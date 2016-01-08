@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{ED9997A2-E54C-4E9F-9350-62BE672C3ABE}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Artemis</RootNamespace>
+    <AssemblyName>Artemis</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>EAC088BE27A2DE790AE6F37A020409F4A1B5EC0E</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Artemis_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Caliburn.Micro, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MyMemory-x64">
+      <HintPath>E:\Downloads\Chome Downloads\MyMemory-x64.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Open.WinKeyboardHook, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Open.WinKeyboardHook.1.0.10.0\lib\net45\Open.WinKeyboardHook.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AppBootStrapper.cs" />
+    <Compile Include="Events\ChangeActiveEffect.cs" />
+    <Compile Include="Events\ChangeBitmap.cs" />
+    <Compile Include="KeyboardProviders\Corsair\K70.cs" />
+    <Compile Include="KeyboardProviders\Corsair\K95.cs" />
+    <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
+    <Compile Include="KeyboardProviders\Logitech\Orion.cs" />
+    <Compile Include="KeyboardProviders\Logitech\Utilities\KeyboardNames.cs" />
+    <Compile Include="KeyboardProviders\Logitech\Utilities\KeyMap.cs" />
+    <Compile Include="KeyboardProviders\Logitech\Utilities\LogitechGSDK.cs" />
+    <Compile Include="KeyboardProviders\Logitech\Utilities\OrionUtilities.cs" />
+    <Compile Include="KeyboardProviders\ProviderHelper.cs" />
+    <Compile Include="Models\EffectModel.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
+    <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
+    <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
+    <Compile Include="Modules\Effects\TypeWave\TypeWaveModel.cs" />
+    <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
+    <Compile Include="Models\MainModel.cs" />
+    <Compile Include="Models\OverlayModel.cs" />
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
+    <Compile Include="Modules\Effects\Debug\DebugEffectSettings.cs" />
+    <Compile Include="Models\EffectSettings.cs" />
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
+    <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Settings\AudioVisualization.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AudioVisualization.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\General.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>General.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\RocketLeague.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RocketLeague.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\TypeWave.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TypeWave.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\Audio\FftEventArgs.cs" />
+    <Compile Include="Utilities\Audio\SampleAggregator.cs" />
+    <Compile Include="Utilities\ColorHelpers.cs" />
+    <Compile Include="Utilities\GameSense\GameDataReceivedEventArgs.cs" />
+    <Compile Include="Utilities\GameSense\GameSenseWebServer.cs" />
+    <Compile Include="Utilities\GameSense\JsonModels\CounterStrikeJson.cs" />
+    <Compile Include="Utilities\Memory\Memory.cs" />
+    <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
+    <Compile Include="Utilities\Memory\Win32.cs" />
+    <Compile Include="Utilities\Keyboard\Key.cs" />
+    <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
+    <Compile Include="ViewModels\EffectsViewModel.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
+    <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
+    <Compile Include="Modules\Effects\TypeHole\TypeHoleViewModel.cs" />
+    <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
+    <Compile Include="ViewModels\GamesViewModel.cs" />
+    <Compile Include="Modules\Games\CounterStrike\CounterStrikeViewModel.cs" />
+    <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\OverlaysViewModel.cs" />
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
+    <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="Views\EffectsView.xaml.cs">
+      <DependentUpon>EffectsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\Debug\DebugEffectView.xaml.cs">
+      <DependentUpon>DebugEffectView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
+      <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\TypeHole\TypeHoleView.xaml.cs">
+      <DependentUpon>TypeHoleView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
+      <DependentUpon>TypeWaveView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GamesView.xaml.cs">
+      <DependentUpon>GamesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\CounterStrike\CounterStrikeView.xaml.cs">
+      <DependentUpon>CounterStrikeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\Dota2\Dota2View.xaml.cs">
+      <DependentUpon>Dota2View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueView.xaml.cs">
+      <DependentUpon>RocketLeagueView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
+      <DependentUpon>Witcher3View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OverlaysView.xaml.cs">
+      <DependentUpon>OverlaysView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
+      <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShellView.xaml.cs">
+      <DependentUpon>ShellView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Entypo.ttf" />
+    <None Include="Settings\AudioVisualization.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>AudioVisualization.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Settings\General.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>General.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Settings\RocketLeague.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>RocketLeague.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Settings\TypeWave.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\EffectsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Effects\Debug\DebugEffectView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Effects\TypeHole\TypeHoleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Effects\TypeWave\TypeWaveView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GamesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\CounterStrike\CounterStrikeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\Dota2\Dota2View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\RocketLeague\RocketLeagueView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\Witcher3\Witcher3View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OverlaysView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ShellView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="LogitechLedEnginesWrapper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\Entypo-license.txt" />
+    <Resource Include="Resources\WindowsIcons-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

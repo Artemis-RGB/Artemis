@@ -1,0 +1,43 @@
+﻿<Controls:MetroWindow x:Class="Artemis.Views.ShellView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:local="clr-namespace:Artemis.Views"
+                      xmlns:cal="http://www.caliburnproject.org"
+                      xmlns:viewModels="clr-namespace:Artemis.ViewModels"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      mc:Ignorable="d"
+                      d:DataContext="{d:DesignInstance Type=viewModels:ShellViewModel, IsDesignTimeCreatable=True}"
+                      cal:Bind.AtDesignTime="True"
+                      cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)]"
+                      Title="Artemis" Height="600" Width="718"
+                      GlowBrush="{DynamicResource AccentColorBrush}">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Content="settings" />
+            <StackPanel Orientation="Horizontal">
+                <ToggleButton x:Name="EffectsEnabled" Width="25" Height="25"
+                              Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                              ToolTip="Toggle all effects"
+                              cal:Message.Attach="[Event Click] = [Action ToggleEffects]"
+                              IsChecked="{Binding Path=EffectsEnabled, Mode=OneWay}" />
+                <TextBlock VerticalAlignment="Center" Text="master switch" />
+            </StackPanel>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary
+                Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+        </Grid.Resources>
+        <TabControl Margin="0,10" TabStripPlacement="Left" x:Name="Items">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayName}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
+    </Grid>
+</Controls:MetroWindow>
