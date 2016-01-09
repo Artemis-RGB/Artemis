@@ -22,7 +22,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
             Enabled = Settings.Enabled;
 
-            VolumeDisplay = new VolumeDisplay();
+            VolumeDisplay = new VolumeDisplay(settings);
         }
 
         public VolumeDisplay VolumeDisplay { get; set; }

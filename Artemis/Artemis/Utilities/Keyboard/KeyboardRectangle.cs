@@ -130,10 +130,14 @@ namespace Artemis.Utilities.Keyboard
 
             var baseRect = new Rectangle(X, Y, Width, Height);
             var brushRect = new Rectangle((int) _rotationProgress, Y, baseRect.Width*2, baseRect.Height*2);
-            var baseBrush = new LinearGradientBrush(brushRect, Colors.First(), Colors.Last(), GradientMode)
-            {InterpolationColors = colorBlend};
-            g.FillRectangle(baseBrush, baseRect);
+            LinearGradientBrush baseBrush;
+            if (Colors.Count > 5)
+                baseBrush = new LinearGradientBrush(brushRect, Colors.First(), Colors.Skip(1).FirstOrDefault(),
+                    GradientMode) {InterpolationColors = colorBlend};
+            else
+                baseBrush = new LinearGradientBrush(baseRect, Colors[0], Colors[1], GradientMode);
 
+            g.FillRectangle(baseBrush, baseRect);
             if (!Rotate)
                 return;
 

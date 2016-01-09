@@ -207,6 +207,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TypeWave.settings</DependentUpon>
     </Compile>
+    <Compile Include="Settings\VolumeDisplay.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VolumeDisplay.settings</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\Audio\FftEventArgs.cs" />
     <Compile Include="Utilities\Audio\SampleAggregator.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
@@ -286,6 +291,10 @@
     </EmbeddedResource>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
+    <None Include="Settings\VolumeDisplay.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
+    </None>
     <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\AudioVisualization.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

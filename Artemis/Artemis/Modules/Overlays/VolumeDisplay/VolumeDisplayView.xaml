@@ -40,16 +40,18 @@
         <StackPanel Grid.Row="1"
                     Grid.Column="0"
                     HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Volume bar color" Style="{DynamicResource DescriptionHeaderStyle}"
+            <Label FontSize="16" Content="Main color" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" Width="134" HorizontalAlignment="Left" />
-            <xctk:ColorPicker x:Name="VolumeBarColor" Width="178" />
+            <xctk:ColorPicker x:Name="MainColor"
+                              SelectedColor="{Binding Path=VolumeDisplaySettings.MainColor, Mode=TwoWay}" />
         </StackPanel>
         <StackPanel Grid.Row="1"
                     Grid.Column="1"
                     HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Volume bar border color" Style="{DynamicResource DescriptionHeaderStyle}"
+            <Label FontSize="16" Content="Secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" />
-            <xctk:ColorPicker x:Name="VolumeBarBorderColor" Width="178" HorizontalAlignment="Left" />
+            <xctk:ColorPicker x:Name="SecondaryColor"
+                              SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}" />
         </StackPanel>
 
         <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">

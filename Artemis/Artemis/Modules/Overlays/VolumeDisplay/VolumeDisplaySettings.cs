@@ -1,4 +1,5 @@
-﻿using Artemis.Models;
+﻿using System.Windows.Media;
+using Artemis.Models;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
@@ -10,27 +11,30 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         }
 
         public bool Enabled { get; set; }
-        public bool DisplayVolume { get; set; }
-        public bool DisplayPlayPause { get; set; }
-        public bool DisplayPreviousNext { get; set; }
-        public bool DisplayStop { get; set; }
+        public Color MainColor { get; set; }
+        public Color SecondaryColor { get; set; }
 
         public override sealed void Load()
         {
-            ToDefault();
+            Enabled = Settings.VolumeDisplay.Default.Enabled;
+            MainColor = Settings.VolumeDisplay.Default.MainColor;
+            SecondaryColor = Settings.VolumeDisplay.Default.SecondaryColor;
         }
 
         public override sealed void Save()
         {
+            Settings.VolumeDisplay.Default.Enabled = Enabled;
+            Settings.VolumeDisplay.Default.MainColor = MainColor;
+            Settings.VolumeDisplay.Default.SecondaryColor = SecondaryColor;
+
+            Settings.VolumeDisplay.Default.Save();
         }
 
         public override sealed void ToDefault()
         {
             Enabled = true;
-            DisplayVolume = true;
-            DisplayPlayPause = true;
-            DisplayPreviousNext = true;
-            DisplayStop = true;
+            MainColor = Color.FromArgb(255, 38, 246, 0);
+            SecondaryColor = Color.FromArgb(255, 255, 41, 0);
         }
     }
 }
