@@ -192,6 +192,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AudioVisualization.settings</DependentUpon>
     </Compile>
+    <Compile Include="Settings\CounterStrike.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>CounterStrike.settings</DependentUpon>
+    </Compile>
     <Compile Include="Settings\General.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -217,7 +222,6 @@
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\GameSense\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameSense\GameSenseWebServer.cs" />
-    <Compile Include="Utilities\GameSense\JsonModels\CounterStrikeJson.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
@@ -291,6 +295,10 @@
     </EmbeddedResource>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
+    <None Include="Settings\CounterStrike.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Settings\VolumeDisplay.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>

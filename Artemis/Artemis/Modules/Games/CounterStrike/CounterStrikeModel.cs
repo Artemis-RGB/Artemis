@@ -5,9 +5,9 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Models;
 using Artemis.Utilities.GameSense;
-using Artemis.Utilities.GameSense.JsonModels;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -23,13 +23,17 @@ namespace Artemis.Modules.Games.CounterStrike
             ProcessName = "csgo";
             Scale = 4;
 
-            AmmoRect = new KeyboardRectangle(Scale, 0, 0, 84, 24, new List<Color> {Color.Blue, Color.Red},
+            AmmoRect = new KeyboardRectangle(Scale, 0, 0, 16*Scale, 1*Scale, new List<Color> {Color.Blue, Color.Red},
+                LinearGradientMode.Horizontal);
+            TeamRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale, new List<Color> {Color.CornflowerBlue},
                 LinearGradientMode.Horizontal);
         }
 
+        public KeyboardRectangle TeamRect { get; set; }
+
         public int Scale { get; set; }
 
-        public CounterStrikeJson CsJson { get; set; }
+        public JObject CsJson { get; set; }
         public KeyboardRectangle AmmoRect { get; set; }
 
         public override void Dispose()
@@ -44,19 +48,46 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Update()
         {
-            if (CsJson?.player.weapons == null)
+            if (CsJson == null)
                 return;
 
-            var activeWeapon = CsJson.player.weapons.FirstOrDefault(w => w.Value.state.Equals("active"));
+            UpdateAmmo();
+            UpdateTeam();
+        }
+
+        private void UpdateTeam()
+        {
+            var currentTeam = CsJson["player"]["team"];
+            if (currentTeam == null)
+                return;
+
+            TeamRect.Colors = currentTeam.Value<string>() == "T"
+                ? new List<Color> {Color.FromArgb(255, 255, 129, 0)}
+                : new List<Color> {Color.FromArgb(255, 112, 209, 255)};
+        }
+
+        private void UpdateAmmo()
+        {
+            var activeWeapon =
+                CsJson["player"]["weapons"].Children()
+                    .Select(c => c.First)
+                    .FirstOrDefault(w => w["state"]?.Value<string>() == "active");
 
             // Update the ammo display
-            var ammoPercentage = 0;
-            if (activeWeapon.Value?.ammo_clip_max > 0)
-                ammoPercentage =
-                    (int) ((Math.Ceiling(100.00/activeWeapon.Value.ammo_clip_max))*activeWeapon.Value.ammo_clip);
+            if (activeWeapon?["ammo_clip_max"] == null || activeWeapon["ammo_clip"] == null)
+                return;
 
-            AmmoRect.Height = ammoPercentage;
-            if (ammoPercentage < 30)
+            var maxAmmo = activeWeapon["ammo_clip_max"].Value<int>();
+            var ammo = activeWeapon["ammo_clip"].Value<int>();
+
+            if (maxAmmo < 0)
+                return;
+
+            var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
+            AmmoRect.Width = ((int) Math.Floor((16/100.00)*ammoPercentage))*Scale;
+
+            // Low ammo indicator
+            if (ammoPercentage < 37)
                 AmmoRect.StartBlink(1000);
             else
                 AmmoRect.StopBlink();
@@ -64,12 +95,13 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = new Bitmap(21, 6);
+            var bitmap = new Bitmap(21*Scale, 6*Scale);
 
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
                 AmmoRect.Draw(g);
+                TeamRect.Draw(g);
             }
             return bitmap;
         }
@@ -83,7 +115,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             // Parse the JSON
-            CsJson = JsonConvert.DeserializeObject<CounterStrikeJson>(jsonString);
+            CsJson = JsonConvert.DeserializeObject<JObject>(jsonString);
         }
     }
 }

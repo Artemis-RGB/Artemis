@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="CounterStrike">
+  <Profiles />
+  <Settings>
+    <Setting Name="GameDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
