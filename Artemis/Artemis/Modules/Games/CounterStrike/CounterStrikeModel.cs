@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -25,16 +26,23 @@ namespace Artemis.Modules.Games.CounterStrike
 
             AmmoRect = new KeyboardRectangle(Scale, 0, 0, 16*Scale, 1*Scale, new List<Color> {Color.Blue, Color.Red},
                 LinearGradientMode.Horizontal);
-            TeamRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale, new List<Color> {Color.CornflowerBlue},
+            TeamRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale,
+                new List<Color>(),
+                LinearGradientMode.Horizontal);
+            EventRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale,
+                new List<Color>(),
                 LinearGradientMode.Horizontal);
         }
 
+        public KeyboardRectangle EventRect { get; set; }
         public KeyboardRectangle TeamRect { get; set; }
+        public KeyboardRectangle AmmoRect { get; set; }
+        public JObject CsJson { get; set; }
+
+        public bool DrawingSmoke { get; set; }
+        public bool DrawingFlash { get; set; }
 
         public int Scale { get; set; }
-
-        public JObject CsJson { get; set; }
-        public KeyboardRectangle AmmoRect { get; set; }
 
         public override void Dispose()
         {
@@ -53,21 +61,72 @@ namespace Artemis.Modules.Games.CounterStrike
 
             UpdateAmmo();
             UpdateTeam();
+            UpdateHealth();
+            UpdateFlash();
+            UpdateSmoke();
+        }
+
+        private void UpdateHealth()
+        {
+            if (CsJson["player"]?["state"]?["health"] == null)
+                return;
+
+            var health = CsJson["player"]["state"]["health"].Value<int>();
+            if (health > 25)
+                return;
+
+            TeamRect.Colors = new List<Color> {Color.Red, Color.DarkOrange, Color.Red, Color.DarkOrange};
+        }
+
+        private void UpdateSmoke()
+        {
+            if (CsJson["player"]?["state"]?["smoked"] == null)
+                return;
+
+            var smoked = CsJson["player"]["state"]["smoked"].Value<int>();
+            if (smoked == 0 && !DrawingSmoke)
+                return;
+
+            EventRect.Colors = new List<Color> {Color.FromArgb(smoked, 255, 255, 255)};
+            DrawingSmoke = (smoked != 0);
+        }
+
+        private void UpdateFlash()
+        {
+            if (CsJson["player"]?["state"]?["flashed"] == null)
+                return;
+
+            var flashed = CsJson["player"]["state"]["flashed"].Value<int>();
+            if (flashed == 0 && !DrawingFlash)
+                return;
+
+            EventRect.Colors = new List<Color> {Color.FromArgb(flashed, 255, 255, 255)};
+            DrawingFlash = (flashed != 0);
         }
 
         private void UpdateTeam()
         {
-            var currentTeam = CsJson["player"]["team"];
+            var currentTeam = CsJson["player"]?["team"];
             if (currentTeam == null)
                 return;
 
+            var t1 = Color.FromArgb(255, 255, 129, 0);
+            var t2 = Color.FromArgb(255, 255, 89, 0);
+
+            var ct1 = Color.FromArgb(255, 203, 238, 255);
+            var ct2 = Color.FromArgb(255, 0, 173, 255);
+
             TeamRect.Colors = currentTeam.Value<string>() == "T"
-                ? new List<Color> {Color.FromArgb(255, 255, 129, 0)}
-                : new List<Color> {Color.FromArgb(255, 112, 209, 255)};
+                ? new List<Color> {t1, t2, t1, t2}
+                : new List<Color> {ct1, ct2, ct1, ct2};
+            TeamRect.Rotate = true;
         }
 
         private void UpdateAmmo()
         {
+            if (CsJson["player"]["weapons"] == null)
+                return;
+
             var activeWeapon =
                 CsJson["player"]["weapons"].Children()
                     .Select(c => c.First)
@@ -102,6 +161,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 g.Clear(Color.Transparent);
                 AmmoRect.Draw(g);
                 TeamRect.Draw(g);
+                EventRect.Draw(g);
             }
             return bitmap;
         }
@@ -114,6 +174,8 @@ namespace Artemis.Modules.Games.CounterStrike
             if (!jsonString.Contains("Counter-Strike: Global Offensive"))
                 return;
 
+
+            Debug.WriteLine(jsonString);
             // Parse the JSON
             CsJson = JsonConvert.DeserializeObject<JObject>(jsonString);
         }
