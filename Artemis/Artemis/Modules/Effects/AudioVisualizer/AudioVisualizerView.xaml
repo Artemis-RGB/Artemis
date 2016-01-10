@@ -6,9 +6,9 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:audioVisualizer="clr-namespace:Artemis.Modules.Effects.AudioVisualizer"
              mc:Ignorable="d"
              d:DesignHeight="407.812" d:DesignWidth="671.484"
-             d:DataContext="{d:DesignInstance Type=effects:AudioVisualizerViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
     <Grid Margin="15, 5, 15, 5">
         <Grid.ColumnDefinitions>
@@ -26,7 +26,7 @@
             <Label FontSize="20"
                    Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
                 <Label.Content>
-                    <AccessText TextWrapping="Wrap" Text="Visualizes the selected audio device on the keyboard." />
+                    <AccessText TextWrapping="Wrap" Text="Visualizes the default audio device on the keyboard." />
                 </Label.Content>
             </Label>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -83,22 +83,6 @@
                     TickFrequency="7"
                     Value="{Binding Path=AudioVisualizerSettings.Bars, Mode=TwoWay}" Minimum="7" Maximum="21"
                     SmallChange="7"
-                    IsSnapToTickEnabled="True" />
-        </StackPanel>
-        <!-- Spread slider -->
-        <StackPanel Grid.Row="3"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Spread" Style="{DynamicResource DescriptionHeaderStyle}"
-                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
-            <Slider x:Name="Spread"
-                    VerticalAlignment="top"
-                    HorizontalAlignment="Left"
-                    Width="132"
-                    TickPlacement="BottomRight"
-                    TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.Spread, Mode=TwoWay}" Minimum="0" Maximum="4"
-                    SmallChange="1"
                     IsSnapToTickEnabled="True" />
         </StackPanel>
         <!-- Fadeout slider -->

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Models;
+using Artemis.Utilities;
 using Artemis.Utilities.GameSense;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
@@ -14,17 +15,20 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
+        private readonly CounterStrikeSettings _counterStrikeSettings;
         private readonly MainModel _mainModel;
 
         // TODO: Make functional (CS' new gamestate intergration broke this)
-        public CounterStrikeModel(MainModel mainModel)
+        public CounterStrikeModel(CounterStrikeSettings counterStrikeSettings, MainModel mainModel)
         {
+            _counterStrikeSettings = counterStrikeSettings;
             _mainModel = mainModel;
             Name = "CounterStrike";
             ProcessName = "csgo";
             Scale = 4;
 
-            AmmoRect = new KeyboardRectangle(Scale, 0, 0, 16*Scale, 1*Scale, new List<Color> {Color.Blue, Color.Red},
+            AmmoRect = new KeyboardRectangle(Scale, 0, 0, 16*Scale, 1*Scale,
+                new List<Color>(),
                 LinearGradientMode.Horizontal);
             TeamRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale,
                 new List<Color>(),
@@ -59,11 +63,16 @@ namespace Artemis.Modules.Games.CounterStrike
             if (CsJson == null)
                 return;
 
-            UpdateAmmo();
-            UpdateTeam();
-            UpdateHealth();
-            UpdateFlash();
-            UpdateSmoke();
+            if (_counterStrikeSettings.AmmoEnabled)
+                UpdateAmmo();
+            if (_counterStrikeSettings.TeamColorEnabled)
+                UpdateTeam();
+            if (_counterStrikeSettings.LowHpEnabled)
+                UpdateHealth();
+            if (_counterStrikeSettings.FlashEnabled)
+                UpdateFlash();
+            if (_counterStrikeSettings.SmokeEnabled)
+                UpdateSmoke();
         }
 
         private void UpdateHealth()
@@ -144,6 +153,11 @@ namespace Artemis.Modules.Games.CounterStrike
 
             var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
             AmmoRect.Width = ((int) Math.Floor((16/100.00)*ammoPercentage))*Scale;
+            AmmoRect.Colors = new List<Color>
+            {
+                ColorHelpers.MediaColorToDrawingColor(_counterStrikeSettings.AmmoMainColor),
+                ColorHelpers.MediaColorToDrawingColor(_counterStrikeSettings.AmmoSecondaryColor)
+            };
 
             // Low ammo indicator
             if (ammoPercentage < 37)
@@ -174,8 +188,6 @@ namespace Artemis.Modules.Games.CounterStrike
             if (!jsonString.Contains("Counter-Strike: Global Offensive"))
                 return;
 
-
-            Debug.WriteLine(jsonString);
             // Parse the JSON
             CsJson = JsonConvert.DeserializeObject<JObject>(jsonString);
         }

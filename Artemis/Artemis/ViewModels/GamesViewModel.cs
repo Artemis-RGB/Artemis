@@ -12,7 +12,7 @@ namespace Artemis.ViewModels
         public GamesViewModel(MainModel mainModel)
         {
             ActivateItem(new RocketLeagueViewModel(mainModel) {DisplayName = "Rocket League"});
-            ActivateItem(new CounterStrikeViewModel(mainModel) {DisplayName = "CS:GO (NYI)"});
+            ActivateItem(new CounterStrikeViewModel(mainModel) {DisplayName = "CS:GO"});
             ActivateItem(new Dota2ViewModel(mainModel) {DisplayName = "Dota 2 (NYI)"});
             ActivateItem(new Witcher3ViewModel(mainModel) {DisplayName = "The Witcher 3"});
         }

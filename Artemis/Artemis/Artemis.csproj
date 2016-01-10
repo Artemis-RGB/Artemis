@@ -174,6 +174,7 @@
     <Compile Include="Modules\Effects\TypeWave\TypeWaveModel.cs" />
     <Compile Include="Models\GameModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
+    <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
     <Compile Include="Models\MainModel.cs" />

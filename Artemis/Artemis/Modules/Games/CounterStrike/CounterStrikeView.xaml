@@ -3,9 +3,113 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        <TextBlock Text="{Binding Content}" />
+             d:DesignHeight="475.61" d:DesignWidth="519.512">
+    <Grid Margin="15, 5, 15, 5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="80" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label.Content>
+                    <AccessText TextWrapping="Wrap"
+                                Text="Shows verious game states and events on the keyboard." />
+                </Label.Content>
+            </Label>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                              Style="{DynamicResource MetroCircleToggleButtonStyle}" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2">
+            <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
+                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
+            <Grid>
+                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action CheckGameDirectory]" />
+                <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25"
+                        Style="{DynamicResource SquareButtonStyle}" Height="25"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Row="2"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.AmmoEnabled, Mode=TwoWay}"
+                                   Header="Ammo display"
+                                   OnLabel="Yes" OffLabel="No"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
+        <StackPanel Grid.Row="3"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Ammo main color" Style="{DynamicResource DescriptionHeaderStyle}"
+                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="181" />
+            <xctk:ColorPicker x:Name="MainColor"
+                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoMainColor, Mode=TwoWay}" Margin="5,0,0,0" />
+        </StackPanel>
+        <StackPanel Grid.Row="3"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Ammo secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
+                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="181" />
+            <xctk:ColorPicker x:Name="SecondaryColor"
+                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoSecondaryColor, Mode=TwoWay}" Margin="5,0,0,0" />
+        </StackPanel>
+        <StackPanel Grid.Row="4"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.SmokeEnabled, Mode=TwoWay}"
+                                   Header="Smoked effect"
+                                   OnLabel="Yes" OffLabel="No"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
+        <StackPanel Grid.Row="4"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.FlashEnabled, Mode=TwoWay}"
+                                   Header="Flashed effect"
+                                   OnLabel="Yes" OffLabel="No"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
+        <StackPanel Grid.Row="5"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.TeamColorEnabled, Mode=TwoWay}"
+                                   Header="Team colors"
+                                   OnLabel="Yes" OffLabel="No"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
+        <StackPanel Grid.Row="5"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.LowHpEnabled, Mode=TwoWay}"
+                                   Header="Low HP effect"
+                                   OnLabel="Yes" OffLabel="No"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="0" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                    Style="{DynamicResource SquareButtonStyle}" />
+            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0"
+                    Style="{DynamicResource SquareButtonStyle}" />
+        </StackPanel>
     </Grid>
 </UserControl>

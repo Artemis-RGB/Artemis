@@ -8,7 +8,6 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
              d:DesignHeight="352.568" d:DesignWidth="490.332"
-             d:DataContext="{d:DesignInstance Type=games:RocketLeagueViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
 
     <Grid Margin="15, 5, 15, 5">

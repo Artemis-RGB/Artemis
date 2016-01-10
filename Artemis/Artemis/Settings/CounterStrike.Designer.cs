@@ -34,5 +34,89 @@ namespace Artemis.Settings {
                 this["GameDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AmmoEnabled {
+            get {
+                return ((bool)(this["AmmoEnabled"]));
+            }
+            set {
+                this["AmmoEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF2900")]
+        public global::System.Windows.Media.Color AmmoMainColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AmmoMainColor"]));
+            }
+            set {
+                this["AmmoMainColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF26F600")]
+        public global::System.Windows.Media.Color AmmoSecondaryColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AmmoSecondaryColor"]));
+            }
+            set {
+                this["AmmoSecondaryColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TeamColorEnabled {
+            get {
+                return ((bool)(this["TeamColorEnabled"]));
+            }
+            set {
+                this["TeamColorEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FlashEnabled {
+            get {
+                return ((bool)(this["FlashEnabled"]));
+            }
+            set {
+                this["FlashEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SmokeEnabled {
+            get {
+                return ((bool)(this["SmokeEnabled"]));
+            }
+            set {
+                this["SmokeEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LowHpEnabled {
+            get {
+                return ((bool)(this["LowHpEnabled"]));
+            }
+            set {
+                this["LowHpEnabled"] = value;
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@
              xmlns:typeWave="clr-namespace:Artemis.Modules.Effects.TypeWave"
              mc:Ignorable="d"
              d:DesignHeight="407.812" d:DesignWidth="671.484"
-             d:DataContext="{d:DesignInstance Type=typeWave:TypeWaveViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
     <Grid Margin="15, 5, 15, 5">
         <Grid.ColumnDefinitions>

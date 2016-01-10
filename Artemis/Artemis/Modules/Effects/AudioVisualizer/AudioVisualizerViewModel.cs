@@ -52,10 +52,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public void SaveSettings()
         {
-            if (AudioVisualizerModel == null)
-                return;
-
-            AudioVisualizerSettings.Save();
+            AudioVisualizerSettings?.Save();
         }
 
         public void ResetSettings()
