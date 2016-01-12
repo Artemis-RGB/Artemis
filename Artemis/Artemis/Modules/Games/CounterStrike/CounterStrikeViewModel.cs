@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Artemis.Models;
 using Screen = Caliburn.Micro.Screen;
@@ -19,6 +20,7 @@ namespace Artemis.Modules.Games.CounterStrike
             // Create effect model and add it to MainModel
             CounterStrikeModel = new CounterStrikeModel(CounterStrikeSettings, MainModel);
             MainModel.EffectModels.Add(CounterStrikeModel);
+            PlaceConfigFile();
         }
 
         public CounterStrikeSettings CounterStrikeSettings
@@ -48,19 +50,23 @@ namespace Artemis.Modules.Games.CounterStrike
 
             CounterStrikeSettings.GameDirectory = dialog.SelectedPath;
             NotifyOfPropertyChange(() => CounterStrikeSettings);
-            CheckGameDirectory();
+            PlaceConfigFile();
         }
 
-        public void CheckGameDirectory()
+        public void PlaceConfigFile()
         {
-            if (Directory.Exists(CounterStrikeSettings.GameDirectory + "/csgo/cfg"))
+            if (CounterStrikeSettings.GameDirectory == string.Empty)
                 return;
+            if (Directory.Exists(CounterStrikeSettings.GameDirectory + "/csgo/cfg"))
+            {
+                var cfgFile = Properties.Resources.gamestateConfigFileCsGo.Replace("{{port}}", MainModel.GameSenseWebServer.Port.ToString());
+                File.WriteAllText(CounterStrikeSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg", cfgFile);
+                return;
+            }
 
             MessageBox.Show("Please select a valid CS:GO directory");
-            CounterStrikeSettings.GameDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive";
+            CounterStrikeSettings.GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => CounterStrikeSettings);
-
-            // TODO: Place config file in CS dir
         }
 
         public void SaveSettings()

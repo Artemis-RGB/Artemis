@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Artemis.Settings {
+namespace Artemis.Modules.Effects.AudioVisualizer {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

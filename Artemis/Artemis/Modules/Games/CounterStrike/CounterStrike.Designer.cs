@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Artemis.Settings {
+namespace Artemis.Modules.Games.CounterStrike {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +25,7 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Counter-Strike Global Offensive")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string GameDirectory {
             get {
                 return ((string)(this["GameDirectory"]));

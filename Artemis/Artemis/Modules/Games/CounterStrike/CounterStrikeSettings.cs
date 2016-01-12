@@ -23,37 +23,37 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override sealed void Load()
         {
-            GameDirectory = Settings.CounterStrike.Default.GameDirectory;
+            GameDirectory = CounterStrike.Default.GameDirectory;
 
-            AmmoEnabled = Settings.CounterStrike.Default.AmmoEnabled;
-            AmmoMainColor = Settings.CounterStrike.Default.AmmoMainColor;
-            AmmoSecondaryColor = Settings.CounterStrike.Default.AmmoSecondaryColor;
+            AmmoEnabled = CounterStrike.Default.AmmoEnabled;
+            AmmoMainColor = CounterStrike.Default.AmmoMainColor;
+            AmmoSecondaryColor = CounterStrike.Default.AmmoSecondaryColor;
 
-            TeamColorEnabled = Settings.CounterStrike.Default.TeamColorEnabled;
-            FlashEnabled = Settings.CounterStrike.Default.FlashEnabled;
-            SmokeEnabled = Settings.CounterStrike.Default.SmokeEnabled;
-            LowHpEnabled = Settings.CounterStrike.Default.LowHpEnabled;
+            TeamColorEnabled = CounterStrike.Default.TeamColorEnabled;
+            FlashEnabled = CounterStrike.Default.FlashEnabled;
+            SmokeEnabled = CounterStrike.Default.SmokeEnabled;
+            LowHpEnabled = CounterStrike.Default.LowHpEnabled;
         }
 
         public override sealed void Save()
         {
-            Settings.CounterStrike.Default.GameDirectory = GameDirectory;
+            CounterStrike.Default.GameDirectory = GameDirectory;
 
-            Settings.CounterStrike.Default.AmmoEnabled = AmmoEnabled;
-            Settings.CounterStrike.Default.AmmoMainColor = AmmoMainColor;
-            Settings.CounterStrike.Default.AmmoSecondaryColor = AmmoSecondaryColor;
+            CounterStrike.Default.AmmoEnabled = AmmoEnabled;
+            CounterStrike.Default.AmmoMainColor = AmmoMainColor;
+            CounterStrike.Default.AmmoSecondaryColor = AmmoSecondaryColor;
 
-            Settings.CounterStrike.Default.TeamColorEnabled = TeamColorEnabled;
-            Settings.CounterStrike.Default.FlashEnabled = FlashEnabled;
-            Settings.CounterStrike.Default.SmokeEnabled = SmokeEnabled;
-            Settings.CounterStrike.Default.LowHpEnabled = LowHpEnabled;
+            CounterStrike.Default.TeamColorEnabled = TeamColorEnabled;
+            CounterStrike.Default.FlashEnabled = FlashEnabled;
+            CounterStrike.Default.SmokeEnabled = SmokeEnabled;
+            CounterStrike.Default.LowHpEnabled = LowHpEnabled;
 
-            Settings.CounterStrike.Default.Save();
+            CounterStrike.Default.Save();
         }
 
         public override sealed void ToDefault()
         {
-            GameDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive";
+            GameDirectory = string.Empty;
 
             AmmoEnabled = true;
             AmmoMainColor = Color.FromArgb(255, 38, 246, 0);

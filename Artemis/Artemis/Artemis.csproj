@@ -168,18 +168,43 @@
     <Compile Include="KeyboardProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="KeyboardProviders\ProviderHelper.cs" />
     <Compile Include="Models\EffectModel.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
+      <DependentUpon>AudioVisualization.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
     <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
+    <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
+      <DependentUpon>TypeWave.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Modules\Effects\TypeWave\TypeWaveModel.cs" />
     <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Modules\Games\CounterStrike\CounterStrike.Designer.cs">
+      <DependentUpon>CounterStrike.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
+    <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
+      <DependentUpon>RocketLeague.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
     <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\OverlayModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
+    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.Designer.cs">
+      <DependentUpon>VolumeDisplay.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectSettings.cs" />
@@ -188,35 +213,10 @@
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Settings\AudioVisualization.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>AudioVisualization.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\CounterStrike.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CounterStrike.settings</DependentUpon>
-    </Compile>
     <Compile Include="Settings\General.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>General.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\RocketLeague.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>RocketLeague.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\TypeWave.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TypeWave.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\VolumeDisplay.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>VolumeDisplay.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Audio\FftEventArgs.cs" />
     <Compile Include="Utilities\Audio\SampleAggregator.cs" />
@@ -294,32 +294,32 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
-    <AppDesigner Include="Properties\" />
-    <None Include="Settings\CounterStrike.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Settings\VolumeDisplay.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
-    </None>
-    <Resource Include="Resources\Entypo.ttf" />
-    <None Include="Settings\AudioVisualization.settings">
+    <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>AudioVisualization.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Settings\General.settings">
+    <None Include="Modules\Effects\TypeWave\TypeWave.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>General.Designer.cs</LastGenOutput>
+      <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Settings\RocketLeague.settings">
+    <None Include="Modules\Games\CounterStrike\CounterStrike.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Modules\Games\RocketLeague\RocketLeague.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>RocketLeague.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Settings\TypeWave.settings">
+    <None Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
+      <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\Entypo.ttf" />
+    <None Include="Settings\General.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>General.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -388,6 +388,7 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\gamestateConfigFileCsGo.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>

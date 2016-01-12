@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Artemis.Properties
-{
-
-
+namespace Artemis.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,49 +22,67 @@ namespace Artemis.Properties
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if ((resourceMan == null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Artemis.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;Artemis&quot;
+        ///{
+        /// &quot;uri&quot; &quot;{{address}}/csgo_game_event&quot;
+        /// &quot;timeout&quot; &quot;5.0&quot;
+        /// &quot;buffer&quot;  &quot;0.1&quot;
+        /// &quot;throttle&quot; &quot;0.1&quot;
+        /// &quot;heartbeat&quot; &quot;30.0&quot;
+        /// &quot;data&quot;
+        /// {
+        ///   &quot;provider&quot;            &quot;1&quot;
+        ///   &quot;map&quot;                 &quot;1&quot;
+        ///   &quot;round&quot;               &quot;1&quot;
+        ///   &quot;player_id&quot;           &quot;1&quot;
+        ///   &quot;player_state&quot;        &quot;1&quot;
+        ///   &quot;player_weapons&quot;      &quot;1&quot;
+        ///   &quot;player_match_stats&quot;  &quot;1&quot;
+        /// }
+        ///}.
+        /// </summary>
+        internal static string gamestateConfigFileCsGo {
+            get {
+                return ResourceManager.GetString("gamestateConfigFileCsGo", resourceCulture);
             }
         }
     }

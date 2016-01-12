@@ -43,7 +43,7 @@
             <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
             <Grid>
-                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action CheckGameDirectory]" />
+                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
                 <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25"
                         Style="{DynamicResource SquareButtonStyle}" Height="25"/>
             </Grid>

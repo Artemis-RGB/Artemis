@@ -1,9 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="CounterStrike">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Games.CounterStrike" GeneratedClassName="CounterStrike">
   <Profiles />
   <Settings>
     <Setting Name="GameDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AmmoEnabled" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
