@@ -13,17 +13,17 @@ Some of it's basic features:
 
 Currently the following games are supported:
 
- * Rocket League
- * The Witcher 3
+ * Rocket League (Memory reading)
+ * The Witcher 3 (Memory reading)
+ * Counter-Strike Global Offensive (Native Gamestate intergration)
 
 Support is planned for:
- * Counter-Strike Global Offensive (Using native Gamestate intergration)
- * Dota 2 (Using native Gamestate intergration)
- * Project CARS (Using native memory sharing)
+ * Dota 2 (Native Gamestate intergration)
+ * Project CARS (Native memory sharing)
 
 Currently the only supported keyboard is the Logitech G910 Orion Spark, but progress is being made to support Corsair as well.
 
-For any other keyboards feel free to submit a PR.
+For any keyboards/games/effects feel we'd love PRs!
 
 ### Screenshots
 ![Screenshot 1](http://i.imgur.com/mq8i4ht.png)
@@ -32,9 +32,9 @@ For any other keyboards feel free to submit a PR.
 
 ### Thanks to:
 
- * [CUE.NET](https://github.com/DarthAffe/CUE.NET) for the great Corsair library
- * [NAudio](http://naudio.codeplex.com/) for the fine audio library
- * [Open.WinKeyboardHook](Open.WinKeyboardHook) for their robust keyboard listener
- * [Caliburn.Micro](http://caliburnmicro.com/) for the awesome WPF framework, really, try it out
- * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) for the brilliant UI
- * [Extended.Wpf.Toolkit](http://wpftoolkit.codeplex.com/) for the sweet color picker
+ * [CUE.NET](https://github.com/DarthAffe/CUE.NET) - Corsair keyboard library
+ * [NAudio](http://naudio.codeplex.com/) - Used for audio visualization
+ * [Open.WinKeyboardHook](Open.WinKeyboardHook) - Used for typing effects/volume overlay
+ * [Caliburn.Micro](http://caliburnmicro.com/) - Awesome WPF framework, really, try it out
+ * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) - Sweet Metro UI
+ * [Extended.Wpf.Toolkit](http://wpftoolkit.codeplex.com/) - Color Picker
