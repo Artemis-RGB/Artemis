@@ -13,7 +13,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public int Sensitivity { get; set; }
         public int Bars { get; set; }
-        public int Spread { get; set; }
+        public bool FromBottom { get; set; }
         public int FadeSpeed { get; set; }
         public Color MainColor { get; set; }
         public Color SecondaryColor { get; set; }
@@ -22,7 +22,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         {
             Sensitivity = AudioVisualization.Default.Sensitivity;
             Bars = AudioVisualization.Default.Bars;
-            Spread = AudioVisualization.Default.Spread;
+            FromBottom = AudioVisualization.Default.FromBottom;
             FadeSpeed = AudioVisualization.Default.FadeSpeed;
             MainColor = AudioVisualization.Default.MainColor;
             SecondaryColor = AudioVisualization.Default.SecondaryColor;
@@ -32,7 +32,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         {
             AudioVisualization.Default.Sensitivity = Sensitivity;
             AudioVisualization.Default.Bars = Bars;
-            AudioVisualization.Default.Spread = Spread;
+            AudioVisualization.Default.FromBottom = FromBottom;
             AudioVisualization.Default.FadeSpeed = FadeSpeed;
             AudioVisualization.Default.MainColor = MainColor;
             AudioVisualization.Default.SecondaryColor = SecondaryColor;
@@ -44,7 +44,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         {
             Sensitivity = 4;
             Bars = 21;
-            Spread = 1;
+            FromBottom = true;
             FadeSpeed = 3;
             MainColor = Color.FromArgb(255, 0, 0, 255);
             SecondaryColor = Color.FromArgb(255, 30, 144, 255);

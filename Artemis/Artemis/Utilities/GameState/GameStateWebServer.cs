@@ -6,16 +6,16 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 
-namespace Artemis.Utilities.GameSense
+namespace Artemis.Utilities.GameState
 {
-    public class GameSenseWebServer
+    public class GameStateWebServer
     {
         public delegate void GameDataReceivedEventHandler(
             object sender, GameDataReceivedEventArgs gameDataReceivedEventArgs);
 
         private readonly HttpListener _listener = new HttpListener();
 
-        public GameSenseWebServer()
+        public GameStateWebServer()
         {
             Start();
         }
@@ -81,7 +81,7 @@ namespace Artemis.Utilities.GameSense
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var content = "{\"address\":\"localhost:" + Port + "\"}";
+            var content = "{\"address\":\"127.0.0.1:" + Port + "\"}";
             File.WriteAllText(path + @"\coreProps.json", content);
         }
 

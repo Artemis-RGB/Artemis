@@ -12,6 +12,7 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3Model : GameModel
     {
+        // TODO: Update for 1.12
         public Witcher3Model(RocketLeagueSettings settings)
         {
             Name = "Witcher3";
@@ -19,8 +20,7 @@ namespace Artemis.Modules.Games.Witcher3
             Scale = 4;
 
             Settings = settings;
-            SignRect = new KeyboardRectangle(Scale, 0, 0, 84, 24, new List<Color> {Color.Blue, Color.Red},
-                LinearGradientMode.Horizontal)
+            SignRect = new KeyboardRectangle(Scale, 0, 0, 84, 24, new List<Color>(), LinearGradientMode.Horizontal)
             {
                 Rotate = true,
                 LoopSpeed = 0.5
@@ -69,19 +69,43 @@ namespace Artemis.Modules.Games.Witcher3
             {
                 case 0:
                     // Aard
-                    SignRect.Colors = new List<Color> {Color.DeepSkyBlue, Color.Blue, Color.DeepSkyBlue, Color.Blue};
+                    SignRect.Colors = new List<Color>
+                    {
+                        Color.DeepSkyBlue,
+                        Color.Blue,
+                        Color.DeepSkyBlue,
+                        Color.Blue
+                    };
                     break;
                 case 1:
                     // Yrden
-                    SignRect.Colors = new List<Color> {Color.Purple, Color.DeepPink, Color.Purple, Color.DeepPink};
+                    SignRect.Colors = new List<Color>
+                    {
+                        Color.Purple,
+                        Color.DeepPink,
+                        Color.Purple,
+                        Color.DeepPink
+                    };
                     break;
                 case 2:
                     // Igni
-                    SignRect.Colors = new List<Color> {Color.DarkOrange, Color.Red, Color.DarkOrange, Color.Red};
+                    SignRect.Colors = new List<Color>
+                    {
+                        Color.DarkOrange,
+                        Color.Red,
+                        Color.DarkOrange,
+                        Color.Red
+                    };
                     break;
                 case 3:
                     // Quen
-                    SignRect.Colors = new List<Color> {Color.DarkOrange, Color.Yellow, Color.DarkOrange, Color.Yellow};
+                    SignRect.Colors = new List<Color>
+                    {
+                        Color.DarkOrange,
+                        Color.Yellow,
+                        Color.DarkOrange,
+                        Color.Yellow
+                    };
                     break;
                 case 4:
                     // Axii

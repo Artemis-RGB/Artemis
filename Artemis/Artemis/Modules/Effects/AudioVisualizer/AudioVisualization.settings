@@ -1,7 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="AudioVisualization">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Effects.AudioVisualizer" GeneratedClassName="AudioVisualization">
   <Profiles />
   <Settings>
     <Setting Name="Sensitivity" Type="System.Int32" Scope="User">
@@ -10,8 +8,8 @@
     <Setting Name="Bars" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">21</Value>
     </Setting>
-    <Setting Name="Spread" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+    <Setting Name="FromBottom" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="FadeSpeed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>

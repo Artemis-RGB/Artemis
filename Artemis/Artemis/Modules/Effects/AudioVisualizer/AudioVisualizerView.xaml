@@ -85,6 +85,14 @@
                     SmallChange="7"
                     IsSnapToTickEnabled="True" />
         </StackPanel>
+        <StackPanel Grid.Row="3"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=AudioVisualizerSettings.FromBottom, Mode=TwoWay}"
+                                   Header="Origin"
+                                   OnLabel="Bottom" OffLabel="Top"
+                                   Margin="5,3,0,0" Width="125" />
+        </StackPanel>
         <!-- Fadeout slider -->
         <StackPanel Grid.Row="3"
                     Grid.Column="1"

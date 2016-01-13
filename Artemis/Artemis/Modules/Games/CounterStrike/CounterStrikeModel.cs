@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Models;
 using Artemis.Utilities;
-using Artemis.Utilities.GameSense;
+using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,7 +18,6 @@ namespace Artemis.Modules.Games.CounterStrike
         private readonly CounterStrikeSettings _counterStrikeSettings;
         private readonly MainModel _mainModel;
 
-        // TODO: Make functional (CS' new gamestate intergration broke this)
         public CounterStrikeModel(CounterStrikeSettings counterStrikeSettings, MainModel mainModel)
         {
             _counterStrikeSettings = counterStrikeSettings;
@@ -50,12 +49,12 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Dispose()
         {
-            _mainModel.GameSenseWebServer.GameDataReceived -= HandleGameData;
+            _mainModel.GameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
-            _mainModel.GameSenseWebServer.GameDataReceived += HandleGameData;
+            _mainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 
         public override void Update()
@@ -81,7 +80,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var health = CsJson["player"]["state"]["health"].Value<int>();
-            if (health > 25)
+            if (health > 25 || health < 1)
                 return;
 
             TeamRect.Colors = new List<Color> {Color.Red, Color.DarkOrange, Color.Red, Color.DarkOrange};
@@ -120,7 +119,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var t1 = Color.FromArgb(255, 255, 129, 0);
-            var t2 = Color.FromArgb(255, 255, 89, 0);
+            var t2 = Color.FromArgb(255, 255, 170, 125);
 
             var ct1 = Color.FromArgb(255, 203, 238, 255);
             var ct2 = Color.FromArgb(255, 0, 173, 255);

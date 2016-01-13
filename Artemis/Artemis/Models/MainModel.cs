@@ -7,7 +7,7 @@ using System.Threading;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
-using Artemis.Utilities.GameSense;
+using Artemis.Utilities.GameState;
 using Artemis.Utilities.Memory;
 using Caliburn.Micro;
 
@@ -22,7 +22,7 @@ namespace Artemis.Models
         {
             EffectModels = new List<EffectModel>();
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
-            GameSenseWebServer = new GameSenseWebServer();
+            GameStateWebServer = new GameStateWebServer();
 
             Events = events;
             Fps = 25;
@@ -38,7 +38,7 @@ namespace Artemis.Models
         public KeyboardProvider ActiveKeyboard { get; set; }
         public List<KeyboardProvider> KeyboardProviders { get; set; }
 
-        public GameSenseWebServer GameSenseWebServer { get; set; }
+        public GameStateWebServer GameStateWebServer { get; set; }
         public IEventAggregator Events { get; set; }
         public int Fps { get; set; }
         public bool Enabled { get; set; }
@@ -50,7 +50,7 @@ namespace Artemis.Models
             LoadLastKeyboard();
 
             // Start the webserver
-            GameSenseWebServer.Start();
+            GameStateWebServer.Start();
 
             // Load last non-game effect and enable
             LoadLastEffect();

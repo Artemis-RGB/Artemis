@@ -49,13 +49,13 @@ namespace Artemis.Modules.Effects.AudioVisualizer {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int Spread {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FromBottom {
             get {
-                return ((int)(this["Spread"]));
+                return ((bool)(this["FromBottom"]));
             }
             set {
-                this["Spread"] = value;
+                this["FromBottom"] = value;
             }
         }
         

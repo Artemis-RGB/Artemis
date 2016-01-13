@@ -1,6 +1,6 @@
 using System;
 
-namespace Artemis.Utilities.GameSense
+namespace Artemis.Utilities.GameState
 {
     public class GameDataReceivedEventArgs : EventArgs
     {

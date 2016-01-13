@@ -18,6 +18,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(FftLength);
         private bool _generating;
         private IWaveIn _waveIn;
+        private bool _previousFromBottom;
 
         public AudioVisualizerModel(AudioVisualizerSettings settings)
         {
@@ -96,6 +97,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             // Clear the rectangle cache on Bars settings change
             if (SoundRectangles.Count != Settings.Bars)
                 SoundRectangles.Clear();
+            if (Settings.FromBottom != _previousFromBottom)
+                SoundRectangles.Clear();
+            _previousFromBottom = Settings.FromBottom;
 
             // Parse spectrum data
             for (var i = 0; i < Settings.Bars; i++)
@@ -123,6 +127,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 // Apply Bars setting
                 SoundRectangles[i].X = (int) Math.Ceiling((double) Lines/Settings.Bars)*i;
                 SoundRectangles[i].Width = (int) Math.Ceiling((double) Lines/Settings.Bars);
+
+                if (Settings.FromBottom)
+                    SoundRectangles[i].Y = (Scale*8) - SoundRectangles[i].Height;
             }
             _generating = false;
         }
@@ -144,6 +151,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 foreach (var soundRectangle in SoundRectangles)
                     soundRectangle.Draw(g);
             }
+
             _generating = false;
             return bitmap;
         }

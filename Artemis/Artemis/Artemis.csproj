@@ -221,8 +221,8 @@
     <Compile Include="Utilities\Audio\FftEventArgs.cs" />
     <Compile Include="Utilities\Audio\SampleAggregator.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
-    <Compile Include="Utilities\GameSense\GameDataReceivedEventArgs.cs" />
-    <Compile Include="Utilities\GameSense\GameSenseWebServer.cs" />
+    <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
+    <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
