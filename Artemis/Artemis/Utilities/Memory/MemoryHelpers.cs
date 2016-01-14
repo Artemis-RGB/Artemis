@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
+using Artemis.Models;
+using Artemis.Settings;
+using Newtonsoft.Json;
 
 namespace Artemis.Utilities.Memory
 {
@@ -36,6 +42,41 @@ namespace Artemis.Utilities.Memory
                     : new IntPtr(BitConverter.ToInt64(tmp, 0) + t.ToInt64());
             }
             return address;
+        }
+
+        public static void GetPointers()
+        {
+            if (!General.Default.EnablePointersUpdate)
+                return;
+
+            try
+            {
+                var jsonClient = new WebClient();
+                var json = jsonClient
+                    .DownloadString("https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json");
+
+                // Get a list of pointers
+                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollectionModel>>(json);
+
+                // Assign each pointer to the settings file
+                var rlPointers = JsonConvert.SerializeObject(pointers.FirstOrDefault(p => p.Game == "RocketLeague"));
+                if (rlPointers != null)
+                {
+                    Offsets.Default.RocketLeague = rlPointers;
+                    Offsets.Default.Save();
+                }
+
+                var witcherPointers = JsonConvert.SerializeObject(pointers.FirstOrDefault(p => p.Game == "Witcher3"));
+                if (witcherPointers != null)
+                {
+                    Offsets.Default.Witcher3 = witcherPointers;
+                    Offsets.Default.Save();
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }

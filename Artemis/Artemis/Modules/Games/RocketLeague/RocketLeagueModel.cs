@@ -1,118 +1,118 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Models;
+using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.Memory;
+using MyMemory;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
     public class RocketLeagueModel : GameModel
     {
+        private readonly KeyboardRectangle _boostRect;
+
+        private int _boostAmount;
+        private bool _boostGrowing;
+        private int _previousBoost;
+
+        private Memory _memory;
+        private GamePointersCollectionModel _pointer;
+
         public RocketLeagueModel(RocketLeagueSettings settings)
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
             Scale = 4;
 
-            Settings = settings;
-            BoostRectangle = new KeyboardRectangle(Scale, 0, 0, Scale*21, Scale*8,
+            _boostRect = new KeyboardRectangle(Scale, 0, 0, Scale*21, Scale*8,
                 new List<Color>
                 {
-                    ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),
-                    ColorHelpers.MediaColorToDrawingColor(Settings.SecondaryColor)
+                    ColorHelpers.MediaColorToDrawingColor(settings.MainColor),
+                    ColorHelpers.MediaColorToDrawingColor(settings.SecondaryColor)
                 }, LinearGradientMode.Horizontal);
 
-            Enabled = Settings.Enabled;
+            Enabled = settings.Enabled;
         }
 
         public int Scale { get; set; }
 
-        public RocketLeagueSettings Settings { get; set; }
-
-        private int BoostAmount { get; set; }
-        private KeyboardRectangle BoostRectangle { get; }
-
-        private Process Process { get; set; }
-
-        private int PreviousBoost { get; set; }
-
-
-        private bool BoostGrowing { get; set; }
-
-        private Memory Memory { get; set; }
-
         public override void Dispose()
         {
-            Process = null;
-            Memory = null;
+            _memory = null;
         }
 
         public override void Enable()
         {
-            Process = MemoryHelpers.GetProcessIfRunning(ProcessName);
-            Memory = new Memory(Process);
+            MemoryHelpers.GetPointers();
+            _pointer = JsonConvert
+                .DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
+
+            var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+            _memory = new Memory(tempProcess);
         }
 
         public override void Update()
         {
-            if (BoostGrowing)
+            if (_boostGrowing)
                 return;
-            if (Memory == null)
+            if (_memory == null)
                 return;
 
-            // TODO: Get address from web on startup
-            var boostAddress = Memory.GetAddress("\"RocketLeague.exe\"+014FAA04+58+5ac+6f4+21c");
-            var boostFloat = Memory.ReadFloat(boostAddress)*100/3;
+            var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
+            var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
+            var boostFloat = _memory.ReadFloat(boostAddress)*100/3;
 
-            PreviousBoost = BoostAmount;
-            BoostAmount = (int) Math.Ceiling(boostFloat);
+            _previousBoost = _boostAmount;
+            _boostAmount = (int) Math.Ceiling(boostFloat);
 
             // Take care of any reading errors resulting in an OutOfMemory on draw
-            if (BoostAmount < 0)
-                BoostAmount = 0;
-            if (BoostAmount > 100)
-                BoostAmount = 100;
+            if (_boostAmount < 0)
+                _boostAmount = 0;
+            if (_boostAmount > 100)
+                _boostAmount = 100;
 
-            BoostRectangle.Width = (int) Math.Ceiling(((Scale*21)/100.00)*BoostAmount);
+            _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
 
             Task.Run(() => GrowIfHigher());
         }
 
         private void GrowIfHigher()
         {
-            if (BoostAmount <= PreviousBoost || BoostGrowing)
+            if (_boostAmount <= _previousBoost || _boostGrowing)
                 return;
 
-            BoostGrowing = true;
+            _boostGrowing = true;
             const int amountOfSteps = 6;
 
-            var difference = BoostAmount - PreviousBoost;
+            var difference = _boostAmount - _previousBoost;
             var differenceStep = difference/amountOfSteps;
             var differenceStepRest = difference%amountOfSteps;
-            BoostAmount = PreviousBoost;
-            BoostRectangle.Width = (int) Math.Ceiling(((Scale*21)/100.00)*BoostAmount);
+            _boostAmount = _previousBoost;
+            _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
 
             for (var i = 0; i < amountOfSteps; i++)
             {
                 if (differenceStepRest > 0)
                 {
                     differenceStepRest -= 1;
-                    BoostAmount += 1;
-                    BoostRectangle.Width = (int) Math.Ceiling(((Scale*21)/100.00)*BoostAmount);
+                    _boostAmount += 1;
+                    _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
                 }
-                BoostAmount += differenceStep;
-                BoostRectangle.Width = (int) Math.Ceiling(((Scale*21)/100.00)*BoostAmount);
+                _boostAmount += differenceStep;
+                _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
 
                 Thread.Sleep(50);
             }
 
-            BoostGrowing = false;
+            _boostGrowing = false;
         }
 
         public override Bitmap GenerateBitmap()
@@ -122,7 +122,7 @@ namespace Artemis.Modules.Games.RocketLeague
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
-                BoostRectangle.Draw(g);
+                _boostRect.Draw(g);
             }
             return bitmap;
         }

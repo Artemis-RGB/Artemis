@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
@@ -34,8 +35,8 @@ namespace Artemis.Models
         }
 
         public EffectModel ActiveEffect { get; set; }
-        public List<EffectModel> EffectModels { get; set; }
         public KeyboardProvider ActiveKeyboard { get; set; }
+        public List<EffectModel> EffectModels { get; set; }
         public List<KeyboardProvider> KeyboardProviders { get; set; }
 
         public GameStateWebServer GameStateWebServer { get; set; }
@@ -104,6 +105,11 @@ namespace Artemis.Models
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
 
+            // Game models are only used if they are enabled
+            var gameModel = effectModel as GameModel;
+            if (gameModel != null)
+                if (!gameModel.Enabled)
+                    return;
 
             if (ActiveEffect != null && effectModel.Name == ActiveEffect.Name)
                 return;

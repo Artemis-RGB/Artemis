@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="Offsets">
+  <Profiles />
+  <Settings>
+    <Setting Name="RocketLeague" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{"Game":"RocketLeague","GameVersion":"1.10","GameAddresses":[{"Description":"Boost","BasePointer":{"value":21998084},"Offsets":[88,1452,1780,540]}]}</Value>
+    </Setting>
+    <Setting Name="Witcher3" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{"Game":"Witcher3","GameVersion":"1.11","GameAddresses":[{"Description":"Sign","BasePointer":{"value":42942304},"Offsets":[40,16,32,3008]}]}</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

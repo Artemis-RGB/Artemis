@@ -1,7 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
   <Profiles />
   <Settings>
     <Setting Name="LastEffect" Type="System.String" Scope="User">
@@ -9,6 +7,9 @@
     </Setting>
     <Setting Name="LastKeyboard" Type="System.String" Scope="User">
       <Value Profile="(Default)">Logitech G910 Orion Spark RGB</Value>
+    </Setting>
+    <Setting Name="EnablePointersUpdate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

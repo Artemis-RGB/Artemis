@@ -13,11 +13,11 @@ namespace Artemis.Settings {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class General : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class Offsets : global::System.Configuration.ApplicationSettingsBase {
         
-        private static General defaultInstance = ((General)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new General())));
+        private static Offsets defaultInstance = ((Offsets)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Offsets())));
         
-        public static General Default {
+        public static Offsets Default {
             get {
                 return defaultInstance;
             }
@@ -25,37 +25,27 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TypeWave")]
-        public string LastEffect {
+        [global::System.Configuration.DefaultSettingValueAttribute("{\"Game\":\"RocketLeague\",\"GameVersion\":\"1.10\",\"GameAddresses\":[{\"Description\":\"Boos" +
+            "t\",\"BasePointer\":{\"value\":21998084},\"Offsets\":[88,1452,1780,540]}]}")]
+        public string RocketLeague {
             get {
-                return ((string)(this["LastEffect"]));
+                return ((string)(this["RocketLeague"]));
             }
             set {
-                this["LastEffect"] = value;
+                this["RocketLeague"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Logitech G910 Orion Spark RGB")]
-        public string LastKeyboard {
+        [global::System.Configuration.DefaultSettingValueAttribute("{\"Game\":\"Witcher3\",\"GameVersion\":\"1.11\",\"GameAddresses\":[{\"Description\":\"Sign\",\"B" +
+            "asePointer\":{\"value\":42942304},\"Offsets\":[40,16,32,3008]}]}")]
+        public string Witcher3 {
             get {
-                return ((string)(this["LastKeyboard"]));
+                return ((string)(this["Witcher3"]));
             }
             set {
-                this["LastKeyboard"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool EnablePointersUpdate {
-            get {
-                return ((bool)(this["EnablePointersUpdate"]));
-            }
-            set {
-                this["EnablePointersUpdate"] = value;
+                this["Witcher3"] = value;
             }
         }
     }
