@@ -31,8 +31,7 @@ namespace Artemis.Utilities.GameState
                 return;
 
             _listener.Prefixes.Clear();
-            //Port = FreeTcpPort();
-            Port = 5821;
+            Port = FreeTcpPort();
             _listener.Prefixes.Add($"http://127.0.0.1:{Port}/");
 
             _listener.Start();

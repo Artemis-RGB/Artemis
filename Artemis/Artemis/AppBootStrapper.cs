@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Artemis.ViewModels;
 using Caliburn.Micro;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Artemis
 {
@@ -13,7 +15,16 @@ namespace Artemis
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            DisplayRootViewFor<ShellViewModel>();
+            try
+            {
+                DisplayRootViewFor<ShellViewModel>();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Startup failed :c \n" + ex.InnerException.Message);
+                throw;
+            }
+            
         }
     }
 }
