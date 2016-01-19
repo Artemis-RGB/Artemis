@@ -43,9 +43,12 @@
             <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
             <Grid>
-                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
-                <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25"
-                        Style="{DynamicResource SquareButtonStyle}" Height="25"/>
+                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                         Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}"
+                         cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
+                <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                        HorizontalAlignment="Right" Width="25"
+                        Style="{DynamicResource SquareButtonStyle}" Height="25" />
             </Grid>
         </StackPanel>
         <StackPanel Grid.Row="2"
@@ -62,7 +65,8 @@
             <Label FontSize="16" Content="Ammo main color" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" Width="180" />
             <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoMainColor, Mode=TwoWay}" Margin="5,0,0,0" />
+                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoMainColor, Mode=TwoWay}"
+                              Margin="5,0,0,0" />
         </StackPanel>
         <StackPanel Grid.Row="3"
                     Grid.Column="1"
@@ -70,7 +74,8 @@
             <Label FontSize="16" Content="Ammo secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
                    FontFamily="Segoe UI Semibold" Foreground="#535353" Width="180" />
             <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoSecondaryColor, Mode=TwoWay}" Margin="5,0,0,0" />
+                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoSecondaryColor, Mode=TwoWay}"
+                              Margin="5,0,0,0" />
         </StackPanel>
         <StackPanel Grid.Row="4"
                     Grid.Column="0"

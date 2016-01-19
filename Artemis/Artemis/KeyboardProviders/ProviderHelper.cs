@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Artemis.KeyboardProviders.Corsair;
 using Artemis.KeyboardProviders.Logitech;
+using Artemis.KeyboardProviders.Razer;
 
 namespace Artemis.KeyboardProviders
 {
@@ -12,7 +13,8 @@ namespace Artemis.KeyboardProviders
             {
                 new Orion(),
                 new K70(),
-                new K95()
+                new K95(),
+                new BlackWidow()
             };
         }
     }

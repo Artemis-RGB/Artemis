@@ -10,7 +10,6 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.Memory;
-using MyMemory;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
@@ -21,10 +20,10 @@ namespace Artemis.Modules.Games.RocketLeague
 
         private int _boostAmount;
         private bool _boostGrowing;
-        private int _previousBoost;
 
         private Memory _memory;
         private GamePointersCollectionModel _pointer;
+        private int _previousBoost;
 
         public RocketLeagueModel(RocketLeagueSettings settings)
         {

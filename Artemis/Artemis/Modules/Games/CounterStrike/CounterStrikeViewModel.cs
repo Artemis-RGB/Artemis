@@ -1,7 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using Artemis.Models;
+using Artemis.Properties;
 using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.Modules.Games.CounterStrike
@@ -59,8 +59,10 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
             if (Directory.Exists(CounterStrikeSettings.GameDirectory + "/csgo/cfg"))
             {
-                var cfgFile = Properties.Resources.gamestateConfigFileCsGo.Replace("{{port}}", MainModel.GameStateWebServer.Port.ToString());
-                File.WriteAllText(CounterStrikeSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg", cfgFile);
+                var cfgFile = Resources.gamestateConfigFileCsGo.Replace("{{port}}",
+                    MainModel.GameStateWebServer.Port.ToString());
+                File.WriteAllText(CounterStrikeSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg",
+                    cfgFile);
                 return;
             }
 

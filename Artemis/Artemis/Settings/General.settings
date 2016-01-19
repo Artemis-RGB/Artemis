@@ -6,7 +6,7 @@
       <Value Profile="(Default)">TypeWave</Value>
     </Setting>
     <Setting Name="LastKeyboard" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Logitech G910 Orion Spark RGB</Value>
+      <Value Profile="(Default)">Razer BlackWidow Chroma</Value>
     </Setting>
     <Setting Name="EnablePointersUpdate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

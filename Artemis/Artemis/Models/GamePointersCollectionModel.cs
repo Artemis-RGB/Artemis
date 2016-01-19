@@ -16,9 +16,11 @@ namespace Artemis.Models
         public string Description { get; set; }
         public IntPtr BasePointer { get; set; }
         public int[] Offsets { get; set; }
+
         public override string ToString()
         {
-            return Offsets.Aggregate(BasePointer.ToString("X"), (current, offset) => current + $"+{offset.ToString("X")}");
+            return Offsets.Aggregate(BasePointer.ToString("X"),
+                (current, offset) => current + $"+{offset.ToString("X")}");
         }
     }
 }

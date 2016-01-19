@@ -17,8 +17,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private const int FftLength = 2048;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(FftLength);
         private bool _generating;
-        private IWaveIn _waveIn;
         private bool _previousFromBottom;
+        private IWaveIn _waveIn;
 
         public AudioVisualizerModel(AudioVisualizerSettings settings)
         {

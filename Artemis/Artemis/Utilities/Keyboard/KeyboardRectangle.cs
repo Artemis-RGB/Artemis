@@ -40,11 +40,13 @@ namespace Artemis.Utilities.Keyboard
             Rotate = false;
             LoopSpeed = 1;
             Visible = true;
+            ContainedBrush = true;
 
             _rotationProgress = 0;
             _blinkWorker.DoWork += BlinkWorker_DoWork;
         }
 
+        public bool ContainedBrush { get; set; }
         public int Scale { get; set; }
         public byte Opacity { get; set; }
         public int X { get; set; }
@@ -113,23 +115,18 @@ namespace Artemis.Utilities.Keyboard
 
         public void Draw(Graphics g)
         {
-            if (!Visible || Height < 1 || Width < 1 || Colors.Count < 1)
+            if (!Visible || Height < 1 || Width < 1 || !Colors.Any())
                 return;
 
-            var colorBlend = new ColorBlend {Colors = Colors.ToArray()};
-            if (Opacity < 255)
-                for (var i = 0; i < colorBlend.Colors.Length; i++)
-                    colorBlend.Colors[i] = Color.FromArgb(Opacity, colorBlend.Colors[i]);
-
-            var devider = (float) Colors.Count - 1;
-            var positions = new List<float>();
-            for (var i = 0; i < Colors.Count; i++)
-                positions.Add(i/devider);
-
-            colorBlend.Positions = positions.ToArray();
+            var brush = ContainedBrush
+                ? CreateContainedBrush()
+                : CreateBrush();
+            var colorBlend = CreateColorBlend();
 
             var baseRect = new Rectangle(X, Y, Width, Height);
-            var brushRect = new Rectangle((int) _rotationProgress, Y, baseRect.Width*2, baseRect.Height*2);
+            var brushRect = ContainedBrush
+                ? new Rectangle((int) _rotationProgress, Y, baseRect.Width*2, baseRect.Height*2)
+                : new Rectangle((int) _rotationProgress, 0, 21*2, 8*2);
             LinearGradientBrush baseBrush;
             if (Colors.Count > 5)
                 baseBrush = new LinearGradientBrush(brushRect, Colors.First(), Colors.Skip(1).FirstOrDefault(),
@@ -146,6 +143,49 @@ namespace Artemis.Utilities.Keyboard
             _rotationProgress = _rotationProgress + LoopSpeed;
             if (_rotationProgress > Width)
                 _rotationProgress = LoopSpeed;
+        }
+
+        private LinearGradientBrush CreateContainedBrush()
+        {
+            //throw new NotImplementedException();
+            return null;
+        }
+
+        private LinearGradientBrush CreateBrush()
+        {
+            var colorBlend = CreateColorBlend();
+            var rect = new Rectangle(0, 0, 21, 8);
+
+            if (Colors.Count > 5)
+                return new LinearGradientBrush(rect, Colors[0], Colors[1], GradientMode)
+                {
+                    InterpolationColors = colorBlend
+                };
+
+            return Colors.Count > 1
+                ? new LinearGradientBrush(rect, Colors[0], Colors[1], GradientMode)
+                : new LinearGradientBrush(rect, Colors[0], Colors[0], GradientMode);
+        }
+
+        private ColorBlend CreateColorBlend()
+        {
+            var colorBlend = new ColorBlend {Colors = Colors.ToArray()};
+
+            // If needed, apply opacity to the colors in the blend
+            if (Opacity < 255)
+                for (var i = 0; i < colorBlend.Colors.Length; i++)
+                    colorBlend.Colors[i] = Color.FromArgb(Opacity, colorBlend.Colors[i]);
+
+            // Devide the colors over the colorblend
+            var devider = (float) Colors.Count - 1;
+            var positions = new List<float>();
+            for (var i = 0; i < Colors.Count; i++)
+                positions.Add(i/devider);
+
+            // Apply the devided positions
+            colorBlend.Positions = positions.ToArray();
+
+            return colorBlend;
         }
     }
 }

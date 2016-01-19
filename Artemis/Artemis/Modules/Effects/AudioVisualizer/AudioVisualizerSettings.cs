@@ -1,6 +1,5 @@
 ﻿using System.Windows.Media;
 using Artemis.Models;
-using Artemis.Settings;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {

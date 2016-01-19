@@ -23,7 +23,7 @@
     <SccProvider>
     </SccProvider>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>C:\Users\spoin\Desktop\Artemis builds\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -33,8 +33,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -71,6 +71,9 @@
   <PropertyGroup>
     <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
@@ -78,6 +81,14 @@
     </Reference>
     <Reference Include="Caliburn.Micro.Platform, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Corale.Colore, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Colore.3.0.2\lib\net35\Corale.Colore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
@@ -171,6 +182,8 @@
     <Compile Include="KeyboardProviders\Logitech\Utilities\LogitechGSDK.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="KeyboardProviders\ProviderHelper.cs" />
+    <Compile Include="KeyboardProviders\Razer\BlackWidow.cs" />
+    <Compile Include="KeyboardProviders\Razer\Utilities\RazerUtilities.cs" />
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\GamePointersCollectionModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
@@ -411,6 +424,7 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="logo.ico" />
     <Content Include="Resources\gamestateConfigFileCsGo.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />

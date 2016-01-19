@@ -9,6 +9,8 @@ namespace Artemis.KeyboardProviders.Logitech
         public Orion()
         {
             Name = "Logitech G910 Orion Spark RGB";
+            Height = 6;
+            Width = 21;
         }
 
         public override void Enable()

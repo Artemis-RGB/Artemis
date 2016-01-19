@@ -37,7 +37,7 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Logitech G910 Orion Spark RGB")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Razer BlackWidow Chroma")]
         public string LastKeyboard {
             get {
                 return ((string)(this["LastKeyboard"]));

@@ -1,5 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="VolumeDisplay">
+
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
+              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="VolumeDisplay">
   <Profiles />
   <Settings>
     <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">
