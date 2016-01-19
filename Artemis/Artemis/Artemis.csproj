@@ -425,6 +425,9 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="RzChromaSDK64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="logo.ico" />
     <Content Include="MyMemory-x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
