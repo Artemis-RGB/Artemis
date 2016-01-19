@@ -1,0 +1,113 @@
+﻿<UserControl x:Class="Artemis.Modules.Effects.Debug.DebugEffectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:debug="clr-namespace:Artemis.Modules.Effects.Debug"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="407.812" d:DesignWidth="671.484"
+             cal:Bind.AtDesignTime="True">
+    <Grid Margin="15, 5, 15, 5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Label FontSize="20"
+                   Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label.Content>
+                    <AccessText TextWrapping="Wrap" Text="A debug effect." />
+                </Label.Content>
+            </Label>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                              IsChecked="{Binding Path=EffectEnabled, Mode=OneWay}"
+                              Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                              cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Direction" Style="{DynamicResource DescriptionHeaderStyle}"
+                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
+            <ComboBox x:Name="RectangleTypes" Width="120" />
+
+        </StackPanel>
+        <StackPanel Grid.Row="2"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Width" Style="{DynamicResource DescriptionHeaderStyle}"
+                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
+            <Slider x:Name="Width"
+                    VerticalAlignment="top"
+                    HorizontalAlignment="Left"
+                    Width="132"
+                    TickPlacement="BottomRight"
+                    TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Width, Mode=TwoWay}" Minimum="1" Maximum="84"
+                    SmallChange="1"
+                    IsSnapToTickEnabled="True" />
+        </StackPanel>
+        <StackPanel Grid.Row="2"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Height" Style="{DynamicResource DescriptionHeaderStyle}"
+                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
+            <Slider x:Name="Height"
+                    VerticalAlignment="top"
+                    HorizontalAlignment="Left"
+                    Width="200"
+                    TickPlacement="BottomRight"
+                    TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Height, Mode=TwoWay}" Minimum="0" Maximum="24"
+                    SmallChange="1"
+                    IsSnapToTickEnabled="True" />
+        </StackPanel>
+        <StackPanel Grid.Row="3"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+            <controls:ToggleSwitch IsChecked="{Binding Path=DebugEffectSettings.Rotate, Mode=TwoWay}"
+                                   Header="Rotate" OnLabel="Yes" OffLabel="No"
+                                   Margin="0 3 0 0" Width="125" />
+        </StackPanel>
+        <StackPanel Grid.Row="3"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">
+            <Label FontSize="16" Content="Spread" Style="{DynamicResource DescriptionHeaderStyle}"
+                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
+            <Slider x:Name="Spread"
+                    VerticalAlignment="top"
+                    HorizontalAlignment="Left"
+                    Width="132"
+                    TickPlacement="BottomRight"
+                    TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Spread, Mode=TwoWay}" Minimum="0" Maximum="5"
+                    SmallChange="1"
+                    IsSnapToTickEnabled="True" />
+        </StackPanel>
+        <!-- Preview panel -->
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <TextBlock>
+                <InlineUIContainer>
+                    <GroupBox Header="Preview" Margin="0" Height="70" Width="118">
+                        <Image Source="{Binding ImageSource}"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               Stretch="Fill" />
+                    </GroupBox>
+                </InlineUIContainer>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>
