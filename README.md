@@ -1,7 +1,7 @@
 # Artemis
 Artemis adds support for several games to a range of RGB keyboards.
 
-Besides game-support there are also a few (rather gimicky) effects for when you're not gaming. 
+Besides game-support there are also a few effects for when you're not gaming. 
 
 Some of it's basic features:
 
@@ -21,9 +21,9 @@ Support is planned for:
  * Dota 2 (Native Gamestate intergration)
  * Project CARS (Native memory sharing)
 
-Currently the only supported keyboard is the Logitech G910 Orion Spark, but progress is being made to support Corsair as well.
+Currently the only supported keyboard is the Logitech G910 Orion Spark, but progress is being made to support Corsair and Razer as well.
 
-For any keyboards/games/effects feel we'd love PRs!
+For any keyboards/games/effects we'd love PRs!
 
 ### Screenshots
 ![Screenshot 1](http://i.imgur.com/mq8i4ht.png)
@@ -33,6 +33,7 @@ For any keyboards/games/effects feel we'd love PRs!
 ### Thanks to:
 
  * [CUE.NET](https://github.com/DarthAffe/CUE.NET) - Corsair keyboard library
+ * [Colore](https://github.com/CoraleStudios/Colore) - Razer keyboard library
  * [NAudio](http://naudio.codeplex.com/) - Used for audio visualization
  * [Open.WinKeyboardHook](Open.WinKeyboardHook) - Used for typing effects/volume overlay
  * [Caliburn.Micro](http://caliburnmicro.com/) - Awesome WPF framework, really, try it out
