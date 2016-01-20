@@ -24,7 +24,6 @@ namespace Artemis
                 MessageBox.Show("Startup failed :c \n" + ex.InnerException.Message);
                 throw;
             }
-            
         }
     }
 }

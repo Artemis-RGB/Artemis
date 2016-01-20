@@ -38,6 +38,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -87,6 +89,10 @@
       <HintPath>..\packages\Colore.3.0.2\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="CUE.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CUE.NET.1.0.0\lib\net45\CUE.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.4\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -133,6 +139,10 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="VioletTape.WpfExceptionViewer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd09609f6784d58, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfExceptionViewer.1.0.0.0\lib\VioletTape.WpfExceptionViewer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -269,6 +279,7 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
+    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
@@ -305,6 +316,9 @@
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -347,6 +361,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
     </None>
+    <None Include="MyMemory-x64.dll" />
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
     <None Include="Settings\Offsets.settings">
@@ -415,6 +430,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -429,9 +448,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="logo.ico" />
-    <Content Include="MyMemory-x64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Resources\gamestateConfigFileCsGo.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
@@ -449,6 +465,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\CUE.NET.1.0.0\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.0\build\net45\CUE.NET.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\CUE.NET.1.0.0\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.0.0\build\net45\CUE.NET.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
