@@ -16,6 +16,9 @@ namespace Artemis.KeyboardProviders.Corsair
             Name = "Corsair Gaming K95 RGB";
         }
 
+        /// <summary>
+        /// Enables the SDK and sets updatemode to manual as well as the color of the background to black.
+        /// </summary>
         public override void Enable()
         {
             try
@@ -35,13 +38,14 @@ namespace Artemis.KeyboardProviders.Corsair
 
         /// <summary>
         /// Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap size.
+        /// Does not reset the color each time. Uncomment line 48 for collor reset.
         /// </summary>
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         { 
             RectangleF[,] ledRectangles = new RectangleF[bitmap.Width, bitmap.Height];
             RectangleKeyGroup[,] ledGroups = new RectangleKeyGroup[bitmap.Width, bitmap.Height];
-
+            //_keyboard.Brush = new SolidColorBrush(Color.Black);
             for (var x = 0 ; x < bitmap.Width; x++)
             {
                 for (var y = 0; y < bitmap.Height; y++)
