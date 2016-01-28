@@ -18,7 +18,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             AudioVisualizerSettings = new AudioVisualizerSettings();
 
             // Create effect model and add it to MainModel
-            AudioVisualizerModel = new AudioVisualizerModel(AudioVisualizerSettings);
+            AudioVisualizerModel = new AudioVisualizerModel(mainModel, AudioVisualizerSettings);
             MainModel.EffectModels.Add(AudioVisualizerModel);
         }
 

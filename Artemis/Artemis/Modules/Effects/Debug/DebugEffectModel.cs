@@ -8,23 +8,11 @@ namespace Artemis.Modules.Effects.Debug
 {
     internal class DebugEffectModel : EffectModel
     {
-        public DebugEffectModel(DebugEffectSettings settings)
+        public DebugEffectModel(MainModel mainModel, DebugEffectSettings settings) : base(mainModel)
         {
             Name = "Debug Effect";
             Settings = settings;
             Scale = 4;
-
-            KeyboardRectangle = new KeyboardRectangle(Scale, 0, 0, 21, 6,
-                new List<Color>
-                {
-                    Color.Red,
-                    Color.OrangeRed,
-                    Color.Yellow,
-                    Color.Green,
-                    Color.Blue,
-                    Color.Purple,
-                    Color.DeepPink
-                }, LinearGradientMode.Horizontal);
         }
 
         public int Scale { get; set; }
@@ -39,6 +27,16 @@ namespace Artemis.Modules.Effects.Debug
 
         public override void Enable()
         {
+            KeyboardRectangle = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>
+                {
+                    Color.Red,
+                    Color.OrangeRed,
+                    Color.Yellow,
+                    Color.Green,
+                    Color.Blue,
+                    Color.Purple,
+                    Color.DeepPink
+                }, LinearGradientMode.Horizontal);
         }
 
         public override void Update()

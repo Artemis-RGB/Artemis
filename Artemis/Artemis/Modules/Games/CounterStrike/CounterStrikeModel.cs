@@ -15,25 +15,13 @@ namespace Artemis.Modules.Games.CounterStrike
     public class CounterStrikeModel : GameModel
     {
         private readonly CounterStrikeSettings _counterStrikeSettings;
-        private readonly MainModel _mainModel;
 
-        public CounterStrikeModel(CounterStrikeSettings counterStrikeSettings, MainModel mainModel)
+        public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings counterStrikeSettings) : base(mainModel)
         {
             _counterStrikeSettings = counterStrikeSettings;
-            _mainModel = mainModel;
             Name = "CounterStrike";
             ProcessName = "csgo";
             Scale = 4;
-
-            AmmoRect = new KeyboardRectangle(Scale, 0, 0, 16*Scale, 1*Scale,
-                new List<Color>(),
-                LinearGradientMode.Horizontal);
-            TeamRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale,
-                new List<Color>(),
-                LinearGradientMode.Horizontal);
-            EventRect = new KeyboardRectangle(Scale, 0, 1*Scale, 21*Scale, 8*Scale,
-                new List<Color>(),
-                LinearGradientMode.Horizontal);
         }
 
         public KeyboardRectangle EventRect { get; set; }
@@ -48,12 +36,16 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Dispose()
         {
-            _mainModel.GameStateWebServer.GameDataReceived -= HandleGameData;
+            MainModel.GameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
-            _mainModel.GameStateWebServer.GameDataReceived += HandleGameData;
+            // TODO: Size stuff 
+            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>(), LinearGradientMode.Horizontal);
+            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
+            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
+            MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 
         public override void Update()

@@ -13,7 +13,7 @@ namespace Artemis.Modules.Effects.TypeWave
 {
     public class TypeWaveModel : EffectModel
     {
-        public TypeWaveModel(TypeWaveSettings settings)
+        public TypeWaveModel(MainModel mainModel, TypeWaveSettings settings) : base(mainModel)
         {
             Name = "TypeWave";
             Waves = new List<Wave>();

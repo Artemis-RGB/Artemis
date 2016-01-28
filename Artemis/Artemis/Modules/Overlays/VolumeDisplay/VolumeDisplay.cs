@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 
@@ -9,12 +10,15 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplay
     {
-        public VolumeDisplay(VolumeDisplaySettings settings)
+        public VolumeDisplay(MainModel mainModel, VolumeDisplaySettings settings)
         {
+            MainModel = mainModel;
             Settings = settings;
             Transparancy = 255;
             Scale = 4;
         }
+
+        public MainModel MainModel { get; set; }
 
         public VolumeDisplaySettings Settings { get; set; }
 
@@ -27,7 +31,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public void Draw(Graphics g)
         {
-            var volumeRect = new KeyboardRectangle(Scale, 0, 0, (int) Math.Ceiling(((Scale*21)/100.00)*Volume), 8*Scale,
+            var volumeRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0,
                 new List<Color>
                 {
                     ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),

@@ -12,7 +12,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
     {
         private bool _enabled;
 
-        public VolumeDisplayModel(VolumeDisplaySettings settings)
+        public VolumeDisplayModel(MainModel mainModel, VolumeDisplaySettings settings) : base(mainModel)
         {
             Settings = settings;
             Name = "VolumeDisplay";
@@ -22,7 +22,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
             Enabled = Settings.Enabled;
 
-            VolumeDisplay = new VolumeDisplay(settings);
+            VolumeDisplay = new VolumeDisplay(mainModel, settings);
         }
 
         public VolumeDisplay VolumeDisplay { get; set; }

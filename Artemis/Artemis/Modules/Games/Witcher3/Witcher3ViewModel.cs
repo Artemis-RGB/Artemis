@@ -16,7 +16,7 @@ namespace Artemis.Modules.Games.Witcher3
             RocketLeagueSettings = new RocketLeagueSettings();
 
             // Create effect model and add it to MainModel
-            Witcher3Model = new Witcher3Model(RocketLeagueSettings);
+            Witcher3Model = new Witcher3Model(mainModel, RocketLeagueSettings);
             MainModel.EffectModels.Add(Witcher3Model);
         }
 

@@ -13,7 +13,7 @@ namespace Artemis.Modules.Effects.TypeHole
             MainModel.Events.Subscribe(this);
 
             // Create effect model and add it to MainModel
-            TypeHoleModel = new TypeHoleModel();
+            TypeHoleModel = new TypeHoleModel(mainModel);
             MainModel.EffectModels.Add(TypeHoleModel);
         }
 

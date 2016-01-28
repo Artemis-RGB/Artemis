@@ -272,6 +272,8 @@
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
     <Compile Include="Modules\Effects\TypeHole\TypeHoleViewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
+    <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
+    <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
     <Compile Include="ViewModels\GamesViewModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeViewModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
@@ -279,7 +281,6 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="Views\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
@@ -295,6 +296,9 @@
     </Compile>
     <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
       <DependentUpon>TypeWaveView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
+      <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamesView.xaml.cs">
       <DependentUpon>GamesView.xaml</DependentUpon>
@@ -316,9 +320,6 @@
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SettingsView.xaml.cs">
-      <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -402,6 +403,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Flyouts\FlyoutSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GamesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -427,10 +432,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

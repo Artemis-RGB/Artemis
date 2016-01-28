@@ -15,23 +15,16 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3Model : GameModel
     {
-        private readonly KeyboardRectangle _signRect;
-
+        private KeyboardRectangle _signRect;
         private IntPtr _baseAddress;
         private GamePointersCollectionModel _pointer;
         private RemoteProcess _process;
 
-        public Witcher3Model(RocketLeagueSettings settings)
+        public Witcher3Model(MainModel mainModel, RocketLeagueSettings settings) : base(mainModel)
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
             Scale = 4;
-
-            _signRect = new KeyboardRectangle(Scale, 0, 0, 84, 24, new List<Color>(), LinearGradientMode.Horizontal)
-            {
-                Rotate = true,
-                LoopSpeed = 0.5
-            };
 
             Enabled = settings.Enabled;
         }
@@ -45,6 +38,11 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
+            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>(), LinearGradientMode.Horizontal)
+            {
+                Rotate = true,
+                LoopSpeed = 0.5
+            };
             MemoryHelpers.GetPointers();
             _pointer = JsonConvert
                 .DeserializeObject<GamePointersCollectionModel>(Offsets.Default.Witcher3);
@@ -123,7 +121,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = new Bitmap(21, 6);
+            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap();
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);

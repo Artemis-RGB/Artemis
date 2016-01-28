@@ -7,6 +7,10 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
+        protected OverlayModel(MainModel mainModel) : base(mainModel)
+        {
+        }
+
         public bool Enabled
         {
             get { return _enabled; }

@@ -16,29 +16,22 @@ namespace Artemis.Modules.Games.RocketLeague
 {
     public class RocketLeagueModel : GameModel
     {
-        private readonly KeyboardRectangle _boostRect;
-
+        private readonly RocketLeagueSettings _settings;
+        private KeyboardRectangle _boostRect;
         private int _boostAmount;
         private bool _boostGrowing;
-
         private Memory _memory;
         private GamePointersCollectionModel _pointer;
         private int _previousBoost;
 
-        public RocketLeagueModel(RocketLeagueSettings settings)
+        public RocketLeagueModel(MainModel mainModel, RocketLeagueSettings settings) : base(mainModel)
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
             Scale = 4;
-
-            _boostRect = new KeyboardRectangle(Scale, 0, 0, Scale*21, Scale*8,
-                new List<Color>
-                {
-                    ColorHelpers.MediaColorToDrawingColor(settings.MainColor),
-                    ColorHelpers.MediaColorToDrawingColor(settings.SecondaryColor)
-                }, LinearGradientMode.Horizontal);
-
             Enabled = settings.Enabled;
+
+            _settings = settings;
         }
 
         public int Scale { get; set; }
@@ -50,6 +43,12 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Enable()
         {
+            _boostRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>
+                {
+                    ColorHelpers.MediaColorToDrawingColor(_settings.MainColor),
+                    ColorHelpers.MediaColorToDrawingColor(_settings.SecondaryColor)
+                }, LinearGradientMode.Horizontal);
+
             MemoryHelpers.GetPointers();
             _pointer = JsonConvert
                 .DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);

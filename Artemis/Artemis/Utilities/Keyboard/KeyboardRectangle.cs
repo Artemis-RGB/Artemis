@@ -5,34 +5,37 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.KeyboardProviders;
 
 namespace Artemis.Utilities.Keyboard
 {
     public class KeyboardRectangle
     {
         private readonly BackgroundWorker _blinkWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
+        private readonly KeyboardProvider _keyboard;
         private int _blinkDelay;
         private List<Color> _colors;
         private double _rotationProgress;
 
         /// <summary>
-        ///     Represents a Rectangle on the keyboard which can be drawn to a Bitmap
+        ///     Represents a Rectangle on the keyboard which can be drawn to a Bitmap.
+        ///     By default, a rectangle is the entire keyboard's size.
         /// </summary>
+        /// <param name="keyboard">The keyboard this rectangle will be used for</param>
         /// <param name="scale">The scale on which the rect should be rendered (Higher means smoother rotation)</param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
         /// <param name="colors">An array of colors the ColorBlend will use</param>
         /// <param name="gradientMode"></param>
-        public KeyboardRectangle(int scale, int x, int y, int width, int height, List<Color> colors,
+        public KeyboardRectangle(KeyboardProvider keyboard, int scale, int x, int y, List<Color> colors,
             LinearGradientMode gradientMode)
         {
+            _keyboard = keyboard;
             Scale = scale;
             X = x;
             Y = y;
-            Width = width;
-            Height = height;
+            Width = keyboard.Width*Scale;
+            Height = keyboard.Height*Scale;
             Colors = colors;
             GradientMode = gradientMode;
 
@@ -40,7 +43,7 @@ namespace Artemis.Utilities.Keyboard
             Rotate = false;
             LoopSpeed = 1;
             Visible = true;
-            ContainedBrush = true;
+            ContainedBrush = false;
 
             _rotationProgress = 0;
             _blinkWorker.DoWork += BlinkWorker_DoWork;
@@ -53,6 +56,10 @@ namespace Artemis.Utilities.Keyboard
         public int Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public LinearGradientMode GradientMode { get; set; }
+        public bool Rotate { get; set; }
+        public double LoopSpeed { get; set; }
+        public bool Visible { get; set; }
 
         public List<Color> Colors
         {
@@ -65,18 +72,6 @@ namespace Artemis.Utilities.Keyboard
                 _colors.AddRange(value);
                 _colors.Add(value.FirstOrDefault());
             }
-        }
-
-        public LinearGradientMode GradientMode { get; set; }
-
-        public bool Rotate { get; set; }
-        public double LoopSpeed { get; set; }
-
-        public bool Visible { get; set; }
-
-        public KeyboardRectangle Clone()
-        {
-            return (KeyboardRectangle) MemberwiseClone();
         }
 
         public void StartBlink(int delay)
@@ -118,43 +113,26 @@ namespace Artemis.Utilities.Keyboard
             if (!Visible || Height < 1 || Width < 1 || !Colors.Any())
                 return;
 
-            var brush = ContainedBrush
-                ? CreateContainedBrush()
-                : CreateBrush();
-            var colorBlend = CreateColorBlend();
-
+            var brush = CreateBrush();
             var baseRect = new Rectangle(X, Y, Width, Height);
-            var brushRect = ContainedBrush
-                ? new Rectangle((int) _rotationProgress, Y, baseRect.Width*2, baseRect.Height*2)
-                : new Rectangle((int) _rotationProgress, 0, 21*2, 8*2);
-            LinearGradientBrush baseBrush;
-            if (Colors.Count > 5)
-                baseBrush = new LinearGradientBrush(brushRect, Colors.First(), Colors.Skip(1).FirstOrDefault(),
-                    GradientMode) {InterpolationColors = colorBlend};
-            else if (Colors.Count > 1)
-                baseBrush = new LinearGradientBrush(baseRect, Colors[0], Colors[1], GradientMode);
-            else
-                baseBrush = new LinearGradientBrush(baseRect, Colors[0], Colors[0], GradientMode);
 
-            g.FillRectangle(baseBrush, baseRect);
+            g.FillRectangle(brush, baseRect);
             if (!Rotate)
                 return;
 
             _rotationProgress = _rotationProgress + LoopSpeed;
-            if (_rotationProgress > Width)
+            if (ContainedBrush && _rotationProgress > Width)
                 _rotationProgress = LoopSpeed;
-        }
-
-        private LinearGradientBrush CreateContainedBrush()
-        {
-            //throw new NotImplementedException();
-            return null;
+            else if (!ContainedBrush && _rotationProgress > _keyboard.Width*Scale)
+                _rotationProgress = LoopSpeed;
         }
 
         private LinearGradientBrush CreateBrush()
         {
             var colorBlend = CreateColorBlend();
-            var rect = new Rectangle(0, 0, 21, 8);
+            var rect = ContainedBrush
+                ? new Rectangle((int) _rotationProgress, Y, Width, Height)
+                : new Rectangle((int) _rotationProgress, 0, _keyboard.Width*Scale, _keyboard.Height*Scale);
 
             if (Colors.Count > 5)
                 return new LinearGradientBrush(rect, Colors[0], Colors[1], GradientMode)

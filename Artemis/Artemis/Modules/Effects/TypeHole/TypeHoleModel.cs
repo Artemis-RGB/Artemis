@@ -5,7 +5,7 @@ namespace Artemis.Modules.Effects.TypeHole
 {
     public class TypeHoleModel : EffectModel
     {
-        public TypeHoleModel()
+        public TypeHoleModel(MainModel mainModel) : base(mainModel)
         {
             Name = "TypeHole";
         }

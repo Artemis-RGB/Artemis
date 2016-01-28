@@ -18,7 +18,7 @@ namespace Artemis.Modules.Games.CounterStrike
             CounterStrikeSettings = new CounterStrikeSettings();
 
             // Create effect model and add it to MainModel
-            CounterStrikeModel = new CounterStrikeModel(CounterStrikeSettings, MainModel);
+            CounterStrikeModel = new CounterStrikeModel(mainModel, CounterStrikeSettings);
             MainModel.EffectModels.Add(CounterStrikeModel);
             PlaceConfigFile();
         }

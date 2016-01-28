@@ -11,5 +11,17 @@ namespace Artemis.KeyboardProviders
         public abstract void Enable();
         public abstract void Disable();
         public abstract void DrawBitmap(Bitmap bitmap);
+
+        /// <summary>
+        /// Returns a bitmap matching the keyboard's dimensions
+        /// </summary>
+        /// <returns></returns>
+        public Bitmap KeyboardBitmap() => new Bitmap(Height, Width);
+
+        /// <summary>
+        /// Returns a bitmap matching the keyboard's dimensions using the provided scale
+        /// </summary>
+        /// <returns></returns>
+        public Bitmap KeyboardBitmap(int scale) => new Bitmap(Height*scale, Width*scale);
     }
 }

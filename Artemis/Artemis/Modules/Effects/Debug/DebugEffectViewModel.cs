@@ -26,7 +26,7 @@ namespace Artemis.Modules.Effects.Debug
             DebugEffectSettings = new DebugEffectSettings();
 
             // Create effect model and add it to MainModel
-            DebugEffectModel = new DebugEffectModel(DebugEffectSettings);
+            DebugEffectModel = new DebugEffectModel(mainModel, DebugEffectSettings);
             MainModel.EffectModels.Add(DebugEffectModel);
         }
 

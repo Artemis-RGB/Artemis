@@ -16,15 +16,19 @@
                       GlowBrush="{DynamicResource AccentColorBrush}">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button Content="settings" />
-            <StackPanel Orientation="Horizontal">
-                <ToggleButton x:Name="EffectsEnabled" Width="25" Height="25"
-                              Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                              ToolTip="Toggle all effects"
-                              cal:Message.Attach="[Event Click] = [Action ToggleEffects]"
-                              IsChecked="{Binding Path=EffectsEnabled, Mode=OneWay}" />
-                <TextBlock VerticalAlignment="Center" Text="master switch" />
-            </StackPanel>
+            <Button x:Name="Settings">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="10" Height="10"
+                               Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_settings}" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock Margin="4 -3 0 0"
+                               VerticalAlignment="Center"
+                               Text="settings" />
+                </StackPanel>
+            </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>

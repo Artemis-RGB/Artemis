@@ -15,7 +15,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplaySettings = new VolumeDisplaySettings();
 
             // Create effect model and add it to MainModel
-            VolumeDisplayModel = new VolumeDisplayModel(VolumeDisplaySettings);
+            VolumeDisplayModel = new VolumeDisplayModel(mainModel, VolumeDisplaySettings);
             MainModel.EffectModels.Add(VolumeDisplayModel);
         }
 

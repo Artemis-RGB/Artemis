@@ -15,7 +15,7 @@ namespace Artemis.Modules.Games.RocketLeague
             RocketLeagueSettings = new RocketLeagueSettings();
 
             // Create effect model and add it to MainModel
-            RocketLeagueModel = new RocketLeagueModel(RocketLeagueSettings);
+            RocketLeagueModel = new RocketLeagueModel(mainModel, RocketLeagueSettings);
             MainModel.EffectModels.Add(RocketLeagueModel);
         }
 
