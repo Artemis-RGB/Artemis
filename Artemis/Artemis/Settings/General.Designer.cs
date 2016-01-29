@@ -37,7 +37,7 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Razer BlackWidow Chroma")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Corsair Gaming K95 RGB")]
         public string LastKeyboard {
             get {
                 return ((string)(this["LastKeyboard"]));

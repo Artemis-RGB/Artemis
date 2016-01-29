@@ -10,13 +10,13 @@ namespace Artemis.KeyboardProviders.Razer
         public BlackWidow()
         {
             Name = "Razer BlackWidow Chroma";
-            Height = (int) Constants.MaxRows;
-            Width = (int) Constants.MaxColumns;
         }
 
         public override void Enable()
         {
             Chroma.Instance.Initialize();
+            Height = (int)Constants.MaxRows;
+            Width = (int)Constants.MaxColumns;
         }
 
         public override void Disable()

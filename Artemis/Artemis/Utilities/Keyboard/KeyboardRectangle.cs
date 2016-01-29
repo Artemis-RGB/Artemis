@@ -14,7 +14,6 @@ namespace Artemis.Utilities.Keyboard
         private readonly BackgroundWorker _blinkWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
         private readonly KeyboardProvider _keyboard;
         private int _blinkDelay;
-        private List<Color> _colors;
         private double _rotationProgress;
 
         /// <summary>
@@ -22,57 +21,68 @@ namespace Artemis.Utilities.Keyboard
         ///     By default, a rectangle is the entire keyboard's size.
         /// </summary>
         /// <param name="keyboard">The keyboard this rectangle will be used for</param>
-        /// <param name="scale">The scale on which the rect should be rendered (Higher means smoother rotation)</param>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="colors">An array of colors the ColorBlend will use</param>
         /// <param name="gradientMode"></param>
-        public KeyboardRectangle(KeyboardProvider keyboard, int scale, int x, int y, List<Color> colors,
+        public KeyboardRectangle(KeyboardProvider keyboard, int x, int y, List<Color> colors,
             LinearGradientMode gradientMode)
         {
             _keyboard = keyboard;
-            Scale = scale;
-            X = x;
-            Y = y;
-            Width = keyboard.Width*Scale;
-            Height = keyboard.Height*Scale;
-            Colors = colors;
-            GradientMode = gradientMode;
-
-            Opacity = 255;
-            Rotate = false;
-            LoopSpeed = 1;
-            Visible = true;
-            ContainedBrush = false;
-
             _rotationProgress = 0;
             _blinkWorker.DoWork += BlinkWorker_DoWork;
+
+            X = x;
+            Y = y;
+            Width = keyboard.Width;
+            Height = keyboard.Height;
+            Visible = true;
+            Opacity = 255;
+
+            ContainedBrush = true;
+            Scale = 4;
+            GradientMode = gradientMode;
+            Rotate = false;
+            LoopSpeed = 1;
+            Colors = colors;
         }
 
-        public bool ContainedBrush { get; set; }
-        public int Scale { get; set; }
-        public byte Opacity { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public LinearGradientMode GradientMode { get; set; }
-        public bool Rotate { get; set; }
-        public double LoopSpeed { get; set; }
         public bool Visible { get; set; }
+        public byte Opacity { get; set; } // TODO: Remove
 
-        public List<Color> Colors
-        {
-            get { return _colors; }
-            set
-            {
-                _colors = value;
+        /// <summary>
+        ///     Sets wether or not the colors should be contained within the rectangle, or span the entire keyboard.
+        /// </summary>
+        public bool ContainedBrush { get; set; }
 
-                // Make the list tilable so that we can loop it
-                _colors.AddRange(value);
-                _colors.Add(value.FirstOrDefault());
-            }
-        }
+        /// <summary>
+        ///     Used when ContainedBrush is set to false to make sure the colors span the entire keyboard on a higher scale.
+        /// </summary>
+        public int Scale { get; set; }
+
+        /// <summary>
+        ///     Determines what grientmode to use in the LinearGradientBrush.
+        /// </summary>
+        public LinearGradientMode GradientMode { get; set; }
+
+        /// <summary>
+        ///     Wether or not to rotate the colors over the brush.
+        /// </summary>
+        public bool Rotate { get; set; }
+
+        /// <summary>
+        ///     What speed to ratate the colors on.
+        /// </summary>
+        public double LoopSpeed { get; set; }
+
+        /// <summary>
+        ///     Colors used on the brush.
+        /// </summary>
+        public List<Color> Colors { get; set; }
 
         public void StartBlink(int delay)
         {
@@ -130,24 +140,28 @@ namespace Artemis.Utilities.Keyboard
         private LinearGradientBrush CreateBrush()
         {
             var colorBlend = CreateColorBlend();
-            var rect = ContainedBrush
-                ? new Rectangle((int) _rotationProgress, Y, Width, Height)
-                : new Rectangle((int) _rotationProgress, 0, _keyboard.Width*Scale, _keyboard.Height*Scale);
+            RectangleF rect;
+            if (Rotate)
+                rect = ContainedBrush
+                    ? new Rectangle((int) _rotationProgress, Y, Width*2, Height*2)
+                    : new Rectangle((int) _rotationProgress, 0, (_keyboard.Width*Scale)*2, (_keyboard.Height*Scale)*2);
+            else
+                rect = ContainedBrush
+                    ? new Rectangle(X, Y, Width, Height)
+                    : new Rectangle(0, 0, (_keyboard.Width*Scale), (_keyboard.Height*Scale));
 
-            if (Colors.Count > 5)
-                return new LinearGradientBrush(rect, Colors[0], Colors[1], GradientMode)
-                {
-                    InterpolationColors = colorBlend
-                };
 
-            return Colors.Count > 1
-                ? new LinearGradientBrush(rect, Colors[0], Colors[1], GradientMode)
-                : new LinearGradientBrush(rect, Colors[0], Colors[0], GradientMode);
+            return new LinearGradientBrush(rect, Color.Transparent, Color.Transparent, GradientMode)
+            {
+                InterpolationColors = colorBlend
+            };
         }
 
         private ColorBlend CreateColorBlend()
         {
-            var colorBlend = new ColorBlend {Colors = Colors.ToArray()};
+            var colorBlend = Rotate
+                ? new ColorBlend {Colors = CreateTilebleColors(Colors).ToArray()}
+                : new ColorBlend {Colors = Colors.ToArray()};
 
             // If needed, apply opacity to the colors in the blend
             if (Opacity < 255)
@@ -155,15 +169,26 @@ namespace Artemis.Utilities.Keyboard
                     colorBlend.Colors[i] = Color.FromArgb(Opacity, colorBlend.Colors[i]);
 
             // Devide the colors over the colorblend
-            var devider = (float) Colors.Count - 1;
+            var devider = (float) colorBlend.Colors.Length - 1;
             var positions = new List<float>();
-            for (var i = 0; i < Colors.Count; i++)
+            for (var i = 0; i < colorBlend.Colors.Length; i++)
                 positions.Add(i/devider);
 
             // Apply the devided positions
             colorBlend.Positions = positions.ToArray();
 
             return colorBlend;
+        }
+
+        private List<Color> CreateTilebleColors(List<Color> sourceColors)
+        {
+            // Create a list using the original colors
+            var tilebleColors = new List<Color>(sourceColors);
+            // Add the original colors again
+            tilebleColors.AddRange(sourceColors);
+            // Add the first color, smoothing the transition
+            tilebleColors.Add(sourceColors.FirstOrDefault());
+            return tilebleColors;
         }
     }
 }

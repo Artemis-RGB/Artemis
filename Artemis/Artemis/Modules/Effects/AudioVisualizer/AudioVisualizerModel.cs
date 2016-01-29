@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Models;
-using Artemis.Utilities;
 using Artemis.Utilities.Audio;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
@@ -17,7 +16,6 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private const int FftLength = 2048;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(FftLength);
         private bool _generating;
-        private bool _previousFromBottom;
         private IWaveIn _waveIn;
 
         public AudioVisualizerModel(MainModel mainModel, AudioVisualizerSettings settings) : base(mainModel)
@@ -26,19 +24,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             Name = "Audiovisualizer";
             DeviceIds = new List<string>();
             SpectrumData = new List<byte>();
-            SoundRectangles = new List<KeyboardRectangle>();
             Scale = 4;
-            
-            // Fill list with device IDs
-            // Would rather just store a MMDevice object, but seems NAudio won't let me.
-            var deviceEnum = new MMDeviceEnumerator();
-            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).ToList();
-            foreach (var mmDevice in devices)
-            {
-                DeviceIds.Add(mmDevice.ID);
-            }
-
-            SelectedDeviceId = DeviceIds.FirstOrDefault();
         }
 
         public int Lines { get; set; }
@@ -64,7 +50,29 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Enable()
         {
-            Lines = MainModel.ActiveKeyboard.Width * Scale;
+            Lines = MainModel.ActiveKeyboard.Width;
+
+            // TODO: Device selection
+            SelectedDeviceId = new MMDeviceEnumerator()
+                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
+                .FirstOrDefault()?.ID;
+
+            SoundRectangles = new List<KeyboardRectangle>();
+            for (var i = 0; i < Lines; i++)
+            {
+                SoundRectangles.Add(new KeyboardRectangle(
+                    MainModel.ActiveKeyboard,
+                    0, 0, new List<Color>
+                    {
+                        //ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),
+                        //ColorHelpers.MediaColorToDrawingColor(Settings.SecondaryColor)
+                        Color.Red,
+                        Color.Yellow,
+                        Color.Green,
+                    },
+                    LinearGradientMode.Vertical) {ContainedBrush = false});
+
+            }
 
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
@@ -79,71 +87,49 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             if (SelectedDeviceId == null)
                 return;
 
-            var deviceEnum = new MMDeviceEnumerator();
-            var devices = deviceEnum.EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).ToList();
-            var device = devices.FirstOrDefault(d => d.ID == SelectedDeviceId);
+            var device = new MMDeviceEnumerator()
+                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
+                .FirstOrDefault(d => d.ID == SelectedDeviceId);
 
-            if (device == null)
+            if (device == null || SpectrumData == null)
                 return;
 
             // Start filling the model
             _generating = true;
 
-            if (SpectrumData == null)
-            {
-                _generating = false;
-                return;
-            }
-
-            // Clear the rectangle cache on Bars settings change
-            if (SoundRectangles.Count != Settings.Bars)
-                SoundRectangles.Clear();
-            if (Settings.FromBottom != _previousFromBottom)
-                SoundRectangles.Clear();
-            _previousFromBottom = Settings.FromBottom;
-
             // Parse spectrum data
-            for (var i = 0; i < Settings.Bars; i++)
+            for (var i = 0; i < Lines; i++)
             {
                 int height;
                 if (SpectrumData.Count - 1 < i || SpectrumData[i] == 0)
                     height = 0;
                 else
-                    height = (int) (Math.Round(SpectrumData[i]/2.55));
-
-                if (SoundRectangles.Count <= i)
-                    SoundRectangles.Add(new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>
-                        {
-                            ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),
-                            ColorHelpers.MediaColorToDrawingColor(Settings.SecondaryColor)
-                        }, LinearGradientMode.Vertical));
+                    height = (int) Math.Round(SpectrumData[i]/2.55);
 
                 // Apply Sensitivity setting
                 height = height*Settings.Sensitivity;
-                if (height > SoundRectangles[i].Height)
-                    SoundRectangles[i].Height = height;
+                var keyboardHeight = (int) Math.Round(((MainModel.ActiveKeyboard.Height/100.00)*height)*Scale);
+                if (keyboardHeight > SoundRectangles[i].Height)
+                    SoundRectangles[i].Height = keyboardHeight;
                 else
                     SoundRectangles[i].Height = SoundRectangles[i].Height - Settings.FadeSpeed;
                 // Apply Bars setting
-                SoundRectangles[i].X = (int) Math.Ceiling((double) Lines/Settings.Bars)*i;
-                SoundRectangles[i].Width = (int) Math.Ceiling((double) Lines/Settings.Bars);
+                SoundRectangles[i].X = i*Scale;
+                SoundRectangles[i].Width = Scale;
 
                 if (Settings.FromBottom)
-                    SoundRectangles[i].Y = (Scale*MainModel.ActiveKeyboard.Height) - SoundRectangles[i].Height;
+                    SoundRectangles[i].Y = (MainModel.ActiveKeyboard.Height*Scale) - SoundRectangles[i].Height;
             }
             _generating = false;
         }
 
         public override Bitmap GenerateBitmap()
         {
+            if (SpectrumData == null)
+                return null;
+
             // Lock the _spectrumData array while busy with it
             _generating = true;
-
-            if (SpectrumData == null)
-            {
-                _generating = false;
-                return null;
-            }
 
             var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))

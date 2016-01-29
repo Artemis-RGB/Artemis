@@ -16,12 +16,12 @@ namespace Artemis.KeyboardProviders
         /// Returns a bitmap matching the keyboard's dimensions
         /// </summary>
         /// <returns></returns>
-        public Bitmap KeyboardBitmap() => new Bitmap(Height, Width);
+        public Bitmap KeyboardBitmap() => new Bitmap(Width, Height);
 
         /// <summary>
         /// Returns a bitmap matching the keyboard's dimensions using the provided scale
         /// </summary>
         /// <returns></returns>
-        public Bitmap KeyboardBitmap(int scale) => new Bitmap(Height*scale, Width*scale);
+        public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
     }
 }

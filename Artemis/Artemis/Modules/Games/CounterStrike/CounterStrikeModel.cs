@@ -42,9 +42,9 @@ namespace Artemis.Modules.Games.CounterStrike
         public override void Enable()
         {
             // TODO: Size stuff 
-            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>(), LinearGradientMode.Horizontal);
-            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
-            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
+            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(), LinearGradientMode.Horizontal);
+            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
+            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
             MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 

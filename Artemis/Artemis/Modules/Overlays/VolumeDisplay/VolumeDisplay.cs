@@ -31,12 +31,12 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public void Draw(Graphics g)
         {
-            var volumeRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0,
-                new List<Color>
+            var volumeRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
                 {
                     ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),
                     ColorHelpers.MediaColorToDrawingColor(Settings.SecondaryColor)
-                }, LinearGradientMode.Horizontal);
+                },
+                LinearGradientMode.Horizontal);
             volumeRect.Draw(g);
         }
     }

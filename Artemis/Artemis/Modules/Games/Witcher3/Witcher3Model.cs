@@ -38,7 +38,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
-            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>(), LinearGradientMode.Horizontal)
+            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(), LinearGradientMode.Horizontal)
             {
                 Rotate = true,
                 LoopSpeed = 0.5

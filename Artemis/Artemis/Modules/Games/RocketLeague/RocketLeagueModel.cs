@@ -43,7 +43,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Enable()
         {
-            _boostRect = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>
+            _boostRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
                 {
                     ColorHelpers.MediaColorToDrawingColor(_settings.MainColor),
                     ColorHelpers.MediaColorToDrawingColor(_settings.SecondaryColor)

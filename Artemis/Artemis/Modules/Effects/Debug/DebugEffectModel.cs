@@ -27,7 +27,7 @@ namespace Artemis.Modules.Effects.Debug
 
         public override void Enable()
         {
-            KeyboardRectangle = new KeyboardRectangle(MainModel.ActiveKeyboard, Scale, 0, 0, new List<Color>
+            KeyboardRectangle = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
                 {
                     Color.Red,
                     Color.OrangeRed,
@@ -43,7 +43,7 @@ namespace Artemis.Modules.Effects.Debug
         {
             KeyboardRectangle.Height = Settings.Height;
             KeyboardRectangle.Width = Settings.Width;
-            //KeyboardRectangle.GradientMode = Settings.Type;
+            KeyboardRectangle.GradientMode = Settings.Type;
             KeyboardRectangle.Rotate = Settings.Rotate;
         }
 

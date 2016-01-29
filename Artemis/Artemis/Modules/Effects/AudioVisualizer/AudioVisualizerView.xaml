@@ -69,22 +69,6 @@
                     SmallChange="1"
                     IsSnapToTickEnabled="True" />
         </StackPanel>
-        <!-- Bars slider -->
-        <StackPanel Grid.Row="2"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Bars" Style="{DynamicResource DescriptionHeaderStyle}"
-                   Foreground="#535353" FontFamily="Segoe UI Semibold" />
-            <Slider x:Name="Bars"
-                    VerticalAlignment="top"
-                    HorizontalAlignment="Left"
-                    Width="132"
-                    TickPlacement="BottomRight"
-                    TickFrequency="7"
-                    Value="{Binding Path=AudioVisualizerSettings.Bars, Mode=TwoWay}" Minimum="7" Maximum="21"
-                    SmallChange="7"
-                    IsSnapToTickEnabled="True" />
-        </StackPanel>
         <StackPanel Grid.Row="3"
                     Grid.Column="0"
                     HorizontalAlignment="Left">

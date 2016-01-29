@@ -21,7 +21,7 @@ Support is planned for:
  * Dota 2 (Native Gamestate intergration)
  * Project CARS (Native memory sharing)
 
-Currently the only supported keyboard is the Logitech G910 Orion Spark, but progress is being made to support Corsair and Razer as well.
+Currently the only supported keyboards are the Logitech G910 Orion Spark and Corsair K95 RGB, but progress is being made to support Razer as well.
 
 For any keyboards/games/effects we'd love PRs!
 
