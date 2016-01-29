@@ -17,9 +17,9 @@ namespace Artemis.Modules.Games.RocketLeague
     public class RocketLeagueModel : GameModel
     {
         private readonly RocketLeagueSettings _settings;
-        private KeyboardRectangle _boostRect;
         private int _boostAmount;
         private bool _boostGrowing;
+        private KeyboardRectangle _boostRect;
         private Memory _memory;
         private GamePointersCollectionModel _pointer;
         private int _previousBoost;
@@ -44,14 +44,13 @@ namespace Artemis.Modules.Games.RocketLeague
         public override void Enable()
         {
             _boostRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
-                {
-                    ColorHelpers.MediaColorToDrawingColor(_settings.MainColor),
-                    ColorHelpers.MediaColorToDrawingColor(_settings.SecondaryColor)
-                }, LinearGradientMode.Horizontal);
+            {
+                ColorHelpers.ToDrawingColor(_settings.MainColor),
+                ColorHelpers.ToDrawingColor(_settings.SecondaryColor)
+            }, LinearGradientMode.Horizontal);
 
             MemoryHelpers.GetPointers();
-            _pointer = JsonConvert
-                .DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
+            _pointer = JsonConvert.DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _memory = new Memory(tempProcess);
@@ -77,7 +76,12 @@ namespace Artemis.Modules.Games.RocketLeague
             if (_boostAmount > 100)
                 _boostAmount = 100;
 
-            _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
+            _boostRect.Width = (int) Math.Ceiling(((MainModel.ActiveKeyboard.Width*Scale)/100.00)*_boostAmount);
+            _boostRect.Colors = new List<Color>
+            {
+                ColorHelpers.ToDrawingColor(_settings.MainColor),
+                ColorHelpers.ToDrawingColor(_settings.SecondaryColor)
+            };
 
             Task.Run(() => GrowIfHigher());
         }
@@ -94,7 +98,7 @@ namespace Artemis.Modules.Games.RocketLeague
             var differenceStep = difference/amountOfSteps;
             var differenceStepRest = difference%amountOfSteps;
             _boostAmount = _previousBoost;
-            _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
+            _boostRect.Width = (int) Math.Ceiling(((MainModel.ActiveKeyboard.Width*Scale)/100.00)*_boostAmount);
 
             for (var i = 0; i < amountOfSteps; i++)
             {
@@ -102,10 +106,10 @@ namespace Artemis.Modules.Games.RocketLeague
                 {
                     differenceStepRest -= 1;
                     _boostAmount += 1;
-                    _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
+                    _boostRect.Width = (int) Math.Ceiling(((MainModel.ActiveKeyboard.Width*Scale)/100.00)*_boostAmount);
                 }
                 _boostAmount += differenceStep;
-                _boostRect.Width = (int) Math.Ceiling(((Scale*21)/100.00)*_boostAmount);
+                _boostRect.Width = (int) Math.Ceiling(((MainModel.ActiveKeyboard.Width*Scale)/100.00)*_boostAmount);
 
                 Thread.Sleep(50);
             }
@@ -115,7 +119,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = new Bitmap(Scale*21, Scale*8);
+            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
 
             using (var g = Graphics.FromImage(bitmap))
             {

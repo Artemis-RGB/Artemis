@@ -16,18 +16,18 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override sealed void Load()
         {
-            Enabled = Settings.RocketLeague.Default.Enabled;
-            MainColor = Settings.RocketLeague.Default.MainColor;
-            SecondaryColor = Settings.RocketLeague.Default.SecondaryColor;
+            Enabled = RocketLeague.Default.Enabled;
+            MainColor = RocketLeague.Default.MainColor;
+            SecondaryColor = RocketLeague.Default.SecondaryColor;
         }
 
         public override sealed void Save()
         {
-            Settings.RocketLeague.Default.Enabled = Enabled;
-            Settings.RocketLeague.Default.MainColor = MainColor;
-            Settings.RocketLeague.Default.SecondaryColor = SecondaryColor;
+            RocketLeague.Default.Enabled = Enabled;
+            RocketLeague.Default.MainColor = MainColor;
+            RocketLeague.Default.SecondaryColor = SecondaryColor;
 
-            Settings.RocketLeague.Default.Save();
+            RocketLeague.Default.Save();
         }
 
         public override sealed void ToDefault()

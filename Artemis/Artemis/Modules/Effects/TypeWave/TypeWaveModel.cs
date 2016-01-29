@@ -117,7 +117,7 @@ namespace Artemis.Modules.Effects.TypeWave
             Waves.Add(Settings.IsRandomColors
                 ? new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0, ColorHelpers.GetRandomRainbowColor())
                 : new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0,
-                    ColorHelpers.MediaColorToDrawingColor(Settings.WaveColor)));
+                    ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
     }
 

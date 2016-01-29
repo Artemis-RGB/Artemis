@@ -145,8 +145,8 @@ namespace Artemis.Modules.Games.CounterStrike
             AmmoRect.Width = ((int) Math.Floor((16/100.00)*ammoPercentage))*Scale;
             AmmoRect.Colors = new List<Color>
             {
-                ColorHelpers.MediaColorToDrawingColor(_counterStrikeSettings.AmmoMainColor),
-                ColorHelpers.MediaColorToDrawingColor(_counterStrikeSettings.AmmoSecondaryColor)
+                ColorHelpers.ToDrawingColor(_counterStrikeSettings.AmmoMainColor),
+                ColorHelpers.ToDrawingColor(_counterStrikeSettings.AmmoSecondaryColor)
             };
 
             // Low ammo indicator

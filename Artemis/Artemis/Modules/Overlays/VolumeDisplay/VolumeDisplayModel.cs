@@ -72,7 +72,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override Bitmap GenerateBitmap()
         {
-            return GenerateBitmap(new Bitmap(21, 6));
+            return GenerateBitmap(MainModel.ActiveKeyboard.KeyboardBitmap(4));
         }
 
         public override Bitmap GenerateBitmap(Bitmap bitmap)

@@ -32,15 +32,15 @@ namespace Artemis.Utilities.Keyboard
             _rotationProgress = 0;
             _blinkWorker.DoWork += BlinkWorker_DoWork;
 
-            X = x;
-            Y = y;
-            Width = keyboard.Width;
-            Height = keyboard.Height;
+            Scale = 4;
+            X = x*Scale;
+            Y = y*Scale;
+            Width = keyboard.Width*Scale;
+            Height = keyboard.Height*Scale;
             Visible = true;
             Opacity = 255;
 
             ContainedBrush = true;
-            Scale = 4;
             GradientMode = gradientMode;
             Rotate = false;
             LoopSpeed = 1;

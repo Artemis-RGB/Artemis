@@ -1,11 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="RocketLeague">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Games.RocketLeague" GeneratedClassName="RocketLeague">
   <Profiles />
   <Settings>
     <Setting Name="Enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FFFF5000</Value>

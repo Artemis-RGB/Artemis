@@ -70,12 +70,12 @@ namespace Artemis.Utilities
             return i;
         }
 
-        public static Color MediaColorToDrawingColor(System.Windows.Media.Color mColor)
+        public static Color ToDrawingColor(System.Windows.Media.Color mColor)
         {
             return Color.FromArgb(mColor.A, mColor.R, mColor.G, mColor.B);
         }
 
-        public static System.Windows.Media.Color DrawingColorToMediaColor(Color dColor)
+        public static System.Windows.Media.Color ToMediaColor(Color dColor)
         {
             return System.Windows.Media.Color.FromArgb(dColor.A, dColor.R, dColor.G, dColor.B);
         }
