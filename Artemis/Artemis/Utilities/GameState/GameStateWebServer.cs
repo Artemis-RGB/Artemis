@@ -31,7 +31,7 @@ namespace Artemis.Utilities.GameState
                 return;
 
             _listener.Prefixes.Clear();
-            Port = FreeTcpPort();
+            Port = Settings.General.Default.GamestatePort;
             _listener.Prefixes.Add($"http://127.0.0.1:{Port}/");
 
             _listener.Start();
@@ -82,15 +82,6 @@ namespace Artemis.Utilities.GameState
 
             var content = "{\"address\":\"127.0.0.1:" + Port + "\"}";
             File.WriteAllText(path + @"\coreProps.json", content);
-        }
-
-        private int FreeTcpPort()
-        {
-            var l = new TcpListener(IPAddress.Loopback, 0);
-            l.Start();
-            var port = ((IPEndPoint) l.LocalEndpoint).Port;
-            l.Stop();
-            return port;
         }
 
         private string HandleRequest(HttpListenerRequest request)

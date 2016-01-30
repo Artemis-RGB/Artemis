@@ -48,10 +48,10 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             // TODO: Size stuff 
             AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = Scale};
-            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, Scale, new List<Color>(),
+                LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
+            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
-            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, Scale, new List<Color>(),
+            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
             MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
@@ -82,7 +82,7 @@ namespace Artemis.Modules.Games.CounterStrike
             if (health > 25 || health < 1)
                 return;
 
-            TeamRect.Colors = new List<Color> {Color.Red, Color.DarkOrange, Color.Red, Color.DarkOrange};
+            TeamRect.Colors = new List<Color> {Color.Red, Color.OrangeRed, Color.Red, Color.OrangeRed };
         }
 
         private void UpdateSmoke()
