@@ -58,5 +58,17 @@ namespace Artemis.Settings {
                 this["EnablePointersUpdate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("51364")]
+        public int GamestatePort {
+            get {
+                return ((int)(this["GamestatePort"]));
+            }
+            set {
+                this["GamestatePort"] = value;
+            }
+        }
     }
 }

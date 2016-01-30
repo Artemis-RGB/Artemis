@@ -10,6 +10,7 @@ namespace Artemis.Modules.Games.CounterStrike
             Load();
         }
 
+        public bool Enabled { get; set; }
         public string GameDirectory { get; set; }
 
         public bool AmmoEnabled { get; set; }
@@ -23,6 +24,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override sealed void Load()
         {
+            Enabled = CounterStrike.Default.Enabled;
             GameDirectory = CounterStrike.Default.GameDirectory;
 
             AmmoEnabled = CounterStrike.Default.AmmoEnabled;
@@ -37,6 +39,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override sealed void Save()
         {
+            CounterStrike.Default.Enabled = Enabled;
             CounterStrike.Default.GameDirectory = GameDirectory;
 
             CounterStrike.Default.AmmoEnabled = AmmoEnabled;
@@ -53,6 +56,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override sealed void ToDefault()
         {
+            Enabled = true;
             GameDirectory = string.Empty;
 
             AmmoEnabled = true;

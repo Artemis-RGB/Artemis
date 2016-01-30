@@ -107,7 +107,7 @@ namespace Artemis.Models
             // Game models are only used if they are enabled
             var gameModel = effectModel as GameModel;
             if (gameModel != null)
-                if (!gameModel.Enabled)
+                if (!gameModel.Enabled())
                     return;
 
             if (ActiveEffect != null && effectModel.Name == ActiveEffect.Name)

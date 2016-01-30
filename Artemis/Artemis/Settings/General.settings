@@ -11,5 +11,8 @@
     <Setting Name="EnablePointersUpdate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="GamestatePort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">51364</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

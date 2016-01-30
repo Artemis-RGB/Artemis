@@ -29,9 +29,13 @@ namespace Artemis.Modules.Games.RocketLeague
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
             Scale = 4;
-            Enabled = settings.Enabled;
 
             _settings = settings;
+        }
+
+        public override bool Enabled()
+        {
+            return _settings.Enabled;
         }
 
         public int Scale { get; set; }

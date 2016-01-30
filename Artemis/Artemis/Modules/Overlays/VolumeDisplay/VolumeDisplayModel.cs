@@ -10,8 +10,6 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        private bool _enabled;
-
         public VolumeDisplayModel(MainModel mainModel, VolumeDisplaySettings settings) : base(mainModel)
         {
             Settings = settings;

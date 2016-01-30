@@ -25,12 +25,14 @@ namespace Artemis.Modules.Games.Witcher3
             Name = "Witcher3";
             ProcessName = "witcher3";
             Scale = 4;
-
-            Enabled = settings.Enabled;
         }
 
         public int Scale { get; set; }
 
+        public override bool Enabled()
+        {
+            return true;
+        }
         public override void Dispose()
         {
             _process = null;

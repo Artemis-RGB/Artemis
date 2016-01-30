@@ -14,11 +14,11 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        private readonly CounterStrikeSettings _counterStrikeSettings;
+        private readonly CounterStrikeSettings _settings;
 
-        public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings counterStrikeSettings) : base(mainModel)
+        public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings settings) : base(mainModel)
         {
-            _counterStrikeSettings = counterStrikeSettings;
+            _settings = settings;
             Name = "CounterStrike";
             ProcessName = "csgo";
             Scale = 4;
@@ -34,6 +34,11 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public int Scale { get; set; }
 
+        public override bool Enabled()
+        {
+            return _settings.Enabled;
+        }
+
         public override void Dispose()
         {
             MainModel.GameStateWebServer.GameDataReceived -= HandleGameData;
@@ -42,9 +47,12 @@ namespace Artemis.Modules.Games.CounterStrike
         public override void Enable()
         {
             // TODO: Size stuff 
-            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(), LinearGradientMode.Horizontal);
-            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
-            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1 * Scale, new List<Color>(), LinearGradientMode.Horizontal);
+            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
+                LinearGradientMode.Horizontal) {Height = Scale};
+            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, Scale, new List<Color>(),
+                LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
+            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, Scale, new List<Color>(),
+                LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
             MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 
@@ -53,15 +61,15 @@ namespace Artemis.Modules.Games.CounterStrike
             if (CsJson == null)
                 return;
 
-            if (_counterStrikeSettings.AmmoEnabled)
+            if (_settings.AmmoEnabled)
                 UpdateAmmo();
-            if (_counterStrikeSettings.TeamColorEnabled)
+            if (_settings.TeamColorEnabled)
                 UpdateTeam();
-            if (_counterStrikeSettings.LowHpEnabled)
+            if (_settings.LowHpEnabled)
                 UpdateHealth();
-            if (_counterStrikeSettings.FlashEnabled)
+            if (_settings.FlashEnabled)
                 UpdateFlash();
-            if (_counterStrikeSettings.SmokeEnabled)
+            if (_settings.SmokeEnabled)
                 UpdateSmoke();
         }
 
@@ -145,8 +153,8 @@ namespace Artemis.Modules.Games.CounterStrike
             AmmoRect.Width = ((int) Math.Floor((16/100.00)*ammoPercentage))*Scale;
             AmmoRect.Colors = new List<Color>
             {
-                ColorHelpers.ToDrawingColor(_counterStrikeSettings.AmmoMainColor),
-                ColorHelpers.ToDrawingColor(_counterStrikeSettings.AmmoSecondaryColor)
+                ColorHelpers.ToDrawingColor(_settings.AmmoMainColor),
+                ColorHelpers.ToDrawingColor(_settings.AmmoSecondaryColor)
             };
 
             // Low ammo indicator
@@ -158,7 +166,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = new Bitmap(21*Scale, 6*Scale);
+            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
 
             using (var g = Graphics.FromImage(bitmap))
             {
