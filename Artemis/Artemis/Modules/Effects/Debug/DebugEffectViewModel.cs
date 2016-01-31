@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -82,33 +84,19 @@ namespace Artemis.Modules.Effects.Debug
 
         public void Handle(ChangeBitmap message)
         {
-            //// Doesn't show transparancy
-            //using (var memory = new MemoryStream())
-            //{
-            //    message.Bitmap.Save(memory, ImageFormat.Bmp);
-            //    memory.Position = 0;
-
-            //    var bitmapImage = new BitmapImage();
-            //    bitmapImage.BeginInit();
-            //    bitmapImage.StreamSource = memory;
-            //    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            //    bitmapImage.EndInit();
-
-            //    ImageSource = bitmapImage;
-            //}
-
-            // Causes "Generic GDI+ Exception" after a while
-            try
+            // Doesn't show transparancy
+            using (var memory = new MemoryStream())
             {
-                ImageSource = Imaging.CreateBitmapSourceFromHBitmap(
-                    message.Bitmap.GetHbitmap(),
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-            }
-            catch (Exception)
-            {
-                // ignored
+                message.Bitmap.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                ImageSource = bitmapImage;
             }
         }
 
