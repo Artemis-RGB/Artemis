@@ -4,12 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             Width="300">
     <UserControl.Resources>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -17,13 +19,59 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
-               Grid.Column="0"
-               Margin="5"
-               VerticalAlignment="Center"
+        <!-- Startup with Windows -->
+        <Label Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Startup with Windows:" />
+        <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" />
+
+        <!-- Keyboard selection -->
+        <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Keyboard:" />
+        <ComboBox Grid.Row="1" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
+                  Width="120" />
+
+        <!-- Gamestate port -->
+        <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Gamestate server port:" />
+        <controls:NumericUpDown Grid.Row="2" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+                                HorizontalAlignment="Right" Width="120" />
+
+        <!-- Update pointers -->
+        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Download pointers:" />
+        <controls:ToggleSwitch Grid.Row="3" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" />
+
+        <!-- Buttons -->
+        <Button Grid.Row="4" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Width="120"
+                Style="{DynamicResource SquareButtonStyle}" />
+        <Button Grid.Row="4" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
+                VerticalAlignment="Center" HorizontalAlignment="Right" Width="120"
+                Style="{DynamicResource SquareButtonStyle}" />
+
+        <!-- Version -->
+        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row ="0" Grid.Column="0" Text="Artemis pre-release" VerticalAlignment="Center" HorizontalAlignment="Left" />
+            <Button Grid.Row ="0" Grid.Column="1"  Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
+                    cal:Message.Attach="[Action NavigateTo('https://github.com/SpoinkyNL/Artemis')]"
+                    Content="View on GitHub" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" />
+        </Grid>
     </Grid>
 </UserControl>

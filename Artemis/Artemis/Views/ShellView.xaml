@@ -28,10 +28,15 @@
     </Controls:MetroWindow.RightWindowCommands>
 
     <Controls:MetroWindow.Flyouts>
-        <Controls:FlyoutsControl ItemsSource="{Binding Path=Flyouts}">
+        <Controls:FlyoutsControl ItemsSource="{Binding Flyouts}">
+            <Controls:FlyoutsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl cal:View.Model="{Binding}" />
+                </DataTemplate>
+            </Controls:FlyoutsControl.ItemTemplate>
             <Controls:FlyoutsControl.ItemContainerStyle>
                 <Style BasedOn="{StaticResource {x:Type Controls:Flyout}}" TargetType="{x:Type Controls:Flyout}">
-                    <Setter Property="Header" Value="{Binding Header}" />
+                    <Setter Property="Header" Value="{Binding Header}"  />
                     <Setter Property="IsOpen" Value="{Binding IsOpen}" />
                     <Setter Property="Position" Value="{Binding Position}" />
                 </Style>
