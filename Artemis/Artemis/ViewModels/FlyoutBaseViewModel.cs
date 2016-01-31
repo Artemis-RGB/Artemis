@@ -5,50 +5,48 @@ namespace Artemis.ViewModels
 {
     public abstract class FlyoutBaseViewModel : PropertyChangedBase
     {
-        private string header;
-
-        private bool isOpen;
-
-        private Position position;
+        private string _header;
+        private bool _isOpen;
+        private Position _position;
 
         public string Header
         {
-            get { return header; }
+            get { return _header; }
 
             set
             {
-                if (value == header)
+                if (value == _header)
                     return;
 
-                header = value;
+                _header = value;
                 NotifyOfPropertyChange(() => Header);
             }
         }
 
         public bool IsOpen
         {
-            get { return isOpen; }
+            get { return _isOpen; }
 
             set
             {
-                if (value.Equals(isOpen))
+                if (value.Equals(_isOpen))
                     return;
 
-                isOpen = value;
+                _isOpen = value;
                 NotifyOfPropertyChange(() => IsOpen);
             }
         }
 
         public Position Position
         {
-            get { return position; }
+            get { return _position; }
 
             set
             {
-                if (value == position)
+                if (value == _position)
                     return;
 
-                position = value;
+                _position = value;
                 NotifyOfPropertyChange(() => Position);
             }
         }

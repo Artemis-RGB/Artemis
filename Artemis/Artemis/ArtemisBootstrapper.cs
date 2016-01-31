@@ -1,14 +1,12 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using Artemis.ViewModels;
 using Caliburn.Micro;
-using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Artemis
 {
-    public class AppBootstrapper : BootstrapperBase
+    public class ArtemisBootstrapper : BootstrapperBase
     {
-        public AppBootstrapper()
+        public ArtemisBootstrapper()
         {
             Initialize();
         }

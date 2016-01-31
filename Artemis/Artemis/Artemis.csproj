@@ -78,15 +78,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.0.0-beta2\lib\net45\Caliburn.Micro.dll</HintPath>
+      <HintPath>..\packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.0-beta2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Caliburn.Micro.Platform.Core, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.0-beta2\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+      <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Corale.Colore, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -131,10 +127,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.3.0-ALPHA017\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -185,7 +178,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppBootStrapper.cs" />
+    <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="Events\ChangeActiveEffect.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
     <Compile Include="KeyboardProviders\Corsair\K70.cs" />
@@ -289,6 +282,9 @@
     <Compile Include="Views\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
     </Compile>
+	<Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
+      <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Effects\Debug\DebugEffectView.xaml.cs">
       <DependentUpon>DebugEffectView.xaml</DependentUpon>
     </Compile>
@@ -300,9 +296,6 @@
     </Compile>
     <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
       <DependentUpon>TypeWaveView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
-      <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamesView.xaml.cs">
       <DependentUpon>GamesView.xaml</DependentUpon>
@@ -408,8 +401,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Flyouts\FlyoutSettingsView.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\GamesView.xaml">
       <SubType>Designer</SubType>

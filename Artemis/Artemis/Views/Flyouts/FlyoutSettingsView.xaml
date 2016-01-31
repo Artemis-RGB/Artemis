@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.Views.Flyouts"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
     </UserControl.Resources>
-
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,20 +24,6 @@
                Grid.Column="0"
                Margin="5"
                VerticalAlignment="Center"
-               Content="Download language:" />
-        <ComboBox x:Name="flyoutSettingsComboboxDownloadlanguage"
-                  Grid.Row="0"
-                  Grid.Column="1"
-                  Margin="0,5,5,5"
-                  VerticalAlignment="Center" />
-
-        <Button x:Name="flyoutSettingsButtonSave"
-                Grid.Row="1"
-                Grid.Column="1"
-                Width="75"
-                Margin="5"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Content="Save" />
+               Content="Gamestate server port:" />
     </Grid>
 </UserControl>

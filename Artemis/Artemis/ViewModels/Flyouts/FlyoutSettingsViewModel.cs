@@ -1,4 +1,4 @@
-﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls;
 
 namespace Artemis.ViewModels.Flyouts
 {

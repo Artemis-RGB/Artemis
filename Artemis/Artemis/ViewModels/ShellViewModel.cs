@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using Artemis.Models;
+using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
-using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Artemis.ViewModels
 {
@@ -18,10 +19,14 @@ namespace Artemis.ViewModels
             ActivateItem(new EffectsViewModel(MainModel) {DisplayName = "Effects"});
             ActivateItem(new GamesViewModel(MainModel) {DisplayName = "Games"});
             ActivateItem(new OverlaysViewModel(MainModel) {DisplayName = "Overlays"});
+            Flyouts.Add(new FlyoutSettingsViewModel());
 
             // By now Effects are added to the MainModel so we can savely start one
             ToggleEffects();
         }
+
+        public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; } =
+            new BindableCollection<FlyoutBaseViewModel>();
 
         public bool EffectsEnabled
         {
@@ -51,9 +56,9 @@ namespace Artemis.ViewModels
             Application.Current.Shutdown();
         }
 
-        public void ToggleSettings()
+        public void Settings()
         {
-            MessageBox.Show("Test");
+            Flyouts.First().IsOpen = !Flyouts.First().IsOpen;
         }
     }
 }

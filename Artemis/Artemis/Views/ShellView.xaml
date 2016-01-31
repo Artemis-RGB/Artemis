@@ -4,19 +4,14 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                      xmlns:local="clr-namespace:Artemis.Views"
                       xmlns:cal="http://www.caliburnproject.org"
-                      xmlns:viewModels="clr-namespace:Artemis.ViewModels"
-                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       mc:Ignorable="d"
-                      d:DataContext="{d:DesignInstance Type=viewModels:ShellViewModel, IsDesignTimeCreatable=True}"
-                      cal:Bind.AtDesignTime="True"
                       cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)]"
                       Title="Artemis" Height="600" Width="718"
                       GlowBrush="{DynamicResource AccentColorBrush}">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>
-            <Button x:Name="Settings">
+            <Button cal:Message.Attach="Settings">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Width="10" Height="10"
                                Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
@@ -31,6 +26,19 @@
             </Button>
         </Controls:WindowCommands>
     </Controls:MetroWindow.RightWindowCommands>
+
+    <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl ItemsSource="{Binding Path=Flyouts}">
+            <Controls:FlyoutsControl.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type Controls:Flyout}}" TargetType="{x:Type Controls:Flyout}">
+                    <Setter Property="Header" Value="{Binding Header}" />
+                    <Setter Property="IsOpen" Value="{Binding IsOpen}" />
+                    <Setter Property="Position" Value="{Binding Position}" />
+                </Style>
+            </Controls:FlyoutsControl.ItemContainerStyle>
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+
     <Grid>
         <Grid.Resources>
             <ResourceDictionary
