@@ -93,7 +93,7 @@ namespace Artemis.Modules.Games.CounterStrike
             var smoked = CsJson["player"]["state"]["smoked"].Value<int>();
             if (smoked == 0 && !DrawingSmoke)
                 return;
-
+            
             EventRect.Colors = new List<Color> {Color.FromArgb(smoked, 255, 255, 255)};
             DrawingSmoke = (smoked != 0);
         }

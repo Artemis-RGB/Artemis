@@ -1,7 +1,9 @@
 ﻿<Application x:Class="Artemis.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Artemis">
+             xmlns:local="clr-namespace:Artemis"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

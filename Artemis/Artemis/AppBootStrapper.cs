@@ -15,15 +15,7 @@ namespace Artemis
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            try
-            {
-                DisplayRootViewFor<ShellViewModel>();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Startup failed :c \n" + ex.InnerException.Message);
-                throw;
-            }
+            DisplayRootViewFor<ShellViewModel>();
         }
     }
 }
