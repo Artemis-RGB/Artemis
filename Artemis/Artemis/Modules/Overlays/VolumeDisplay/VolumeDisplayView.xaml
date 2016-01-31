@@ -3,62 +3,63 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="407.812" d:DesignWidth="671.484"
-             d:DataContext="{d:DesignInstance Type=overlays:VolumeDisplayViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
-    <Grid Margin="15, 5, 15, 5">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label FontSize="20"
-                   Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
-                <Label.Content>
-                    <AccessText TextWrapping="Wrap" Text="Displays media key actions on the keyboard." />
-                </Label.Content>
-            </Label>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                              IsChecked="{Binding Path=VolumeDisplaySettings.Enabled, Mode=TwoWay}"
-                              Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                              cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Margin="15, 5, 15, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+                <Label FontSize="20"
+                       Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                    <Label.Content>
+                        <AccessText TextWrapping="Wrap" Text="Displays media key actions on the keyboard." />
+                    </Label.Content>
+                </Label>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                    <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                                  IsChecked="{Binding Path=VolumeDisplaySettings.Enabled, Mode=TwoWay}"
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
-        <StackPanel Grid.Row="1"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Main color" Style="{DynamicResource DescriptionHeaderStyle}"
-                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="134" HorizontalAlignment="Left" />
-            <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=VolumeDisplaySettings.MainColor, Mode=TwoWay}" />
-        </StackPanel>
-        <StackPanel Grid.Row="1"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
-                   FontFamily="Segoe UI Semibold" Foreground="#535353" />
-            <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}" />
-        </StackPanel>
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0"
+                        HorizontalAlignment="Left">
+                <Label FontSize="16" Content="Main color" Style="{DynamicResource DescriptionHeaderStyle}"
+                       FontFamily="Segoe UI Semibold" Foreground="#535353" Width="134" HorizontalAlignment="Left" />
+                <xctk:ColorPicker x:Name="MainColor"
+                                  SelectedColor="{Binding Path=VolumeDisplaySettings.MainColor, Mode=TwoWay}" />
+            </StackPanel>
+            <StackPanel Grid.Row="1"
+                        Grid.Column="1"
+                        HorizontalAlignment="Left">
+                <Label FontSize="16" Content="Secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
+                       FontFamily="Segoe UI Semibold" Foreground="#535353" />
+                <xctk:ColorPicker x:Name="SecondaryColor"
+                                  SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}" />
+            </StackPanel>
 
-        <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
-            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
-                    Style="{DynamicResource SquareButtonStyle}" />
-            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0"
-                    Style="{DynamicResource SquareButtonStyle}" />
-        </StackPanel>
-    </Grid>
+            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
+                        Margin="10,0,0,0"
+                        Style="{DynamicResource SquareButtonStyle}" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

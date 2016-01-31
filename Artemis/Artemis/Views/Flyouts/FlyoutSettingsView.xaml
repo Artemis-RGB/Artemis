@@ -30,7 +30,7 @@
         <Label Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Startup with Windows:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" />
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
         <!-- Keyboard selection -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -48,7 +48,7 @@
         <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Download pointers:" />
         <controls:ToggleSwitch Grid.Row="3" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="120" />
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
         <!-- Buttons -->
         <Button Grid.Row="4" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"

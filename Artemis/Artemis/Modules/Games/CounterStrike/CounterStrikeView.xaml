@@ -8,10 +8,11 @@
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="475.61" d:DesignWidth="519.512">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
     <Grid Margin="15, 5, 15, 5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -117,4 +118,5 @@
                     Style="{DynamicResource SquareButtonStyle}" />
         </StackPanel>
     </Grid>
+    </ScrollViewer>
 </UserControl>
