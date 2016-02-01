@@ -7,7 +7,8 @@
                       xmlns:cal="http://www.caliburnproject.org"
                       mc:Ignorable="d"
                       cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)]"
-                      Title="Artemis" Height="600" Width="718"
+                      Title="Artemis" Height="670" Width="675"
+                      MinWidth="500" MinHeight="400"
                       GlowBrush="{DynamicResource AccentColorBrush}">
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands>

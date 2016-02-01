@@ -14,8 +14,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         public int Bars { get; set; }
         public bool FromBottom { get; set; }
         public int FadeSpeed { get; set; }
-        public Color MainColor { get; set; }
-        public Color SecondaryColor { get; set; }
+        public Color TopColor { get; set; }
+        public Color MiddleColor { get; set; }
+        public Color BottomColor { get; set; }
 
         public override sealed void Load()
         {
@@ -23,8 +24,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             Bars = AudioVisualization.Default.Bars;
             FromBottom = AudioVisualization.Default.FromBottom;
             FadeSpeed = AudioVisualization.Default.FadeSpeed;
-            MainColor = AudioVisualization.Default.MainColor;
-            SecondaryColor = AudioVisualization.Default.SecondaryColor;
+            TopColor = AudioVisualization.Default.TopColor;
+            MiddleColor = AudioVisualization.Default.MiddleColor;
+            BottomColor = AudioVisualization.Default.BottomColor;
         }
 
         public override sealed void Save()
@@ -33,8 +35,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             AudioVisualization.Default.Bars = Bars;
             AudioVisualization.Default.FromBottom = FromBottom;
             AudioVisualization.Default.FadeSpeed = FadeSpeed;
-            AudioVisualization.Default.MainColor = MainColor;
-            AudioVisualization.Default.SecondaryColor = SecondaryColor;
+            AudioVisualization.Default.TopColor = TopColor;
+            AudioVisualization.Default.MiddleColor = MiddleColor;
+            AudioVisualization.Default.BottomColor = BottomColor;
 
             AudioVisualization.Default.Save();
         }
@@ -45,8 +48,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             Bars = 21;
             FromBottom = true;
             FadeSpeed = 3;
-            MainColor = Color.FromArgb(255, 0, 0, 255);
-            SecondaryColor = Color.FromArgb(255, 30, 144, 255);
+            TopColor = Color.FromArgb(255, 249, 0, 0);
+            MiddleColor = Color.FromArgb(255, 255, 118, 30);
+            BottomColor = Color.FromArgb(255, 0, 223, 0);
         }
     }
 }

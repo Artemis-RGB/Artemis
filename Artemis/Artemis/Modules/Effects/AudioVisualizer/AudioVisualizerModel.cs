@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Models;
+using Artemis.Utilities;
 using Artemis.Utilities.Audio;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
@@ -64,11 +65,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     MainModel.ActiveKeyboard,
                     0, 0, new List<Color>
                     {
-                        //ColorHelpers.MediaColorToDrawingColor(Settings.MainColor),
-                        //ColorHelpers.MediaColorToDrawingColor(Settings.SecondaryColor)
-                        Color.Red,
-                        Color.Yellow,
-                        Color.Green,
+                        ColorHelpers.ToDrawingColor(Settings.TopColor),
+                        ColorHelpers.ToDrawingColor(Settings.MiddleColor),
+                        ColorHelpers.ToDrawingColor(Settings.BottomColor)
                     },
                     LinearGradientMode.Vertical) {ContainedBrush = false});
 

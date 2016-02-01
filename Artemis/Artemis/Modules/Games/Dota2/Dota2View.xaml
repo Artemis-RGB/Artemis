@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid>
-            <TextBlock Text="{Binding Content}" />
+            <TextBlock Text="Dota 2 support is still to be done." />
         </Grid>
     </ScrollViewer>
 </UserControl>

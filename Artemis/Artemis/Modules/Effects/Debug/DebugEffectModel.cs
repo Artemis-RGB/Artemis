@@ -45,6 +45,8 @@ namespace Artemis.Modules.Effects.Debug
             KeyboardRectangle.Width = Settings.Width;
             KeyboardRectangle.GradientMode = Settings.Type;
             KeyboardRectangle.Rotate = Settings.Rotate;
+            KeyboardRectangle.Scale = Settings.Scale;
+            Scale = Settings.Scale;
         }
 
         public override Bitmap GenerateBitmap()

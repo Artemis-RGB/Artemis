@@ -73,25 +73,37 @@ namespace Artemis.Modules.Effects.AudioVisualizer {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF0000FF")]
-        public global::System.Windows.Media.Color MainColor {
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFF90000")]
+        public global::System.Windows.Media.Color TopColor {
             get {
-                return ((global::System.Windows.Media.Color)(this["MainColor"]));
+                return ((global::System.Windows.Media.Color)(this["TopColor"]));
             }
             set {
-                this["MainColor"] = value;
+                this["TopColor"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FF1E90FF")]
-        public global::System.Windows.Media.Color SecondaryColor {
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF761E")]
+        public global::System.Windows.Media.Color MiddleColor {
             get {
-                return ((global::System.Windows.Media.Color)(this["SecondaryColor"]));
+                return ((global::System.Windows.Media.Color)(this["MiddleColor"]));
             }
             set {
-                this["SecondaryColor"] = value;
+                this["MiddleColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF00DF00")]
+        public global::System.Windows.Media.Color BottomColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["BottomColor"]));
+            }
+            set {
+                this["BottomColor"] = value;
             }
         }
     }

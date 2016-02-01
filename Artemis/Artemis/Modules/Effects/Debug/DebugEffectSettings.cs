@@ -12,8 +12,8 @@ namespace Artemis.Modules.Effects.Debug
 
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Spread { get; set; }
         public bool Rotate { get; set; }
+        public int Scale { get; set; }
         public LinearGradientMode Type { get; set; }
 
         public override sealed void Load()
@@ -27,11 +27,11 @@ namespace Artemis.Modules.Effects.Debug
 
         public override sealed void ToDefault()
         {
-            Width = 6;
-            Height = 100;
-            Spread = 0;
+            Width = 84;
+            Height = 24;
+            Scale = 4;
             Type = LinearGradientMode.Horizontal;
-            Rotate = false;
+            Rotate = true;
         }
     }
 }

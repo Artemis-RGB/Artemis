@@ -3,99 +3,116 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
-             d:DesignHeight="407.812" d:DesignWidth="671.484"
-             cal:Bind.AtDesignTime="True">
+             d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="320" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label FontSize="20"
-                       Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
                     <Label.Content>
-                        <AccessText TextWrapping="Wrap" Text="Visualizes the default audio device on the keyboard." />
+                        <AccessText TextWrapping="Wrap"
+                                    Text="Visualizes the default audio device on the keyboard." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=EffectEnabled, Mode=OneWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left" Width="130">
-                <Label FontSize="16" Content="Main color" Style="{DynamicResource DescriptionHeaderStyle}"
-                       FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" />
-                <xctk:ColorPicker x:Name="MainColor"
-                                  SelectedColor="{Binding Path=AudioVisualizerSettings.MainColor, Mode=TwoWay}" />
-            </StackPanel>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="1"
-                        HorizontalAlignment="Left" Width="130">
-                <Label FontSize="16" Content="Secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
-                       FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" />
-                <xctk:ColorPicker x:Name="SecondaryColor"
-                                  SelectedColor="{Binding Path=AudioVisualizerSettings.SecondaryColor, Mode=TwoWay}" />
-            </StackPanel>
-            <!-- Sensitivity slider -->
-            <StackPanel Grid.Row="2"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left" Width="132">
-                <Label FontSize="16" Content="Sensitivity" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <Slider x:Name="Sensitivity"
-                        VerticalAlignment="top"
-                        HorizontalAlignment="Left"
-                        Width="132"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        Value="{Binding Path=AudioVisualizerSettings.Sensitivity, Mode=TwoWay}" Minimum="1"
-                        Maximum="10"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True" />
-            </StackPanel>
-            <StackPanel Grid.Row="3"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left" Width="130">
-                <controls:ToggleSwitch IsChecked="{Binding Path=AudioVisualizerSettings.FromBottom, Mode=TwoWay}"
-                                       Header="Origin"
-                                       OnLabel="Bottom" OffLabel="Top"
-                                       Margin="5,3,0,0" Width="125" />
-            </StackPanel>
-            <!-- Fadeout slider -->
-            <StackPanel Grid.Row="3"
-                        Grid.Column="1"
-                        HorizontalAlignment="Left" Width="132">
-                <Label FontSize="16" Content="Fade speed" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <Slider x:Name="FadeSpeed"
-                        VerticalAlignment="top"
-                        HorizontalAlignment="Left"
-                        Width="132"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        Value="{Binding Path=AudioVisualizerSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="10"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True" />
-            </StackPanel>
+
+            <!-- Top color -->
+            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Color used on top
+            </TextBlock>
+            <xctk:ColorPicker x:Name="TopColor"
+                              SelectedColor="{Binding Path=AudioVisualizerSettings.TopColor, Mode=TwoWay}"
+                              Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Middle color -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Color used in the middle
+            </TextBlock>
+            <xctk:ColorPicker x:Name="MiddleColor"
+                              SelectedColor="{Binding Path=AudioVisualizerSettings.MiddleColor, Mode=TwoWay}"
+                              Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Bottom color -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Color used on the bottom
+            </TextBlock>
+            <xctk:ColorPicker x:Name="Bottom"
+                              SelectedColor="{Binding Path=AudioVisualizerSettings.BottomColor, Mode=TwoWay}"
+                              Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Bar direction -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="116" VerticalAlignment="Center"
+                       Height="16" Margin="0,9,0,10">
+                Grow bars bottom
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=AudioVisualizerSettings.FromBottom, Mode=TwoWay}"
+                                   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
+                                   OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Bars amount -->
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Bars amount (less bars means thicker bars)
+            </TextBlock>
+            <Slider x:Name="Bars" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
+                    Value="{Binding Path=AudioVisualizerSettings.Bars, Mode=TwoWay}" Minimum="2" Maximum="21"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+            
+            <!-- Sensitivity -->
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Volume sensitivity multiplier
+            </TextBlock>
+            <Slider x:Name="Sensitivity" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
+                    Value="{Binding Path=AudioVisualizerSettings.Sensitivity, Mode=TwoWay}" Minimum="1" Maximum="10"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+
+            <!-- Fade speed -->
+            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Bar fade-out speed
+            </TextBlock>
+            <Slider x:Name="FadeSpeed" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
+                    Value="{Binding Path=AudioVisualizerSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="3"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="8" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

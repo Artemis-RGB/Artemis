@@ -1,7 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Modules.Effects.AudioVisualizer" GeneratedClassName="AudioVisualization">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Effects.AudioVisualizer" GeneratedClassName="AudioVisualization">
   <Profiles />
   <Settings>
     <Setting Name="Sensitivity" Type="System.Int32" Scope="User">
@@ -16,11 +14,14 @@
     <Setting Name="FadeSpeed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
-    <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF0000FF</Value>
+    <Setting Name="TopColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FFF90000</Value>
     </Setting>
-    <Setting Name="SecondaryColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF1E90FF</Value>
+    <Setting Name="MiddleColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FFFF761E</Value>
+    </Setting>
+    <Setting Name="BottomColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FF00DF00</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -7,116 +7,128 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
-             d:DesignHeight="475.61" d:DesignWidth="519.512">
+             d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-    <Grid Margin="15, 5, 15, 5">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="80" />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+        <Grid Margin="15, 5, 15, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="80" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
 
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-            <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
-                <Label.Content>
-                    <AccessText TextWrapping="Wrap"
-                                Text="Shows verious game states and events on the keyboard." />
-                </Label.Content>
-            </Label>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                              Style="{DynamicResource MetroCircleToggleButtonStyle}" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                    <Label.Content>
+                        <AccessText TextWrapping="Wrap"
+                                    Text="Shows verious game states and events on the keyboard." />
+                    </Label.Content>
+                </Label>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                    <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
 
-        <StackPanel Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2">
-            <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
-                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
-            <Grid>
-                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                         Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}"
-                         cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
-                <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
-                        HorizontalAlignment="Right" Width="25"
-                        Style="{DynamicResource SquareButtonStyle}" Height="25" />
-            </Grid>
-        </StackPanel>
-        <StackPanel Grid.Row="2"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
+                       FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
+                <Grid>
+                    <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                             Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}"
+                             cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
+                    <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                            HorizontalAlignment="Right" Width="25"
+                            Style="{DynamicResource SquareButtonStyle}" Height="25" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Ammo display -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="130" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Display ammo on F-keys
+            </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.AmmoEnabled, Mode=TwoWay}"
-                                   Header="Ammo display"
-                                   OnLabel="Yes" OffLabel="No"
-                                   Margin="5,3,0,0" Width="180" />
-        </StackPanel>
-        <StackPanel Grid.Row="3"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Ammo main color" Style="{DynamicResource DescriptionHeaderStyle}"
-                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="180" />
+                                   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Ammo main color -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="94" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Main ammo color
+            </TextBlock>
             <xctk:ColorPicker x:Name="MainColor"
                               SelectedColor="{Binding Path=CounterStrikeSettings.AmmoMainColor, Mode=TwoWay}"
-                              Margin="5,0,0,0" />
-        </StackPanel>
-        <StackPanel Grid.Row="3"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left">
-            <Label FontSize="16" Content="Ammo secondary color" Style="{DynamicResource DescriptionHeaderStyle}"
-                   FontFamily="Segoe UI Semibold" Foreground="#535353" Width="180" />
+                              Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Ammo secondary color -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="122" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Secondary ammo color
+            </TextBlock>
             <xctk:ColorPicker x:Name="SecondaryColor"
                               SelectedColor="{Binding Path=CounterStrikeSettings.AmmoSecondaryColor, Mode=TwoWay}"
-                              Margin="5,0,0,0" />
-        </StackPanel>
-        <StackPanel Grid.Row="4"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.SmokeEnabled, Mode=TwoWay}"
-                                   Header="Smoked effect"
-                                   OnLabel="Yes" OffLabel="No"
-                                   Margin="5,3,0,0" Width="180" />
-        </StackPanel>
-        <StackPanel Grid.Row="4"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left">
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.FlashEnabled, Mode=TwoWay}"
-                                   Header="Flashed effect"
-                                   OnLabel="Yes" OffLabel="No"
-                                   Margin="5,3,0,0" Width="180" />
-        </StackPanel>
-        <StackPanel Grid.Row="5"
-                    Grid.Column="0"
-                    HorizontalAlignment="Left">
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.TeamColorEnabled, Mode=TwoWay}"
-                                   Header="Team colors"
-                                   OnLabel="Yes" OffLabel="No"
-                                   Margin="5,3,0,0" Width="180" />
-        </StackPanel>
-        <StackPanel Grid.Row="5"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left">
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.LowHpEnabled, Mode=TwoWay}"
-                                   Header="Low HP effect"
-                                   OnLabel="Yes" OffLabel="No"
-                                   Margin="5,3,0,0" Width="180" />
-        </StackPanel>
+                              Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
-        <StackPanel Grid.Column="0" Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Bottom">
-            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
-                    Style="{DynamicResource SquareButtonStyle}" />
-            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0"
-                    Style="{DynamicResource SquareButtonStyle}" />
-        </StackPanel>
-    </Grid>
+            <!-- Smoke effect -->
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="116" VerticalAlignment="Center"
+                       Height="16" Margin="0,9,0,10">
+                Display smoked effect
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.SmokeEnabled, Mode=TwoWay}"
+                                   Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Flash effect -->
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="113" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Display flashed effect
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.FlashEnabled, Mode=TwoWay}"
+                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Team color -->
+            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="181" VerticalAlignment="Center"
+                       Height="16" Margin="0,9,0,10">
+                Color keyboard according to team
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.TeamColorEnabled, Mode=TwoWay}"
+                                   Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Team color -->
+            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="160" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Color keyboard red on low HP
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.LowHpEnabled, Mode=TwoWay}"
+                                   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Buttons -->
+            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
+                        Margin="10,0,0,0"
+                        Style="{DynamicResource SquareButtonStyle}" />
+            </StackPanel>
+        </Grid>
     </ScrollViewer>
 </UserControl>

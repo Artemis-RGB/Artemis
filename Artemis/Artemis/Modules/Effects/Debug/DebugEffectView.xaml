@@ -5,99 +5,92 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
-             d:DesignHeight="407.812" d:DesignWidth="671.484"
-             cal:Bind.AtDesignTime="True">
+             d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="320" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label FontSize="20"
-                       Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="20" MaxWidth="500" Style="{DynamicResource DescriptionHeaderStyle}"
+                       HorizontalAlignment="Left">
                     <Label.Content>
-                        <AccessText TextWrapping="Wrap" Text="A debug effect." />
+                        <AccessText TextWrapping="Wrap"
+                                    Text="A few debugging options, also lets you see what is being sent to the keyboard" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=EffectEnabled, Mode=OneWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left">
-                <Label FontSize="16" Content="Direction" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <ComboBox x:Name="RectangleTypes" Width="120" />
 
-            </StackPanel>
-            <StackPanel Grid.Row="2"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left">
-                <Label FontSize="16" Content="Width" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <Slider x:Name="Width"
-                        VerticalAlignment="top"
-                        HorizontalAlignment="Left"
-                        Width="132"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        Value="{Binding Path=DebugEffectSettings.Width, Mode=TwoWay}" Minimum="1" Maximum="84"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True" />
-            </StackPanel>
-            <StackPanel Grid.Row="2"
-                        Grid.Column="1"
-                        HorizontalAlignment="Left">
-                <Label FontSize="16" Content="Height" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <Slider x:Name="Height"
-                        VerticalAlignment="top"
-                        HorizontalAlignment="Left"
-                        Width="200"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        Value="{Binding Path=DebugEffectSettings.Height, Mode=TwoWay}" Minimum="0" Maximum="24"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True" />
-            </StackPanel>
-            <StackPanel Grid.Row="3"
-                        Grid.Column="1"
-                        HorizontalAlignment="Left">
-                <controls:ToggleSwitch IsChecked="{Binding Path=DebugEffectSettings.Rotate, Mode=TwoWay}"
-                                       Header="Rotate" OnLabel="Yes" OffLabel="No"
-                                       Margin="0 3 0 0" Width="125" />
-            </StackPanel>
-            <StackPanel Grid.Row="3"
-                        Grid.Column="0"
-                        HorizontalAlignment="Left">
-                <Label FontSize="16" Content="Spread" Style="{DynamicResource DescriptionHeaderStyle}"
-                       Foreground="#535353" FontFamily="Segoe UI Semibold" />
-                <Slider x:Name="Spread"
-                        VerticalAlignment="top"
-                        HorizontalAlignment="Left"
-                        Width="132"
-                        TickPlacement="BottomRight"
-                        TickFrequency="1"
-                        Value="{Binding Path=DebugEffectSettings.Spread, Mode=TwoWay}" Minimum="0" Maximum="5"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True" />
-            </StackPanel>
+            <!-- Direction -->
+            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Color gradient direction
+            </TextBlock>
+            <ComboBox Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right" VerticalAlignment="Center"
+                      x:Name="RectangleTypes" />
+
+            <!-- Width -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Debug-rectangle width
+            </TextBlock>
+            <Slider x:Name="Width" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Width, Mode=TwoWay}" Minimum="0" Maximum="84"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+
+            <!-- Height -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Debug-rectangle height
+            </TextBlock>
+            <Slider x:Name="Height" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Height, Mode=TwoWay}" Minimum="0" Maximum="24"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+
+            <!-- Scale -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Debug-rectangle scale (higher means more fluent)
+            </TextBlock>
+            <Slider x:Name="Scale" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
+                    Value="{Binding Path=DebugEffectSettings.Scale, Mode=TwoWay}" Minimum="1" Maximum="4"
+                    SmallChange="1" IsSnapToTickEnabled="True" />
+            
+            <!-- Color rotation -->
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,9,0,10">
+                Rotate colors on debug-rectangle
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=DebugEffectSettings.Rotate, Mode=TwoWay}"
+                                   Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
+                                   OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
             <!-- Preview panel -->
-            <StackPanel Grid.Column="1" Grid.Row="1">
+            <StackPanel Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Margin="0,25,0,0">
                 <TextBlock>
                     <InlineUIContainer>
                         <GroupBox Header="Preview" Margin="0" Height="70" Width="118">
@@ -108,6 +101,15 @@
                         </GroupBox>
                     </InlineUIContainer>
                 </TextBlock>
+            </StackPanel>
+            
+            <!-- Buttons -->
+            <StackPanel Grid.Column="0" Grid.Row="8" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
+                        Margin="10,0,0,0"
+                        Style="{DynamicResource SquareButtonStyle}" />
             </StackPanel>
         </Grid>
     </ScrollViewer>
