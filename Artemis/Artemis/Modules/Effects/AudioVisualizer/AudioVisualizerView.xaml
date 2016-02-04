@@ -27,7 +27,7 @@
 
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
                                     Text="Visualizes the default audio device on the keyboard." />

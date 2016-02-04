@@ -16,7 +16,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
                                     Text="Colors the keyboard according to the sign Gerald is using." />
@@ -30,7 +30,7 @@
             </StackPanel>
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="520" TextAlignment="Justify">
+                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
                 Note: Requires patch x.x. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).
             </TextBlock>
 

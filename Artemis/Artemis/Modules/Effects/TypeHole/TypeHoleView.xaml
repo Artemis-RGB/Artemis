@@ -22,8 +22,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-                <Label FontSize="20"
-                       Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
                                     Text="Creates holes in the keyboard's lightning as you press keys." />

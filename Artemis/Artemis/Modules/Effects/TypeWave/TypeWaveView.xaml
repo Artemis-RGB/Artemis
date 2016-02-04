@@ -28,17 +28,16 @@
 
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
-                        <AccessText TextWrapping="Wrap"
-                                    Text="Creates waves on the keyboard as you press keys." />
+                        <AccessText TextWrapping="Wrap" Text="Creates waves on the keyboard as you press keys." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" 
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}" />
                 </StackPanel>
             </StackPanel>
 
@@ -51,7 +50,7 @@
                               SelectedColor="{Binding Path=TypeWaveSettings.WaveColor, Mode=TwoWay}"
                               Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-            
+
             <!-- Random colors -->
             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
@@ -61,7 +60,7 @@
                                    Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
                                    OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
-            
+
             <!-- Shift color -->
             <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
@@ -81,7 +80,7 @@
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
                     Value="{Binding Path=TypeWaveSettings.ShiftColorSpeed, Mode=TwoWay}" Minimum="1" Maximum="200"
                     SmallChange="45" IsSnapToTickEnabled="True" />
-            
+
             <!-- TTL -->
             <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">

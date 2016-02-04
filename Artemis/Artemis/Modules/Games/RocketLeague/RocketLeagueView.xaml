@@ -22,7 +22,7 @@
 
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="20" Style="{DynamicResource DescriptionHeaderStyle}" HorizontalAlignment="Left">
+                <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
                                     Text="Shows your boost amount on the keyboard." />
@@ -57,13 +57,13 @@
 
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="520" TextAlignment="Justify">
+                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
                 Tip: To find a color combination you like, start an exhibition match, pickup 100 boost and play around with the colors.
                 They'll appear on your keyboard immediately! Once you're satisfied don't forget to click save changes.
             </TextBlock>
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="520" TextAlignment="Justify">
+                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
                 Note: Requires patch x.x. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).
             </TextBlock>
 
