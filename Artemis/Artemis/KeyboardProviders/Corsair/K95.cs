@@ -45,26 +45,35 @@ namespace Artemis.KeyboardProviders.Corsair
         /// </summary>
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
-        { 
-            RectangleF[,] ledRectangles = new RectangleF[bitmap.Width, bitmap.Height];
-            RectangleKeyGroup[,] ledGroups = new RectangleKeyGroup[bitmap.Width, bitmap.Height];
-            //_keyboard.Brush = new SolidColorBrush(Color.Black);
-            for (var x = 0 ; x < bitmap.Width; x++)
+        {
+            Bitmap resize = new Bitmap(bitmap, new Size((int)_keyboard.KeyboardRectangle.Width, (int)_keyboard.KeyboardRectangle.Height));
+            foreach (var item in _keyboard.Keys)
             {
-                for (var y = 0; y < bitmap.Height; y++)
-                {
-                    ledRectangles[x, y] = new RectangleF(_keyboard.KeyboardRectangle.X * (x*(_keyboard.KeyboardRectangle.Width / bitmap.Width / _keyboard.KeyboardRectangle.X)), _keyboard.KeyboardRectangle.Y*(y*(_keyboard.KeyboardRectangle.Height / bitmap.Height / _keyboard.KeyboardRectangle.Y)), _keyboard.KeyboardRectangle.Width / bitmap.Width, _keyboard.KeyboardRectangle.Height / bitmap.Height);
-                    ledGroups[x, y] = new RectangleKeyGroup(_keyboard, ledRectangles[x, y], 0.01f) { Brush = new SolidColorBrush(bitmap.GetPixel(x, y)) };
-                }  
+                item.Led.Color = resize.GetPixel((int)item.KeyRectangle.X, (int)item.KeyRectangle.Y);
             }
             _keyboard.Update();
-            for (var x = 0; x < bitmap.Width; x++)
+        }
+
+        /*
+        RectangleF[,] ledRectangles = new RectangleF[bitmap.Width, bitmap.Height];
+        RectangleKeyGroup[,] ledGroups = new RectangleKeyGroup[bitmap.Width, bitmap.Height];
+        //_keyboard.Brush = new SolidColorBrush(Color.Black);
+        for (var x = 0 ; x < bitmap.Width; x++)
+        {
+            for (var y = 0; y < bitmap.Height; y++)
             {
-                for (var y = 0; y < bitmap.Height; y++)
-                {
-                    _keyboard.DetachKeyGroup(ledGroups[x, y]);
-                }
+                ledRectangles[x, y] = new RectangleF(_keyboard.KeyboardRectangle.X * (x*(_keyboard.KeyboardRectangle.Width / bitmap.Width / _keyboard.KeyboardRectangle.X)), _keyboard.KeyboardRectangle.Y*(y*(_keyboard.KeyboardRectangle.Height / bitmap.Height / _keyboard.KeyboardRectangle.Y)), _keyboard.KeyboardRectangle.Width / bitmap.Width, _keyboard.KeyboardRectangle.Height / bitmap.Height);
+                ledGroups[x, y] = new RectangleKeyGroup(_keyboard, ledRectangles[x, y], 0.01f) { Brush = new SolidColorBrush(bitmap.GetPixel(x, y)) };
+            }  
+        }
+        _keyboard.Update();
+        for (var x = 0; x < bitmap.Width; x++)
+        {
+            for (var y = 0; y < bitmap.Height; y++)
+            {
+                _keyboard.DetachKeyGroup(ledGroups[x, y]);
             }
         }
+        */
     }
 }

@@ -32,7 +32,7 @@ namespace Artemis.Utilities.GameState
 
             _listener.Prefixes.Clear();
             Port = Settings.General.Default.GamestatePort;
-            _listener.Prefixes.Add($"http://127.0.0.1:{Port}/");
+            _listener.Prefixes.Add($"http://localhost:{Port}/");
 
             _listener.Start();
 
