@@ -13,13 +13,16 @@ Some of it's basic features:
 
 Currently the following games are supported:
 
- * Rocket League (Memory reading)
+ * Rocket League (Memory reading, we've had contact with Psyonix for a better solution)
  * The Witcher 3 (Memory reading)
  * Counter-Strike Global Offensive (Native Gamestate intergration)
 
 Support is planned for:
  * Dota 2 (Native Gamestate intergration)
  * Project CARS (Native memory sharing)
+ * What you happen to suggest!
+
+For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
 
 Currently the only supported keyboards are the Logitech G910 Orion Spark and Corsair K95 RGB, but progress is being made to support Razer as well.
 
