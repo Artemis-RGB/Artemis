@@ -28,6 +28,10 @@ Currently the only supported keyboards are the Logitech G910 Orion Spark and Cor
 
 For any keyboards/games/effects we'd love PRs!
 
+### Video
+A quick demo of Rocket League support in the old codebase (a better video demonstrating all functionality will be put up before release)
+
+[![RocketLeague](http://img.youtube.com/vi/L8rqFGaPeTg/0.jpg)](https://www.youtube.com/watch?v=L8rqFGaPeTg "Rocket League")
 ### Screenshots
 ![Screenshot 1](http://i.imgur.com/mq8i4ht.png)
 ![Screenshot 2](http://i.imgur.com/Z2RkiTE.png)
