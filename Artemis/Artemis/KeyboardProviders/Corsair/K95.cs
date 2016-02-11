@@ -1,10 +1,7 @@
 ﻿using System.Drawing;
 using CUE.NET;
-using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
-using CUE.NET.Brushes;
-using CUE.NET.Devices.Keyboard.Keys;
-using System;
+using Artemis.Utilities;
 
 namespace Artemis.KeyboardProviders.Corsair
 {
@@ -47,17 +44,16 @@ namespace Artemis.KeyboardProviders.Corsair
         public override void DrawBitmap(Bitmap bitmap)
         {
             //bitmap = new Bitmap(@"C:\Users\Hazard\Desktop\1920x1080.png");
-            Bitmap resize = new Bitmap(bitmap, new Size((int)_keyboard.KeyboardRectangle.Width, (int)_keyboard.KeyboardRectangle.Height));
-            foreach (var item in _keyboard.Keys)
+            using (
+                var resized = ImageUtilities.ResizeImage(bitmap, (int)_keyboard.KeyboardRectangle.Width,
+                    (int)_keyboard.KeyboardRectangle.Height))
             {
-                Color pixelColor = resize.GetPixel((int)item.KeyRectangle.X, (int)item.KeyRectangle.Y);
-                if (pixelColor.Name == "0")
+                foreach (var item in _keyboard.Keys)
                 {
-                    pixelColor = Color.Black;
+                    item.Led.Color = resized.GetPixel((int)item.KeyRectangle.X, (int)item.KeyRectangle.Y);
                 }
-                    item.Led.Color = pixelColor;
             }
-            _keyboard.Update();
+            _keyboard.Update(true);
         }
 
         /*

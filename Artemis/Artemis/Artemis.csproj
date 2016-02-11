@@ -259,6 +259,7 @@
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
+    <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
@@ -282,7 +283,7 @@
     <Compile Include="Views\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
     </Compile>
-	<Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
+    <Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
       <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\Debug\DebugEffectView.xaml.cs">
