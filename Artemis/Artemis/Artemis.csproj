@@ -360,7 +360,9 @@
     </None>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\playerWitcher.ws" />
+    <None Include="Resources\playerWitcher.txt" />
+    <None Include="Resources\artemis.txt" />
+    <Content Include="Resources\playerWitcher.ws" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
@@ -441,7 +443,7 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\artemis.xml" />
+    <Content Include="Resources\artemis.xml" />
     <Content Include="RzChromaSDK64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

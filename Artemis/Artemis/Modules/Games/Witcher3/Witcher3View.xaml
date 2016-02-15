@@ -9,9 +9,11 @@
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -28,12 +30,19 @@
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}" />
                 </StackPanel>
             </StackPanel>
-            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                        Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
-                Note: Requires patch x.x. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).
+                Artemis requires the latest Witcher 3 version and mod to be installed in order to work. If you don't use any (conflicting) Witcher 3 mods, the mod can automatically be installed.
             </TextBlock>
 
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
+                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
+                If you do use conflicting mods, we'll let you know what to do.
+            </TextBlock>
+            <Button Grid.Row="3" Grid.Column="0" x:Name="AutoInstall" Content="Try automatic mod install" Width="160"
+                        Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Left" Margin="0,20,0,0" />
         </Grid>
     </ScrollViewer>
 </UserControl>

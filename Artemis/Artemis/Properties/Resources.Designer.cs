@@ -104,12 +104,26 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to /***********************************************************************/
+        ////** 	© 2015 CD PROJEKT S.A. All rights reserved.
+        ////** 	THE WITCHER® is a trademark of CD PROJEKT S. A.
+        ////** 	The Witcher game is based on the prose of Andrzej Sapkowski.
+        ////***********************************************************************/
+        ///
+        ///
+        ///
+        ///
+        ///statemachine class W3PlayerWitcher extends CR4Player
+        ///{	
+        ///	
+        ///	private saved var craftingSchematics				: array&lt;name&gt;; 					
+        ///	
+        ///	
+        ///	private saved var alchemyRecipes 					: array&lt;name&gt;; [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static byte[] playerWitcher {
+        internal static string playerWitcher {
             get {
-                object obj = ResourceManager.GetObject("playerWitcher", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("playerWitcher", resourceCulture);
             }
         }
     }
