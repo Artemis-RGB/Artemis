@@ -197,6 +197,8 @@ namespace Artemis.Models
                     var process = MemoryHelpers.GetProcessIfRunning(effectModel.ProcessName);
                     if (process == null)
                         continue;
+                    if (process.HasExited)
+                        continue;
 
                     ChangeEffect(effectModel);
                     foundProcess = true;

@@ -92,7 +92,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
             if (device == null || SpectrumData == null)
                 return;
-
+            if (!SpectrumData.Any())
+                return;
+            
             // Start filling the model
             _generating = true;
 
