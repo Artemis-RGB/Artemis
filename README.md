@@ -40,8 +40,11 @@ A demo of The Witcher 3 support on the new codebase
 
 
 ### Screenshots
-![Screenshot 1](http://i.imgur.com/mq8i4ht.png)
-![Screenshot 2](http://i.imgur.com/Z2RkiTE.png)
+![Screenshot 1](http://i.imgur.com/7bho4WH.png)
+![Screenshot 2](http://i.imgur.com/X7LMaWr.png)
+![Screenshot 3](http://i.imgur.com/iSy4jfW.png)
+![Screenshot 4](http://i.imgur.com/P7WUsS6.png)
+![Screenshot 5](http://i.imgur.com/OqD1n7E.png)
 
 
 ### Thanks to:
