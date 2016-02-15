@@ -1,0 +1,44 @@
+﻿<Window x:Class="Artemis.Views.SystemTrayView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        Title="SystemTrayView" 
+        Height="0" Width="0"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Visibility="Hidden">
+
+    <Window.Resources>
+
+        <!-- NotifyIcon and related stuff here -->
+
+        <!-- The taskbar context menu -->
+        <!--
+        The "shared" directive is needed if we reopen the sample window a few times - WPF will otherwise
+        reuse the same context menu (which is a resource) again (which will have its DataContext set to the old TaskbarIcon)
+        -->
+        <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
+            <MenuItem Header="Show Artemis" cal:Message.Attach="ShowWindow" />
+            <MenuItem Header="Hide Artemis" cal:Message.Attach="HideWindow" />
+            <Separator />
+            <MenuItem Header="Disable all effects" cal:Message.Attach="DisableEffects" />
+            <MenuItem Header="Exit" cal:Message.Attach="ExitApplication" />
+        </ContextMenu>
+
+        <!-- the application main system tray icon -->
+        <tb:TaskbarIcon x:Key="SystemTrayIcon"
+                        IconSource="../logo.ico"
+                        ToolTipText="Artemis"
+                        cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
+                        ContextMenu="{StaticResource MainSysTrayMenu}" />
+
+    </Window.Resources>
+
+    <Grid>
+        <TextBlock>View + ViewModel started from bootstrapper. This should not be visible.</TextBlock>
+        <ContentControl Content="{StaticResource SystemTrayIcon}" />
+    </Grid>
+</Window>

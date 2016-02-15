@@ -7,7 +7,7 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels
 {
-    internal sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
+    public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
         public ShellViewModel()
         {
