@@ -8,6 +8,7 @@ using Artemis.Modules.Games.RocketLeague;
 using Artemis.Settings;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.Memory;
+using Binarysharp.MemoryManagement;
 using MyMemory;
 using Newtonsoft.Json;
 
@@ -15,10 +16,11 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3Model : GameModel
     {
-        private KeyboardRectangle _signRect;
         private IntPtr _baseAddress;
         private GamePointersCollectionModel _pointer;
         private RemoteProcess _process;
+        private KeyboardRectangle _signRect;
+        private MemorySharp _mem;
 
         public Witcher3Model(MainModel mainModel, RocketLeagueSettings settings) : base(mainModel)
         {
@@ -33,6 +35,7 @@ namespace Artemis.Modules.Games.Witcher3
         {
             return true;
         }
+
         public override void Dispose()
         {
             _process = null;
@@ -40,7 +43,8 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
-            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(), LinearGradientMode.Horizontal)
+            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
+                LinearGradientMode.Horizontal)
             {
                 Rotate = true,
                 LoopSpeed = 0.5
@@ -52,6 +56,7 @@ namespace Artemis.Modules.Games.Witcher3
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _baseAddress = tempProcess.MainModule.BaseAddress;
             _process = new RemoteProcess((uint) tempProcess.Id);
+            _mem = new MemorySharp(tempProcess);
         }
 
         public override void Update()
@@ -64,6 +69,14 @@ namespace Artemis.Modules.Games.Witcher3
                 _pointer.GameAddresses.First(ga => ga.Description == "Sign").BasePointer,
                 _pointer.GameAddresses.First(ga => ga.Description == "Sign").Offsets);
 
+            var test =
+                _mem.Modules.MainModule.FindPattern(
+                    new byte[]
+                    {
+                        0x88, 0x07, 0x48, 0x8B, 0x5C, 0x24, 0x30, 0x48, 0x83, 0xC4, 0x20, 0x5F, 0xC3, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xC2, 0x00, 0x00, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0x48
+                    },
+                    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", 0, true);
+            var tessst = _process.MemoryManager.Read<byte>(test.Address);
             var result = _process.MemoryManager.Read<byte>(addr);
 
             switch (result)

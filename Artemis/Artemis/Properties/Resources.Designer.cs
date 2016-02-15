@@ -61,9 +61,26 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
+        ///&lt;!-- Used by Artemis to get the active Sign --&gt;
+        ///&lt;UserConfig&gt;
+        ///	&lt;Group id=&quot;Artemis&quot; displayName=&quot;Artemis&quot;&gt;
+        ///		&lt;VisibleVars&gt;
+        ///			&lt;Var id=&quot;ActiveSign&quot; displayName=&quot;ActiveSign&quot; displayType=&quot;SLIDER:0:1:1000000&quot;/&gt;
+        ///		&lt;/VisibleVars&gt;
+        ///	&lt;/Group&gt;
+        ///&lt;/UserConfig&gt;.
+        /// </summary>
+        internal static string artemis {
+            get {
+                return ResourceManager.GetString("artemis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
-        /// &quot;uri&quot; &quot;{{address}}/csgo_game_event&quot;
+        /// &quot;uri&quot; &quot;http://127.0.0.1:{{port}}/csgo_game_event&quot;
         /// &quot;timeout&quot; &quot;5.0&quot;
         /// &quot;buffer&quot;  &quot;0.1&quot;
         /// &quot;throttle&quot; &quot;0.1&quot;
@@ -83,6 +100,16 @@ namespace Artemis.Properties {
         internal static string gamestateConfigFileCsGo {
             get {
                 return ResourceManager.GetString("gamestateConfigFileCsGo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] playerWitcher {
+            get {
+                object obj = ResourceManager.GetObject("playerWitcher", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

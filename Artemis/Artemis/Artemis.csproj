@@ -23,6 +23,8 @@
     <SccProvider>
     </SccProvider>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>C:\Users\spoin\Desktop\Artemis builds\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -38,8 +40,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -100,6 +100,9 @@
     <Reference Include="MahApps.Metro, Version=1.3.0.17, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.3.0-ALPHA017\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="MemorySharp">
+      <HintPath>E:\Downloads\Chome Downloads\MemorySharp-master\MemorySharp-master\MemorySharp\bin\Release\MemorySharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -363,6 +366,7 @@
     <None Include="MyMemory-x64.dll" />
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\playerWitcher.ws" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
@@ -443,6 +447,7 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\artemis.xml" />
     <Content Include="RzChromaSDK64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
