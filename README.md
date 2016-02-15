@@ -13,13 +13,13 @@ Some of it's basic features:
 
 Currently the following games are supported:
 
- * Rocket League (Memory reading, we've had contact with Psyonix for a better solution)
- * The Witcher 3 (Memory reading)
- * Counter-Strike Global Offensive (Native Gamestate intergration)
+ * Rocket League (uses memory reading for now, we've had contact with Psyonix for a better solution)
+ * The Witcher 3 (uses a mod)
+ * Counter-Strike Global Offensive (uses native gamestate intergration)
 
 Support is planned for:
- * Dota 2 (Native Gamestate intergration)
- * Project CARS (Native memory sharing)
+ * Dota 2 (using native gamestate intergration))
+ * Project CARS (using native memory sharing)
  * What you happen to suggest!
 
 For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
@@ -30,8 +30,11 @@ For any keyboards/games/effects we'd love PRs!
 
 ### Video
 A quick demo of Rocket League support in the old codebase (a better video demonstrating all functionality will be put up before release)
-
 [![RocketLeague](http://img.youtube.com/vi/L8rqFGaPeTg/0.jpg)](https://www.youtube.com/watch?v=L8rqFGaPeTg "Rocket League")
+
+A demo of The Witcher 3 support on the new codebase
+[![Witcher3](http://img.youtube.com/vi/H03D_y2cFYs/0.jpg)](https://www.youtube.com/watch?v=H03D_y2cFYs "The Witcher 3")
+
 ### Screenshots
 ![Screenshot 1](http://i.imgur.com/mq8i4ht.png)
 ![Screenshot 2](http://i.imgur.com/Z2RkiTE.png)
