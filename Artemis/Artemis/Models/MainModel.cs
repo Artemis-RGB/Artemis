@@ -8,6 +8,7 @@ using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
 using Artemis.Utilities.GameState;
+using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.Memory;
 using Caliburn.Micro;
 
@@ -23,6 +24,7 @@ namespace Artemis.Models
             EffectModels = new List<EffectModel>();
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
             GameStateWebServer = new GameStateWebServer();
+            KeyboardHook = new KeyboardHook();
 
             Events = events;
             Fps = 25;
@@ -32,6 +34,8 @@ namespace Artemis.Models
             _updateWorker.DoWork += UpdateWorker_DoWork;
             _processWorker.DoWork += ProcessWorker_DoWork;
         }
+
+        public KeyboardHook KeyboardHook { get; set; }
 
         public EffectModel ActiveEffect { get; set; }
         public KeyboardProvider ActiveKeyboard { get; set; }

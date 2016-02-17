@@ -7,65 +7,66 @@ using System.Windows.Forms;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 using Artemis.Models;
 using Artemis.Utilities;
-using Open.WinKeyboardHook;
+using Gma.System.MouseKeyHook;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
     public class TypeWaveModel : EffectModel
     {
+        private readonly List<Wave> _waves;
+        private Color _randomColor;
+
         public TypeWaveModel(MainModel mainModel, TypeWaveSettings settings) : base(mainModel)
         {
             Name = "TypeWave";
-            Waves = new List<Wave>();
+            _waves = new List<Wave>();
+            _randomColor = Color.Red;
             Settings = settings;
-
-            // KeyboardIntercepter won't start untill the effect is active
-            KeyboardInterceptor = new KeyboardInterceptor();
         }
 
         public TypeWaveSettings Settings { get; set; }
-        public List<Wave> Waves { get; set; }
-        public KeyboardInterceptor KeyboardInterceptor { get; set; }
 
         public override void Dispose()
         {
-            KeyboardInterceptor.KeyUp -= HandleKeypress;
-            KeyboardInterceptor.StopCapturing();
+            MainModel.KeyboardHook.Unsubscribe(HandleKeypress);
         }
 
         public override void Enable()
         {
-            KeyboardInterceptor.StartCapturing();
-            KeyboardInterceptor.KeyUp += HandleKeypress;
+            // Listener won't start unless the effect is active
+            MainModel.KeyboardHook.Subscribe(HandleKeypress);
         }
 
         public override void Update()
         {
-            for (var i = 0; i < Waves.Count; i++)
+            if (Settings.IsRandomColors)
+                _randomColor = ColorHelpers.ShiftColor(_randomColor, 25);
+
+            for (var i = 0; i < _waves.Count; i++)
             {
                 // TODO: Get from settings
                 var fps = 25;
 
-                Waves[i].Size += Settings.SpreadSpeed;
+                _waves[i].Size += Settings.SpreadSpeed;
 
                 if (Settings.IsShiftColors)
-                    Waves[i].Color = ColorHelpers.ShiftColor(Waves[i].Color, Settings.ShiftColorSpeed);
+                    _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
 
                 var decreaseAmount = 255/(Settings.TimeToLive/fps);
-                Waves[i].Color = Color.FromArgb(Waves[i].Color.A - decreaseAmount, Waves[i].Color.R, Waves[i].Color.G,
-                    Waves[i].Color.B);
+                _waves[i].Color = Color.FromArgb(_waves[i].Color.A - decreaseAmount, _waves[i].Color.R, _waves[i].Color.G,
+                    _waves[i].Color.B);
 
-                if (Waves[i].Color.A >= decreaseAmount)
+                if (_waves[i].Color.A >= decreaseAmount)
                     continue;
 
-                Waves.RemoveAt(i);
+                _waves.RemoveAt(i);
                 i--;
             }
         }
 
         public override Bitmap GenerateBitmap()
         {
-            if (Waves.Count == 0)
+            if (_waves.Count == 0)
                 return null;
 
             var bitmap = new Bitmap(21, 6);
@@ -78,17 +79,17 @@ namespace Artemis.Modules.Effects.TypeWave
 
                 // Don't want a foreach, collection is changed in different thread
                 // ReSharper disable once ForCanBeConvertedToForeach
-                for (var i = 0; i < Waves.Count; i++)
+                for (var i = 0; i < _waves.Count; i++)
                 {
-                    if (Waves[i].Size == 0)
+                    if (_waves[i].Size == 0)
                         continue;
                     var path = new GraphicsPath();
-                    path.AddEllipse(Waves[i].Point.X - Waves[i].Size/2, Waves[i].Point.Y - Waves[i].Size/2,
-                        Waves[i].Size, Waves[i].Size);
+                    path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
+                        _waves[i].Size, _waves[i].Size);
 
                     var pthGrBrush = new PathGradientBrush(path)
                     {
-                        SurroundColors = new[] {Waves[i].Color},
+                        SurroundColors = new[] {_waves[i].Color},
                         CenterColor = Color.Transparent
                     };
 
@@ -96,8 +97,8 @@ namespace Artemis.Modules.Effects.TypeWave
                     pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
 
                     g.FillPath(pthGrBrush, path);
-                    g.DrawEllipse(new Pen(pthGrBrush, 1), Waves[i].Point.X - Waves[i].Size/2,
-                        Waves[i].Point.Y - Waves[i].Size/2, Waves[i].Size, Waves[i].Size);
+                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
+                        _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
                 }
             }
             return bitmap;
@@ -114,8 +115,8 @@ namespace Artemis.Modules.Effects.TypeWave
             if (keyMatch == null)
                 return;
 
-            Waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0, ColorHelpers.GetRandomRainbowColor())
+            _waves.Add(Settings.IsRandomColors
+                ? new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0, _randomColor)
                 : new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0,
                     ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }

@@ -3,21 +3,19 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.Models;
+using Gma.System.MouseKeyHook;
 using NAudio.CoreAudioApi;
-using Open.WinKeyboardHook;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
+        private IKeyboardMouseEvents _mGlobalHook;
+
         public VolumeDisplayModel(MainModel mainModel, VolumeDisplaySettings settings) : base(mainModel)
         {
             Settings = settings;
             Name = "VolumeDisplay";
-
-            KeyboardInterceptor = new KeyboardInterceptor();
-            KeyboardInterceptor.StartCapturing();
-
             Enabled = Settings.Enabled;
 
             VolumeDisplay = new VolumeDisplay(mainModel, settings);
@@ -26,18 +24,16 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         public VolumeDisplay VolumeDisplay { get; set; }
 
         public VolumeDisplaySettings Settings { get; set; }
-        public KeyboardInterceptor KeyboardInterceptor { get; set; }
 
         public override void Dispose()
         {
-            KeyboardInterceptor.KeyUp -= HandleKeypress;
-            KeyboardInterceptor.StopCapturing();
+            MainModel.KeyboardHook.Unsubscribe(HandleKeypress);
         }
 
         public override void Enable()
         {
-            KeyboardInterceptor.StartCapturing();
-            KeyboardInterceptor.KeyUp += HandleKeypress;
+            // Listener won't start unless the effect is active
+            MainModel.KeyboardHook.Subscribe(HandleKeypress);
         }
 
         public override void Update()
