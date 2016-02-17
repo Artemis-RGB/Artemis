@@ -37,7 +37,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public void ToggleEffect()
         {
-            VolumeDisplayModel.Enabled = VolumeDisplaySettings.Enabled;
+            VolumeDisplayModel.Enabled = _volumeDisplaySettings.Enabled;
         }
 
         public void SaveSettings()

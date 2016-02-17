@@ -10,8 +10,6 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        private IKeyboardMouseEvents _mGlobalHook;
-
         public VolumeDisplayModel(MainModel mainModel, VolumeDisplaySettings settings) : base(mainModel)
         {
             Settings = settings;

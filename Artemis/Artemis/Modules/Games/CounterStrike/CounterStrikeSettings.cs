@@ -22,7 +22,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public bool SmokeEnabled { get; set; }
         public bool LowHpEnabled { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             Enabled = CounterStrike.Default.Enabled;
             GameDirectory = CounterStrike.Default.GameDirectory;
@@ -37,7 +37,7 @@ namespace Artemis.Modules.Games.CounterStrike
             LowHpEnabled = CounterStrike.Default.LowHpEnabled;
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
             CounterStrike.Default.Enabled = Enabled;
             CounterStrike.Default.GameDirectory = GameDirectory;
@@ -54,7 +54,7 @@ namespace Artemis.Modules.Games.CounterStrike
             CounterStrike.Default.Save();
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             Enabled = true;
             GameDirectory = string.Empty;

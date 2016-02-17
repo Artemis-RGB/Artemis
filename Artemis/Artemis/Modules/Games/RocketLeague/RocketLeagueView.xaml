@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -31,7 +32,9 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}" />
+                                  IsChecked="{Binding Path=RocketLeagueSettings.Enabled, Mode=TwoWay}"
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
 

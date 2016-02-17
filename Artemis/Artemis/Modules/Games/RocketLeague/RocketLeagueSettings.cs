@@ -14,14 +14,14 @@ namespace Artemis.Modules.Games.RocketLeague
         public Color MainColor { get; set; }
         public Color SecondaryColor { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             Enabled = RocketLeague.Default.Enabled;
             MainColor = RocketLeague.Default.MainColor;
             SecondaryColor = RocketLeague.Default.SecondaryColor;
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
             RocketLeague.Default.Enabled = Enabled;
             RocketLeague.Default.MainColor = MainColor;
@@ -30,7 +30,7 @@ namespace Artemis.Modules.Games.RocketLeague
             RocketLeague.Default.Save();
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             Enabled = true;
             MainColor = Color.FromArgb(255, 255, 80, 0);

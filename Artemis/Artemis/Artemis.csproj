@@ -232,6 +232,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

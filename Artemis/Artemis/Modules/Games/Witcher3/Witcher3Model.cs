@@ -6,7 +6,6 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text.RegularExpressions;
 using Artemis.Models;
-using Artemis.Modules.Games.RocketLeague;
 using Artemis.Utilities.Keyboard;
 
 namespace Artemis.Modules.Games.Witcher3
@@ -18,22 +17,21 @@ namespace Artemis.Modules.Games.Witcher3
         private KeyboardRectangle _signRect;
         private string _witcherSettings;
 
-        public Witcher3Model(MainModel mainModel, RocketLeagueSettings settings) : base(mainModel)
+        public Witcher3Model(MainModel mainModel, Witcher3Settings settings) : base(mainModel)
         {
+            Settings = settings;
             Name = "Witcher3";
             ProcessName = "witcher3";
             Scale = 4;
+            Enabled = Settings.Enabled;
 
             _updateSw = new Stopwatch();
             _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
         }
 
-        public int Scale { get; set; }
+        public Witcher3Settings Settings { get; set; }
 
-        public override bool Enabled()
-        {
-            return true; // TODO
-        }
+        public int Scale { get; set; }
 
         public override void Dispose()
         {

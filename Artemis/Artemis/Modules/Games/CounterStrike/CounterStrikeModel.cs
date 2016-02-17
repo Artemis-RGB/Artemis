@@ -14,15 +14,16 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        private readonly CounterStrikeSettings _settings;
-
         public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings settings) : base(mainModel)
         {
-            _settings = settings;
+            Settings = settings;
             Name = "CounterStrike";
             ProcessName = "csgo";
             Scale = 4;
+            Enabled = Settings.Enabled;
         }
+
+        public CounterStrikeSettings Settings { get; set; }
 
         public KeyboardRectangle EventRect { get; set; }
         public KeyboardRectangle TeamRect { get; set; }
@@ -33,11 +34,6 @@ namespace Artemis.Modules.Games.CounterStrike
         public bool DrawingFlash { get; set; }
 
         public int Scale { get; set; }
-
-        public override bool Enabled()
-        {
-            return _settings.Enabled;
-        }
 
         public override void Dispose()
         {
@@ -50,9 +46,9 @@ namespace Artemis.Modules.Games.CounterStrike
             AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
             TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
+                LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
             EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = (MainModel.ActiveKeyboard.Height*Scale) - Scale};
+                LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
             MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 
@@ -61,15 +57,15 @@ namespace Artemis.Modules.Games.CounterStrike
             if (CsJson == null)
                 return;
 
-            if (_settings.AmmoEnabled)
+            if (Settings.AmmoEnabled)
                 UpdateAmmo();
-            if (_settings.TeamColorEnabled)
+            if (Settings.TeamColorEnabled)
                 UpdateTeam();
-            if (_settings.LowHpEnabled)
+            if (Settings.LowHpEnabled)
                 UpdateHealth();
-            if (_settings.FlashEnabled)
+            if (Settings.FlashEnabled)
                 UpdateFlash();
-            if (_settings.SmokeEnabled)
+            if (Settings.SmokeEnabled)
                 UpdateSmoke();
         }
 
@@ -82,7 +78,7 @@ namespace Artemis.Modules.Games.CounterStrike
             if (health > 25 || health < 1)
                 return;
 
-            TeamRect.Colors = new List<Color> {Color.Red, Color.OrangeRed, Color.Red, Color.OrangeRed };
+            TeamRect.Colors = new List<Color> {Color.Red, Color.OrangeRed, Color.Red, Color.OrangeRed};
         }
 
         private void UpdateSmoke()
@@ -93,9 +89,9 @@ namespace Artemis.Modules.Games.CounterStrike
             var smoked = CsJson["player"]["state"]["smoked"].Value<int>();
             if (smoked == 0 && !DrawingSmoke)
                 return;
-            
+
             EventRect.Colors = new List<Color> {Color.FromArgb(smoked, 255, 255, 255)};
-            DrawingSmoke = (smoked != 0);
+            DrawingSmoke = smoked != 0;
         }
 
         private void UpdateFlash()
@@ -108,7 +104,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             EventRect.Colors = new List<Color> {Color.FromArgb(flashed, 255, 255, 255)};
-            DrawingFlash = (flashed != 0);
+            DrawingFlash = flashed != 0;
         }
 
         private void UpdateTeam()
@@ -150,11 +146,11 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
-            AmmoRect.Width = ((int) Math.Floor((16/100.00)*ammoPercentage))*Scale;
+            AmmoRect.Width = (int) Math.Floor(16/100.00*ammoPercentage)*Scale;
             AmmoRect.Colors = new List<Color>
             {
-                ColorHelpers.ToDrawingColor(_settings.AmmoMainColor),
-                ColorHelpers.ToDrawingColor(_settings.AmmoSecondaryColor)
+                ColorHelpers.ToDrawingColor(Settings.AmmoMainColor),
+                ColorHelpers.ToDrawingColor(Settings.AmmoSecondaryColor)
             };
 
             // Low ammo indicator

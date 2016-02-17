@@ -111,7 +111,7 @@ namespace Artemis.Models
             // Game models are only used if they are enabled
             var gameModel = effectModel as GameModel;
             if (gameModel != null)
-                if (!gameModel.Enabled())
+                if (!gameModel.Enabled)
                     return;
 
             if (ActiveEffect != null && effectModel.Name == ActiveEffect.Name)
@@ -204,8 +204,15 @@ namespace Artemis.Models
                     if (process.HasExited)
                         continue;
 
-                    ChangeEffect(effectModel);
-                    foundProcess = true;
+                    // If the active effect is a disabled game model, disable it
+                    var model = ActiveEffect as GameModel;
+                    if (model != null && !model.Enabled)
+                        LoadLastEffect();
+                    else
+                    {
+                        ChangeEffect(effectModel);
+                        foundProcess = true;
+                    }
                 }
 
                 // If no game process is found, but the active effect still belongs to a game,

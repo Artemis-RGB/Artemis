@@ -37,7 +37,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             },
                 LinearGradientMode.Horizontal)
             {
-                Width = (int) ((MainModel.ActiveKeyboard.Width/100.00)*Volume)*Scale,
+                Width = (int) ((MainModel.ActiveKeyboard.Width * Scale / 100.00)*Volume),
                 ContainedBrush = false
             };
             volumeRect.Draw(g);
