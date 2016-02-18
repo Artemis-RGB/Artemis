@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -145,12 +144,11 @@ namespace Artemis.Utilities.Keyboard
             if (Rotate)
                 rect = ContainedBrush
                     ? new Rectangle((int) _rotationProgress, Y, Width*2, Height*2)
-                    : new Rectangle((int) _rotationProgress, 0, (_keyboard.Width*Scale)*2, (_keyboard.Height*Scale)*2);
+                    : new Rectangle((int) _rotationProgress, 0, _keyboard.Width*Scale*2, _keyboard.Height*Scale*2);
             else
                 rect = ContainedBrush
                     ? new Rectangle(X, Y, Width, Height)
-                    : new Rectangle(0, 0, (_keyboard.Width*Scale), (_keyboard.Height*Scale));
-
+                    : new Rectangle(0, 0, _keyboard.Width*Scale, _keyboard.Height*Scale);
 
             return new LinearGradientBrush(rect, Color.Transparent, Color.Transparent, GradientMode)
             {
@@ -160,6 +158,8 @@ namespace Artemis.Utilities.Keyboard
 
         private ColorBlend CreateColorBlend()
         {
+            if (Colors.Count == 1)
+                return new ColorBlend { Colors = new []{Colors[0], Colors[0]}, Positions = new []{0F, 1F}};
             var colorBlend = Rotate
                 ? new ColorBlend {Colors = CreateTilebleColors(Colors).ToArray()}
                 : new ColorBlend {Colors = Colors.ToArray()};

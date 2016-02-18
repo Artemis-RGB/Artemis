@@ -9,16 +9,20 @@ namespace Artemis.ViewModels
 {
     public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
+        private readonly EffectsViewModel _effectsVm;
+        private readonly GamesViewModel _gamesVm;
+        private readonly OverlaysViewModel _overlaysVm;
+
         public ShellViewModel()
         {
             IEventAggregator events = new EventAggregator();
             MainModel = new MainModel(events);
-
             DisplayName = "Artemis";
 
-            ActivateItem(new EffectsViewModel(MainModel) {DisplayName = "Effects"});
-            ActivateItem(new GamesViewModel(MainModel) {DisplayName = "Games"});
-            ActivateItem(new OverlaysViewModel(MainModel) {DisplayName = "Overlays"});
+            _effectsVm = new EffectsViewModel(MainModel) {DisplayName = "Effects"};
+            _gamesVm = new GamesViewModel(MainModel) { DisplayName = "Games" };
+            _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
+            
             Flyouts.Add(new FlyoutSettingsViewModel());
 
             // By now Effects are added to the MainModel so we can savely start one
@@ -27,6 +31,15 @@ namespace Artemis.ViewModels
 
         public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; } =
             new BindableCollection<FlyoutBaseViewModel>();
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            ActivateItem(_effectsVm);
+            ActivateItem(_gamesVm);
+            ActivateItem(_overlaysVm);
+        }
 
         public bool EffectsEnabled
         {

@@ -23,7 +23,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
 
             </Grid.RowDefinitions>
@@ -101,28 +100,8 @@
                     Value="{Binding Path=TypeWaveSettings.SpreadSpeed, Mode=TwoWay}" Minimum="1" Maximum="6"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
-            <!-- Sensitivity -->
-            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Volume sensitivity multiplier
-            </TextBlock>
-            <Slider x:Name="Sensitivity" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"
-                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.Sensitivity, Mode=TwoWay}" Minimum="1" Maximum="10"
-                    SmallChange="1" IsSnapToTickEnabled="True" />
-
-            <!-- Fade speed -->
-            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Bar fade-out speed
-            </TextBlock>
-            <Slider x:Name="FadeSpeed" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center"
-                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="3"
-                    SmallChange="1" IsSnapToTickEnabled="True" />
-
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="7" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

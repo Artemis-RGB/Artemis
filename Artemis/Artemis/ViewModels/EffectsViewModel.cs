@@ -9,12 +9,27 @@ namespace Artemis.ViewModels
 {
     public class EffectsViewModel : Conductor<IScreen>.Collection.OneActive
     {
+        private readonly TypeWaveViewModel _typeWaveVm;
+        private readonly TypeHoleViewModel _typeHoleVm;
+        private readonly AudioVisualizerViewModel _audioVisualizerVm;
+        private readonly DebugEffectViewModel _debugVm;
+
         public EffectsViewModel(MainModel mainModel)
         {
-            ActivateItem(new TypeWaveViewModel(mainModel) {DisplayName = "Type Waves"});
-            ActivateItem(new TypeHoleViewModel(mainModel) {DisplayName = "Type Holes (NYI)"});
-            ActivateItem(new AudioVisualizerViewModel(mainModel) {DisplayName = "Audio Visualization"});
-            ActivateItem(new DebugEffectViewModel(mainModel) {DisplayName = "Debug Effect"});
+            _typeWaveVm = new TypeWaveViewModel(mainModel) {DisplayName = "Type Waves"};
+            _typeHoleVm = new TypeHoleViewModel(mainModel) { DisplayName = "Type Holes (NYI)" };
+            _audioVisualizerVm = new AudioVisualizerViewModel(mainModel) { DisplayName = "Audio Visualization" };
+            _debugVm = new DebugEffectViewModel(mainModel) { DisplayName = "Debug Effect" };
+        }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            ActivateItem(_typeWaveVm);
+            ActivateItem(_typeHoleVm);
+            ActivateItem(_audioVisualizerVm);
+            ActivateItem(_debugVm);
         }
     }
 }

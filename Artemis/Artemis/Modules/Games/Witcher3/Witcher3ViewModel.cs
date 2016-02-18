@@ -114,9 +114,9 @@ namespace Artemis.Modules.Games.Witcher3
 
             // Install the mod files
             File.WriteAllText(dialog.SelectedPath + @"\bin\config\r4game\user_config_matrix\pc\artemis.xml",
-                Resources.artemis);
+                Resources.artemisXml);
             File.WriteAllText(dialog.SelectedPath + @"\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",
-                Resources.playerWitcher);
+                Resources.playerWitcherWs);
 
             MessageBox.Show("The mod was successfully installed!", "Success");
         }

@@ -111,6 +111,10 @@ namespace Artemis.Modules.Effects.TypeWave
 
         private void KeyPressTask(KeyEventArgs e)
         {
+            // More than 25 waves is pointless
+            if (_waves.Count >= 25)
+                return;
+            
             var keyMatch = KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == e.KeyCode);
             if (keyMatch == null)
                 return;

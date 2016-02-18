@@ -21,6 +21,8 @@ namespace Artemis.ViewModels
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
+
+            // TODO: Check if show on startup is enabled, if so, show window.
         }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
@@ -37,6 +39,9 @@ namespace Artemis.ViewModels
 
         public void ShowWindow()
         {
+            if (!CanShowWindow)
+                return;
+
             // manually show the next window view-model
             _windowManager.ShowWindow(_shellViewModel);
 
@@ -46,6 +51,9 @@ namespace Artemis.ViewModels
 
         public void HideWindow()
         {
+            if (!CanHideWindow)
+                return;
+
             _shellViewModel.TryClose();
 
             NotifyOfPropertyChange(() => CanShowWindow);

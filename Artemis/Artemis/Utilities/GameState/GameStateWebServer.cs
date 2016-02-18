@@ -73,15 +73,6 @@ namespace Artemis.Utilities.GameState
             });
 
             Running = true;
-
-            // Create and store JSON file (Could serialize an object but not worth it)
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) +
-                       @"\SteelSeries\SteelSeries Engine 3";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var content = "{\"address\":\"127.0.0.1:" + Port + "\"}";
-            File.WriteAllText(path + @"\coreProps.json", content);
         }
 
         private string HandleRequest(HttpListenerRequest request)

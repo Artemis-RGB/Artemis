@@ -13,13 +13,6 @@
 
     <Window.Resources>
 
-        <!-- NotifyIcon and related stuff here -->
-
-        <!-- The taskbar context menu -->
-        <!--
-        The "shared" directive is needed if we reopen the sample window a few times - WPF will otherwise
-        reuse the same context menu (which is a resource) again (which will have its DataContext set to the old TaskbarIcon)
-        -->
         <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
             <MenuItem Header="Show Artemis" cal:Message.Attach="ShowWindow" />
             <MenuItem Header="Hide Artemis" cal:Message.Attach="HideWindow" />
@@ -38,7 +31,6 @@
     </Window.Resources>
 
     <Grid>
-        <TextBlock>View + ViewModel started from bootstrapper. This should not be visible.</TextBlock>
         <ContentControl Content="{StaticResource SystemTrayIcon}" />
     </Grid>
 </Window>

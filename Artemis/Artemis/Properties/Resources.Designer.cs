@@ -71,16 +71,26 @@ namespace Artemis.Properties {
         ///	&lt;/Group&gt;
         ///&lt;/UserConfig&gt;.
         /// </summary>
-        internal static string artemis {
+        internal static string artemisXml {
             get {
-                return ResourceManager.GetString("artemis", resourceCulture);
+                return ResourceManager.GetString("artemisXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap bow {
+            get {
+                object obj = ResourceManager.GetObject("bow", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
-        /// &quot;uri&quot; &quot;http://127.0.0.1:{{port}}/csgo_game_event&quot;
+        /// &quot;uri&quot; &quot;http://localhost:{{port}}/csgo_game_event&quot;
         /// &quot;timeout&quot; &quot;5.0&quot;
         /// &quot;buffer&quot;  &quot;0.1&quot;
         /// &quot;throttle&quot; &quot;0.1&quot;
@@ -97,9 +107,9 @@ namespace Artemis.Properties {
         /// }
         ///}.
         /// </summary>
-        internal static string gamestateConfigFileCsGo {
+        internal static string gamestateConfiguration {
             get {
-                return ResourceManager.GetString("gamestateConfigFileCsGo", resourceCulture);
+                return ResourceManager.GetString("gamestateConfiguration", resourceCulture);
             }
         }
         
@@ -121,9 +131,9 @@ namespace Artemis.Properties {
         ///	
         ///	private saved var alchemyRecipes 					: array&lt;name&gt;; [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string playerWitcher {
+        internal static string playerWitcherWs {
             get {
-                return ResourceManager.GetString("playerWitcher", resourceCulture);
+                return ResourceManager.GetString("playerWitcherWs", resourceCulture);
             }
         }
     }

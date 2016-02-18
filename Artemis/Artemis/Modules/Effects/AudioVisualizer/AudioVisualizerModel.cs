@@ -83,6 +83,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Update()
         {
+            // Start filling the model
+            _generating = true;
+
             if (SelectedDeviceId == null)
                 return;
 
@@ -94,9 +97,6 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 return;
             if (!SpectrumData.Any())
                 return;
-            
-            // Start filling the model
-            _generating = true;
 
             // Parse spectrum data
             for (var i = 0; i < Lines; i++)
@@ -126,7 +126,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override Bitmap GenerateBitmap()
         {
-            if (SpectrumData == null)
+            if (SpectrumData == null || SoundRectangles == null)
                 return null;
 
             // Lock the _spectrumData array while busy with it
