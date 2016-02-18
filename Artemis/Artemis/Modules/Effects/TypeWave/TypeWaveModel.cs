@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 using Artemis.Models;
 using Artemis.Utilities;
-using Gma.System.MouseKeyHook;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
@@ -53,7 +52,8 @@ namespace Artemis.Modules.Effects.TypeWave
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
 
                 var decreaseAmount = 255/(Settings.TimeToLive/fps);
-                _waves[i].Color = Color.FromArgb(_waves[i].Color.A - decreaseAmount, _waves[i].Color.R, _waves[i].Color.G,
+                _waves[i].Color = Color.FromArgb(_waves[i].Color.A - decreaseAmount, _waves[i].Color.R,
+                    _waves[i].Color.G,
                     _waves[i].Color.B);
 
                 if (_waves[i].Color.A >= decreaseAmount)
@@ -114,7 +114,7 @@ namespace Artemis.Modules.Effects.TypeWave
             // More than 25 waves is pointless
             if (_waves.Count >= 25)
                 return;
-            
+
             var keyMatch = KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == e.KeyCode);
             if (keyMatch == null)
                 return;

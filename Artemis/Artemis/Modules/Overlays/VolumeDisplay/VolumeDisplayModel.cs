@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.Models;
-using Gma.System.MouseKeyHook;
 using NAudio.CoreAudioApi;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay

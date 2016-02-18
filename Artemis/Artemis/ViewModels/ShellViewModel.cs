@@ -20,9 +20,9 @@ namespace Artemis.ViewModels
             DisplayName = "Artemis";
 
             _effectsVm = new EffectsViewModel(MainModel) {DisplayName = "Effects"};
-            _gamesVm = new GamesViewModel(MainModel) { DisplayName = "Games" };
+            _gamesVm = new GamesViewModel(MainModel) {DisplayName = "Games"};
             _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
-            
+
             Flyouts.Add(new FlyoutSettingsViewModel());
 
             // By now Effects are added to the MainModel so we can savely start one
@@ -31,15 +31,6 @@ namespace Artemis.ViewModels
 
         public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; } =
             new BindableCollection<FlyoutBaseViewModel>();
-
-        protected override void OnActivate()
-        {
-            base.OnActivate();
-
-            ActivateItem(_effectsVm);
-            ActivateItem(_gamesVm);
-            ActivateItem(_overlaysVm);
-        }
 
         public bool EffectsEnabled
         {
@@ -52,6 +43,15 @@ namespace Artemis.ViewModels
         }
 
         public MainModel MainModel { get; set; }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            ActivateItem(_effectsVm);
+            ActivateItem(_gamesVm);
+            ActivateItem(_overlaysVm);
+        }
 
         public void ToggleEffects()
         {

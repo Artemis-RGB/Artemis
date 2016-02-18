@@ -15,8 +15,8 @@ namespace Artemis.KeyboardProviders.Razer
         public override void Enable()
         {
             Chroma.Instance.Initialize();
-            Height = (int)Constants.MaxRows;
-            Width = (int)Constants.MaxColumns;
+            Height = (int) Constants.MaxRows;
+            Width = (int) Constants.MaxColumns;
         }
 
         public override void Disable()

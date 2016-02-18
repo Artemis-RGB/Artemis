@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Devices.Keyboard;
-using Artemis.Utilities;
-using CUE.NET.Brushes;
+using CUE.NET.Exceptions;
 
 namespace Artemis.KeyboardProviders.Corsair
 {
@@ -17,7 +16,7 @@ namespace Artemis.KeyboardProviders.Corsair
         }
 
         /// <summary>
-        /// Enables the SDK and sets updatemode to manual as well as the color of the background to black.
+        ///     Enables the SDK and sets updatemode to manual as well as the color of the background to black.
         /// </summary>
         public override void Enable()
         {
@@ -25,12 +24,15 @@ namespace Artemis.KeyboardProviders.Corsair
             {
                 CueSDK.Initialize();
             }
-            catch (CUE.NET.Exceptions.WrapperException){/*CUE is already initialized*/}
+            catch (WrapperException)
+            {
+/*CUE is already initialized*/
+            }
             _keyboard = CueSDK.KeyboardSDK;
-            Height = (int)_keyboard.KeyboardRectangle.Height;
-            Width = (int)_keyboard.KeyboardRectangle.Width;
+            Height = (int) _keyboard.KeyboardRectangle.Height;
+            Width = (int) _keyboard.KeyboardRectangle.Width;
 
-           // _keyboard.UpdateMode = UpdateMode.Manual;
+            // _keyboard.UpdateMode = UpdateMode.Manual;
             _keyboard.Update(true);
         }
 
@@ -39,28 +41,28 @@ namespace Artemis.KeyboardProviders.Corsair
         }
 
         /// <summary>
-        /// Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap size.
-        /// Does not reset the color each time. Uncomment line 48 for collor reset.
+        ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
+        ///     size.
+        ///     Does not reset the color each time. Uncomment line 48 for collor reset.
         /// </summary>
         /// <param name="bitmap//"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
             using (
                 var resized = ImageUtilities.ResizeImage(bitmap,
-                (int)_keyboard.KeyboardRectangle.Width,
-                (int)_keyboard.KeyboardRectangle.Height)
-                  )
+                    (int) _keyboard.KeyboardRectangle.Width,
+                    (int) _keyboard.KeyboardRectangle.Height)
+                )
             {
                 foreach (var item in _keyboard.Keys)
                 {
-                    Color ledColor = resized.GetPixel((int)item.KeyRectangle.X, (int)item.KeyRectangle.Y);
+                    var ledColor = resized.GetPixel((int) item.KeyRectangle.X, (int) item.KeyRectangle.Y);
                     if (ledColor == Color.FromArgb(0, 0, 0, 0))
                         ledColor = Color.Black;
                     item.Led.Color = ledColor;
                 }
             }
             _keyboard.Update(true);
-
         }
 
         /*

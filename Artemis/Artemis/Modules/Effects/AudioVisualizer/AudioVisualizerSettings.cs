@@ -18,7 +18,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         public Color MiddleColor { get; set; }
         public Color BottomColor { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             Sensitivity = AudioVisualization.Default.Sensitivity;
             Bars = AudioVisualization.Default.Bars;
@@ -29,7 +29,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             BottomColor = AudioVisualization.Default.BottomColor;
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
             AudioVisualization.Default.Sensitivity = Sensitivity;
             AudioVisualization.Default.Bars = Bars;
@@ -42,7 +42,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             AudioVisualization.Default.Save();
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             Sensitivity = 4;
             Bars = 21;

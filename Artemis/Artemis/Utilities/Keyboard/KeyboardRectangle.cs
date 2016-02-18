@@ -159,7 +159,7 @@ namespace Artemis.Utilities.Keyboard
         private ColorBlend CreateColorBlend()
         {
             if (Colors.Count == 1)
-                return new ColorBlend { Colors = new []{Colors[0], Colors[0]}, Positions = new []{0F, 1F}};
+                return new ColorBlend {Colors = new[] {Colors[0], Colors[0]}, Positions = new[] {0F, 1F}};
             var colorBlend = Rotate
                 ? new ColorBlend {Colors = CreateTilebleColors(Colors).ToArray()}
                 : new ColorBlend {Colors = Colors.ToArray()};

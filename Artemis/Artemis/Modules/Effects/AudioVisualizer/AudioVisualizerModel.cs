@@ -70,7 +70,6 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                         ColorHelpers.ToDrawingColor(Settings.BottomColor)
                     },
                     LinearGradientMode.Vertical) {ContainedBrush = false});
-
             }
 
             _sampleAggregator.FftCalculated += FftCalculated;
@@ -109,7 +108,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
                 // Apply Sensitivity setting
                 height = height*Settings.Sensitivity;
-                var keyboardHeight = (int) Math.Round(((MainModel.ActiveKeyboard.Height/100.00)*height)*Scale);
+                var keyboardHeight = (int) Math.Round(MainModel.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
@@ -119,7 +118,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 SoundRectangles[i].Width = Scale;
 
                 if (Settings.FromBottom)
-                    SoundRectangles[i].Y = (MainModel.ActiveKeyboard.Height*Scale) - SoundRectangles[i].Height;
+                    SoundRectangles[i].Y = MainModel.ActiveKeyboard.Height*Scale - SoundRectangles[i].Height;
             }
             _generating = false;
         }

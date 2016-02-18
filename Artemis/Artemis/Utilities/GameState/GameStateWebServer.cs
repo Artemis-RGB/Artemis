@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Artemis.Settings;
 using Newtonsoft.Json;
 
 namespace Artemis.Utilities.GameState
@@ -31,7 +30,7 @@ namespace Artemis.Utilities.GameState
                 return;
 
             _listener.Prefixes.Clear();
-            Port = Settings.General.Default.GamestatePort;
+            Port = General.Default.GamestatePort;
             _listener.Prefixes.Add($"http://localhost:{Port}/");
 
             _listener.Start();

@@ -182,7 +182,7 @@ namespace Artemis.Models
                 }
 
                 // Sleep according to time left this frame
-                var sleep = (int) ((1000/Fps) - sw.ElapsedMilliseconds);
+                var sleep = (int) (1000/Fps - sw.ElapsedMilliseconds);
                 if (sleep > 0)
                     Thread.Sleep(sleep);
                 sw.Reset();

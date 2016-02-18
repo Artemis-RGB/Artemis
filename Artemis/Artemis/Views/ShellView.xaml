@@ -13,12 +13,12 @@
     <Controls:MetroWindow.IconTemplate>
         <DataTemplate>
             <Grid Width="{TemplateBinding Width}"
-                 Height="{TemplateBinding Height}"
-                 Margin="0,0,-10,0"
-                 Background="Transparent"
-                 RenderOptions.EdgeMode="Aliased"
-                 RenderOptions.BitmapScalingMode="HighQuality">
-                <Image Source="/Artemis;component/Resources/bow.png"></Image>
+                  Height="{TemplateBinding Height}"
+                  Margin="0,0,-10,0"
+                  Background="Transparent"
+                  RenderOptions.EdgeMode="Aliased"
+                  RenderOptions.BitmapScalingMode="HighQuality">
+                <Image Source="/Artemis;component/Resources/bow.png" />
             </Grid>
         </DataTemplate>
     </Controls:MetroWindow.IconTemplate>
@@ -49,7 +49,7 @@
             </Controls:FlyoutsControl.ItemTemplate>
             <Controls:FlyoutsControl.ItemContainerStyle>
                 <Style BasedOn="{StaticResource {x:Type Controls:Flyout}}" TargetType="{x:Type Controls:Flyout}">
-                    <Setter Property="Header" Value="{Binding Header}"  />
+                    <Setter Property="Header" Value="{Binding Header}" />
                     <Setter Property="IsOpen" Value="{Binding IsOpen}" />
                     <Setter Property="Position" Value="{Binding Position}" />
                 </Style>

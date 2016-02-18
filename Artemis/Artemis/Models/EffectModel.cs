@@ -15,9 +15,9 @@ namespace Artemis.Models
             MainModel = mainModel;
         }
 
-        public event SettingsUpdateHandler SettingsUpdateEvent;
-
         public abstract void Dispose();
+
+        public event SettingsUpdateHandler SettingsUpdateEvent;
 
         // Called on creation
         public abstract void Enable();

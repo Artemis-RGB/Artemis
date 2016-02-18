@@ -28,15 +28,15 @@ namespace Artemis.Modules.Effects.Debug
         public override void Enable()
         {
             KeyboardRectangle = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
-                {
-                    Color.Red,
-                    Color.OrangeRed,
-                    Color.Yellow,
-                    Color.Green,
-                    Color.Blue,
-                    Color.Purple,
-                    Color.DeepPink
-                }, LinearGradientMode.Horizontal);
+            {
+                Color.Red,
+                Color.OrangeRed,
+                Color.Yellow,
+                Color.Green,
+                Color.Blue,
+                Color.Purple,
+                Color.DeepPink
+            }, LinearGradientMode.Horizontal);
         }
 
         public override void Update()
