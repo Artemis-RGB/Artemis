@@ -23,7 +23,7 @@ namespace Artemis.ViewModels
             _gamesVm = new GamesViewModel(MainModel) {DisplayName = "Games"};
             _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
 
-            Flyouts.Add(new FlyoutSettingsViewModel());
+            Flyouts.Add(new FlyoutSettingsViewModel(MainModel));
 
             // By now Effects are added to the MainModel so we can savely start one
             ToggleEffects();

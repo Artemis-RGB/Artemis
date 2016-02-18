@@ -88,7 +88,7 @@ namespace Artemis.Models
             ChangeKeyboard(keyboard ?? KeyboardProviders.First(k => k.Name == "Logitech G910 Orion Spark RGB"));
         }
 
-        private void ChangeKeyboard(KeyboardProvider keyboardProvider)
+        public void ChangeKeyboard(KeyboardProvider keyboardProvider)
         {
             if (ActiveKeyboard != null && keyboardProvider.Name == ActiveKeyboard.Name)
                 return;

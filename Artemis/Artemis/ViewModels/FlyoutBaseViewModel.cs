@@ -33,6 +33,7 @@ namespace Artemis.ViewModels
                     return;
 
                 _isOpen = value;
+                HandleOpen();
                 NotifyOfPropertyChange(() => IsOpen);
             }
         }
@@ -50,5 +51,7 @@ namespace Artemis.ViewModels
                 NotifyOfPropertyChange(() => Position);
             }
         }
+
+        protected abstract void HandleOpen();
     }
 }

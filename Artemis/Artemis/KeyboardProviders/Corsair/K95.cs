@@ -84,27 +84,5 @@ namespace Artemis.KeyboardProviders.Corsair
             }
             _keyboard.Update(true);
         }
-
-        /*
-        RectangleF[,] ledRectangles = new RectangleF[bitmap.Width, bitmap.Height];
-        RectangleKeyGroup[,] ledGroups = new RectangleKeyGroup[bitmap.Width, bitmap.Height];
-        //_keyboard.Brush = new SolidColorBrush(Color.Black);
-        for (var x = 0 ; x < bitmap.Width; x++)
-        {
-            for (var y = 0; y < bitmap.Height; y++)
-            {
-                ledRectangles[x, y] = new RectangleF(_keyboard.KeyboardRectangle.X * (x*(_keyboard.KeyboardRectangle.Width / bitmap.Width / _keyboard.KeyboardRectangle.X)), _keyboard.KeyboardRectangle.Y*(y*(_keyboard.KeyboardRectangle.Height / bitmap.Height / _keyboard.KeyboardRectangle.Y)), _keyboard.KeyboardRectangle.Width / bitmap.Width, _keyboard.KeyboardRectangle.Height / bitmap.Height);
-                ledGroups[x, y] = new RectangleKeyGroup(_keyboard, ledRectangles[x, y], 0.01f) { Brush = new SolidColorBrush(bitmap.GetPixel(x, y)) };
-            }  
-        }
-        _keyboard.Update();
-        for (var x = 0; x < bitmap.Width; x++)
-        {
-            for (var y = 0; y < bitmap.Height; y++)
-            {
-                _keyboard.DetachKeyGroup(ledGroups[x, y]);
-            }
-        }
-        */
     }
 }

@@ -42,8 +42,9 @@
         <!-- Keyboard selection -->
         <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />
-        <ComboBox Grid.Row="2" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
+        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
                   Width="120" />
+        <!-- TODO: Ugly -->
 
         <!-- Gamestate port -->
         <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
