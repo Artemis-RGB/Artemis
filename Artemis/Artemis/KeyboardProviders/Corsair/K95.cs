@@ -1,6 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
 using Artemis.Utilities;
 using CUE.NET;
+using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET.Exceptions;
 
@@ -15,6 +18,23 @@ namespace Artemis.KeyboardProviders.Corsair
             Name = "Corsair Gaming K95 RGB";
         }
 
+        public override bool CanEnable()
+        {
+            try
+            {
+                CueSDK.Initialize();
+            }
+            catch (CUEException e)
+            {
+                if (e.Error == CorsairError.ServerNotFound)
+                    return false;
+                throw;
+            }
+
+            return true;
+
+        }
+
         /// <summary>
         ///     Enables the SDK and sets updatemode to manual as well as the color of the background to black.
         /// </summary>
@@ -26,7 +46,7 @@ namespace Artemis.KeyboardProviders.Corsair
             }
             catch (WrapperException)
             {
-/*CUE is already initialized*/
+                /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
             Height = (int) _keyboard.KeyboardRectangle.Height;

@@ -13,6 +13,12 @@ namespace Artemis.KeyboardProviders.Logitech
             Width = 21;
         }
 
+        public override bool CanEnable()
+        {
+            // TODO
+            return true;
+        }
+
         public override void Enable()
         {
             // Initialize the SDK

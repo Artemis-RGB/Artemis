@@ -8,6 +8,7 @@ namespace Artemis.KeyboardProviders
         public int Height { get; set; }
         public int Width { get; set; }
 
+        public abstract bool CanEnable();
         public abstract void Enable();
         public abstract void Disable();
         public abstract void DrawBitmap(Bitmap bitmap);

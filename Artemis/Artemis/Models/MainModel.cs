@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
@@ -52,6 +53,9 @@ namespace Artemis.Models
         public void StartEffects()
         {
             LoadLastKeyboard();
+            // If no keyboard was loaded, don't enable effects.
+            if (ActiveKeyboard == null)
+                return;
 
             // Start the webserver
             GameStateWebServer.Start();
@@ -90,6 +94,22 @@ namespace Artemis.Models
                 return;
 
             ActiveKeyboard?.Disable();
+
+            // Disable everything if there's no active keyboard found
+            if (!keyboardProvider.CanEnable())
+            {
+                ActiveKeyboard = null;
+                MessageBox.Show(
+                    "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
+                    "Please check your cables and/or drivers (could be outdated).\n\n " +
+                    "If needed, you can select a different keyboard in Artemis under settings",
+                    "Artemis  (╯°□°）╯︵ ┻━┻",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                ShutdownEffects();
+                return;
+            }
+
             ActiveKeyboard = keyboardProvider;
             ActiveKeyboard.Enable();
 

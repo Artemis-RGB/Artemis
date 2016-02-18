@@ -56,7 +56,7 @@
 		<author>##ID_STRING3##</author>
 		<keywords>Installer,MSI,Database</keywords>
 		<comments>Contact:  Your local administrator</comments>
-		<template>Intel;1033</template>
+		<template>x64;1033</template>
 		<lastauthor>Administrator</lastauthor>
 		<revnumber>{EC92BB19-2C2C-43AB-86BA-9A30BCCD0F7B}</revnumber>
 		<lastprinted/>
@@ -343,32 +343,57 @@
 		<col def="S0">ISDotNetInstallerArgsCommit</col>
 		<col def="S0">ISDotNetInstallerArgsUninstall</col>
 		<col def="S0">ISDotNetInstallerArgsRollback</col>
-		<row><td>Artemis.exe</td><td>{AE545887-5D55-4F70-9F91-DB5FEA5535F1}</td><td>INSTALLDIR</td><td>2</td><td/><td>artemis.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Artemis.vshost.exe</td><td>{A786DBCC-9549-4570-9501-B69D81129600}</td><td>INSTALLDIR</td><td>2</td><td/><td>artemis.vshost.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Autofac.dll</td><td>{5E25D325-7083-45DE-B892-5067169B5E66}</td><td>INSTALLDIR</td><td>2</td><td/><td>autofac.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>CUE.NET.dll</td><td>{88A9B4DE-9327-4001-AE80-821E0CFE64AA}</td><td>INSTALLDIR</td><td>2</td><td/><td>cue.net.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Caliburn.Micro.Autofac.dll</td><td>{24255F48-D48A-4822-845C-1CD3AE52C8B4}</td><td>INSTALLDIR</td><td>2</td><td/><td>caliburn.micro.autofac.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Caliburn.Micro.Platform.dll</td><td>{94110BC6-B64E-42D1-86C7-47A5F3166787}</td><td>INSTALLDIR</td><td>2</td><td/><td>caliburn.micro.platform.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Caliburn.Micro.dll</td><td>{3F1F37E8-7A58-458E-9F63-520775D41134}</td><td>INSTALLDIR</td><td>2</td><td/><td>caliburn.micro.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Corale.Colore.dll</td><td>{7673A790-3E02-4505-B6B6-DC5738F63AFF}</td><td>INSTALLDIR</td><td>2</td><td/><td>corale.colore.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Gma.System.MouseKeyHook.dll</td><td>{A1493BEE-2789-4682-BE78-2591A1A97D4D}</td><td>INSTALLDIR</td><td>2</td><td/><td>gma.system.mousekeyhook.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td>{2B527944-FF38-4497-96D5-B418C1748EA4}</td><td>INSTALLDIR</td><td>2</td><td/><td>hardcodet.wpf.taskbarnotific</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ISX_DEFAULTCOMPONENT</td><td>{36900BAB-5A03-4896-844F-704AB82C4BE8}</td><td>INSTALLDIR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>LogitechLedEnginesWrapper.dll</td><td>{873B7FD2-DBAB-43EF-8076-FD201D8B25C2}</td><td>INSTALLDIR</td><td>2</td><td/><td>logitechledengineswrapper.dl</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>MahApps.Metro.dll</td><td>{364BD482-3C7F-433D-8152-D76E8E5BEBAD}</td><td>INSTALLDIR</td><td>2</td><td/><td>mahapps.metro.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td>{F5F43626-71B6-49A1-8C2E-D909DA18E438}</td><td>INSTALLDIR</td><td>2</td><td/><td>microsoft.qualitytools.testi</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>NAudio.dll</td><td>{8E1903D2-51A0-4969-9788-C89533096C30}</td><td>INSTALLDIR</td><td>2</td><td/><td>naudio.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Newtonsoft.Json.dll</td><td>{5CCCDF7F-1449-4613-A51A-C16AC8586B9B}</td><td>INSTALLDIR</td><td>2</td><td/><td>newtonsoft.json.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>RzChromaSDK64.dll</td><td>{CDE3628F-ECCF-4F79-AC47-4009863BDDFC}</td><td>INSTALLDIR</td><td>2</td><td/><td>rzchromasdk64.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>System.Windows.Interactivity.dll</td><td>{37B73ADA-645B-4F87-A988-BB23501EEDE9}</td><td>INSTALLDIR</td><td>2</td><td/><td>system.windows.interactivity</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>VioletTape.WpfExceptionViewer.dll</td><td>{B28ED871-0D73-4850-999F-6F9B3A482B37}</td><td>INSTALLDIR</td><td>2</td><td/><td>violettape.wpfexceptionviewe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>{9109677E-64B1-48BB-A670-F3FAC884E250}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.avalondock.themes.</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>{20144D29-AFAF-4478-8A66-8EAE3EC648D0}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.avalondock.themes.1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>{AE11D506-2381-464A-BA43-AC434838BE82}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.avalondock.themes.2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.AvalonDock.dll</td><td>{4F466BE2-07E1-48DD-9D8A-7A85B1A30C6D}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.avalondock.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.DataGrid.dll</td><td>{5245EED9-5622-4DB3-BE31-FFC89C666288}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.datagrid.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Xceed.Wpf.Toolkit.dll</td><td>{931E8392-8470-4FF8-8AC1-3CB776D074C6}</td><td>INSTALLDIR</td><td>2</td><td/><td>xceed.wpf.toolkit.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>log4net.dll</td><td>{5F695E14-D796-4166-B685-59D67B4AABB2}</td><td>INSTALLDIR</td><td>2</td><td/><td>log4net.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Artemis.exe</td><td>{B02B4530-74C0-4D59-8543-FF1F3F25D615}</td><td>INSTALLDIR</td><td>258</td><td/><td>artemis.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Artemis.exe1</td><td>{22E47816-54E8-411A-B041-1D76131D0081}</td><td>APP.PUBLISH</td><td>258</td><td/><td>artemis.exe1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Artemis.vshost.exe</td><td>{44B48DAA-FA30-487B-8BF4-02FDB0C6460C}</td><td>INSTALLDIR</td><td>258</td><td/><td>artemis.vshost.exe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Autofac.dll</td><td>{D8C4FF10-E186-4090-96C3-DAA02CB39A4B}</td><td>INSTALLDIR</td><td>258</td><td/><td>autofac.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>CUE.NET.dll</td><td>{9F510AE0-4297-43FA-A61C-D791E1632AAB}</td><td>INSTALLDIR</td><td>258</td><td/><td>cue.net.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>CUESDK_2013.dll</td><td>{D8C6979F-9879-4906-922E-388CBA26D713}</td><td>X86</td><td>258</td><td/><td>cuesdk_2013.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>CUESDK_2013.dll1</td><td>{0090DBC5-1D73-4172-A460-D7C18950E57B}</td><td>X64</td><td>258</td><td/><td>cuesdk_2013.dll1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Caliburn.Micro.Autofac.dll</td><td>{4D74839D-58AA-4CE5-8DFC-EE786366D348}</td><td>INSTALLDIR</td><td>258</td><td/><td>caliburn.micro.autofac.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Caliburn.Micro.Platform.dll</td><td>{4783031F-4312-4F7F-B7AD-00833CA1E55B}</td><td>INSTALLDIR</td><td>258</td><td/><td>caliburn.micro.platform.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Caliburn.Micro.dll</td><td>{2664ADFE-F14C-4A3E-B9D2-57C692F14009}</td><td>INSTALLDIR</td><td>258</td><td/><td>caliburn.micro.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Corale.Colore.dll</td><td>{54EC7C55-F41A-4C70-954C-16FF3F779E1D}</td><td>INSTALLDIR</td><td>258</td><td/><td>corale.colore.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Gma.System.MouseKeyHook.dll</td><td>{2E1F5FC8-A491-47D1-A987-EE98C246E506}</td><td>INSTALLDIR</td><td>258</td><td/><td>gma.system.mousekeyhook.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td>{549B3A3B-5BAF-444C-8BEB-AC590FF70A75}</td><td>INSTALLDIR</td><td>258</td><td/><td>hardcodet.wpf.taskbarnotific</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td>{20846069-F23C-4EB8-AC61-08D8151A81E9}</td><td>X86</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td>{46ECAF22-8691-4364-8EE8-F1EFD9268313}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT10</td><td>{4289E95A-3492-4EBC-81CB-3DFFEBADBB3F}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT11</td><td>{B523AAF8-A6AF-491D-8A72-711B5EFE824E}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT12</td><td>{D16D59FC-40C7-43CB-B869-CC25FBBF5FF0}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT13</td><td>{E5434A8D-E067-4E01-860A-9B04BF267845}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT14</td><td>{B6C950CC-3CDD-4984-A45D-CAE83891F95F}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT15</td><td>{D7D8AB7B-DA29-4D0A-B1D3-74AAC7BF02DB}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT16</td><td>{855A191F-29E6-447C-A7EB-F0D9497A330C}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT17</td><td>{5A42EEDB-12F4-4515-B3D8-25AABC898CF3}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT18</td><td>{FDB644F0-E77C-4A15-92D4-232766189FEC}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT19</td><td>{4D30D212-BED7-4F93-9F8E-ABB3C55CD893}</td><td>APP.PUBLISH</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td>{DEFEA09F-C9A6-433D-B5D7-587AD795F23A}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT20</td><td>{A907A13C-78FB-4EA8-AF28-C6CAE9DC3123}</td><td>EN</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT21</td><td>{E74EDE95-403D-4B30-8DEE-2ED573A02F49}</td><td>X64</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td>{CA29D83B-4508-43A4-875A-F872FFD1A94B}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{DD6A5AD4-4ED5-48C3-B03F-CE53531138D8}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{A96C208F-B0E6-4E66-87BF-D3BB33FEB984}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT6</td><td>{6B859E43-5409-4E6F-BF78-F14C4C16343F}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT7</td><td>{9FD90576-A2EF-4DBD-925A-168677ED4BFC}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td>{D43111C1-9E51-4FC6-BADD-7B75DF55C253}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT9</td><td>{9F6849D8-4D20-4E29-BD00-078D6A90ACB8}</td><td>INSTALLDIR</td><td>258</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>LogitechLedEnginesWrapper.dll</td><td>{5378E226-3067-4B44-BD1E-727F3FD18BB7}</td><td>INSTALLDIR</td><td>258</td><td/><td>logitechledengineswrapper.dl</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>MahApps.Metro.dll</td><td>{06CDA28D-FFFC-44BE-A343-08DA7E4F0019}</td><td>INSTALLDIR</td><td>258</td><td/><td>mahapps.metro.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td>{0738241C-E4BF-4787-B1E7-32EAD819E442}</td><td>INSTALLDIR</td><td>258</td><td/><td>microsoft.qualitytools.testi</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>NAudio.dll</td><td>{AF17BC2A-D7EE-4CCF-A2A3-6B2FC57CB7F2}</td><td>INSTALLDIR</td><td>258</td><td/><td>naudio.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Newtonsoft.Json.dll</td><td>{CB020A96-2229-48B1-ACD0-46C9D7297035}</td><td>INSTALLDIR</td><td>258</td><td/><td>newtonsoft.json.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>RzChromaSDK64.dll</td><td>{42EB96E7-712E-4DFE-B165-14C4A16688E5}</td><td>INSTALLDIR</td><td>258</td><td/><td>rzchromasdk64.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>System.Windows.Interactivity.dll</td><td>{04906B6A-CEA4-4580-920C-5DD0411B7A1F}</td><td>INSTALLDIR</td><td>258</td><td/><td>system.windows.interactivity</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>System.Windows.Interactivity.resources.dll</td><td>{B7A859EA-CC4C-4790-AFC4-DFACBF0B6FC9}</td><td>EN</td><td>258</td><td/><td>system.windows.interactivity1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>VioletTape.WpfExceptionViewer.dll</td><td>{0BC672A2-B55D-4831-9A34-C30E42438B73}</td><td>INSTALLDIR</td><td>258</td><td/><td>violettape.wpfexceptionviewe</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>{A8A2AC15-16EF-46A2-88AD-EB2F075A97E9}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.avalondock.themes.</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>{B16C1971-F7C3-41F1-94CF-3526A0E2FA72}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.avalondock.themes.1</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>{2F7EE82B-FAE0-48B0-8B77-3C9ECBF0FAAE}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.avalondock.themes.2</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.AvalonDock.dll</td><td>{37254458-3D69-4CE5-AD7C-4436F5E94CB8}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.avalondock.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.DataGrid.dll</td><td>{BBAD5AA3-0272-4E17-BE05-391A3A8D6AF6}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.datagrid.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Xceed.Wpf.Toolkit.dll</td><td>{E4F5D675-7BBE-43E8-9FA7-77330F1A6CBD}</td><td>INSTALLDIR</td><td>258</td><td/><td>xceed.wpf.toolkit.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>log4net.dll</td><td>{DDDCB0C0-50CF-4D54-AB3A-07785241C67B}</td><td>INSTALLDIR</td><td>258</td><td/><td>log4net.dll</td><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 	</table>
 
 	<table name="Condition">
@@ -952,7 +977,8 @@
 		<row><td>DestinationFolder</td><td>Cancel</td><td>SpawnDialog</td><td>CancelSetup</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>SpawnDialog</td><td>InstallChangeFolder</td><td>1</td><td>1</td></row>
 		<row><td>DestinationFolder</td><td>ChangeFolder</td><td>[_BrowseProperty]</td><td>INSTALLDIR</td><td>1</td><td>2</td></row>
-		<row><td>DestinationFolder</td><td>Next</td><td>NewDialog</td><td>ReadyToInstall</td><td>1</td><td>0</td></row>
+		<row><td>DestinationFolder</td><td>Next</td><td>EndDialog</td><td>Return</td><td>OutOfDiskSpace &lt;&gt; 1</td><td>1</td></row>
+		<row><td>DestinationFolder</td><td>Next</td><td>NewDialog</td><td>ReadyToInstall</td><td>0</td><td>1</td></row>
 		<row><td>DiskSpaceRequirements</td><td>OK</td><td>EndDialog</td><td>Return</td><td>1</td><td>0</td></row>
 		<row><td>FilesInUse</td><td>Exit</td><td>EndDialog</td><td>Exit</td><td>1</td><td>0</td></row>
 		<row><td>FilesInUse</td><td>Ignore</td><td>EndDialog</td><td>Ignore</td><td>1</td><td>0</td></row>
@@ -1078,10 +1104,17 @@
 	<table name="CreateFolder">
 		<col key="yes" def="s72">Directory_</col>
 		<col key="yes" def="s72">Component_</col>
+		<row><td>APP.PUBLISH</td><td>Artemis.exe1</td></row>
+		<row><td>APP.PUBLISH</td><td>ISX_DEFAULTCOMPONENT19</td></row>
+		<row><td>EN</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>EN</td><td>System.Windows.Interactivity.resources.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Artemis.exe</td></row>
+		<row><td>INSTALLDIR</td><td>Artemis.exe1</td></row>
 		<row><td>INSTALLDIR</td><td>Artemis.vshost.exe</td></row>
 		<row><td>INSTALLDIR</td><td>Autofac.dll</td></row>
 		<row><td>INSTALLDIR</td><td>CUE.NET.dll</td></row>
+		<row><td>INSTALLDIR</td><td>CUESDK_2013.dll</td></row>
+		<row><td>INSTALLDIR</td><td>CUESDK_2013.dll1</td></row>
 		<row><td>INSTALLDIR</td><td>Caliburn.Micro.Autofac.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Caliburn.Micro.Platform.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Caliburn.Micro.dll</td></row>
@@ -1089,6 +1122,27 @@
 		<row><td>INSTALLDIR</td><td>Gma.System.MouseKeyHook.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Hardcodet.Wpf.TaskbarNotification.dll</td></row>
 		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT10</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT11</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT12</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT13</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT14</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT15</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT16</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT17</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT18</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT19</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT5</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT6</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT8</td></row>
+		<row><td>INSTALLDIR</td><td>ISX_DEFAULTCOMPONENT9</td></row>
 		<row><td>INSTALLDIR</td><td>LogitechLedEnginesWrapper.dll</td></row>
 		<row><td>INSTALLDIR</td><td>MahApps.Metro.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Microsoft.QualityTools.Testing.Fakes.dll</td></row>
@@ -1096,6 +1150,7 @@
 		<row><td>INSTALLDIR</td><td>Newtonsoft.Json.dll</td></row>
 		<row><td>INSTALLDIR</td><td>RzChromaSDK64.dll</td></row>
 		<row><td>INSTALLDIR</td><td>System.Windows.Interactivity.dll</td></row>
+		<row><td>INSTALLDIR</td><td>System.Windows.Interactivity.resources.dll</td></row>
 		<row><td>INSTALLDIR</td><td>VioletTape.WpfExceptionViewer.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td></row>
@@ -1104,6 +1159,10 @@
 		<row><td>INSTALLDIR</td><td>Xceed.Wpf.DataGrid.dll</td></row>
 		<row><td>INSTALLDIR</td><td>Xceed.Wpf.Toolkit.dll</td></row>
 		<row><td>INSTALLDIR</td><td>log4net.dll</td></row>
+		<row><td>X64</td><td>CUESDK_2013.dll1</td></row>
+		<row><td>X64</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>X86</td><td>CUESDK_2013.dll</td></row>
+		<row><td>X86</td><td>ISX_DEFAULTCOMPONENT</td></row>
 	</table>
 
 	<table name="CustomAction">
@@ -1184,8 +1243,10 @@
 		<col def="I4">ISAttributes</col>
 		<col def="S255">ISFolderName</col>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
+		<row><td>APP.PUBLISH</td><td>INSTALLDIR</td><td>APP_PU~1|app.publish</td><td/><td>0</td><td/></row>
 		<row><td>ARTEMIS</td><td>ProgramFilesFolder</td><td>Artemis</td><td/><td>0</td><td/></row>
 		<row><td>ARTEMIS1</td><td>ARTEMIS</td><td>Artemis</td><td/><td>0</td><td/></row>
+		<row><td>ARTEMIS2</td><td>ProgramFiles64Folder</td><td>Artemis</td><td/><td>0</td><td/></row>
 		<row><td>AdminToolsFolder</td><td>TARGETDIR</td><td>.:Admint~1|AdminTools</td><td/><td>0</td><td/></row>
 		<row><td>AppDataFolder</td><td>TARGETDIR</td><td>.:APPLIC~1|Application Data</td><td/><td>0</td><td/></row>
 		<row><td>CommonAppDataFolder</td><td>TARGETDIR</td><td>.:Common~1|CommonAppData</td><td/><td>0</td><td/></row>
@@ -1193,10 +1254,11 @@
 		<row><td>CommonFilesFolder</td><td>TARGETDIR</td><td>.:Common</td><td/><td>0</td><td/></row>
 		<row><td>DATABASEDIR</td><td>ISYourDataBaseDir</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>DesktopFolder</td><td>TARGETDIR</td><td>.:Desktop</td><td/><td>3</td><td/></row>
+		<row><td>EN</td><td>INSTALLDIR</td><td>en</td><td/><td>0</td><td/></row>
 		<row><td>FavoritesFolder</td><td>TARGETDIR</td><td>.:FAVORI~1|Favorites</td><td/><td>0</td><td/></row>
 		<row><td>FontsFolder</td><td>TARGETDIR</td><td>.:Fonts</td><td/><td>0</td><td/></row>
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
-		<row><td>INSTALLDIR</td><td>ARTEMIS1</td><td>.</td><td/><td>0</td><td/></row>
+		<row><td>INSTALLDIR</td><td>ARTEMIS2</td><td>.</td><td/><td>0</td><td/></row>
 		<row><td>ISCommonFilesFolder</td><td>CommonFilesFolder</td><td>Instal~1|InstallShield</td><td/><td>0</td><td/></row>
 		<row><td>ISMyCompanyDir</td><td>ProgramFilesFolder</td><td>MYCOMP~1|My Company Name</td><td/><td>0</td><td/></row>
 		<row><td>ISMyProductDir</td><td>ISMyCompanyDir</td><td>MYPROD~1|My Product Name</td><td/><td>0</td><td/></row>
@@ -1224,6 +1286,8 @@
 		<row><td>USERPROFILE</td><td>TARGETDIR</td><td>.:USERPR~1|UserProfile</td><td/><td>0</td><td/></row>
 		<row><td>WindowsFolder</td><td>TARGETDIR</td><td>.:Windows</td><td/><td>0</td><td/></row>
 		<row><td>WindowsVolume</td><td>TARGETDIR</td><td>.:WinRoot</td><td/><td>0</td><td/></row>
+		<row><td>X64</td><td>INSTALLDIR</td><td>x64</td><td/><td>0</td><td/></row>
+		<row><td>X86</td><td>INSTALLDIR</td><td>x86</td><td/><td>0</td><td/></row>
 		<row><td>artemis</td><td>ProgramMenuFolder</td><td>Artemis</td><td/><td>1</td><td/></row>
 		<row><td>artemis1</td><td>artemis</td><td>Artemis</td><td/><td>1</td><td/></row>
 	</table>
@@ -1918,9 +1982,12 @@
 		<col key="yes" def="s38">Feature_</col>
 		<col key="yes" def="s72">Component_</col>
 		<row><td>AlwaysInstall</td><td>Artemis.exe</td></row>
+		<row><td>AlwaysInstall</td><td>Artemis.exe1</td></row>
 		<row><td>AlwaysInstall</td><td>Artemis.vshost.exe</td></row>
 		<row><td>AlwaysInstall</td><td>Autofac.dll</td></row>
 		<row><td>AlwaysInstall</td><td>CUE.NET.dll</td></row>
+		<row><td>AlwaysInstall</td><td>CUESDK_2013.dll</td></row>
+		<row><td>AlwaysInstall</td><td>CUESDK_2013.dll1</td></row>
 		<row><td>AlwaysInstall</td><td>Caliburn.Micro.Autofac.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Caliburn.Micro.Platform.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Caliburn.Micro.dll</td></row>
@@ -1928,6 +1995,27 @@
 		<row><td>AlwaysInstall</td><td>Gma.System.MouseKeyHook.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Hardcodet.Wpf.TaskbarNotification.dll</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT1</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT10</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT11</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT12</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT13</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT14</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT15</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT16</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT17</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT18</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT19</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT2</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT20</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT21</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT3</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT6</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT7</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT8</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT9</td></row>
 		<row><td>AlwaysInstall</td><td>LogitechLedEnginesWrapper.dll</td></row>
 		<row><td>AlwaysInstall</td><td>MahApps.Metro.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Microsoft.QualityTools.Testing.Fakes.dll</td></row>
@@ -1935,6 +2023,7 @@
 		<row><td>AlwaysInstall</td><td>Newtonsoft.Json.dll</td></row>
 		<row><td>AlwaysInstall</td><td>RzChromaSDK64.dll</td></row>
 		<row><td>AlwaysInstall</td><td>System.Windows.Interactivity.dll</td></row>
+		<row><td>AlwaysInstall</td><td>System.Windows.Interactivity.resources.dll</td></row>
 		<row><td>AlwaysInstall</td><td>VioletTape.WpfExceptionViewer.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td></row>
 		<row><td>AlwaysInstall</td><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td></row>
@@ -1957,49 +2046,53 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I4">ISAttributes</col>
 		<col def="S72">ISComponentSubFolder_</col>
-		<row><td>artemis.application</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.APP|Artemis.application</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.application</td><td>1</td><td/></row>
-		<row><td>artemis.exe</td><td>Artemis.exe</td><td>Artemis.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.exe</td><td>1</td><td/></row>
-		<row><td>artemis.exe.config</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.CON|Artemis.exe.config</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.exe.config</td><td>1</td><td/></row>
-		<row><td>artemis.exe.manifest</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.MAN|Artemis.exe.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.exe.manifest</td><td>1</td><td/></row>
-		<row><td>artemis.pdb</td><td>ISX_DEFAULTCOMPONENT</td><td>Artemis.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.pdb</td><td>1</td><td/></row>
-		<row><td>artemis.vshost.application</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.APP|Artemis.vshost.application</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.vshost.application</td><td>1</td><td/></row>
-		<row><td>artemis.vshost.exe</td><td>Artemis.vshost.exe</td><td>ARTEMI~1.EXE|Artemis.vshost.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.vshost.exe</td><td>1</td><td/></row>
-		<row><td>artemis.vshost.exe.config</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.CON|Artemis.vshost.exe.config</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.vshost.exe.config</td><td>1</td><td/></row>
-		<row><td>artemis.vshost.exe.manifest</td><td>ISX_DEFAULTCOMPONENT</td><td>ARTEMI~1.MAN|Artemis.vshost.exe.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.vshost.exe.manifest</td><td>1</td><td/></row>
-		<row><td>autofac.dll</td><td>Autofac.dll</td><td>Autofac.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Autofac.dll</td><td>1</td><td/></row>
-		<row><td>autofac.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>Autofac.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Autofac.xml</td><td>1</td><td/></row>
-		<row><td>caliburn.micro.autofac.dll</td><td>Caliburn.Micro.Autofac.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.Autofac.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Caliburn.Micro.Autofac.dll</td><td>1</td><td/></row>
-		<row><td>caliburn.micro.dll</td><td>Caliburn.Micro.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Caliburn.Micro.dll</td><td>1</td><td/></row>
-		<row><td>caliburn.micro.platform.dll</td><td>Caliburn.Micro.Platform.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.Platform.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Caliburn.Micro.Platform.dll</td><td>1</td><td/></row>
-		<row><td>caliburn.micro.platform.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>CALIBU~1.XML|Caliburn.Micro.Platform.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Caliburn.Micro.Platform.xml</td><td>1</td><td/></row>
-		<row><td>caliburn.micro.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>CALIBU~1.XML|Caliburn.Micro.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Caliburn.Micro.xml</td><td>1</td><td/></row>
-		<row><td>corale.colore.dll</td><td>Corale.Colore.dll</td><td>CORALE~1.DLL|Corale.Colore.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Corale.Colore.dll</td><td>1</td><td/></row>
-		<row><td>corale.colore.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>CORALE~1.XML|Corale.Colore.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Corale.Colore.xml</td><td>1</td><td/></row>
-		<row><td>cue.net.dll</td><td>CUE.NET.dll</td><td>CUENET~1.DLL|CUE.NET.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\CUE.NET.dll</td><td>1</td><td/></row>
-		<row><td>gma.system.mousekeyhook.dll</td><td>Gma.System.MouseKeyHook.dll</td><td>GMASYS~1.DLL|Gma.System.MouseKeyHook.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Gma.System.MouseKeyHook.dll</td><td>1</td><td/></row>
-		<row><td>hardcodet.wpf.taskbarnotific</td><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td>HARDCO~1.DLL|Hardcodet.Wpf.TaskbarNotification.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Hardcodet.Wpf.TaskbarNotification.dll</td><td>1</td><td/></row>
-		<row><td>hardcodet.wpf.taskbarnotific1</td><td>ISX_DEFAULTCOMPONENT</td><td>HARDCO~1.PDB|Hardcodet.Wpf.TaskbarNotification.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Hardcodet.Wpf.TaskbarNotification.pdb</td><td>1</td><td/></row>
-		<row><td>hardcodet.wpf.taskbarnotific2</td><td>ISX_DEFAULTCOMPONENT</td><td>HARDCO~1.XML|Hardcodet.Wpf.TaskbarNotification.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Hardcodet.Wpf.TaskbarNotification.xml</td><td>1</td><td/></row>
-		<row><td>log4net.dll</td><td>log4net.dll</td><td>log4net.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\log4net.dll</td><td>1</td><td/></row>
-		<row><td>log4net.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>log4net.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\log4net.xml</td><td>1</td><td/></row>
-		<row><td>logitechledengineswrapper.dl</td><td>LogitechLedEnginesWrapper.dll</td><td>LOGITE~1.DLL|LogitechLedEnginesWrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\LogitechLedEnginesWrapper.dll</td><td>1</td><td/></row>
-		<row><td>mahapps.metro.dll</td><td>MahApps.Metro.dll</td><td>MAHAPP~1.DLL|MahApps.Metro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\MahApps.Metro.dll</td><td>1</td><td/></row>
-		<row><td>mahapps.metro.pdb</td><td>ISX_DEFAULTCOMPONENT</td><td>MAHAPP~1.PDB|MahApps.Metro.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\MahApps.Metro.pdb</td><td>1</td><td/></row>
-		<row><td>mahapps.metro.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>MAHAPP~1.XML|MahApps.Metro.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\MahApps.Metro.xml</td><td>1</td><td/></row>
-		<row><td>microsoft.qualitytools.testi</td><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td>MICROS~1.DLL|Microsoft.QualityTools.Testing.Fakes.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Microsoft.QualityTools.Testing.Fakes.dll</td><td>1</td><td/></row>
-		<row><td>naudio.dll</td><td>NAudio.dll</td><td>NAudio.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\NAudio.dll</td><td>1</td><td/></row>
-		<row><td>naudio.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>NAudio.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\NAudio.xml</td><td>1</td><td/></row>
-		<row><td>newtonsoft.json.dll</td><td>Newtonsoft.Json.dll</td><td>NEWTON~1.DLL|Newtonsoft.Json.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Newtonsoft.Json.dll</td><td>1</td><td/></row>
-		<row><td>newtonsoft.json.xml</td><td>ISX_DEFAULTCOMPONENT</td><td>NEWTON~1.XML|Newtonsoft.Json.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Newtonsoft.Json.xml</td><td>1</td><td/></row>
-		<row><td>rzchromasdk64.dll</td><td>RzChromaSDK64.dll</td><td>RZCHRO~1.DLL|RzChromaSDK64.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\RzChromaSDK64.dll</td><td>1</td><td/></row>
-		<row><td>system.windows.interactivity</td><td>System.Windows.Interactivity.dll</td><td>SYSTEM~1.DLL|System.Windows.Interactivity.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\System.Windows.Interactivity.dll</td><td>1</td><td/></row>
-		<row><td>violettape.wpfexceptionviewe</td><td>VioletTape.WpfExceptionViewer.dll</td><td>VIOLET~1.DLL|VioletTape.WpfExceptionViewer.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\VioletTape.WpfExceptionViewer.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.avalondock.dll</td><td>Xceed.Wpf.AvalonDock.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.AvalonDock.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.avalondock.themes.</td><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.avalondock.themes.1</td><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.avalondock.themes.2</td><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.datagrid.dll</td><td>Xceed.Wpf.DataGrid.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.DataGrid.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.DataGrid.dll</td><td>1</td><td/></row>
-		<row><td>xceed.wpf.toolkit.dll</td><td>Xceed.Wpf.Toolkit.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.Toolkit.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Xceed.Wpf.Toolkit.dll</td><td>1</td><td/></row>
+		<row><td>artemis.application</td><td>ISX_DEFAULTCOMPONENT1</td><td>ARTEMI~1.APP|Artemis.application</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.application</td><td>1</td><td/></row>
+		<row><td>artemis.exe</td><td>Artemis.exe</td><td>Artemis.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.exe</td><td>1</td><td/></row>
+		<row><td>artemis.exe.config</td><td>ISX_DEFAULTCOMPONENT2</td><td>ARTEMI~1.CON|Artemis.exe.config</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.exe.config</td><td>1</td><td/></row>
+		<row><td>artemis.exe.manifest</td><td>ISX_DEFAULTCOMPONENT3</td><td>ARTEMI~1.MAN|Artemis.exe.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.exe.manifest</td><td>1</td><td/></row>
+		<row><td>artemis.exe1</td><td>Artemis.exe1</td><td>Artemis.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\app.publish\Artemis.exe</td><td>1</td><td/></row>
+		<row><td>artemis.pdb</td><td>ISX_DEFAULTCOMPONENT4</td><td>Artemis.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.pdb</td><td>1</td><td/></row>
+		<row><td>artemis.vshost.application</td><td>ISX_DEFAULTCOMPONENT5</td><td>ARTEMI~1.APP|Artemis.vshost.application</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.vshost.application</td><td>1</td><td/></row>
+		<row><td>artemis.vshost.exe</td><td>Artemis.vshost.exe</td><td>ARTEMI~1.EXE|Artemis.vshost.exe</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.vshost.exe</td><td>1</td><td/></row>
+		<row><td>artemis.vshost.exe.config</td><td>ISX_DEFAULTCOMPONENT6</td><td>ARTEMI~1.CON|Artemis.vshost.exe.config</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.vshost.exe.config</td><td>1</td><td/></row>
+		<row><td>artemis.vshost.exe.manifest</td><td>ISX_DEFAULTCOMPONENT7</td><td>ARTEMI~1.MAN|Artemis.vshost.exe.manifest</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.vshost.exe.manifest</td><td>1</td><td/></row>
+		<row><td>autofac.dll</td><td>Autofac.dll</td><td>Autofac.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Autofac.dll</td><td>1</td><td/></row>
+		<row><td>autofac.xml</td><td>ISX_DEFAULTCOMPONENT8</td><td>Autofac.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Autofac.xml</td><td>1</td><td/></row>
+		<row><td>caliburn.micro.autofac.dll</td><td>Caliburn.Micro.Autofac.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.Autofac.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Caliburn.Micro.Autofac.dll</td><td>1</td><td/></row>
+		<row><td>caliburn.micro.dll</td><td>Caliburn.Micro.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Caliburn.Micro.dll</td><td>1</td><td/></row>
+		<row><td>caliburn.micro.platform.dll</td><td>Caliburn.Micro.Platform.dll</td><td>CALIBU~1.DLL|Caliburn.Micro.Platform.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Caliburn.Micro.Platform.dll</td><td>1</td><td/></row>
+		<row><td>caliburn.micro.platform.xml</td><td>ISX_DEFAULTCOMPONENT9</td><td>CALIBU~1.XML|Caliburn.Micro.Platform.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Caliburn.Micro.Platform.xml</td><td>1</td><td/></row>
+		<row><td>caliburn.micro.xml</td><td>ISX_DEFAULTCOMPONENT10</td><td>CALIBU~1.XML|Caliburn.Micro.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Caliburn.Micro.xml</td><td>1</td><td/></row>
+		<row><td>corale.colore.dll</td><td>Corale.Colore.dll</td><td>CORALE~1.DLL|Corale.Colore.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Corale.Colore.dll</td><td>1</td><td/></row>
+		<row><td>corale.colore.xml</td><td>ISX_DEFAULTCOMPONENT11</td><td>CORALE~1.XML|Corale.Colore.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Corale.Colore.xml</td><td>1</td><td/></row>
+		<row><td>cue.net.dll</td><td>CUE.NET.dll</td><td>CUENET~1.DLL|CUE.NET.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\CUE.NET.dll</td><td>1</td><td/></row>
+		<row><td>cuesdk_2013.dll</td><td>CUESDK_2013.dll</td><td>CUESDK~1.DLL|CUESDK_2013.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\x86\CUESDK_2013.dll</td><td>1</td><td/></row>
+		<row><td>cuesdk_2013.dll1</td><td>CUESDK_2013.dll1</td><td>CUESDK~1.DLL|CUESDK_2013.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\x64\CUESDK_2013.dll</td><td>1</td><td/></row>
+		<row><td>gma.system.mousekeyhook.dll</td><td>Gma.System.MouseKeyHook.dll</td><td>GMASYS~1.DLL|Gma.System.MouseKeyHook.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Gma.System.MouseKeyHook.dll</td><td>1</td><td/></row>
+		<row><td>hardcodet.wpf.taskbarnotific</td><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td>HARDCO~1.DLL|Hardcodet.Wpf.TaskbarNotification.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Hardcodet.Wpf.TaskbarNotification.dll</td><td>1</td><td/></row>
+		<row><td>hardcodet.wpf.taskbarnotific1</td><td>ISX_DEFAULTCOMPONENT12</td><td>HARDCO~1.PDB|Hardcodet.Wpf.TaskbarNotification.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Hardcodet.Wpf.TaskbarNotification.pdb</td><td>1</td><td/></row>
+		<row><td>hardcodet.wpf.taskbarnotific2</td><td>ISX_DEFAULTCOMPONENT13</td><td>HARDCO~1.XML|Hardcodet.Wpf.TaskbarNotification.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Hardcodet.Wpf.TaskbarNotification.xml</td><td>1</td><td/></row>
+		<row><td>log4net.dll</td><td>log4net.dll</td><td>log4net.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\log4net.dll</td><td>1</td><td/></row>
+		<row><td>log4net.xml</td><td>ISX_DEFAULTCOMPONENT14</td><td>log4net.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\log4net.xml</td><td>1</td><td/></row>
+		<row><td>logitechledengineswrapper.dl</td><td>LogitechLedEnginesWrapper.dll</td><td>LOGITE~1.DLL|LogitechLedEnginesWrapper.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\LogitechLedEnginesWrapper.dll</td><td>1</td><td/></row>
+		<row><td>mahapps.metro.dll</td><td>MahApps.Metro.dll</td><td>MAHAPP~1.DLL|MahApps.Metro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\MahApps.Metro.dll</td><td>1</td><td/></row>
+		<row><td>mahapps.metro.pdb</td><td>ISX_DEFAULTCOMPONENT15</td><td>MAHAPP~1.PDB|MahApps.Metro.pdb</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\MahApps.Metro.pdb</td><td>1</td><td/></row>
+		<row><td>mahapps.metro.xml</td><td>ISX_DEFAULTCOMPONENT16</td><td>MAHAPP~1.XML|MahApps.Metro.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\MahApps.Metro.xml</td><td>1</td><td/></row>
+		<row><td>microsoft.qualitytools.testi</td><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td>MICROS~1.DLL|Microsoft.QualityTools.Testing.Fakes.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Microsoft.QualityTools.Testing.Fakes.dll</td><td>1</td><td/></row>
+		<row><td>naudio.dll</td><td>NAudio.dll</td><td>NAudio.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\NAudio.dll</td><td>1</td><td/></row>
+		<row><td>naudio.xml</td><td>ISX_DEFAULTCOMPONENT17</td><td>NAudio.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\NAudio.xml</td><td>1</td><td/></row>
+		<row><td>newtonsoft.json.dll</td><td>Newtonsoft.Json.dll</td><td>NEWTON~1.DLL|Newtonsoft.Json.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Newtonsoft.Json.dll</td><td>1</td><td/></row>
+		<row><td>newtonsoft.json.xml</td><td>ISX_DEFAULTCOMPONENT18</td><td>NEWTON~1.XML|Newtonsoft.Json.xml</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Newtonsoft.Json.xml</td><td>1</td><td/></row>
+		<row><td>rzchromasdk64.dll</td><td>RzChromaSDK64.dll</td><td>RZCHRO~1.DLL|RzChromaSDK64.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\RzChromaSDK64.dll</td><td>1</td><td/></row>
+		<row><td>system.windows.interactivity</td><td>System.Windows.Interactivity.dll</td><td>SYSTEM~1.DLL|System.Windows.Interactivity.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\System.Windows.Interactivity.dll</td><td>1</td><td/></row>
+		<row><td>system.windows.interactivity1</td><td>System.Windows.Interactivity.resources.dll</td><td>SYSTEM~1.DLL|System.Windows.Interactivity.resources.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\en\System.Windows.Interactivity.resources.dll</td><td>1</td><td/></row>
+		<row><td>violettape.wpfexceptionviewe</td><td>VioletTape.WpfExceptionViewer.dll</td><td>VIOLET~1.DLL|VioletTape.WpfExceptionViewer.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\VioletTape.WpfExceptionViewer.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.avalondock.dll</td><td>Xceed.Wpf.AvalonDock.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.AvalonDock.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.avalondock.themes.</td><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.avalondock.themes.1</td><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.avalondock.themes.2</td><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.datagrid.dll</td><td>Xceed.Wpf.DataGrid.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.DataGrid.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.DataGrid.dll</td><td>1</td><td/></row>
+		<row><td>xceed.wpf.toolkit.dll</td><td>Xceed.Wpf.Toolkit.dll</td><td>XCEEDW~1.DLL|Xceed.Wpf.Toolkit.dll</td><td>0</td><td/><td/><td/><td>1</td><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Xceed.Wpf.Toolkit.dll</td><td>1</td><td/></row>
 	</table>
 
 	<table name="FileSFPCatalog">
@@ -2141,32 +2234,57 @@
 		<col def="S0">FTPLocation</col>
 		<col def="S0">HTTPLocation</col>
 		<col def="S0">Miscellaneous</col>
-		<row><td>Artemis.exe</td><td/><td/><td>_EBE28BB4_337D_45D8_A05A_7042D9160184_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Artemis.vshost.exe</td><td/><td/><td>_A9AED88F_78D7_4406_9F2C_6498F741176F_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Autofac.dll</td><td/><td/><td>_F6CE5925_4B50_4E2A_8DBE_B68ABA31C14F_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>CUE.NET.dll</td><td/><td/><td>_FE06BB55_FA4D_4830_BAC9_FB17A991E081_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Caliburn.Micro.Autofac.dll</td><td/><td/><td>_70355146_900F_47ED_BF3A_4FE144C6FAED_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Caliburn.Micro.Platform.dll</td><td/><td/><td>_9A557EFB_4F69_4751_97E8_F3EE43DAA4A6_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Caliburn.Micro.dll</td><td/><td/><td>_65FF289F_31E5_486A_82FB_7475C226E01D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Corale.Colore.dll</td><td/><td/><td>_DAF356DE_8E9C_45AD_BDC3_D59F18E6344E_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Gma.System.MouseKeyHook.dll</td><td/><td/><td>_0BD9270F_2CAD_4B7F_85F5_0A57724F4D78_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td/><td/><td>_54CF599D_1E84_4DC2_A893_F9206D52B84A_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_B035C80E_078A_46AE_84EC_154B07D733F4_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>LogitechLedEnginesWrapper.dll</td><td/><td/><td>_D45F9A72_236D_4A1B_9C8C_B0B93DA41C1D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>MahApps.Metro.dll</td><td/><td/><td>_E7732D57_04EC_4272_ACB0_C2AEFBCBF8E8_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td/><td/><td>_784CB380_02F5_4B15_8327_CC2206C1C8F3_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>NAudio.dll</td><td/><td/><td>_56469CCE_A509_47EF_9FC2_CDD68075E623_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Newtonsoft.Json.dll</td><td/><td/><td>_948F1A63_9A42_482A_B3DF_03343AD670B3_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>RzChromaSDK64.dll</td><td/><td/><td>_DA345AAC_F050_4527_9979_E1D4EC7D2791_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>System.Windows.Interactivity.dll</td><td/><td/><td>_F5D83CBA_70F6_4EDA_9CBD_77E442B22F00_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>VioletTape.WpfExceptionViewer.dll</td><td/><td/><td>_26CEABC5_895B_48D5_9941_211B33565D7D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td/><td/><td>_5642DDC4_8010_4079_8A25_426132428AB3_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td/><td/><td>_34E6FF71_B266_420A_90B1_87A1931C4A25_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td/><td/><td>_E58B5A59_8472_45FD_B495_A15AD9749C5D_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.AvalonDock.dll</td><td/><td/><td>_AF126129_8E8D_4B14_990C_96DADED11A17_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.DataGrid.dll</td><td/><td/><td>_C4A4F8C6_2C23_4894_9C59_B3994C8A2EAA_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Xceed.Wpf.Toolkit.dll</td><td/><td/><td>_7BCC8FD2_D002_4E25_9FB6_3D795E192424_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>log4net.dll</td><td/><td/><td>_927C863B_C194_4DB8_A296_FA153412FFF7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Artemis.exe</td><td/><td/><td>_68233B2F_565C_464E_BFFD_8C2F6D07C23D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Artemis.exe1</td><td/><td/><td>_B80D64F0_2EF8_402F_BE8D_08D87DD0FB41_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Artemis.vshost.exe</td><td/><td/><td>_F12D01E7_97B1_4AE1_97F3_C19D768F0E82_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Autofac.dll</td><td/><td/><td>_A7A0E6AC_B464_487A_B8C3_77385022166C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>CUE.NET.dll</td><td/><td/><td>_FDE78EE0_83B0_48DE_890A_9F9C910445CD_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>CUESDK_2013.dll</td><td/><td/><td>_1F494E4F_D612_49AC_AEB7_2FE55B93F4B8_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>CUESDK_2013.dll1</td><td/><td/><td>_767F003A_F071_4B27_ACF6_09F5FBCF090A_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Caliburn.Micro.Autofac.dll</td><td/><td/><td>_6C2346B0_9872_4AE5_B4FB_E63D003495B5_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Caliburn.Micro.Platform.dll</td><td/><td/><td>_16AB3B03_6E7D_42D2_9B19_93909BD0C13D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Caliburn.Micro.dll</td><td/><td/><td>_C15695D4_1943_4889_9568_9B5C6E088E81_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Corale.Colore.dll</td><td/><td/><td>_1657F555_F106_476A_A63B_4A501396B84B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Gma.System.MouseKeyHook.dll</td><td/><td/><td>_91E10BF1_DE3A_4AF7_A18C_9D8EB647ACFF_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Hardcodet.Wpf.TaskbarNotification.dll</td><td/><td/><td>_44AAF394_2330_4F60_87B1_A6955C7168C3_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT</td><td/><td/><td>_AE754BD4_E4E9_4D0C_989A_A66083D6BA9F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT1</td><td/><td/><td>_D96A5BA7_64E7_4837_9403_61514AD8A834_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT10</td><td/><td/><td>_531014E5_A318_4701_9226_0484BFCD1DBD_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT11</td><td/><td/><td>_683EC30D_5AD5_4BA1_988A_5CAA113F2CB9_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT12</td><td/><td/><td>_0C721F7A_8942_4514_8A0F_D4B57DF1479B_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT13</td><td/><td/><td>_21103ED8_962C_434C_A5C3_6DCBD37B3066_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT14</td><td/><td/><td>_CB04E5C4_BE06_4D1A_87E2_0E5A35F385FB_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT15</td><td/><td/><td>_BC8845FB_C201_4878_921E_A4C7081E55C2_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT16</td><td/><td/><td>_812C50A0_9266_4A4A_A0CF_FC4F2F46A46C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT17</td><td/><td/><td>_BF3CF6E8_8133_4E1D_A899_0ED65D43C3A4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT18</td><td/><td/><td>_33C0DE66_206B_4121_AE0E_FE78F28A6C2D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT19</td><td/><td/><td>_4BE5608B_8B33_4AF1_8C62_6779A66094C9_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT2</td><td/><td/><td>_542EA1A2_0C6E_4BF0_8A1C_576A273DD1B7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT20</td><td/><td/><td>_3B3D74CD_46E5_4A43_AE83_2E47F1EDCB99_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT21</td><td/><td/><td>_7543EF4C_D7D1_4493_849A_7532F0CE369E_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT3</td><td/><td/><td>_3AE37FBC_B3A0_493A_8D33_8E52B81D8476_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_313FB409_A850_4F82_9C69_70F88ACB9F48_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_DB249CA3_19FD_4261_A2FE_4643700A1CFE_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT6</td><td/><td/><td>_C6AC80CF_C33A_472F_9BB9_67900FA88764_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT7</td><td/><td/><td>_7E62AA24_148B_46D6_9500_7177E6568782_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT8</td><td/><td/><td>_BAD989AC_D0B4_4EB4_975F_FB8FFF28D01F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT9</td><td/><td/><td>_029BC5F4_6DDB_4E95_BA87_68B01D25800E_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>LogitechLedEnginesWrapper.dll</td><td/><td/><td>_FEF9BBD0_EA44_466C_9190_D41189AB12C3_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>MahApps.Metro.dll</td><td/><td/><td>_A92FD2C9_A49C_4B32_B5E2_E0084C33B6BC_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Microsoft.QualityTools.Testing.Fakes.dll</td><td/><td/><td>_59AF2DF7_C2DC_46AE_AC35_44D0C3F4D1E6_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>NAudio.dll</td><td/><td/><td>_3FB28840_52C8_429D_95A1_1D01CE6F9B49_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Newtonsoft.Json.dll</td><td/><td/><td>_9965E019_555B_4D94_BD23_1F8919039940_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>RzChromaSDK64.dll</td><td/><td/><td>_3270DF7A_39C4_404E_945B_694AD678597F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>System.Windows.Interactivity.dll</td><td/><td/><td>_8D3E805A_DBC6_484D_A520_632C122E83CC_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>System.Windows.Interactivity.resources.dll</td><td/><td/><td>_32324EA1_4358_4D7E_B4BD_B36898C4FCA7_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>VioletTape.WpfExceptionViewer.dll</td><td/><td/><td>_D1C8BD59_977A_4EFB_8CB5_C0A8E0AA7580_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.Aero.dll</td><td/><td/><td>_342FCEE4_8D1B_41DD_9C77_4F3F96DEDF35_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.Metro.dll</td><td/><td/><td>_72FEB3F3_CBB7_4F0C_A5C3_B9390FFFEF6C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.AvalonDock.Themes.VS2010.dll</td><td/><td/><td>_B2132F11_CCE4_475E_A456_00A3C95FAF2D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.AvalonDock.dll</td><td/><td/><td>_1985F108_E2C9_4964_8A6C_6F5C6359E022_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.DataGrid.dll</td><td/><td/><td>_D3AEB309_ADE2_4482_88B8_9814C821B0C8_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Xceed.Wpf.Toolkit.dll</td><td/><td/><td>_CE7B7B86_0B02_4430_ACFA_DAA7E4727BF4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>log4net.dll</td><td/><td/><td>_A4DBE1D7_3D25_4FF1_B6F6_467DB7A1FDE9_FILTER</td><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="ISCustomActionReference">
@@ -2754,7 +2872,7 @@
 		<col def="I2">Encoded</col>
 		<col def="S0">Comment</col>
 		<col def="I4">TimeStamp</col>
-		<row><td>COMPANY_NAME</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1994091562</td></row>
+		<row><td>COMPANY_NAME</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1859900396</td></row>
 		<row><td>DN_AlwaysInstall</td><td>1033</td><td>Always Install</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_COLOR</td><td>1033</td><td>The color settings of your system are not adequate for running [ProductName].</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDPROP_EXPRESS_LAUNCH_CONDITION_DOTNETVERSION45FULL</td><td>1033</td><td>Microsoft .NET Framework 4.5 Full package or greater needs to be installed for this installation to continue.</td><td>0</td><td/><td>-1994070507</td></row>
@@ -3569,6 +3687,12 @@
 		<row><td>IDS_SETUPEXE_LAUNCH_COND_E</td><td>1033</td><td>This setup was built with an evaluation version of InstallShield and can only be launched from setup.exe.</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME1</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1994084715</td></row>
 		<row><td>IDS_SHORTCUT_DISPLAY_NAME2</td><td>1033</td><td>LAUNCH~1.EXE|Launch Artemis.vshost.exe</td><td>0</td><td/><td>-1994117483</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME3</td><td>1033</td><td>LAUNCH~1.EXE|Launch Artemis.exe</td><td>0</td><td/><td>-1859886476</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME4</td><td>1033</td><td>LAUNCH~1.EXE|Launch Artemis.vshost.exe</td><td>0</td><td/><td>-1859886476</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME5</td><td>1033</td><td>LAUNCH~1.EXE|Launch Artemis.exe</td><td>0</td><td/><td>-1859900044</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME6</td><td>1033</td><td>LAUNCH~1.EXE|Launch Artemis.vshost.exe</td><td>0</td><td/><td>-1859900044</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME7</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1859879564</td></row>
+		<row><td>IDS_SHORTCUT_DISPLAY_NAME8</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1859875276</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO</td><td>1033</td><td>From the list of servers below, select the database server you would like to target.</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_DB</td><td>1033</td><td>From the list of catalog names below, select the database catalog you would like to target.</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDS_SQLBROWSE_INTRO_TEMPLATE</td><td>1033</td><td>[IS_SQLBROWSE_INTRO]</td><td>0</td><td/><td>-1994117611</td></row>
@@ -3858,8 +3982,8 @@
 		<row><td>IDS__TargetReq_DESC_RAM</td><td>1033</td><td>The amount of RAM is not adequate for running [ProductName].</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>IDS__TargetReq_DESC_RESOLUTION</td><td>1033</td><td>The screen resolution is not adequate for running [ProductName].</td><td>0</td><td/><td>-1994117611</td></row>
 		<row><td>ID_STRING1</td><td>1033</td><td/><td>0</td><td/><td>-1994117611</td></row>
-		<row><td>ID_STRING2</td><td>1033</td><td>http://www.Artemis.com</td><td>0</td><td/><td>-1994091562</td></row>
-		<row><td>ID_STRING3</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1994091562</td></row>
+		<row><td>ID_STRING2</td><td>1033</td><td>https://github.com/SpoinkyNL/Artemis</td><td>0</td><td/><td>-1859891724</td></row>
+		<row><td>ID_STRING3</td><td>1033</td><td>Artemis</td><td>0</td><td/><td>-1859900396</td></row>
 		<row><td>IIDS_UITEXT_FeatureUninstalled</td><td>1033</td><td>This feature will remain uninstalled.</td><td>0</td><td/><td>-1994117611</td></row>
 	</table>
 
@@ -3974,7 +4098,10 @@
 		<col def="S255">ISBuildSourcePath</col>
 		<col def="I2">ISIconIndex</col>
 		<row><td>ARPPRODUCTICON.exe</td><td/><td>&lt;ISProductFolder&gt;\redist\Language Independent\OS Independent\setupicon.ico</td><td>0</td></row>
+		<row><td>Artemis.exe_7927D36840EA4517BE39ADAC58421976.exe</td><td/><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.exe</td><td>0</td></row>
 		<row><td>Artemis.exe_A44F9637E487415F88FE56145589B717.exe</td><td/><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\Release\Artemis.exe</td><td>0</td></row>
+		<row><td>Artemis.exe_E4F41C0A6D354DCF9C772473C9F6983E.exe</td><td/><td>C:\Users\spoin\Source\Repos\Artemis\Artemis\Artemis\bin\x64\Release\Artemis.exe</td><td>0</td></row>
+		<row><td>Artemis.vshost.exe_48ACCE3AC2614742B3A6B47834DE97E9.exe</td><td/><td>&lt;ISProductFolder&gt;\redist\Language Independent\OS Independent\GenericExe.ico</td><td>0</td></row>
 	</table>
 
 	<table name="IniFile">
@@ -4107,7 +4234,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ISTheme</td><td>InstallShield Blue.theme</td></row>
 		<row><td>ISUSLock</td><td>{695C565B-3E0B-4AD8-BD3C-17E49DB978DD}</td></row>
 		<row><td>ISUSSignature</td><td>{1B63A73F-5F61-45BA-9762-D491A52141EF}</td></row>
-		<row><td>ISVisitedViews</td><td>viewAssistant</td></row>
+		<row><td>ISVisitedViews</td><td>viewAssistant,viewProject,viewUI</td></row>
 		<row><td>Limited</td><td>1</td></row>
 		<row><td>LockPermissionMode</td><td>1</td></row>
 		<row><td>MsiExecCmdLineOptions</td><td/></row>
@@ -4486,7 +4613,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>PROGRAMFILETOLAUNCHATEND</td><td>[INSTALLDIR]Artemis.exe</td><td/></row>
 		<row><td>ProductCode</td><td>{01792E9F-90A3-4598-94E1-65F787E2CCED}</td><td/></row>
 		<row><td>ProductName</td><td>Artemis</td><td/></row>
-		<row><td>ProductVersion</td><td>1.00.0000</td><td/></row>
+		<row><td>ProductVersion</td><td>1.0.0</td><td/></row>
 		<row><td>ProgressType0</td><td>install</td><td/></row>
 		<row><td>ProgressType1</td><td>Installing</td><td/></row>
 		<row><td>ProgressType2</td><td>installed</td><td/></row>
@@ -4564,8 +4691,6 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="s72">DirProperty</col>
 		<col def="i2">InstallMode</col>
 		<row><td>Artemis.exe</td><td>Artemis.exe</td><td/><td>artemis1</td><td>2</td></row>
-		<row><td>FileKey1</td><td>Artemis.exe</td><td/><td>artemis</td><td>2</td></row>
-		<row><td>FileKey2</td><td>Artemis.exe</td><td/><td>artemis1</td><td>2</td></row>
 	</table>
 
 	<table name="RemoveIniFile">
@@ -4651,7 +4776,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<col def="S255">ISComments</col>
 		<col def="S255">ISShortcutName</col>
 		<col def="I4">ISAttributes</col>
-		<row><td>Artemis.exe</td><td>artemis1</td><td>##IDS_SHORTCUT_DISPLAY_NAME1##</td><td>Artemis.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>Artemis.exe_A44F9637E487415F88FE56145589B717.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
+		<row><td>Artemis.exe</td><td>artemis1</td><td>##IDS_SHORTCUT_DISPLAY_NAME8##</td><td>Artemis.exe</td><td>AlwaysInstall</td><td/><td/><td/><td>Artemis.exe_7927D36840EA4517BE39ADAC58421976.exe</td><td>1</td><td>1</td><td>INSTALLDIR</td><td/><td/><td/><td/><td/><td/><td/></row>
 	</table>
 
 	<table name="Signature">
@@ -4678,7 +4803,7 @@ UwBpAG4AZwBsAGUASQBtAGEAZwBlAAEARQB4AHAAcgBlAHMAcwA=
 		<row><td>ArialBlueStrike10</td><td>Arial</td><td>10</td><td>16711680</td><td>8</td></row>
 		<row><td>CourierNew8</td><td>Courier New</td><td>8</td><td/><td/></row>
 		<row><td>CourierNew9</td><td>Courier New</td><td>9</td><td/><td/></row>
-		<row><td>ExpressDefault</td><td>Tahoma</td><td>8</td><td/><td/></row>
+		<row><td>ExpressDefault</td><td>Segoe UI</td><td>9</td><td>0</td><td>0</td></row>
 		<row><td>MSGothic9</td><td>MS Gothic</td><td>9</td><td/><td/></row>
 		<row><td>MSSGreySerif8</td><td>MS Sans Serif</td><td>8</td><td>8421504</td><td/></row>
 		<row><td>MSSWhiteSerif8</td><td>Tahoma</td><td>8</td><td>16777215</td><td/></row>

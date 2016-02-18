@@ -12,6 +12,11 @@ namespace Artemis.KeyboardProviders.Razer
             Name = "Razer BlackWidow Chroma";
         }
 
+        public override bool CanEnable()
+        {
+            return Chroma.IsSdkAvailable();
+        }
+
         public override void Enable()
         {
             Chroma.Instance.Initialize();
