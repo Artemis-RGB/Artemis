@@ -70,7 +70,6 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                         ColorHelpers.ToDrawingColor(Settings.BottomColor)
                     },
                     LinearGradientMode.Vertical) {ContainedBrush = false});
-
             }
 
             _sampleAggregator.FftCalculated += FftCalculated;
@@ -83,6 +82,9 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Update()
         {
+            // Start filling the model
+            _generating = true;
+
             if (SelectedDeviceId == null)
                 return;
 
@@ -92,9 +94,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
             if (device == null || SpectrumData == null)
                 return;
-
-            // Start filling the model
-            _generating = true;
+            if (!SpectrumData.Any())
+                return;
 
             // Parse spectrum data
             for (var i = 0; i < Lines; i++)
@@ -107,7 +108,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
                 // Apply Sensitivity setting
                 height = height*Settings.Sensitivity;
-                var keyboardHeight = (int) Math.Round(((MainModel.ActiveKeyboard.Height/100.00)*height)*Scale);
+                var keyboardHeight = (int) Math.Round(MainModel.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
@@ -117,14 +118,14 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 SoundRectangles[i].Width = Scale;
 
                 if (Settings.FromBottom)
-                    SoundRectangles[i].Y = (MainModel.ActiveKeyboard.Height*Scale) - SoundRectangles[i].Height;
+                    SoundRectangles[i].Y = MainModel.ActiveKeyboard.Height*Scale - SoundRectangles[i].Height;
             }
             _generating = false;
         }
 
         public override Bitmap GenerateBitmap()
         {
-            if (SpectrumData == null)
+            if (SpectrumData == null || SoundRectangles == null)
                 return null;
 
             // Lock the _spectrumData array while busy with it

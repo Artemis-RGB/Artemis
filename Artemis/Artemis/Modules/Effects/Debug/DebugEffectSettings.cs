@@ -16,16 +16,16 @@ namespace Artemis.Modules.Effects.Debug
         public int Scale { get; set; }
         public LinearGradientMode Type { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             ToDefault();
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             Width = 84;
             Height = 24;

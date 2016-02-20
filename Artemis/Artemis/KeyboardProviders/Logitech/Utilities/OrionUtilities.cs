@@ -17,7 +17,7 @@ namespace Artemis.KeyboardProviders.Logitech.Utilities
 
             var depth = Image.GetPixelFormatSize(b.PixelFormat);
             var step = depth/8;
-            var pixels = new byte[(21*6)*step];
+            var pixels = new byte[21*6*step];
             var iptr = bitmapData.Scan0;
 
             // Copy data from pointer to array

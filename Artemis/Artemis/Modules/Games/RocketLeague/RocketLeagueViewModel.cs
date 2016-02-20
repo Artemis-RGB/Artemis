@@ -51,5 +51,10 @@ namespace Artemis.Modules.Games.RocketLeague
 
             SaveSettings();
         }
+
+        public void ToggleEffect()
+        {
+            RocketLeagueModel.Enabled = _rocketLeagueSettings.Enabled;
+        }
     }
 }

@@ -14,14 +14,14 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         public Color MainColor { get; set; }
         public Color SecondaryColor { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             Enabled = Settings.VolumeDisplay.Default.Enabled;
             MainColor = Settings.VolumeDisplay.Default.MainColor;
             SecondaryColor = Settings.VolumeDisplay.Default.SecondaryColor;
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
             Settings.VolumeDisplay.Default.Enabled = Enabled;
             Settings.VolumeDisplay.Default.MainColor = MainColor;
@@ -30,7 +30,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             Settings.VolumeDisplay.Default.Save();
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             Enabled = true;
             MainColor = Color.FromArgb(255, 38, 246, 0);

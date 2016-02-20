@@ -11,6 +11,7 @@ namespace Artemis.Models
         {
         }
 
+        // Overlay Enabled() and Dispose() is called when changing the Enabled value
         public bool Enabled
         {
             get { return _enabled; }

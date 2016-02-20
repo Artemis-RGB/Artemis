@@ -41,6 +41,25 @@ namespace Artemis.Modules.Games.CounterStrike
         public static string Name => "CS:GO";
         public string Content => "Counter-Strike: GO Content";
 
+        public void SaveSettings()
+        {
+            CounterStrikeSettings?.Save();
+        }
+
+        public void ResetSettings()
+        {
+            // TODO: Confirmation dialog (Generic MVVM approach)
+            CounterStrikeSettings.ToDefault();
+            NotifyOfPropertyChange(() => CounterStrikeSettings);
+
+            SaveSettings();
+        }
+
+        public void ToggleEffect()
+        {
+            CounterStrikeModel.Enabled = _counterStrikeSettings.Enabled;
+        }
+
         public void BrowseDirectory()
         {
             var dialog = new FolderBrowserDialog {SelectedPath = CounterStrikeSettings.GameDirectory};
@@ -59,7 +78,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
             if (Directory.Exists(CounterStrikeSettings.GameDirectory + "/csgo/cfg"))
             {
-                var cfgFile = Resources.gamestateConfigFileCsGo.Replace("{{port}}",
+                var cfgFile = Resources.gamestateConfiguration.Replace("{{port}}",
                     MainModel.GameStateWebServer.Port.ToString());
                 File.WriteAllText(CounterStrikeSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg",
                     cfgFile);
@@ -69,20 +88,6 @@ namespace Artemis.Modules.Games.CounterStrike
             MessageBox.Show("Please select a valid CS:GO directory");
             CounterStrikeSettings.GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => CounterStrikeSettings);
-        }
-
-        public void SaveSettings()
-        {
-            CounterStrikeSettings?.Save();
-        }
-
-        public void ResetSettings()
-        {
-            // TODO: Confirmation dialog (Generic MVVM approach)
-            CounterStrikeSettings.ToDefault();
-            NotifyOfPropertyChange(() => CounterStrikeSettings);
-
-            SaveSettings();
         }
     }
 }

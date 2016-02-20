@@ -76,7 +76,7 @@
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
                     Value="{Binding Path=DebugEffectSettings.Scale, Mode=TwoWay}" Minimum="1" Maximum="4"
                     SmallChange="1" IsSnapToTickEnabled="True" />
-            
+
             <!-- Color rotation -->
             <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,9,0,10">
@@ -100,7 +100,7 @@
                     </InlineUIContainer>
                 </TextBlock>
             </StackPanel>
-            
+
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="8" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"

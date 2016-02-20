@@ -23,43 +23,51 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Startup with Windows -->
+        <!-- Master switch -->
         <Label Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
-               Content="Startup with Windows:" />
+               Content="Enable Artemis:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
-        <!-- Keyboard selection -->
+        <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Startup with Windows:" />
+        <controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+
+        <!-- Keyboard selection -->
+        <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />
-        <ComboBox Grid.Row="1" Grid.Column="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
+        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
                   Width="120" />
+        <!-- TODO: Ugly -->
 
         <!-- Gamestate port -->
-        <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Gamestate server port:" />
-        <controls:NumericUpDown Grid.Row="2" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+        <controls:NumericUpDown Grid.Row="3" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="120" />
 
         <!-- Update pointers -->
-        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Download pointers:" />
-        <controls:ToggleSwitch Grid.Row="3" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+        <controls:ToggleSwitch Grid.Row="4" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
         <!-- Buttons -->
-        <Button Grid.Row="4" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+        <Button Grid.Row="5" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
                 VerticalAlignment="Center" HorizontalAlignment="Left" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="4" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
+        <Button Grid.Row="5" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
-        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -68,8 +76,9 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row ="0" Grid.Column="0" Text="Artemis pre-release" VerticalAlignment="Center" HorizontalAlignment="Left" />
-            <Button Grid.Row ="0" Grid.Column="1"  Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis pre-release" VerticalAlignment="Center"
+                       HorizontalAlignment="Left" />
+            <Button Grid.Row="0" Grid.Column="1" Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
                     cal:Message.Attach="[Action NavigateTo('https://github.com/SpoinkyNL/Artemis')]"
                     Content="View on GitHub" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" />
         </Grid>

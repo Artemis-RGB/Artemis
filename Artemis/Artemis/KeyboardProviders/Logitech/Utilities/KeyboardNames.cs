@@ -107,5 +107,5 @@ namespace Artemis.KeyboardProviders.Logitech.Utilities
         NUM_ZERO = 0x52,
         NUM_PERIOD = 0x53,
         TEST = 0x1
-    };
+    }
 }

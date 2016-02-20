@@ -11,7 +11,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -37,15 +37,17 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}" />
+                                  IsChecked="{Binding Path=CounterStrikeSettings.Enabled, Mode=TwoWay}"
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="16" Content="CS:GO Directory" Style="{DynamicResource DescriptionHeaderStyle}"
-                       FontFamily="Segoe UI Semibold" Foreground="#535353" Width="130" HorizontalAlignment="Left" />
+                <Label FontSize="16" Content="CS:GO Directory" FontFamily="Segoe UI Semibold" Foreground="#535353"
+                       Width="130" HorizontalAlignment="Left" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                              Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}"

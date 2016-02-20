@@ -90,7 +90,7 @@
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
                     Value="{Binding Path=AudioVisualizerSettings.Bars, Mode=TwoWay}" Minimum="2" Maximum="21"
                     SmallChange="1" IsSnapToTickEnabled="True" />
-            
+
             <!-- Sensitivity -->
             <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">

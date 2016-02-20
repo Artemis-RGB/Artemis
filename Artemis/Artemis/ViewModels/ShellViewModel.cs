@@ -7,19 +7,23 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels
 {
-    internal sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
+    public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
+        private readonly EffectsViewModel _effectsVm;
+        private readonly GamesViewModel _gamesVm;
+        private readonly OverlaysViewModel _overlaysVm;
+
         public ShellViewModel()
         {
             IEventAggregator events = new EventAggregator();
             MainModel = new MainModel(events);
-
             DisplayName = "Artemis";
 
-            ActivateItem(new EffectsViewModel(MainModel) {DisplayName = "Effects"});
-            ActivateItem(new GamesViewModel(MainModel) {DisplayName = "Games"});
-            ActivateItem(new OverlaysViewModel(MainModel) {DisplayName = "Overlays"});
-            Flyouts.Add(new FlyoutSettingsViewModel());
+            _effectsVm = new EffectsViewModel(MainModel) {DisplayName = "Effects"};
+            _gamesVm = new GamesViewModel(MainModel) {DisplayName = "Games"};
+            _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
+
+            Flyouts.Add(new FlyoutSettingsViewModel(MainModel));
 
             // By now Effects are added to the MainModel so we can savely start one
             ToggleEffects();
@@ -39,6 +43,15 @@ namespace Artemis.ViewModels
         }
 
         public MainModel MainModel { get; set; }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            ActivateItem(_effectsVm);
+            ActivateItem(_gamesVm);
+            ActivateItem(_overlaysVm);
+        }
 
         public void ToggleEffects()
         {

@@ -17,7 +17,7 @@ namespace Artemis.Modules.Effects.TypeWave
         public int TimeToLive { get; set; }
         public int SpreadSpeed { get; set; }
 
-        public override sealed void Load()
+        public sealed override void Load()
         {
             IsRandomColors = Settings.TypeWave.Default.IsRandomColors;
             WaveColor = Settings.TypeWave.Default.WaveColor;
@@ -27,7 +27,7 @@ namespace Artemis.Modules.Effects.TypeWave
             SpreadSpeed = Settings.TypeWave.Default.SpreadSpeed;
         }
 
-        public override sealed void Save()
+        public sealed override void Save()
         {
             Settings.TypeWave.Default.IsRandomColors = IsRandomColors;
             Settings.TypeWave.Default.WaveColor = WaveColor;
@@ -39,7 +39,7 @@ namespace Artemis.Modules.Effects.TypeWave
             Settings.TypeWave.Default.Save();
         }
 
-        public override sealed void ToDefault()
+        public sealed override void ToDefault()
         {
             IsRandomColors = true;
             WaveColor = Color.FromArgb(255, 255, 0, 0);

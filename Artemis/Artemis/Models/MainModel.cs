@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
 using Artemis.Utilities.GameState;
+using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.Memory;
 using Caliburn.Micro;
 
@@ -23,6 +25,7 @@ namespace Artemis.Models
             EffectModels = new List<EffectModel>();
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
             GameStateWebServer = new GameStateWebServer();
+            KeyboardHook = new KeyboardHook();
 
             Events = events;
             Fps = 25;
@@ -32,6 +35,8 @@ namespace Artemis.Models
             _updateWorker.DoWork += UpdateWorker_DoWork;
             _processWorker.DoWork += ProcessWorker_DoWork;
         }
+
+        public KeyboardHook KeyboardHook { get; set; }
 
         public EffectModel ActiveEffect { get; set; }
         public KeyboardProvider ActiveKeyboard { get; set; }
@@ -48,6 +53,9 @@ namespace Artemis.Models
         public void StartEffects()
         {
             LoadLastKeyboard();
+            // If no keyboard was loaded, don't enable effects.
+            if (ActiveKeyboard == null)
+                return;
 
             // Start the webserver
             GameStateWebServer.Start();
@@ -80,12 +88,28 @@ namespace Artemis.Models
             ChangeKeyboard(keyboard ?? KeyboardProviders.First(k => k.Name == "Logitech G910 Orion Spark RGB"));
         }
 
-        private void ChangeKeyboard(KeyboardProvider keyboardProvider)
+        public void ChangeKeyboard(KeyboardProvider keyboardProvider)
         {
             if (ActiveKeyboard != null && keyboardProvider.Name == ActiveKeyboard.Name)
                 return;
 
             ActiveKeyboard?.Disable();
+
+            // Disable everything if there's no active keyboard found
+            if (!keyboardProvider.CanEnable())
+            {
+                ActiveKeyboard = null;
+                MessageBox.Show(
+                    "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
+                    "Please check your cables and/or drivers (could be outdated).\n\n " +
+                    "If needed, you can select a different keyboard in Artemis under settings",
+                    "Artemis  (╯°□°）╯︵ ┻━┻",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                ShutdownEffects();
+                return;
+            }
+
             ActiveKeyboard = keyboardProvider;
             ActiveKeyboard.Enable();
 
@@ -107,7 +131,7 @@ namespace Artemis.Models
             // Game models are only used if they are enabled
             var gameModel = effectModel as GameModel;
             if (gameModel != null)
-                if (!gameModel.Enabled())
+                if (!gameModel.Enabled)
                     return;
 
             if (ActiveEffect != null && effectModel.Name == ActiveEffect.Name)
@@ -178,7 +202,7 @@ namespace Artemis.Models
                 }
 
                 // Sleep according to time left this frame
-                var sleep = (int) ((1000/Fps) - sw.ElapsedMilliseconds);
+                var sleep = (int) (1000/Fps - sw.ElapsedMilliseconds);
                 if (sleep > 0)
                     Thread.Sleep(sleep);
                 sw.Reset();
@@ -197,9 +221,18 @@ namespace Artemis.Models
                     var process = MemoryHelpers.GetProcessIfRunning(effectModel.ProcessName);
                     if (process == null)
                         continue;
+                    if (process.HasExited)
+                        continue;
 
-                    ChangeEffect(effectModel);
-                    foundProcess = true;
+                    // If the active effect is a disabled game model, disable it
+                    var model = ActiveEffect as GameModel;
+                    if (model != null && !model.Enabled)
+                        LoadLastEffect();
+                    else
+                    {
+                        ChangeEffect(effectModel);
+                        foundProcess = true;
+                    }
                 }
 
                 // If no game process is found, but the active effect still belongs to a game,

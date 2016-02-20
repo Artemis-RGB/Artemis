@@ -5,6 +5,8 @@ namespace Artemis.Models
 {
     public abstract class EffectModel : IDisposable
     {
+        public delegate void SettingsUpdateHandler(EffectSettings settings);
+
         public MainModel MainModel;
         public string Name;
 
@@ -14,6 +16,8 @@ namespace Artemis.Models
         }
 
         public abstract void Dispose();
+
+        public event SettingsUpdateHandler SettingsUpdateEvent;
 
         // Called on creation
         public abstract void Enable();
