@@ -49,8 +49,8 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-            Height = (int)_keyboard.KeyboardRectangle.Height;
-            Width = (int)_keyboard.KeyboardRectangle.Width;
+            Height = 7; //(int) _keyboard.KeyboardRectangle.Height;
+            Width = 21; //(int) _keyboard.KeyboardRectangle.Width;
 
             // _keyboard.UpdateMode = UpdateMode.Manual;
             _keyboard.Update(true);
@@ -58,6 +58,7 @@ namespace Artemis.KeyboardProviders.Corsair
 
         public override void Disable()
         {
+            CueSDK.Reinitialize();
         }
 
         /// <summary>
@@ -65,7 +66,7 @@ namespace Artemis.KeyboardProviders.Corsair
         ///     size.
         ///     Does not reset the color each time. Uncomment line 48 for collor reset.
         /// </summary>
-        /// <param name="bitmap//"></param>
+        /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
             using (
