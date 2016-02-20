@@ -24,7 +24,12 @@ namespace Artemis.KeyboardProviders.Logitech
             // Initialize the SDK
             LogitechGSDK.LogiLedInit();
             Thread.Sleep(200);
+
             LogitechGSDK.LogiLedSaveCurrentLighting();
+            LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
+
+            // Disable keys we can't color
+            LogitechGSDK.LogiLedSetLighting(0, 0, 0);
         }
 
         public override void Disable()

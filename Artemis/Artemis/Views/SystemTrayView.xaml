@@ -17,7 +17,7 @@
             <MenuItem Header="Show Artemis" cal:Message.Attach="ShowWindow" />
             <MenuItem Header="Hide Artemis" cal:Message.Attach="HideWindow" />
             <Separator />
-            <MenuItem Header="Disable all effects" cal:Message.Attach="DisableEffects" />
+            <MenuItem Header="{Binding Path=ToggleText, Mode=OneWay}" cal:Message.Attach="ToggleEnabled" />
             <MenuItem Header="Exit" cal:Message.Attach="ExitApplication" />
         </ContextMenu>
 

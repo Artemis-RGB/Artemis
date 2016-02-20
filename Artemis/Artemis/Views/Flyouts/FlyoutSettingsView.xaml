@@ -31,12 +31,15 @@
         <Label Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Enable Artemis:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
+                               IsChecked="{Binding Path=Enabled, Mode=OneWay}"
+                               cal:Message.Attach="[Event Unchecked] = [Action ToggleEnabled]; [Event Checked] = [Action ToggleEnabled]"/>
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Startup with Windows:" />
         <controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               IsChecked="{Binding Path=GeneralSettings.Autorun, Mode=TwoWay}"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
         <!-- Keyboard selection -->
@@ -50,13 +53,15 @@
         <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Gamestate server port:" />
         <controls:NumericUpDown Grid.Row="3" Grid.Column="1" Margin="10" VerticalAlignment="Center"
-                                HorizontalAlignment="Right" Width="120" />
+                                HorizontalAlignment="Right" Width="120"
+                                Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}"/>
 
         <!-- Update pointers -->
         <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Download pointers:" />
         <controls:ToggleSwitch Grid.Row="4" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
+                               IsChecked="{Binding Path=GeneralSettings.EnablePointersUpdate, Mode=TwoWay}"/>
 
         <!-- Buttons -->
         <Button Grid.Row="5" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"

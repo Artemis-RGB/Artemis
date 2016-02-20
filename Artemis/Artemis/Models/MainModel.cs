@@ -52,6 +52,14 @@ namespace Artemis.Models
 
         public void StartEffects()
         {
+            if (Enabled)
+                return;
+            if (_updateWorker.IsBusy || _processWorker.IsBusy)
+            {
+                Events.PublishOnUIThread(new ToggleEnabled(Enabled));
+                return;
+            }
+
             LoadLastKeyboard();
             // If no keyboard was loaded, don't enable effects.
             if (ActiveKeyboard == null)
@@ -66,10 +74,16 @@ namespace Artemis.Models
             // Start the Background Workers
             _updateWorker.RunWorkerAsync();
             _processWorker.RunWorkerAsync();
+
+            Enabled = true;
+            Events.PublishOnUIThread(new ToggleEnabled(Enabled));
         }
 
         public void ShutdownEffects()
         {
+            if (!Enabled)
+                return;
+            
             // Stop the Background Worker
             _updateWorker.CancelAsync();
             _processWorker.CancelAsync();
@@ -80,6 +94,9 @@ namespace Artemis.Models
 
             ActiveKeyboard?.Disable();
             ActiveKeyboard = null;
+            
+            Enabled = false;
+            Events.PublishOnUIThread(new ToggleEnabled(Enabled));
         }
 
         private void LoadLastKeyboard()
@@ -176,6 +193,12 @@ namespace Artemis.Models
             var sw = new Stopwatch();
             while (!_updateWorker.CancellationPending)
             {
+                if (ActiveKeyboard == null)
+                {
+                    Thread.Sleep(1000 / Fps);
+                    continue;
+                }
+
                 sw.Start();
 
                 // Update the current effect
@@ -186,7 +209,8 @@ namespace Artemis.Models
 
                 // Draw enabled overlays on top
                 foreach (
-                    var overlayModel in EffectModels.OfType<OverlayModel>().Where(overlayModel => overlayModel.Enabled))
+                    var overlayModel in
+                        EffectModels.OfType<OverlayModel>().Where(overlayModel => overlayModel.Enabled))
                 {
                     overlayModel.Update();
                     bitmap = bitmap != null ? overlayModel.GenerateBitmap(bitmap) : overlayModel.GenerateBitmap();
@@ -197,12 +221,12 @@ namespace Artemis.Models
                 {
                     ActiveKeyboard.DrawBitmap(bitmap);
 
-                    // debugging
+                    // debugging TODO: Disable when window isn't shown
                     Events.PublishOnUIThread(new ChangeBitmap(bitmap));
                 }
 
                 // Sleep according to time left this frame
-                var sleep = (int) (1000/Fps - sw.ElapsedMilliseconds);
+                var sleep = (int)(1000 / Fps - sw.ElapsedMilliseconds);
                 if (sleep > 0)
                     Thread.Sleep(sleep);
                 sw.Reset();

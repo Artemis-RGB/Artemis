@@ -151,12 +151,9 @@
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=1.3.0.17, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.3.0-ALPHA017\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="MemorySharp">
-      <HintPath>E:\Downloads\Chome Downloads\MemorySharp-master\MemorySharp-master\MemorySharp\bin\Release\MemorySharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -175,7 +172,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -227,6 +227,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
+    <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ChangeActiveEffect.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
     <Compile Include="KeyboardProviders\Corsair\K70.cs" />
@@ -303,6 +304,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>General.settings</DependentUpon>
     </Compile>
+    <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="Settings\Offsets.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -320,6 +322,7 @@
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
+    <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
@@ -417,14 +420,16 @@
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\bow.png" />
+    <Resource Include="Resources\WindowsIcons-license.txt" />
+    <Resource Include="Resources\Entypo-license.txt" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="logo-disabled.ico" />
+    <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\General.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>General.Designer.cs</LastGenOutput>
@@ -499,7 +504,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -511,8 +515,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Content Include="Resources\CounterStrike\gamestateConfiguration.txt" />
-    <Resource Include="Resources\Entypo-license.txt" />
-    <Resource Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
