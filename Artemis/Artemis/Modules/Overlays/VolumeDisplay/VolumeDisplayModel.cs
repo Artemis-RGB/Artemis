@@ -74,9 +74,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
                 return bitmap;
 
             using (var g = Graphics.FromImage(bitmap))
-            {
                 VolumeDisplay.Draw(g);
-            }
 
             return bitmap;
         }
