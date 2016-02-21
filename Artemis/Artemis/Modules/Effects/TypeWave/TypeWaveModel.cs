@@ -69,11 +69,9 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count == 0)
                 return null;
 
-            var bitmap = new Bitmap(21, 6);
+            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap();
             using (var g = Graphics.FromImage(bitmap))
             {
-                // TODO: Might implement a user-defined background color, but looks ugly most of the time
-                //g.Clear(Color.FromArgb(100, 255, 0, 255));
                 g.Clear(Color.Transparent);
                 g.SmoothingMode = SmoothingMode.HighQuality;
 
