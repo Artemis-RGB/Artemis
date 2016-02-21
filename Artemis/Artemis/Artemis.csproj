@@ -230,8 +230,7 @@
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ChangeActiveEffect.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
-    <Compile Include="KeyboardProviders\Corsair\K70.cs" />
-    <Compile Include="KeyboardProviders\Corsair\K95.cs" />
+    <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
     <Compile Include="KeyboardProviders\Logitech\Orion.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\KeyboardNames.cs" />
