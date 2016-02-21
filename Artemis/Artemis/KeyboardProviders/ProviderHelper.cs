@@ -12,8 +12,7 @@ namespace Artemis.KeyboardProviders
             return new List<KeyboardProvider>
             {
                 new Orion(),
-                new K70(),
-                new K95(),
+                new CorsairRGB(),
                 new BlackWidow()
             };
         }

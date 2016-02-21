@@ -1,19 +1,20 @@
 ﻿using System.Drawing;
 using Artemis.Utilities;
 using CUE.NET;
+using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET.Exceptions;
 
 namespace Artemis.KeyboardProviders.Corsair
 {
-    internal class K95 : KeyboardProvider
+    internal class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
 
-        public K95()
+        public CorsairRGB()
         {
-            Name = "Corsair K95 RGB";
+            Name = "Corsair RGB Keyboards";
             CantEnableText = "Couldn't connect to your Corsair keyboard.\n " +
                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
                              "If needed, you can select a different keyboard in Artemis under settings.";
@@ -54,8 +55,22 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-            Height = 7; //(int) _keyboard.KeyboardRectangle.Height;
-            Width = 24; //(int) _keyboard.KeyboardRectangle.Width;
+
+            switch (_keyboard.DeviceInfo.Model)
+            {
+                case "K95 RGB":
+                    Height = 7;
+                    Width = 24;
+                    break;
+                case "K70 RGB":
+                    Height = 7;
+                    Width = 21;
+                    break;
+                case "Strafe RGB":
+                    Height = 7;
+                    Width = 22;
+                    break;
+            }
 
             // _keyboard.UpdateMode = UpdateMode.Manual;
             _keyboard.Update(true);
