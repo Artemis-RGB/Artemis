@@ -52,6 +52,21 @@ namespace Artemis.Modules.Games.RocketLeague
             MemoryHelpers.GetPointers();
             _pointer = JsonConvert.DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
 
+            //var test =
+            //    JsonConvert.SerializeObject(new List<GamePointersCollectionModel>
+            //    {
+            //        new GamePointersCollectionModel
+            //        {
+            //            Game = "RocketLeague",
+            //            GameVersion = "1.12",
+            //            GameAddresses = new List<GamePointer> {new GamePointer
+            //            {
+            //                Description = "Boost",
+            //                BasePointer = new IntPtr(0x01581AF4),
+            //                Offsets = new []{0xB4, 0x104, 0x320, 0x708, 0x21C}
+            //            }}
+            //        }
+            //    });
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _memory = new Memory(tempProcess);
         }
@@ -120,6 +135,8 @@ namespace Artemis.Modules.Games.RocketLeague
         public override Bitmap GenerateBitmap()
         {
             var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
+            if (_boostRect == null)
+                return null;
 
             using (var g = Graphics.FromImage(bitmap))
             {
