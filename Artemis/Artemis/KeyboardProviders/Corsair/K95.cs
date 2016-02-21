@@ -30,6 +30,11 @@ namespace Artemis.KeyboardProviders.Corsair
                     return false;
                 throw;
             }
+            catch (WrapperException)
+            {
+                CueSDK.Reinitialize();
+                return true;
+            }
 
             return true;
 
@@ -49,8 +54,8 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-            Height = (int) _keyboard.KeyboardRectangle.Height;
-            Width = (int) _keyboard.KeyboardRectangle.Width;
+            Height = 7; //(int) _keyboard.KeyboardRectangle.Height;
+            Width = 24; //(int) _keyboard.KeyboardRectangle.Width;
 
             // _keyboard.UpdateMode = UpdateMode.Manual;
             _keyboard.Update(true);
@@ -58,6 +63,7 @@ namespace Artemis.KeyboardProviders.Corsair
 
         public override void Disable()
         {
+            CueSDK.Reinitialize();
         }
 
         /// <summary>
