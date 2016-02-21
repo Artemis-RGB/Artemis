@@ -1,25 +1,21 @@
 // Pointers used to auto-update
 [
-  {
-    "Game": "Witcher3",
-    "GameVersion": "1.11",
-    "GameAddresses": [
-      {
-        "Description": "Sign",
-        "BasePointer": { "value": 42942304 },
-        "Offsets": [ 40, 16, 32, 3008 ]
-      }
-    ]
-  },
-  {
-    "Game": "RocketLeague",
-    "GameVersion": "1.10",
-    "GameAddresses": [
-      {
-        "Description": "Boost",
-        "BasePointer": { "value": 21998084 },
-        "Offsets": [ 88, 1452, 1780, 540 ]
-      }
-    ]
-  }
+   {
+      "Game":"RocketLeague",
+      "GameVersion":"1.12",
+      "GameAddresses":[
+         {
+            "Description":"Boost",
+            "BasePointer":{
+               "value":22094988
+            },
+            "Offsets":[
+               1252,
+               1452,
+               1800,
+               540
+            ]
+         }
+      ]
+   }
 ]
