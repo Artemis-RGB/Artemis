@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Artemis.KeyboardProviders.Corsair;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 using Artemis.Models;
 using Artemis.Utilities;
@@ -52,7 +53,8 @@ namespace Artemis.Modules.Effects.TypeWave
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
 
                 var decreaseAmount = 255/(Settings.TimeToLive/fps);
-                _waves[i].Color = Color.FromArgb(_waves[i].Color.A - decreaseAmount, _waves[i].Color.R,
+                _waves[i].Color = Color.FromArgb(
+                    _waves[i].Color.A - decreaseAmount, _waves[i].Color.R,
                     _waves[i].Color.G,
                     _waves[i].Color.B);
 
@@ -85,10 +87,16 @@ namespace Artemis.Modules.Effects.TypeWave
                     path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
                         _waves[i].Size, _waves[i].Size);
 
+                    Color fillColor;
+                    if (MainModel.ActiveKeyboard is CorsairRGB)
+                        fillColor = Color.Black;
+                    else
+                        fillColor = Color.Transparent;
+                    
                     var pthGrBrush = new PathGradientBrush(path)
                     {
                         SurroundColors = new[] {_waves[i].Color},
-                        CenterColor = Color.Transparent
+                        CenterColor = fillColor
                     };
 
                     g.FillPath(pthGrBrush, path);
