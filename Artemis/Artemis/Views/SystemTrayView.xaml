@@ -1,6 +1,7 @@
-﻿<Window x:Class="Artemis.Views.SystemTrayView"
+﻿<Controls:MetroWindow x:Class="Artemis.Views.SystemTrayView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:cal="http://www.caliburnproject.org"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         Title="SystemTrayView"
@@ -11,7 +12,7 @@
         Background="Transparent"
         Visibility="Hidden">
 
-    <Window.Resources>
+    <Controls:MetroWindow.Resources>
 
         <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
             <MenuItem Header="Show Artemis" cal:Message.Attach="ShowWindow" />
@@ -28,9 +29,9 @@
                         cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
                         ContextMenu="{StaticResource MainSysTrayMenu}" />
 
-    </Window.Resources>
+    </Controls:MetroWindow.Resources>
 
     <Grid>
         <ContentControl Content="{StaticResource SystemTrayIcon}" />
     </Grid>
-</Window>
+</Controls:MetroWindow>

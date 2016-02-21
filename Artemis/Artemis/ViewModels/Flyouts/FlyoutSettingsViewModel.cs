@@ -80,6 +80,17 @@ namespace Artemis.ViewModels.Flyouts
                 MainModel.StartEffects();
         }
 
+        public void ResetSettings()
+        {
+            GeneralSettings.ResetSettings();
+            NotifyOfPropertyChange(() => GeneralSettings);
+        }
+
+        public void SaveSettings()
+        {
+            GeneralSettings.SaveSettings();
+        }
+
         public void NavigateTo(string url)
         {
             Process.Start(new ProcessStartInfo(url));

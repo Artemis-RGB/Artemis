@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Artemis.Events;
+using Artemis.Settings;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels

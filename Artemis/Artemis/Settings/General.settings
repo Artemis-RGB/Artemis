@@ -6,7 +6,7 @@
       <Value Profile="(Default)">TypeWave</Value>
     </Setting>
     <Setting Name="LastKeyboard" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Corsair Gaming K95 RGB</Value>
+      <Value Profile="(Default)">Logitech G910 RGB</Value>
     </Setting>
     <Setting Name="EnablePointersUpdate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -16,6 +16,9 @@
     </Setting>
     <Setting Name="Autorun" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Suspended" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

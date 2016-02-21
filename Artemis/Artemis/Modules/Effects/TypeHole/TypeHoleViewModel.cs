@@ -30,7 +30,15 @@ namespace Artemis.Modules.Effects.TypeHole
 
         public void ToggleEffect()
         {
-            MainModel.EnableEffect(TypeHoleModel);
+            if (EffectEnabled && !MainModel.Suspended)
+                MainModel.ToggleSuspension();
+            else if (!EffectEnabled && !MainModel.Suspended)
+                MainModel.EnableEffect(TypeHoleModel);
+            else
+            {
+                MainModel.ToggleSuspension();
+                MainModel.EnableEffect(TypeHoleModel);
+            }
         }
     }
 }

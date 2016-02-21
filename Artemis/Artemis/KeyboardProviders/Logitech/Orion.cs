@@ -8,7 +8,10 @@ namespace Artemis.KeyboardProviders.Logitech
     {
         public Orion()
         {
-            Name = "Logitech G910 Orion Spark RGB";
+            Name = "Logitech G910 RGB";
+            CantEnableText = "Couldn't connect to your Logitech G910.\n " +
+                             "Please check your cables and updating the Logitech Gaming Software.\n\n " +
+                             "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
         }

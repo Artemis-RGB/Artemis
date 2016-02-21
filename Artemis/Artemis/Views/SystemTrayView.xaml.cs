@@ -1,11 +1,12 @@
 ﻿using System.Windows;
+using MahApps.Metro.Controls;
 
 namespace Artemis.Views
 {
     /// <summary>
     ///     Interaction logic for SystemTrayView.xaml
     /// </summary>
-    public partial class SystemTrayView : Window
+    public partial class SystemTrayView : MetroWindow
     {
         public SystemTrayView()
         {

@@ -46,8 +46,15 @@ namespace Artemis.Modules.Effects.TypeWave
 
         public void ToggleEffect()
         {
-            MainModel.EnableEffect(TypeWaveModel);
-            NotifyOfPropertyChange(() => EffectEnabled);
+            if (EffectEnabled && !MainModel.Suspended)
+                MainModel.ToggleSuspension();
+            else if (!EffectEnabled && !MainModel.Suspended)
+                MainModel.EnableEffect(TypeWaveModel);
+            else
+            {
+                MainModel.ToggleSuspension();
+                MainModel.EnableEffect(TypeWaveModel);
+            }
         }
 
         public void SaveSettings()

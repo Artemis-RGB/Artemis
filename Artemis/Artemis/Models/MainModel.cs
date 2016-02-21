@@ -17,8 +17,12 @@ namespace Artemis.Models
 {
     public class MainModel
     {
+        private readonly int _fps;
         private readonly BackgroundWorker _processWorker;
         private readonly BackgroundWorker _updateWorker;
+
+        private EffectModel _activeEffect;
+        private bool _wasSuspendedBeforeGame;
 
         public MainModel(IEventAggregator events)
         {
@@ -26,10 +30,11 @@ namespace Artemis.Models
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
             GameStateWebServer = new GameStateWebServer();
             KeyboardHook = new KeyboardHook();
+            Suspended = false;
 
             Events = events;
-            Fps = 25;
 
+            _fps = 25;
             _updateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _processWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _updateWorker.DoWork += UpdateWorker_DoWork;
@@ -37,16 +42,13 @@ namespace Artemis.Models
         }
 
         public KeyboardHook KeyboardHook { get; set; }
-
-        public EffectModel ActiveEffect { get; set; }
         public KeyboardProvider ActiveKeyboard { get; set; }
         public List<EffectModel> EffectModels { get; set; }
         public List<KeyboardProvider> KeyboardProviders { get; set; }
-
         public GameStateWebServer GameStateWebServer { get; set; }
         public IEventAggregator Events { get; set; }
-        public int Fps { get; set; }
-        public bool Enabled { get; set; }
+        public bool Enabled { get; private set; }
+        public bool Suspended { get; private set; }
 
         #region Effect methods
 
@@ -77,73 +79,29 @@ namespace Artemis.Models
 
             Enabled = true;
             Events.PublishOnUIThread(new ToggleEnabled(Enabled));
+
+            if (General.Default.Suspended && !Suspended)
+                ToggleSuspension();
         }
 
         public void ShutdownEffects()
         {
             if (!Enabled)
                 return;
-            
+
             // Stop the Background Worker
             _updateWorker.CancelAsync();
             _processWorker.CancelAsync();
 
             // Dispose the current active effect
-            ActiveEffect?.Dispose();
-            ActiveEffect = null;
+            _activeEffect?.Dispose();
+            _activeEffect = null;
 
             ActiveKeyboard?.Disable();
             ActiveKeyboard = null;
-            
+
             Enabled = false;
             Events.PublishOnUIThread(new ToggleEnabled(Enabled));
-        }
-
-        private void LoadLastKeyboard()
-        {
-            var keyboard = KeyboardProviders.FirstOrDefault(k => k.Name == General.Default.LastKeyboard);
-            ChangeKeyboard(keyboard ?? KeyboardProviders.First(k => k.Name == "Logitech G910 Orion Spark RGB"));
-        }
-
-        public void ChangeKeyboard(KeyboardProvider keyboardProvider)
-        {
-            if (ActiveKeyboard != null && keyboardProvider.Name == ActiveKeyboard.Name)
-                return;
-
-            ActiveKeyboard?.Disable();
-
-            // Disable everything if there's no active keyboard found
-            if (!keyboardProvider.CanEnable())
-            {
-                string message;
-                if (keyboardProvider.Name.ToLower().Contains("Corsair"))
-                {
-                    message = "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
-                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
-                              "If needed, you can select a different keyboard in Artemis under settings.";
-                }
-                else
-                {
-                    message = "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
-                              "Please check your cables and/or drivers (could be outdated).\n\n " +
-                              "If needed, you can select a different keyboard in Artemis under settings.";
-                }
-                
-                ActiveKeyboard = null;
-                MessageBox.Show(
-                    message,
-                    "Artemis  (╯°□°）╯︵ ┻━┻",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                ShutdownEffects();
-                return;
-            }
-
-            ActiveKeyboard = keyboardProvider;
-            ActiveKeyboard.Enable();
-
-            General.Default.LastKeyboard = ActiveKeyboard.Name;
-            General.Default.Save();
         }
 
         private void LoadLastEffect()
@@ -163,21 +121,30 @@ namespace Artemis.Models
                 if (!gameModel.Enabled)
                     return;
 
-            if (ActiveEffect != null && effectModel.Name == ActiveEffect.Name)
+            if (_activeEffect != null && effectModel.Name == _activeEffect.Name)
                 return;
 
-            ActiveEffect?.Dispose();
-            ActiveEffect = effectModel;
-            ActiveEffect.Enable();
+            _activeEffect?.Dispose();
 
-            if (ActiveEffect is GameModel) return;
+            // If needed, unsuspend when loading a new effect
+            if (Suspended)
+            {
+                _wasSuspendedBeforeGame = true;
+                ToggleSuspension();
+            }
+
+            _activeEffect = effectModel;
+            _activeEffect.Enable();
+
+            if (_activeEffect is GameModel)
+                return;
 
             // Non-game effects are stored as the new LastEffect.
-            General.Default.LastEffect = ActiveEffect.Name;
+            General.Default.LastEffect = _activeEffect.Name;
             General.Default.Save();
 
             // Let the ViewModels know
-            Events.PublishOnUIThread(new ChangeActiveEffect(ActiveEffect.Name));
+            Events.PublishOnUIThread(new ChangeActiveEffect(_activeEffect.Name));
         }
 
         public void EnableEffect(EffectModel effectModel)
@@ -188,15 +155,71 @@ namespace Artemis.Models
             ChangeEffect(effectModel);
         }
 
+        public void ToggleSuspension()
+        {
+            if (Suspended)
+            {
+                LoadLastKeyboard();
+                Suspended = false;
+                General.Default.Suspended = false;
+                General.Default.Save();
+                Events.PublishOnUIThread(new ChangeActiveEffect(_activeEffect?.Name));
+                return;
+            }
+
+            Suspended = true;
+            General.Default.Suspended = true;
+            General.Default.Save();
+            ActiveKeyboard?.Disable();
+            ActiveKeyboard = null;
+            Events.PublishOnUIThread(new ChangeActiveEffect(_activeEffect?.Name));
+        }
+
         public bool IsEnabled(EffectModel effectModel)
         {
+            if (Suspended)
+                return false;
             if (effectModel is GameModel)
                 return false;
 
             return General.Default.LastEffect == effectModel.Name;
         }
 
-        #endregion Effect methods
+        #endregion
+
+        #region Keyboard methods
+
+        private void LoadLastKeyboard()
+        {
+            var keyboard = KeyboardProviders.FirstOrDefault(k => k.Name == General.Default.LastKeyboard);
+            ChangeKeyboard(keyboard ?? KeyboardProviders.First());
+        }
+
+        public void ChangeKeyboard(KeyboardProvider keyboardProvider)
+        {
+            if (ActiveKeyboard != null && keyboardProvider.Name == ActiveKeyboard.Name)
+                return;
+
+            ActiveKeyboard?.Disable();
+
+            // Disable everything if there's no active keyboard found
+            if (!keyboardProvider.CanEnable())
+            {
+                ActiveKeyboard = null;
+                MessageBox.Show(keyboardProvider.CantEnableText, "Artemis  (╯°□°）╯︵ ┻━┻",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ShutdownEffects();
+                return;
+            }
+
+            ActiveKeyboard = keyboardProvider;
+            ActiveKeyboard.Enable();
+
+            General.Default.LastKeyboard = ActiveKeyboard.Name;
+            General.Default.Save();
+        }
+
+        #endregion
 
         #region Workers
 
@@ -205,24 +228,23 @@ namespace Artemis.Models
             var sw = new Stopwatch();
             while (!_updateWorker.CancellationPending)
             {
-                if (ActiveKeyboard == null)
+                if (ActiveKeyboard == null || Suspended)
                 {
-                    Thread.Sleep(1000 / Fps);
+                    Thread.Sleep(1000/_fps);
                     continue;
                 }
 
                 sw.Start();
 
                 // Update the current effect
-                ActiveEffect.Update();
+                _activeEffect.Update();
 
                 // Get ActiveEffect's bitmap
-                var bitmap = ActiveEffect.GenerateBitmap();
+                var bitmap = _activeEffect.GenerateBitmap();
 
                 // Draw enabled overlays on top
-                foreach (
-                    var overlayModel in
-                        EffectModels.OfType<OverlayModel>().Where(overlayModel => overlayModel.Enabled))
+                foreach (var overlayModel in EffectModels.OfType<OverlayModel>()
+                    .Where(overlayModel => overlayModel.Enabled))
                 {
                     overlayModel.Update();
                     bitmap = bitmap != null ? overlayModel.GenerateBitmap(bitmap) : overlayModel.GenerateBitmap();
@@ -238,7 +260,7 @@ namespace Artemis.Models
                 }
 
                 // Sleep according to time left this frame
-                var sleep = (int)(1000 / Fps - sw.ElapsedMilliseconds);
+                var sleep = (int) (1000/_fps - sw.ElapsedMilliseconds);
                 if (sleep > 0)
                     Thread.Sleep(sleep);
                 sw.Reset();
@@ -261,7 +283,7 @@ namespace Artemis.Models
                         continue;
 
                     // If the active effect is a disabled game model, disable it
-                    var model = ActiveEffect as GameModel;
+                    var model = _activeEffect as GameModel;
                     if (model != null && !model.Enabled)
                         LoadLastEffect();
                     else
@@ -272,9 +294,16 @@ namespace Artemis.Models
                 }
 
                 // If no game process is found, but the active effect still belongs to a game,
-                // set it to a normal effect
-                if (!foundProcess && ActiveEffect is GameModel)
+                // set it to a normal effect, and if needed, suspend again.
+                if (!foundProcess && _activeEffect is GameModel)
+                {
                     LoadLastEffect();
+                    if (_wasSuspendedBeforeGame)
+                    {
+                        ToggleSuspension();
+                        _wasSuspendedBeforeGame = false;
+                    }
+                }
 
                 Thread.Sleep(1000);
             }

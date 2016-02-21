@@ -7,6 +7,7 @@ namespace Artemis.KeyboardProviders
         public string Name { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
+        public string CantEnableText { get; set; }
 
         public abstract bool CanEnable();
         public abstract void Enable();

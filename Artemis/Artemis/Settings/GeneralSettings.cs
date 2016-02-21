@@ -15,8 +15,6 @@ namespace Artemis.Settings
             {
                 if (General.Default.GamestatePort == value) return;
                 General.Default.GamestatePort = value;
-                ApplyGamestatePort();
-                General.Default.Save();
             }
         }
 
@@ -27,7 +25,6 @@ namespace Artemis.Settings
             {
                 if (General.Default.EnablePointersUpdate == value) return;
                 General.Default.EnablePointersUpdate = value;
-                General.Default.Save();
             }
         }
 
@@ -38,8 +35,6 @@ namespace Artemis.Settings
             {
                 if (General.Default.Autorun == value) return;
                 General.Default.Autorun = value;
-                ApplyAutorun();
-                General.Default.Save();
             }
         }
 
@@ -61,6 +56,23 @@ namespace Artemis.Settings
             }
             else if (File.Exists(startupFolder + @"\Artemis.lnk"))
                 File.Delete(startupFolder + @"\Artemis.lnk");
+        }
+
+        public void SaveSettings()
+        {
+            General.Default.Save();
+
+            ApplyAutorun();
+            ApplyGamestatePort();
+        }
+
+        public void ResetSettings()
+        {
+            GamestatePort = 51364;
+            EnablePointersUpdate = true;
+            Autorun = true;
+
+            SaveSettings();
         }
     }
 }

@@ -100,7 +100,15 @@ namespace Artemis.Modules.Effects.Debug
 
         public void ToggleEffect()
         {
-            MainModel.EnableEffect(DebugEffectModel);
+            if (EffectEnabled && !MainModel.Suspended)
+                MainModel.ToggleSuspension();
+            else if (!EffectEnabled && !MainModel.Suspended)
+                MainModel.EnableEffect(DebugEffectModel);
+            else
+            {
+                MainModel.ToggleSuspension();
+                MainModel.EnableEffect(DebugEffectModel);
+            }
         }
 
         public void ResetSettings()

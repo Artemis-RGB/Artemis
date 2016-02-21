@@ -37,7 +37,7 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Corsair Gaming K95 RGB")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Logitech G910 RGB")]
         public string LastKeyboard {
             get {
                 return ((string)(this["LastKeyboard"]));
@@ -80,6 +80,18 @@ namespace Artemis.Settings {
             }
             set {
                 this["Autorun"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Suspended {
+            get {
+                return ((bool)(this["Suspended"]));
+            }
+            set {
+                this["Suspended"] = value;
             }
         }
     }

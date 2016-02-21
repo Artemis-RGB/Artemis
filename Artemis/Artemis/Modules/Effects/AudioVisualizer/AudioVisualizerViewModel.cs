@@ -46,8 +46,15 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public void ToggleEffect()
         {
-            MainModel.EnableEffect(AudioVisualizerModel);
-            NotifyOfPropertyChange(() => EffectEnabled);
+            if (EffectEnabled && !MainModel.Suspended)
+                MainModel.ToggleSuspension();
+            else if (!EffectEnabled && !MainModel.Suspended)
+                MainModel.EnableEffect(AudioVisualizerModel);
+            else
+            {
+                MainModel.ToggleSuspension();
+                MainModel.EnableEffect(AudioVisualizerModel);
+            }
         }
 
         public void SaveSettings()

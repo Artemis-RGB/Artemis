@@ -3,7 +3,6 @@ using System.Drawing;
 using Artemis.KeyboardProviders.Razer.Utilities;
 using Corale.Colore.Core;
 using Corale.Colore.Razer.Keyboard;
-using Color = Corale.Colore.Core.Color;
 
 namespace Artemis.KeyboardProviders.Razer
 {
@@ -12,6 +11,9 @@ namespace Artemis.KeyboardProviders.Razer
         public BlackWidow()
         {
             Name = "Razer BlackWidow Chroma";
+            CantEnableText = "Couldn't connect to your Razer BlackWidow Chroma.\n " +
+                             "Please check your cables and try updating Razer Synapse.\n\n " +
+                             "If needed, you can select a different keyboard in Artemis under settings.";
         }
 
         public override bool CanEnable()
@@ -38,8 +40,8 @@ namespace Artemis.KeyboardProviders.Razer
         public override void Enable()
         {
             Chroma.Instance.Initialize();
-            Height = (int) Constants.MaxRows;
-            Width = (int) Constants.MaxColumns;
+            Height = Constants.MaxRows;
+            Width = Constants.MaxColumns;
         }
 
         public override void Disable()

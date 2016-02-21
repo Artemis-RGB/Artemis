@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Drawing;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Devices.Generic.Enums;
@@ -15,7 +13,10 @@ namespace Artemis.KeyboardProviders.Corsair
 
         public K95()
         {
-            Name = "Corsair Gaming K95 RGB";
+            Name = "Corsair K95 RGB";
+            CantEnableText = "Couldn't connect to your Corsair keyboard.\n " +
+                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
+                             "If needed, you can select a different keyboard in Artemis under settings.";
         }
 
         public override bool CanEnable()
@@ -37,7 +38,6 @@ namespace Artemis.KeyboardProviders.Corsair
             }
 
             return true;
-
         }
 
         /// <summary>
