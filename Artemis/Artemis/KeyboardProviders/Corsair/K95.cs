@@ -30,6 +30,11 @@ namespace Artemis.KeyboardProviders.Corsair
                     return false;
                 throw;
             }
+            catch (WrapperException)
+            {
+                CueSDK.Reinitialize();
+                return true;
+            }
 
             return true;
 

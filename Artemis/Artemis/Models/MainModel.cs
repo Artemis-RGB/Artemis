@@ -115,11 +115,23 @@ namespace Artemis.Models
             // Disable everything if there's no active keyboard found
             if (!keyboardProvider.CanEnable())
             {
+                string message;
+                if (keyboardProvider.Name.ToLower().Contains("Corsair"))
+                {
+                    message = "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
+                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
+                              "If needed, you can select a different keyboard in Artemis under settings.";
+                }
+                else
+                {
+                    message = "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
+                              "Please check your cables and/or drivers (could be outdated).\n\n " +
+                              "If needed, you can select a different keyboard in Artemis under settings.";
+                }
+                
                 ActiveKeyboard = null;
                 MessageBox.Show(
-                    "Couldn't connect to the " + keyboardProvider.Name + ".\n " +
-                    "Please check your cables and/or drivers (could be outdated).\n\n " +
-                    "If needed, you can select a different keyboard in Artemis under settings",
+                    message,
                     "Artemis  (╯°□°）╯︵ ┻━┻",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
