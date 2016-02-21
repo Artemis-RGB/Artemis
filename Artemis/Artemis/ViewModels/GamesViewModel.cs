@@ -18,7 +18,7 @@ namespace Artemis.ViewModels
         {
             _rocketLeagueVm = new RocketLeagueViewModel(mainModel) {DisplayName = "Rocket League"};
             _counterStrikeVm = new CounterStrikeViewModel(mainModel) {DisplayName = "CS:GO"};
-            _dota2Vm = new Dota2ViewModel(mainModel) {DisplayName = "Dota 2 (NYI)"};
+            //_dota2Vm = new Dota2ViewModel(mainModel) {DisplayName = "Dota 2 (NYI)"};
             _witcher3Vm = new Witcher3ViewModel(mainModel) {DisplayName = "The Witcher 3"};
         }
 
@@ -28,7 +28,7 @@ namespace Artemis.ViewModels
 
             ActivateItem(_rocketLeagueVm);
             ActivateItem(_counterStrikeVm);
-            ActivateItem(_dota2Vm);
+            //ActivateItem(_dota2Vm);
             ActivateItem(_witcher3Vm);
         }
     }

@@ -228,7 +228,7 @@ namespace Artemis.Models
             var sw = new Stopwatch();
             while (!_updateWorker.CancellationPending)
             {
-                if (ActiveKeyboard == null || Suspended)
+                if (ActiveKeyboard == null || Suspended || _activeEffect == null)
                 {
                     Thread.Sleep(1000/_fps);
                     continue;

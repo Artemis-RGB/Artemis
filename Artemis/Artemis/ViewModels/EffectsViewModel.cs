@@ -17,7 +17,7 @@ namespace Artemis.ViewModels
         public EffectsViewModel(MainModel mainModel)
         {
             _typeWaveVm = new TypeWaveViewModel(mainModel) {DisplayName = "Type Waves"};
-            _typeHoleVm = new TypeHoleViewModel(mainModel) {DisplayName = "Type Holes (NYI)"};
+            //_typeHoleVm = new TypeHoleViewModel(mainModel) {DisplayName = "Type Holes (NYI)"};
             _audioVisualizerVm = new AudioVisualizerViewModel(mainModel) {DisplayName = "Audio Visualization"};
             _debugVm = new DebugEffectViewModel(mainModel) {DisplayName = "Debug Effect"};
         }
@@ -27,7 +27,7 @@ namespace Artemis.ViewModels
             base.OnActivate();
 
             ActivateItem(_typeWaveVm);
-            ActivateItem(_typeHoleVm);
+            //ActivateItem(_typeHoleVm);
             ActivateItem(_audioVisualizerVm);
             ActivateItem(_debugVm);
         }

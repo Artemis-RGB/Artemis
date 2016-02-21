@@ -72,14 +72,14 @@
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
             <!-- Bar direction -->
-            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="116" VerticalAlignment="Center"
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,9,0,10">
-                Grow bars bottom
+                Grow bars bottom (broken, sorry!)
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=AudioVisualizerSettings.FromBottom, Mode=TwoWay}"
                                    Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
                                    OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
+                                   Margin="0,0,-5,0" Width="114" IsEnabled="False"/>
 
             <!-- Bars amount -->
             <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"

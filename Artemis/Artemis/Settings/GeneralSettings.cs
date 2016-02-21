@@ -40,7 +40,7 @@ namespace Artemis.Settings
 
         private void ApplyGamestatePort()
         {
-            // TODO: Restart Gamestate server
+            // TODO: Restart Gamestate server with new port
         }
 
         private void ApplyAutorun()
