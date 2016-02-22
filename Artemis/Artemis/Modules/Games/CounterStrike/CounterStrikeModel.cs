@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using Artemis.KeyboardProviders.Corsair;
+using Artemis.KeyboardProviders.Logitech;
 using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.GameState;
@@ -42,12 +44,18 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Enable()
         {
-            // TODO: Size stuff 
-            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
+            // Some keyboards have a different baseline, Corsair F-keys start at row 1
+            int baseLine;
+            if (MainModel.ActiveKeyboard is CorsairRGB)
+                baseLine = 1;
+            else
+                baseLine = 0;
+
+            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, baseLine, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
-            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
+            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, baseLine + 1, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
-            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 1, new List<Color>(),
+            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, baseLine + 1, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
             MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
         }

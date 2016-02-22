@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Artemis.Models;
@@ -101,6 +103,23 @@ namespace Artemis.Modules.Games.Witcher3
                                         "Conflicting file: " + file.Remove(0, dialog.SelectedPath.Length) +
                                         "\n\nOnce you press OK you will be taken to an instructions page.",
                             "Conflicting mod found");
+
+                        // Put the mod in the documents folder instead
+                        // Create the directory structure
+                        var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis";
+                        if (
+                            !Directory.Exists(folder + @"\Witcher3\mods\modArtemis\content\scripts\game\player"))
+                            Directory.CreateDirectory(folder + @"\Witcher3\mods\modArtemis\content\scripts\game\player");
+                        if (
+                            !Directory.Exists(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc"))
+                            Directory.CreateDirectory(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc");
+
+                        // Install the mod files
+                        File.WriteAllText(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc\artemis.xml",Resources.artemisXml);
+                        File.WriteAllText(folder + @"\Witcher3\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",Resources.playerWitcherWs);
+
+                        Process.Start(new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
+
                         return;
                     }
                 }

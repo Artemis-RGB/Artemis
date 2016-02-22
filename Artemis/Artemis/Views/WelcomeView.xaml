@@ -41,7 +41,7 @@
                 <LineBreak /><LineBreak />
                 There is also an FAQ available over
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                           NavigateUri="https://github.com/SpoinkyNL/Artemis">
+                           NavigateUri="https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)">
                     here.
                 </Hyperlink>
             </TextBlock>
