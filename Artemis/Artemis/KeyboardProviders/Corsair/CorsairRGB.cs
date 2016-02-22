@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Threading;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
@@ -22,23 +23,33 @@ namespace Artemis.KeyboardProviders.Corsair
 
         public override bool CanEnable()
         {
-            try
+            // Try for about 10 seconds
+            var tries = 0;
+            while (tries < 9)
             {
-                CueSDK.Initialize();
-            }
-            catch (CUEException e)
-            {
-                if (e.Error == CorsairError.ServerNotFound)
-                    return false;
-                throw;
-            }
-            catch (WrapperException)
-            {
-                CueSDK.Reinitialize();
+                try
+                {
+                    CueSDK.Initialize();
+                }
+                catch (CUEException e)
+                {
+                    if (e.Error == CorsairError.ServerNotFound)
+                    {
+                        tries++;
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+                }
+                catch (WrapperException)
+                {
+                    CueSDK.Reinitialize();
+                    return true;
+                }
+
                 return true;
             }
 
-            return true;
+            return false;
         }
 
         /// <summary>
