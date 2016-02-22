@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Artemis.Views.WelcomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="476.986" d:DesignWidth="538.772">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Margin="15, 5, 15, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" MaxWidth="500"
+                   HorizontalAlignment="Left">
+                <Label.Content>
+                    <AccessText TextWrapping="Wrap" Text="Welcome to Artemis" />
+                </Label.Content>
+            </Label>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
+                       Foreground="#070707" MaxWidth="520" TextAlignment="Justify">
+                Hello, <LineBreak /><LineBreak />
+                Thanks a bunch for downloading this application. You're going to enjoy this! :)<LineBreak />
+                <LineBreak />
+                To get started you can click any of the categories on the left and browse through the effects.
+                <LineBreak />
+                Some games require a bit of setting up, so be sure to take a look at everything you want to use.
+                <LineBreak /><LineBreak />
+                If you run into any issues, feel free to let us know on GitHub, you can find a link to our page in the settings menu.
+                <LineBreak /><LineBreak />
+                There is also an FAQ available over
+                <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                           NavigateUri="https://github.com/SpoinkyNL/Artemis">
+                    here.
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

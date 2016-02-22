@@ -54,7 +54,9 @@ namespace Artemis.Utilities.Memory
                 var jsonClient = new WebClient();
                 // Random number to get around cache issues
                 var rand = new Random(DateTime.Now.Millisecond);
-                var json = jsonClient.DownloadString("https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json?random=" + rand.Next());
+                var json =
+                    jsonClient.DownloadString(
+                        "https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json?random=" + rand.Next());
 
                 // Get a list of pointers
                 var pointers = JsonConvert.DeserializeObject<List<GamePointersCollectionModel>>(json);

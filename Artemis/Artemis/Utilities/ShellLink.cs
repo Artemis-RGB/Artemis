@@ -5,8 +5,8 @@ using System.Text;
 namespace Artemis.Utilities
 {
     /// <summary>
-    /// Creates a shortcut (.lnk) file.
-    /// Source: http://stackoverflow.com/a/14632782/5015269
+    ///     Creates a shortcut (.lnk) file.
+    ///     Source: http://stackoverflow.com/a/14632782/5015269
     /// </summary>
     [ComImport]
     [Guid("00021401-0000-0000-C000-000000000046")]

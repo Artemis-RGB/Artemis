@@ -33,7 +33,7 @@
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
                                IsChecked="{Binding Path=Enabled, Mode=OneWay}"
-                               cal:Message.Attach="[Event Unchecked] = [Action ToggleEnabled]; [Event Checked] = [Action ToggleEnabled]"/>
+                               cal:Message.Attach="[Event Unchecked] = [Action ToggleEnabled]; [Event Checked] = [Action ToggleEnabled]" />
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -45,7 +45,8 @@
         <!-- Keyboard selection -->
         <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />
-        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Right"
+        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center"
+                  HorizontalAlignment="Right"
                   Width="140" />
         <!-- TODO: Ugly -->
 
@@ -54,14 +55,14 @@
                Content="Gamestate server port:" />
         <controls:NumericUpDown Grid.Row="3" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="120"
-                                Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}"/>
+                                Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}" />
 
         <!-- Update pointers -->
         <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Download pointers:" />
         <controls:ToggleSwitch Grid.Row="4" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=GeneralSettings.EnablePointersUpdate, Mode=TwoWay}"/>
+                               IsChecked="{Binding Path=GeneralSettings.EnablePointersUpdate, Mode=TwoWay}" />
 
         <!-- Buttons -->
         <Button Grid.Row="5" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"

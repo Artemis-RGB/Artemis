@@ -2,7 +2,6 @@
 using System.Threading;
 using Artemis.Utilities;
 using CUE.NET;
-using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET.Exceptions;
@@ -23,7 +22,7 @@ namespace Artemis.KeyboardProviders.Corsair
 
         public override bool CanEnable()
         {
-            // Try for about 10 seconds
+            // Try for about 10 seconds, in case CUE isn't started yet
             var tries = 0;
             while (tries < 9)
             {

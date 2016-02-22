@@ -12,6 +12,7 @@ namespace Artemis.ViewModels
         private readonly EffectsViewModel _effectsVm;
         private readonly GamesViewModel _gamesVm;
         private readonly OverlaysViewModel _overlaysVm;
+        private readonly WelcomeViewModel _welcomeVm;
 
         public ShellViewModel()
         {
@@ -19,6 +20,7 @@ namespace Artemis.ViewModels
             MainModel = new MainModel(events);
             DisplayName = "Artemis";
 
+            _welcomeVm = new WelcomeViewModel {DisplayName = "Welcome"};
             _effectsVm = new EffectsViewModel(MainModel) {DisplayName = "Effects"};
             _gamesVm = new GamesViewModel(MainModel) {DisplayName = "Games"};
             _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
@@ -35,9 +37,12 @@ namespace Artemis.ViewModels
         {
             base.OnActivate();
 
+            ActivateItem(_welcomeVm);
             ActivateItem(_effectsVm);
             ActivateItem(_gamesVm);
             ActivateItem(_overlaysVm);
+
+            ActiveItem = _welcomeVm;
         }
 
         public void OnClose(EventArgs e)

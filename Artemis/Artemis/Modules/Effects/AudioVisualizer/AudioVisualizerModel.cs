@@ -69,7 +69,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                         ColorHelpers.ToDrawingColor(Settings.MiddleColor),
                         ColorHelpers.ToDrawingColor(Settings.BottomColor)
                     },
-                    LinearGradientMode.Vertical) {ContainedBrush = false});
+                    LinearGradientMode.Vertical) {ContainedBrush = false, Height = 0});
             }
 
             _sampleAggregator.FftCalculated += FftCalculated;

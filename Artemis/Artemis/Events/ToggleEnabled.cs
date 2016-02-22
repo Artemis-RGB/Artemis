@@ -2,11 +2,11 @@
 {
     public class ToggleEnabled
     {
-        public bool Enabled { get; set; }
-
         public ToggleEnabled(bool enabled)
         {
             Enabled = enabled;
         }
+
+        public bool Enabled { get; set; }
     }
 }

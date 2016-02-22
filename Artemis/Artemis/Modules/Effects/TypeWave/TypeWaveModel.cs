@@ -92,7 +92,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;
-                    
+
                     var pthGrBrush = new PathGradientBrush(path)
                     {
                         SurroundColors = new[] {_waves[i].Color},

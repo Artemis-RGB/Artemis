@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Artemis.Events;
-using Artemis.Settings;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels
@@ -26,8 +25,8 @@ namespace Artemis.ViewModels
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
             _shellViewModel.MainModel.Events.Subscribe(this);
-            
-           /*
+
+            /*
             * By now Effects are added to the MainModel so we can savely start
             * This is done from here to make sure all UI elements listening to 
             * events will receive the first ToggleEnabled event
