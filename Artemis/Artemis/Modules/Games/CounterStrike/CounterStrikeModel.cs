@@ -16,6 +16,8 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
+        private int _ammoWidth;
+
         public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings settings) : base(mainModel)
         {
             Settings = settings;
@@ -47,9 +49,15 @@ namespace Artemis.Modules.Games.CounterStrike
             // Some keyboards have a different baseline, Corsair F-keys start at row 1
             int baseLine;
             if (MainModel.ActiveKeyboard is CorsairRGB)
+            {
                 baseLine = 1;
+                _ammoWidth = 19;
+            }
             else
+            {
                 baseLine = 0;
+                _ammoWidth = 16;
+            }
 
             AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, baseLine, new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
@@ -154,7 +162,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
-            AmmoRect.Width = (int) Math.Floor(16/100.00*ammoPercentage)*Scale;
+            AmmoRect.Width = (int) Math.Floor(_ammoWidth / 100.00*ammoPercentage)*Scale;
             AmmoRect.Colors = new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.AmmoMainColor),

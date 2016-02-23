@@ -82,7 +82,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis pre-release" VerticalAlignment="Center"
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis 1.0.0" VerticalAlignment="Center"
                        HorizontalAlignment="Left" />
             <Button Grid.Row="0" Grid.Column="1" Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
                     cal:Message.Attach="[Action NavigateTo('https://github.com/SpoinkyNL/Artemis')]"
