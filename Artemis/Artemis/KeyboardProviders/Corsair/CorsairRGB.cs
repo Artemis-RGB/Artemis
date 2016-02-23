@@ -76,6 +76,10 @@ namespace Artemis.KeyboardProviders.Corsair
                     Height = 7;
                     Width = 21;
                     break;
+                case "K65 RGB":
+                    Height = 7;
+                    Width = 18;
+                    break;
                 case "Strafe RGB":
                     Height = 7;
                     Width = 22;
