@@ -112,6 +112,10 @@ namespace Artemis.Models
 
         private void ChangeEffect(EffectModel effectModel)
         {
+            // Can't set a new effect if ActiveKeyboard is null
+            if (ActiveKeyboard == null)
+                return;
+
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
 
@@ -160,6 +164,11 @@ namespace Artemis.Models
             if (Suspended)
             {
                 LoadLastKeyboard();
+
+                // Don't resume if no keyboard was found
+                if (ActiveKeyboard == null)
+                    return;
+
                 Suspended = false;
                 General.Default.Suspended = false;
                 General.Default.Save();
