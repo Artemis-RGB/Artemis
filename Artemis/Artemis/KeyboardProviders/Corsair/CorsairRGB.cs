@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using Artemis.Utilities;
 using CUE.NET;
@@ -18,6 +19,7 @@ namespace Artemis.KeyboardProviders.Corsair
             CantEnableText = "Couldn't connect to your Corsair keyboard.\n " +
                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
                              "If needed, you can select a different keyboard in Artemis under settings.";
+            KeyboardRegions = new List<KeyboardRegion>();
         }
 
         public override bool CanEnable()
@@ -71,13 +73,16 @@ namespace Artemis.KeyboardProviders.Corsair
                 case "K95 RGB":
                     Height = 7;
                     Width = 24;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 20)));
                     break;
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
                     break;
                 case "Strafe RGB":
                     Height = 7;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
                     Width = 22;
                     break;
             }

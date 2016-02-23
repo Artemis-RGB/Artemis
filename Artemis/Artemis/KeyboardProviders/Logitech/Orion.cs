@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 
@@ -14,6 +15,7 @@ namespace Artemis.KeyboardProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
+            KeyboardRegions = new List<KeyboardRegion> {new KeyboardRegion("TopRow", new Point(0, 0), new Point(0, 16))};
         }
 
         public override bool CanEnable()
