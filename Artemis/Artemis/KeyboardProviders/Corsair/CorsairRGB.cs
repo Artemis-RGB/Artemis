@@ -80,7 +80,7 @@ namespace Artemis.KeyboardProviders.Corsair
                     Height = 7;
                     Width = 18;
                     break;
-                case "Strafe RGB":
+                case "STRAFE RGB":
                     Height = 7;
                     Width = 22;
                     break;
