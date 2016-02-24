@@ -232,6 +232,7 @@
     <Compile Include="Events\ChangeBitmap.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
+    <Compile Include="KeyboardProviders\KeyboardRegion.cs" />
     <Compile Include="KeyboardProviders\Logitech\Orion.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\KeyboardNames.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\KeyMap.cs" />

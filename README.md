@@ -3,6 +3,10 @@ Artemis adds support for several games to a range of RGB keyboards.
 
 Besides game-support there are also a few effects for when you're not gaming. 
 
+**Download**: https://github.com/SpoinkyNL/Artemis/releases
+
+**FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
+
 Some of it's basic features:
 
  * Support for multiple keyboards planned.

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Artemis.KeyboardProviders
 {
@@ -8,6 +9,8 @@ namespace Artemis.KeyboardProviders
         public int Height { get; set; }
         public int Width { get; set; }
         public string CantEnableText { get; set; }
+
+        public List<KeyboardRegion> KeyboardRegions { get; set; }
 
         public abstract bool CanEnable();
         public abstract void Enable();
