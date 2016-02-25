@@ -1,8 +1,8 @@
 ﻿namespace Artemis.Events
 {
-    public class ChangeActiveEffect
+    public class ActiveEffectChanged
     {
-        public ChangeActiveEffect(string activeEffect)
+        public ActiveEffectChanged(string activeEffect)
         {
             ActiveEffect = activeEffect;
         }

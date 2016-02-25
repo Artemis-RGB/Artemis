@@ -228,7 +228,7 @@
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
-    <Compile Include="Events\ChangeActiveEffect.cs" />
+    <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
@@ -241,6 +241,9 @@
     <Compile Include="KeyboardProviders\ProviderHelper.cs" />
     <Compile Include="KeyboardProviders\Razer\BlackWidow.cs" />
     <Compile Include="KeyboardProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="Managers\EffectManager.cs" />
+    <Compile Include="Managers\KeyboardManager.cs" />
+    <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\GamePointersCollectionModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
@@ -278,13 +281,12 @@
       <DependentUpon>Witcher3.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
-    <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\OverlayModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.Designer.cs">
-      <DependentUpon>VolumeDisplay.settings</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VolumeDisplay.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
@@ -323,6 +325,7 @@
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
+    <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />

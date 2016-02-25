@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using Artemis.Managers;
 using Artemis.Models;
 
 namespace Artemis.Modules.Effects.TypeHole
 {
     public class TypeHoleModel : EffectModel
     {
-        public TypeHoleModel(MainModel mainModel) : base(mainModel)
+        public TypeHoleModel(MainManager mainManager) : base(mainManager)
         {
             Name = "TypeHole";
         }

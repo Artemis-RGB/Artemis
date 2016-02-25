@@ -1,44 +1,28 @@
 ﻿using Artemis.Events;
-using Artemis.Models;
+using Artemis.Managers;
+using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.TypeHole
 {
-    public class TypeHoleViewModel : Screen, IHandle<ChangeActiveEffect>
+    public class TypeHoleViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public TypeHoleViewModel(MainModel mainModel)
+        public TypeHoleViewModel(MainManager mainManager)
         {
             // Subscribe to main model
-            MainModel = mainModel;
-            MainModel.Events.Subscribe(this);
+            MainManager = mainManager;
+            MainManager.Events.Subscribe(this);
 
-            // Create effect model and add it to MainModel
-            TypeHoleModel = new TypeHoleModel(mainModel);
-            MainModel.EffectModels.Add(TypeHoleModel);
+            // Create effect model and add it to MainManager
+            EffectModel = new TypeHoleModel(mainManager);
+            MainManager.EffectManager.EffectModels.Add((TypeHoleModel) EffectModel);
         }
-
-        public MainModel MainModel { get; set; }
-        public TypeHoleModel TypeHoleModel { get; set; }
 
         public static string Name => "Type Holes (NYI)";
-        public bool EffectEnabled => MainModel.IsEnabled(TypeHoleModel);
 
-        public void Handle(ChangeActiveEffect message)
+        public void Handle(ActiveEffectChanged message)
         {
             NotifyOfPropertyChange(() => EffectEnabled);
-        }
-
-        public void ToggleEffect()
-        {
-            if (EffectEnabled && !MainModel.Suspended)
-                MainModel.ToggleSuspension();
-            else if (!EffectEnabled && !MainModel.Suspended)
-                MainModel.EnableEffect(TypeHoleModel);
-            else
-            {
-                MainModel.ToggleSuspension();
-                MainModel.EnableEffect(TypeHoleModel);
-            }
         }
     }
 }

@@ -32,8 +32,7 @@
                Content="Enable Artemis:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=Enabled, Mode=OneWay}"
-                               cal:Message.Attach="[Event Unchecked] = [Action ToggleEnabled]; [Event Checked] = [Action ToggleEnabled]" />
+                               IsChecked="{Binding Path=Enabled, Mode=OneWay}" />
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -82,7 +81,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis 1.0.0" VerticalAlignment="Center"
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis 1.0.1" VerticalAlignment="Center"
                        HorizontalAlignment="Left" />
             <Button Grid.Row="0" Grid.Column="1" Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
                     cal:Message.Attach="[Action NavigateTo('https://github.com/SpoinkyNL/Artemis')]"

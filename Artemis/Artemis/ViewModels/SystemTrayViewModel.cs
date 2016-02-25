@@ -24,14 +24,7 @@ namespace Artemis.ViewModels
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
-            _shellViewModel.MainModel.Events.Subscribe(this);
-
-            /*
-            * By now Effects are added to the MainModel so we can savely start
-            * This is done from here to make sure all UI elements listening to 
-            * events will receive the first ToggleEnabled event
-            * */
-            _shellViewModel.MainModel.StartEffects();
+            _shellViewModel.MainManager.Events.Subscribe(this);
 
             // TODO: Check if show on startup is enabled, if so, show window.
         }
@@ -72,9 +65,9 @@ namespace Artemis.ViewModels
         public void ToggleEnabled()
         {
             if (Enabled)
-                _shellViewModel.MainModel.ShutdownEffects();
+                _shellViewModel.MainManager.Stop();
             else
-                _shellViewModel.MainModel.StartEffects();
+                _shellViewModel.MainManager.Start();
         }
 
         protected override void OnActivate()
@@ -110,7 +103,7 @@ namespace Artemis.ViewModels
 
         public void ExitApplication()
         {
-            _shellViewModel.MainModel.ShutdownEffects();
+            _shellViewModel.MainManager.Stop();
             Application.Current.Shutdown();
         }
     }

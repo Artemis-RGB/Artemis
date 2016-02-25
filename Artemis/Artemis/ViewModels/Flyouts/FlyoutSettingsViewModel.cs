@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Artemis.Events;
-using Artemis.Models;
+using Artemis.Managers;
 using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
@@ -14,14 +14,14 @@ namespace Artemis.ViewModels.Flyouts
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainModel mainModel)
+        public FlyoutSettingsViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
-            Header = "settings";
+            MainManager = mainManager;
+            Header = "Settings";
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
-            MainModel.Events.Subscribe(this);
+            MainManager.Events.Subscribe(this);
         }
 
         public GeneralSettings GeneralSettings
@@ -35,10 +35,10 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
 
         public BindableCollection<string> KeyboardProviders
-            => new BindableCollection<string>(MainModel.KeyboardProviders.Select(k => k.Name));
+            => new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders.Select(k => k.Name));
 
         public string SelectedKeyboardProvider
         {
@@ -51,7 +51,8 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == null)
                     return;
 
-                MainModel.ChangeKeyboard(MainModel.KeyboardProviders.First(k => k.Name == _selectedKeyboardProvider));
+                MainManager.KeyboardManager.ChangeKeyboard(
+                    MainManager.KeyboardManager.KeyboardProviders.First(k => k.Name == _selectedKeyboardProvider));
             }
         }
 
@@ -75,9 +76,11 @@ namespace Artemis.ViewModels.Flyouts
         public void ToggleEnabled()
         {
             if (Enabled)
-                MainModel.ShutdownEffects();
+                MainManager.Stop();
+            else if (MainManager.EffectManager.ActiveEffect != null)
+                MainManager.Start();
             else
-                MainModel.StartEffects();
+                MainManager.Start(MainManager.EffectManager.GetLastEffect());
         }
 
         public void ResetSettings()
@@ -98,7 +101,7 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = MainModel.ActiveKeyboard?.Name;
+            SelectedKeyboardProvider = MainManager.KeyboardManager.ActiveKeyboard?.Name;
         }
     }
 }

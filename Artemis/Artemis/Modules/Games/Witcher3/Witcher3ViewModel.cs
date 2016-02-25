@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Artemis.Models;
+using Artemis.Managers;
 using Artemis.Properties;
 using Screen = Caliburn.Micro.Screen;
 
@@ -13,21 +13,21 @@ namespace Artemis.Modules.Games.Witcher3
     {
         private Witcher3Settings _witcher3Settings;
 
-        public Witcher3ViewModel(MainModel mainModel)
+        public Witcher3ViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
 
             // Settings are loaded from file by class
             Witcher3Settings = new Witcher3Settings();
 
-            // Create effect model and add it to MainModel
-            Witcher3Model = new Witcher3Model(mainModel, Witcher3Settings);
-            MainModel.EffectModels.Add(Witcher3Model);
+            // Create effect model and add it to MainManager
+            Witcher3Model = new Witcher3Model(mainManager, Witcher3Settings);
+            MainManager.EffectManager.EffectModels.Add(Witcher3Model);
         }
 
         public static string Name => "The Witcher 3";
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
         public Witcher3Model Witcher3Model { get; set; }
 
         public Witcher3Settings Witcher3Settings
@@ -115,8 +115,11 @@ namespace Artemis.Modules.Games.Witcher3
                             Directory.CreateDirectory(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc");
 
                         // Install the mod files
-                        File.WriteAllText(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc\artemis.xml",Resources.artemisXml);
-                        File.WriteAllText(folder + @"\Witcher3\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",Resources.playerWitcherWs);
+                        File.WriteAllText(folder + @"\Witcher3\bin\config\r4game\user_config_matrix\pc\artemis.xml",
+                            Resources.artemisXml);
+                        File.WriteAllText(
+                            folder + @"\Witcher3\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",
+                            Resources.playerWitcherWs);
 
                         Process.Start(new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
 

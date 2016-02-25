@@ -1,4 +1,4 @@
-﻿using Artemis.Models;
+﻿using Artemis.Managers;
 using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.RocketLeague
@@ -7,21 +7,21 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private RocketLeagueSettings _rocketLeagueSettings;
 
-        public RocketLeagueViewModel(MainModel mainModel)
+        public RocketLeagueViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
 
             // Settings are loaded from file by class
             RocketLeagueSettings = new RocketLeagueSettings();
 
-            // Create effect model and add it to MainModel
-            RocketLeagueModel = new RocketLeagueModel(mainModel, RocketLeagueSettings);
-            MainModel.EffectModels.Add(RocketLeagueModel);
+            // Create effect model and add it to MainManager
+            RocketLeagueModel = new RocketLeagueModel(mainManager, RocketLeagueSettings);
+            MainManager.EffectManager.EffectModels.Add(RocketLeagueModel);
         }
 
         public static string Name => "Rocket League";
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
         public RocketLeagueModel RocketLeagueModel { get; set; }
 
         public RocketLeagueSettings RocketLeagueSettings

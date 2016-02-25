@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Artemis.Managers;
 using Artemis.Models;
 using NAudio.CoreAudioApi;
 
@@ -9,28 +10,28 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        public VolumeDisplayModel(MainModel mainModel, VolumeDisplaySettings settings) : base(mainModel)
+        public VolumeDisplayModel(MainManager mainManager, VolumeDisplaySettings settings) : base(mainManager)
         {
             Settings = settings;
             Name = "VolumeDisplay";
             Enabled = Settings.Enabled;
 
-            VolumeDisplay = new VolumeDisplay(mainModel, settings);
+            VolumeDisplay = new VolumeBar(mainManager, settings);
         }
 
-        public VolumeDisplay VolumeDisplay { get; set; }
+        public VolumeBar VolumeDisplay { get; set; }
 
         public VolumeDisplaySettings Settings { get; set; }
 
         public override void Dispose()
         {
-            MainModel.KeyboardHook.Unsubscribe(HandleKeypress);
+            MainManager.KeyboardHook.Unsubscribe(HandleKeypress);
         }
 
         public override void Enable()
         {
             // Listener won't start unless the effect is active
-            MainModel.KeyboardHook.Subscribe(HandleKeypress);
+            MainManager.KeyboardHook.Subscribe(HandleKeypress);
         }
 
         public override void Update()
@@ -63,7 +64,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override Bitmap GenerateBitmap()
         {
-            return GenerateBitmap(MainModel.ActiveKeyboard.KeyboardBitmap(4));
+            return GenerateBitmap(MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(4));
         }
 
         public override Bitmap GenerateBitmap(Bitmap bitmap)

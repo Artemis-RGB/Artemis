@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Artemis.Managers;
 
 namespace Artemis.Models
 {
@@ -7,12 +8,12 @@ namespace Artemis.Models
     {
         public delegate void SettingsUpdateHandler(EffectSettings settings);
 
-        public MainModel MainModel;
+        public MainManager MainManager;
         public string Name;
 
-        protected EffectModel(MainModel mainModel)
+        protected EffectModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
         }
 
         public abstract void Dispose();

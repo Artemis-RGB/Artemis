@@ -46,7 +46,7 @@
                 Wave color
             </TextBlock>
             <xctk:ColorPicker x:Name="MiddleColor"
-                              SelectedColor="{Binding Path=TypeWaveSettings.WaveColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=EffectSettings.WaveColor, Mode=TwoWay}"
                               Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -55,7 +55,7 @@
                        Height="16" Margin="0,8">
                 Use random colors
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=TypeWaveSettings.IsRandomColors, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=EffectSettings.IsRandomColors, Mode=TwoWay}"
                                    Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
                                    OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
@@ -65,7 +65,7 @@
                        Height="16" Margin="0,8">
                 Shift through colors as the wave grows
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=TypeWaveSettings.IsShiftColors, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=EffectSettings.IsShiftColors, Mode=TwoWay}"
                                    Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
                                    OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
@@ -77,7 +77,7 @@
             </TextBlock>
             <Slider x:Name="ColorShiftSpeed" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
-                    Value="{Binding Path=TypeWaveSettings.ShiftColorSpeed, Mode=TwoWay}" Minimum="1" Maximum="200"
+                    Value="{Binding Path=EffectSettings.ShiftColorSpeed, Mode=TwoWay}" Minimum="1" Maximum="200"
                     SmallChange="45" IsSnapToTickEnabled="True" />
 
             <!-- TTL -->
@@ -87,7 +87,7 @@
             </TextBlock>
             <Slider x:Name="TimeToLive" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
-                    Value="{Binding Path=TypeWaveSettings.TimeToLive, Mode=TwoWay}" Minimum="100" Maximum="2000"
+                    Value="{Binding Path=EffectSettings.TimeToLive, Mode=TwoWay}" Minimum="100" Maximum="2000"
                     SmallChange="45" IsSnapToTickEnabled="True" />
 
             <!-- Growth speed -->
@@ -97,7 +97,7 @@
             </TextBlock>
             <Slider x:Name="SpreadSpeed" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=TypeWaveSettings.SpreadSpeed, Mode=TwoWay}" Minimum="1" Maximum="6"
+                    Value="{Binding Path=EffectSettings.SpreadSpeed, Mode=TwoWay}" Minimum="1" Maximum="6"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->

@@ -18,8 +18,8 @@ namespace Artemis.Utilities.Memory
 
         public static Process GetProcessIfRunning(string processName)
         {
-            var rlProcess = Process.GetProcessesByName(processName);
-            return rlProcess.Length >= 1 ? rlProcess[0] : null;
+            var processes = Process.GetProcessesByName(processName);
+            return processes.Length >= 1 ? processes[0] : null;
         }
 
         public static IntPtr FindAddress(IntPtr pHandle, IntPtr baseAddress, IntPtr staticPointer, int[] offsets)

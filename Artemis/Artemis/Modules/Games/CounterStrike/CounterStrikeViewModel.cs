@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using Artemis.Models;
+using Artemis.Managers;
 using Artemis.Properties;
 using Screen = Caliburn.Micro.Screen;
 
@@ -10,16 +10,16 @@ namespace Artemis.Modules.Games.CounterStrike
     {
         private CounterStrikeSettings _counterStrikeSettings;
 
-        public CounterStrikeViewModel(MainModel mainModel)
+        public CounterStrikeViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
 
             // Settings are loaded from file by class
             CounterStrikeSettings = new CounterStrikeSettings();
 
-            // Create effect model and add it to MainModel
-            CounterStrikeModel = new CounterStrikeModel(mainModel, CounterStrikeSettings);
-            MainModel.EffectModels.Add(CounterStrikeModel);
+            // Create effect model and add it to MainManager
+            CounterStrikeModel = new CounterStrikeModel(mainManager, CounterStrikeSettings);
+            MainManager.EffectManager.EffectModels.Add(CounterStrikeModel);
             PlaceConfigFile();
         }
 
@@ -36,7 +36,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public CounterStrikeModel CounterStrikeModel { get; set; }
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
 
         public static string Name => "CS:GO";
         public string Content => "Counter-Strike: GO Content";
@@ -79,7 +79,7 @@ namespace Artemis.Modules.Games.CounterStrike
             if (Directory.Exists(CounterStrikeSettings.GameDirectory + "/csgo/cfg"))
             {
                 var cfgFile = Resources.gamestateConfiguration.Replace("{{port}}",
-                    MainModel.GameStateWebServer.Port.ToString());
+                    MainManager.GameStateWebServer.Port.ToString());
                 File.WriteAllText(CounterStrikeSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg",
                     cfgFile);
                 return;

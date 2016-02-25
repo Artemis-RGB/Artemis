@@ -4,8 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.KeyboardProviders;
-using Artemis.KeyboardProviders.Corsair;
-using Artemis.KeyboardProviders.Logitech;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.GameState;
@@ -19,7 +18,7 @@ namespace Artemis.Modules.Games.CounterStrike
     {
         private KeyboardRegion _topRow;
 
-        public CounterStrikeModel(MainModel mainModel, CounterStrikeSettings settings) : base(mainModel)
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager)
         {
             Settings = settings;
             Name = "CounterStrike";
@@ -42,20 +41,29 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Dispose()
         {
-            MainModel.GameStateWebServer.GameDataReceived -= HandleGameData;
+            MainManager.GameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
             // Some keyboards have a different baseline, Corsair F-keys start at row 1
-            _topRow = MainModel.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
-            AmmoRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, _topRow.TopLeft.X, new List<Color>(),
+            _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
+            AmmoRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X,
+                new List<Color>(),
                 LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
-            TeamRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, _topRow.TopLeft.X + 1, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
-            EventRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, _topRow.TopLeft.X + 1, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = MainModel.ActiveKeyboard.Height*Scale - Scale};
-            MainModel.GameStateWebServer.GameDataReceived += HandleGameData;
+            TeamRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X + 1,
+                new List<Color>(),
+                LinearGradientMode.Horizontal)
+            {
+                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
+            };
+            EventRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X + 1,
+                new List<Color>(),
+                LinearGradientMode.Horizontal)
+            {
+                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
+            };
+            MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
         }
 
         public override void Update()
@@ -152,7 +160,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
-            AmmoRect.Width = (int) Math.Floor(_topRow.BottomRight.Y / 100.00*ammoPercentage)*Scale;
+            AmmoRect.Width = (int) Math.Floor(_topRow.BottomRight.Y/100.00*ammoPercentage)*Scale;
             AmmoRect.Colors = new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.AmmoMainColor),
@@ -168,7 +176,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
 
             using (var g = Graphics.FromImage(bitmap))
             {

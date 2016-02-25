@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.KeyboardProviders.Corsair;
 using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
 
@@ -16,7 +17,7 @@ namespace Artemis.Modules.Effects.TypeWave
         private readonly List<Wave> _waves;
         private Color _randomColor;
 
-        public TypeWaveModel(MainModel mainModel, TypeWaveSettings settings) : base(mainModel)
+        public TypeWaveModel(MainManager mainManager, TypeWaveSettings settings) : base(mainManager)
         {
             Name = "TypeWave";
             _waves = new List<Wave>();
@@ -28,13 +29,13 @@ namespace Artemis.Modules.Effects.TypeWave
 
         public override void Dispose()
         {
-            MainModel.KeyboardHook.Unsubscribe(HandleKeypress);
+            MainManager.KeyboardHook.Unsubscribe(HandleKeypress);
         }
 
         public override void Enable()
         {
             // Listener won't start unless the effect is active
-            MainModel.KeyboardHook.Subscribe(HandleKeypress);
+            MainManager.KeyboardHook.Subscribe(HandleKeypress);
         }
 
         public override void Update()
@@ -71,13 +72,13 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count == 0)
                 return null;
 
-            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap();
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap();
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
                 g.SmoothingMode = SmoothingMode.HighQuality;
 
-                // Don't want a foreach, collection is changed in different thread
+                // Don't want a for-each, collection is changed in different thread
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (var i = 0; i < _waves.Count; i++)
                 {
@@ -88,7 +89,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
-                    if (MainModel.ActiveKeyboard is CorsairRGB)
+                    if (MainManager.KeyboardManager.ActiveKeyboard is CorsairRGB)
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;

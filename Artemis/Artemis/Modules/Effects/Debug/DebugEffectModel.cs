@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.Keyboard;
 
@@ -8,7 +9,7 @@ namespace Artemis.Modules.Effects.Debug
 {
     internal class DebugEffectModel : EffectModel
     {
-        public DebugEffectModel(MainModel mainModel, DebugEffectSettings settings) : base(mainModel)
+        public DebugEffectModel(MainManager mainManager, DebugEffectSettings settings) : base(mainManager)
         {
             Name = "Debug Effect";
             Settings = settings;
@@ -27,7 +28,7 @@ namespace Artemis.Modules.Effects.Debug
 
         public override void Enable()
         {
-            KeyboardRectangle = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
+            KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 Color.Red,
                 Color.OrangeRed,
