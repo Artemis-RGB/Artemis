@@ -103,7 +103,6 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <summary>
         ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
         ///     size.
-        ///     Does not reset the color each time. Uncomment line 48 for collor reset.
         /// </summary>
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
