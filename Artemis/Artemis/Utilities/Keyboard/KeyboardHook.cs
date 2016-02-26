@@ -10,7 +10,7 @@ namespace Artemis.Utilities.Keyboard
 
         public void Subscribe(KeyEventHandler handleKeypress)
         {
-            if (Subscriptions < 1)
+            if (_mGlobalHook == null)
                 _mGlobalHook = Hook.GlobalEvents();
 
             _mGlobalHook.KeyDown += handleKeypress;
@@ -19,6 +19,9 @@ namespace Artemis.Utilities.Keyboard
 
         public void Unsubscribe(KeyEventHandler handleKeypress)
         {
+            if (_mGlobalHook == null)
+                return;
+
             _mGlobalHook.KeyDown -= handleKeypress;
             Subscriptions--;
 

@@ -65,9 +65,9 @@ namespace Artemis.ViewModels
         public void ToggleEnabled()
         {
             if (Enabled)
-                _shellViewModel.MainManager.Stop();
+                _shellViewModel.MainManager.DisableProgram();
             else
-                _shellViewModel.MainManager.Start();
+                _shellViewModel.MainManager.EnableProgram();
         }
 
         protected override void OnActivate()

@@ -76,11 +76,9 @@ namespace Artemis.ViewModels.Flyouts
         public void ToggleEnabled()
         {
             if (Enabled)
-                MainManager.Stop();
-            else if (MainManager.EffectManager.ActiveEffect != null)
-                MainManager.Start();
+                MainManager.DisableProgram();
             else
-                MainManager.Start(MainManager.EffectManager.GetLastEffect());
+                MainManager.EnableProgram();
         }
 
         public void ResetSettings()
