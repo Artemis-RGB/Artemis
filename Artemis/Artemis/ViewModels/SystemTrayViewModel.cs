@@ -17,7 +17,7 @@ namespace Artemis.ViewModels
          * Thus no property notification is invoked, and system tray context-menu appears 
          * out of sync, still allowing 'Hide' and disabling 'Show'.
          * Given the purpose of the sample - integrating Caliburn.Micro with WPF NotifyIcon -
-         * sync'ing the two view-models is not of interest here.
+         * syncing the two view-models is not of interest here.
          * */
 
         public SystemTrayViewModel(IWindowManager windowManager, ShellViewModel shellViewModel)
@@ -25,6 +25,7 @@ namespace Artemis.ViewModels
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
             _shellViewModel.MainManager.Events.Subscribe(this);
+            _shellViewModel.MainManager.EnableProgram();
 
             // TODO: Check if show on startup is enabled, if so, show window.
         }

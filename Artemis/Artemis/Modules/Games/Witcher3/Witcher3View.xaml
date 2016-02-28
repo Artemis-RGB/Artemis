@@ -36,14 +36,14 @@
             </StackPanel>
             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
+                       MaxWidth="510" TextAlignment="Justify">
                 Artemis requires the latest Witcher 3 version and mod to be installed in order to work. If you don't use any (conflicting) Witcher 3 mods, the mod can automatically be installed.
             </TextBlock>
 
             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
-                If you do use conflicting mods, we'll let you know what to do.
+                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify">
+                Note: If you do use conflicting mods, we'll let you know what to do.
             </TextBlock>
             <Button Grid.Row="3" Grid.Column="0" x:Name="AutoInstall" Content="Try automatic mod install" Width="160"
                     Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Left" Margin="0,20,0,0" />

@@ -48,7 +48,7 @@ namespace Artemis.ViewModels.Abstract
             if (EffectEnabled)
                 MainManager.EffectManager.ClearEffect();
             else
-                MainManager.Restart(EffectModel);
+                MainManager.EffectManager.ChangeEffect(EffectModel);
         }
 
         public void SaveSettings()
@@ -58,7 +58,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the effect if it's currently running to apply settings.
-            MainManager.Restart(EffectModel);
+            MainManager.EffectManager.ChangeEffect(EffectModel);
         }
 
         public void ResetSettings()

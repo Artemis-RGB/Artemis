@@ -37,15 +37,8 @@
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
-                    <Popup PlacementTarget="{Binding ElementName=EffectEnabled}"
-                           IsOpen="{Binding Path=ShowDisabledPopup, Mode=TwoWay}" Placement="Left" VerticalOffset="-10"
-                           PopupAnimation="Fade" StaysOpen="False">
-                        <Border Margin="1">
-                            <TextBlock Background="{DynamicResource AccentColorBrush}" Foreground="{DynamicResource IdealForegroundColorBrush}"
-                                       Text="You can't enable an effect when Artemis is disabled" Padding="4" />
-                        </Border>
-                    </Popup>
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" 
+                                  ToolTip="Note: You can't enable an effect when Artemis is disabled"/>
                 </StackPanel>
             </StackPanel>
             <!-- Top color -->
