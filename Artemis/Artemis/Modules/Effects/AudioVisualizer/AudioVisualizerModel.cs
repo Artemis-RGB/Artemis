@@ -92,7 +92,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         }
 
         public override void Update()
-        {           
+        {      
             // Start filling the model
             _generating = true;
 
