@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -14,6 +15,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -58,13 +60,23 @@
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <!-- Secondary color -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Color bar according to boost amount
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=RocketLeagueSettings.ContextualColor, Mode=TwoWay}"
+                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Info text -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                        Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
                 Tip: To find a color combination you like, start an exhibition match, pickup 100 boost and play around with the colors.
                 They'll appear on your keyboard immediately! Once you're satisfied don't forget to click save changes.
             </TextBlock>
-            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                        Foreground="#535353" MaxWidth="510" TextAlignment="Justify">
                 Note: Requires patch x.x. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).

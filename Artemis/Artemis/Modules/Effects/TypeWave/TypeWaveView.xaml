@@ -22,7 +22,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
 
             </Grid.RowDefinitions>
@@ -109,7 +108,7 @@
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="7" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="8" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

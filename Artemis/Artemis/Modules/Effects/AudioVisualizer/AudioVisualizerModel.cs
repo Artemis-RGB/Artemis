@@ -19,6 +19,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(FftLength);
         private bool _generating;
         private IWaveIn _waveIn;
+        private int _sensitivity;
+        private bool _fromBottom;
 
         public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager)
         {
@@ -27,6 +29,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             DeviceIds = new List<string>();
             SpectrumData = new List<byte>();
             Scale = 4;
+            Initialized = false;
         }
 
         public int Lines { get; set; }
@@ -42,6 +45,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Dispose()
         {
+            Initialized = false;
             _sampleAggregator.PerformFFT = false;
             _sampleAggregator.FftCalculated -= FftCalculated;
 
@@ -52,6 +56,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Enable()
         {
+            Initialized = false;
             Lines = MainManager.KeyboardManager.ActiveKeyboard.Width;
 
             // TODO: Device selection
@@ -59,6 +64,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active)
                 .FirstOrDefault()?.ID;
 
+            // Apply settings
             SoundRectangles = new List<KeyboardRectangle>();
             for (var i = 0; i < Lines; i++)
             {
@@ -72,17 +78,21 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     },
                     LinearGradientMode.Vertical) {ContainedBrush = false, Height = 0});
             }
-
+            _sensitivity = Settings.Sensitivity;
+            _fromBottom = Settings.FromBottom;
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
 
+            // Start listening for sound data
             _waveIn = new WasapiLoopbackCapture();
             _waveIn.DataAvailable += OnDataAvailable;
             _waveIn.StartRecording();
+
+            Initialized = true;
         }
 
         public override void Update()
-        {
+        {           
             // Start filling the model
             _generating = true;
 
@@ -108,7 +118,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     height = (int) Math.Round(SpectrumData[i]/2.55);
 
                 // Apply Sensitivity setting
-                height = height*Settings.Sensitivity;
+                height = height* _sensitivity;
                 var keyboardHeight =
                     (int) Math.Round(MainManager.KeyboardManager.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)
@@ -119,7 +129,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 SoundRectangles[i].X = i*Scale;
                 SoundRectangles[i].Width = Scale;
 
-                if (Settings.FromBottom)
+                if (_fromBottom)
                     SoundRectangles[i].Y = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale -
                                            SoundRectangles[i].Height;
             }
