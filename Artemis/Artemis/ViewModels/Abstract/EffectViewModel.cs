@@ -58,7 +58,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the effect if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(EffectModel);
+            MainManager.EffectManager.ChangeEffect(EffectModel, true);
         }
 
         public void ResetSettings()

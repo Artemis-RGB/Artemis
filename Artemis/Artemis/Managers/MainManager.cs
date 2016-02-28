@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Utilities.GameState;
@@ -15,7 +16,6 @@ namespace Artemis.Managers
         public delegate void PauseCallbackHandler();
 
         private readonly int _fps;
-        private readonly BackgroundWorker _processWorker;
         private bool _paused;
 
         public MainManager(IEventAggregator events)
@@ -28,16 +28,16 @@ namespace Artemis.Managers
 
             _fps = 25;
             UpdateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            _processWorker = new BackgroundWorker();
+            ProcessWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
 
             UpdateWorker.DoWork += UpdateWorker_DoWork;
             UpdateWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
 
-            _processWorker.DoWork += ProcessWorker_DoWork;
-            _processWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
+            ProcessWorker.DoWork += ProcessWorker_DoWork;
+            ProcessWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
 
             // Process worker will always run (and just do nothing when ProgramEnabled is false)
-            _processWorker.RunWorkerAsync();
+            ProcessWorker.RunWorkerAsync();
 
             ProgramEnabled = false;
             Running = false;
@@ -48,6 +48,7 @@ namespace Artemis.Managers
         }
 
         public BackgroundWorker UpdateWorker { get; set; }
+        public BackgroundWorker ProcessWorker { get; set; }
 
         public KeyboardManager KeyboardManager { get; set; }
         public EffectManager EffectManager { get; set; }
@@ -221,7 +222,7 @@ namespace Artemis.Managers
 
         private void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (true)
+            while (!ProcessWorker.CancellationPending)
             {
                 if (!ProgramEnabled)
                 {
@@ -254,5 +255,12 @@ namespace Artemis.Managers
         }
 
         #endregion
+
+        public void Shutdown()
+        {
+            Stop();
+            ProcessWorker.CancelAsync();
+            GameStateWebServer.Stop();
+        }
     }
 }

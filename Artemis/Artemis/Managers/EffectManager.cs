@@ -54,7 +54,8 @@ namespace Artemis.Managers
         ///     Disables the current effect and changes it to the provided effect.
         /// </summary>
         /// <param name="effectModel"></param>
-        public void ChangeEffect(EffectModel effectModel)
+        /// <param name="force">Changes the effect, even if it's already running (effectively restarting it)</param>
+        public void ChangeEffect(EffectModel effectModel, bool force = false)
         {
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
@@ -66,7 +67,7 @@ namespace Artemis.Managers
                     return;
 
             if (ActiveEffect != null)
-                if (effectModel.Name == ActiveEffect.Name)
+                if (effectModel.Name == ActiveEffect.Name && !force)
                     return;
 
             // If the main manager is running, pause it and safely change the effect

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Artemis.Events;
 using Caliburn.Micro;
 
@@ -104,8 +105,11 @@ namespace Artemis.ViewModels
 
         public void ExitApplication()
         {
-            _shellViewModel.MainManager.Stop();
+            _shellViewModel.MainManager.Shutdown();
             Application.Current.Shutdown();
+
+            // Sometimes you need to be rough.
+            Environment.Exit(0);
         }
     }
 }
