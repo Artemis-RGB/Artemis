@@ -10,6 +10,7 @@ namespace Artemis.Models
 
         public MainManager MainManager;
         public string Name;
+        public bool Initialized;
 
         protected EffectModel(MainManager mainManager)
         {
@@ -17,8 +18,6 @@ namespace Artemis.Models
         }
 
         public abstract void Dispose();
-
-        public event SettingsUpdateHandler SettingsUpdateEvent;
 
         // Called on creation
         public abstract void Enable();

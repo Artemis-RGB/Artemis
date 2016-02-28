@@ -25,6 +25,7 @@ namespace Artemis.Modules.Games.CounterStrike
             ProcessName = "csgo";
             Scale = 4;
             Enabled = Settings.Enabled;
+            Initialized = false;
         }
 
         public CounterStrikeSettings Settings { get; set; }
@@ -41,11 +42,14 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Dispose()
         {
+            Initialized = false;
             MainManager.GameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
+            Initialized = false;
+
             // Some keyboards have a different baseline, Corsair F-keys start at row 1
             _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
             AmmoRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X,
@@ -64,6 +68,8 @@ namespace Artemis.Modules.Games.CounterStrike
                 Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
             };
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
+
+            Initialized = true;
         }
 
         public override void Update()

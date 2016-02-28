@@ -25,7 +25,8 @@ namespace Artemis.Modules.Games.Witcher3
             ProcessName = "witcher3";
             Scale = 4;
             Enabled = Settings.Enabled;
-
+            Initialized = false;
+            
             _updateSw = new Stopwatch();
             _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
         }
@@ -36,6 +37,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Dispose()
         {
+            Initialized = false;
             _witcherSettings = null;
 
             _updateSw.Reset();
@@ -43,6 +45,8 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
+            Initialized = false;
+
             _signRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -57,6 +61,8 @@ namespace Artemis.Modules.Games.Witcher3
                 _witcherSettings = witcherSettings;
 
             _updateSw.Start();
+
+            Initialized = true;
         }
 
         public override void Update()

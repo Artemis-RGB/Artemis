@@ -23,19 +23,25 @@ namespace Artemis.Modules.Effects.TypeWave
             _waves = new List<Wave>();
             _randomColor = Color.Red;
             Settings = settings;
+            Initialized = false;
         }
 
         public TypeWaveSettings Settings { get; set; }
 
         public override void Dispose()
         {
+            Initialized = false;
             MainManager.KeyboardHook.Unsubscribe(HandleKeypress);
         }
 
         public override void Enable()
         {
+            Initialized = false;
+
             // Listener won't start unless the effect is active
             MainManager.KeyboardHook.Subscribe(HandleKeypress);
+
+            Initialized = true;
         }
 
         public override void Update()

@@ -14,6 +14,7 @@ namespace Artemis.Modules.Effects.Debug
             Name = "Debug Effect";
             Settings = settings;
             Scale = 4;
+            Initialized = false;
         }
 
         public int Scale { get; set; }
@@ -24,10 +25,13 @@ namespace Artemis.Modules.Effects.Debug
 
         public override void Dispose()
         {
+            Initialized = false;
         }
 
         public override void Enable()
         {
+            Initialized = false;
+
             KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 Color.Red,
@@ -38,6 +42,8 @@ namespace Artemis.Modules.Effects.Debug
                 Color.Purple,
                 Color.DeepPink
             }, LinearGradientMode.Horizontal);
+
+            Initialized = true;
         }
 
         public override void Update()

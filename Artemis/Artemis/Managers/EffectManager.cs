@@ -68,16 +68,18 @@ namespace Artemis.Managers
                 if (effectModel.Name == ActiveEffect.Name)
                     return;
 
-            ActiveEffect?.Dispose();
-
-            if (!_mainManager.Running)
+            // If the main manager is running, pause it and safely change the effect
+            if (_mainManager.Running)
             {
-                _mainManager.Start(effectModel);
+                ChangeEffectWithPause(effectModel);
                 return;
             }
 
+            // If it's not running, change the effect and start it afterwards.
             ActiveEffect = effectModel;
             ActiveEffect.Enable();
+
+            _mainManager.Start(effectModel);
 
             if (ActiveEffect is GameModel)
                 return;
@@ -88,6 +90,17 @@ namespace Artemis.Managers
 
             // Let the ViewModels know
             _events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
+        }
+
+        private void ChangeEffectWithPause(EffectModel effectModel)
+        {
+            _mainManager.Pause(effectModel);
+            _mainManager.PauseCallback += MainManagerOnPauseCallback;
+        }
+
+        private void MainManagerOnPauseCallback(EffectModel callbackEffect)
+        {
+            
         }
 
         /// <summary>

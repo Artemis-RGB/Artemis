@@ -11,5 +11,8 @@
     <Setting Name="SecondaryColor" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FFFF0000</Value>
     </Setting>
+    <Setting Name="ContextualColor" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

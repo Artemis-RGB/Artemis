@@ -31,6 +31,7 @@ namespace Artemis.Modules.Games.RocketLeague
             ProcessName = "RocketLeague";
             Scale = 4;
             Enabled = Settings.Enabled;
+            Initialized = false;
         }
 
         public RocketLeagueSettings Settings { get; set; }
@@ -39,11 +40,14 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Dispose()
         {
+            Initialized = false;
             _memory = null;
         }
 
         public override void Enable()
         {
+            Initialized = false;
+
             _boostRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.MainColor),
@@ -53,23 +57,10 @@ namespace Artemis.Modules.Games.RocketLeague
             MemoryHelpers.GetPointers();
             _pointer = JsonConvert.DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
 
-            //var test =
-            //    JsonConvert.SerializeObject(new List<GamePointersCollectionModel>
-            //    {
-            //        new GamePointersCollectionModel
-            //        {
-            //            Game = "RocketLeague",
-            //            GameVersion = "1.12",
-            //            GameAddresses = new List<GamePointer> {new GamePointer
-            //            {
-            //                Description = "Boost",
-            //                BasePointer = new IntPtr(0x01581AF4),
-            //                Offsets = new []{0xB4, 0x104, 0x320, 0x708, 0x21C}
-            //            }}
-            //        }
-            //    });
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _memory = new Memory(tempProcess);
+
+            Initialized = true;
         }
 
         public override void Update()

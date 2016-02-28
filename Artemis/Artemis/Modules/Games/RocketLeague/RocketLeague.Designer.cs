@@ -58,5 +58,17 @@ namespace Artemis.Modules.Games.RocketLeague {
                 this["SecondaryColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ContextualColor {
+            get {
+                return ((bool)(this["ContextualColor"]));
+            }
+            set {
+                this["ContextualColor"] = value;
+            }
+        }
     }
 }
