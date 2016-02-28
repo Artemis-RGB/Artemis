@@ -32,11 +32,13 @@ namespace Artemis.Modules.Games.RocketLeague
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
+            ContextualColor = Settings.ContextualColor;
         }
 
         public RocketLeagueSettings Settings { get; set; }
 
         public int Scale { get; set; }
+        public bool ContextualColor { get; set; }
 
         public override void Dispose()
         {
@@ -85,11 +87,25 @@ namespace Artemis.Modules.Games.RocketLeague
 
             _boostRect.Width =
                 (int) Math.Ceiling(MainManager.KeyboardManager.ActiveKeyboard.Width*Scale/100.00*_boostAmount);
-            _boostRect.Colors = new List<Color>
+
+            if (ContextualColor)
             {
-                ColorHelpers.ToDrawingColor(Settings.MainColor),
-                ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
-            };
+                if(_boostAmount < 33)
+                    _boostRect.Colors = new List<Color>{ Color.Red };
+                else if(_boostAmount >= 33 && _boostAmount < 66)
+                    _boostRect.Colors = new List<Color> { Color.Yellow };
+                else if(_boostAmount >= 66)
+                    _boostRect.Colors = new List<Color> { Color.Lime };
+            }
+            else
+            {
+                _boostRect.Colors = new List<Color>
+                {
+                    ColorHelpers.ToDrawingColor(Settings.MainColor),
+                    ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
+                };
+            }
+
 
             Task.Run(() => GrowIfHigher());
         }
