@@ -50,8 +50,6 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Initialized = false;
 
-            ContextualColor = Settings.ContextualColor;
-
             _boostRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.MainColor),
@@ -74,6 +72,7 @@ namespace Artemis.Modules.Games.RocketLeague
             if (_memory == null)
                 return;
 
+            ContextualColor = Settings.ContextualColor;
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
             var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
             var boostFloat = _memory.ReadFloat(boostAddress)*100/3;
