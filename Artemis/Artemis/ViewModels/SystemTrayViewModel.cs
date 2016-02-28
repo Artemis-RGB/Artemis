@@ -1,7 +1,13 @@
 ﻿using System;
-using System.Windows;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Artemis.Events;
+using Artemis.Utilities;
 using Caliburn.Micro;
+using Newtonsoft.Json.Linq;
+using Application = System.Windows.Application;
+using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels
 {
@@ -10,6 +16,7 @@ namespace Artemis.ViewModels
         private readonly ShellViewModel _shellViewModel;
 
         private readonly IWindowManager _windowManager;
+        private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
         /*
@@ -27,6 +34,7 @@ namespace Artemis.ViewModels
             _shellViewModel = shellViewModel;
             _shellViewModel.MainManager.Events.Subscribe(this);
             _shellViewModel.MainManager.EnableProgram();
+            _checkedForUpdate = false;
 
             // TODO: Check if show on startup is enabled, if so, show window.
         }
@@ -85,12 +93,20 @@ namespace Artemis.ViewModels
             if (!CanShowWindow)
                 return;
 
+            if (!_checkedForUpdate)
+            {
+                _checkedForUpdate = true;
+                var updateTask = new Task(Updater.CheckForUpdate);
+                updateTask.Start();
+            }
+
             // manually show the next window view-model
             _windowManager.ShowWindow(_shellViewModel);
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
         }
+
 
         public void HideWindow()
         {
