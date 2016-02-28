@@ -32,7 +32,7 @@ namespace Artemis.Modules.Games.RocketLeague
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
-            ContextualColor = Settings.ContextualColor;
+
         }
 
         public RocketLeagueSettings Settings { get; set; }
@@ -49,6 +49,8 @@ namespace Artemis.Modules.Games.RocketLeague
         public override void Enable()
         {
             Initialized = false;
+
+            ContextualColor = Settings.ContextualColor;
 
             _boostRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
