@@ -56,7 +56,7 @@ namespace Artemis.Modules.Games.RocketLeague
                 ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
             }, LinearGradientMode.Horizontal);
 
-            MemoryHelpers.GetPointers();
+            Updater.GetPointers();
             _pointer = JsonConvert.DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
