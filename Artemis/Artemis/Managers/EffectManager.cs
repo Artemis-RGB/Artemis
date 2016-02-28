@@ -23,6 +23,7 @@ namespace Artemis.Managers
 
         public List<EffectModel> EffectModels { get; set; }
         public EffectModel ActiveEffect { get; private set; }
+        public EffectModel PauseEffect { get; private set; }
 
         public IEnumerable<OverlayModel> EnabledOverlays
         {
@@ -75,11 +76,33 @@ namespace Artemis.Managers
                 return;
             }
 
-            // If it's not running, change the effect and start it afterwards.
-            ActiveEffect = effectModel;
+            // If it's not running start it, and let the next recursion handle changing the effect
+            _mainManager.Start(effectModel);
+        }
+
+        private void ChangeEffectWithPause(EffectModel effectModel)
+        {
+            if (PauseEffect != null)
+                return;
+
+            PauseEffect = effectModel;
+            _mainManager.Pause();
+            _mainManager.PauseCallback += MainManagerOnPauseCallback;
+        }
+
+        private void MainManagerOnPauseCallback()
+        {
+            // Change effect logic
+            ActiveEffect?.Dispose();
+
+            ActiveEffect = PauseEffect;
             ActiveEffect.Enable();
 
-            _mainManager.Start(effectModel);
+            // Let the ViewModels know
+            _events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
+
+            PauseEffect = null;
+            _mainManager.Unpause();
 
             if (ActiveEffect is GameModel)
                 return;
@@ -87,20 +110,6 @@ namespace Artemis.Managers
             // Non-game effects are stored as the new LastEffect.
             General.Default.LastEffect = ActiveEffect.Name;
             General.Default.Save();
-
-            // Let the ViewModels know
-            _events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
-        }
-
-        private void ChangeEffectWithPause(EffectModel effectModel)
-        {
-            _mainManager.Pause(effectModel);
-            _mainManager.PauseCallback += MainManagerOnPauseCallback;
-        }
-
-        private void MainManagerOnPauseCallback(EffectModel callbackEffect)
-        {
-            
         }
 
         /// <summary>
@@ -108,6 +117,10 @@ namespace Artemis.Managers
         /// </summary>
         public void ClearEffect()
         {
+            // Don't mess with the ActiveEffect if in the process of changing the effect.
+            if (PauseEffect != null)
+                return;
+            
             if (ActiveEffect == null)
                 return;
 
