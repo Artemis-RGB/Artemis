@@ -43,35 +43,5 @@ namespace Artemis.Utilities.Memory
             }
             return address;
         }
-
-        public static void GetPointers()
-        {
-            if (!General.Default.EnablePointersUpdate)
-                return;
-
-            try
-            {
-                var jsonClient = new WebClient();
-                // Random number to get around cache issues
-                var rand = new Random(DateTime.Now.Millisecond);
-                var json =
-                    jsonClient.DownloadString(
-                        "https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json?random=" + rand.Next());
-
-                // Get a list of pointers
-                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollectionModel>>(json);
-                // Assign each pointer to the settings file
-                var rlPointers = JsonConvert.SerializeObject(pointers.FirstOrDefault(p => p.Game == "RocketLeague"));
-                if (rlPointers != null)
-                {
-                    Offsets.Default.RocketLeague = rlPointers;
-                    Offsets.Default.Save();
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
-        }
     }
 }
