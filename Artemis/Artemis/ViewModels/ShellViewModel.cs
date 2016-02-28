@@ -45,12 +45,6 @@ namespace Artemis.ViewModels
             ActiveItem = _welcomeVm;
         }
 
-        public void OnClose(EventArgs e)
-        {
-            MainManager.Stop();
-            Application.Current.Shutdown();
-        }
-
         public void Settings()
         {
             Flyouts.First().IsOpen = !Flyouts.First().IsOpen;

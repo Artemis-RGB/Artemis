@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 
 namespace Artemis.KeyboardProviders.Logitech
@@ -11,7 +12,8 @@ namespace Artemis.KeyboardProviders.Logitech
         {
             Name = "Logitech G910 RGB";
             CantEnableText = "Couldn't connect to your Logitech G910.\n " +
-                             "Please check your cables and updating the Logitech Gaming Software.\n\n " +
+                             "Please check your cables and updating the Logitech Gaming Software\n" +
+                             "A minimum version of 8.81.15 is required).\n\n " +
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
@@ -20,8 +22,17 @@ namespace Artemis.KeyboardProviders.Logitech
 
         public override bool CanEnable()
         {
-            // TODO
-            return true;
+            int majorNum = 0, minorNum = 0, buildNum = 0;
+
+            LogitechGSDK.LogiLedInit();
+            LogitechGSDK.LogiLedSetLightingForKeyWithKeyName(KeyboardNames.A, 100, 100, 100);
+            LogitechGSDK.LogiLedGetSdkVersion(ref majorNum, ref minorNum, ref buildNum);
+            LogitechGSDK.LogiLedRestoreLighting();
+            LogitechGSDK.LogiLedShutdown();
+
+            // Turn it into one long number...
+            var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
+            return version >= 88115;
         }
 
         public override void Enable()

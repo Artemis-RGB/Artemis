@@ -58,19 +58,19 @@ namespace Artemis.ViewModels.Flyouts
 
         public bool Enabled
         {
-            get { return _enabled; }
+            get { return MainManager.ProgramEnabled; }
             set
             {
-                if (value == _enabled) return;
-                _enabled = value;
-
-                NotifyOfPropertyChange(() => Enabled);
+                if (value)
+                    MainManager.EnableProgram();
+                else
+                    MainManager.DisableProgram();
             }
         }
 
         public void Handle(ToggleEnabled message)
         {
-            Enabled = message.Enabled;
+            NotifyOfPropertyChange(() => Enabled);
         }
 
         public void ToggleEnabled()
