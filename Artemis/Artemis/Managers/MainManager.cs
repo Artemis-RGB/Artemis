@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -30,8 +29,12 @@ namespace Artemis.Managers
             _fps = 25;
             UpdateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _processWorker = new BackgroundWorker();
+
             UpdateWorker.DoWork += UpdateWorker_DoWork;
+            UpdateWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
+
             _processWorker.DoWork += ProcessWorker_DoWork;
+            _processWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
 
             // Process worker will always run (and just do nothing when ProgramEnabled is false)
             _processWorker.RunWorkerAsync();
@@ -156,7 +159,7 @@ namespace Artemis.Managers
                 if (_paused)
                 {
                     PauseCallback?.Invoke();
-                    Thread.Sleep(1000 / _fps);
+                    Thread.Sleep(1000/_fps);
                     continue;
                 }
 
@@ -208,6 +211,12 @@ namespace Artemis.Managers
                     Thread.Sleep(sleep);
                 sw.Reset();
             }
+        }
+
+        private void BackgroundWorkerExceptionCatcher(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+                throw e.Error;
         }
 
         private void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
