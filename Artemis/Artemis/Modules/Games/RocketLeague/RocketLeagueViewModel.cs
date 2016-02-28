@@ -1,6 +1,7 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -62,7 +63,7 @@ namespace Artemis.Modules.Games.RocketLeague
                 return;
             }
 
-            MemoryHelpers.GetPointers();
+            Updater.GetPointers();
             var version = JsonConvert
                 .DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague)
                 .GameVersion;
