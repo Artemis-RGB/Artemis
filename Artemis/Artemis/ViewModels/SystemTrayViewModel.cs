@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Events;
+using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
@@ -15,14 +15,6 @@ namespace Artemis.ViewModels
         private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
-        /*
-         * NOTE: In this sample the system tray view-model doesn't receive any notification 
-         * when the other window gets closed by pressing the top right 'x'.
-         * Thus no property notification is invoked, and system tray context-menu appears 
-         * out of sync, still allowing 'Hide' and disabling 'Show'.
-         * Given the purpose of the sample - integrating Caliburn.Micro with WPF NotifyIcon -
-         * syncing the two view-models is not of interest here.
-         * */
 
         public SystemTrayViewModel(IWindowManager windowManager, ShellViewModel shellViewModel)
         {
@@ -32,7 +24,8 @@ namespace Artemis.ViewModels
             _shellViewModel.MainManager.EnableProgram();
             _checkedForUpdate = false;
 
-            // TODO: Check if show on startup is enabled, if so, show window.
+            if (General.Default.ShowOnStartup)
+                ShowWindow();
         }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
@@ -89,18 +82,17 @@ namespace Artemis.ViewModels
             if (!CanShowWindow)
                 return;
 
-            if (!_checkedForUpdate)
-            {
-                _checkedForUpdate = true;
-                var updateTask = new Task(Updater.CheckForUpdate);
-                updateTask.Start();
-            }
-
             // manually show the next window view-model
             _windowManager.ShowWindow(_shellViewModel);
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
+
+            if (_checkedForUpdate)
+                return;
+
+            _checkedForUpdate = true;
+            Updater.CheckForUpdate(_shellViewModel.MainManager.DialogService);
         }
 
 

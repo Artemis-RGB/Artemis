@@ -301,6 +301,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\MetroDialogService.cs" />
     <Compile Include="Settings\General.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

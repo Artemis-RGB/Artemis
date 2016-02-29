@@ -5,6 +5,8 @@
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:cal="http://www.caliburnproject.org"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      dialogs:DialogParticipation.Register="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
                       mc:Ignorable="d"
                       Title="Artemis" Height="670" Width="690"
                       MinWidth="500" MinHeight="400"

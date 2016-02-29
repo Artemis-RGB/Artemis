@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Windows.Forms;
+using System.Threading.Tasks;
 using Artemis.Models;
+using Artemis.Services;
 using Artemis.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,20 +16,25 @@ namespace Artemis.Utilities
     {
         public static int CurrentVersion = 100;
 
-        public static void CheckForUpdate()
+        public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
+            if (!General.Default.CheckForUpdates)
+                return null;
+
             var newRelease = IsUpdateAvailable();
             if (newRelease == null)
-                return;
+                return null;
 
-            var viewUpdate =
-                MessageBox.Show(
+            var viewUpdate = await
+                dialogService.ShowQuestionMessageBox("Update available",
                     $"A new version of Artemis is available, version {newRelease["tag_name"].Value<string>()}.\n" +
                     "Do you wish to view the update on GitHub now?\n\n" +
-                    "Note: You can disable update notifications in the settings menu", "Artemis - Update available",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if (viewUpdate == DialogResult.Yes)
+                    "Note: You can disable update notifications in the settings menu");
+
+            if (viewUpdate.Value)
                 Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
+
+            return null;
         }
 
         public static JObject IsUpdateAvailable()

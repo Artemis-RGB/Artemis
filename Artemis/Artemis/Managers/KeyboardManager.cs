@@ -9,7 +9,6 @@ namespace Artemis.Managers
     public class KeyboardManager
     {
         private readonly MainManager _mainManager;
-        private KeyboardProvider _pauseKeyboard;
 
         public KeyboardManager(MainManager mainManager)
         {
@@ -52,8 +51,9 @@ namespace Artemis.Managers
             // Disable everything if there's no active keyboard found
             if (!keyboardProvider.CanEnable())
             {
-                MessageBox.Show(keyboardProvider.CantEnableText, "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
+                _mainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                //MessageBox.Show(keyboardProvider.CantEnableText, "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK,
+                //    MessageBoxIcon.Warning);
                 return;
             }
 

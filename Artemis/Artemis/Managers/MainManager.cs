@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Artemis.Events;
 using Artemis.Models;
+using Artemis.Services;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Caliburn.Micro;
@@ -18,9 +19,10 @@ namespace Artemis.Managers
         private bool _paused;
         private bool _restarting;
 
-        public MainManager(IEventAggregator events)
+        public MainManager(IEventAggregator events, MetroDialogService dialogService)
         {
             Events = events;
+            DialogService = dialogService;
 
             KeyboardManager = new KeyboardManager(this);
             EffectManager = new EffectManager(this, Events);
@@ -57,6 +59,7 @@ namespace Artemis.Managers
 
         public GameStateWebServer GameStateWebServer { get; set; }
         public IEventAggregator Events { get; set; }
+        public MetroDialogService DialogService { get; set; }
 
         public bool ProgramEnabled { get; private set; }
         public bool Suspended { get; set; }

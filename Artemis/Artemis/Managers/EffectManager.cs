@@ -143,6 +143,8 @@ namespace Artemis.Managers
             General.Default.LastEffect = null;
             General.Default.Save();
 
+            _events.PublishOnUIThread(new ActiveEffectChanged(""));
+
             _clearing = false;
             _mainManager.Unpause();
         }
