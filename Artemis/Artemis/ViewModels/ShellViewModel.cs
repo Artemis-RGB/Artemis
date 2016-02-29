@@ -47,5 +47,10 @@ namespace Artemis.ViewModels
         {
             Flyouts.First().IsOpen = !Flyouts.First().IsOpen;
         }
+
+        public void CloseSettings()
+        {
+            Flyouts.First().IsOpen = false;
+        }
     }
 }

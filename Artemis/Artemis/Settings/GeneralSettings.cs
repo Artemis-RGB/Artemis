@@ -38,6 +38,26 @@ namespace Artemis.Settings
             }
         }
 
+        public bool CheckForUpdates
+        {
+            get { return General.Default.CheckForUpdates; }
+            set
+            {
+                if (General.Default.CheckForUpdates == value) return;
+                General.Default.CheckForUpdates = value;
+            }
+        }
+
+        public bool ShowOnStartup
+        {
+            get { return General.Default.ShowOnStartup; }
+            set
+            {
+                if (General.Default.ShowOnStartup == value) return;
+                General.Default.ShowOnStartup = value;
+            }
+        }
+
         private void ApplyGamestatePort()
         {
             // TODO: Restart Gamestate server with new port
@@ -71,6 +91,8 @@ namespace Artemis.Settings
             GamestatePort = 51364;
             EnablePointersUpdate = true;
             Autorun = true;
+            CheckForUpdates = true;
+            ShowOnStartup = true;
 
             SaveSettings();
         }

@@ -1,14 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
   <Profiles />
   <Settings>
     <Setting Name="LastEffect" Type="System.String" Scope="User">
       <Value Profile="(Default)">TypeWave</Value>
     </Setting>
     <Setting Name="LastKeyboard" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Logitech G910 RGB</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="EnablePointersUpdate" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -21,6 +19,12 @@
     </Setting>
     <Setting Name="Suspended" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ShowOnStartup" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CheckForUpdates" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

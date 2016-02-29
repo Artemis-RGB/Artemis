@@ -38,7 +38,15 @@ namespace Artemis.ViewModels.Flyouts
         public MainManager MainManager { get; set; }
 
         public BindableCollection<string> KeyboardProviders
-            => new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders.Select(k => k.Name));
+        {
+            get
+            {
+                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders
+                    .Select(k => k.Name));
+                collection.Insert(0, "None");
+                return collection;
+            }
+        }
 
         public string SelectedKeyboardProvider
         {
@@ -52,7 +60,8 @@ namespace Artemis.ViewModels.Flyouts
                     return;
 
                 MainManager.KeyboardManager.ChangeKeyboard(
-                    MainManager.KeyboardManager.KeyboardProviders.First(k => k.Name == _selectedKeyboardProvider));
+                    MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(
+                        k => k.Name == _selectedKeyboardProvider));
             }
         }
 
@@ -99,7 +108,9 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = MainManager.KeyboardManager.ActiveKeyboard?.Name;
+            SelectedKeyboardProvider = MainManager.KeyboardManager.ActiveKeyboard != null
+                ? MainManager.KeyboardManager.ActiveKeyboard.Name
+                : "None";
         }
     }
 }
