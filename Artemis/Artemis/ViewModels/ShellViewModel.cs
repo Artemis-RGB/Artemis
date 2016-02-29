@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Artemis.Managers;
+using Artemis.Services;
 using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
 
@@ -14,8 +15,10 @@ namespace Artemis.ViewModels
 
         public ShellViewModel()
         {
+            var dialogService = new MetroDialogService(this);
             IEventAggregator events = new EventAggregator();
-            MainManager = new MainManager(events);
+
+            MainManager = new MainManager(events, dialogService);
             DisplayName = "Artemis";
 
             _welcomeVm = new WelcomeViewModel {DisplayName = "Welcome"};

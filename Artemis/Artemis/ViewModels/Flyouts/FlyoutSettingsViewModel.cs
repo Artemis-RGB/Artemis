@@ -8,8 +8,9 @@ using MahApps.Metro.Controls;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>
+    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
     {
+        private string _activeEffectName;
         private bool _enabled;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
@@ -77,6 +78,23 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
+        public string ActiveEffectName
+        {
+            get { return _activeEffectName; }
+            set
+            {
+                if (value == _activeEffectName) return;
+                _activeEffectName = value;
+                NotifyOfPropertyChange(() => ActiveEffectName);
+            }
+        }
+
+        public void Handle(ActiveEffectChanged message)
+        {
+            var effectDisplay = message.ActiveEffect.Length > 0 ? message.ActiveEffect : "none";
+            ActiveEffectName = $"Active effect: {effectDisplay}";
+        }
+
         public void Handle(ToggleEnabled message)
         {
             NotifyOfPropertyChange(() => Enabled);
@@ -108,8 +126,8 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = MainManager.KeyboardManager.ActiveKeyboard != null
-                ? MainManager.KeyboardManager.ActiveKeyboard.Name
+            SelectedKeyboardProvider = General.Default.LastKeyboard.Length > 0
+                ? General.Default.LastKeyboard
                 : "None";
         }
     }
