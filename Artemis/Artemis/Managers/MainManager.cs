@@ -16,6 +16,7 @@ namespace Artemis.Managers
 
         private readonly int _fps;
         private bool _paused;
+        private bool _restarting;
 
         public MainManager(IEventAggregator events)
         {
@@ -78,7 +79,8 @@ namespace Artemis.Managers
                 return true;
 
             // Only continue if a keyboard was loaded
-            if (!KeyboardManager.LoadLastKeyboard())
+            KeyboardManager.EnableLastKeyboard();
+            if (KeyboardManager.ActiveKeyboard == null)
                 return false;
 
             Running = true;
@@ -128,6 +130,41 @@ namespace Artemis.Managers
             PauseCallback = null;
         }
 
+        public void Shutdown()
+        {
+            Stop();
+            ProcessWorker.CancelAsync();
+            GameStateWebServer.Stop();
+        }
+
+        public void Restart()
+        {
+            if (_restarting)
+                return;
+            if (!Running)
+            {
+                Start();
+                return;
+            }
+
+            _restarting = true;
+
+            UpdateWorker.RunWorkerCompleted += FinishRestart;
+            Stop();
+        }
+
+        public void FinishRestart(object sender, RunWorkerCompletedEventArgs e)
+        {
+            UpdateWorker.RunWorkerCompleted -= FinishRestart;
+
+            if (e.Error != null)
+                return;
+
+            Start();
+
+            _restarting = false;
+        }
+
         /// <summary>
         ///     Loads the last active effect and starts the program
         /// </summary>
@@ -146,13 +183,6 @@ namespace Artemis.Managers
             Stop();
             ProgramEnabled = false;
             Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
-        }
-
-        public void Shutdown()
-        {
-            Stop();
-            ProcessWorker.CancelAsync();
-            GameStateWebServer.Stop();
         }
 
         #region Workers
