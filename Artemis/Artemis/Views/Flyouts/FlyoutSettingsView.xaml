@@ -32,7 +32,7 @@
                Content="Enable Artemis:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=Enabled, Mode=TwoWay}"/>
+                               IsChecked="{Binding Path=Enabled, Mode=TwoWay}" />
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"

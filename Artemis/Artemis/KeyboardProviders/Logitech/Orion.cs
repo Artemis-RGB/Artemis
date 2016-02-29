@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using System.Windows.Forms;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 
 namespace Artemis.KeyboardProviders.Logitech

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
 using Artemis.Events;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using Newtonsoft.Json.Linq;
-using Application = System.Windows.Application;
-using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels
 {
