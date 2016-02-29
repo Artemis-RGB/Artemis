@@ -34,7 +34,7 @@ namespace Artemis.Utilities.GameState
             _listener.Prefixes.Add($"http://localhost:{Port}/");
 
             _listener.Start();
-            
+
             ThreadPool.QueueUserWorkItem(o =>
             {
                 try

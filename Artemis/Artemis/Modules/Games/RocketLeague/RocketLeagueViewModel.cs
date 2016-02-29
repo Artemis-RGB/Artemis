@@ -2,7 +2,6 @@
 using Artemis.Models;
 using Artemis.Settings;
 using Artemis.Utilities;
-using Artemis.Utilities.Memory;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 

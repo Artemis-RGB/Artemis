@@ -40,7 +40,8 @@
                            IsOpen="{Binding Path=ShowDisabledPopup, Mode=TwoWay}" Placement="Left" VerticalOffset="-10"
                            PopupAnimation="Fade" StaysOpen="False">
                         <Border Margin="1">
-                            <TextBlock Background="{DynamicResource AccentColorBrush}" Foreground="{DynamicResource IdealForegroundColorBrush}"
+                            <TextBlock Background="{DynamicResource AccentColorBrush}"
+                                       Foreground="{DynamicResource IdealForegroundColorBrush}"
                                        Text="You can't enable an effect when Artemis is disabled" Padding="4" />
                         </Border>
                     </Popup>

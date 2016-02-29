@@ -26,7 +26,7 @@ namespace Artemis.Modules.Games.Witcher3
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
-            
+
             _updateSw = new Stopwatch();
             _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
         }

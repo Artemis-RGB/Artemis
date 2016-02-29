@@ -32,7 +32,6 @@ namespace Artemis.Modules.Games.RocketLeague
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
-
         }
 
         public RocketLeagueSettings Settings { get; set; }
@@ -92,12 +91,12 @@ namespace Artemis.Modules.Games.RocketLeague
 
             if (ContextualColor)
             {
-                if(_boostAmount < 33)
-                    _boostRect.Colors = new List<Color>{ Color.Red };
-                else if(_boostAmount >= 33 && _boostAmount < 66)
-                    _boostRect.Colors = new List<Color> { Color.Yellow };
-                else if(_boostAmount >= 66)
-                    _boostRect.Colors = new List<Color> { Color.Lime };
+                if (_boostAmount < 33)
+                    _boostRect.Colors = new List<Color> {Color.Red};
+                else if (_boostAmount >= 33 && _boostAmount < 66)
+                    _boostRect.Colors = new List<Color> {Color.Yellow};
+                else if (_boostAmount >= 66)
+                    _boostRect.Colors = new List<Color> {Color.Lime};
             }
             else
             {

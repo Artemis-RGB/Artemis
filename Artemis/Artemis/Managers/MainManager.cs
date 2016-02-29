@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Utilities.GameState;
@@ -28,7 +27,7 @@ namespace Artemis.Managers
 
             _fps = 25;
             UpdateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            ProcessWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
+            ProcessWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
 
             UpdateWorker.DoWork += UpdateWorker_DoWork;
             UpdateWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
@@ -149,6 +148,13 @@ namespace Artemis.Managers
             Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 
+        public void Shutdown()
+        {
+            Stop();
+            ProcessWorker.CancelAsync();
+            GameStateWebServer.Stop();
+        }
+
         #region Workers
 
         private void UpdateWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -255,12 +261,5 @@ namespace Artemis.Managers
         }
 
         #endregion
-
-        public void Shutdown()
-        {
-            Stop();
-            ProcessWorker.CancelAsync();
-            GameStateWebServer.Stop();
-        }
     }
 }

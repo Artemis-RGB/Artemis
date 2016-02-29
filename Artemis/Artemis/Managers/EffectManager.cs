@@ -10,8 +10,8 @@ namespace Artemis.Managers
 {
     public class EffectManager
     {
-        private readonly MainManager _mainManager;
         private readonly IEventAggregator _events;
+        private readonly MainManager _mainManager;
 
         public EffectManager(MainManager mainManager, IEventAggregator events)
         {
@@ -121,7 +121,7 @@ namespace Artemis.Managers
             // Don't mess with the ActiveEffect if in the process of changing the effect.
             if (PauseEffect != null)
                 return;
-            
+
             if (ActiveEffect == null)
                 return;
 
