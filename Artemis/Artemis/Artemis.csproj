@@ -245,7 +245,8 @@
     <Compile Include="Managers\KeyboardManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
-    <Compile Include="Models\GamePointersCollectionModel.cs" />
+    <Compile Include="Models\EffectSettings.cs" />
+    <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
       <DependentUpon>AudioVisualization.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -291,7 +292,6 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectSettings.cs" />
-    <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
@@ -321,6 +321,7 @@
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\Memory\GamePointer.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
@@ -329,6 +330,7 @@
     <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
+    <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />

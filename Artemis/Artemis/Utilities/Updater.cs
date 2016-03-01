@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Artemis.Models;
 using Artemis.Services;
 using Artemis.Settings;
+using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -86,7 +87,7 @@ namespace Artemis.Utilities
                         "https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json?random=" + rand.Next());
 
                 // Get a list of pointers
-                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollectionModel>>(json);
+                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollection>>(json);
                 // Assign each pointer to the settings file
                 var rlPointers = JsonConvert.SerializeObject(pointers.FirstOrDefault(p => p.Game == "RocketLeague"));
                 if (rlPointers != null)
