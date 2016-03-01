@@ -20,8 +20,9 @@ namespace Artemis.Modules.Games.RocketLeague
         private int _boostAmount;
         private bool _boostGrowing;
         private KeyboardRectangle _boostRect;
+        private bool _contextualColor;
         private Memory _memory;
-        private GamePointersCollectionModel _pointer;
+        private GamePointersCollection _pointer;
         private int _previousBoost;
 
         public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager)
@@ -37,7 +38,6 @@ namespace Artemis.Modules.Games.RocketLeague
         public RocketLeagueSettings Settings { get; set; }
 
         public int Scale { get; set; }
-        public bool ContextualColor { get; set; }
 
         public override void Dispose()
         {
@@ -49,7 +49,7 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Initialized = false;
 
-            ContextualColor = Settings.ContextualColor;
+            _contextualColor = Settings.ContextualColor;
 
             _boostRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
@@ -58,7 +58,7 @@ namespace Artemis.Modules.Games.RocketLeague
             }, LinearGradientMode.Horizontal);
 
             Updater.GetPointers();
-            _pointer = JsonConvert.DeserializeObject<GamePointersCollectionModel>(Offsets.Default.RocketLeague);
+            _pointer = JsonConvert.DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague);
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _memory = new Memory(tempProcess);
@@ -89,7 +89,7 @@ namespace Artemis.Modules.Games.RocketLeague
             _boostRect.Width =
                 (int) Math.Ceiling(MainManager.KeyboardManager.ActiveKeyboard.Width*Scale/100.00*_boostAmount);
 
-            if (ContextualColor)
+            if (_contextualColor)
             {
                 if (_boostAmount < 33)
                     _boostRect.Colors = new List<Color> {Color.Red};
@@ -98,15 +98,6 @@ namespace Artemis.Modules.Games.RocketLeague
                 else if (_boostAmount >= 66)
                     _boostRect.Colors = new List<Color> {Color.Lime};
             }
-            else
-            {
-                _boostRect.Colors = new List<Color>
-                {
-                    ColorHelpers.ToDrawingColor(Settings.MainColor),
-                    ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
-                };
-            }
-
 
             Task.Run(() => GrowIfHigher());
         }

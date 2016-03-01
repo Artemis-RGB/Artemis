@@ -15,7 +15,7 @@ namespace Artemis.Modules.Effects.TypeHole
 
             // Create effect model and add it to MainManager
             EffectModel = new TypeHoleModel(mainManager);
-            MainManager.EffectManager.EffectModels.Add((TypeHoleModel) EffectModel);
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public static string Name => "Type Holes (NYI)";

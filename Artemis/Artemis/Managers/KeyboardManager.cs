@@ -52,8 +52,6 @@ namespace Artemis.Managers
             if (!keyboardProvider.CanEnable())
             {
                 _mainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
-                //MessageBox.Show(keyboardProvider.CantEnableText, "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK,
-                //    MessageBoxIcon.Warning);
                 return;
             }
 

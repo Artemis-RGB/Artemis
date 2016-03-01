@@ -2,14 +2,12 @@
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public class Witcher3Settings : EffectSettings
+    public class Witcher3Settings : GameSettings
     {
         public Witcher3Settings()
         {
             Load();
         }
-
-        public bool Enabled { get; set; }
 
         public sealed override void Load()
         {
