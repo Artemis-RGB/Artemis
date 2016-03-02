@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Artemis.Events;
+using Artemis.Properties;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -12,6 +13,7 @@ namespace Artemis.ViewModels
         private readonly ShellViewModel _shellViewModel;
 
         private readonly IWindowManager _windowManager;
+        private string _activeIcon;
         private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
@@ -23,6 +25,7 @@ namespace Artemis.ViewModels
             _shellViewModel.MainManager.Events.Subscribe(this);
             _shellViewModel.MainManager.EnableProgram();
             _checkedForUpdate = false;
+            //ActiveIcon = "../logo.ico";
 
             if (General.Default.ShowOnStartup)
                 ShowWindow();
@@ -41,7 +44,18 @@ namespace Artemis.ViewModels
                 _enabled = value;
 
                 ToggleText = _enabled ? "Disable Artemis" : "Enable Artemis";
+                ActiveIcon = _enabled ? "../Resources/logo.ico" : "../Resources/logo-disabled.ico";
                 NotifyOfPropertyChange(() => Enabled);
+            }
+        }
+
+        public string ActiveIcon
+        {
+            get { return _activeIcon; }
+            set
+            {
+                _activeIcon = value;
+                NotifyOfPropertyChange();
             }
         }
 

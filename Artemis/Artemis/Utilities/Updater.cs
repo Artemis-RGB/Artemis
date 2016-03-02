@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Artemis.Models;
 using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
@@ -15,7 +14,7 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 100;
+        public static int CurrentVersion = 102;
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {

@@ -35,9 +35,13 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <SupportUrl>https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-%28FAQ%29</SupportUrl>
+    <ProductName>Artemis</ProductName>
+    <PublisherName>Artemis</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.2.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -74,7 +78,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -139,10 +143,6 @@
       <HintPath>..\packages\CUE.NET.1.0.2.1\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
       <Private>True</Private>
@@ -172,10 +172,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -187,6 +184,10 @@
     </Reference>
     <Reference Include="VioletTape.WpfExceptionViewer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd09609f6784d58, processorArchitecture=MSIL">
       <HintPath>..\packages\WpfExceptionViewer.1.0.0.0\lib\VioletTape.WpfExceptionViewer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VirtualInput, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtualInput.1.0.1\lib\net20\VirtualInput.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -434,9 +435,13 @@
     <Resource Include="Resources\bow.png" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
+    <Content Include="logo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\logo.ico" />
+    <Resource Include="Resources\logo-disabled.ico" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
-    <Resource Include="logo-disabled.ico" />
     <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -527,9 +532,6 @@
     <Content Include="RzChromaSDK64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="logo.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Content Include="Resources\CounterStrike\gamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Settings;
 using Newtonsoft.Json;
 
@@ -29,11 +31,18 @@ namespace Artemis.Utilities.GameState
             if (Running)
                 return;
 
-            _listener.Prefixes.Clear();
-            Port = General.Default.GamestatePort;
-            _listener.Prefixes.Add($"http://localhost:{Port}/");
+            try
+            {
+                _listener.Prefixes.Clear();
+                Port = General.Default.GamestatePort;
+                _listener.Prefixes.Add($"http://localhost:{Port}/");
 
-            _listener.Start();
+                _listener.Start();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Couldn't start the webserver. CS:GO effect won't work :c \n\nTry changing the port in Settings and restart Artemis.");
+            }
 
             ThreadPool.QueueUserWorkItem(o =>
             {
