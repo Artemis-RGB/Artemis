@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Artemis.Managers;
 
 namespace Artemis.Models
 {
@@ -7,11 +8,10 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainModel mainModel) : base(mainModel)
+        protected OverlayModel(MainManager mainManager) : base(mainManager)
         {
         }
 
-        // Overlay Enabled() and Dispose() is called when changing the Enabled value
         public bool Enabled
         {
             get { return _enabled; }

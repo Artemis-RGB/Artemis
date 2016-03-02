@@ -1,27 +1,28 @@
 using System.Diagnostics;
 using System.Linq;
 using Artemis.Events;
-using Artemis.Models;
+using Artemis.Managers;
 using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>
+    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
     {
+        private string _activeEffectName;
         private bool _enabled;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainModel mainModel)
+        public FlyoutSettingsViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
-            Header = "settings";
+            MainManager = mainManager;
+            Header = "Settings";
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
-            MainModel.Events.Subscribe(this);
+            MainManager.Events.Subscribe(this);
         }
 
         public GeneralSettings GeneralSettings
@@ -35,10 +36,18 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
 
         public BindableCollection<string> KeyboardProviders
-            => new BindableCollection<string>(MainModel.KeyboardProviders.Select(k => k.Name));
+        {
+            get
+            {
+                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders
+                    .Select(k => k.Name));
+                collection.Insert(0, "None");
+                return collection;
+            }
+        }
 
         public string SelectedKeyboardProvider
         {
@@ -51,33 +60,52 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == null)
                     return;
 
-                MainModel.ChangeKeyboard(MainModel.KeyboardProviders.First(k => k.Name == _selectedKeyboardProvider));
+                MainManager.KeyboardManager.ChangeKeyboard(
+                    MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(
+                        k => k.Name == _selectedKeyboardProvider));
             }
         }
 
         public bool Enabled
         {
-            get { return _enabled; }
+            get { return MainManager.ProgramEnabled; }
             set
             {
-                if (value == _enabled) return;
-                _enabled = value;
-
-                NotifyOfPropertyChange(() => Enabled);
+                if (value)
+                    MainManager.EnableProgram();
+                else
+                    MainManager.DisableProgram();
             }
+        }
+
+        public string ActiveEffectName
+        {
+            get { return _activeEffectName; }
+            set
+            {
+                if (value == _activeEffectName) return;
+                _activeEffectName = value;
+                NotifyOfPropertyChange(() => ActiveEffectName);
+            }
+        }
+
+        public void Handle(ActiveEffectChanged message)
+        {
+            var effectDisplay = message.ActiveEffect.Length > 0 ? message.ActiveEffect : "none";
+            ActiveEffectName = $"Active effect: {effectDisplay}";
         }
 
         public void Handle(ToggleEnabled message)
         {
-            Enabled = message.Enabled;
+            NotifyOfPropertyChange(() => Enabled);
         }
 
         public void ToggleEnabled()
         {
             if (Enabled)
-                MainModel.ShutdownEffects();
+                MainManager.DisableProgram();
             else
-                MainModel.StartEffects();
+                MainManager.EnableProgram();
         }
 
         public void ResetSettings()
@@ -98,7 +126,9 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = MainModel.ActiveKeyboard?.Name;
+            SelectedKeyboardProvider = General.Default.LastKeyboard.Length > 0
+                ? General.Default.LastKeyboard
+                : "None";
         }
     }
 }

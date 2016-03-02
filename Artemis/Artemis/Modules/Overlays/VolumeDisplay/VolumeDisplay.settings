@@ -1,17 +1,17 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="VolumeDisplay">
+              GeneratedClassNamespace="Artemis.Modules.Overlays.VolumeDisplay" GeneratedClassName="VolumeDisplay">
   <Profiles />
   <Settings>
+    <Setting Name="Enabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
     <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FFFF2900</Value>
     </Setting>
     <Setting Name="SecondaryColor" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FF26F600</Value>
-    </Setting>
-    <Setting Name="Enabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

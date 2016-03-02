@@ -16,8 +16,8 @@ namespace Artemis.KeyboardProviders.Corsair
         public CorsairRGB()
         {
             Name = "Corsair RGB Keyboards";
-            CantEnableText = "Couldn't connect to your Corsair keyboard.\n " +
-                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
+            CantEnableText = "Couldn't connect to your Corsair keyboard.\n" +
+                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
             KeyboardRegions = new List<KeyboardRegion>();
         }

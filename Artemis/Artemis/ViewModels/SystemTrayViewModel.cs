@@ -1,5 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Artemis.Events;
+using Artemis.Properties;
+using Artemis.Settings;
+using Artemis.Utilities;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels
@@ -9,31 +13,22 @@ namespace Artemis.ViewModels
         private readonly ShellViewModel _shellViewModel;
 
         private readonly IWindowManager _windowManager;
+        private string _activeIcon;
+        private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
-        /*
-         * NOTE: In this sample the system tray view-model doesn't receive any notification 
-         * when the other window gets closed by pressing the top right 'x'.
-         * Thus no property notification is invoked, and system tray context-menu appears 
-         * out of sync, still allowing 'Hide' and disabling 'Show'.
-         * Given the purpose of the sample - integrating Caliburn.Micro with WPF NotifyIcon -
-         * sync'ing the two view-models is not of interest here.
-         * */
 
         public SystemTrayViewModel(IWindowManager windowManager, ShellViewModel shellViewModel)
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
-            _shellViewModel.MainModel.Events.Subscribe(this);
+            _shellViewModel.MainManager.Events.Subscribe(this);
+            _shellViewModel.MainManager.EnableProgram();
+            _checkedForUpdate = false;
+            //ActiveIcon = "../logo.ico";
 
-            /*
-            * By now Effects are added to the MainModel so we can savely start
-            * This is done from here to make sure all UI elements listening to 
-            * events will receive the first ToggleEnabled event
-            * */
-            _shellViewModel.MainModel.StartEffects();
-
-            // TODO: Check if show on startup is enabled, if so, show window.
+            if (General.Default.ShowOnStartup)
+                ShowWindow();
         }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
@@ -49,7 +44,18 @@ namespace Artemis.ViewModels
                 _enabled = value;
 
                 ToggleText = _enabled ? "Disable Artemis" : "Enable Artemis";
+                ActiveIcon = _enabled ? "../Resources/logo.ico" : "../Resources/logo-disabled.ico";
                 NotifyOfPropertyChange(() => Enabled);
+            }
+        }
+
+        public string ActiveIcon
+        {
+            get { return _activeIcon; }
+            set
+            {
+                _activeIcon = value;
+                NotifyOfPropertyChange();
             }
         }
 
@@ -72,9 +78,9 @@ namespace Artemis.ViewModels
         public void ToggleEnabled()
         {
             if (Enabled)
-                _shellViewModel.MainModel.ShutdownEffects();
+                _shellViewModel.MainManager.DisableProgram();
             else
-                _shellViewModel.MainModel.StartEffects();
+                _shellViewModel.MainManager.EnableProgram();
         }
 
         protected override void OnActivate()
@@ -95,7 +101,14 @@ namespace Artemis.ViewModels
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
+
+            if (_checkedForUpdate)
+                return;
+
+            _checkedForUpdate = true;
+            Updater.CheckForUpdate(_shellViewModel.MainManager.DialogService);
         }
+
 
         public void HideWindow()
         {
@@ -110,8 +123,11 @@ namespace Artemis.ViewModels
 
         public void ExitApplication()
         {
-            _shellViewModel.MainModel.ShutdownEffects();
+            _shellViewModel.MainManager.Shutdown();
             Application.Current.Shutdown();
+
+            // Sometimes you need to be rough.
+            Environment.Exit(0);
         }
     }
 }

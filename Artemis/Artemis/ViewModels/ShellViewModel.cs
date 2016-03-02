@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-using Artemis.Models;
+﻿using System.Linq;
+using Artemis.Managers;
+using Artemis.Services;
 using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
 
@@ -16,22 +15,24 @@ namespace Artemis.ViewModels
 
         public ShellViewModel()
         {
+            var dialogService = new MetroDialogService(this);
             IEventAggregator events = new EventAggregator();
-            MainModel = new MainModel(events);
+
+            MainManager = new MainManager(events, dialogService);
             DisplayName = "Artemis";
 
             _welcomeVm = new WelcomeViewModel {DisplayName = "Welcome"};
-            _effectsVm = new EffectsViewModel(MainModel) {DisplayName = "Effects"};
-            _gamesVm = new GamesViewModel(MainModel) {DisplayName = "Games"};
-            _overlaysVm = new OverlaysViewModel(MainModel) {DisplayName = "Overlays"};
+            _effectsVm = new EffectsViewModel(MainManager) {DisplayName = "Effects"};
+            _gamesVm = new GamesViewModel(MainManager) {DisplayName = "Games"};
+            _overlaysVm = new OverlaysViewModel(MainManager) {DisplayName = "Overlays"};
 
-            Flyouts.Add(new FlyoutSettingsViewModel(MainModel));
+            Flyouts.Add(new FlyoutSettingsViewModel(MainManager));
         }
 
         public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; } =
             new BindableCollection<FlyoutBaseViewModel>();
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
 
         protected override void OnActivate()
         {
@@ -45,15 +46,14 @@ namespace Artemis.ViewModels
             ActiveItem = _welcomeVm;
         }
 
-        public void OnClose(EventArgs e)
-        {
-            MainModel.ShutdownEffects();
-            Application.Current.Shutdown();
-        }
-
         public void Settings()
         {
             Flyouts.First().IsOpen = !Flyouts.First().IsOpen;
+        }
+
+        public void CloseSettings()
+        {
+            Flyouts.First().IsOpen = false;
         }
     }
 }

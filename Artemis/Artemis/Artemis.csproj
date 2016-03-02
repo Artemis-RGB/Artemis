@@ -25,7 +25,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <PublishUrl>C:\Users\spoin\Desktop\Artemis builds\</PublishUrl>
+    <PublishUrl>C:\Users\Robert\Desktop\Artemis builds\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -35,9 +35,13 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
+    <SupportUrl>https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-%28FAQ%29</SupportUrl>
+    <ProductName>Artemis</ProductName>
+    <PublisherName>Artemis</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.2.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -74,7 +78,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -135,12 +139,8 @@
       <HintPath>..\packages\Colore.4.0.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CUE.NET, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CUE.NET.1.0.2\lib\net45\CUE.NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
+    <Reference Include="CUE.NET, Version=1.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CUE.NET.1.0.2.1\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -172,10 +172,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -187,6 +184,10 @@
     </Reference>
     <Reference Include="VioletTape.WpfExceptionViewer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd09609f6784d58, processorArchitecture=MSIL">
       <HintPath>..\packages\WpfExceptionViewer.1.0.0.0\lib\VioletTape.WpfExceptionViewer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VirtualInput, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtualInput.1.0.1\lib\net20\VirtualInput.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -228,7 +229,7 @@
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
-    <Compile Include="Events\ChangeActiveEffect.cs" />
+    <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
@@ -241,8 +242,12 @@
     <Compile Include="KeyboardProviders\ProviderHelper.cs" />
     <Compile Include="KeyboardProviders\Razer\BlackWidow.cs" />
     <Compile Include="KeyboardProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="Managers\EffectManager.cs" />
+    <Compile Include="Managers\KeyboardManager.cs" />
+    <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
-    <Compile Include="Models\GamePointersCollectionModel.cs" />
+    <Compile Include="Models\EffectSettings.cs" />
+    <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
       <DependentUpon>AudioVisualization.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -271,25 +276,23 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
-    <Compile Include="Modules\Games\Witcher3\RocketLeagueSettings.cs" />
+    <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Witcher3.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
-    <Compile Include="Models\MainModel.cs" />
     <Compile Include="Models\OverlayModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.Designer.cs">
-      <DependentUpon>VolumeDisplay.settings</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>VolumeDisplay.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectSettings.cs" />
-    <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
@@ -299,6 +302,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Services\MetroDialogService.cs" />
     <Compile Include="Settings\General.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -317,12 +322,16 @@
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\Memory\GamePointer.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
+    <Compile Include="Utilities\Updater.cs" />
+    <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
+    <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
@@ -426,9 +435,13 @@
     <Resource Include="Resources\bow.png" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
+    <Content Include="logo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\logo.ico" />
+    <Resource Include="Resources\logo-disabled.ico" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
-    <Resource Include="logo-disabled.ico" />
     <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -519,9 +532,6 @@
     <Content Include="RzChromaSDK64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="logo.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Content Include="Resources\CounterStrike\gamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -537,12 +547,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\CUE.NET.1.0.2\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.2\build\net45\CUE.NET.targets')" />
+  <Import Project="..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\CUE.NET.1.0.2\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.0.2\build\net45\CUE.NET.targets'))" />
+    <Error Condition="!Exists('..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

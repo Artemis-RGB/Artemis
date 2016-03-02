@@ -2,10 +2,10 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.KeyboardProviders.Corsair;
 using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
 
@@ -16,25 +16,50 @@ namespace Artemis.Modules.Effects.TypeWave
         private readonly List<Wave> _waves;
         private Color _randomColor;
 
-        public TypeWaveModel(MainModel mainModel, TypeWaveSettings settings) : base(mainModel)
+        public TypeWaveModel(MainManager mainManager, TypeWaveSettings settings) : base(mainManager)
         {
             Name = "TypeWave";
             _waves = new List<Wave>();
             _randomColor = Color.Red;
             Settings = settings;
+            Initialized = false;
+            Scale = 4;
         }
+
+        public int Scale { get; set; }
 
         public TypeWaveSettings Settings { get; set; }
 
         public override void Dispose()
         {
-            MainModel.KeyboardHook.Unsubscribe(HandleKeypress);
+            Initialized = false;
+            MainManager.KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
+        }
+
+        private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
+        {
+            // More than 25 waves is pointless
+            if (_waves.Count >= 25)
+                return;
+
+            var keyMatch = KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == e.KeyCode);
+            if (keyMatch == null)
+                return;
+
+            _waves.Add(Settings.IsRandomColors
+                ? new Wave(new Point(keyMatch.PosX * Scale, keyMatch.PosY * Scale), 0, _randomColor)
+                : new Wave(new Point(keyMatch.PosX * Scale, keyMatch.PosY * Scale), 0,
+                    ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
 
         public override void Enable()
         {
+            Initialized = false;
+
             // Listener won't start unless the effect is active
-            MainModel.KeyboardHook.Subscribe(HandleKeypress);
+            MainManager.KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
+
+            Initialized = true;
         }
 
         public override void Update()
@@ -47,7 +72,7 @@ namespace Artemis.Modules.Effects.TypeWave
                 // TODO: Get from settings
                 var fps = 25;
 
-                _waves[i].Size += Settings.SpreadSpeed;
+                _waves[i].Size += Settings.SpreadSpeed * Scale;
 
                 if (Settings.IsShiftColors)
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
@@ -71,13 +96,13 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count == 0)
                 return null;
 
-            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap();
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
                 g.SmoothingMode = SmoothingMode.HighQuality;
 
-                // Don't want a foreach, collection is changed in different thread
+                // Don't want a for-each, collection is changed in different thread
                 // ReSharper disable once ForCanBeConvertedToForeach
                 for (var i = 0; i < _waves.Count; i++)
                 {
@@ -88,7 +113,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
-                    if (MainModel.ActiveKeyboard is CorsairRGB)
+                    if (MainManager.KeyboardManager.ActiveKeyboard is CorsairRGB)
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;
@@ -108,27 +133,6 @@ namespace Artemis.Modules.Effects.TypeWave
                 }
             }
             return bitmap;
-        }
-
-        private void HandleKeypress(object sender, KeyEventArgs e)
-        {
-            Task.Factory.StartNew(() => KeyPressTask(e));
-        }
-
-        private void KeyPressTask(KeyEventArgs e)
-        {
-            // More than 25 waves is pointless
-            if (_waves.Count >= 25)
-                return;
-
-            var keyMatch = KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == e.KeyCode);
-            if (keyMatch == null)
-                return;
-
-            _waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0, _randomColor)
-                : new Wave(new Point(keyMatch.PosX, keyMatch.PosY), 0,
-                    ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
     }
 
