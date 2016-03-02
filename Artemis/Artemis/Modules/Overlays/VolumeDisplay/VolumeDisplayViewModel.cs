@@ -1,4 +1,4 @@
-﻿using Artemis.Models;
+﻿using Artemis.Managers;
 using Caliburn.Micro;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
@@ -7,21 +7,21 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
     {
         private VolumeDisplaySettings _volumeDisplaySettings;
 
-        public VolumeDisplayViewModel(MainModel mainModel)
+        public VolumeDisplayViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
 
             // Settings are loaded from file by class
             VolumeDisplaySettings = new VolumeDisplaySettings();
 
-            // Create effect model and add it to MainModel
-            VolumeDisplayModel = new VolumeDisplayModel(mainModel, VolumeDisplaySettings);
-            MainModel.EffectModels.Add(VolumeDisplayModel);
+            // Create effect model and add it to MainManager
+            VolumeDisplayModel = new VolumeDisplayModel(mainManager, VolumeDisplaySettings);
+            MainManager.EffectManager.EffectModels.Add(VolumeDisplayModel);
         }
 
         public static string Name => "Volume Display";
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
         public VolumeDisplayModel VolumeDisplayModel { get; set; }
 
         public VolumeDisplaySettings VolumeDisplaySettings

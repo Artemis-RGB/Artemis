@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using Artemis.Models;
+using Artemis.Managers;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
-    public class VolumeDisplay
+    public class VolumeBar
     {
-        public VolumeDisplay(MainModel mainModel, VolumeDisplaySettings settings)
+        public VolumeBar(MainManager mainManager, VolumeDisplaySettings settings)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
             Settings = settings;
             Transparancy = 255;
             Scale = 4;
         }
 
-        public MainModel MainModel { get; set; }
+        public MainManager MainManager { get; set; }
 
         public VolumeDisplaySettings Settings { get; set; }
 
@@ -30,14 +30,14 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public void Draw(Graphics g)
         {
-            var volumeRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>
+            var volumeRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.SecondaryColor),
                 ColorHelpers.ToDrawingColor(Settings.MainColor)
             },
                 LinearGradientMode.Horizontal)
             {
-                Width = (int) (MainModel.ActiveKeyboard.Width*Scale/100.00*Volume),
+                Width = (int) (MainManager.KeyboardManager.ActiveKeyboard.Width*Scale/100.00*Volume),
                 ContainedBrush = false
             };
             volumeRect.Draw(g);

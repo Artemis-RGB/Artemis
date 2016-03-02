@@ -37,17 +37,17 @@
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]"
+                                  ToolTip="Note: You can't enable an effect when Artemis is disabled" />
                 </StackPanel>
             </StackPanel>
-
             <!-- Top color -->
             <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
                 Color used on top
             </TextBlock>
             <xctk:ColorPicker x:Name="TopColor"
-                              SelectedColor="{Binding Path=AudioVisualizerSettings.TopColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=EffectSettings.TopColor, Mode=TwoWay}"
                               Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -57,7 +57,7 @@
                 Color used in the middle
             </TextBlock>
             <xctk:ColorPicker x:Name="MiddleColor"
-                              SelectedColor="{Binding Path=AudioVisualizerSettings.MiddleColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=EffectSettings.MiddleColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -67,19 +67,18 @@
                 Color used on the bottom
             </TextBlock>
             <xctk:ColorPicker x:Name="Bottom"
-                              SelectedColor="{Binding Path=AudioVisualizerSettings.BottomColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=EffectSettings.BottomColor, Mode=TwoWay}"
                               Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
             <!-- Bar direction -->
             <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,9,0,10">
-                Grow bars bottom (broken, sorry!)
+                Grow bars bottom
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=AudioVisualizerSettings.FromBottom, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=EffectSettings.FromBottom, Mode=TwoWay}"
                                    Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
-                                   OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" IsEnabled="False" />
+                                   OffLabel="No" Margin="0,0,-5,0" Width="114" />
 
             <!-- Bars amount -->
             <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
@@ -88,7 +87,7 @@
             </TextBlock>
             <Slider x:Name="Bars" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.Bars, Mode=TwoWay}" Minimum="2" Maximum="21"
+                    Value="{Binding Path=EffectSettings.Bars, Mode=TwoWay}" Minimum="2" Maximum="21"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Sensitivity -->
@@ -98,7 +97,7 @@
             </TextBlock>
             <Slider x:Name="Sensitivity" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.Sensitivity, Mode=TwoWay}" Minimum="1" Maximum="10"
+                    Value="{Binding Path=EffectSettings.Sensitivity, Mode=TwoWay}" Minimum="1" Maximum="10"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Fade speed -->
@@ -108,7 +107,7 @@
             </TextBlock>
             <Slider x:Name="FadeSpeed" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=AudioVisualizerSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="3"
+                    Value="{Binding Path=EffectSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="3"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->

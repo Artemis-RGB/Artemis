@@ -1,16 +1,14 @@
-﻿using Artemis.Models;
-using Caliburn.Micro;
+﻿using Artemis.Managers;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.Dota2
 {
-    public class Dota2ViewModel : Screen
+    public class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainModel mainModel)
+        public Dota2ViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
         }
-
-        public MainModel MainModel { get; set; }
 
         public static string Name => "Dota 2 (NYI)";
         public string Content => "Dota 2 Content";

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Artemis.Settings {
+namespace Artemis.Modules.Overlays.VolumeDisplay {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,6 +20,18 @@ namespace Artemis.Settings {
         public static VolumeDisplay Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Enabled {
+            get {
+                return ((bool)(this["Enabled"]));
+            }
+            set {
+                this["Enabled"] = value;
             }
         }
         
@@ -44,18 +56,6 @@ namespace Artemis.Settings {
             }
             set {
                 this["SecondaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool Enabled {
-            get {
-                return ((bool)(this["Enabled"]));
-            }
-            set {
-                this["Enabled"] = value;
             }
         }
     }

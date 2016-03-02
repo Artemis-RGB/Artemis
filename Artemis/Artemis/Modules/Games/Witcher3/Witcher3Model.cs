@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text.RegularExpressions;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.Keyboard;
 
@@ -17,13 +18,14 @@ namespace Artemis.Modules.Games.Witcher3
         private KeyboardRectangle _signRect;
         private string _witcherSettings;
 
-        public Witcher3Model(MainModel mainModel, Witcher3Settings settings) : base(mainModel)
+        public Witcher3Model(MainManager mainManager, Witcher3Settings settings) : base(mainManager)
         {
             Settings = settings;
             Name = "Witcher3";
             ProcessName = "witcher3";
             Scale = 4;
             Enabled = Settings.Enabled;
+            Initialized = false;
 
             _updateSw = new Stopwatch();
             _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
@@ -35,6 +37,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Dispose()
         {
+            Initialized = false;
             _witcherSettings = null;
 
             _updateSw.Reset();
@@ -42,7 +45,9 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
-            _signRect = new KeyboardRectangle(MainModel.ActiveKeyboard, 0, 0, new List<Color>(),
+            Initialized = false;
+
+            _signRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
                 Rotate = true,
@@ -56,6 +61,8 @@ namespace Artemis.Modules.Games.Witcher3
                 _witcherSettings = witcherSettings;
 
             _updateSw.Start();
+
+            Initialized = true;
         }
 
         public override void Update()
@@ -102,7 +109,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainModel.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);

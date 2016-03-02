@@ -55,17 +55,23 @@
             <xctk:ColorPicker x:Name="SecondaryColor"
                               SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22">
+                <xctk:ColorPicker.Template>
+                    <ControlTemplate>
+                        <Rectangle />
+                    </ControlTemplate>
+                </xctk:ColorPicker.Template>
+            </xctk:ColorPicker>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#535353" MaxWidth="520" TextAlignment="Justify">
+                       MaxWidth="520" TextAlignment="Justify">
                 Note: This is an overlay. It will go over any other active effect, and is only shown at certain moments (in this case when changing volume). Please also note that it won't work if there aren't any active effects.
             </TextBlock>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#B50000" MaxWidth="520" TextAlignment="Justify">
+                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="520" TextAlignment="Justify">
                 Please also note that it won't work if there aren't any active effects.
             </TextBlock>
 

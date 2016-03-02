@@ -16,18 +16,18 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public sealed override void Load()
         {
-            Enabled = Settings.VolumeDisplay.Default.Enabled;
-            MainColor = Settings.VolumeDisplay.Default.MainColor;
-            SecondaryColor = Settings.VolumeDisplay.Default.SecondaryColor;
+            Enabled = VolumeDisplay.Default.Enabled;
+            MainColor = VolumeDisplay.Default.MainColor;
+            SecondaryColor = VolumeDisplay.Default.SecondaryColor;
         }
 
         public sealed override void Save()
         {
-            Settings.VolumeDisplay.Default.Enabled = Enabled;
-            Settings.VolumeDisplay.Default.MainColor = MainColor;
-            Settings.VolumeDisplay.Default.SecondaryColor = SecondaryColor;
+            VolumeDisplay.Default.Enabled = Enabled;
+            VolumeDisplay.Default.MainColor = MainColor;
+            VolumeDisplay.Default.SecondaryColor = SecondaryColor;
 
-            Settings.VolumeDisplay.Default.Save();
+            VolumeDisplay.Default.Save();
         }
 
         public sealed override void ToDefault()

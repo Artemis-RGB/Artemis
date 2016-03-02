@@ -1,60 +1,60 @@
-﻿using Artemis.Models;
-using Caliburn.Micro;
+﻿using Artemis.Managers;
+using Artemis.Settings;
+using Artemis.Utilities;
+using Artemis.Utilities.Memory;
+using Artemis.ViewModels.Abstract;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueViewModel : Screen
+    public class RocketLeagueViewModel : GameViewModel
     {
-        private RocketLeagueSettings _rocketLeagueSettings;
+        private string _versionText;
 
-        public RocketLeagueViewModel(MainModel mainModel)
+        public RocketLeagueViewModel(MainManager mainManager)
         {
-            MainModel = mainModel;
+            MainManager = mainManager;
 
             // Settings are loaded from file by class
-            RocketLeagueSettings = new RocketLeagueSettings();
+            GameSettings = new RocketLeagueSettings();
 
-            // Create effect model and add it to MainModel
-            RocketLeagueModel = new RocketLeagueModel(mainModel, RocketLeagueSettings);
-            MainModel.EffectModels.Add(RocketLeagueModel);
+            // Create effect model and add it to MainManager
+            GameModel = new RocketLeagueModel(mainManager, (RocketLeagueSettings) GameSettings);
+            MainManager.EffectManager.EffectModels.Add(GameModel);
+
+            SetVersionText();
         }
 
         public static string Name => "Rocket League";
 
-        public MainModel MainModel { get; set; }
-        public RocketLeagueModel RocketLeagueModel { get; set; }
-
-        public RocketLeagueSettings RocketLeagueSettings
+        public string VersionText
         {
-            get { return _rocketLeagueSettings; }
+            get { return _versionText; }
             set
             {
-                if (Equals(value, _rocketLeagueSettings)) return;
-                _rocketLeagueSettings = value;
-                NotifyOfPropertyChange(() => RocketLeagueSettings);
+                if (value == _versionText) return;
+                _versionText = value;
+                NotifyOfPropertyChange(() => VersionText);
             }
         }
 
-        public void SaveSettings()
+        public RocketLeagueModel RocketLeagueModel { get; set; }
+
+        private void SetVersionText()
         {
-            if (RocketLeagueModel == null)
+            if (!General.Default.EnablePointersUpdate)
+            {
+                VersionText = "Note: You disabled pointer updates, this could result in the " +
+                              "Rocket League effect not working after a game update.";
                 return;
+            }
 
-            RocketLeagueSettings.Save();
-        }
-
-        public void ResetSettings()
-        {
-            // TODO: Confirmation dialog (Generic MVVM approach)
-            RocketLeagueSettings.ToDefault();
-            NotifyOfPropertyChange(() => RocketLeagueSettings);
-
-            SaveSettings();
-        }
-
-        public void ToggleEffect()
-        {
-            RocketLeagueModel.Enabled = _rocketLeagueSettings.Enabled;
+            Updater.GetPointers();
+            var version = JsonConvert
+                .DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague)
+                .GameVersion;
+            VersionText = $"Note: Requires patch {version}. When a new patch is released Artemis downloads " +
+                          "new pointers for the latest version (unless disabled in settings).";
         }
     }
 }

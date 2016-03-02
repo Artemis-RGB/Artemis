@@ -28,8 +28,8 @@
             </Label>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
-                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="#070707" MaxWidth="520" TextAlignment="Justify">
+                       TextWrapping="Wrap" HorizontalAlignment="Left"
+                       MaxWidth="520" TextAlignment="Justify">
                 Hello, <LineBreak /><LineBreak />
                 Thanks a bunch for downloading this application. You're going to enjoy this! :)<LineBreak />
                 <LineBreak />
