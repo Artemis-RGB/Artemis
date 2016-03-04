@@ -177,7 +177,6 @@ namespace Artemis.Utilities.Keyboard
 
             // Apply the devided positions
             colorBlend.Positions = positions.ToArray();
-
             return colorBlend;
         }
 
