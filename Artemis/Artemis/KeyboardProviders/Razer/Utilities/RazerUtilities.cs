@@ -1,25 +1,23 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using Color = Corale.Colore.Core.Color;
+using Corale.Colore.Razer.Keyboard.Effects;
 
 namespace Artemis.KeyboardProviders.Razer.Utilities
 {
     public static class RazerUtilities
     {
-        public static Color[][] BitmapColorArray(Bitmap b, int height, int width)
+        public static Custom BitmapColorArray(Bitmap b, int height, int width)
         {
-            var res = new Color[height][];
+            var keyboardGrid = Custom.Create();
             if (b.Width > width || b.Height > height)
                 b = ResizeImage(b, width, height);
 
-            for (var y = 0; y < b.Height - 1; y++)
-            {
-                res[y] = new Color[width];
-                for (var x = 0; x < b.Width - 1; x++)
-                    res[y][x] = b.GetPixel(x, y);
-            }
-            return res;
+            for (var y = 0; y < b.Height; y++)
+                for (var x = 0; x < b.Width; x++)
+                    keyboardGrid[y, x] = b.GetPixel(x, y);
+
+            return keyboardGrid;
         }
 
         /// <summary>
