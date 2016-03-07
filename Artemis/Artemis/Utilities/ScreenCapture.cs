@@ -1,4 +1,8 @@
-﻿using System.Drawing;
+﻿// Original code by Florian Schnell
+// http://www.floschnell.de/computer-science/super-fast-screen-capture-with-windows-8.html
+
+using System;
+using System.Drawing;
 using System.IO;
 using SharpDX;
 using SharpDX.Direct3D;
@@ -11,14 +15,13 @@ using ResultCode = SharpDX.DXGI.ResultCode;
 
 namespace Artemis.Utilities
 {
-    internal class ScreenCapture
+    internal class ScreenCapture : IDisposable
     {
         private readonly Device _device;
-        private readonly OutputDuplication _duplicatedOutput;
+        private readonly Factory1 _factory;
         private readonly Texture2D _screenTexture;
-        private readonly uint numAdapter = 0; // # of graphics card adapter
-        private readonly uint numOutput = 0; // # of output device (i.e. monitor)
         private DataStream _dataStream;
+        private OutputDuplication _duplicatedOutput;
         private Resource _screenResource;
         private Surface _screenSurface;
 
@@ -26,7 +29,7 @@ namespace Artemis.Utilities
         {
             // Create device and factory
             _device = new Device(DriverType.Hardware);
-            var factory = new Factory1();
+            _factory = new Factory1();
 
             // Creating CPU-accessible texture resource
             var texdes = new Texture2DDescription
@@ -34,8 +37,8 @@ namespace Artemis.Utilities
                 CpuAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
                 Format = Format.B8G8R8A8_UNorm,
-                Height = factory.Adapters1[numAdapter].Outputs[numOutput].Description.DesktopBounds.Bottom,
-                Width = factory.Adapters1[numAdapter].Outputs[numOutput].Description.DesktopBounds.Right,
+                Height = _factory.Adapters1[0].Outputs[0].Description.DesktopBounds.Bottom,
+                Width = _factory.Adapters1[0].Outputs[0].Description.DesktopBounds.Right,
                 OptionFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
                 ArraySize = 1,
@@ -49,10 +52,18 @@ namespace Artemis.Utilities
             _screenTexture = new Texture2D(_device, texdes);
 
             // duplicate output stuff
-            var output = new Output1(factory.Adapters1[numAdapter].Outputs[numOutput].NativePointer);
+            var output = new Output1(_factory.Adapters1[0].Outputs[0].NativePointer);
             _duplicatedOutput = output.DuplicateOutput(_device);
             _screenResource = null;
             _dataStream = null;
+        }
+
+        public void Dispose()
+        {
+            _duplicatedOutput.Dispose();
+            _screenResource.Dispose();
+            _dataStream.Dispose();
+            _factory.Dispose();
         }
 
         public DataStream Capture()
@@ -64,8 +75,10 @@ namespace Artemis.Utilities
             }
             catch (SharpDXException e)
             {
-                if (e.ResultCode.Code == ResultCode.WaitTimeout.Result.Code)
-                    return Capture();
+                if (e.ResultCode.Code == ResultCode.WaitTimeout.Result.Code ||
+                    e.ResultCode.Code == ResultCode.AccessDenied.Result.Code ||
+                    e.ResultCode.Code == ResultCode.AccessLost.Result.Code)
+                    return null;
                 throw;
             }
 
@@ -99,10 +112,12 @@ namespace Artemis.Utilities
         /// <param name="surfaceDataStream"></param>
         /// <param name="position">Given point on the screen.</param>
         /// <returns></returns>
-        public static Color GetColor(DataStream surfaceDataStream, Point position)
+        public Color GetColor(DataStream surfaceDataStream, Point position)
         {
             var data = new byte[4];
-            surfaceDataStream.Seek(position.Y*1920*4 + position.X*4, SeekOrigin.Begin);
+            surfaceDataStream.Seek(
+                position.Y*_factory.Adapters1[0].Outputs[0].Description.DesktopBounds.Right*4 + position.X*4,
+                SeekOrigin.Begin);
             surfaceDataStream.Read(data, 0, 4);
             return Color.FromArgb(255, data[2], data[1], data[0]);
         }
