@@ -19,29 +19,40 @@ namespace Artemis.Managers
         public List<KeyboardProvider> KeyboardProviders { get; set; }
         public KeyboardProvider ActiveKeyboard { get; set; }
 
-        public bool LoadLastKeyboard()
+        /// <summary>
+        ///     Enables the last keyboard according to the settings file
+        /// </summary>
+        public void EnableLastKeyboard()
         {
+            if (General.Default.LastKeyboard == null)
+                return;
+            if (General.Default.LastKeyboard == "")
+                return;
+
             var keyboard = KeyboardProviders.FirstOrDefault(k => k.Name == General.Default.LastKeyboard);
-            return ChangeKeyboard(keyboard ?? KeyboardProviders.First());
+            EnableKeyboard(keyboard);
         }
 
-        public bool ChangeKeyboard(KeyboardProvider keyboardProvider)
+        /// <summary>
+        ///     Enables the given keyboard
+        /// </summary>
+        /// <param name="keyboardProvider"></param>
+        public void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
+            ReleaseActiveKeyboard();
+
             if (keyboardProvider == null)
-                return false;
+                return;
 
             if (ActiveKeyboard != null)
                 if (keyboardProvider.Name == ActiveKeyboard.Name)
-                    return true;
-
-            ReleaseActiveKeyboard();
+                    return;
 
             // Disable everything if there's no active keyboard found
             if (!keyboardProvider.CanEnable())
             {
-                MessageBox.Show(keyboardProvider.CantEnableText, "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return false;
+                _mainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                return;
             }
 
             ActiveKeyboard = keyboardProvider;
@@ -49,10 +60,11 @@ namespace Artemis.Managers
 
             General.Default.LastKeyboard = ActiveKeyboard.Name;
             General.Default.Save();
-
-            return true;
         }
 
+        /// <summary>
+        ///     Releases the active keyboard
+        /// </summary>
         public void ReleaseActiveKeyboard()
         {
             if (ActiveKeyboard == null)
@@ -60,6 +72,21 @@ namespace Artemis.Managers
 
             ActiveKeyboard.Disable();
             ActiveKeyboard = null;
+        }
+
+        /// <summary>
+        ///     Changes the active keyboard
+        /// </summary>
+        /// <param name="keyboardProvider"></param>
+        public void ChangeKeyboard(KeyboardProvider keyboardProvider)
+        {
+            if (keyboardProvider == ActiveKeyboard)
+                return;
+
+            General.Default.LastKeyboard = keyboardProvider?.Name;
+            General.Default.Save();
+
+            _mainManager.Restart();
         }
     }
 }

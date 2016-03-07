@@ -3,14 +3,13 @@ using Artemis.Models;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueSettings : EffectSettings
+    public class RocketLeagueSettings : GameSettings
     {
         public RocketLeagueSettings()
         {
             Load();
         }
 
-        public bool Enabled { get; set; }
         public Color MainColor { get; set; }
         public Color SecondaryColor { get; set; }
         public bool ContextualColor { get; set; }

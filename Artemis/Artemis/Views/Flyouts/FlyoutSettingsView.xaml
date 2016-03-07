@@ -6,7 +6,7 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="600" d:DesignWidth="300"
              Width="300">
     <UserControl.Resources>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
@@ -24,6 +24,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -32,7 +34,7 @@
                Content="Enable Artemis:" />
         <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=Enabled, Mode=TwoWay}"/>
+                               IsChecked="{Binding Path=Enabled, Mode=TwoWay}" />
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -41,38 +43,52 @@
                                IsChecked="{Binding Path=GeneralSettings.Autorun, Mode=TwoWay}"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
 
-        <!-- Keyboard selection -->
+        <!-- Show on startup -->
         <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Show on startup:" />
+        <controls:ToggleSwitch Grid.Row="2" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               IsChecked="{Binding Path=GeneralSettings.ShowOnStartup, Mode=TwoWay}"
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+
+        <!-- Keyboard selection -->
+        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />
-        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
         <!-- TODO: Ugly -->
 
         <!-- Gamestate port -->
-        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Gamestate server port:" />
-        <controls:NumericUpDown Grid.Row="3" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+        <controls:NumericUpDown Grid.Row="4" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="120"
                                 Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}" />
 
+        <!-- Updates check -->
+        <Label Grid.Row="5" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Check for updates:" />
+        <controls:ToggleSwitch Grid.Row="5" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
+                               IsChecked="{Binding Path=GeneralSettings.CheckForUpdates, Mode=TwoWay}" />
+
         <!-- Update pointers -->
-        <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="6" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Download pointers:" />
-        <controls:ToggleSwitch Grid.Row="4" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
+        <controls:ToggleSwitch Grid.Row="6" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
                                VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
                                IsChecked="{Binding Path=GeneralSettings.EnablePointersUpdate, Mode=TwoWay}" />
 
         <!-- Buttons -->
-        <Button Grid.Row="5" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+        <Button Grid.Row="7" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
                 VerticalAlignment="Center" HorizontalAlignment="Left" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="5" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
+        <Button Grid.Row="7" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
-        <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -81,11 +97,14 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Artemis 1.0.1" VerticalAlignment="Center"
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" x:Name="ActiveEffectName" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Artemis 1.0.2" VerticalAlignment="Center"
                        HorizontalAlignment="Left" />
-            <Button Grid.Row="0" Grid.Column="1" Focusable="False" Style="{StaticResource AccentedSquareButtonStyle}"
+            <Button Grid.Row="1" Grid.Column="1" Focusable="False"
+                    Style="{StaticResource AccentedSquareButtonStyle}"
                     cal:Message.Attach="[Action NavigateTo('https://github.com/SpoinkyNL/Artemis')]"
-                    Content="View on GitHub" Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                    Content="View on GitHub" Margin="5,0,0,0" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" />
         </Grid>
     </Grid>
 </UserControl>

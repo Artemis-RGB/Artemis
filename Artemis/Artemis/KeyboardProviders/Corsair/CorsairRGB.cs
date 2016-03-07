@@ -16,8 +16,8 @@ namespace Artemis.KeyboardProviders.Corsair
         public CorsairRGB()
         {
             Name = "Corsair RGB Keyboards";
-            CantEnableText = "Couldn't connect to your Corsair keyboard.\n " +
-                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n " +
+            CantEnableText = "Couldn't connect to your Corsair keyboard.\n" +
+                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
             KeyboardRegions = new List<KeyboardRegion>();
         }
@@ -103,7 +103,6 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <summary>
         ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
         ///     size.
-        ///     Does not reset the color each time. Uncomment line 48 for collor reset.
         /// </summary>
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)

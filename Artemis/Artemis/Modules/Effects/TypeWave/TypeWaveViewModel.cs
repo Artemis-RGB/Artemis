@@ -18,7 +18,7 @@ namespace Artemis.Modules.Effects.TypeWave
 
             // Create effect model and add it to MainManager
             EffectModel = new TypeWaveModel(mainManager, (TypeWaveSettings) EffectSettings);
-            MainManager.EffectManager.EffectModels.Add((TypeWaveModel) EffectModel);
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public static string Name => "Type Waves";
