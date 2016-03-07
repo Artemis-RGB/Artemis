@@ -24,7 +24,7 @@
 
         <!-- the application main system tray icon -->
         <tb:TaskbarIcon x:Key="SystemTrayIcon"
-                        IconSource="../logo.ico"
+                        IconSource="{Binding Path=ActiveIcon, Mode=OneWay}"
                         ToolTipText="Artemis"
                         cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
                         ContextMenu="{StaticResource MainSysTrayMenu}" />

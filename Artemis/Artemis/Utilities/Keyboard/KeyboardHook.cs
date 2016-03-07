@@ -1,34 +1,24 @@
-﻿using System.Windows.Forms;
-using Gma.System.MouseKeyHook;
+﻿using System.Threading.Tasks;
+using System.Windows.Forms;
+using VirtualInput;
 
 namespace Artemis.Utilities.Keyboard
 {
     public class KeyboardHook
     {
-        private IKeyboardMouseEvents _mGlobalHook;
-        public int Subscriptions { get; set; }
+        public delegate void KeyDownCallbackHandler(KeyEventArgs e);
 
-        public void Subscribe(KeyEventHandler handleKeypress)
+        public KeyboardHook()
         {
-            if (_mGlobalHook == null)
-                _mGlobalHook = Hook.GlobalEvents();
-
-            _mGlobalHook.KeyDown += handleKeypress;
-            Subscriptions++;
+            VirtualKeyboard.KeyDown += VirtualKeyboardOnKeyDown;
+            VirtualKeyboard.StartInterceptor();
         }
 
-        public void Unsubscribe(KeyEventHandler handleKeypress)
+        private void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
-            if (_mGlobalHook == null)
-                return;
-
-            _mGlobalHook.KeyDown -= handleKeypress;
-            Subscriptions--;
-
-            if (Subscriptions >= 1)
-                return;
-            _mGlobalHook.Dispose();
-            _mGlobalHook = null;
+            Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
+        
+        public event KeyDownCallbackHandler KeyDownCallback;
     }
 }

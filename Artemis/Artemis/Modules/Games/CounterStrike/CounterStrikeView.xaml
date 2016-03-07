@@ -37,7 +37,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=CounterStrikeSettings.Enabled, Mode=TwoWay}"
+                                  IsChecked="{Binding Path=GameSettings.Enabled, Mode=TwoWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
@@ -50,7 +50,7 @@
                        Width="130" HorizontalAlignment="Left" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                             Text="{Binding Path=CounterStrikeSettings.GameDirectory, Mode=TwoWay}"
+                             Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
                              cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
                     <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                             HorizontalAlignment="Right" Width="25"
@@ -63,7 +63,7 @@
                        Height="16" Margin="0,10,0,9">
                 Display ammo on F-keys
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.AmmoEnabled, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.AmmoEnabled, Mode=TwoWay}"
                                    Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
@@ -73,7 +73,7 @@
                 Main ammo color
             </TextBlock>
             <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoMainColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=GameSettings.AmmoMainColor, Mode=TwoWay}"
                               Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -83,7 +83,7 @@
                 Secondary ammo color
             </TextBlock>
             <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=CounterStrikeSettings.AmmoSecondaryColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=GameSettings.AmmoSecondaryColor, Mode=TwoWay}"
                               Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -92,7 +92,7 @@
                        Height="16" Margin="0,9,0,10">
                 Display smoked effect
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.SmokeEnabled, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.SmokeEnabled, Mode=TwoWay}"
                                    Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
@@ -101,7 +101,7 @@
                        Height="16" Margin="0,10,0,9">
                 Display flashed effect
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.FlashEnabled, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.FlashEnabled, Mode=TwoWay}"
                                    Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
@@ -110,7 +110,7 @@
                        Height="16" Margin="0,9,0,10">
                 Color keyboard according to team
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.TeamColorEnabled, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.TeamColorEnabled, Mode=TwoWay}"
                                    Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
@@ -119,7 +119,7 @@
                        Height="16" Margin="0,10,0,9">
                 Color keyboard red on low HP
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=CounterStrikeSettings.LowHpEnabled, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.LowHpEnabled, Mode=TwoWay}"
                                    Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 

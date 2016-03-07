@@ -8,9 +8,10 @@ namespace Artemis.Models
     {
         public delegate void SettingsUpdateHandler(EffectSettings settings);
 
+        public bool Initialized;
+
         public MainManager MainManager;
         public string Name;
-        public bool Initialized;
 
         protected EffectModel(MainManager mainManager)
         {

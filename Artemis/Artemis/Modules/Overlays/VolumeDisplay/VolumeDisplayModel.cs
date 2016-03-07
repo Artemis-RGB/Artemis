@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
@@ -25,13 +24,13 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override void Dispose()
         {
-            MainManager.KeyboardHook.Unsubscribe(HandleKeypress);
+            MainManager.KeyboardHook.KeyDownCallback -= KeyPressTask;
         }
 
         public override void Enable()
         {
             // Listener won't start unless the effect is active
-            MainManager.KeyboardHook.Subscribe(HandleKeypress);
+            MainManager.KeyboardHook.KeyDownCallback += KeyPressTask;
         }
 
         public override void Update()
@@ -78,11 +77,6 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
                 VolumeDisplay.Draw(g);
 
             return bitmap;
-        }
-
-        private void HandleKeypress(object sender, KeyEventArgs e)
-        {
-            Task.Factory.StartNew(() => KeyPressTask(e));
         }
 
         private void KeyPressTask(KeyEventArgs e)

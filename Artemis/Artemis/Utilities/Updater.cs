@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Windows.Forms;
-using Artemis.Models;
+using System.Threading.Tasks;
+using Artemis.Services;
 using Artemis.Settings;
+using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,22 +14,27 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 100;
+        public static int CurrentVersion = 102;
 
-        public static void CheckForUpdate()
+        public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
+            if (!General.Default.CheckForUpdates)
+                return null;
+
             var newRelease = IsUpdateAvailable();
             if (newRelease == null)
-                return;
+                return null;
 
-            var viewUpdate =
-                MessageBox.Show(
+            var viewUpdate = await
+                dialogService.ShowQuestionMessageBox("Update available",
                     $"A new version of Artemis is available, version {newRelease["tag_name"].Value<string>()}.\n" +
                     "Do you wish to view the update on GitHub now?\n\n" +
-                    "Note: You can disable update notifications in the settings menu", "Artemis - Update available",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if (viewUpdate == DialogResult.Yes)
+                    "Note: You can disable update notifications in the settings menu");
+
+            if (viewUpdate.Value)
                 Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
+
+            return null;
         }
 
         public static JObject IsUpdateAvailable()
@@ -80,7 +86,7 @@ namespace Artemis.Utilities
                         "https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/pointers.json?random=" + rand.Next());
 
                 // Get a list of pointers
-                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollectionModel>>(json);
+                var pointers = JsonConvert.DeserializeObject<List<GamePointersCollection>>(json);
                 // Assign each pointer to the settings file
                 var rlPointers = JsonConvert.SerializeObject(pointers.FirstOrDefault(p => p.Game == "RocketLeague"));
                 if (rlPointers != null)

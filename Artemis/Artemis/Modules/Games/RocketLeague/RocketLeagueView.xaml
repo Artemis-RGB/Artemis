@@ -34,7 +34,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=RocketLeagueSettings.Enabled, Mode=TwoWay}"
+                                  IsChecked="{Binding Path=GameSettings.Enabled, Mode=TwoWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
@@ -46,7 +46,7 @@
                 Main boost display color
             </TextBlock>
             <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=RocketLeagueSettings.MainColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=GameSettings.MainColor, Mode=TwoWay}"
                               Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -56,7 +56,7 @@
                 Secondary boost display color
             </TextBlock>
             <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=RocketLeagueSettings.SecondaryColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=GameSettings.SecondaryColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -65,7 +65,7 @@
                        Height="16" Margin="0,8">
                 Color bar according to boost amount
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=RocketLeagueSettings.ContextualColor, Mode=TwoWay}"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ContextualColor, Mode=TwoWay}"
                                    Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
@@ -76,9 +76,10 @@
                 Tip: To find a color combination you like, start an exhibition match, pickup 100 boost and play around with the colors.
                 They'll appear on your keyboard immediately! Once you're satisfied don't forget to click save changes.
             </TextBlock>
-            <TextBlock x:Name="VersionText" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <TextBlock x:Name="VersionText" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
+                       Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify"/>
+                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">

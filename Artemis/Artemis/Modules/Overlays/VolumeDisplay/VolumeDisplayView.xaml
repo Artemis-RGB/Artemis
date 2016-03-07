@@ -55,10 +55,10 @@
             <xctk:ColorPicker x:Name="SecondaryColor"
                               SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" >
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22">
                 <xctk:ColorPicker.Template>
                     <ControlTemplate>
-                        <Rectangle ></Rectangle>
+                        <Rectangle />
                     </ControlTemplate>
                 </xctk:ColorPicker.Template>
             </xctk:ColorPicker>
