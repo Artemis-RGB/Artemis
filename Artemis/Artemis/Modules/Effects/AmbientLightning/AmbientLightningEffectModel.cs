@@ -39,6 +39,8 @@ namespace Artemis.Modules.Effects.AmbientLightning
         public override void Dispose()
         {
             Initialized = false;
+
+            _screenCapturer.Dispose();
             _screenCapturer = null;
         }
 
@@ -52,14 +54,16 @@ namespace Artemis.Modules.Effects.AmbientLightning
                 LinearGradientMode.Horizontal) {Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale/2};
             _botRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal);
-
-
+            
             Initialized = true;
         }
 
         public override void Update()
         {
             var capture = _screenCapturer.Capture();
+            if (capture == null)
+                return;
+
             _rectangles = new List<Rectangle>();
             // Analise the result
             // Chop the screen into 2 rows and 3 columns
@@ -80,7 +84,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
                         {
                             var x = blockWidth/6*blockColumn + blockWidth/6/4 + blockBase.X;
                             var y = blockHeight/6*blockRow + blockHeight/6/4 + blockBase.Y;
-                            samples.Add(ScreenCapture.GetColor(capture, new Point(x, y)));
+                            samples.Add(_screenCapturer.GetColor(capture, new Point(x, y)));
                         }
                     }
 
