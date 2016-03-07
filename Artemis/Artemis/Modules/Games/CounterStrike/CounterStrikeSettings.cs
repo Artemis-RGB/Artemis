@@ -3,13 +3,14 @@ using Artemis.Models;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeSettings : GameSettings
+    public class CounterStrikeSettings : EffectSettings
     {
         public CounterStrikeSettings()
         {
             Load();
         }
 
+        public bool Enabled { get; set; }
         public string GameDirectory { get; set; }
 
         public bool AmmoEnabled { get; set; }

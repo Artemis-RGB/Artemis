@@ -1,10 +1,13 @@
 ﻿using System;
-using System.Windows;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Artemis.Events;
-using Artemis.Properties;
-using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Newtonsoft.Json.Linq;
+using Application = System.Windows.Application;
+using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels
 {
@@ -13,10 +16,17 @@ namespace Artemis.ViewModels
         private readonly ShellViewModel _shellViewModel;
 
         private readonly IWindowManager _windowManager;
-        private string _activeIcon;
         private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
+        /*
+         * NOTE: In this sample the system tray view-model doesn't receive any notification 
+         * when the other window gets closed by pressing the top right 'x'.
+         * Thus no property notification is invoked, and system tray context-menu appears 
+         * out of sync, still allowing 'Hide' and disabling 'Show'.
+         * Given the purpose of the sample - integrating Caliburn.Micro with WPF NotifyIcon -
+         * syncing the two view-models is not of interest here.
+         * */
 
         public SystemTrayViewModel(IWindowManager windowManager, ShellViewModel shellViewModel)
         {
@@ -25,10 +35,8 @@ namespace Artemis.ViewModels
             _shellViewModel.MainManager.Events.Subscribe(this);
             _shellViewModel.MainManager.EnableProgram();
             _checkedForUpdate = false;
-            //ActiveIcon = "../logo.ico";
 
-            if (General.Default.ShowOnStartup)
-                ShowWindow();
+            // TODO: Check if show on startup is enabled, if so, show window.
         }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
@@ -44,18 +52,7 @@ namespace Artemis.ViewModels
                 _enabled = value;
 
                 ToggleText = _enabled ? "Disable Artemis" : "Enable Artemis";
-                ActiveIcon = _enabled ? "../Resources/logo.ico" : "../Resources/logo-disabled.ico";
                 NotifyOfPropertyChange(() => Enabled);
-            }
-        }
-
-        public string ActiveIcon
-        {
-            get { return _activeIcon; }
-            set
-            {
-                _activeIcon = value;
-                NotifyOfPropertyChange();
             }
         }
 
@@ -96,17 +93,18 @@ namespace Artemis.ViewModels
             if (!CanShowWindow)
                 return;
 
+            if (!_checkedForUpdate)
+            {
+                _checkedForUpdate = true;
+                var updateTask = new Task(Updater.CheckForUpdate);
+                updateTask.Start();
+            }
+
             // manually show the next window view-model
             _windowManager.ShowWindow(_shellViewModel);
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
-
-            if (_checkedForUpdate)
-                return;
-
-            _checkedForUpdate = true;
-            Updater.CheckForUpdate(_shellViewModel.MainManager.DialogService);
         }
 
 

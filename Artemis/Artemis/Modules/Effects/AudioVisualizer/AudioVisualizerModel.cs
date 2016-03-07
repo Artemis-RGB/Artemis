@@ -17,10 +17,10 @@ namespace Artemis.Modules.Effects.AudioVisualizer
     {
         private const int FftLength = 2048;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(FftLength);
-        private bool _fromBottom;
         private bool _generating;
-        private int _sensitivity;
         private IWaveIn _waveIn;
+        private int _sensitivity;
+        private bool _fromBottom;
 
         public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager)
         {
@@ -92,7 +92,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         }
 
         public override void Update()
-        {
+        {      
             // Start filling the model
             _generating = true;
 
@@ -118,7 +118,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     height = (int) Math.Round(SpectrumData[i]/2.55);
 
                 // Apply Sensitivity setting
-                height = height*_sensitivity;
+                height = height* _sensitivity;
                 var keyboardHeight =
                     (int) Math.Round(MainManager.KeyboardManager.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)

@@ -8,9 +8,8 @@ using MahApps.Metro.Controls;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
+    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>
     {
-        private string _activeEffectName;
         private bool _enabled;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
@@ -39,15 +38,7 @@ namespace Artemis.ViewModels.Flyouts
         public MainManager MainManager { get; set; }
 
         public BindableCollection<string> KeyboardProviders
-        {
-            get
-            {
-                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders
-                    .Select(k => k.Name));
-                collection.Insert(0, "None");
-                return collection;
-            }
-        }
+            => new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders.Select(k => k.Name));
 
         public string SelectedKeyboardProvider
         {
@@ -61,8 +52,7 @@ namespace Artemis.ViewModels.Flyouts
                     return;
 
                 MainManager.KeyboardManager.ChangeKeyboard(
-                    MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(
-                        k => k.Name == _selectedKeyboardProvider));
+                    MainManager.KeyboardManager.KeyboardProviders.First(k => k.Name == _selectedKeyboardProvider));
             }
         }
 
@@ -76,23 +66,6 @@ namespace Artemis.ViewModels.Flyouts
                 else
                     MainManager.DisableProgram();
             }
-        }
-
-        public string ActiveEffectName
-        {
-            get { return _activeEffectName; }
-            set
-            {
-                if (value == _activeEffectName) return;
-                _activeEffectName = value;
-                NotifyOfPropertyChange(() => ActiveEffectName);
-            }
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            var effectDisplay = message.ActiveEffect.Length > 0 ? message.ActiveEffect : "none";
-            ActiveEffectName = $"Active effect: {effectDisplay}";
         }
 
         public void Handle(ToggleEnabled message)
@@ -126,9 +99,7 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = General.Default.LastKeyboard.Length > 0
-                ? General.Default.LastKeyboard
-                : "None";
+            SelectedKeyboardProvider = MainManager.KeyboardManager.ActiveKeyboard?.Name;
         }
     }
 }
