@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
+using Artemis.Models;
+using Artemis.Settings;
+using Newtonsoft.Json;
 
 namespace Artemis.Utilities.Memory
 {

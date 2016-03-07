@@ -61,15 +61,9 @@ namespace Artemis.ViewModels.Abstract
             MainManager.EffectManager.ChangeEffect(EffectModel, true);
         }
 
-        public async void ResetSettings()
+        public void ResetSettings()
         {
-            var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
-                    "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
-
-            if (!resetConfirm.Value)
-                return;
-
+            // TODO: Confirmation dialog (Generic MVVM approach)
             EffectSettings.ToDefault();
             NotifyOfPropertyChange(() => EffectSettings);
 

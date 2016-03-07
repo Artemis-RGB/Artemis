@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
-using Artemis.Services;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Caliburn.Micro;
@@ -17,12 +17,10 @@ namespace Artemis.Managers
 
         private readonly int _fps;
         private bool _paused;
-        private bool _restarting;
 
-        public MainManager(IEventAggregator events, MetroDialogService dialogService)
+        public MainManager(IEventAggregator events)
         {
             Events = events;
-            DialogService = dialogService;
 
             KeyboardManager = new KeyboardManager(this);
             EffectManager = new EffectManager(this, Events);
@@ -30,7 +28,7 @@ namespace Artemis.Managers
 
             _fps = 25;
             UpdateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            ProcessWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
+            ProcessWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
 
             UpdateWorker.DoWork += UpdateWorker_DoWork;
             UpdateWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
@@ -59,7 +57,6 @@ namespace Artemis.Managers
 
         public GameStateWebServer GameStateWebServer { get; set; }
         public IEventAggregator Events { get; set; }
-        public MetroDialogService DialogService { get; set; }
 
         public bool ProgramEnabled { get; private set; }
         public bool Suspended { get; set; }
@@ -82,8 +79,7 @@ namespace Artemis.Managers
                 return true;
 
             // Only continue if a keyboard was loaded
-            KeyboardManager.EnableLastKeyboard();
-            if (KeyboardManager.ActiveKeyboard == null)
+            if (!KeyboardManager.LoadLastKeyboard())
                 return false;
 
             Running = true;
@@ -131,41 +127,6 @@ namespace Artemis.Managers
 
             _paused = false;
             PauseCallback = null;
-        }
-
-        public void Shutdown()
-        {
-            Stop();
-            ProcessWorker.CancelAsync();
-            GameStateWebServer.Stop();
-        }
-
-        public void Restart()
-        {
-            if (_restarting)
-                return;
-            if (!Running)
-            {
-                Start();
-                return;
-            }
-
-            _restarting = true;
-
-            UpdateWorker.RunWorkerCompleted += FinishRestart;
-            Stop();
-        }
-
-        public void FinishRestart(object sender, RunWorkerCompletedEventArgs e)
-        {
-            UpdateWorker.RunWorkerCompleted -= FinishRestart;
-
-            if (e.Error != null)
-                return;
-
-            Start();
-
-            _restarting = false;
         }
 
         /// <summary>
@@ -294,5 +255,12 @@ namespace Artemis.Managers
         }
 
         #endregion
+
+        public void Shutdown()
+        {
+            Stop();
+            ProcessWorker.CancelAsync();
+            GameStateWebServer.Stop();
+        }
     }
 }

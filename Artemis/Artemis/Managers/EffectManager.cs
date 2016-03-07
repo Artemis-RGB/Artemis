@@ -10,10 +10,8 @@ namespace Artemis.Managers
 {
     public class EffectManager
     {
-        private readonly IEventAggregator _events;
         private readonly MainManager _mainManager;
-        private bool _clearing;
-        private EffectModel _pauseEffect;
+        private readonly IEventAggregator _events;
 
         public EffectManager(MainManager mainManager, IEventAggregator events)
         {
@@ -25,6 +23,7 @@ namespace Artemis.Managers
 
         public List<EffectModel> EffectModels { get; set; }
         public EffectModel ActiveEffect { get; private set; }
+        public EffectModel PauseEffect { get; private set; }
 
         public IEnumerable<OverlayModel> EnabledOverlays
         {
@@ -84,27 +83,27 @@ namespace Artemis.Managers
 
         private void ChangeEffectWithPause(EffectModel effectModel)
         {
-            if (_pauseEffect != null)
+            if (PauseEffect != null)
                 return;
 
-            _pauseEffect = effectModel;
+            PauseEffect = effectModel;
             _mainManager.Pause();
-            _mainManager.PauseCallback += ChangeEffectPauseCallback;
+            _mainManager.PauseCallback += MainManagerOnPauseCallback;
         }
 
-        private void ChangeEffectPauseCallback()
+        private void MainManagerOnPauseCallback()
         {
             // Change effect logic
             ActiveEffect?.Dispose();
 
-            ActiveEffect = _pauseEffect;
+            ActiveEffect = PauseEffect;
             ActiveEffect.Enable();
 
             // Let the ViewModels know
             _events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
 
+            PauseEffect = null;
             _mainManager.Unpause();
-            _pauseEffect = null;
 
             if (ActiveEffect is GameModel)
                 return;
@@ -119,34 +118,18 @@ namespace Artemis.Managers
         /// </summary>
         public void ClearEffect()
         {
-            if (_clearing)
-                return;
-
             // Don't mess with the ActiveEffect if in the process of changing the effect.
-            if (_pauseEffect != null)
+            if (PauseEffect != null)
                 return;
-
+            
             if (ActiveEffect == null)
                 return;
 
-            _clearing = true;
-
-            _mainManager.Pause();
-            _mainManager.PauseCallback += ClearEffectPauseCallback;
-        }
-
-        private void ClearEffectPauseCallback()
-        {
             ActiveEffect.Dispose();
             ActiveEffect = null;
 
             General.Default.LastEffect = null;
             General.Default.Save();
-
-            _events.PublishOnUIThread(new ActiveEffectChanged(""));
-
-            _clearing = false;
-            _mainManager.Unpause();
         }
 
         /// <summary>
