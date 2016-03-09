@@ -3,11 +3,86 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="424" d:DesignWidth="635">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid>
-            <TextBlock Text="Dota 2 support is still to be done." />
+        <Grid Margin="15, 5, 15, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="80" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="20" HorizontalAlignment="Left">
+                    <Label.Content>
+                        <AccessText TextWrapping="Wrap"
+                                    Text="Shows various information Dota 2." />
+                    </Label.Content>
+                </Label>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                    <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                                  IsChecked="{Binding Path=GameSettings.Enabled, Mode=TwoWay}"
+                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
+                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Label FontSize="16" Content="Dota 2 Directory" FontFamily="Segoe UI Semibold" Foreground="#535353"
+                       Width="130" HorizontalAlignment="Left" />
+                <Grid>
+                    <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                             Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
+                             cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
+                    <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                            HorizontalAlignment="Right" Width="25"
+                            Style="{DynamicResource SquareButtonStyle}" Height="25" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Abilities Display -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show abilities that can be cast.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
+                                   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+            
+            <!-- Health Display -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show health on F-Keys.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowHealth, Mode=TwoWay}"
+                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+            
+            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
+                        Margin="10,0,0,0"
+                        Style="{DynamicResource SquareButtonStyle}" />
+            </StackPanel>
+
+
         </Grid>
     </ScrollViewer>
 </UserControl>
