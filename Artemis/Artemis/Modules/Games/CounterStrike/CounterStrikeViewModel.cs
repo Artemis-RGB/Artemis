@@ -44,7 +44,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
             if (Directory.Exists(((CounterStrikeSettings) GameSettings).GameDirectory + "/csgo/cfg"))
             {
-                var cfgFile = Resources.gamestateConfiguration.Replace("{{port}}",
+                var cfgFile = Resources.csgoGamestateConfiguration.Replace("{{port}}",
                     MainManager.GameStateWebServer.Port.ToString());
                 File.WriteAllText(
                     ((CounterStrikeSettings) GameSettings).GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg",
