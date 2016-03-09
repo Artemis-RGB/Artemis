@@ -1,11 +1,14 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.Utilities.LogitechDll;
 using Artemis.ViewModels;
 using Autofac;
 using Caliburn.Micro;
 using Caliburn.Micro.Autofac;
+using Microsoft.Win32;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
 
@@ -15,7 +18,8 @@ namespace Artemis
     {
         public ArtemisBootstrapper()
         {
-            CheckDuplicateInstances();
+            //CheckDuplicateInstances();
+            DllManager.RestoreDll();
             Initialize();
         }
 
