@@ -67,6 +67,15 @@ namespace Artemis.Modules.Games.Dota2
                 UpdateAbilities();
             if (Settings.ShowHealth)
                 UpdateHealth();
+            /*
+            * if (Settings.ShowDayCycle)
+            *   UpdateDay();
+            * if (Settings.ShowMana) //Not sure if this is in the Json. Will check when I get home
+            *   UpdateMana();
+            * if (Settings.CanCastItems)
+            *   UpdateItems();
+            * if (Settings.) //Add something
+            */
         }
 
         private void UpdateHealth()
