@@ -46,5 +46,29 @@ namespace Artemis.Modules.Games.Dota2 {
                 this["GameDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CanCastAbility {
+            get {
+                return ((bool)(this["CanCastAbility"]));
+            }
+            set {
+                this["CanCastAbility"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowHealth {
+            get {
+                return ((bool)(this["ShowHealth"]));
+            }
+            set {
+                this["ShowHealth"] = value;
+            }
+        }
     }
 }

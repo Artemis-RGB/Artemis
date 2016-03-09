@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="424" d:DesignWidth="635">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -54,6 +55,34 @@
                             Style="{DynamicResource SquareButtonStyle}" Height="25" />
                 </Grid>
             </StackPanel>
+
+            <!-- Abilities Display -->
+            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show abilities that can be cast.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
+                                   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+            
+            <!-- Health Display -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show health on F-Keys.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowHealth, Mode=TwoWay}"
+                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+            
+            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
+                        Margin="10,0,0,0"
+                        Style="{DynamicResource SquareButtonStyle}" />
+            </StackPanel>
+
+
         </Grid>
     </ScrollViewer>
 </UserControl>

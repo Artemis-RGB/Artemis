@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.GameState;
+using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -14,6 +17,8 @@ namespace Artemis.Modules.Games.Dota2
 {
     class Dota2Model : GameModel
     {
+
+        private KeyboardRegion _topRow;
         public Dota2Model(MainManager mainManager, Dota2Settings settings) : base(mainManager)
         {
             Settings = settings;
@@ -29,6 +34,8 @@ namespace Artemis.Modules.Games.Dota2
         public Dota2Settings Settings { get; set; }
         public JObject D2Json { get; set; }
         public int Scale { get; set; }
+        public KeyboardRectangle HealthRect { get; set; }
+
         #endregion
 
 
@@ -41,14 +48,41 @@ namespace Artemis.Modules.Games.Dota2
         public override void Enable()
         {
             Initialized = false;
-
+            _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
+            HealthRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X,
+                new List<Color>(),
+                LinearGradientMode.Horizontal)
+            { Height = Scale, ContainedBrush = false };
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }
 
         public override void Update()
         {
-            throw new NotImplementedException();
+            if (D2Json == null)
+                return;
+
+            if (Settings.CanCastAbility)
+                UpdateAbilities();
+            if (Settings.ShowHealth)
+                UpdateHealth();
+        }
+
+        private void UpdateHealth()
+        {
+            var health = D2Json["hero"]["health_percent"];
+            if((int)health > 66)
+                HealthRect.Colors = new List<Color> { Color.Lime };
+            else if ((int) health > 33)
+                HealthRect.Colors = new List<Color> {Color.Yellow};
+            else
+                HealthRect.Colors = new List<Color> {Color.Red};
+            
+        }
+
+        private void UpdateAbilities()
+        {
+            //Update keys according to the abilities they take.
         }
 
         public override Bitmap GenerateBitmap()
@@ -58,16 +92,18 @@ namespace Artemis.Modules.Games.Dota2
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
+                HealthRect.Draw(g);
             }
             return bitmap;
         }
+
 
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
         {
             var jsonString = e.Json.ToString();
 
-            // Ensure it's CS:GO JSON
+            // Ensure it's Dota 2 JSON
             if (!jsonString.Contains("Dota 2"))
                 return;
 

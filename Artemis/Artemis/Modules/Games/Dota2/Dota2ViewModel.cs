@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Properties;
@@ -39,13 +40,24 @@ namespace Artemis.Modules.Games.Dota2
         {
             if (((Dota2Settings)GameSettings).GameDirectory == string.Empty)
                 return;
-            if (Directory.Exists(((Dota2Settings)GameSettings).GameDirectory + "/dota2/cfg"))
+            if (Directory.Exists(((Dota2Settings)GameSettings).GameDirectory + "/game/dota/cfg"))
             {
-                var cfgFile = Resources.gamestateConfiguration.Replace("{{port}}",
+                var cfgFile = Resources.dotaGamestateConfiguration.Replace("{{port}}",
                     MainManager.GameStateWebServer.Port.ToString());
-                File.WriteAllText(
-                    ((Dota2Settings)GameSettings).GameDirectory + "/dota2/cfg/gamestate_integration_artemis.cfg",
+                try
+                {
+                    File.WriteAllText(
+                    ((Dota2Settings)GameSettings).GameDirectory + "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
                     cfgFile);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Directory.CreateDirectory(((Dota2Settings) GameSettings).GameDirectory + "/game/dota/cfg/gamestate_integration/");
+                    File.WriteAllText(
+                    ((Dota2Settings)GameSettings).GameDirectory + "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
+                    cfgFile);
+                }
+                
 
                 return;
             }
