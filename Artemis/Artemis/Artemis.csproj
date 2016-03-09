@@ -435,6 +435,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -474,6 +475,7 @@
     </Content>
     <Resource Include="Resources\logo.ico" />
     <Resource Include="Resources\logo-disabled.ico" />
+    <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="Resources\Entypo.ttf" />
@@ -567,7 +569,7 @@
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\CounterStrike\gamestateConfiguration.txt" />
+    <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
