@@ -12,6 +12,7 @@ using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Artemis.Modules.Games.Dota2;
 
 namespace Artemis.Modules.Games.Dota2
 {
@@ -32,7 +33,7 @@ namespace Artemis.Modules.Games.Dota2
         #region Variables
 
         public Dota2Settings Settings { get; set; }
-        public JObject D2Json { get; set; }
+        public Dota2DataModel.Rootobject D2Json { get; set; }
         public int Scale { get; set; }
         public KeyboardRectangle HealthRect { get; set; }
 
@@ -70,10 +71,10 @@ namespace Artemis.Modules.Games.Dota2
 
         private void UpdateHealth()
         {
-            var health = D2Json["hero"]["health_percent"];
-            if((int)health > 66)
+            var health = D2Json.hero.health_percent;
+            if(health > 66)
                 HealthRect.Colors = new List<Color> { Color.Lime };
-            else if ((int) health > 33)
+            else if (health > 33)
                 HealthRect.Colors = new List<Color> {Color.Yellow};
             else
                 HealthRect.Colors = new List<Color> {Color.Red};
@@ -82,6 +83,9 @@ namespace Artemis.Modules.Games.Dota2
 
         private void UpdateAbilities()
         {
+
+            Console.WriteLine();
+
             //Update keys according to the abilities they take.
         }
 
@@ -108,7 +112,7 @@ namespace Artemis.Modules.Games.Dota2
                 return;
 
             // Parse the JSON
-            D2Json = JsonConvert.DeserializeObject<JObject>(jsonString);
+            D2Json = JsonConvert.DeserializeObject<Dota2DataModel.Rootobject>(jsonString);
         }
     }
 }
