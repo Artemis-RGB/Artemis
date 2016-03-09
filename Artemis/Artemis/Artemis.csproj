@@ -297,6 +297,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Dota2.settings</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Games\Dota2\Dota2DataModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">

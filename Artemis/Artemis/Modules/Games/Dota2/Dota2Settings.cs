@@ -37,6 +37,8 @@ namespace Artemis.Modules.Games.Dota2
             Dota2.Default.CanCastAbility = CanCastAbility;
             Dota2.Default.Enabled = Enabled;
             Dota2.Default.GameDirectory = GameDirectory;
+
+            Dota2.Default.Save();
         }
 
         public override void ToDefault()
