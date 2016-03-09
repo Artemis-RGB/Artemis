@@ -292,6 +292,13 @@
     </Compile>
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
+    <Compile Include="Modules\Games\Dota2\Dota2.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Dota2.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
+    <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
       <DependentUpon>RocketLeague.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -440,6 +447,10 @@
     <None Include="Modules\Games\CounterStrike\CounterStrike.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Modules\Games\Dota2\Dota2.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Dota2.Designer.cs</LastGenOutput>
     </None>
     <None Include="Modules\Games\RocketLeague\RocketLeague.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
