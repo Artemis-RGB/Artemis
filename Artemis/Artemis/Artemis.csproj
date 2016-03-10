@@ -163,6 +163,10 @@
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="NamedPipeWrapper, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NamedPipeWrapper.1.4.0\lib\net40\NamedPipeWrapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
@@ -271,12 +275,15 @@
       <DependentUpon>AmbientLightningEffectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectViewModel.cs" />
+    <Compile Include="Modules\Effects\AmbientLightning\ScreenCapture.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
       <DependentUpon>AudioVisualization.settings</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
     <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
@@ -346,21 +353,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Offsets.settings</DependentUpon>
     </Compile>
-    <Compile Include="Utilities\Audio\FftEventArgs.cs" />
-    <Compile Include="Utilities\Audio\SampleAggregator.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
+    <Compile Include="Utilities\GeneralHelpers.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
+    <Compile Include="Utilities\LogitechDll\LogitechNamedPipe.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
-    <Compile Include="Utilities\ScreenCapture.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />

@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using NAudio.Dsp;
 
-namespace Artemis.Utilities.Audio
+namespace Artemis.Modules.Effects.AudioVisualizer.Utilities
 {
     public class FftEventArgs : EventArgs
     {
