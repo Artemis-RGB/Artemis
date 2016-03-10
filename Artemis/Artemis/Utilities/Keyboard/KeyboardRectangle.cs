@@ -33,8 +33,8 @@ namespace Artemis.Utilities.Keyboard
             _blinkWorker.DoWork += BlinkWorker_DoWork;
 
             Scale = 4;
-            X = x*Scale;
-            Y = y*Scale;
+            X = x;
+            Y = y;
             Width = keyboard.Width*Scale;
             Height = keyboard.Height*Scale;
             Visible = true;
