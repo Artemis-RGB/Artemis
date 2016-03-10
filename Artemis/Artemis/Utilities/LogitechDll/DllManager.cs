@@ -6,16 +6,20 @@ namespace Artemis.Utilities.LogitechDll
 {
     internal static class DllManager
     {
-        public static void RestoreDll()
+        private const string LogitechPath = @"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\";
+
+        public static bool RestoreDll()
         {
-            if (!BackupAvailable())
-                return;
+            if (!File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                return false;
 
             // Get rid of our own DLL
-            File.Delete(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll");
+            File.Delete(LogitechPath + @"\LogitechLed.dll");
             // Restore the backup
-            File.Move(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll.bak",
-                @"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll");
+            File.Move(LogitechPath + @"\LogitechLed.dll.bak",
+                LogitechPath + @"\LogitechLed.dll");
+
+            return true;
         }
 
         public static void PlaceDll()
@@ -24,19 +28,19 @@ namespace Artemis.Utilities.LogitechDll
                 return;
 
             // Create directory structure, just in case
-            Directory.CreateDirectory(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64");
+            Directory.CreateDirectory(LogitechPath + @"");
 
             // Remove old backups if they are there
-            if (BackupAvailable())
-                File.Delete(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll.bak");
+            if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                File.Delete(LogitechPath + @"\LogitechLed.dll.bak");
 
             // Backup the existing DLL
-            if (File.Exists(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll"))
-                File.Move(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll",
-                    @"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll.bak");
+            if (File.Exists(LogitechPath + @"\LogitechLed.dll"))
+                File.Move(LogitechPath + @"\LogitechLed.dll",
+                    LogitechPath + @"\LogitechLed.dll.bak");
 
             // Copy our own DLL in place
-            File.WriteAllBytes(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLED.dll",
+            File.WriteAllBytes(LogitechPath + @"\LogitechLED.dll",
                 Resources.LogitechLED);
 
             // If the user doesn't have a Logitech device, the CLSID will be missing
@@ -47,17 +51,12 @@ namespace Artemis.Utilities.LogitechDll
 
         public static bool DllPlaced()
         {
-            if (!Directory.Exists(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64"))
+            if (!Directory.Exists(LogitechPath + @""))
                 return false;
             if (!RegistryKeyPlaced())
                 return false;
 
-            return File.Exists(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll");
-        }
-
-        private static bool BackupAvailable()
-        {
-            return File.Exists(@"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll.bak");
+            return File.Exists(LogitechPath + @"\LogitechLed.dll");
         }
 
         private static bool RegistryKeyPlaced()
@@ -73,7 +72,7 @@ namespace Artemis.Utilities.LogitechDll
             var key = Registry
                 .LocalMachine.OpenSubKey(
                     @"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
-            key?.SetValue(null, @"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\LogitechLed.dll");
+            key?.SetValue(null, LogitechPath + @"\LogitechLed.dll");
         }
     }
 }

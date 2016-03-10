@@ -13,7 +13,7 @@ using MapFlags = SharpDX.DXGI.MapFlags;
 using Resource = SharpDX.DXGI.Resource;
 using ResultCode = SharpDX.DXGI.ResultCode;
 
-namespace Artemis.Utilities
+namespace Artemis.Modules.Effects.AmbientLightning
 {
     internal class ScreenCapture : IDisposable
     {
