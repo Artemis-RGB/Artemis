@@ -118,5 +118,29 @@ namespace Artemis.Modules.Games.Dota2 {
                 this["ShowDead"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF0000")]
+        public global::System.Windows.Media.Color MainColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["MainColor"]));
+            }
+            set {
+                this["MainColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF0000FF")]
+        public global::System.Windows.Media.Color ManaColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["ManaColor"]));
+            }
+            set {
+                this["ManaColor"] = value;
+            }
+        }
     }
 }

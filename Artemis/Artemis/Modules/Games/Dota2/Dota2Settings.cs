@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Media;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,11 +25,15 @@ namespace Artemis.Modules.Games.Dota2
         public bool CanCastItem { get; set; }
         public bool ShowMana { get; set; }
         public bool ShowDead { get; set; }
+        public Color MainColor { get; set; }
+        public Color ManaColor { get; set; }
         #endregion
 
 
         public override void Load()
         {
+            MainColor = Dota2.Default.MainColor;
+            ManaColor = Dota2.Default.ManaColor;
             ShowHealth = Dota2.Default.ShowHealth;
             CanCastAbility = Dota2.Default.CanCastAbility;
             Enabled = Dota2.Default.Enabled;
@@ -41,6 +46,8 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Save()
         {
+            Dota2.Default.MainColor = MainColor;
+            Dota2.Default.ManaColor = ManaColor;
             Dota2.Default.ShowDayCycle = ShowDayCycle;
             Dota2.Default.ShowHealth = ShowHealth;
             Dota2.Default.CanCastAbility = CanCastAbility;
@@ -56,9 +63,11 @@ namespace Artemis.Modules.Games.Dota2
         public override void ToDefault()
         {
            
-            Enabled = false;
+            Enabled = true;
             GameDirectory = string.Empty;
 
+            MainColor = Color.FromArgb(255,255,0,0);
+            ManaColor = Color.FromArgb(255,0,0,255);
             ShowHealth = true;
             CanCastAbility = true;
             ShowDayCycle = true;

@@ -14,6 +14,7 @@ using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Artemis.Modules.Games.Dota2;
+using Artemis.Utilities;
 
 namespace Artemis.Modules.Games.Dota2
 {
@@ -95,8 +96,12 @@ namespace Artemis.Modules.Games.Dota2
             if (D2Json == null)
                 return;
 
-            if (Settings.ShowDead)
-                UpdateDead();
+            if (Settings.ShowDead && D2Json?.hero?.alive != null && !D2Json.hero.alive)
+            {
+                UpdateLifeStatus();
+                return;
+            }
+            UpdateMainColor();
             if (Settings.CanCastAbility)
                 UpdateAbilities();
             if (Settings.ShowHealth)
@@ -107,15 +112,28 @@ namespace Artemis.Modules.Games.Dota2
                 UpdateMana();
             if (Settings.CanCastItem)
                 UpdateItems();
+
+            
            
         }
 
-        private void UpdateDead()
+        private void UpdateMainColor()
         {
-            if (D2Json?.hero?.alive == null)
-                return;
+            var list = new List<Color> { ColorHelpers.ToDrawingColor(Settings.MainColor) };
+            EventRectangle.Colors = list;
+            DayCycleRectangle.Colors = list;
+            HealthRectangle.Colors = list;
+            ManaRectangle.Colors = list;
+        }
 
-            EventRectangle.Colors = D2Json.hero.alive ? new List<Color> { Color.Lime } : new List<Color> {Color.LightGray};
+        private void UpdateLifeStatus()
+        {
+            var list = new List<Color> { Color.LightGray };
+            EventRectangle.Colors = list;
+            DayCycleRectangle.Colors = list;
+            HealthRectangle.Colors = list;
+            ManaRectangle.Colors = list;
+            
         }
 
         private void UpdateDay()
@@ -143,7 +161,7 @@ namespace Artemis.Modules.Games.Dota2
                 return;
 
             var manaPercent = D2Json.hero.mana_percent;
-            ManaRectangle.Colors = new List<Color> {Color.Blue};
+            ManaRectangle.Colors = new List<Color> { ColorHelpers.ToDrawingColor(Settings.ManaColor) };
             ManaRectangle.Width = (int)Math.Floor(_topRow.BottomRight.Y / 100.00 * manaPercent) * Scale;
         }
 
