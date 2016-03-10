@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
+using Artemis.Utilities;
 using WpfExceptionViewer;
 
 namespace Artemis
@@ -15,41 +13,13 @@ namespace Artemis
     {
         public App()
         {
-            if (!IsRunAsAdministrator())
-            {
-                var processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase);
-
-                // The following properties run the new process as administrator
-                processInfo.UseShellExecute = true;
-                processInfo.Verb = "runas";
-
-                // Start the new process
-                try
-                {
-                    Process.Start(processInfo);
-                }
-                catch (Exception)
-                {
-                    // The user did not allow the application to run as administrator
-                    MessageBox.Show("Sorry, this application must be run as Administrator.");
-                }
-
-                // Shut down the current process
-                Environment.Exit(0);
-            }
+            if (!GeneralHelpers.IsRunAsAdministrator())
+                GeneralHelpers.RunAsAdministrator();
 
             InitializeComponent();
         }
 
         public bool DoHandle { get; set; }
-
-        private bool IsRunAsAdministrator()
-        {
-            var wi = WindowsIdentity.GetCurrent();
-            var wp = new WindowsPrincipal(wi);
-
-            return wp.IsInRole(WindowsBuiltInRole.Administrator);
-        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
