@@ -64,16 +64,55 @@
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
                                    Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
-            
-            <!-- Health Display -->
+
+            <!-- Items Display -->
             <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show items that can be cast.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastItem, Mode=TwoWay}"
+                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Health Display -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
                 Show health on F-Keys.
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowHealth, Mode=TwoWay}"
-                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
-            
+
+            <!-- Mana Display-->
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show mana on the number keys.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowMana, Mode=TwoWay}"
+                                   Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Daytime Display -->
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Show day/night cycle.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDayCycle, Mode=TwoWay}"
+                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+            <!-- Dead Display -->
+            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Turn grey when dead.
+            </TextBlock>
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDead, Mode=TwoWay}"
+                                   Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Margin="0,0,-5,0" Width="114" />
+
+
+
+
             <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
