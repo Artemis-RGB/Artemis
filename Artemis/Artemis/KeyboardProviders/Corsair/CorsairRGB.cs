@@ -73,25 +73,25 @@ namespace Artemis.KeyboardProviders.Corsair
                 case "K95 RGB":
                     Height = 7;
                     Width = 24;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 20)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 21), new Point(7, 25)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(20, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(21, 2), new Point(25, 7)));
                     break;
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(20, 7)));
                     break;
                 case "STRAFE RGB":
                     Height = 7;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
                     Width = 22;
                     break;
             }
