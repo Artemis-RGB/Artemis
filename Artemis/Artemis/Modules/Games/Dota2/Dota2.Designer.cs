@@ -70,5 +70,53 @@ namespace Artemis.Modules.Games.Dota2 {
                 this["ShowHealth"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDayCycle {
+            get {
+                return ((bool)(this["ShowDayCycle"]));
+            }
+            set {
+                this["ShowDayCycle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CanCastItem {
+            get {
+                return ((bool)(this["CanCastItem"]));
+            }
+            set {
+                this["CanCastItem"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowMana {
+            get {
+                return ((bool)(this["ShowMana"]));
+            }
+            set {
+                this["ShowMana"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDead {
+            get {
+                return ((bool)(this["ShowDead"]));
+            }
+            set {
+                this["ShowDead"] = value;
+            }
+        }
     }
 }
