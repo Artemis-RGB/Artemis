@@ -16,7 +16,11 @@ namespace Artemis.KeyboardProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
-            KeyboardRegions = new List<KeyboardRegion> {new KeyboardRegion("TopRow", new Point(0, 0), new Point(0, 16))};
+            KeyboardRegions = new List<KeyboardRegion>
+            {
+                new KeyboardRegion("TopRow", new Point(0, 0), new Point(0, 16)),
+                new KeyboardRegion("NumPad", new Point(0, 17), new Point(0, 25))
+            };
         }
 
         public override bool CanEnable()

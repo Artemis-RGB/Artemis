@@ -74,19 +74,24 @@ namespace Artemis.KeyboardProviders.Corsair
                     Height = 7;
                     Width = 24;
                     KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 20)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 21), new Point(7, 25)));
                     break;
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
                     KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
                     break;
                 case "STRAFE RGB":
                     Height = 7;
                     KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(2, 17), new Point(7, 21)));
                     Width = 22;
                     break;
             }
