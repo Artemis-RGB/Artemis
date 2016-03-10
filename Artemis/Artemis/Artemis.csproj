@@ -314,6 +314,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
+    <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>TheDivision.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\TheDivision\TheDivisionModel.cs" />
+    <Compile Include="Modules\Games\TheDivision\TheDivisionSettings.cs" />
+    <Compile Include="Modules\Games\TheDivision\TheDivisionView.xaml.cs">
+      <DependentUpon>TheDivisionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -466,6 +477,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>RocketLeague.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Modules\Games\TheDivision\TheDivision.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>TheDivision.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Games\Witcher3\Witcher3.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Witcher3.Designer.cs</LastGenOutput>
@@ -503,6 +518,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\TheDivision\TheDivisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

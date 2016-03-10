@@ -2,27 +2,23 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Utilities;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Artemis.Modules.Games.Dota2;
-using Artemis.Utilities;
 
 namespace Artemis.Modules.Games.Dota2
 {
-    class Dota2Model : GameModel
+    internal class Dota2Model : GameModel
     {
+        private KeyboardRegion _keyPad;
 
         private KeyboardRegion _topRow;
-        private KeyboardRegion _keyPad;
+
         public Dota2Model(MainManager mainManager, Dota2Settings settings) : base(mainManager)
         {
             Settings = settings;
@@ -32,17 +28,6 @@ namespace Artemis.Modules.Games.Dota2
             Initialized = false;
             Scale = 4;
         }
-
-        #region Variables
-
-        public Dota2Settings Settings { get; set; }
-        public Dota2DataModel.Rootobject D2Json { get; set; }
-        public int Scale { get; set; }
-        public KeyboardRectangle HealthRectangle { get; set; }
-        public KeyboardRectangle EventRectangle { get; set; }
-        public KeyboardRectangle DayCycleRectangle { get; set; }
-        public KeyboardRectangle ManaRectangle { get; set; }
-        #endregion
 
 
         public override void Dispose()
@@ -58,34 +43,37 @@ namespace Artemis.Modules.Games.Dota2
             _keyPad = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "NumPad");
             HealthRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , 0
-                , _topRow.TopLeft.X
+                , _topRow.BottomRight.Y*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
-            { Height = Scale, ContainedBrush = false };
+            {Height = Scale, ContainedBrush = false};
 
             ManaRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , 0
-                , _topRow.TopLeft.X+1
+                , (_topRow.BottomRight.Y + 1)*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
-            { Height = Scale, ContainedBrush = false };
+            {Height = Scale, ContainedBrush = false};
 
             EventRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , 0
                 , _topRow.TopLeft.X + 2
                 , new List<Color>()
-                , LinearGradientMode.Horizontal )
-            {Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
-            , Width = MainManager.KeyboardManager.ActiveKeyboard.Width*Scale-Scale-12};
+                , LinearGradientMode.Horizontal)
+            {
+                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
+                ,
+                Width = MainManager.KeyboardManager.ActiveKeyboard.Width*Scale - Scale - 12
+            };
 
             DayCycleRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
-                , _keyPad.BottomRight.X * 3
-                , _keyPad.TopLeft.X 
+                , _keyPad.TopLeft.X*Scale
+                , _keyPad.TopLeft.Y*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {
-                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale,
-                Width = MainManager.KeyboardManager.ActiveKeyboard.Width - (MainManager.KeyboardManager.ActiveKeyboard.Width * Scale - Scale - 12)
+                Height = _keyPad.GetRectangle().Height*Scale,
+                Width = _keyPad.GetRectangle().Width*Scale
             };
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
@@ -112,14 +100,11 @@ namespace Artemis.Modules.Games.Dota2
                 UpdateMana();
             if (Settings.CanCastItem)
                 UpdateItems();
-
-            
-           
         }
 
         private void UpdateMainColor()
         {
-            var list = new List<Color> { ColorHelpers.ToDrawingColor(Settings.MainColor) };
+            var list = new List<Color> {ColorHelpers.ToDrawingColor(Settings.MainColor)};
             EventRectangle.Colors = list;
             DayCycleRectangle.Colors = list;
             HealthRectangle.Colors = list;
@@ -128,31 +113,31 @@ namespace Artemis.Modules.Games.Dota2
 
         private void UpdateLifeStatus()
         {
-            var list = new List<Color> { Color.LightGray };
+            var list = new List<Color> {Color.LightGray};
             EventRectangle.Colors = list;
             DayCycleRectangle.Colors = list;
             HealthRectangle.Colors = list;
             ManaRectangle.Colors = list;
-            
         }
 
         private void UpdateDay()
         {
-
             if (D2Json?.map?.daytime == null)
                 return;
 
             if (D2Json.map.nightstalker_night)
             {
-                DayCycleRectangle.Colors = new List<Color> { Color.Blue };
+                DayCycleRectangle.Colors = new List<Color> {Color.Blue};
                 return;
             }
 
-            var timeLeft = 240 - (D2Json.map.clock_time % 240);
-            double width = (int) ((MainManager.KeyboardManager.ActiveKeyboard.Width*Scale - (MainManager.KeyboardManager.ActiveKeyboard.Width * Scale - Scale*Scale)) * (timeLeft/240D)) ;
-            DayCycleRectangle.Width = (int) (width/2) > 1 ? (int)(width / 2)+1 : (int)(width / 2);
-            DayCycleRectangle.Colors = D2Json.map.daytime ? new List<Color> { Color.Yellow } : new List<Color> { Color.Blue };
-
+            var timeLeft = 240 - D2Json.map.clock_time%240;
+            var timePercentage = 100.00/240*timeLeft;
+            var test = _keyPad.GetRectangle().Width;
+            DayCycleRectangle.Width = (int) (_keyPad.GetRectangle().Width*Scale/100.00*timePercentage);
+            DayCycleRectangle.Colors = D2Json.map.daytime
+                ? new List<Color> {Color.Yellow}
+                : new List<Color> {Color.Blue};
         }
 
         private void UpdateMana()
@@ -161,8 +146,8 @@ namespace Artemis.Modules.Games.Dota2
                 return;
 
             var manaPercent = D2Json.hero.mana_percent;
-            ManaRectangle.Colors = new List<Color> { ColorHelpers.ToDrawingColor(Settings.ManaColor) };
-            ManaRectangle.Width = (int)Math.Floor(_topRow.BottomRight.Y / 100.00 * manaPercent) * Scale;
+            ManaRectangle.Colors = new List<Color> {ColorHelpers.ToDrawingColor(Settings.ManaColor)};
+            ManaRectangle.Width = (int) Math.Floor(_topRow.GetRectangle().Width*Scale/100.00*manaPercent);
         }
 
         private void UpdateItems()
@@ -172,7 +157,6 @@ namespace Artemis.Modules.Games.Dota2
 
         private void UpdateAbilities()
         {
-
             //Console.WriteLine();
 
             //Update keys according to the abilities they take.
@@ -185,15 +169,14 @@ namespace Artemis.Modules.Games.Dota2
                 return;
 
             var healthPercent = D2Json.hero.health_percent;
-            if(healthPercent > 66)
-                HealthRectangle.Colors = new List<Color> { Color.Lime };
+            if (healthPercent > 66)
+                HealthRectangle.Colors = new List<Color> {Color.Lime};
             else if (healthPercent > 33)
                 HealthRectangle.Colors = new List<Color> {Color.Yellow};
             else
                 HealthRectangle.Colors = new List<Color> {Color.Red};
 
-            HealthRectangle.Width = (int)Math.Floor(_topRow.BottomRight.Y / 100.00 * healthPercent) * Scale;
-
+            HealthRectangle.Width = (int) Math.Floor(_topRow.GetRectangle().Width*Scale/100.00*healthPercent);
         }
 
 
@@ -208,11 +191,9 @@ namespace Artemis.Modules.Games.Dota2
                 HealthRectangle.Draw(g);
                 ManaRectangle.Draw(g);
                 DayCycleRectangle.Draw(g);
-                
             }
             return bitmap;
         }
-
 
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
@@ -226,5 +207,17 @@ namespace Artemis.Modules.Games.Dota2
             // Parse the JSON
             D2Json = JsonConvert.DeserializeObject<Dota2DataModel.Rootobject>(jsonString);
         }
+
+        #region Variables
+
+        public Dota2Settings Settings { get; set; }
+        public Dota2DataModel.Rootobject D2Json { get; set; }
+        public int Scale { get; set; }
+        public KeyboardRectangle HealthRectangle { get; set; }
+        public KeyboardRectangle EventRectangle { get; set; }
+        public KeyboardRectangle DayCycleRectangle { get; set; }
+        public KeyboardRectangle ManaRectangle { get; set; }
+
+        #endregion
     }
 }
