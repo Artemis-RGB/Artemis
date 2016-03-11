@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Services;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
+using Artemis.Utilities.LogitechDll;
 using Caliburn.Micro;
 
 namespace Artemis.Managers
@@ -47,8 +49,13 @@ namespace Artemis.Managers
             // Create and start the web server
             GameStateWebServer = new GameStateWebServer();
             GameStateWebServer.Start();
+
+            // Start the named pipe
+            PipeServer = new PipeServer();
+            PipeServer.Start("artemis");
         }
 
+        public PipeServer PipeServer { get; set; }
         public BackgroundWorker UpdateWorker { get; set; }
         public BackgroundWorker ProcessWorker { get; set; }
 
@@ -65,6 +72,7 @@ namespace Artemis.Managers
         public bool Suspended { get; set; }
 
         public bool Running { get; private set; }
+
         public event PauseCallbackHandler PauseCallback;
 
         /// <summary>
@@ -137,7 +145,9 @@ namespace Artemis.Managers
         {
             Stop();
             ProcessWorker.CancelAsync();
+            ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
+            //NamedPipeServer.StopServer();
         }
 
         public void Restart()

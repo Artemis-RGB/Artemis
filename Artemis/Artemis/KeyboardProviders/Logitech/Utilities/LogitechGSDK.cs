@@ -68,7 +68,7 @@ namespace Artemis.KeyboardProviders.Logitech.Utilities
             int greenPercentage, int bluePercentage);
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool LogiLedSetLightingForKeyWithKeyName(KeyboardNames keyCode, int redPercentage,
+        public static extern bool LogiLedSetLightingForKeyWithKeyName(int keyCode, int redPercentage,
             int greenPercentage, int bluePercentage);
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]

@@ -10,14 +10,17 @@ namespace Artemis.Utilities.LogitechDll
 
         public static bool RestoreDll()
         {
-            if (!File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+            if (!File.Exists(LogitechPath + @"\LogitechLed.dll") || !File.Exists(LogitechPath + @"\artemis.txt"))
                 return false;
-
+            
             // Get rid of our own DLL
             File.Delete(LogitechPath + @"\LogitechLed.dll");
+
             // Restore the backup
-            File.Move(LogitechPath + @"\LogitechLed.dll.bak",
-                LogitechPath + @"\LogitechLed.dll");
+            if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                File.Move(LogitechPath + @"\LogitechLed.dll.bak", LogitechPath + @"\LogitechLed.dll");
+
+            File.Delete(LogitechPath + @"\artemis.txt");
 
             return true;
         }
@@ -43,6 +46,9 @@ namespace Artemis.Utilities.LogitechDll
             File.WriteAllBytes(LogitechPath + @"\LogitechLED.dll",
                 Resources.LogitechLED);
 
+            // A token to show the file is placed
+            File.Create(LogitechPath + @"\artemis.txt");
+
             // If the user doesn't have a Logitech device, the CLSID will be missing
             // and we should create it ourselves.
             if (!RegistryKeyPlaced())
@@ -56,7 +62,7 @@ namespace Artemis.Utilities.LogitechDll
             if (!RegistryKeyPlaced())
                 return false;
 
-            return File.Exists(LogitechPath + @"\LogitechLed.dll");
+            return File.Exists(LogitechPath + @"\artemis.txt");
         }
 
         private static bool RegistryKeyPlaced()
