@@ -57,7 +57,7 @@ namespace Artemis.Modules.Games.Dota2
 
             EventRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , 0
-                , _topRow.TopLeft.X + 2
+                , _topRow.TopLeft.X + 3
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {
