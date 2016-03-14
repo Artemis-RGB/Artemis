@@ -9,7 +9,7 @@ Besides game-support there are also a few effects for when you're not gaming.
 
 Some of it's basic features:
 
- * Support for multiple keyboards planned.
+ * Support for multiple keyboards.
  * Support for multiple games.
  * A few non-gaming effects such as type waves and audio visualization.
  * A fancy, modern looking UI.
@@ -22,13 +22,21 @@ Currently the following games are supported:
  * Counter-Strike Global Offensive (uses native gamestate intergration)
 
 Support is planned for:
- * Dota 2 (using native gamestate intergration))
+ * Dota 2 (in development right now!)
  * Project CARS (using native memory sharing)
  * What you happen to suggest!
 
 For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
 
-Currently the only supported keyboards are the Logitech G910 Orion Spark and Corsair K95 RGB, but progress is being made to support Razer as well.
+The following keyboards are supported:
+ * Corsair K95 RGB
+ * Corsair K70 RGB
+ * Corsair Strafe RGB
+ * Logitech G910
+ * Logitech G810 (untested)
+ * Logitech G410 (untested)
+
+Razer BlackWidow Chroma support coming soon.
 
 For any keyboards/games/effects we'd love PRs!
 
