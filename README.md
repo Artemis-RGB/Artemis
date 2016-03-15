@@ -53,17 +53,16 @@ A demo of The Witcher 3 support on the new codebase
 
 
 ### Screenshots
-![Screenshot 1](http://i.imgur.com/hug66P4.png)
-![Screenshot 2](http://i.imgur.com/6NTAuYR.png)
-![Screenshot 3](http://i.imgur.com/uGzRhxP.png)
-![Screenshot 4](http://i.imgur.com/NvLsJpy.png)
-![Screenshot 5](http://i.imgur.com/Q0C50fe.png)
-![Screenshot 6](http://i.imgur.com/BhLWThq.png)
-![Screenshot 7](http://i.imgur.com/IkQuJ6m.png)
-![Screenshot 8](http://i.imgur.com/kc6sHjE.png)
-![Screenshot 9](http://i.imgur.com/Eg1ASem.png)
-![Screenshot 10](http://i.imgur.com/L7qilNp.png)
-![Screenshot 11](http://i.imgur.com/bS9NhfB.png)
+![Welcome Screen](http://i.imgur.com/hug66P4.png)
+![Flyout](http://i.imgur.com/6NTAuYR.png)
+![Debug](http://i.imgur.com/uGzRhxP.png)
+![Audio Visualization](http://i.imgur.com/Q0C50fe.png)
+![Type Waves](http://i.imgur.com/BhLWThq.png)
+![Witcher](http://i.imgur.com/IkQuJ6m.png)
+![Dota](http://i.imgur.com/kc6sHjE.png)
+![CS:GO](http://i.imgur.com/Eg1ASem.png)
+![Rocket League](http://i.imgur.com/L7qilNp.png)
+![Volume Overlay](http://i.imgur.com/bS9NhfB.png)
 
 
 ### Thanks to:
