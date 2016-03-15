@@ -89,7 +89,7 @@
                 Ability on Cooldown Color
             </TextBlock>
             <xctk:ColorPicker x:Name="AbilityCooldownColor"
-                              SelectedColor="{Binding Path=GameSettings.AbilityDownColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=GameSettings.AbilityCooldownColor, Mode=TwoWay}"
                               Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
