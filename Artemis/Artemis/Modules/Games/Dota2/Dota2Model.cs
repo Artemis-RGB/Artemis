@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
@@ -75,15 +76,22 @@ namespace Artemis.Modules.Games.Dota2
                 Height = _keyPad.GetRectangle().Height*Scale,
                 Width = _keyPad.GetRectangle().Width*Scale
             };
+
+            SetAbilityKeys();
+
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
+        }
+
+        private void SetAbilityKeys()
+        {
+
         }
 
         public override void Update()
         {
             if (D2Json == null)
                 return;
-
             if (Settings.ShowDead && D2Json?.hero?.alive != null && !D2Json.hero.alive)
             {
                 UpdateLifeStatus();
@@ -100,6 +108,7 @@ namespace Artemis.Modules.Games.Dota2
                 UpdateMana();
             if (Settings.CanCastItem)
                 UpdateItems();
+
         }
 
         private void UpdateMainColor()
@@ -217,7 +226,10 @@ namespace Artemis.Modules.Games.Dota2
         public KeyboardRectangle EventRectangle { get; set; }
         public KeyboardRectangle DayCycleRectangle { get; set; }
         public KeyboardRectangle ManaRectangle { get; set; }
-
+        public KeyboardRectangle[] AbilityKeys { get; set; }
         #endregion
+
+
+        
     }
 }
