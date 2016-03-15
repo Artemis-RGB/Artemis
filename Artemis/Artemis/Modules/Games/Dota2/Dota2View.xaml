@@ -8,7 +8,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d"
              d:DesignHeight="495" d:DesignWidth="635">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-19">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -17,6 +17,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="80" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -70,75 +72,95 @@
                               SelectedColor="{Binding Path=GameSettings.MainColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-            
-            <!-- Abilities Display -->
-            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Castable abilities
+
+            <!-- Ability Ready Color -->
+            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Ability Ready Color
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
-                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
+            <xctk:ColorPicker x:Name="AbilityReadyColor"
+                              SelectedColor="{Binding Path=GameSettings.AbilityReadyColor, Mode=TwoWay}"
+                              Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Ability on Cooldown Color -->
+            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="147" VerticalAlignment="Center"
+                       Height="16" Margin="0,8">
+                Ability on Cooldown Color
+            </TextBlock>
+            <xctk:ColorPicker x:Name="AbilityCooldownColor"
+                              SelectedColor="{Binding Path=GameSettings.AbilityCooldownColor, Mode=TwoWay}"
+                              Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+
+            <!-- Abilities Display -->
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+                       Height="16" Margin="0,10,0,9">
+                Keyboard Template
+            </TextBlock>
+            <ComboBox Grid.Row="5" Grid.Column="1" x:Name="KeyboardLayouts" ItemsSource="{Binding Path=KeyboardLayouts}" SelectedIndex="{Binding Path=GameSettings.KeyboardLayout}" VerticalAlignment="Center"
+                  HorizontalAlignment="Right"
+                  Width="109" Margin="0,6,0,7" />
 
             <!-- Items Display -->
-            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
-                Castable items
+                Castable Abilities
             </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastItem, Mode=TwoWay}"
-                                   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
+                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
             <!-- Health Display -->
-            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
                 Display health
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowHealth, Mode=TwoWay}"
-                                   Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
             <!-- Mana Display-->
-            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
                 Display mana
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowMana, Mode=TwoWay}"
-                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
             <!-- Mana Color -->
-            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
+            <TextBlock Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
                 Mana color
             </TextBlock>
             <xctk:ColorPicker x:Name="ManaColor"
                               SelectedColor="{Binding Path=GameSettings.ManaColor, Mode=TwoWay}"
-                              Grid.Row="7" Grid.Column="1" Width="110" HorizontalAlignment="Right"
+                              Grid.Row="9" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
             <!-- Daytime Display -->
-            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+            <TextBlock Grid.Row="10" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
                 Display day/night
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDayCycle, Mode=TwoWay}"
-                                   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
             <!-- Dead Display -->
-            <TextBlock Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
+            <TextBlock Grid.Row="11" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
                        Height="16" Margin="0,10,0,9">
                 Display gray when dead
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDead, Mode=TwoWay}"
-                                   Grid.Row="9" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="11" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
 
 
 
-            <StackPanel Grid.Column="0" Grid.Row="11" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="12" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

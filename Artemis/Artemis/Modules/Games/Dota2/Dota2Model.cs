@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
+using System.Windows.Media;
 using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
@@ -10,13 +12,14 @@ using Artemis.Utilities;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
+using Color = System.Drawing.Color;
 
 namespace Artemis.Modules.Games.Dota2
 {
     internal class Dota2Model : GameModel
     {
         private KeyboardRegion _keyPad;
-
+        private KeyboardRegion _abilityKeys;
         private KeyboardRegion _topRow;
 
         public Dota2Model(MainManager mainManager, Dota2Settings settings) : base(mainManager)
@@ -41,6 +44,7 @@ namespace Artemis.Modules.Games.Dota2
             Initialized = false;
             _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
             _keyPad = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "NumPad");
+            _abilityKeys = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "QWER");
             HealthRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , 0
                 , _topRow.BottomRight.Y*Scale
@@ -68,22 +72,103 @@ namespace Artemis.Modules.Games.Dota2
 
             DayCycleRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , _keyPad.TopLeft.X*Scale
-                , _keyPad.TopLeft.Y*Scale
+                , _keyPad.BottomRight.Y*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {
                 Height = _keyPad.GetRectangle().Height*Scale,
                 Width = _keyPad.GetRectangle().Width*Scale
             };
+
+            SetAbilityKeys();
+
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
+        }
+
+        private void SetAbilityKeys()
+        {
+            #region Long Switch Statement for Keys
+            switch (Settings.KeyboardLayout)
+            {
+                case "0": //default
+                case "4": //Heroes of newearth
+                case "3": //League of Legends
+                    for (int i = 0; i < AbilityKeysRectangles.Length; i++)
+                    {
+                        AbilityKeysRectangles[i] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                        (_abilityKeys.TopLeft.X + i) * Scale - 2,
+                                        _abilityKeys.TopLeft.Y * Scale,
+                                        new List<Color>(),
+                                        LinearGradientMode.Horizontal)
+                        {
+                            Height = Scale,
+                            Width = Scale
+                        };
+                    }
+                    break;
+                case "2":
+                    AbilityKeysRectangles[0] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                    (_abilityKeys.TopLeft.X * Scale) - 2,
+                                    _abilityKeys.TopLeft.Y * Scale,
+                                    new List<Color>(),
+                                    LinearGradientMode.Horizontal)
+                    {
+                        Height = Scale,
+                        Width = Scale
+                    };
+                    AbilityKeysRectangles[1] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                    ((_abilityKeys.TopLeft.X + 2) * Scale) - 2,
+                                    _abilityKeys.TopLeft.Y * Scale,
+                                    new List<Color>(),
+                                    LinearGradientMode.Horizontal)
+                    {
+                        Height = Scale,
+                        Width = Scale
+                    };
+                    AbilityKeysRectangles[2] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                    ((_abilityKeys.TopLeft.X +3) * Scale) - 2,
+                                    _abilityKeys.TopLeft.Y * Scale,
+                                    new List<Color>(),
+                                    LinearGradientMode.Horizontal)
+                    {
+                        Height = Scale,
+                        Width = Scale
+                    };
+                    AbilityKeysRectangles[3] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                    ((_abilityKeys.TopLeft.X +3)* Scale) - 2,
+                                    (_abilityKeys.TopLeft.Y +1)* Scale,
+                                    new List<Color>(),
+                                    LinearGradientMode.Horizontal)
+                    {
+                        Height = Scale,
+                        Width = Scale
+                    };
+                    break;
+                case "1": //MMO
+                case "5": //Smite
+                    for (int i = 0; i < AbilityKeysRectangles.Length; i++)
+                    {
+                        AbilityKeysRectangles[i] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                                        (_abilityKeys.TopLeft.X + i) * Scale - 3,
+                                        (_abilityKeys.TopLeft.Y-1) * Scale,
+                                        new List<Color>(),
+                                        LinearGradientMode.Horizontal)
+                        {
+                            Height = Scale,
+                            Width = Scale
+                        };
+                    }
+                    break;
+
+            }
+        #endregion
         }
 
         public override void Update()
         {
             if (D2Json == null)
                 return;
-
             if (Settings.ShowDead && D2Json?.hero?.alive != null && !D2Json.hero.alive)
             {
                 UpdateLifeStatus();
@@ -98,8 +183,7 @@ namespace Artemis.Modules.Games.Dota2
                 UpdateDay();
             if (Settings.ShowMana)
                 UpdateMana();
-            if (Settings.CanCastItem)
-                UpdateItems();
+
         }
 
         private void UpdateMainColor()
@@ -133,7 +217,6 @@ namespace Artemis.Modules.Games.Dota2
 
             var timeLeft = 240 - D2Json.map.clock_time%240;
             var timePercentage = 100.00/240*timeLeft;
-            var test = _keyPad.GetRectangle().Width;
             DayCycleRectangle.Width = (int) (_keyPad.GetRectangle().Width*Scale/100.00*timePercentage);
             DayCycleRectangle.Colors = D2Json.map.daytime
                 ? new List<Color> {Color.Yellow}
@@ -150,16 +233,19 @@ namespace Artemis.Modules.Games.Dota2
             ManaRectangle.Width = (int) Math.Floor(_topRow.GetRectangle().Width*Scale/100.00*manaPercent);
         }
 
-        private void UpdateItems()
-        {
-            //throw new NotImplementedException();
-        }
-
         private void UpdateAbilities()
         {
-            //Console.WriteLine();
-
-            //Update keys according to the abilities they take.
+            if (AbilityKeysRectangles == null)
+                return;
+            
+            AbilityKeysRectangles[0].Colors = D2Json?.abilities?.ability0?.can_cast == true ? new List<Color>
+            { ColorHelpers.ToDrawingColor(Settings.AbilityReadyColor) } : new List<Color> { ColorHelpers.ToDrawingColor(Settings.AbilityCooldownColor) };
+            AbilityKeysRectangles[1].Colors = D2Json?.abilities?.ability1?.can_cast == true ? new List<Color>
+            { ColorHelpers.ToDrawingColor(Settings.AbilityReadyColor) } : new List<Color> { ColorHelpers.ToDrawingColor(Settings.AbilityCooldownColor) };
+            AbilityKeysRectangles[2].Colors = D2Json?.abilities?.ability2?.can_cast == true ? new List<Color>
+            { ColorHelpers.ToDrawingColor(Settings.AbilityReadyColor) } : new List<Color> { ColorHelpers.ToDrawingColor(Settings.AbilityCooldownColor) };
+            AbilityKeysRectangles[3].Colors = D2Json?.abilities?.ability3?.can_cast == true ? new List<Color>
+            { ColorHelpers.ToDrawingColor(Settings.AbilityReadyColor) } : new List<Color> { ColorHelpers.ToDrawingColor(Settings.AbilityCooldownColor) };
         }
 
 
@@ -191,6 +277,8 @@ namespace Artemis.Modules.Games.Dota2
                 HealthRectangle.Draw(g);
                 ManaRectangle.Draw(g);
                 DayCycleRectangle.Draw(g);
+                foreach (var key in AbilityKeysRectangles)
+                   key.Draw(g);
             }
             return bitmap;
         }
@@ -217,7 +305,8 @@ namespace Artemis.Modules.Games.Dota2
         public KeyboardRectangle EventRectangle { get; set; }
         public KeyboardRectangle DayCycleRectangle { get; set; }
         public KeyboardRectangle ManaRectangle { get; set; }
-
+        public KeyboardRectangle[] AbilityKeysRectangles = new KeyboardRectangle[4];
         #endregion
+
     }
 }
