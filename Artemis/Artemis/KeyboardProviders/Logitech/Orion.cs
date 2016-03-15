@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows;
 using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.Utilities;
+using Artemis.Utilities.LogitechDll;
+using Point = System.Drawing.Point;
 
 namespace Artemis.KeyboardProviders.Logitech
 {
@@ -25,6 +29,8 @@ namespace Artemis.KeyboardProviders.Logitech
 
         public override bool CanEnable()
         {
+            if (DllManager.RestoreDll())
+                RestoreDll();
             int majorNum = 0, minorNum = 0, buildNum = 0;
 
             LogitechGSDK.LogiLedInit();
@@ -34,6 +40,18 @@ namespace Artemis.KeyboardProviders.Logitech
             // Turn it into one long number...
             var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
             return version >= 88115;
+        }
+
+        private void RestoreDll()
+        {
+            MessageBox.Show(
+                "Artemis couldn't enable your Logitech keyboard, because the required files are not in place.\n\n" +
+                "This happens when you run The Division and shut down Artemis before shutting down The Division\n" +
+                "It can be fixed automatically by clicking OK, but to avoid this message in the future please\n" +
+                "shut down The Division before shutting down Artemis.\n\n" +
+                "Click OK to fix the issue and restart Artemis");
+
+            GeneralHelpers.RunAsAdministrator();
         }
 
         public override void Enable()
