@@ -17,9 +17,6 @@
     <Setting Name="ShowDayCycle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="CanCastItem" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="ShowMana" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -31,6 +28,15 @@
     </Setting>
     <Setting Name="ManaColor" Type="System.Windows.Media.Color" Scope="User">
       <Value Profile="(Default)">#FF0000FF</Value>
+    </Setting>
+    <Setting Name="KeyboardLayout" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Default</Value>
+    </Setting>
+    <Setting Name="AbilityReadyColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FF00FF00</Value>
+    </Setting>
+    <Setting Name="AbilityCooldownColor" Type="System.Windows.Media.Color" Scope="User">
+      <Value Profile="(Default)">#FF6A5ACD</Value>
     </Setting>
   </Settings>
 </SettingsFile>

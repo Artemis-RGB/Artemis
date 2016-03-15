@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
@@ -12,6 +13,7 @@ namespace Artemis.Modules.Games.Dota2
     {
         public Dota2ViewModel(MainManager mainManager)
         {
+
             MainManager = mainManager;
             GameSettings = new Dota2Settings();
             
@@ -24,23 +26,7 @@ namespace Artemis.Modules.Games.Dota2
         {
             get
             {
-                return new BindableCollection<string>(
-                    new string[] {"Default","MMO","WASD","LOL","HON","Smite"});
-            }
-        }
-
-        private string _selectedLayout;
-
-        public string SelectedLayout
-        {
-            get { return _selectedLayout; }
-            set
-            {
-                if (value == _selectedLayout)
-                    return;
-                _selectedLayout = value;
-                NotifyOfPropertyChange(() => SelectedLayout);
-
+                return new BindableCollection<string>(new[] {"Default","MMO","WASD","League of Legends","Heros of Newearth","Smite"});
             }
         }
 
