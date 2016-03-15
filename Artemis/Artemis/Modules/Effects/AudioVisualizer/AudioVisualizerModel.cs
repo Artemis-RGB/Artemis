@@ -93,6 +93,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Update()
         {
+            // TODO: Use lock instead of a bool
             // Start filling the model
             _generating = true;
 

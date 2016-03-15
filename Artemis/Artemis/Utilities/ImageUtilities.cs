@@ -66,37 +66,12 @@ namespace Artemis.Utilities
             //use a graphics object to draw the resized image into the bitmap
             using (var graphics = Graphics.FromImage(result))
             {
-                //set the resize quality modes to high quality
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
                 //draw the image into the target bitmap
                 graphics.DrawImage(image, 0, 0, result.Width, result.Height);
             }
 
             //return the resulting bitmap
             return result;
-        }
-
-        /// <summary>
-        ///     Returns the image codec with the given mime type
-        /// </summary>
-        public static ImageCodecInfo GetEncoderInfo(string mimeType)
-        {
-            //do a case insensitive search for the mime type
-            var lookupKey = mimeType.ToLower();
-
-            //the codec to return, default to null
-            ImageCodecInfo foundCodec = null;
-
-            //if we have the encoder, get it to return
-            if (Encoders.ContainsKey(lookupKey))
-            {
-                //pull the codec from the lookup
-                foundCodec = Encoders[lookupKey];
-            }
-
-            return foundCodec;
         }
     }
 }
