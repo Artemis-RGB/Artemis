@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Dota2
 {
@@ -17,6 +18,30 @@ namespace Artemis.Modules.Games.Dota2
             GameModel = new Dota2Model(mainManager, (Dota2Settings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
+        }
+
+        public BindableCollection<string> KeyboardLayouts
+        {
+            get
+            {
+                return new BindableCollection<string>(
+                    new string[] {"Default","MMO","WASD","LOL","HON","Smite"});
+            }
+        }
+
+        private string _selectedLayout;
+
+        public string SelectedLayout
+        {
+            get { return _selectedLayout; }
+            set
+            {
+                if (value == _selectedLayout)
+                    return;
+                _selectedLayout = value;
+                NotifyOfPropertyChange(() => SelectedLayout);
+
+            }
         }
 
         public static string Name => "Dota 2";
