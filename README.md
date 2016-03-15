@@ -31,6 +31,7 @@ For online games we greatly perfer to use an official API, since memory reading 
 The following keyboards are supported:
  * Corsair K95 RGB
  * Corsair K70 RGB
+ * Corsair K65 RGB (Untested)
  * Corsair Strafe RGB
  * Logitech G910
  * Logitech G810 (untested)
@@ -52,11 +53,17 @@ A demo of The Witcher 3 support on the new codebase
 
 
 ### Screenshots
-![Screenshot 1](http://i.imgur.com/7bho4WH.png)
-![Screenshot 2](http://i.imgur.com/X7LMaWr.png)
-![Screenshot 3](http://i.imgur.com/iSy4jfW.png)
-![Screenshot 4](http://i.imgur.com/P7WUsS6.png)
-![Screenshot 5](http://i.imgur.com/JNoLaDB.png)
+![Screenshot 1](http://i.imgur.com/hug66P4.png)
+![Screenshot 2](http://i.imgur.com/6NTAuYR.png)
+![Screenshot 3](http://i.imgur.com/uGzRhxP.png)
+![Screenshot 4](http://i.imgur.com/NvLsJpy.png)
+![Screenshot 5](http://i.imgur.com/Q0C50fe.png)
+![Screenshot 6](http://i.imgur.com/BhLWThq.png)
+![Screenshot 7](http://i.imgur.com/IkQuJ6m.png)
+![Screenshot 8](http://i.imgur.com/kc6sHjE.png)
+![Screenshot 9](http://i.imgur.com/Eg1ASem.png)
+![Screenshot 10](http://i.imgur.com/L7qilNp.png)
+![Screenshot 11](http://i.imgur.com/bS9NhfB.png)
 
 
 ### Thanks to:
