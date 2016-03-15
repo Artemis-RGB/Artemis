@@ -86,18 +86,6 @@ namespace Artemis.Modules.Games.Dota2 {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CanCastItem {
-            get {
-                return ((bool)(this["CanCastItem"]));
-            }
-            set {
-                this["CanCastItem"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowMana {
             get {
                 return ((bool)(this["ShowMana"]));
@@ -140,6 +128,42 @@ namespace Artemis.Modules.Games.Dota2 {
             }
             set {
                 this["ManaColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string KeyboardLayout {
+            get {
+                return ((string)(this["KeyboardLayout"]));
+            }
+            set {
+                this["KeyboardLayout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF00FF00")]
+        public global::System.Windows.Media.Color AbilityReadyColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AbilityReadyColor"]));
+            }
+            set {
+                this["AbilityReadyColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FF6A5ACD")]
+        public global::System.Windows.Media.Color AbilityCooldownColor {
+            get {
+                return ((global::System.Windows.Media.Color)(this["AbilityCooldownColor"]));
+            }
+            set {
+                this["AbilityCooldownColor"] = value;
             }
         }
     }
