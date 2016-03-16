@@ -399,6 +399,7 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
+    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
@@ -440,6 +441,9 @@
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileEditorView.xaml.cs">
+      <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -532,6 +536,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Styles\Accents\CorsairYellow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EffectsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -584,6 +592,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\ProfileEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ShellView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -615,6 +627,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.2.1\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

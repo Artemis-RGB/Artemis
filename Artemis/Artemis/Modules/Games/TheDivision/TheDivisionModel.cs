@@ -202,18 +202,6 @@ namespace Artemis.Modules.Games.TheDivision
                 _p4.Colors = new List<Color> { Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45) };
             else
                 _p4.Colors = new List<Color> {Color.Red, Color.Orange};
-
-            if (!_dataModel.LowAmmo)
-            {
-                foreach (var corsairLed in CueSDK.MouseSDK.Leds)
-                    corsairLed.Color = Color.Green;
-            }
-            else
-            {
-                foreach (var corsairLed in CueSDK.MouseSDK.Leds)
-                    corsairLed.Color = Color.Red;
-            }
-            CueSDK.MouseSDK.Update();
         }
 
         public override Bitmap GenerateBitmap()

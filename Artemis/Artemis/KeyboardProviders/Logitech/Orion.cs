@@ -30,6 +30,7 @@ namespace Artemis.KeyboardProviders.Logitech
 
         public override bool CanEnable()
         {
+            return true;
             if (DllManager.RestoreDll())
                 RestoreDll();
             int majorNum = 0, minorNum = 0, buildNum = 0;
