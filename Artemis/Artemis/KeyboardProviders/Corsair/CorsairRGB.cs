@@ -108,6 +108,27 @@ namespace Artemis.KeyboardProviders.Corsair
             CueSDK.Reinitialize();
         }
 
+
+        /*
+        //Should be able to scale the keyboard instead of resizing the bitmap for better speed. TODO: Test it
+        public override void DrawBitmapEfficiently(Bitmap bitmap)
+        {
+            foreach (var item in _keyboard.Keys)
+            {
+                item.Led.Color = Color.Black;
+                var ledColor = bitmap.GetPixel(
+                (int) 4*(item.KeyRectangle.X/_keyboard.KeyboardRectangle.Width)*MainManager.KeyboardManager.ActiveKeyboard.Width,
+                (int) 4*(item.KeyRectangle.Y/_keyboard.KeyboardRectangle.Height)*MainManager.KeyboardManager.ActiveKeyboard.Height);
+                if (ledColor.A == 0)
+                    continue;
+                    
+                item.Led.Color = Color.FromArgb(255, (int) (ledColor.R/255.00*ledColor.A),
+                    (int) (ledColor.G/255.00*ledColor.A), (int) (ledColor.B/255.00*ledColor.A));
+                
+            }
+        }
+        */
+        
         /// <summary>
         ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
         ///     size.
