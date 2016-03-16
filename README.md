@@ -7,10 +7,10 @@ Besides game-support there are also a few effects for when you're not gaming.
 
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
-Some of it's basic features:
+Current Features:
 
- * Support for multiple keyboards.
- * Support for multiple games.
+ * Support for many Corsair keyboards, Logitech keyboards, and a Razer keyboard.
+ * Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
  * A few non-gaming effects such as type waves and audio visualization.
  * A fancy, modern looking UI.
 
@@ -22,9 +22,15 @@ Currently the following games are supported:
  * Counter-Strike Global Offensive (uses native gamestate intergration)
 
 Support is planned for:
- * Dota 2 (in development right now!)
+ * Dota 2 (finished in devlopment branch)
  * Project CARS (using native memory sharing)
  * What you happen to suggest!
+ * Tom Clancy's The Division
+ 
+Support is being looked at for:
+ * Smite
+ * Battlefield 4
+ * Burnout Paradise: Ultimate Box
 
 For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
 
@@ -37,7 +43,7 @@ The following keyboards are supported:
  * Logitech G810 (untested)
  * Logitech G410 (untested)
 
-Razer BlackWidow Chroma support coming soon.
+Razer BlackWidow Chroma support will be included in the next release.
 
 For any keyboards/games/effects we'd love PRs!
 
