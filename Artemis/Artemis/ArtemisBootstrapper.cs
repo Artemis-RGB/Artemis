@@ -18,8 +18,6 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             CheckDuplicateInstances();
-            if (DllManager.RestoreDll())
-                GeneralHelpers.RunAsAdministrator();
 
             Initialize();
         }

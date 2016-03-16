@@ -38,7 +38,7 @@
             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                        Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify">
-                Note: For this game to work with Artemis, please enable ... in The Division settings.
+                Note: For this game to work with Artemis, please open up your Division settings, navigate to 3rd Party and set LED keyboard support to Yes. (This only works if you have Artemis running before starting the game)
             </TextBlock>
 
             <!-- Buttons -->

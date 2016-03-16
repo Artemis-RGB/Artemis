@@ -67,7 +67,6 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-
             switch (_keyboard.DeviceInfo.Model)
             {
                 case "K95 RGB":
@@ -100,7 +99,7 @@ namespace Artemis.KeyboardProviders.Corsair
                     break;
             }
 
-            // _keyboard.UpdateMode = UpdateMode.Manual;
+            _keyboard.UpdateMode = UpdateMode.Manual;
             _keyboard.Update(true);
         }
 
@@ -116,20 +115,23 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            using (
-                var resized = ImageUtilities.ResizeImage(bitmap,
-                    (int) _keyboard.KeyboardRectangle.Width,
-                    (int) _keyboard.KeyboardRectangle.Height)
-                )
+            var res = ImageUtilities.ResizeImage(bitmap, (int) _keyboard.KeyboardRectangle.Width,
+                (int) _keyboard.KeyboardRectangle.Height);
+
+            foreach (var item in _keyboard.Keys)
             {
-                foreach (var item in _keyboard.Keys)
-                {
-                    var ledColor = resized.GetPixel((int) item.KeyRectangle.X, (int) item.KeyRectangle.Y);
-                    if (ledColor == Color.FromArgb(0, 0, 0, 0))
-                        ledColor = Color.Black;
-                    item.Led.Color = ledColor;
-                }
+                item.Led.Color = Color.Black;
+
+                var ledColor = res.GetPixel((int) item.KeyRectangle.X, (int) item.KeyRectangle.Y);
+                if (ledColor.A == 0)
+                    continue;
+
+                // Since the brightness doesn't seem to be used, 
+                // decrease the RGB value based on the brightness manually
+                item.Led.Color = Color.FromArgb(255, (int) (ledColor.R/255.00*ledColor.A),
+                    (int) (ledColor.G/255.00*ledColor.A), (int) (ledColor.B/255.00*ledColor.A));
             }
+            
             _keyboard.Update(true);
         }
     }
