@@ -72,7 +72,7 @@ namespace Artemis.Modules.Games.Dota2
 
             DayCycleRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
                 , _keyPad.TopLeft.X*Scale
-                , _keyPad.BottomRight.Y*Scale
+                , _keyPad.TopLeft.Y* Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {
@@ -91,7 +91,8 @@ namespace Artemis.Modules.Games.Dota2
             #region Long Switch Statement for Keys
             switch (Settings.KeyboardLayout)
             {
-                case "0": //default
+                case "0":
+                case "Default": //default
                 case "4": //Heroes of newearth
                 case "3": //League of Legends
                     for (int i = 0; i < AbilityKeysRectangles.Length; i++)
@@ -167,20 +168,20 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Update()
         {
-            if (D2Json == null)
+            if (D2Json?.map == null)
                 return;
-            if (Settings.ShowDead && D2Json?.hero?.alive != null && !D2Json.hero.alive)
-            {
-                UpdateLifeStatus();
-                return;
-            }
+
             UpdateMainColor();
+            if (Settings.ShowEvents)
+                UpdateEvents();
+            if (Settings.ShowDayCycle)
+                UpdateDay();
+            if (!D2Json.hero.alive)
+                return;
             if (Settings.CanCastAbility)
                 UpdateAbilities();
             if (Settings.ShowHealth)
                 UpdateHealth();
-            if (Settings.ShowDayCycle)
-                UpdateDay();
             if (Settings.ShowMana)
                 UpdateMana();
 
@@ -193,15 +194,34 @@ namespace Artemis.Modules.Games.Dota2
             DayCycleRectangle.Colors = list;
             HealthRectangle.Colors = list;
             ManaRectangle.Colors = list;
+            foreach (var key in AbilityKeysRectangles)
+                key.Colors = list;
         }
 
-        private void UpdateLifeStatus()
+        private void UpdateEvents()
         {
-            var list = new List<Color> {Color.LightGray};
+            List<Color> list = null;
+            if (!D2Json.hero.alive)
+                list = new List<Color> { Color.LightGray };
+            else if (D2Json.hero.disarmed)
+                list = new List<Color> { Color.Yellow };
+            else if (D2Json.hero.hexed)
+                list = new List<Color> { Color.Yellow };
+            else if (D2Json.hero.silenced)
+                list = new List<Color> { Color.Yellow };
+            else if (D2Json.hero.stunned)
+                list = new List<Color> { Color.Yellow };
+            else if (D2Json.hero.magicimmune)
+                list = new List<Color> { Color.Lime };
+            if(list == null)
+                return;
+
             EventRectangle.Colors = list;
             DayCycleRectangle.Colors = list;
             HealthRectangle.Colors = list;
             ManaRectangle.Colors = list;
+            foreach (var item in AbilityKeysRectangles)
+                item.Colors = list;
         }
 
         private void UpdateDay()
@@ -276,9 +296,12 @@ namespace Artemis.Modules.Games.Dota2
                 EventRectangle.Draw(g);
                 HealthRectangle.Draw(g);
                 ManaRectangle.Draw(g);
+                foreach (var item in AbilityKeysRectangles)
+                {
+                    item.Draw(g);
+                }
                 DayCycleRectangle.Draw(g);
-                foreach (var key in AbilityKeysRectangles)
-                   key.Draw(g);
+
             }
             return bitmap;
         }
