@@ -171,16 +171,20 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpDX, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.3.0.1\lib\net45\SharpDX.dll</HintPath>
+    <Reference Include="Screna, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Screna.0.1.3\lib\Screna.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D11.3.0.1\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.3.0.2\lib\net45\SharpDX.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=3.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DXGI.3.0.1\lib\net45\SharpDX.DXGI.dll</HintPath>
+    <Reference Include="SharpDX.Direct3D11, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.3.0.2\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.3.0.2\lib\net45\SharpDX.DXGI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -315,6 +319,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TheDivision.settings</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Games\TheDivision\TheDivisionDataModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionSettings.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionView.xaml.cs">
@@ -376,6 +381,7 @@
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
+    <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
