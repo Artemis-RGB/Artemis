@@ -20,7 +20,7 @@
     <Setting Name="ShowMana" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ShowDead" Type="System.Boolean" Scope="User">
+    <Setting Name="ShowEvents" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">

@@ -23,7 +23,7 @@ namespace Artemis.Modules.Games.Dota2
         public bool ShowHealth { get; set; }
         public bool ShowDayCycle { get; set; } 
         public bool ShowMana { get; set; }
-        public bool ShowDead { get; set; }
+        public bool ShowEvents { get; set; }
         public Color MainColor { get; set; }
         public Color ManaColor { get; set; }
         public string KeyboardLayout { get; set; }
@@ -43,7 +43,7 @@ namespace Artemis.Modules.Games.Dota2
             GameDirectory = Dota2.Default.GameDirectory;
             ShowDayCycle = Dota2.Default.ShowDayCycle;
             ShowMana = Dota2.Default.ShowMana;
-            ShowDead = Dota2.Default.ShowDead;
+            ShowEvents = Dota2.Default.ShowEvents;
             AbilityReadyColor = Dota2.Default.AbilityReadyColor;
             AbilityCooldownColor = Dota2.Default.AbilityCooldownColor;
         }
@@ -59,7 +59,7 @@ namespace Artemis.Modules.Games.Dota2
             Dota2.Default.Enabled = Enabled;
             Dota2.Default.GameDirectory = GameDirectory;
             Dota2.Default.ShowMana = ShowMana;
-            Dota2.Default.ShowDead = ShowDead;
+            Dota2.Default.ShowEvents = ShowEvents;
             Dota2.Default.AbilityCooldownColor = AbilityCooldownColor;
             Dota2.Default.AbilityReadyColor = AbilityReadyColor;
 
@@ -81,7 +81,7 @@ namespace Artemis.Modules.Games.Dota2
             CanCastAbility = true;
             ShowDayCycle = true;
             ShowMana = true;
-            ShowDead = true;
+            ShowEvents = true;
 
         }
     }
