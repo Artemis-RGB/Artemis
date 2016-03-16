@@ -98,12 +98,12 @@ namespace Artemis.Modules.Games.Dota2 {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ShowDead {
+        public bool ShowEvents {
             get {
-                return ((bool)(this["ShowDead"]));
+                return ((bool)(this["ShowEvents"]));
             }
             set {
-                this["ShowDead"] = value;
+                this["ShowEvents"] = value;
             }
         }
         
