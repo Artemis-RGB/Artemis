@@ -124,8 +124,8 @@ namespace Artemis.KeyboardProviders.Corsair
                     
                 item.Led.Color = Color.FromArgb(255, (int) (ledColor.R/255.00*ledColor.A),
                     (int) (ledColor.G/255.00*ledColor.A), (int) (ledColor.B/255.00*ledColor.A));
-                
             }
+            _keyboard.Update(true);
         }
         */
         
