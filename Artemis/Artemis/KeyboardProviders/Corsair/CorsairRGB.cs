@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using Artemis.Utilities;
 using CUE.NET;
+using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET.Exceptions;
@@ -98,36 +99,12 @@ namespace Artemis.KeyboardProviders.Corsair
                     Width = 22;
                     break;
             }
-
-            _keyboard.UpdateMode = UpdateMode.Manual;
-            _keyboard.Update(true);
         }
 
         public override void Disable()
         {
             CueSDK.Reinitialize();
         }
-
-
-        /*
-        //Should be able to scale the keyboard instead of resizing the bitmap for better speed. TODO: Test it
-        public override void DrawBitmapEfficiently(Bitmap bitmap)
-        {
-            foreach (var item in _keyboard.Keys)
-            {
-                item.Led.Color = Color.Black;
-                var ledColor = bitmap.GetPixel(
-                (int) 4*(item.KeyRectangle.X/_keyboard.KeyboardRectangle.Width)*MainManager.KeyboardManager.ActiveKeyboard.Width,
-                (int) 4*(item.KeyRectangle.Y/_keyboard.KeyboardRectangle.Height)*MainManager.KeyboardManager.ActiveKeyboard.Height);
-                if (ledColor.A == 0)
-                    continue;
-                    
-                item.Led.Color = Color.FromArgb(255, (int) (ledColor.R/255.00*ledColor.A),
-                    (int) (ledColor.G/255.00*ledColor.A), (int) (ledColor.B/255.00*ledColor.A));
-            }
-            _keyboard.Update(true);
-        }
-        */
         
         /// <summary>
         ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
@@ -136,24 +113,20 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            var res = ImageUtilities.ResizeImage(bitmap, (int) _keyboard.KeyboardRectangle.Width,
-                (int) _keyboard.KeyboardRectangle.Height);
-
-            foreach (var item in _keyboard.Keys)
+            var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
+            using (var g = Graphics.FromImage(fixedBmp))
             {
-                item.Led.Color = Color.Black;
-
-                var ledColor = res.GetPixel((int) item.KeyRectangle.X, (int) item.KeyRectangle.Y);
-                if (ledColor.A == 0)
-                    continue;
-
-                // Since the brightness doesn't seem to be used, 
-                // decrease the RGB value based on the brightness manually
-                item.Led.Color = Color.FromArgb(255, (int) (ledColor.R/255.00*ledColor.A),
-                    (int) (ledColor.G/255.00*ledColor.A), (int) (ledColor.B/255.00*ledColor.A));
+                g.Clear(Color.Black);
+                g.DrawImage(bitmap, 0,0);
             }
-            
-            _keyboard.Update(true);
+
+            var brush = new ImageBrush
+            {
+                Image = ImageUtilities.ResizeImage(fixedBmp, Width, Height)
+            };
+
+            _keyboard.Brush = brush;
+            _keyboard.Update();
         }
     }
 }
