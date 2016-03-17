@@ -4,7 +4,7 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels
 {
-    internal class ProfileEditorViewModel : Screen
+    public class ProfileEditorViewModel : Screen
     {
         private readonly KeyboardProvider _keyboard;
 
