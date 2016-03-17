@@ -1,30 +1,256 @@
 ﻿<UserControl x:Class="Artemis.Views.ProfileEditorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="800">
-    <Grid>
+             mc:Ignorable="d"
+             d:DesignHeight="772.5" d:DesignWidth="1335">
+    <Grid Width="Auto" Height="Auto">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Image Grid.Column="0" Grid.Row="0" Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\keyboards\k95.png" Height="200"/>
-        <StackPanel Grid.Column="1" Grid.Row="0">
-            <Label Content="Layers" Style="{DynamicResource DescriptionHeaderStyle}" />
-            <ListView Margin="10,10,0,13" Name="ListView1" HorizontalAlignment="Left" VerticalAlignment="Top" Width="78" Height="178" Style="{StaticResource VirtualisedMetroListView}">>
-                <ListViewItem Content="Coffie"></ListViewItem>
-                <ListViewItem Content="Tea"></ListViewItem>
-                <ListViewItem Content="Orange Juice"></ListViewItem>
-                <ListViewItem Content="Milk"></ListViewItem>
-                <ListViewItem Content="Iced Tea"></ListViewItem>
-                <ListViewItem Content="Mango Shake"></ListViewItem>
-            </ListView>
-        </StackPanel>
+
+        <!-- Preview -->
+        <Label Grid.Column="0" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Preview" />
+        <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
+                BorderThickness="3" Width="800" Height="400">
+            <Border>
+                <Border.Effect>
+                    <!-- TODO: Pulse 10-20 -->
+                    <DropShadowEffect ShadowDepth="0"
+                                      Color="{DynamicResource HighlightColor}"
+                                      Opacity="1"
+                                      BlurRadius="20" />
+                </Border.Effect>
+                <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\keyboards\k95.png" Margin="50" />
+            </Border>
+        </Border>
+
+        <!-- Layer list -->
+        <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
+        <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
+                BorderThickness="3" Margin="10,0,0,0" Height="400" Width="200">
+            <!--<ListView x:Name="ListView1" BorderThickness="0">
+                <ListView.Resources>
+                    <ResourceDictionary
+                        Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                </ListView.Resources>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\rect.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\rect.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+                <ListViewItem>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox VerticalAlignment="Center" />
+                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
+                               Height="30" Margin="5,0" />
+                        <TextBlock Text="Layer" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ListViewItem>
+            </ListView>-->
+            <TreeView>
+                <TreeView.Resources>
+                    <ResourceDictionary
+                        Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                </TreeView.Resources>
+                <TreeViewItem>
+                    <!-- Layer example -->
+                    <!-- Content -->
+                    <TreeViewItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                            <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
+                                       Fill="#FFFFE800" />
+                            <TextBlock Margin="5,0,0,0" Text="Layer 1" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </TreeViewItem.Header>
+                    <!-- Context menu -->
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Rename" />
+                            <MenuItem Header="Delete" />
+                            <MenuItem Header="Properties" />
+                        </ContextMenu>
+                    </TreeViewItem.ContextMenu>
+                </TreeViewItem>
+                <TreeViewItem Header="Group 1">
+                    <!-- Context menu -->
+                    <TreeViewItem.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Rename" />
+                            <MenuItem Header="Delete" />
+                            <MenuItem Header="Properties" />
+                        </ContextMenu>
+                    </TreeViewItem.ContextMenu>
+                    <!-- Group example -->
+                    <TreeViewItem>
+                        <!-- Content -->
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
+                                           Fill="#FFC50A0A" />
+                                <TextBlock Margin="5,0,0,0" Text="Layer 2" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                    <!-- Circular Layer example -->
+                    <TreeViewItem>
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
+                                         Fill="#FF0AC50A" RadiusX="18" RadiusY="18" />
+                                
+                                <TextBlock Margin="5,0,0,0" Text="Layer 3" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                    <TreeViewItem>
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom" Fill="#FF2C0AC5" />
+                                <TextBlock Margin="5,0,0,0" Text="Layer 4" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                </TreeViewItem>
+                <TreeViewItem Header="Group 2">
+                    <TreeViewItem>
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
+                                         Fill="#FF0AC5C5" RadiusX="18" RadiusY="18" />
+                                <TextBlock Margin="5,0,0,0" Text="Layer 5" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                    <TreeViewItem>
+                        <TreeViewItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom" Fill="White" RadiusX="18" RadiusY="18" />
+                                <TextBlock Margin="5,0,0,0" Text="Layer 6" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </TreeViewItem.Header>
+                    </TreeViewItem>
+                </TreeViewItem>
+            </TreeView>
+        </Border>
+        <Grid Grid.Column="1" Grid.Row="2" Margin="10,5,0,0">
+            <Button x:Name="AddLayer" Content="Add layer" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" />
+            <Button x:Name="RemoveLayer" Content="Remove layer" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" />
+        </Grid>
     </Grid>
 </UserControl>
