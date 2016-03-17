@@ -120,8 +120,15 @@ namespace Artemis.Managers
 
         private void FinishStop(object sender, RunWorkerCompletedEventArgs e)
         {
+            UpdateWorker.RunWorkerCompleted -= FinishStop;
             KeyboardManager.ReleaseActiveKeyboard();
             Running = false;
+
+            if (e.Error != null || !_restarting)
+                return;
+
+            Start();
+            _restarting = false;
         }
 
         public void Pause()
@@ -161,21 +168,7 @@ namespace Artemis.Managers
             }
 
             _restarting = true;
-
-            UpdateWorker.RunWorkerCompleted += FinishRestart;
             Stop();
-        }
-
-        public void FinishRestart(object sender, RunWorkerCompletedEventArgs e)
-        {
-            UpdateWorker.RunWorkerCompleted -= FinishRestart;
-
-            if (e.Error != null)
-                return;
-
-            Start();
-
-            _restarting = false;
         }
 
         /// <summary>
