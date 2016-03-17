@@ -190,6 +190,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -249,6 +253,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
+    <Compile Include="Components\Abstract\LayerComponent.cs" />
+    <Compile Include="Components\Layer.cs" />
+    <Compile Include="Components\LayerComposite.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
@@ -269,6 +276,8 @@
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
+    <Compile Include="Models\Interfaces\IGameDataModel.cs" />
+    <Compile Include="Models\LayerConditionModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">

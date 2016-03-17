@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionDataModel
+    public class TheDivisionDataModel : IGameDataModel
     {
         public List<DivisionPlayer> DivisionPlayers { get; set; }
         public GrenadeState GrenadeState { get; set; }
