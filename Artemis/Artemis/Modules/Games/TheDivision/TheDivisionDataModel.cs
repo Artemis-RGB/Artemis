@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿ using System.Collections.Generic;
 using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.TheDivision
