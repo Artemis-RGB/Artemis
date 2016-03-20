@@ -8,18 +8,18 @@ using Newtonsoft.Json;
 
 namespace Artemis.DAL
 {
-    internal class ProfileProvider
+    public static class ProfileProvider
     {
-        private List<ProfileModel> _profiles;
+        private static readonly string ProfileFolder =
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
 
         /// <summary>
         ///     Get all profiles
         /// </summary>
         /// <returns>All profiles</returns>
-        public List<ProfileModel> GetAll()
+        public static List<ProfileModel> GetAll()
         {
-            ReadProfiles();
-            return new List<ProfileModel>();
+            return ReadProfiles();
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Artemis.DAL
         /// </summary>
         /// <param name="game">The game to match</param>
         /// <returns>All profiles matching the provided game</returns>
-        public List<ProfileModel> GetAll(GameModel game)
+        public static List<ProfileModel> GetAll(GameModel game)
         {
             return GetAll().Where(g => g.GameName.Equals(game.Name)).ToList();
         }
@@ -36,37 +36,43 @@ namespace Artemis.DAL
         ///     Adds or update the given profile.
         ///     Updates occur when a profile with the same name and game exist.
         /// </summary>
-        /// <param name="profile">The profile to add or update</param>
-        public void AddOrUpdate(ProfileModel profile)
+        /// <param name="prof">The profile to add or update</param>
+        public static void AddOrUpdate(ProfileModel prof)
         {
+            if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
+                throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardName are required");
+
+            var serialized = JsonConvert.SerializeObject(prof);
+            var path = ProfileFolder + $@"\{prof.KeyboardName}\{prof.GameName}\{prof.Name}.json";
+            File.WriteAllText(path, serialized);
         }
 
-        private void ReadProfiles()
+        private static List<ProfileModel> ReadProfiles()
         {
             CheckProfiles();
-            _profiles = new List<ProfileModel>();
+            var profiles = new List<ProfileModel>();
 
             // Create the directory structure
-            var profileFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
-            var profileFiles = Directory.GetFiles(profileFolder, "*.json", SearchOption.AllDirectories);
+            var profileFiles = Directory.GetFiles(ProfileFolder, "*.json", SearchOption.AllDirectories);
 
             // Parse the JSON files into objects and add them if they are valid
             foreach (var file in profileFiles)
             {
                 var prof = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(file));
                 if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
-                    _profiles.Add(prof);
+                    profiles.Add(prof);
             }
+
+            return profiles;
         }
 
-        private void CheckProfiles()
+        private static void CheckProfiles()
         {
             // Create the directory structure
-            var profileFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
-            if (Directory.Exists(profileFolder))
+            if (Directory.Exists(ProfileFolder))
                 return;
 
-            Directory.CreateDirectory(profileFolder);
+            Directory.CreateDirectory(ProfileFolder);
             Debug.WriteLine("Place presets");
         }
     }
