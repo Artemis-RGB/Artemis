@@ -256,6 +256,7 @@
     <Compile Include="Components\Abstract\LayerComponent.cs" />
     <Compile Include="Components\Layer.cs" />
     <Compile Include="Components\LayerComposite.cs" />
+    <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
@@ -278,6 +279,7 @@
     <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\Interfaces\IGameDataModel.cs" />
     <Compile Include="Models\LayerConditionModel.cs" />
+    <Compile Include="Models\ProfileModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
