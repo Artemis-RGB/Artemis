@@ -118,7 +118,7 @@ namespace Artemis.Modules.Games.TheDivision
         }
 
         // Parses Division key data to game data
-        private void InterpertrateDivisionKey(int[] parts)
+        private void InterpertrateDivisionKey(IReadOnlyList<int> parts)
         {
             var keyCode = parts[1];
             var rPer = parts[2];
