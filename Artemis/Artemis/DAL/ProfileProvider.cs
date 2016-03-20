@@ -42,9 +42,12 @@ namespace Artemis.DAL
             if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
                 throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardName are required");
 
-            var serialized = JsonConvert.SerializeObject(prof);
-            var path = ProfileFolder + $@"\{prof.KeyboardName}\{prof.GameName}\{prof.Name}.json";
-            File.WriteAllText(path, serialized);
+            var path = ProfileFolder + $@"\{prof.KeyboardName}\{prof.GameName}";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var serialized = JsonConvert.SerializeObject(prof, Formatting.Indented);
+            File.WriteAllText(path + $@"\{prof.Name}.json", serialized);
         }
 
         private static List<ProfileModel> ReadProfiles()

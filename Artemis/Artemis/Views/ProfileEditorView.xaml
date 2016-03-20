@@ -32,129 +32,20 @@
                 <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\keyboards\k95.png" Margin="50" />
             </Border>
         </Border>
+        <!-- Profile management -->
+        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
+            <Label Content="Active profile"></Label>
+            <ComboBox Grid.Row="1" Grid.Column="1" Width="110" VerticalAlignment="Top" x:Name="ProfileModels" DisplayMemberPath="Name"  Margin="5,0,0,0" />
+            <Button x:Name="AddProfile" Content="Add profile" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,0" />
+            <Button x:Name="RemoveProfile" Content="Remove profile" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" Margin="10,0,0,0" />
+        </StackPanel>
 
         <!-- Layer list -->
         <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="200">
-            <!--<ListView x:Name="ListView1" BorderThickness="0">
-                <ListView.Resources>
-                    <ResourceDictionary
-                        Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
-                </ListView.Resources>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\rect.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\rect.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-                <ListViewItem>
-                    <StackPanel Orientation="Horizontal" Margin="5">
-                        <CheckBox VerticalAlignment="Center" />
-                        <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\Config concept\circle.png"
-                               Height="30" Margin="5,0" />
-                        <TextBlock Text="Layer" VerticalAlignment="Center" />
-                    </StackPanel>
-                </ListViewItem>
-            </ListView>-->
             <TreeView>
                 <TreeView.Resources>
                     <ResourceDictionary

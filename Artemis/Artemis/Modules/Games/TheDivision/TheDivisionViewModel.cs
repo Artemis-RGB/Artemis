@@ -17,7 +17,7 @@ namespace Artemis.Modules.Games.TheDivision
             GameModel = new TheDivisionModel(mainManager, (TheDivisionSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
 
-            ProfileEditor = new ProfileEditorViewModel(GameModel, MainManager.KeyboardManager.ActiveKeyboard);
+            ProfileEditor = new ProfileEditorViewModel(MainManager, GameModel);
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
