@@ -253,9 +253,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
-    <Compile Include="Components\Abstract\LayerComponent.cs" />
-    <Compile Include="Components\Layer.cs" />
-    <Compile Include="Components\LayerComposite.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
@@ -278,8 +275,11 @@
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\Interfaces\IGameDataModel.cs" />
-    <Compile Include="Models\LayerConditionModel.cs" />
-    <Compile Include="Models\ProfileModel.cs" />
+    <Compile Include="Models\Profiles\LayerConditionModel.cs" />
+    <Compile Include="Models\Profiles\LayerModel.cs" />
+    <Compile Include="Models\Profiles\LayerDynamicPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\LayerPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\ProfileModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
@@ -324,6 +324,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueDataModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -519,6 +520,7 @@
     <Resource Include="Resources\logo-disabled.ico" />
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <None Include="Resources\LogitechLED.dll" />
+    <None Include="Resources\folder.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="Resources\Entypo.ttf" />

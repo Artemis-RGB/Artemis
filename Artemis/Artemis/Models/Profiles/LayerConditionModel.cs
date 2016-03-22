@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Dynamic;
+using Artemis.Models.Interfaces;
 
-namespace Artemis.Models
+namespace Artemis.Models.Profiles
 {
     public class LayerConditionModel
     {
@@ -9,11 +10,11 @@ namespace Artemis.Models
         public string Value { get; set; }
         public string Operator { get; set; }
 
-        public bool ConditionMet(object subject)
+        public bool ConditionMet<T>(IGameDataModel subject)
         {
             // Put the subject in a list, allowing Dynamic Linq to be used.
-            var subjectList = new List<object> {subject};
-            var res = subjectList.Where($"s => s.{Field} {Operator} {Value}").Any();
+            var subjectList = new List<T> {(T) subject};
+            var res = subjectList.Where($"{Field} {Operator} {Value}").Any();
             return res;
         }
     }
