@@ -20,7 +20,7 @@
         <!-- Preview -->
         <Label Grid.Column="0" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Preview" />
         <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
-                BorderThickness="3" Width="800" Height="400">
+                BorderThickness="3" Width="750" Height="400">
             <Border>
                 <Border.Effect>
                     <!-- TODO: Pulse 10-20 -->
@@ -34,107 +34,41 @@
         </Border>
         <!-- Profile management -->
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
-            <Label Content="Active profile"></Label>
-            <ComboBox Grid.Row="1" Grid.Column="1" Width="110" VerticalAlignment="Top" x:Name="ProfileModels" DisplayMemberPath="Name"  Margin="5,0,0,0" />
+            <Label Content="Active profile" />
+            <ComboBox Grid.Row="1" Grid.Column="1" Width="110" VerticalAlignment="Top" x:Name="ProfileModels"
+                      DisplayMemberPath="Name" Margin="5,0,0,0" />
             <Button x:Name="AddProfile" Content="Add profile" VerticalAlignment="Top"
                     Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,0" />
             <Button x:Name="RemoveProfile" Content="Remove profile" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" Margin="10,0,0,0" />
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right"
+                    Margin="10,0,0,0" />
         </StackPanel>
 
         <!-- Layer list -->
         <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
-                BorderThickness="3" Margin="10,0,0,0" Height="400" Width="200">
-            <TreeView>
+                BorderThickness="3" Margin="10,0,0,0" Height="400" Width="250">
+            <TreeView ItemsSource="{Binding Path=SelectedProfileModel.Layers}">
                 <TreeView.Resources>
                     <ResourceDictionary
                         Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 </TreeView.Resources>
-                <TreeViewItem>
-                    <!-- Layer example -->
-                    <!-- Content -->
-                    <TreeViewItem.Header>
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Rename" />
+                                    <MenuItem Header="Delete" />
+                                    <MenuItem Header="Properties" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
                             <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                            <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
-                                       Fill="#FFFFE800" />
-                            <TextBlock Margin="5,0,0,0" Text="Layer 1" VerticalAlignment="Center" />
+                            <Image Height="18" Width="18" Source="{Binding LayerImage}" />
+                            <TextBlock Margin="5,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>
-                    </TreeViewItem.Header>
-                    <!-- Context menu -->
-                    <TreeViewItem.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Rename" />
-                            <MenuItem Header="Delete" />
-                            <MenuItem Header="Properties" />
-                        </ContextMenu>
-                    </TreeViewItem.ContextMenu>
-                </TreeViewItem>
-                <TreeViewItem Header="Group 1">
-                    <!-- Context menu -->
-                    <TreeViewItem.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Rename" />
-                            <MenuItem Header="Delete" />
-                            <MenuItem Header="Properties" />
-                        </ContextMenu>
-                    </TreeViewItem.ContextMenu>
-                    <!-- Group example -->
-                    <TreeViewItem>
-                        <!-- Content -->
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
-                                           Fill="#FFC50A0A" />
-                                <TextBlock Margin="5,0,0,0" Text="Layer 2" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                    </TreeViewItem>
-                    <!-- Circular Layer example -->
-                    <TreeViewItem>
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
-                                         Fill="#FF0AC50A" RadiusX="18" RadiusY="18" />
-                                
-                                <TextBlock Margin="5,0,0,0" Text="Layer 3" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                    </TreeViewItem>
-                    <TreeViewItem>
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom" Fill="#FF2C0AC5" />
-                                <TextBlock Margin="5,0,0,0" Text="Layer 4" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                    </TreeViewItem>
-                </TreeViewItem>
-                <TreeViewItem Header="Group 2">
-                    <TreeViewItem>
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom"
-                                         Fill="#FF0AC5C5" RadiusX="18" RadiusY="18" />
-                                <TextBlock Margin="5,0,0,0" Text="Layer 5" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                    </TreeViewItem>
-                    <TreeViewItem>
-                        <TreeViewItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
-                                <Rectangle Height="18" Width="18" Stroke="Black" VerticalAlignment="Bottom" Fill="White" RadiusX="18" RadiusY="18" />
-                                <TextBlock Margin="5,0,0,0" Text="Layer 6" VerticalAlignment="Center" />
-                            </StackPanel>
-                        </TreeViewItem.Header>
-                    </TreeViewItem>
-                </TreeViewItem>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
             </TreeView>
         </Border>
         <Grid Grid.Column="1" Grid.Row="2" Margin="10,5,0,0">

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Newtonsoft.Json;
 
 namespace Artemis.DAL
