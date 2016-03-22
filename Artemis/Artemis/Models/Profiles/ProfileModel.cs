@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Artemis.Components;
 
-namespace Artemis.Models
+namespace Artemis.Models.Profiles
 {
     public class ProfileModel
     {
@@ -16,7 +15,7 @@ namespace Artemis.Models
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
 
-        public LayerComposite Layers { get; set; }
+        public List<LayerModel> Layers { get; set; }
 
         protected bool Equals(ProfileModel other)
         {
@@ -27,7 +26,7 @@ namespace Artemis.Models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((ProfileModel) obj);
         }
 
@@ -35,9 +34,9 @@ namespace Artemis.Models
         {
             unchecked
             {
-                var hashCode = (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (KeyboardName != null ? KeyboardName.GetHashCode() : 0);
-                hashCode = (hashCode*397) ^ (GameName != null ? GameName.GetHashCode() : 0);
+                var hashCode = Name?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ (KeyboardName?.GetHashCode() ?? 0);
+                hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }
