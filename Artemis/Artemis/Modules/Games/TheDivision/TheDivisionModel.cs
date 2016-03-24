@@ -1,14 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.LogitechDll;
-using CUE.NET;
 
 namespace Artemis.Modules.Games.TheDivision
 {
@@ -95,8 +93,6 @@ namespace Artemis.Modules.Games.TheDivision
 
             DllManager.PlaceDll();
             _dataModel = new TheDivisionDataModel();
-            for (var i = 1; i < 5; i++)
-                _dataModel.DivisionPlayers.Add(new DivisionPlayer(i));
 
             MainManager.PipeServer.PipeMessage += PipeServerOnPipeMessage;
             Initialized = true;
@@ -129,16 +125,21 @@ namespace Artemis.Modules.Games.TheDivision
             if (keyCode >= 59 && keyCode <= 62)
             {
                 var playerId = keyCode - 58;
-                var playerDataModel = _dataModel.DivisionPlayers.FirstOrDefault(p => p.Id == playerId);
-                if (playerDataModel == null)
-                    return;
 
+                PlayerState newState;
                 if (gPer > 10)
-                    playerDataModel.PlayerState = PlayerState.Online;
+                    newState = PlayerState.Online;
                 else if (rPer > 10)
-                    playerDataModel.PlayerState = PlayerState.Hit;
+                    newState = PlayerState.Hit;
                 else
-                    playerDataModel.PlayerState = PlayerState.Offline;
+                    newState = PlayerState.Offline;
+
+                if (playerId == 1)
+                    _dataModel.PartyMember1 = newState;
+                else if (playerId == 2)
+                    _dataModel.PartyMember2 = newState;
+                else if (playerId == 3)
+                    _dataModel.PartyMember3 = newState;
             }
             // R blinks white when low on ammo
             else if (keyCode == 19)
@@ -180,26 +181,26 @@ namespace Artemis.Modules.Games.TheDivision
 
             _hpRect.Colors = _dataModel.LowHp
                 ? new List<Color> {Color.Red, Color.Orange}
-                : new List<Color> {Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45) };
+                : new List<Color> {Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45)};
 
-            if (_dataModel.DivisionPlayers[1].PlayerState == PlayerState.Offline)
+            if (_dataModel.PartyMember1 == PlayerState.Offline)
                 _p2.Colors = new List<Color> {Color.Gray, Color.White};
-            else if (_dataModel.DivisionPlayers[1].PlayerState == PlayerState.Online)
-                _p2.Colors = new List<Color> { Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45) };
+            else if (_dataModel.PartyMember1 == PlayerState.Online)
+                _p2.Colors = new List<Color> {Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45)};
             else
                 _p2.Colors = new List<Color> {Color.Red, Color.Orange};
 
-            if (_dataModel.DivisionPlayers[2].PlayerState == PlayerState.Offline)
+            if (_dataModel.PartyMember2 == PlayerState.Offline)
                 _p3.Colors = new List<Color> {Color.Gray, Color.White};
-            else if (_dataModel.DivisionPlayers[2].PlayerState == PlayerState.Online)
-                _p3.Colors = new List<Color> { Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45) };
+            else if (_dataModel.PartyMember2 == PlayerState.Online)
+                _p3.Colors = new List<Color> {Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45)};
             else
                 _p3.Colors = new List<Color> {Color.Red, Color.Orange};
 
-            if (_dataModel.DivisionPlayers[3].PlayerState == PlayerState.Offline)
+            if (_dataModel.PartyMember3 == PlayerState.Offline)
                 _p4.Colors = new List<Color> {Color.Gray, Color.White};
-            else if (_dataModel.DivisionPlayers[3].PlayerState == PlayerState.Online)
-                _p4.Colors = new List<Color> { Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45) };
+            else if (_dataModel.PartyMember3 == PlayerState.Online)
+                _p4.Colors = new List<Color> {Color.FromArgb(10, 255, 0), Color.FromArgb(80, 255, 45)};
             else
                 _p4.Colors = new List<Color> {Color.Red, Color.Orange};
         }

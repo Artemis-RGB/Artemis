@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Artemis.Utilities
 {
@@ -43,6 +43,44 @@ namespace Artemis.Utilities
             var wp = new WindowsPrincipal(wi);
 
             return wp.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public static void CopyProperties(object dest, object src)
+        {
+            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
+            {
+                item.SetValue(dest, item.GetValue(src));
+            }
+        }
+
+        public static List<PropertyCollection> GetPropertyMap(object o)
+        {
+            var res = new List<PropertyCollection>();
+            // No point reinventing the wheel, just serialize it to JSON and parse that
+            var json = JObject.FromObject(o, JsonSerializer.CreateDefault());
+            res.AddRange(JObjectToPropertyCollection(json));
+
+            return res;
+        }
+
+        private static List<PropertyCollection> JObjectToPropertyCollection(JObject json)
+        {
+            var res = new List<PropertyCollection>();
+            foreach (var property in json.Properties())
+            {
+                var parent = new PropertyCollection {Name = property.Name};
+                foreach (var child in property.Children<JObject>())
+                    parent.Children = JObjectToPropertyCollection(child);
+
+                res.Add(parent);
+            }
+            return res;
+        }
+
+        public struct PropertyCollection
+        {
+            public string Name { get; set; }
+            public List<PropertyCollection> Children { get; set; }
         }
     }
 }

@@ -17,10 +17,10 @@ namespace Artemis.Modules.Games.TheDivision
             GameModel = new TheDivisionModel(mainManager, (TheDivisionSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
 
-            ProfileEditor = new ProfileEditorViewModel(MainManager, GameModel);
+            ProfileEditor = new ProfileEditorViewModel<TheDivisionDataModel>(MainManager, GameModel);
         }
 
-        public ProfileEditorViewModel ProfileEditor { get; set; }
+        public ProfileEditorViewModel<TheDivisionDataModel> ProfileEditor { get; set; }
 
         public static string Name => "The Division";
     }
