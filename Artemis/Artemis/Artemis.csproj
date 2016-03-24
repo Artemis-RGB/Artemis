@@ -274,7 +274,7 @@
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
-    <Compile Include="Models\Interfaces\IGameDataModel.cs" />
+    <Compile Include="Models\Interfaces\GameDataModel.cs" />
     <Compile Include="Models\Profiles\LayerConditionModel.cs" />
     <Compile Include="Models\Profiles\LayerModel.cs" />
     <Compile Include="Models\Profiles\LayerDynamicPropertiesModel.cs" />
@@ -383,6 +383,7 @@
     <Compile Include="Utilities\GeneralHelpers.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\LayerDrawer.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
     <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
@@ -409,6 +410,7 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditorViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
@@ -447,6 +449,9 @@
     </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditorView.xaml.cs">
+      <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
@@ -594,6 +599,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Games\Witcher3\Witcher3View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

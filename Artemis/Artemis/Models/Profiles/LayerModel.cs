@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Models.Interfaces;
-using Artemis.Properties;
+using Artemis.Utilities;
 using Newtonsoft.Json;
-using Color = System.Drawing.Color;
-using Pen = System.Drawing.Pen;
 
 namespace Artemis.Models.Profiles
 {
     public class LayerModel
     {
+        [JsonIgnore] private readonly LayerDrawer _drawer;
+
         public LayerModel(string name, LayerType layerType)
         {
             Name = name;
@@ -27,56 +23,23 @@ namespace Artemis.Models.Profiles
             Children = new List<LayerModel>();
             LayerConditions = new List<LayerConditionModel>();
             LayerProperties = new List<LayerDynamicPropertiesModel>();
+
+            _drawer = new LayerDrawer(this);
         }
 
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
         public LayerPropertiesModel LayerUserProperties { get; set; }
 
-        [JsonIgnore]
-        public LayerPropertiesModel LayerCalculatedProperties { get; }
-
         public List<LayerModel> Children { get; set; }
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
-        public ImageSource LayerImage => GetPreviewImage();
 
-        private BitmapImage GetPreviewImage()
-        {
-            var bitmap = new Bitmap(18, 18);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                if (LayerType == LayerType.Ellipse)
-                {
-                    g.FillEllipse(new SolidBrush(LayerUserProperties.Colors.FirstOrDefault()), 0, 0, 18, 18);
-                    g.DrawEllipse(new Pen(Color.Black, 1), 0, 0, 17, 17);
-                }
-                else if (LayerType == LayerType.Rectangle)
-                {
-                    g.FillRectangle(new SolidBrush(LayerUserProperties.Colors.FirstOrDefault()), 0, 0, 18, 18);
-                    g.DrawRectangle(new Pen(Color.Black, 1), 0, 0, 17, 17);
-                }
-                else
-                {
-                    bitmap = Resources.folder;
-                }
-            }
+        [JsonIgnore]
+        public LayerPropertiesModel LayerCalculatedProperties { get; }
 
-            using (var memory = new MemoryStream())
-            {
-                bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                return bitmapImage;
-            }
-        }
+        [JsonIgnore]
+        public ImageSource LayerImage => _drawer.GetPreviewImage();
 
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
@@ -95,10 +58,10 @@ namespace Artemis.Models.Profiles
                     DrawChildren<T>(dataModel, g);
                     break;
                 case LayerType.Rectangle:
-                    DrawRectangle(g);
+                    _drawer.DrawRectangle(g);
                     break;
                 case LayerType.Ellipse:
-                    DrawEllipse(g);
+                    _drawer.DrawEllipse(g);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -107,6 +70,7 @@ namespace Artemis.Models.Profiles
 
         private void Update<T>(IGameDataModel dataModel)
         {
+            GeneralHelpers.CopyProperties(LayerCalculatedProperties, LayerUserProperties);
             foreach (var dynamicProperty in LayerProperties)
                 dynamicProperty.ApplyProperty<T>(dataModel, LayerUserProperties, LayerCalculatedProperties);
         }
@@ -115,14 +79,6 @@ namespace Artemis.Models.Profiles
         {
             foreach (var layerModel in Children)
                 layerModel.Draw<T>(dataModel, g);
-        }
-
-        private void DrawRectangle(Graphics g)
-        {
-        }
-
-        private void DrawEllipse(Graphics g)
-        {
         }
     }
 
