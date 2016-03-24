@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.Views"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="772.5" d:DesignWidth="1335">
     <Grid Width="Auto" Height="Auto">
@@ -38,29 +40,31 @@
             <ComboBox Grid.Row="1" Grid.Column="1" Width="110" VerticalAlignment="Top" x:Name="ProfileModels"
                       DisplayMemberPath="Name" Margin="5,0,0,0" />
             <Button x:Name="AddProfile" Content="Add profile" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left"
+                    Margin="10,0,0,0" />
             <Button x:Name="RemoveProfile" Content="Remove profile" VerticalAlignment="Top"
                     Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right"
                     Margin="10,0,0,0" />
         </StackPanel>
 
         <!-- Layer list -->
-        <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
+        <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers"
+               Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="250">
-            <TreeView ItemsSource="{Binding Path=SelectedProfileModel.Layers}">
+            <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=SelectedProfileModel.Layers}">
                 <TreeView.Resources>
                     <ResourceDictionary
                         Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}">
                             <StackPanel.ContextMenu>
-                                <ContextMenu>
+                                <ContextMenu cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" />
                                     <MenuItem Header="Delete" />
-                                    <MenuItem Header="Properties" />
+                                    <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)"/>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
