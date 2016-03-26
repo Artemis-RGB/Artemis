@@ -15,7 +15,6 @@ namespace Artemis.KeyboardProviders.Corsair
     internal class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
-        private CorsairMouse _mouse;
         public CorsairRGB()
         {
             Name = "Corsair RGB Keyboards";
@@ -70,7 +69,6 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-            _mouse = CueSDK.MouseSDK;
             switch (_keyboard.DeviceInfo.Model)
             {
                 case "K95 RGB":
@@ -129,13 +127,8 @@ namespace Artemis.KeyboardProviders.Corsair
                 Image = fixedImage
             };
 
-            var i = 0;
-            foreach (var region in _mouse.Leds)
-                region.Color = fixedImage.GetPixel(3, i++);
-
             _keyboard.Brush = brush;
             _keyboard.Update();
-            _mouse.Update();
         }
     }
 }
