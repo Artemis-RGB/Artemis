@@ -411,6 +411,7 @@
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
@@ -452,6 +453,9 @@
     </Compile>
     <Compile Include="Views\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
+      <DependentUpon>LayerConditionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
@@ -603,6 +607,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LayerEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerConditionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -7,8 +7,8 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:cal="http://www.caliburnproject.org"
                       mc:Ignorable="d"
-                      Title="Artemis | Edit Layer" Height="400" Width="600"
-                      GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
+                      Title="Artemis | Edit Layer" Height="800" Width="630"
+                      GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -17,46 +17,16 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="16" Text="Display if.." />
-        <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <ListBoxItem Margin="10, 0, 10, 0" Padding="10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <!-- Left -->
-                    <Border BorderThickness="1" BorderBrush="{DynamicResource GrayBrush6}">
-                        <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=DataModelProps}" Width="200"
-                                  Height="100">
-                            <TreeView.ItemTemplate>
-                                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                    <TextBlock Text="{Binding Name}" />
-                                </HierarchicalDataTemplate>
-                            </TreeView.ItemTemplate>
-                        </TreeView>
-                    </Border>
-
-                    <!-- Center -->
-                    <TextBlock Grid.Column="1" Text="is" VerticalAlignment="Top" HorizontalAlignment="Center"
-                               Margin="0,3,0,0" />
-                    <ComboBox Grid.Column="2" Width="60" IsEditable="True" MaxDropDownHeight="125"
-                              Style="{DynamicResource VirtualisedMetroComboBox}" HorizontalAlignment="Center"
-                              VerticalAlignment="Top" ItemsSource="{Binding Path=DataModelProps}" />
-                    <TextBlock Grid.Column="3" Text="than" VerticalAlignment="Top" HorizontalAlignment="Center"
-                               Margin="0,3,0,0" />
-
-                    <!-- Right -->
-                    <TextBox Grid.Column="4" Width="200" VerticalAlignment="Top" />
-                </Grid>
-            </ListBoxItem>
-        </ListBox>
-
+        <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LayerConditionVms" />
+        <Button Grid.Row="2" Grid.Column="0" x:Name="AddCondition" Content="Add condition" VerticalAlignment="Top"
+                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10" />
+        <Button Grid.Row="3" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
+                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10" />
     </Grid>
+    
 </controls:MetroWindow>
