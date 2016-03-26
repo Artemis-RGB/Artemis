@@ -6,35 +6,57 @@
              xmlns:local="clr-namespace:Artemis.Views.LayerEditor"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
-             mc:Ignorable="d"
-             d:DesignHeight="132.061" d:DesignWidth="632.296">
+             mc:Ignorable="d" d:DesignWidth="613.296" Height="46">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="30" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <!-- Left -->
         <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="250" MaxDropDownHeight="125"
-                  HorizontalAlignment="Center" VerticalAlignment="Top" DisplayMemberPath="Display" />
+                  HorizontalAlignment="Center" VerticalAlignment="Top">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel DataContext="{Binding}" Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="{Binding Path=DisplayType}"/>
+                        <TextBlock Text="{Binding Path=Display}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <!-- Center -->
         <TextBlock Grid.Column="1" Text="is" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,3,0,0" />
         <ComboBox x:Name="Operators" Grid.Column="2" Width="150" MaxDropDownHeight="125" HorizontalAlignment="Center"
-                  VerticalAlignment="Top" Margin="0,0,20,0" />
+                  VerticalAlignment="Top" />
 
         <!-- Right -->
-        <Grid Grid.Column="3">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" x:Name="UserValueIsVisible">
-                <TextBox x:Name="UserValue" VerticalAlignment="Top" />
+        <Grid Grid.Column="3" HorizontalAlignment="Left" Margin="10,0,0,0" Width="152">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="125"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" x:Name="UserValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="115"/>
             </StackPanel>
-            <Button Grid.Row="1" x:Name="Delete" Content="Delete condition" VerticalAlignment="Bottom" Width="100"
-                    Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Right" />
+            <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" >
+                <Button.Content>
+                <Rectangle Fill="Black" Width="12" Height="12">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+                </Button.Content>
+            </Button>
         </Grid>
 
     </Grid>
