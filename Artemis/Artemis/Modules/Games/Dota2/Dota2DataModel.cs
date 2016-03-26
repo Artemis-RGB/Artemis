@@ -85,6 +85,7 @@
             public Ability1 ability1 { get; set; }
             public Ability2 ability2 { get; set; }
             public Ability3 ability3 { get; set; }
+
             public Attributes attributes { get; set; }
         }
 
@@ -122,28 +123,6 @@
         }
 
         public class Ability3
-        {
-            public string name { get; set; }
-            public int level { get; set; }
-            public bool can_cast { get; set; }
-            public bool passive { get; set; }
-            public bool ability_active { get; set; }
-            public int cooldown { get; set; }
-            public bool ultimate { get; set; }
-        }
-
-        public class Ability4
-        {
-            public string name { get; set; }
-            public int level { get; set; }
-            public bool can_cast { get; set; }
-            public bool passive { get; set; }
-            public bool ability_active { get; set; }
-            public int cooldown { get; set; }
-            public bool ultimate { get; set; }
-        }
-
-        public class Ability5
         {
             public string name { get; set; }
             public int level { get; set; }

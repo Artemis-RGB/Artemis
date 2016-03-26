@@ -6,8 +6,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d"
-             d:DesignHeight="495" d:DesignWidth="635">
+             mc:Ignorable="d" d:DesignWidth="635" Height="515.691">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-19">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
@@ -46,8 +45,8 @@
                 </StackPanel>
             </StackPanel>
 
-            
-            
+
+
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">

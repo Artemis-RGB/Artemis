@@ -34,13 +34,13 @@ namespace Artemis.Modules.Effects.Debug
 
             KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
-                //Color.Red,
-                //Color.OrangeRed,
-                //Color.Yellow,
+                Color.Red,
+                Color.OrangeRed,
+                Color.Yellow,
                 Color.Green,
                 Color.Blue,
-                //Color.Purple,
-                //Color.DeepPink
+                Color.Purple,
+                Color.DeepPink
             }, LinearGradientMode.Horizontal);
 
             Initialized = true;
