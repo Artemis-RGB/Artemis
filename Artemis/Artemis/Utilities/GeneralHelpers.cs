@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
@@ -53,33 +54,45 @@ namespace Artemis.Utilities
             }
         }
 
-        public static List<PropertyCollection> GetPropertyMap(object o)
-        {
-            var res = new List<PropertyCollection>();
-            // No point reinventing the wheel, just serialize it to JSON and parse that
-            var json = JObject.FromObject(o, JsonSerializer.CreateDefault());
-            res.AddRange(JObjectToPropertyCollection(json));
+        public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
+        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof (T).GetProperties());
 
-            return res;
-        }
-
-        private static List<PropertyCollection> JObjectToPropertyCollection(JObject json)
+        private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
+            string path = "")
         {
-            var res = new List<PropertyCollection>();
-            foreach (var property in json.Properties())
+            var list = new List<PropertyCollection>();
+            foreach (var propertyInfo in getProperties)
             {
-                var parent = new PropertyCollection {Name = property.Name};
-                foreach (var child in property.Children<JObject>())
-                    parent.Children = JObjectToPropertyCollection(child);
+                var parent = new PropertyCollection
+                {
+                    Type = propertyInfo.PropertyType.Name,
+                    Display = $"{path.Replace(".", " → ")}{propertyInfo.Name}",
+                    Path = $"{path}{propertyInfo.Name}"
+                };
 
-                res.Add(parent);
+                if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
+                {
+                    parent.EnumValues = Enum.GetNames(propertyInfo.PropertyType);
+                    parent.Type = "Enum";
+                }
+
+                list.Add(parent);
+                list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(), path + $"{propertyInfo.Name}."));
             }
-            return res;
+            return list;
         }
 
         public struct PropertyCollection
         {
-            public string Name { get; set; }
+            public string Display { get; set; }
+            public string Path { get; set; }
+            public string Type { get; set; }
+
+            /// <summary>
+            ///     Only used if Type is an enumerable
+            /// </summary>
+            public string[] EnumValues { get; set; }
+
             public List<PropertyCollection> Children { get; set; }
         }
     }
