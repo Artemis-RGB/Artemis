@@ -5,7 +5,9 @@ using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
+using CUE.NET.Devices.Headset;
 using CUE.NET.Devices.Keyboard;
+using CUE.NET.Devices.Mouse;
 using CUE.NET.Exceptions;
 
 namespace Artemis.KeyboardProviders.Corsair
@@ -13,7 +15,7 @@ namespace Artemis.KeyboardProviders.Corsair
     internal class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
-
+        private CorsairMouse _mouse;
         public CorsairRGB()
         {
             Name = "Corsair RGB Keyboards";
@@ -68,11 +70,12 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
+            _mouse = CueSDK.MouseSDK;
             switch (_keyboard.DeviceInfo.Model)
             {
                 case "K95 RGB":
                     Height = 7;
-                    Width = 24;
+                    Width = 25;
                     KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(20, 1)));
                     KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(21, 2), new Point(25, 7)));
                     KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(5, 3), new Point(8, 3)));
@@ -80,22 +83,22 @@ namespace Artemis.KeyboardProviders.Corsair
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
                     KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
                     KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
                     KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(20, 7)));
                     KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
                     break;
                 case "STRAFE RGB":
-                    Height = 7;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(16, 1)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
-                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
+                    Height = 6;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(18, 2), new Point(22, 7)));
+                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(1, 3), new Point(4, 3)));
                     Width = 22;
                     break;
             }
@@ -120,13 +123,19 @@ namespace Artemis.KeyboardProviders.Corsair
                 g.DrawImage(bitmap, 0,0);
             }
 
+            var fixedImage = ImageUtilities.ResizeImage(fixedBmp, Width, Height);
             var brush = new ImageBrush
             {
-                Image = ImageUtilities.ResizeImage(fixedBmp, Width, Height)
+                Image = fixedImage
             };
+
+            var i = 0;
+            foreach (var region in _mouse.Leds)
+                region.Color = fixedImage.GetPixel(3, i++);
 
             _keyboard.Brush = brush;
             _keyboard.Update();
+            _mouse.Update();
         }
     }
 }
