@@ -18,7 +18,7 @@ namespace Artemis.Utilities.LogitechDll
 
             // Restore the backup
             if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
-                File.Move(LogitechPath + @"\LogitechLed.dll.bak", LogitechPath + @"\LogitechLed.dll");
+                File.Copy(LogitechPath + @"\LogitechLed.dll.bak", LogitechPath + @"\LogitechLed.dll");
 
             File.Delete(LogitechPath + @"\artemis.txt");
 
@@ -32,10 +32,6 @@ namespace Artemis.Utilities.LogitechDll
 
             // Create directory structure, just in case
             Directory.CreateDirectory(LogitechPath + @"");
-
-            // Remove old backups if they are there
-            if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
-                File.Delete(LogitechPath + @"\LogitechLed.dll.bak");
 
             // Backup the existing DLL
             if (File.Exists(LogitechPath + @"\LogitechLed.dll"))
