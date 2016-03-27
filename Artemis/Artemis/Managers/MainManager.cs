@@ -51,8 +51,8 @@ namespace Artemis.Managers
             GameStateWebServer.Start();
 
             // Start the named pipe
-            PipeServer = new PipeServer();
-            PipeServer.Start("artemis");
+            //PipeServer = new PipeServer();
+            //PipeServer.Start("artemis");
         }
 
         public PipeServer PipeServer { get; set; }
@@ -286,7 +286,7 @@ namespace Artemis.Managers
 
                 // Look for running games, stopping on the first one that's found.
                 var newGame = EffectManager.EnabledGames
-                    .FirstOrDefault(g => runningProcesses.Any(p => p.ProcessName == g.ProcessName));
+                    .FirstOrDefault(g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
                 // If it's not already enabled, do so.
                 if (newGame != null && EffectManager.ActiveEffect != newGame)
