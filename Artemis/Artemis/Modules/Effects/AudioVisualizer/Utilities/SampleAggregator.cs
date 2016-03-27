@@ -1,7 +1,7 @@
 ﻿using System;
 using NAudio.Dsp;
 
-namespace Artemis.Utilities.Audio
+namespace Artemis.Modules.Effects.AudioVisualizer.Utilities
 { // The Complex and FFT are here!
 
     public class SampleAggregator

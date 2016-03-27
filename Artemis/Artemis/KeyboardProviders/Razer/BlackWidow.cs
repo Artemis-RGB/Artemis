@@ -3,6 +3,8 @@ using System.Drawing;
 using Artemis.KeyboardProviders.Razer.Utilities;
 using Corale.Colore.Core;
 using Corale.Colore.Razer.Keyboard;
+using ColoreColor = Corale.Colore.Core.Color;
+using KeyboardCustom = Corale.Colore.Razer.Keyboard.Effects.Custom;
 
 namespace Artemis.KeyboardProviders.Razer
 {
@@ -22,19 +24,9 @@ namespace Artemis.KeyboardProviders.Razer
                 return false;
 
             // Some people have Synapse installed, but not a Chroma keyboard, deal with this
-            try
-            {
-                // Create a bitmap to send as a test
-                var b = new Bitmap(22, 6);
-                var razerArray = RazerUtilities.BitmapColorArray(b, 6, 22);
-                Chroma.Instance.Keyboard.SetGrid(razerArray);
-                Chroma.Instance.Keyboard.Clear();
-            }
-            catch (NullReferenceException)
-            {
-                return false;
-            }
-            return true;
+            var blackWidowFound = Chroma.Instance.Query(Corale.Colore.Razer.Devices.Blackwidow).Connected;
+            var blackWidowTeFound = Chroma.Instance.Query(Corale.Colore.Razer.Devices.BlackwidowTe).Connected;
+            return (blackWidowFound || blackWidowTeFound);
         }
 
         public override void Enable()
@@ -42,6 +34,10 @@ namespace Artemis.KeyboardProviders.Razer
             Chroma.Instance.Initialize();
             Height = Constants.MaxRows;
             Width = Constants.MaxColumns;
+
+            KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 0), new Point(19, 0)));
+            KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(20, 1), new Point(23, 6)));
+            KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 2), new Point(5, 2)));
         }
 
         public override void Disable()
@@ -52,7 +48,8 @@ namespace Artemis.KeyboardProviders.Razer
         public override void DrawBitmap(Bitmap bitmap)
         {
             var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
-            Chroma.Instance.Keyboard.SetGrid(razerArray);
+            
+            Chroma.Instance.Keyboard.SetCustom(razerArray);
         }
     }
 }

@@ -66,75 +66,12 @@ namespace Artemis.Utilities
             //use a graphics object to draw the resized image into the bitmap
             using (var graphics = Graphics.FromImage(result))
             {
-                //set the resize quality modes to high quality
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
                 //draw the image into the target bitmap
                 graphics.DrawImage(image, 0, 0, result.Width, result.Height);
             }
 
             //return the resulting bitmap
             return result;
-        }
-
-        /// <summary>
-        ///     Saves an image as a jpeg image, with the given quality
-        /// </summary>
-        /// <param name="path">Path to which the image would be saved.</param>
-        /// <param name="quality">
-        ///     An integer from 0 to 100, with 100 being the
-        ///     highest quality
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///     An invalid value was entered for image quality.
-        /// </exception>
-        public static void SaveJpeg(string path, Image image, int quality)
-        {
-            //ensure the quality is within the correct range
-            if ((quality < 0) || (quality > 100))
-            {
-                //create the error message
-                var error =
-                    string.Format(
-                        "Jpeg image quality must be between 0 and 100, with 100 being the highest quality.  A value of {0} was specified.",
-                        quality);
-                //throw a helpful exception
-                throw new ArgumentOutOfRangeException(error);
-            }
-
-            //create an encoder parameter for the image quality
-            var qualityParam = new EncoderParameter(Encoder.Quality, quality);
-            //get the jpeg codec
-            var jpegCodec = GetEncoderInfo("image/jpeg");
-
-            //create a collection of all parameters that we will pass to the encoder
-            var encoderParams = new EncoderParameters(1);
-            //set the quality parameter for the codec
-            encoderParams.Param[0] = qualityParam;
-            //save the image using the codec and the parameters
-            image.Save(path, jpegCodec, encoderParams);
-        }
-
-        /// <summary>
-        ///     Returns the image codec with the given mime type
-        /// </summary>
-        public static ImageCodecInfo GetEncoderInfo(string mimeType)
-        {
-            //do a case insensitive search for the mime type
-            var lookupKey = mimeType.ToLower();
-
-            //the codec to return, default to null
-            ImageCodecInfo foundCodec = null;
-
-            //if we have the encoder, get it to return
-            if (Encoders.ContainsKey(lookupKey))
-            {
-                //pull the codec from the lookup
-                foundCodec = Encoders[lookupKey];
-            }
-
-            return foundCodec;
         }
     }
 }

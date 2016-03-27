@@ -5,8 +5,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using Artemis.Utilities;
-using Artemis.Utilities.Audio;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
@@ -93,6 +93,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 
         public override void Update()
         {
+            // TODO: Use lock instead of a bool
             // Start filling the model
             _generating = true;
 

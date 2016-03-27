@@ -124,8 +124,14 @@
   <data name="bow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="gamestateConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\counterstrike\gamestateconfiguration.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="csgoGamestateConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\counterstrike\csgoGamestateconfiguration.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="dotaGamestateConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\dota2\dotaGamestateconfiguration.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="LogitechLED" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LogitechLED.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

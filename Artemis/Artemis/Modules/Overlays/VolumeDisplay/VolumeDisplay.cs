@@ -32,8 +32,8 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         {
             var volumeRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
-                ColorHelpers.ToDrawingColor(Settings.SecondaryColor),
-                ColorHelpers.ToDrawingColor(Settings.MainColor)
+                ColorHelpers.ToDrawingColor(Settings.MainColor),
+                ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
             },
                 LinearGradientMode.Horizontal)
             {

@@ -3,8 +3,11 @@ using System.Drawing;
 using System.Threading;
 using Artemis.Utilities;
 using CUE.NET;
+using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
+using CUE.NET.Devices.Headset;
 using CUE.NET.Devices.Keyboard;
+using CUE.NET.Devices.Mouse;
 using CUE.NET.Exceptions;
 
 namespace Artemis.KeyboardProviders.Corsair
@@ -12,7 +15,6 @@ namespace Artemis.KeyboardProviders.Corsair
     internal class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
-
         public CorsairRGB()
         {
             Name = "Corsair RGB Keyboards";
@@ -67,39 +69,44 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-
             switch (_keyboard.DeviceInfo.Model)
             {
                 case "K95 RGB":
                     Height = 7;
-                    Width = 24;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 20)));
+                    Width = 25;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(20, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(21, 2), new Point(25, 7)));
+                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(5, 3), new Point(8, 3)));
                     break;
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
+                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(20, 7)));
+                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
                     break;
                 case "STRAFE RGB":
-                    Height = 7;
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(1, 0), new Point(1, 16)));
+                    Height = 6;
+                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
+                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(18, 2), new Point(22, 7)));
+                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(1, 3), new Point(4, 3)));
                     Width = 22;
                     break;
             }
-
-            // _keyboard.UpdateMode = UpdateMode.Manual;
-            _keyboard.Update(true);
         }
 
         public override void Disable()
         {
             CueSDK.Reinitialize();
         }
-
+        
         /// <summary>
         ///     Properly resizes any size bitmap to the keyboard by creating a rectangle whose size is dependent on the bitmap
         ///     size.
@@ -107,21 +114,21 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            using (
-                var resized = ImageUtilities.ResizeImage(bitmap,
-                    (int) _keyboard.KeyboardRectangle.Width,
-                    (int) _keyboard.KeyboardRectangle.Height)
-                )
+            var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
+            using (var g = Graphics.FromImage(fixedBmp))
             {
-                foreach (var item in _keyboard.Keys)
-                {
-                    var ledColor = resized.GetPixel((int) item.KeyRectangle.X, (int) item.KeyRectangle.Y);
-                    if (ledColor == Color.FromArgb(0, 0, 0, 0))
-                        ledColor = Color.Black;
-                    item.Led.Color = ledColor;
-                }
+                g.Clear(Color.Black);
+                g.DrawImage(bitmap, 0,0);
             }
-            _keyboard.Update(true);
+
+            var fixedImage = ImageUtilities.ResizeImage(fixedBmp, Width, Height);
+            var brush = new ImageBrush
+            {
+                Image = fixedImage
+            };
+
+            _keyboard.Brush = brush;
+            _keyboard.Update();
         }
     }
 }

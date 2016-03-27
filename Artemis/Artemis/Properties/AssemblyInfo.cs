@@ -7,11 +7,11 @@ using System.Windows;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("Artemis")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Adds third-party support for RGB keyboards to games")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Artemis developers")]
 [assembly: AssemblyProduct("Artemis")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

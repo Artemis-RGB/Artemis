@@ -107,9 +107,44 @@ namespace Artemis.Properties {
         /// }
         ///}.
         /// </summary>
-        internal static string gamestateConfiguration {
+        internal static string csgoGamestateConfiguration {
             get {
-                return ResourceManager.GetString("gamestateConfiguration", resourceCulture);
+                return ResourceManager.GetString("csgoGamestateConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;Artemis&quot;
+        ///{
+        ///    &quot;uri&quot;           &quot;http://localhost:4000/&quot;
+        ///    &quot;timeout&quot;       &quot;5.0&quot;
+        ///    &quot;buffer&quot;        &quot;0.1&quot;
+        ///    &quot;throttle&quot;      &quot;0.1&quot;
+        ///    &quot;heartbeat&quot;     &quot;30.0&quot;
+        ///    &quot;data&quot;
+        ///    {
+        ///        &quot;provider&quot;      &quot;1&quot;
+        ///        &quot;map&quot;           &quot;1&quot;
+        ///        &quot;player&quot;        &quot;1&quot;
+        ///        &quot;hero&quot;          &quot;1&quot;
+        ///        &quot;abilities&quot;     &quot;1&quot;
+        ///        &quot;items&quot;         &quot;1&quot;
+        ///    }
+        ///}.
+        /// </summary>
+        internal static string dotaGamestateConfiguration {
+            get {
+                return ResourceManager.GetString("dotaGamestateConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LogitechLED {
+            get {
+                object obj = ResourceManager.GetObject("LogitechLED", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

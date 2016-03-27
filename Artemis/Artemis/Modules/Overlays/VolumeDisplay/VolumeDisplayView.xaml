@@ -55,13 +55,7 @@
             <xctk:ColorPicker x:Name="SecondaryColor"
                               SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22">
-                <xctk:ColorPicker.Template>
-                    <ControlTemplate>
-                        <Rectangle />
-                    </ControlTemplate>
-                </xctk:ColorPicker.Template>
-            </xctk:ColorPicker>
+                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"

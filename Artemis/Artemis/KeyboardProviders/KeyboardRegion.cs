@@ -14,5 +14,7 @@ namespace Artemis.KeyboardProviders
         public string RegionName { get; set; }
         public Point TopLeft { get; set; }
         public Point BottomRight { get; set; }
+
+        public Rectangle GetRectangle() => new Rectangle(TopLeft.X, TopLeft.Y, BottomRight.X - TopLeft.X, BottomRight.Y - TopLeft.Y);
     }
 }
