@@ -22,7 +22,7 @@ namespace Artemis.KeyboardProviders.Logitech
             Width = 21;
             KeyboardRegions = new List<KeyboardRegion>
             {
-                new KeyboardRegion("TopRow", new Point(0, 0), new Point(16, 0)),
+                new KeyboardRegion("TopRow", new Point(0, 0), new Point(18, 0)),
                 new KeyboardRegion("NumPad", new Point(17, 1), new Point(21, 6)),
                 new KeyboardRegion("QWER", new Point(2, 2), new Point(5, 2))
         };

@@ -281,7 +281,7 @@ namespace Artemis.Managers
                 // If the currently active effect is a no longer running game, get rid of it.
                 var activeGame = EffectManager.ActiveEffect as GameModel;
                 if (activeGame != null)
-                    if (runningProcesses.All(p => p.ProcessName != activeGame.ProcessName))
+                    if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
                         EffectManager.DisableGame(activeGame);
 
                 // Look for running games, stopping on the first one that's found.
