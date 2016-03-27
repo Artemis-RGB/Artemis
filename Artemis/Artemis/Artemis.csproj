@@ -190,6 +190,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -249,6 +253,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
+    <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
@@ -269,6 +274,12 @@
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
+    <Compile Include="Models\Interfaces\GameDataModel.cs" />
+    <Compile Include="Models\Profiles\LayerConditionModel.cs" />
+    <Compile Include="Models\Profiles\LayerModel.cs" />
+    <Compile Include="Models\Profiles\LayerDynamicPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\LayerPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\ProfileModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
@@ -313,6 +324,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueDataModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -371,6 +383,7 @@
     <Compile Include="Utilities\GeneralHelpers.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\LayerDrawer.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
     <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
@@ -397,8 +410,11 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
+    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
@@ -435,11 +451,20 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\LayerEditorView.xaml.cs">
+      <DependentUpon>LayerEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
+      <DependentUpon>LayerConditionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileEditorView.xaml.cs">
+      <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -504,6 +529,7 @@
     <Resource Include="Resources\logo-disabled.ico" />
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <None Include="Resources\LogitechLED.dll" />
+    <None Include="Resources\folder.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="Resources\Entypo.ttf" />
@@ -531,6 +557,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Accents\CorsairYellow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EffectsView.xaml">
       <SubType>Designer</SubType>
@@ -576,11 +606,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\LayerEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerConditionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\OverlaysView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

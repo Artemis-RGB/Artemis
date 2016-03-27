@@ -11,12 +11,14 @@ namespace Artemis.KeyboardProviders.Logitech
 {
     internal class Orion : KeyboardProvider
     {
+        private string _versionString;
+
         public Orion()
         {
             Name = "Logitech G910 RGB";
             CantEnableText = "Couldn't connect to your Logitech G910.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
-                             "A minimum version of 8.81.15 is required).\n\n" +
+                             "A minimum version of 8.81.15 is required.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
@@ -40,6 +42,12 @@ namespace Artemis.KeyboardProviders.Logitech
 
             // Turn it into one long number...
             var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
+            CantEnableText = "Couldn't connect to your Logitech G910.\n" +
+                             "Please check your cables and updating the Logitech Gaming Software\n" +
+                             $"A minimum version of 8.81.15 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
+                             "If the detected version differs from the version LGS is reporting, reinstall LGS or see the FAQ.\n\n" +
+                             "If needed, you can select a different keyboard in Artemis under settings.";
+
             return version >= 88115;
         }
 

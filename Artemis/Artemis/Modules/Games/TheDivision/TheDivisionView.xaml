@@ -17,6 +17,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
@@ -40,7 +41,10 @@
                        Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify">
                 Note: For this game to work with Artemis, please open up your Division settings, navigate to 3rd Party and set LED keyboard support to Yes. (This only works if you have Artemis running before starting the game)
             </TextBlock>
-
+            
+            <!-- Profile editor -->
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
+            
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
