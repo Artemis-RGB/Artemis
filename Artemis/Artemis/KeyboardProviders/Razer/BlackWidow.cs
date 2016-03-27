@@ -34,6 +34,10 @@ namespace Artemis.KeyboardProviders.Razer
             Chroma.Instance.Initialize();
             Height = Constants.MaxRows;
             Width = Constants.MaxColumns;
+
+            KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 0), new Point(19, 0)));
+            KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(20, 1), new Point(23, 6)));
+            KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 2), new Point(5, 2)));
         }
 
         public override void Disable()
