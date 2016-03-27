@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Services;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
+using Artemis.Utilities.LogitechDll;
 using Caliburn.Micro;
 
 namespace Artemis.Managers
@@ -47,8 +49,13 @@ namespace Artemis.Managers
             // Create and start the web server
             GameStateWebServer = new GameStateWebServer();
             GameStateWebServer.Start();
+
+            // Start the named pipe
+            //PipeServer = new PipeServer();
+            //PipeServer.Start("artemis");
         }
 
+        public PipeServer PipeServer { get; set; }
         public BackgroundWorker UpdateWorker { get; set; }
         public BackgroundWorker ProcessWorker { get; set; }
 
@@ -65,6 +72,7 @@ namespace Artemis.Managers
         public bool Suspended { get; set; }
 
         public bool Running { get; private set; }
+
         public event PauseCallbackHandler PauseCallback;
 
         /// <summary>
@@ -112,8 +120,15 @@ namespace Artemis.Managers
 
         private void FinishStop(object sender, RunWorkerCompletedEventArgs e)
         {
+            UpdateWorker.RunWorkerCompleted -= FinishStop;
             KeyboardManager.ReleaseActiveKeyboard();
             Running = false;
+
+            if (e.Error != null || !_restarting)
+                return;
+
+            Start();
+            _restarting = false;
         }
 
         public void Pause()
@@ -137,7 +152,9 @@ namespace Artemis.Managers
         {
             Stop();
             ProcessWorker.CancelAsync();
+            ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
+            //NamedPipeServer.StopServer();
         }
 
         public void Restart()
@@ -151,21 +168,7 @@ namespace Artemis.Managers
             }
 
             _restarting = true;
-
-            UpdateWorker.RunWorkerCompleted += FinishRestart;
             Stop();
-        }
-
-        public void FinishRestart(object sender, RunWorkerCompletedEventArgs e)
-        {
-            UpdateWorker.RunWorkerCompleted -= FinishRestart;
-
-            if (e.Error != null)
-                return;
-
-            Start();
-
-            _restarting = false;
         }
 
         /// <summary>
@@ -278,12 +281,12 @@ namespace Artemis.Managers
                 // If the currently active effect is a no longer running game, get rid of it.
                 var activeGame = EffectManager.ActiveEffect as GameModel;
                 if (activeGame != null)
-                    if (runningProcesses.All(p => p.ProcessName != activeGame.ProcessName))
+                    if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
                         EffectManager.DisableGame(activeGame);
 
                 // Look for running games, stopping on the first one that's found.
                 var newGame = EffectManager.EnabledGames
-                    .FirstOrDefault(g => runningProcesses.Any(p => p.ProcessName == g.ProcessName));
+                    .FirstOrDefault(g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
                 // If it's not already enabled, do so.
                 if (newGame != null && EffectManager.ActiveEffect != newGame)

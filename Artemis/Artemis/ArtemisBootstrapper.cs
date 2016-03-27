@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.Utilities;
+using Artemis.Utilities.LogitechDll;
 using Artemis.ViewModels;
 using Autofac;
 using Caliburn.Micro;
@@ -16,6 +18,7 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             CheckDuplicateInstances();
+
             Initialize();
         }
 
