@@ -11,7 +11,6 @@ namespace Artemis.ViewModels.Flyouts
     public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
     {
         private string _activeEffectName;
-        private bool _enabled;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 

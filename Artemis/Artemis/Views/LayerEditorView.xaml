@@ -9,24 +9,57 @@
                       mc:Ignorable="d"
                       Title="Artemis | Edit Layer" Height="800" Width="630"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico" ResizeMode="NoResize">
-    <Grid>
+    <Grid Margin="10,0">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="25*" />
+            <ColumnDefinition Width="53*" />
+            <ColumnDefinition Width="25*" />
+            <ColumnDefinition Width="53*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" FontSize="16" Text="Display if.." />
-        <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="LayerConditionVms" />
-        <Button Grid.Row="2" Grid.Column="0" x:Name="AddCondition" Content="Add condition" VerticalAlignment="Top"
-                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10" />
-        <Button Grid.Row="3" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
-                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10" />
+        <!-- Header -->
+        <Label Grid.Row="0" Grid.ColumnSpan="4" FontSize="20" HorizontalAlignment="Left">
+            <Label.Content>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Path=Layer.Name}" />
+                    <TextBlock Text=" - Basics" />
+                </StackPanel>
+            </Label.Content>
+        </Label>
+
+        <!-- Layer name -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="10" FontSize="16" Text="Name:" />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" />
+
+        <!-- Layer type -->
+        <TextBlock Grid.Row="1" Grid.Column="2" Margin="10" FontSize="16" Text="Type:" />
+        <ComboBox Grid.Row="1" Grid.Column="3" x:Name="Operators" Margin="10" />
+
+        <!-- Condition editor -->
+        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" FontSize="20" Content="Display if.." />
+        <ScrollViewer Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Height="145">
+            <ListBox x:Name="LayerConditionVms" />
+        </ScrollViewer>
+        <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AddCondition" Content="Add condition" VerticalAlignment="Top"
+                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,10,0,0"
+                Height="20" />
+
+        <!-- Advanced -->
+        <Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" FontSize="20" HorizontalAlignment="Left"
+               Content="Advanced" />
+
+        <Button Grid.Row="6" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
+                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,10"
+                Height="20" Grid.ColumnSpan="2" />
     </Grid>
-    
+
 </controls:MetroWindow>
