@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <!-- Left -->
-        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="250" MaxDropDownHeight="125"
+        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="229" MaxDropDownHeight="125"
                   HorizontalAlignment="Center" VerticalAlignment="Top">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -37,7 +37,7 @@
         <!-- Center -->
         <TextBlock Grid.Column="1" Text="is" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,3,0,0" />
         <ComboBox x:Name="Operators" Grid.Column="2" Width="150" MaxDropDownHeight="125" HorizontalAlignment="Center"
-                  VerticalAlignment="Top" />
+                  VerticalAlignment="Top" DisplayMemberPath="Display" />
 
         <!-- Right -->
         <Grid Grid.Column="3" HorizontalAlignment="Left" Margin="10,0,0,0" Width="152">

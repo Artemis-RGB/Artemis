@@ -378,6 +378,7 @@
       <DependentUpon>Offsets.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\ColorHelpers.cs" />
+    <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\GeneralHelpers.cs" />

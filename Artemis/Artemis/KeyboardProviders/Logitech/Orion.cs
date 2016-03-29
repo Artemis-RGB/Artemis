@@ -11,8 +11,6 @@ namespace Artemis.KeyboardProviders.Logitech
 {
     internal class Orion : KeyboardProvider
     {
-        private string _versionString;
-
         public Orion()
         {
             Name = "Logitech G910 RGB";
