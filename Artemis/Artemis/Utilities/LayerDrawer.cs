@@ -13,33 +13,36 @@ namespace Artemis.Utilities
     internal class LayerDrawer
     {
         private readonly LayerModel _layerModel;
+        private LinearGradientBrush _brush;
         private Rectangle _rectangle;
         private double _rotationProgress;
         private Rectangle _userRectangle;
 
-        public LayerDrawer(LayerModel layerModel)
+        public LayerDrawer(LayerModel layerModel, int scale)
         {
+            Scale = scale;
             _layerModel = layerModel;
             _rotationProgress = 0;
         }
 
-        public void Draw(Graphics graphics)
-        {
-            _rectangle = new Rectangle(
-                _layerModel.LayerCalculatedProperties.X,
-                _layerModel.LayerCalculatedProperties.Y,
-                _layerModel.LayerCalculatedProperties.Width,
-                _layerModel.LayerCalculatedProperties.Height);
-            _userRectangle = new Rectangle(
-                _layerModel.LayerUserProperties.X,
-                _layerModel.LayerUserProperties.Y,
-                _layerModel.LayerUserProperties.Width,
-                _layerModel.LayerUserProperties.Height);
+        public int Scale { get; set; }
 
-            if (_layerModel.LayerType == LayerType.Ellipse)
-                DrawEllipse(graphics);
-            else if (_layerModel.LayerType == LayerType.Ellipse)
-                DrawRectangle(graphics);
+        public void Draw(Graphics g)
+        {
+            // Set up variables for this frame
+            _rectangle = new Rectangle(_layerModel.LayerCalculatedProperties.X*Scale,
+                _layerModel.LayerCalculatedProperties.Y*Scale, _layerModel.LayerCalculatedProperties.Width*Scale,
+                _layerModel.LayerCalculatedProperties.Height*Scale);
+            _userRectangle = new Rectangle(_layerModel.LayerUserProperties.X*Scale,
+                _layerModel.LayerUserProperties.Y*Scale, _layerModel.LayerUserProperties.Width*Scale,
+                _layerModel.LayerUserProperties.Height*Scale);
+            _brush = CreateGradientBrush(
+                _layerModel.LayerCalculatedProperties.Colors.Select(ColorHelpers.ToDrawingColor).ToList());
+
+            if (_layerModel.LayerType == LayerType.KeyboardRectangle)
+                DrawRectangle(g);
+            else if (_layerModel.LayerType == LayerType.KeyboardEllipse)
+                DrawEllipse(g);
 
             // Update the rotation progress
             _rotationProgress = _rotationProgress + _layerModel.LayerCalculatedProperties.RotateSpeed;
@@ -50,23 +53,24 @@ namespace Artemis.Utilities
                 _rotationProgress = _layerModel.LayerCalculatedProperties.RotateSpeed;
         }
 
-        public BitmapImage GetPreviewImage()
+        public BitmapImage GetThumbnail()
         {
             _rectangle = new Rectangle(0, 0, 18, 18);
             _userRectangle = new Rectangle(0, 0, 18, 18);
             _layerModel.LayerCalculatedProperties.Opacity = 255;
-            var brush = CreateGradientBrush(_layerModel.LayerUserProperties.Colors);
+            var brush =
+                CreateGradientBrush(_layerModel.LayerUserProperties.Colors.Select(ColorHelpers.ToDrawingColor).ToList());
             var bitmap = new Bitmap(18, 18);
 
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
-                if (_layerModel.LayerType == LayerType.Ellipse)
+                if (_layerModel.LayerType == LayerType.KeyboardEllipse)
                 {
                     g.FillEllipse(brush, _rectangle);
                     g.DrawEllipse(new Pen(Color.Black, 1), 0, 0, 17, 17);
                 }
-                else if (_layerModel.LayerType == LayerType.Rectangle)
+                else if (_layerModel.LayerType == LayerType.KeyboardRectangle)
                 {
                     g.FillRectangle(brush, _rectangle);
                     g.DrawRectangle(new Pen(Color.Black, 1), 0, 0, 17, 17);
@@ -90,11 +94,17 @@ namespace Artemis.Utilities
             }
         }
 
-        public void DrawRectangle(Graphics graphics)
+        public void DrawRectangle(Graphics g)
         {
+            g.FillRectangle(_brush, _rectangle);
         }
 
-        public void DrawEllipse(Graphics graphics)
+        public void DrawEllipse(Graphics g)
+        {
+            g.FillEllipse(_brush, _rectangle);
+        }
+
+        public void DrawGif(Graphics g)
         {
         }
 
@@ -152,8 +162,12 @@ namespace Artemis.Utilities
                     ? new Rectangle(_rectangle.X, _rectangle.Y, _rectangle.Width, _rectangle.Height)
                     : new Rectangle(_userRectangle.X, _userRectangle.Y, _userRectangle.Width, _userRectangle.Height);
 
-            return new LinearGradientBrush(rect, Color.Transparent, Color.Transparent,
-                _layerModel.LayerCalculatedProperties.GradientMode)
+            if (_layerModel.LayerCalculatedProperties.ColorMode == LayerColorMode.Horizontal)
+                return new LinearGradientBrush(rect, Color.Transparent, Color.Transparent, LinearGradientMode.Horizontal)
+                {
+                    InterpolationColors = colorBlend
+                };
+            return new LinearGradientBrush(rect, Color.Transparent, Color.Transparent, LinearGradientMode.Vertical)
             {
                 InterpolationColors = colorBlend
             };
@@ -168,6 +182,14 @@ namespace Artemis.Utilities
             // Add the first color, smoothing the transition
             tilebleColors.Add(sourceColors.FirstOrDefault());
             return tilebleColors;
+        }
+
+        public void UpdateMouse()
+        {
+        }
+
+        public void UpdateHeadset()
+        {
         }
     }
 }

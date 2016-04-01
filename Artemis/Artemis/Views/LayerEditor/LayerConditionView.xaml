@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <!-- Left -->
-        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="229" MaxDropDownHeight="125"
+        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="210" MaxDropDownHeight="125"
                   HorizontalAlignment="Center" VerticalAlignment="Top">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -40,13 +40,13 @@
                   VerticalAlignment="Top" DisplayMemberPath="Display" />
 
         <!-- Right -->
-        <Grid Grid.Column="3" HorizontalAlignment="Left" Margin="10,0,0,0" Width="152">
+        <Grid Grid.Column="3" HorizontalAlignment="Left" Margin="10,0,0,0" Width="148">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="125"/>
+                <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" x:Name="UserValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="115"/>
+                <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110"/>
             </StackPanel>
             <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" >
                 <Button.Content>

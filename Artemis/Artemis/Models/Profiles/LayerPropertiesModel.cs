@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
+using System.Windows.Media;
 using System.Drawing.Drawing2D;
 
 namespace Artemis.Models.Profiles
@@ -12,7 +13,7 @@ namespace Artemis.Models.Profiles
         public int Height { get; set; }
         public int Opacity { get; set; }
         public bool ContainedBrush { get; set; }
-        public LinearGradientMode GradientMode { get; set; }
+        public LayerColorMode ColorMode { get; set; }
         public bool Rotate { get; set; }
         public double RotateSpeed { get; set; }
         public List<Color> Colors { get; set; }
@@ -21,5 +22,17 @@ namespace Artemis.Models.Profiles
         {
             Colors = new List<Color>();
         }
+    }
+
+    public enum LayerColorMode
+    {
+        [Description("Left to right")]
+        Horizontal,
+        [Description("Top to bottom")]
+        Vertical,
+        [Description("Shift")]
+        Shift,
+        [Description("Pulse")]
+        Pulse,
     }
 }
