@@ -136,6 +136,9 @@
       <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ColorBox">
+      <HintPath>lib\ColorBox.dll</HintPath>
+    </Reference>
     <Reference Include="Corale.Colore, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Colore.4.0.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>

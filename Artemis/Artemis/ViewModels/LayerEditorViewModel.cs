@@ -80,7 +80,7 @@ namespace Artemis.ViewModels
             {
                 // For the preview, put the proposed properties into the calculated properties
                 _layer.LayerCalculatedProperties = ProposedProperties;
-                var bitmap = new Bitmap(ProposedProperties.Width, ProposedProperties.Height);
+                var bitmap = new Bitmap(ProposedProperties.Width*4, ProposedProperties.Height*4);
 
                 using (var g = Graphics.FromImage(bitmap))
                 {
