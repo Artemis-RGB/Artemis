@@ -150,8 +150,8 @@
         <TextBlock Grid.Row="9" Grid.Column="2" Margin="10" FontSize="13.333" Text="Rotation speed:"
                    VerticalAlignment="Center" Height="18" />
         <Slider x:Name="RotationSpeed" Grid.Row="9" Grid.Column="3" VerticalAlignment="Center"
-                TickPlacement="BottomRight" TickFrequency="1"
-                Value="{Binding Path=ProposedProperties.RotateSpeed, Mode=TwoWay}" Minimum="1" Maximum="10"
+                TickPlacement="BottomRight" TickFrequency="0.1"
+                Value="{Binding Path=ProposedProperties.RotateSpeed, Mode=TwoWay}" Minimum="0.1" Maximum="3"
                 SmallChange="1" IsSnapToTickEnabled="True" Margin="10,7" Height="24" />
 
         <!-- Color direction -->
@@ -212,7 +212,7 @@
         <!-- Preview -->
         <TextBlock Grid.Row="11" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Preview:"
                    VerticalAlignment="Top" Height="18" />
-        <Image Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" Source="{Binding LayerImage}" />
+        <Image Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" Source="{Binding LayerImage}" Stretch="Uniform" Width="280" Height="105"/>
 
         <Button Grid.Row="12" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
