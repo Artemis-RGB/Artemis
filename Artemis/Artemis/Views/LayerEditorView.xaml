@@ -11,6 +11,7 @@
                       mc:Ignorable="d"
                       Title="Artemis | Edit Layer" Height="750" Width="630"
                       xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
+                      xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico" ResizeMode="NoResize">
     <controls:MetroWindow.Resources>
         <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
@@ -171,7 +172,8 @@
         <TextBlock Grid.Row="10" Grid.Column="2" Margin="10,13,10,0" FontSize="13.333" Text="Colors:"
                    VerticalAlignment="Top" Height="18" />
         <StackPanel Grid.Row="10" Grid.Column="3" Grid.RowSpan="2">
-            <Border BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}" Margin="10">
+            <ncore:ColorBox Width="100" Height="25"></ncore:ColorBox>
+            <!--<Border BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}" Margin="10">
                 <ListBox Height="108" ItemsSource="{Binding Path=ProposedColors}"
                          ScrollViewer.VerticalScrollBarVisibility="Visible" VerticalAlignment="Top">
                     <ListBox.Template>
@@ -184,8 +186,8 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <xctk:ColorPicker x:Name="Bottom" SelectedColor="{Binding Path=., Mode=TwoWay}"
-                                                  VerticalAlignment="Center" Width="100" Height="26" />
+                                <xctk:ColorPicker SelectedColor="{Binding Path=.}"
+                                                  VerticalAlignment="Center" Width="100" Height="26"/>
                                 <Button x:Name="Delete" Width="26" Height="26"
                                         Style="{DynamicResource SquareButtonStyle}"
                                         VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5,5,0,5"
@@ -202,7 +204,7 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </Border>
+            </Border>-->
             <Button x:Name="AddColor" Content="Add color"
                     VerticalAlignment="Center"
                     Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" Height="30"
@@ -212,7 +214,10 @@
         <!-- Preview -->
         <TextBlock Grid.Row="11" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Preview:"
                    VerticalAlignment="Top" Height="18" />
-        <Image Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" Source="{Binding LayerImage}" Stretch="Uniform" Width="280" Height="105"/>
+        <Border Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" BorderThickness="1"
+                BorderBrush="{StaticResource GrayBrush7}" Width="280" Height="105">
+            <Image Source="{Binding LayerImage}" Stretch="Uniform"  />
+        </Border>
 
         <Button Grid.Row="12" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
