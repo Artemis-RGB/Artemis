@@ -189,7 +189,7 @@
 
                             <Popup IsOpen="{Binding ElementName=PART_OpenPopup,Path=IsChecked}" StaysOpen="False"
                                    AllowsTransparency="True" Width="{Binding ActualWidth, ElementName=PART_Root}"
-                                   MinWidth="250" HorizontalOffset="-1" Placement="Center">
+                                   MinWidth="250" HorizontalOffset="-1" Placement="Center" PopupAnimation="Fade">
                                 <Border Background="{StaticResource ControlBackgroundBrush}"
                                         BorderBrush="{StaticResource AccentColorBrush}" BorderThickness="1"
                                         Margin="10,0,10,10">
@@ -731,6 +731,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-
 </ResourceDictionary>

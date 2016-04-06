@@ -1,10 +1,12 @@
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media;
-using System.Drawing.Drawing2D;
+using System.Xml.Serialization;
 
 namespace Artemis.Models.Profiles
 {
+    [XmlInclude(typeof(LinearGradientBrush))]
+    [XmlInclude(typeof(RadialGradientBrush))]
+    [XmlInclude(typeof(MatrixTransform))]
     public class LayerPropertiesModel
     {
         public int X { get; set; }
@@ -16,23 +18,14 @@ namespace Artemis.Models.Profiles
         public LayerColorMode ColorMode { get; set; }
         public bool Rotate { get; set; }
         public double RotateSpeed { get; set; }
-        public List<Color> Colors { get; set; }
-
-        public LayerPropertiesModel()
-        {
-            Colors = new List<Color>();
-        }
+        public Brush Brush { get; set; }
     }
 
     public enum LayerColorMode
     {
-        [Description("Left to right")]
-        Horizontal,
-        [Description("Top to bottom")]
-        Vertical,
-        [Description("Shift")]
-        Shift,
-        [Description("Pulse")]
-        Pulse,
+        [Description("Gradient")] Gradient,
+        [Description("Moving gradient")] MovingGradient,
+        [Description("Shift")] Shift,
+        [Description("Pulse")] Pulse
     }
 }

@@ -1,35 +1,33 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Artemis.DAL;
 using Artemis.Models.Profiles;
 using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
-using Color = System.Windows.Media.Color;
 
 namespace Artemis.ViewModels
 {
     public class LayerEditorViewModel<T> : Screen
     {
+        private readonly ProfileModel _profile;
         private readonly BackgroundWorker _previewWorker;
         private LayerModel _layer;
         private LayerPropertiesModel _proposedProperties;
 
-        public LayerEditorViewModel(LayerModel layer)
+        public LayerEditorViewModel(ProfileModel profile, LayerModel layer)
         {
+            _profile = profile;
             Layer = layer;
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            ProposedColors = new BindableCollection<Color>();
             ProposedProperties = new LayerPropertiesModel();
-            ProposedColors.CollectionChanged += UpdateColors;
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap<T>());
 
             LayerConditionVms =
@@ -39,16 +37,14 @@ namespace Artemis.ViewModels
             _previewWorker = new BackgroundWorker();
             _previewWorker.WorkerSupportsCancellation = true;
             _previewWorker.DoWork += PreviewWorkerOnDoWork;
-
             _previewWorker.RunWorkerAsync();
+
             PreSelect();
         }
 
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
 
         public BindableCollection<string> LayerTypes => new BindableCollection<string>();
-
-        public BindableCollection<Color> ProposedColors { get; set; }
 
         public BindableCollection<LayerConditionViewModel<T>> LayerConditionVms { get; set; }
 
@@ -80,32 +76,26 @@ namespace Artemis.ViewModels
             {
                 // For the preview, put the proposed properties into the calculated properties
                 _layer.LayerCalculatedProperties = ProposedProperties;
-                var bitmap = new Bitmap(ProposedProperties.Width*4, ProposedProperties.Height*4);
 
-                using (var g = Graphics.FromImage(bitmap))
+                var visual = new DrawingVisual();
+                using (var drawingContext = visual.RenderOpen())
                 {
-                    _layer.DrawPreview(g);
+                    // TODO: Get active keyboard's size * 4
+                    var keyboardRect = new Rect(new Size(280, 105));
+
+                    // Setup the DrawingVisual's size
+                    drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                    drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                    // Draw the layer
+                    _layer.DrawPreview(drawingContext);
+
+                    // Remove the clip
+                    drawingContext.Pop();
                 }
-
-                using (var memory = new MemoryStream())
-                {
-                    bitmap.Save(memory, ImageFormat.Png);
-                    memory.Position = 0;
-
-                    var bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = memory;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-
-                    return bitmapImage;
-                }
+                var image = new DrawingImage(visual.Drawing);
+                return image;
             }
-        }
-
-        private void UpdateColors(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            ProposedProperties.Colors = ProposedColors.ToList();
         }
 
         private void PreviewWorkerOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
@@ -117,11 +107,9 @@ namespace Artemis.ViewModels
             }
         }
 
-        private void PreSelect()
+        public void PreSelect()
         {
             GeneralHelpers.CopyProperties(ProposedProperties, Layer.LayerUserProperties);
-            ProposedColors.Clear();
-            ProposedColors.AddRange(ProposedProperties.Colors);
         }
 
         public void AddCondition()
@@ -131,19 +119,10 @@ namespace Artemis.ViewModels
             LayerConditionVms.Add(new LayerConditionViewModel<T>(this, condition, DataModelProps));
         }
 
-        public void AddColor()
-        {
-            ProposedColors.Add(ColorHelpers.ToMediaColor(ColorHelpers.GetRandomRainbowColor()));
-        }
-
-        public void DeleteColor(Color c)
-        {
-            ProposedColors.Remove(c);
-        }
-
         public void Apply()
         {
             GeneralHelpers.CopyProperties(Layer.LayerUserProperties, ProposedProperties);
+            ProfileProvider.AddOrUpdate(_profile);
         }
 
         public void DeleteCondition(LayerConditionViewModel<T> layerConditionViewModel,

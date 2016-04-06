@@ -13,9 +13,9 @@ namespace Artemis.ViewModels
     {
         private readonly GameModel _gameModel;
         private readonly MainManager _mainManager;
+        private LayerEditorViewModel<T> _editorVm;
         private BindableCollection<ProfileModel> _profileModels;
         private ProfileModel _selectedProfileModel;
-        private LayerEditorViewModel<T> _editorVm;
 
         public ProfileEditorViewModel(MainManager mainManager, GameModel gameModel)
         {
@@ -48,6 +48,8 @@ namespace Artemis.ViewModels
             }
         }
 
+        public LayerModel SelectedLayer { get; set; }
+
         private void LoadProfiles()
         {
             ProfileModels.Clear();
@@ -67,7 +69,12 @@ namespace Artemis.ViewModels
                 return;
             }
 
-            var profile = new ProfileModel(name, _mainManager.KeyboardManager.ActiveKeyboard.Name, _gameModel.Name);
+            var profile = new ProfileModel
+            {
+                Name = name,
+                KeyboardName = _mainManager.KeyboardManager.ActiveKeyboard.Name,
+                GameName = _gameModel.Name
+            };
             if (ProfileProvider.GetAll().Contains(profile))
             {
                 var overwrite =
@@ -87,11 +94,26 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel<T>(layer);
+            _editorVm = new LayerEditorViewModel<T>(SelectedProfileModel, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;
             manager.ShowDialog(_editorVm, null, settings);
+        }
+
+        public void SetSelectedLayer(LayerModel layer)
+        {
+            SelectedLayer = layer;
+        }
+
+        public void AddLayer()
+        {
+            _selectedProfileModel.Layers.Add(new LayerModel
+            {
+                Name = "Layer " + (_selectedProfileModel.Layers.Count + 1),
+                LayerType = LayerType.KeyboardRectangle
+            });
+            NotifyOfPropertyChange();
         }
 
         private ImageSource GenerateKeyboardImage()

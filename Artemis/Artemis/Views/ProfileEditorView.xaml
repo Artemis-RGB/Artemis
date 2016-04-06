@@ -59,7 +59,7 @@
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}" cal:Message.Attach="SetSelectedLayer($datacontext)">
                             <StackPanel.ContextMenu>
                                 <ContextMenu cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" />

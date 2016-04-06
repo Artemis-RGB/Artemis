@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 using Newtonsoft.Json;
@@ -47,8 +48,11 @@ namespace Artemis.DAL
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var serialized = JsonConvert.SerializeObject(prof, Formatting.Indented);
-            File.WriteAllText(path + $@"\{prof.Name}.json", serialized);
+            var serializer = new XmlSerializer(typeof(ProfileModel));
+            using (var file = new StreamWriter(path + $@"\{prof.Name}.xml"))
+            {
+                serializer.Serialize(file, prof);
+            }
         }
 
         private static List<ProfileModel> ReadProfiles()
@@ -57,14 +61,19 @@ namespace Artemis.DAL
             var profiles = new List<ProfileModel>();
 
             // Create the directory structure
-            var profileFiles = Directory.GetFiles(ProfileFolder, "*.json", SearchOption.AllDirectories);
+            var profilePaths = Directory.GetFiles(ProfileFolder, "*.xml", SearchOption.AllDirectories);
 
             // Parse the JSON files into objects and add them if they are valid
-            foreach (var file in profileFiles)
+            // TODO: Invalid file handling
+            var deserializer = new XmlSerializer(typeof (ProfileModel));
+            foreach (var path in profilePaths)
             {
-                var prof = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(file));
-                if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
-                    profiles.Add(prof);
+                using (var file = new StreamReader(path))
+                {
+                    var prof = (ProfileModel) deserializer.Deserialize(file);
+                    if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
+                        profiles.Add(prof);
+                }
             }
 
             return profiles;

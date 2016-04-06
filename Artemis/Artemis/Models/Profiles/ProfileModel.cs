@@ -4,11 +4,9 @@ namespace Artemis.Models.Profiles
 {
     public class ProfileModel
     {
-        public ProfileModel(string name, string keyboardName, string gameName)
+        public ProfileModel()
         {
-            Name = name;
-            KeyboardName = keyboardName;
-            GameName = gameName;
+            Layers = new List<LayerModel>();
         }
 
         public string Name { get; set; }
@@ -19,7 +17,8 @@ namespace Artemis.Models.Profiles
 
         protected bool Equals(ProfileModel other)
         {
-            return string.Equals(Name, other.Name) && string.Equals(KeyboardName, other.KeyboardName) && string.Equals(GameName, other.GameName);
+            return string.Equals(Name, other.Name) && string.Equals(KeyboardName, other.KeyboardName) &&
+                   string.Equals(GameName, other.GameName);
         }
 
         public override bool Equals(object obj)
