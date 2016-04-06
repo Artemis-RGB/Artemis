@@ -19,11 +19,6 @@ namespace Artemis.Models.Profiles
         /// </summary>
         public string PercentageSource { get; set; }
 
-        /// <summary>
-        ///     Only used when LayerPropertyType is Color
-        /// </summary>
-        public List<Color> LayerColors { get; set; }
-
         internal void ApplyProperty<T>(IGameDataModel dataModel, LayerPropertiesModel userProps,
             LayerPropertiesModel props)
         {
@@ -37,11 +32,6 @@ namespace Artemis.Models.Profiles
                 SetPercentageOf(props, userProps, dataModel, int.Parse(PercentageSource));
             if (LayerPopertyType == LayerPopertyType.PercentageOfProperty)
                 SetPercentageOfProperty(props, userProps, dataModel);
-            if (LayerPopertyType == LayerPopertyType.Color)
-            {
-                if (dataList.Where($"{GameProperty} {RequiredOperator} {RequiredValue}").Any())
-                    SetColor(layerProp, dataModel);
-            }
         }
 
         private void SetPercentageOf(LayerPropertiesModel props, LayerPropertiesModel userProps,
@@ -66,14 +56,6 @@ namespace Artemis.Models.Profiles
             var value = dataModel.GetType().GetProperty(PercentageSource)?.GetValue(dataModel, null);
             if (value != null)
                 SetPercentageOf(props, userProps, dataModel, (int) value);
-        }
-
-        private void SetColor(PropertyInfo layerProp, IGameDataModel dataModel)
-        {
-            if (layerProp == null)
-                return;
-            if (layerProp.PropertyType == typeof (List<Color>))
-                layerProp.SetValue(dataModel, LayerColors, null);
         }
     }
 

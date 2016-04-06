@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
 using Newtonsoft.Json;
@@ -11,12 +11,10 @@ namespace Artemis.Models.Profiles
 {
     public class LayerModel
     {
-        [JsonIgnore] private readonly LayerDrawer _drawer;
+        [XmlIgnore] private readonly LayerDrawer _drawer;
 
-        public LayerModel(string name, LayerType layerType)
+        public LayerModel()
         {
-            Name = name;
-            LayerType = layerType;
             LayerUserProperties = new LayerPropertiesModel();
             LayerCalculatedProperties = new LayerPropertiesModel();
 
@@ -35,10 +33,10 @@ namespace Artemis.Models.Profiles
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
 
-        [JsonIgnore]
+        [XmlIgnore]
         public LayerPropertiesModel LayerCalculatedProperties { get; set; }
 
-        [JsonIgnore]
+        [XmlIgnore]
         public ImageSource LayerImage => _drawer.GetThumbnail();
 
         public bool ConditionsMet<T>(IGameDataModel dataModel)
@@ -46,15 +44,15 @@ namespace Artemis.Models.Profiles
             return LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
-        public void DrawPreview(Graphics g)
+        public void DrawPreview(DrawingContext c)
         {
             if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
-                _drawer.Draw(g);
+                _drawer.Draw(c);
             else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(g);
+                _drawer.DrawGif(c);
         }
 
-        public void Draw<T>(IGameDataModel dataModel, Graphics g)
+        public void Draw<T>(IGameDataModel dataModel, DrawingContext c)
         {
             if (!ConditionsMet<T>(dataModel))
                 return;
@@ -62,11 +60,11 @@ namespace Artemis.Models.Profiles
             Update<T>(dataModel);
 
             if (LayerType == LayerType.Folder)
-                DrawChildren<T>(dataModel, g);
+                DrawChildren<T>(dataModel, c);
             else if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
-                _drawer.Draw(g);
+                _drawer.Draw(c);
             else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(g);
+                _drawer.DrawGif(c);
             else if (LayerType == LayerType.Mouse)
                 _drawer.UpdateMouse();
             else if (LayerType == LayerType.Headset)
@@ -80,10 +78,10 @@ namespace Artemis.Models.Profiles
                 dynamicProperty.ApplyProperty<T>(dataModel, LayerUserProperties, LayerCalculatedProperties);
         }
 
-        private void DrawChildren<T>(IGameDataModel dataModel, Graphics g)
+        private void DrawChildren<T>(IGameDataModel dataModel, DrawingContext c)
         {
             foreach (var layerModel in Children)
-                layerModel.Draw<T>(dataModel, g);
+                layerModel.Draw<T>(dataModel, c);
         }
     }
 
