@@ -4,9 +4,9 @@ using System.Xml.Serialization;
 
 namespace Artemis.Models.Profiles
 {
-    [XmlInclude(typeof(LinearGradientBrush))]
-    [XmlInclude(typeof(RadialGradientBrush))]
-    [XmlInclude(typeof(MatrixTransform))]
+    [XmlInclude(typeof (LinearGradientBrush))]
+    [XmlInclude(typeof (RadialGradientBrush))]
+    [XmlInclude(typeof (MatrixTransform))]
     public class LayerPropertiesModel
     {
         public int X { get; set; }

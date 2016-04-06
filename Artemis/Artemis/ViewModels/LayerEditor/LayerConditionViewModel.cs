@@ -162,6 +162,7 @@ namespace Artemis.ViewModels.LayerEditor
             LayerConditionModel.Field = SelectedDataModelProp.Path;
             LayerConditionModel.Operator = SelectedOperator.Value;
             LayerConditionModel.Value = UserValue;
+            LayerConditionModel.Type = SelectedDataModelProp.Type;
         }
 
         /// <summary>
@@ -173,6 +174,7 @@ namespace Artemis.ViewModels.LayerEditor
             SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == LayerConditionModel.Field);
             SelectedOperator = Operators.FirstOrDefault(o => o.Value == LayerConditionModel.Operator);
             UserValue = LayerConditionModel.Value;
+            LayerConditionModel.Type = SelectedDataModelProp.Type;
             _preselecting = false;
         }
 

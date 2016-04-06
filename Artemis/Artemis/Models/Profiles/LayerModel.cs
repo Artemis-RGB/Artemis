@@ -5,7 +5,6 @@ using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
-using Newtonsoft.Json;
 
 namespace Artemis.Models.Profiles
 {
@@ -57,10 +56,9 @@ namespace Artemis.Models.Profiles
             if (!ConditionsMet<T>(dataModel))
                 return;
 
-            Update<T>(dataModel);
-
             if (LayerType == LayerType.Folder)
-                DrawChildren<T>(dataModel, c);
+                foreach (var layerModel in Children)
+                    layerModel.Draw<T>(dataModel, c);
             else if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
                 _drawer.Draw(c);
             else if (LayerType == LayerType.KeyboardGif)
@@ -71,17 +69,18 @@ namespace Artemis.Models.Profiles
                 _drawer.UpdateHeadset();
         }
 
-        private void Update<T>(IGameDataModel dataModel)
+        public void Update<T>(IGameDataModel dataModel)
         {
+            if (LayerType == LayerType.Folder)
+            {
+                foreach (var layerModel in Children)
+                    layerModel.Update<T>(dataModel);
+                return;
+            }
+
             GeneralHelpers.CopyProperties(LayerCalculatedProperties, LayerUserProperties);
             foreach (var dynamicProperty in LayerProperties)
                 dynamicProperty.ApplyProperty<T>(dataModel, LayerUserProperties, LayerCalculatedProperties);
-        }
-
-        private void DrawChildren<T>(IGameDataModel dataModel, DrawingContext c)
-        {
-            foreach (var layerModel in Children)
-                layerModel.Draw<T>(dataModel, c);
         }
     }
 

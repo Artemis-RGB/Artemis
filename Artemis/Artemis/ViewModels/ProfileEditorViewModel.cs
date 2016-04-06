@@ -44,6 +44,10 @@ namespace Artemis.ViewModels
             {
                 if (Equals(value, _selectedProfileModel)) return;
                 _selectedProfileModel = value;
+                foreach (var layerModel in SelectedProfileModel.Layers)
+                {
+                    layerModel.LayerUserProperties.Brush?.Freeze();
+                }
                 NotifyOfPropertyChange();
             }
         }
@@ -94,7 +98,7 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel<T>(SelectedProfileModel, layer);
+            _editorVm = new LayerEditorViewModel<T>(_mainManager.KeyboardManager.ActiveKeyboard, SelectedProfileModel, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;
