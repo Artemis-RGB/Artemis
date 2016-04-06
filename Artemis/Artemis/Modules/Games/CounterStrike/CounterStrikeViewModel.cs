@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Properties;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.CounterStrike
@@ -19,7 +20,13 @@ namespace Artemis.Modules.Games.CounterStrike
             GameModel = new CounterStrikeModel(mainManager, (CounterStrikeSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
+
+            ProfileEditor = new ProfileEditorViewModel<CounterStrikeDataModel>(MainManager, GameModel);
+
+            GameModel.Profile = ProfileEditor.SelectedProfileModel;
         }
+
+        public ProfileEditorViewModel<CounterStrikeDataModel> ProfileEditor { get; set; }
 
         public static string Name => "CS:GO";
         public string Content => "Counter-Strike: GO Content";

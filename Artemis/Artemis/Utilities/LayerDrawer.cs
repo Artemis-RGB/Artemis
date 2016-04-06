@@ -25,6 +25,8 @@ namespace Artemis.Utilities
         {
             if (_layerModel.LayerCalculatedProperties.Brush == null)
                 return;
+            if (!_layerModel.LayerCalculatedProperties.Brush.IsFrozen)
+                return;
 
             // Set up variables for this frame
             _rectangle = new Rect(_layerModel.LayerCalculatedProperties.X*Scale,

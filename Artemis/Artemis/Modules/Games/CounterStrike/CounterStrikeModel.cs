@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using Artemis.KeyboardProviders;
+﻿using System.Drawing;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.GameState;
-using Artemis.Utilities.Keyboard;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        private KeyboardRegion _topRow;
-
         public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager)
         {
             Settings = settings;
@@ -29,14 +22,6 @@ namespace Artemis.Modules.Games.CounterStrike
         }
 
         public CounterStrikeSettings Settings { get; set; }
-
-        public KeyboardRectangle EventRect { get; set; }
-        public KeyboardRectangle TeamRect { get; set; }
-        public KeyboardRectangle AmmoRect { get; set; }
-        public JObject CsJson { get; set; }
-
-        public bool DrawingSmoke { get; set; }
-        public bool DrawingFlash { get; set; }
 
         public int Scale { get; set; }
 
@@ -50,23 +35,7 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             Initialized = false;
 
-            // Some keyboards have a different baseline, Corsair F-keys start at row 1
-            _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
-            AmmoRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X,
-                new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = Scale, ContainedBrush = false};
-            TeamRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X + 1,
-                new List<Color>(),
-                LinearGradientMode.Horizontal)
-            {
-                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
-            };
-            EventRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, _topRow.TopLeft.X + 1,
-                new List<Color>(),
-                LinearGradientMode.Horizontal)
-            {
-                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
-            };
+            GameDataModel = new CounterStrikeDataModel();
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
 
             Initialized = true;
@@ -74,124 +43,33 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Update()
         {
-            if (CsJson == null)
+            if (Profile == null || GameDataModel == null)
                 return;
 
-            if (Settings.AmmoEnabled)
-                UpdateAmmo();
-            if (Settings.TeamColorEnabled)
-                UpdateTeam();
-            if (Settings.LowHpEnabled)
-                UpdateHealth();
-            if (Settings.FlashEnabled)
-                UpdateFlash();
-            if (Settings.SmokeEnabled)
-                UpdateSmoke();
-        }
-
-        private void UpdateHealth()
-        {
-            if (CsJson["player"]?["state"]?["health"] == null)
-                return;
-
-            var health = CsJson["player"]["state"]["health"].Value<int>();
-            if (health > 25 || health < 1)
-                return;
-
-            TeamRect.Colors = new List<Color> {Color.Red, Color.OrangeRed, Color.Red, Color.OrangeRed};
-        }
-
-        private void UpdateSmoke()
-        {
-            if (CsJson["player"]?["state"]?["smoked"] == null)
-                return;
-
-            var smoked = CsJson["player"]["state"]["smoked"].Value<int>();
-            if (smoked == 0 && !DrawingSmoke)
-                return;
-
-            EventRect.Colors = new List<Color> {Color.FromArgb(smoked, 255, 255, 255)};
-            DrawingSmoke = smoked != 0;
-        }
-
-        private void UpdateFlash()
-        {
-            if (CsJson["player"]?["state"]?["flashed"] == null)
-                return;
-
-            var flashed = CsJson["player"]["state"]["flashed"].Value<int>();
-            if (flashed == 0 && !DrawingFlash)
-                return;
-
-            EventRect.Colors = new List<Color> {Color.FromArgb(flashed, 255, 255, 255)};
-            DrawingFlash = flashed != 0;
-        }
-
-        private void UpdateTeam()
-        {
-            var currentTeam = CsJson["player"]?["team"];
-            if (currentTeam == null)
-                return;
-
-            var t1 = Color.FromArgb(255, 255, 129, 0);
-            var t2 = Color.FromArgb(255, 255, 170, 125);
-
-            var ct1 = Color.FromArgb(255, 203, 238, 255);
-            var ct2 = Color.FromArgb(255, 0, 173, 255);
-
-            TeamRect.Colors = currentTeam.Value<string>() == "T"
-                ? new List<Color> {t1, t2, t1, t2}
-                : new List<Color> {ct1, ct2, ct1, ct2};
-            TeamRect.Rotate = true;
-        }
-
-        private void UpdateAmmo()
-        {
-            if (CsJson["player"]["weapons"] == null)
-                return;
-
-            var activeWeapon =
-                CsJson["player"]["weapons"].Children()
-                    .Select(c => c.First)
-                    .FirstOrDefault(w => w["state"]?.Value<string>() == "active");
-
-            // Update the ammo display
-            if (activeWeapon?["ammo_clip_max"] == null || activeWeapon["ammo_clip"] == null)
-                return;
-
-            var maxAmmo = activeWeapon["ammo_clip_max"].Value<int>();
-            var ammo = activeWeapon["ammo_clip"].Value<int>();
-
-            if (maxAmmo < 0)
-                return;
-
-            var ammoPercentage = (int) Math.Ceiling(100.00/maxAmmo)*ammo;
-            AmmoRect.Width = (int) Math.Floor(_topRow.BottomRight.Y/100.00*ammoPercentage)*Scale;
-            AmmoRect.Colors = new List<Color>
-            {
-                ColorHelpers.ToDrawingColor(Settings.AmmoMainColor),
-                ColorHelpers.ToDrawingColor(Settings.AmmoSecondaryColor)
-            };
-
-            // Low ammo indicator
-            if (ammoPercentage < 37)
-                AmmoRect.StartBlink(1000);
-            else
-                AmmoRect.StopBlink();
+            foreach (var layerModel in Profile.Layers)
+                layerModel.Update<CounterStrikeDataModel>(GameDataModel);
         }
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+           var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
 
-            using (var g = Graphics.FromImage(bitmap))
+            var visual = new DrawingVisual();
+            using (var drawingContext = visual.RenderOpen())
             {
-                g.Clear(Color.Transparent);
-                AmmoRect.Draw(g);
-                TeamRect.Draw(g);
-                EventRect.Draw(g);
+                // Setup the DrawingVisual's size
+                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                // Draw the layers
+                foreach (var layerModel in Profile.Layers)
+                    layerModel.Draw<CounterStrikeDataModel>(GameDataModel, drawingContext);
+
+                // Remove the clip
+                drawingContext.Pop();
             }
-            return bitmap;
+
+            return ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
@@ -203,7 +81,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             // Parse the JSON
-            CsJson = JsonConvert.DeserializeObject<JObject>(jsonString);
+            GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
         }
     }
 }

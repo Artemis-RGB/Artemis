@@ -26,10 +26,16 @@
                   HorizontalAlignment="Center" VerticalAlignment="Top">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel DataContext="{Binding}" Orientation="Horizontal">
-                        <TextBlock FontWeight="Bold" Text="{Binding Path=DisplayType}"/>
-                        <TextBlock Text="{Binding Path=Display}"/>
-                    </StackPanel>
+                    <Grid MinWidth="522">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding Path=Display}" HorizontalAlignment="Left" />
+                        <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Path=DisplayType}"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
@@ -42,19 +48,20 @@
         <!-- Right -->
         <Grid Grid.Column="3" HorizontalAlignment="Left" Margin="10,0,0,0" Width="148">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" x:Name="UserValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110"/>
+                <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110" />
             </StackPanel>
-            <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" >
+            <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}"
+                    VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Button.Content>
-                <Rectangle Fill="Black" Width="12" Height="12">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
+                    <Rectangle Fill="Black" Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                 </Button.Content>
             </Button>
         </Grid>

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Windows;
+using Size = System.Windows.Size;
 
 namespace Artemis.KeyboardProviders
 {
@@ -28,5 +30,7 @@ namespace Artemis.KeyboardProviders
         /// </summary>
         /// <returns></returns>
         public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
+
+        public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
     }
 }

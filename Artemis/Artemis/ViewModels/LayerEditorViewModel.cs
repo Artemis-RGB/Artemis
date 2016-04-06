@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.DAL;
+using Artemis.KeyboardProviders;
 using Artemis.Models.Profiles;
 using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
@@ -16,13 +15,15 @@ namespace Artemis.ViewModels
 {
     public class LayerEditorViewModel<T> : Screen
     {
-        private readonly ProfileModel _profile;
+        private readonly KeyboardProvider _activeKeyboard;
         private readonly BackgroundWorker _previewWorker;
+        private readonly ProfileModel _profile;
         private LayerModel _layer;
         private LayerPropertiesModel _proposedProperties;
 
-        public LayerEditorViewModel(ProfileModel profile, LayerModel layer)
+        public LayerEditorViewModel(KeyboardProvider activeKeyboard, ProfileModel profile, LayerModel layer)
         {
+            _activeKeyboard = activeKeyboard;
             _profile = profile;
             Layer = layer;
 
@@ -76,13 +77,11 @@ namespace Artemis.ViewModels
             {
                 // For the preview, put the proposed properties into the calculated properties
                 _layer.LayerCalculatedProperties = ProposedProperties;
+                var keyboardRect = _activeKeyboard.KeyboardRectangle(4);
 
                 var visual = new DrawingVisual();
                 using (var drawingContext = visual.RenderOpen())
                 {
-                    // TODO: Get active keyboard's size * 4
-                    var keyboardRect = new Rect(new Size(280, 105));
-
                     // Setup the DrawingVisual's size
                     drawingContext.PushClip(new RectangleGeometry(keyboardRect));
                     drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
@@ -94,6 +93,7 @@ namespace Artemis.ViewModels
                     drawingContext.Pop();
                 }
                 var image = new DrawingImage(visual.Drawing);
+
                 return image;
             }
         }

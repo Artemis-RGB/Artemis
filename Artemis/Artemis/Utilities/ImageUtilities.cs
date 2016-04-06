@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Artemis.Utilities
 {
@@ -38,12 +40,12 @@ namespace Artemis.Utilities
         {
             var width = srs.PixelWidth;
             var height = srs.PixelHeight;
-            var stride = width * ((srs.Format.BitsPerPixel + 7) / 8);
+            var stride = width*((srs.Format.BitsPerPixel + 7)/8);
             var ptr = IntPtr.Zero;
             try
             {
-                ptr = Marshal.AllocHGlobal(height * stride);
-                srs.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height * stride, stride);
+                ptr = Marshal.AllocHGlobal(height*stride);
+                srs.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height*stride, stride);
                 using (var btm = new Bitmap(width, height, stride, PixelFormat.Format1bppIndexed, ptr))
                 {
                     // Clone the bitmap so that we can dispose it and
@@ -56,6 +58,23 @@ namespace Artemis.Utilities
                 if (ptr != IntPtr.Zero)
                     Marshal.FreeHGlobal(ptr);
             }
+        }
+
+        public static Bitmap DrawinVisualToBitmap(DrawingVisual visual, Rect rect)
+        {
+            var bmp = new RenderTargetBitmap((int) rect.Width, (int) rect.Height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(visual);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+            Bitmap bitmap;
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                bitmap = new Bitmap(stream);
+            }
+            return bitmap;
         }
     }
 }

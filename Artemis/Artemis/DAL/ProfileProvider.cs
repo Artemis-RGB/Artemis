@@ -6,7 +6,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using Artemis.Models;
 using Artemis.Models.Profiles;
-using Newtonsoft.Json;
 
 namespace Artemis.DAL
 {
@@ -48,7 +47,7 @@ namespace Artemis.DAL
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var serializer = new XmlSerializer(typeof(ProfileModel));
+            var serializer = new XmlSerializer(typeof (ProfileModel));
             using (var file = new StreamWriter(path + $@"\{prof.Name}.xml"))
             {
                 serializer.Serialize(file, prof);
