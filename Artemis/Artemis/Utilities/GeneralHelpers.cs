@@ -55,6 +55,19 @@ namespace Artemis.Utilities
             }
         }
 
+        public static object GetPropertyValue(object o, string path)
+        {
+            var propertyNames = path.Split('.');
+            var value = o.GetType().GetProperty(propertyNames[0]).GetValue(o, null);
+
+            if (propertyNames.Length == 1 || value == null)
+                return value;
+            else
+            {
+                return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
+            }
+        }
+
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
         public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof (T).GetProperties());
 
@@ -66,11 +79,11 @@ namespace Artemis.Utilities
             {
                 var friendlyName = Empty;
                 if (propertyInfo.PropertyType.Name == "Int32")
-                    friendlyName = "(Number) ";
+                    friendlyName = "(Number)";
                 else if (propertyInfo.PropertyType.Name == "String")
-                    friendlyName = "(Text) ";
+                    friendlyName = "(Text)";
                 if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
-                    friendlyName = "(Choice) ";
+                    friendlyName = "(Choice)";
 
                 var parent = new PropertyCollection
                 {

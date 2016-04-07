@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Artemis.Models.Profiles
 {
@@ -7,11 +8,13 @@ namespace Artemis.Models.Profiles
         public ProfileModel()
         {
             Layers = new List<LayerModel>();
+            DrawingVisual = new DrawingVisual();
         }
 
         public string Name { get; set; }
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
+        public DrawingVisual DrawingVisual { get; set; }
 
         public List<LayerModel> Layers { get; set; }
 

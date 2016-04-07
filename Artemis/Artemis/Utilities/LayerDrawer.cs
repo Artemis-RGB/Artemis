@@ -25,8 +25,6 @@ namespace Artemis.Utilities
         {
             if (_layerModel.LayerCalculatedProperties.Brush == null)
                 return;
-            if (!_layerModel.LayerCalculatedProperties.Brush.IsFrozen)
-                return;
 
             // Set up variables for this frame
             _rectangle = new Rect(_layerModel.LayerCalculatedProperties.X*Scale,
@@ -95,13 +93,15 @@ namespace Artemis.Utilities
 
         public void DrawRectangle(DrawingContext c)
         {
-            c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _rectangle);
+            _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(
+                () => c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _rectangle));
         }
 
         public void DrawEllipse(DrawingContext c)
         {
-            c.DrawEllipse(_layerModel.LayerCalculatedProperties.Brush, null,
-                new Point(_rectangle.Width/2, _rectangle.Height/2), _rectangle.Width, _rectangle.Height);
+            _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(
+                () => c.DrawEllipse(_layerModel.LayerCalculatedProperties.Brush, null,
+                    new Point(_rectangle.Width/2, _rectangle.Height/2), _rectangle.Width, _rectangle.Height));
         }
 
         public void DrawGif(DrawingContext bmp)

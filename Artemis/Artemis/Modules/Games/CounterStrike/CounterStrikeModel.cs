@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
+using Color = System.Windows.Media.Color;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -52,24 +52,32 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override Bitmap GenerateBitmap()
         {
-           var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            if (Profile == null || GameDataModel == null)
+                return null;
 
-            var visual = new DrawingVisual();
-            using (var drawingContext = visual.RenderOpen())
+            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            Bitmap bitmap = null;
+            Profile.DrawingVisual.Dispatcher.Invoke(delegate
             {
-                // Setup the DrawingVisual's size
-                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
-                drawingContext.DrawRectangle(new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+                var visual = new DrawingVisual();
+                using (var drawingContext = visual.RenderOpen())
+                {
+                    // Setup the DrawingVisual's size
+                    drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                    drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)),
+                        null, keyboardRect);
 
-                // Draw the layers
-                foreach (var layerModel in Profile.Layers)
-                    layerModel.Draw<CounterStrikeDataModel>(GameDataModel, drawingContext);
+                    // Draw the layers
+                    foreach (var layerModel in Profile.Layers)
+                        layerModel.Draw<CounterStrikeDataModel>(GameDataModel, drawingContext);
 
-                // Remove the clip
-                drawingContext.Pop();
-            }
+                    // Remove the clip
+                    drawingContext.Pop();
+                }
 
-            return ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
+                bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
+            });
+            return bitmap;
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)

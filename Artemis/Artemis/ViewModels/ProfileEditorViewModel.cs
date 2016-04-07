@@ -44,10 +44,6 @@ namespace Artemis.ViewModels
             {
                 if (Equals(value, _selectedProfileModel)) return;
                 _selectedProfileModel = value;
-                foreach (var layerModel in SelectedProfileModel.Layers)
-                {
-                    layerModel.LayerUserProperties.Brush?.Freeze();
-                }
                 NotifyOfPropertyChange();
             }
         }
