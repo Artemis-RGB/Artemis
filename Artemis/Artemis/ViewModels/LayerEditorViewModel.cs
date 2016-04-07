@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -35,11 +36,10 @@ namespace Artemis.ViewModels
                 new BindableCollection<LayerConditionViewModel<T>>(
                     layer.LayerConditions.Select(c => new LayerConditionViewModel<T>(this, c, DataModelProps)));
 
-            _previewWorker = new BackgroundWorker();
-            _previewWorker.WorkerSupportsCancellation = true;
+            _previewWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _previewWorker.DoWork += PreviewWorkerOnDoWork;
             _previewWorker.RunWorkerAsync();
-
+            
             PreSelect();
         }
 
@@ -75,8 +75,6 @@ namespace Artemis.ViewModels
         {
             get
             {
-                // For the preview, put the proposed properties into the calculated properties
-                _layer.LayerCalculatedProperties = ProposedProperties;
                 var keyboardRect = _activeKeyboard.KeyboardRectangle(4);
 
                 var visual = new DrawingVisual();
@@ -103,7 +101,7 @@ namespace Artemis.ViewModels
             while (!_previewWorker.CancellationPending)
             {
                 NotifyOfPropertyChange(() => LayerImage);
-                Thread.Sleep(1000/25);
+                Thread.Sleep(1000 / 25);
             }
         }
 
