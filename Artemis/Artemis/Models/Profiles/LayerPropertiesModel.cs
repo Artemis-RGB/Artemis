@@ -15,17 +15,19 @@ namespace Artemis.Models.Profiles
         public int Height { get; set; }
         public int Opacity { get; set; }
         public bool ContainedBrush { get; set; }
-        public LayerColorMode ColorMode { get; set; }
-        public bool Rotate { get; set; }
-        public double RotateSpeed { get; set; }
+        public LayerAnimation Animation { get; set; }
+        public double AnimationSpeed { get; set; }
         public Brush Brush { get; set; }
     }
 
-    public enum LayerColorMode
+    public enum LayerAnimation
     {
-        [Description("Gradient")] Gradient,
-        [Description("Moving gradient")] MovingGradient,
-        [Description("Shift")] Shift,
+        [Description("None")] None,
+        [Description("Slide left")] SlideLeft,
+        [Description("Slide right")] SlideRight,
+        [Description("Slide up")] SlideUp,
+        [Description("Slide down")] SlideDown,
+        [Description("Grow")] Grow,
         [Description("Pulse")] Pulse
     }
 }

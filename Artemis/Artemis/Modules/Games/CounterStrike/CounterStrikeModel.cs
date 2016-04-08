@@ -70,11 +70,11 @@ namespace Artemis.Modules.Games.CounterStrike
                     // Draw the layers
                     foreach (var layerModel in Profile.Layers)
                         layerModel.Draw<CounterStrikeDataModel>(GameDataModel, drawingContext);
-
+                    
                     // Remove the clip
                     drawingContext.Pop();
                 }
-
+                
                 bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
             });
             return bitmap;
