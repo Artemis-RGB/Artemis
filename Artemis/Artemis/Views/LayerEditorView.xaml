@@ -17,16 +17,9 @@
         <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
         <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}"
-                            x:Key="LayerEnumValues">
+                            x:Key="AnimationEnumValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="ColorEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerColorMode" />
+                <x:Type TypeName="profileEnumerations:LayerAnimation" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </controls:MetroWindow.Resources>
@@ -113,8 +106,8 @@
         <TextBlock Grid.Row="7" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
                    VerticalAlignment="Center"
                    Height="18" />
-        <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Source={StaticResource ColorEnumValues}}"
-                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.ColorMode}"
+        <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding Source={StaticResource AnimationEnumValues}}"
+                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
                   VerticalAlignment="Top" Height="22">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -128,7 +121,7 @@
                    VerticalAlignment="Center" Height="18" />
         <Slider x:Name="RotationSpeed" Grid.Row="7" Grid.Column="3" VerticalAlignment="Center"
                 TickPlacement="BottomRight" TickFrequency="0.1"
-                Value="{Binding Path=ProposedProperties.RotateSpeed, Mode=TwoWay}" Minimum="0.1" Maximum="3"
+                Value="{Binding Path=ProposedProperties.AnimationSpeed, Mode=TwoWay}" Minimum="0.1" Maximum="3"
                 SmallChange="1" IsSnapToTickEnabled="True" Margin="10,7" Height="24" />
 
         <!-- Opacity -->

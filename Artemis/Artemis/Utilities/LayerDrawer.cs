@@ -8,15 +8,16 @@ namespace Artemis.Utilities
     internal class LayerDrawer
     {
         private readonly LayerModel _layerModel;
+        private double _animationProgress;
+        private Rect _firstRect;
         private Rect _rectangle;
-        private double _rotationProgress;
-        private Rect _userRectangle;
+        private Rect _secondRect;
 
         public LayerDrawer(LayerModel layerModel, int scale)
         {
             Scale = scale;
             _layerModel = layerModel;
-            _rotationProgress = 0;
+            _animationProgress = 0;
         }
 
         public int Scale { get; set; }
@@ -30,22 +31,60 @@ namespace Artemis.Utilities
             _rectangle = new Rect(_layerModel.LayerCalculatedProperties.X*Scale,
                 _layerModel.LayerCalculatedProperties.Y*Scale, _layerModel.LayerCalculatedProperties.Width*Scale,
                 _layerModel.LayerCalculatedProperties.Height*Scale);
-            _userRectangle = new Rect(_layerModel.LayerUserProperties.X*Scale,
-                _layerModel.LayerUserProperties.Y*Scale, _layerModel.LayerUserProperties.Width*Scale,
-                _layerModel.LayerUserProperties.Height*Scale);
 
             if (_layerModel.LayerType == LayerType.KeyboardRectangle)
-                DrawRectangle(c);
+                _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(() => DrawRectangle(c));
             else if (_layerModel.LayerType == LayerType.KeyboardEllipse)
-                DrawEllipse(c);
+                _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(() => DrawEllipse(c));
+
+            UpdateAnimation();
+        }
+
+        private void UpdateAnimation()
+        {
+            if (_layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideRight)
+            {
+                _firstRect = new Rect(new Point(_rectangle.X + _animationProgress, _rectangle.Y),
+                    new Size(_rectangle.Width, _rectangle.Height));
+                _secondRect = new Rect(new Point(_firstRect.X - _rectangle.Width, _rectangle.Y),
+                    new Size(_rectangle.Width + 1, _rectangle.Height));
+
+                if (_animationProgress > _layerModel.LayerCalculatedProperties.Width*4)
+                    _animationProgress = 0;
+            }
+            if (_layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideLeft)
+            {
+                _firstRect = new Rect(new Point(_rectangle.X - _animationProgress, _rectangle.Y),
+                    new Size(_rectangle.Width + 1, _rectangle.Height));
+                _secondRect = new Rect(new Point(_firstRect.X + _rectangle.Width, _rectangle.Y),
+                    new Size(_rectangle.Width , _rectangle.Height));
+
+                if (_animationProgress > _layerModel.LayerCalculatedProperties.Width*4)
+                    _animationProgress = 0;
+            }
+            if (_layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideDown)
+            {
+                _firstRect = new Rect(new Point(_rectangle.X, _rectangle.Y + _animationProgress),
+                    new Size(_rectangle.Width, _rectangle.Height));
+                _secondRect = new Rect(new Point(_firstRect.X, _firstRect.Y - _rectangle.Height),
+                    new Size(_rectangle.Width, _rectangle.Height));
+
+                if (_animationProgress > _layerModel.LayerCalculatedProperties.Height * 4)
+                    _animationProgress = 0;
+            }
+            if (_layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideUp)
+            {
+                _firstRect = new Rect(new Point(_rectangle.X, _rectangle.Y - _animationProgress),
+                    new Size(_rectangle.Width, _rectangle.Height));
+                _secondRect = new Rect(new Point(_firstRect.X, _firstRect.Y + _rectangle.Height),
+                    new Size(_rectangle.Width, _rectangle.Height));
+
+                if (_animationProgress > _layerModel.LayerCalculatedProperties.Height * 4)
+                    _animationProgress = 0;
+            }
 
             // Update the rotation progress
-            _rotationProgress = _rotationProgress + _layerModel.LayerCalculatedProperties.RotateSpeed;
-
-            if (_layerModel.LayerCalculatedProperties.ContainedBrush && _rotationProgress > _rectangle.Width)
-                _rotationProgress = _layerModel.LayerCalculatedProperties.RotateSpeed;
-            else if (!_layerModel.LayerCalculatedProperties.ContainedBrush && _rotationProgress > _userRectangle.Width)
-                _rotationProgress = _layerModel.LayerCalculatedProperties.RotateSpeed;
+            _animationProgress = _animationProgress + _layerModel.LayerCalculatedProperties.AnimationSpeed;
         }
 
         public BitmapImage GetThumbnail()
@@ -54,7 +93,6 @@ namespace Artemis.Utilities
                 return null;
 
             _rectangle = new Rect(0, 0, 18, 18);
-            _userRectangle = new Rect(0, 0, 18, 18);
 
             //var bitmap = new Bitmap(18, 18);
 
@@ -93,15 +131,28 @@ namespace Artemis.Utilities
 
         public void DrawRectangle(DrawingContext c)
         {
-            _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(
-                () => c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _rectangle));
+            _layerModel.LayerCalculatedProperties.Brush.Opacity = _layerModel.LayerCalculatedProperties.Opacity;
+
+            if (_layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideDown ||
+                _layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideLeft ||
+                _layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideRight ||
+                _layerModel.LayerCalculatedProperties.Animation == LayerAnimation.SlideUp)
+            {
+                c.PushClip(new RectangleGeometry(_rectangle));
+                c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _firstRect);
+                c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _secondRect);
+                c.Pop();
+            }
+            else
+            {
+                c.DrawRectangle(_layerModel.LayerCalculatedProperties.Brush, null, _rectangle);
+            }
         }
 
         public void DrawEllipse(DrawingContext c)
         {
-            _layerModel.LayerCalculatedProperties.Brush.Dispatcher.Invoke(
-                () => c.DrawEllipse(_layerModel.LayerCalculatedProperties.Brush, null,
-                    new Point(_rectangle.Width/2, _rectangle.Height/2), _rectangle.Width, _rectangle.Height));
+            c.DrawEllipse(_layerModel.LayerCalculatedProperties.Brush, null,
+                new Point(_rectangle.Width/2, _rectangle.Height/2), _rectangle.Width, _rectangle.Height);
         }
 
         public void DrawGif(DrawingContext bmp)
