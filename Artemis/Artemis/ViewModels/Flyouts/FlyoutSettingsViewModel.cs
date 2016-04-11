@@ -90,7 +90,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void Handle(ActiveEffectChanged message)
         {
-            var effectDisplay = message.ActiveEffect.Length > 0 ? message.ActiveEffect : "none";
+            var effectDisplay = string.IsNullOrEmpty(message.ActiveEffect) ? message.ActiveEffect : "none";
             ActiveEffectName = $"Active effect: {effectDisplay}";
         }
 

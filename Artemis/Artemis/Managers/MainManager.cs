@@ -25,7 +25,7 @@ namespace Artemis.Managers
             Events = events;
             DialogService = dialogService;
 
-            KeyboardManager = new KeyboardManager(this);
+            KeyboardManager = new KeyboardManager(this, Events);
             EffectManager = new EffectManager(this, Events);
             KeyboardHook = new KeyboardHook();
 

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Media;
 using Artemis.DAL;
 using Artemis.KeyboardProviders;
@@ -19,6 +17,7 @@ namespace Artemis.ViewModels
         private readonly KeyboardProvider _activeKeyboard;
         private readonly BackgroundWorker _previewWorker;
         private readonly ProfileModel _profile;
+        private readonly bool _wasEnabled;
         private LayerModel _layer;
         private LayerPropertiesModel _proposedProperties;
 
@@ -26,7 +25,10 @@ namespace Artemis.ViewModels
         {
             _activeKeyboard = activeKeyboard;
             _profile = profile;
+            _wasEnabled = layer.Enabled;
             Layer = layer;
+
+            Layer.Enabled = false;
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             ProposedProperties = new LayerPropertiesModel();
@@ -39,7 +41,8 @@ namespace Artemis.ViewModels
             _previewWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             _previewWorker.DoWork += PreviewWorkerOnDoWork;
             _previewWorker.RunWorkerAsync();
-            
+
+            PropertyChanged += AnimationUiHandler;
             PreSelect();
         }
 
@@ -101,13 +104,19 @@ namespace Artemis.ViewModels
             while (!_previewWorker.CancellationPending)
             {
                 NotifyOfPropertyChange(() => LayerImage);
-                Thread.Sleep(1000 / 25);
+                Thread.Sleep(1000/25);
             }
         }
 
         public void PreSelect()
         {
             GeneralHelpers.CopyProperties(ProposedProperties, Layer.LayerUserProperties);
+        }
+
+        private void AnimationUiHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "_proposedProperties")
+                return;
         }
 
         public void AddCondition()
@@ -133,6 +142,7 @@ namespace Artemis.ViewModels
         public override void CanClose(Action<bool> callback)
         {
             _previewWorker.CancelAsync();
+            _layer.Enabled = _wasEnabled;
             base.CanClose(callback);
         }
     }

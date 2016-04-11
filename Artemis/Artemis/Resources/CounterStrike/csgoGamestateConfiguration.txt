@@ -1,10 +1,7 @@
 "Artemis"
 {
  "uri" "http://localhost:{{port}}/csgo_game_event"
- "timeout" "5.0"
- "buffer"  "0.1"
- "throttle" "0.1"
- "heartbeat" "30.0"
+ "timeout" "0.1"
  "data"
  {
    "provider"            "1"

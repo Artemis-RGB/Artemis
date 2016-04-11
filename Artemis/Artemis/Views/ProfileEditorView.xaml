@@ -31,7 +31,17 @@
                                       Opacity="1"
                                       BlurRadius="20" />
                 </Border.Effect>
-                <Image Source="D:\Gebruiker folder\Mijn afbeeldingen\Artemis logo\keyboards\k95.png" Margin="50" />
+                <Grid>
+
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" Margin="50" />
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.666"
+                           Width="{Binding Path=PreviewSettings.Width}"
+                           Height="{Binding Path=PreviewSettings.Height}"
+                           Margin="{Binding Path=PreviewSettings.Margin}"
+                           Stretch="Fill"
+                           cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]"/>
+
+                </Grid>
             </Border>
         </Border>
         <!-- Profile management -->
@@ -59,15 +69,17 @@
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}" cal:Message.Attach="SetSelectedLayer($datacontext)">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}"
+                                    cal:Message.Attach="SetSelectedLayer($datacontext)">
                             <StackPanel.ContextMenu>
-                                <ContextMenu cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                <ContextMenu
+                                    cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" />
                                     <MenuItem Header="Delete" />
-                                    <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)"/>
+                                    <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
-                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" />
+                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}" />
                             <Image Height="18" Width="18" Source="{Binding LayerImage}" />
                             <TextBlock Margin="5,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>

@@ -14,6 +14,7 @@ namespace Artemis.Managers
         private readonly MainManager _mainManager;
         private bool _clearing;
         private EffectModel _pauseEffect;
+        private EffectModel _activeEffect;
 
         public EffectManager(MainManager mainManager, IEventAggregator events)
         {
@@ -24,7 +25,16 @@ namespace Artemis.Managers
         }
 
         public List<EffectModel> EffectModels { get; set; }
-        public EffectModel ActiveEffect { get; private set; }
+
+        public EffectModel ActiveEffect
+        {
+            get { return _activeEffect; }
+            private set
+            {
+                _activeEffect = value;
+                _events.PublishOnUIThread(new ActiveEffectChanged(value?.Name));
+            }
+        }
 
         public IEnumerable<OverlayModel> EnabledOverlays
         {
@@ -101,7 +111,7 @@ namespace Artemis.Managers
             ActiveEffect.Enable();
 
             // Let the ViewModels know
-            _events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
+            //_events.PublishOnUIThread(new ActiveEffectChanged(ActiveEffect.Name));
 
             _mainManager.Unpause();
             _pauseEffect = null;
@@ -143,7 +153,7 @@ namespace Artemis.Managers
             General.Default.LastEffect = null;
             General.Default.Save();
 
-            _events.PublishOnUIThread(new ActiveEffectChanged(""));
+            //_events.PublishOnUIThread(new ActiveEffectChanged(""));
 
             _clearing = false;
             _mainManager.Unpause();

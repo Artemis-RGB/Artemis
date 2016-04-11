@@ -13,7 +13,7 @@ namespace Artemis.Models.Profiles
         public int Y { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Opacity { get; set; }
+        public double Opacity { get; set; }
         public bool ContainedBrush { get; set; }
         public LayerAnimation Animation { get; set; }
         public double AnimationSpeed { get; set; }

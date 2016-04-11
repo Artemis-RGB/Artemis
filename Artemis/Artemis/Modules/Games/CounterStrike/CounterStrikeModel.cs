@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Media;
 using Artemis.Managers;
 using Artemis.Models;
@@ -87,6 +88,8 @@ namespace Artemis.Modules.Games.CounterStrike
             // Ensure it's CS:GO JSON
             if (!jsonString.Contains("Counter-Strike: Global Offensive"))
                 return;
+
+            Debug.WriteLine("Received data");
 
             // Parse the JSON
             GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
