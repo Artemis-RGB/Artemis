@@ -57,8 +57,8 @@ namespace Artemis.Utilities.GameState
                                 return;
                             try
                             {
-                                var rstr = HandleRequest(ctx.Request);
-                                var buf = Encoding.UTF8.GetBytes(rstr);
+                                HandleRequest(ctx.Request);
+                                var buf = Encoding.UTF8.GetBytes("ok");
                                 ctx.Response.ContentLength64 = buf.Length;
                                 ctx.Response.OutputStream.Write(buf, 0, buf.Length);
                             }

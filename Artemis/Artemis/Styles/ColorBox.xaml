@@ -189,7 +189,7 @@
 
                             <Popup IsOpen="{Binding ElementName=PART_OpenPopup,Path=IsChecked}" StaysOpen="False"
                                    AllowsTransparency="True" Width="{Binding ActualWidth, ElementName=PART_Root}"
-                                   MinWidth="250" HorizontalOffset="-1" Placement="Center" PopupAnimation="Fade">
+                                   MinWidth="250" HorizontalOffset="-1" Placement="Top" PopupAnimation="Fade">
                                 <Border Background="{StaticResource ControlBackgroundBrush}"
                                         BorderBrush="{StaticResource AccentColorBrush}" BorderThickness="1"
                                         Margin="10,0,10,10">
@@ -492,8 +492,7 @@
                                                                                                SelectedGradient="{Binding}"
                                                                                                Margin="0,0,0,2">
                                                                             <nc:GradientStopSlider.Background>
-                                                                                <SolidColorBrush
-                                                                                    Color="{Binding Color}" />
+                                                                                <SolidColorBrush Color="{Binding Color}"/>
                                                                             </nc:GradientStopSlider.Background>
                                                                         </nc:GradientStopSlider>
 

@@ -26,8 +26,9 @@ namespace Artemis.Models.Profiles
 
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
+        public bool Enabled { get; set; }
         public LayerPropertiesModel LayerUserProperties { get; set; }
-
+        
         public List<LayerModel> Children { get; set; }
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
@@ -40,11 +41,12 @@ namespace Artemis.Models.Profiles
 
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
-            return LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
+            return Enabled && LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
         public void DrawPreview(DrawingContext c)
         {
+            GeneralHelpers.CopyProperties(LayerCalculatedProperties, LayerUserProperties);
             if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
                 _drawer.Draw(c);
             else if (LayerType == LayerType.KeyboardGif)

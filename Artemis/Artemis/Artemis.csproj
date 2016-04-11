@@ -267,6 +267,7 @@
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
+    <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
@@ -498,8 +499,8 @@
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -546,6 +547,10 @@
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <None Include="Resources\LogitechLED.dll" />
     <None Include="Resources\folder.png" />
+    <Resource Include="Resources\Keyboards\k65.png" />
+    <Resource Include="Resources\Keyboards\k70.png" />
+    <Resource Include="Resources\Keyboards\k95.png" />
+    <Resource Include="Resources\Keyboards\strafe.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="Resources\Entypo.ttf" />
