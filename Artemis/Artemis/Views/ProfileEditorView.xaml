@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:Artemis.Views"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
              mc:Ignorable="d"
              d:DesignHeight="482.812" d:DesignWidth="1029.95">
     <Grid Width="Auto" Height="Auto">
@@ -34,12 +36,14 @@
                 <Grid>
 
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" Margin="50" />
-                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.666"
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8"
                            Width="{Binding Path=PreviewSettings.Width}"
                            Height="{Binding Path=PreviewSettings.Height}"
                            Margin="{Binding Path=PreviewSettings.Margin}"
-                           Stretch="Fill"
-                           cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]"/>
+                           Stretch="Fill" Cursor="{Binding Path=KeyboardPreviewCursor}"
+                           cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)];
+                           [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)];
+                           [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
 
                 </Grid>
             </Border>
@@ -62,15 +66,17 @@
                Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="250">
-            <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=SelectedProfileModel.Layers}">
+            <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=Layers}">
+                <i:Interaction.Behaviors>
+                    <itemBehaviours:BindableSelectedItemBehavior SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
+                </i:Interaction.Behaviors>
                 <TreeView.Resources>
                     <ResourceDictionary
                         Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}"
-                                    cal:Message.Attach="SetSelectedLayer($datacontext)">
+                        <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}">
                             <StackPanel.ContextMenu>
                                 <ContextMenu
                                     cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
@@ -79,7 +85,8 @@
                                     <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
-                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}" />
+                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}"
+                                      cal:Message.Attach="ToggleEnabled($datacontext)" />
                             <Image Height="18" Width="18" Source="{Binding LayerImage}" />
                             <TextBlock Margin="5,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>
