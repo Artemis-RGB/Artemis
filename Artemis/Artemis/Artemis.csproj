@@ -271,6 +271,7 @@
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
+    <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
     <Compile Include="KeyboardProviders\KeyboardRegion.cs" />
@@ -551,6 +552,7 @@
     <Resource Include="Resources\Keyboards\k70.png" />
     <Resource Include="Resources\Keyboards\k95.png" />
     <Resource Include="Resources\Keyboards\strafe.png" />
+    <Resource Include="Resources\Keyboards\g910.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <Resource Include="Resources\Entypo.ttf" />

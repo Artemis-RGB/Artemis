@@ -11,30 +11,32 @@ namespace Artemis.Models.Profiles
     public class LayerModel
     {
         [XmlIgnore] private readonly LayerDrawer _drawer;
+        private bool _mustDraw;
 
         public LayerModel()
         {
-            LayerUserProperties = new LayerPropertiesModel();
-            LayerCalculatedProperties = new LayerPropertiesModel();
+            UserProps = new LayerPropertiesModel();
+            CalcProps = new LayerPropertiesModel();
 
             Children = new List<LayerModel>();
             LayerConditions = new List<LayerConditionModel>();
             LayerProperties = new List<LayerDynamicPropertiesModel>();
 
+            _mustDraw = true;
             _drawer = new LayerDrawer(this, 4);
         }
 
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
-        public LayerPropertiesModel LayerUserProperties { get; set; }
+        public LayerPropertiesModel UserProps { get; set; }
         
         public List<LayerModel> Children { get; set; }
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
 
         [XmlIgnore]
-        public LayerPropertiesModel LayerCalculatedProperties { get; set; }
+        public LayerPropertiesModel CalcProps { get; set; }
 
         [XmlIgnore]
         public ImageSource LayerImage => _drawer.GetThumbnail();
@@ -46,11 +48,12 @@ namespace Artemis.Models.Profiles
 
         public void DrawPreview(DrawingContext c)
         {
-            GeneralHelpers.CopyProperties(LayerCalculatedProperties, LayerUserProperties);
+            GeneralHelpers.CopyProperties(CalcProps, UserProps);
             if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
-                _drawer.Draw(c);
+                _drawer.Draw(c, _mustDraw);
             else if (LayerType == LayerType.KeyboardGif)
                 _drawer.DrawGif(c);
+            _mustDraw = false;
         }
 
         public void Draw<T>(IGameDataModel dataModel, DrawingContext c)
@@ -80,9 +83,9 @@ namespace Artemis.Models.Profiles
                 return;
             }
 
-            GeneralHelpers.CopyProperties(LayerCalculatedProperties, LayerUserProperties);
+            GeneralHelpers.CopyProperties(CalcProps, UserProps);
             foreach (var dynamicProperty in LayerProperties)
-                dynamicProperty.ApplyProperty<T>(dataModel, LayerUserProperties, LayerCalculatedProperties);
+                dynamicProperty.ApplyProperty<T>(dataModel, UserProps, CalcProps);
         }
     }
 

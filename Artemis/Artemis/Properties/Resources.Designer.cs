@@ -148,6 +148,16 @@ namespace Artemis.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap g910 {
+            get {
+                object obj = ResourceManager.GetObject("g910", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap k65 {
             get {
                 object obj = ResourceManager.GetObject("k65", resourceCulture);

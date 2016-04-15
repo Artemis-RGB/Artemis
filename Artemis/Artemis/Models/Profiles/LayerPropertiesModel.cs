@@ -1,9 +1,11 @@
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
 
 namespace Artemis.Models.Profiles
 {
+    [XmlInclude(typeof (SolidColorBrush))]
     [XmlInclude(typeof (LinearGradientBrush))]
     [XmlInclude(typeof (RadialGradientBrush))]
     [XmlInclude(typeof (MatrixTransform))]
@@ -18,7 +20,13 @@ namespace Artemis.Models.Profiles
         public LayerAnimation Animation { get; set; }
         public double AnimationSpeed { get; set; }
         public Brush Brush { get; set; }
+
+        public Rect GetRect(int scale = 4)
+        {
+            return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
+        }
     }
+
 
     public enum LayerAnimation
     {

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.LogitechDll;
 using Point = System.Drawing.Point;
@@ -20,6 +21,7 @@ namespace Artemis.KeyboardProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
+            PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.g910);
             KeyboardRegions = new List<KeyboardRegion>
             {
                 new KeyboardRegion("TopRow", new Point(0, 0), new Point(18, 0)),

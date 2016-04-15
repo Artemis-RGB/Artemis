@@ -23,7 +23,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
             ProfileEditor = new ProfileEditorViewModel<CounterStrikeDataModel>(MainManager, GameModel);
 
-            GameModel.Profile = ProfileEditor.SelectedProfileModel;
+            GameModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         public ProfileEditorViewModel<CounterStrikeDataModel> ProfileEditor { get; set; }

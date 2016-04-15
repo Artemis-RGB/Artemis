@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Dynamic;
 using System.IO;
@@ -15,6 +16,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 using Caliburn.Micro;
+using MahApps.Metro;
 
 namespace Artemis.ViewModels
 {
@@ -22,9 +24,16 @@ namespace Artemis.ViewModels
     {
         private readonly GameModel _gameModel;
         private readonly MainManager _mainManager;
+        private DateTime _downTime;
+        private LayerModel _draggingLayer;
+        private Point? _draggingLayerOffset;
         private LayerEditorViewModel<T> _editorVm;
+        private Cursor _keyboardPreviewCursor;
+        private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profileModels;
-        private ProfileModel _selectedProfileModel;
+        private bool _resizeSourceRect;
+        private LayerModel _selectedLayer;
+        private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(MainManager mainManager, GameModel gameModel)
         {
@@ -32,7 +41,10 @@ namespace Artemis.ViewModels
             _gameModel = gameModel;
 
             ProfileModels = new BindableCollection<ProfileModel>();
+            Layers = new BindableCollection<LayerModel>();
             _mainManager.Events.Subscribe(this);
+
+            PropertyChanged += PreviewRefresher;
             LoadProfiles();
         }
 
@@ -47,27 +59,52 @@ namespace Artemis.ViewModels
             }
         }
 
-        public ProfileModel SelectedProfileModel
+        public BindableCollection<LayerModel> Layers
         {
-            get { return _selectedProfileModel; }
+            get { return _layers; }
             set
             {
-                if (Equals(value, _selectedProfileModel)) return;
-                _selectedProfileModel = value;
-                NotifyOfPropertyChange(() => SelectedProfileModel);
+                if (Equals(value, _layers)) return;
+                _layers = value;
+                NotifyOfPropertyChange(() => Layers);
             }
         }
 
-        public LayerModel SelectedLayer { get; set; }
+        public LayerModel SelectedLayer
+        {
+            get { return _selectedLayer; }
+            set
+            {
+                if (Equals(value, _selectedLayer)) return;
+                _selectedLayer = value;
+                NotifyOfPropertyChange(() => SelectedLayer);
+            }
+        }
+
+        public ProfileModel SelectedProfile
+        {
+            get { return _selectedProfile; }
+            set
+            {
+                if (Equals(value, _selectedProfile)) return;
+                _selectedProfile = value;
+
+                Layers.Clear();
+                Layers.AddRange(_selectedProfile?.Layers);
+
+                NotifyOfPropertyChange(() => SelectedProfile);
+                NotifyOfPropertyChange(() => CanAddLayer);
+            }
+        }
 
         public ImageSource KeyboardPreview
         {
             get
             {
-                if (_selectedProfileModel == null)
+                if (_selectedProfile == null)
                     return null;
 
-                var keyboardRect = _mainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(4);
+                var keyboardRect = ActiveKeyboard.KeyboardRectangle(4);
                 var visual = new DrawingVisual();
                 using (var drawingContext = visual.RenderOpen())
                 {
@@ -75,12 +112,30 @@ namespace Artemis.ViewModels
                     drawingContext.PushClip(new RectangleGeometry(keyboardRect));
                     drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
+                    // Get the selection color
+                    var penColor = (Color)ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
+                    var pen = new Pen(new SolidColorBrush(penColor), 0.4);
+
                     // Draw the layer
-                    foreach (var layerModel in _selectedProfileModel.Layers)
+                    foreach (var layerModel in _selectedProfile.Layers)
                     {
-                        // if (layerModel.Selected)
-                            drawingContext.DrawRectangle(null, new Pen(new SolidColorBrush(Colors.White), 0.5),new Rect(layerModel.LayerUserProperties.X*4,layerModel.LayerUserProperties.Y*4, layerModel.LayerUserProperties.Width*4,layerModel.LayerUserProperties.Height*4));
                         layerModel.DrawPreview(drawingContext);
+                        if (layerModel != SelectedLayer || !layerModel.Enabled)
+                            continue;
+                        
+                        var layerRect = layerModel.UserProps.GetRect();
+                        // Draw an outline around the selected layer
+                        drawingContext.DrawRectangle(null, pen, layerRect);
+                        // Draw a resize indicator in the bottom-right
+                        drawingContext.DrawLine(pen,
+                            new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
+                            new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
+                        drawingContext.DrawLine(pen,
+                            new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
+                            new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
+                        drawingContext.DrawLine(pen,
+                            new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
+                            new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                     }
 
                     // Remove the clip
@@ -98,10 +153,9 @@ namespace Artemis.ViewModels
             {
                 using (var memory = new MemoryStream())
                 {
-                    if (_mainManager.KeyboardManager.ActiveKeyboard?.PreviewSettings == null)
+                    if (ActiveKeyboard?.PreviewSettings == null || ActiveKeyboard?.PreviewSettings.Image == null)
                         return null;
-
-                    _mainManager.KeyboardManager.ActiveKeyboard.PreviewSettings.Image.Save(memory, ImageFormat.Png);
+                    ActiveKeyboard.PreviewSettings.Image.Save(memory, ImageFormat.Png);
                     memory.Position = 0;
 
                     var bitmapImage = new BitmapImage();
@@ -115,10 +169,22 @@ namespace Artemis.ViewModels
             }
         }
 
-        public PreviewSettings? PreviewSettings
+        public PreviewSettings? PreviewSettings => ActiveKeyboard?.PreviewSettings;
+
+        public bool CanAddLayer => _selectedProfile != null;
+
+        public Cursor KeyboardPreviewCursor
         {
-            get { return _mainManager.KeyboardManager.ActiveKeyboard?.PreviewSettings; }
+            get { return _keyboardPreviewCursor; }
+            set
+            {
+                if (Equals(value, _keyboardPreviewCursor)) return;
+                _keyboardPreviewCursor = value;
+                NotifyOfPropertyChange(() => KeyboardPreviewCursor);
+            }
         }
+
+        private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
 
         public void Handle(ActiveKeyboardChanged message)
         {
@@ -126,11 +192,17 @@ namespace Artemis.ViewModels
             NotifyOfPropertyChange(() => PreviewSettings);
         }
 
+        private void PreviewRefresher(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedLayer" || e.PropertyName == "ProfileTree")
+                NotifyOfPropertyChange(() => KeyboardPreview);
+        }
+
         private void LoadProfiles()
         {
             ProfileModels.Clear();
             ProfileModels.AddRange(ProfileProvider.GetAll(_gameModel));
-            SelectedProfileModel = ProfileModels.FirstOrDefault();
+            SelectedProfile = ProfileModels.FirstOrDefault();
         }
 
         public async void AddProfile()
@@ -148,7 +220,7 @@ namespace Artemis.ViewModels
             var profile = new ProfileModel
             {
                 Name = name,
-                KeyboardName = _mainManager.KeyboardManager.ActiveKeyboard.Name,
+                KeyboardName = ActiveKeyboard.Name,
                 GameName = _gameModel.Name
             };
             if (ProfileProvider.GetAll().Contains(profile))
@@ -164,13 +236,18 @@ namespace Artemis.ViewModels
             ProfileProvider.AddOrUpdate(profile);
 
             LoadProfiles();
-            SelectedProfileModel = profile;
+            SelectedProfile = profile;
+        }
+
+        public void ToggleEnabled(LayerModel layer)
+        {
+            NotifyOfPropertyChange(() => KeyboardPreview);
         }
 
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel<T>(_mainManager.KeyboardManager.ActiveKeyboard, SelectedProfileModel,
+            _editorVm = new LayerEditorViewModel<T>(ActiveKeyboard, SelectedProfile,
                 layer);
             dynamic settings = new ExpandoObject();
 
@@ -186,27 +263,125 @@ namespace Artemis.ViewModels
 
         public void AddLayer()
         {
-            _selectedProfileModel.Layers.Add(new LayerModel
+            if (_selectedProfile == null)
+                return;
+
+            var layer = new LayerModel
             {
-                Name = "Layer " + (_selectedProfileModel.Layers.Count + 1),
-                LayerType = LayerType.KeyboardRectangle
-            });
-            NotifyOfPropertyChange(() => SelectedProfileModel);
+                Name = "Layer " + (_selectedProfile.Layers.Count + 1),
+                LayerType = LayerType.KeyboardRectangle,
+                UserProps = new LayerPropertiesModel
+                {
+                    Brush = new SolidColorBrush(Colors.Red),
+                    Animation = LayerAnimation.None,
+                    Height = 1,
+                    Width = 1,
+                    X = 0,
+                    Y = 0,
+                    Opacity = 1
+                }
+            };
+            SelectedProfile.Layers.Add(layer);
+            Layers.Add(layer);
+        }
+
+        public void MouseDownKeyboardPreview(MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                _downTime = DateTime.Now;
+        }
+
+        public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
+        {
+            var timeSinceDown = DateTime.Now - _downTime;
+            if (timeSinceDown.TotalMilliseconds < 500)
+            {
+                var pos = e.GetPosition((Image) e.OriginalSource);
+                var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
+                var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
+
+                var hoverLayer = SelectedProfile.Layers.Where(l => l.Enabled)
+                    .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
+                if (hoverLayer != null)
+                    SelectedLayer = hoverLayer;
+            }
         }
 
         public void MouseMoveKeyboardPreview(MouseEventArgs e)
         {
             var pos = e.GetPosition((Image) e.OriginalSource);
-            var realX =
-                (int)
-                    Math.Round(pos.X/
-                               (_mainManager.KeyboardManager.ActiveKeyboard.PreviewSettings.Width/
-                                _mainManager.KeyboardManager.ActiveKeyboard.Width));
-            var realY =
-                (int)
-                    Math.Round(pos.Y/
-                               (_mainManager.KeyboardManager.ActiveKeyboard.PreviewSettings.Height/
-                                _mainManager.KeyboardManager.ActiveKeyboard.Height));
+            var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
+            var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
+            var hoverLayer = SelectedProfile.Layers.Where(l => l.Enabled)
+                .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
+
+            HandleDragging(e, x, y, hoverLayer);
+
+            if (hoverLayer == null)
+            {
+                KeyboardPreviewCursor = Cursors.Arrow;
+                return;
+            }
+
+
+            // Turn the mouse pointer into a hand if hovering over an active layer
+            if (hoverLayer == SelectedLayer)
+            {
+                var layerRect = hoverLayer.UserProps.GetRect(1);
+                if (Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) + Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6)
+                    KeyboardPreviewCursor = Cursors.SizeNWSE;
+                else
+                    KeyboardPreviewCursor = Cursors.SizeAll;
+            }
+            else
+                KeyboardPreviewCursor = Cursors.Hand;
+        }
+
+        private void HandleDragging(MouseEventArgs e, double x, double y, LayerModel hoverLayer)
+        {
+            // Reset the dragging state on mouse release
+            if (e.LeftButton == MouseButtonState.Released ||
+                (_draggingLayer != null && _selectedLayer != _draggingLayer))
+            {
+                _draggingLayerOffset = null;
+                _draggingLayer = null;
+                return;
+            }
+
+            if (SelectedLayer == null)
+                return;
+
+            // Setup the dragging state on mouse press
+            if (_draggingLayerOffset == null && hoverLayer != null && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var layerRect = hoverLayer.UserProps.GetRect(1);
+                _draggingLayerOffset = new Point(x - SelectedLayer.UserProps.X, y - SelectedLayer.UserProps.Y);
+                _draggingLayer = hoverLayer;
+                if (Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) + Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6)
+                    _resizeSourceRect = true;
+                else
+                    _resizeSourceRect = false;
+            }
+
+            if (_draggingLayerOffset == null || _draggingLayer == null || (_draggingLayer != SelectedLayer))
+                return;
+
+            // If no setup or reset was done, handle the actual dragging action
+            if (_resizeSourceRect)
+            {
+                _draggingLayer.UserProps.Width = (int) Math.Round(x - _draggingLayer.UserProps.X);
+                _draggingLayer.UserProps.Height = (int) Math.Round(y - _draggingLayer.UserProps.Y);
+                if (_draggingLayer.UserProps.Width < 1)
+                    _draggingLayer.UserProps.Width = 1;
+                if (_draggingLayer.UserProps.Height < 1)
+                    _draggingLayer.UserProps.Height = 1;
+            }
+            else
+            {
+                _draggingLayer.UserProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
+                _draggingLayer.UserProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
+            }
+            NotifyOfPropertyChange(() => KeyboardPreview);
         }
     }
 }

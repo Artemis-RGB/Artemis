@@ -110,7 +110,7 @@ namespace Artemis.ViewModels
 
         public void PreSelect()
         {
-            GeneralHelpers.CopyProperties(ProposedProperties, Layer.LayerUserProperties);
+            GeneralHelpers.CopyProperties(ProposedProperties, Layer.UserProps);
         }
 
         private void AnimationUiHandler(object sender, PropertyChangedEventArgs e)
@@ -128,7 +128,7 @@ namespace Artemis.ViewModels
 
         public void Apply()
         {
-            GeneralHelpers.CopyProperties(Layer.LayerUserProperties, ProposedProperties);
+            GeneralHelpers.CopyProperties(Layer.UserProps, ProposedProperties);
             ProfileProvider.AddOrUpdate(_profile);
         }
 
