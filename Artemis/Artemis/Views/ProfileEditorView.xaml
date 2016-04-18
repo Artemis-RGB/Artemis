@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.Views"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
@@ -28,13 +26,10 @@
             <Border>
                 <Border.Effect>
                     <!-- TODO: Pulse 10-20 -->
-                    <DropShadowEffect ShadowDepth="0"
-                                      Color="{DynamicResource HighlightColor}"
-                                      Opacity="1"
+                    <DropShadowEffect ShadowDepth="0" Color="{DynamicResource HighlightColor}" Opacity="1"
                                       BlurRadius="20" />
                 </Border.Effect>
                 <Grid>
-
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" Margin="50" />
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8"
                            Width="{Binding Path=PreviewSettings.Width}"
@@ -44,26 +39,23 @@
                            cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)];
                            [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)];
                            [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
-
                 </Grid>
             </Border>
         </Border>
         <!-- Profile management -->
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0">
             <Label Content="Active profile" />
-            <ComboBox Grid.Row="1" Grid.Column="1" Width="110" VerticalAlignment="Top" x:Name="ProfileModels"
-                      DisplayMemberPath="Name" Margin="5,0,0,0" />
+            <ComboBox Width="110" VerticalAlignment="Top" x:Name="Profiles" DisplayMemberPath="Name"
+                      Margin="5,0,0,0" />
             <Button x:Name="AddProfile" Content="Add profile" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left"
-                    Margin="10,0,0,0" />
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,0" />
             <Button x:Name="RemoveProfile" Content="Remove profile" VerticalAlignment="Top"
                     Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right"
                     Margin="10,0,0,0" />
         </StackPanel>
 
         <!-- Layer list -->
-        <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers"
-               Margin="10,0,0,0" />
+        <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="250">
             <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=Layers}">
@@ -95,10 +87,20 @@
             </TreeView>
         </Border>
         <Grid Grid.Column="1" Grid.Row="2" Margin="10,5,0,0">
-            <Button x:Name="AddLayer" Content="Add layer" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" />
-            <Button x:Name="RemoveLayer" Content="Remove layer" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" x:Name="AddLayer" Content="Add layer" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" />
+            <Button Grid.Column="1" x:Name="LayerUp" Content="^" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="26" Margin="2,0,0,0" />
+            <Button Grid.Column="2" x:Name="LayerDown" Content="v" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="26" Margin="0,0,2,0" />
+            <Button Grid.Column="3" x:Name="RemoveLayer" Content="Remove layer" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" />
         </Grid>
     </Grid>
 </UserControl>

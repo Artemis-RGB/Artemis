@@ -11,7 +11,7 @@ namespace Artemis.Models.Profiles
     public class LayerModel
     {
         [XmlIgnore] private readonly LayerDrawer _drawer;
-        private bool _mustDraw;
+        [XmlIgnore] private bool _mustDraw;
 
         public LayerModel()
         {
@@ -30,7 +30,7 @@ namespace Artemis.Models.Profiles
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
         public LayerPropertiesModel UserProps { get; set; }
-        
+
         public List<LayerModel> Children { get; set; }
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
