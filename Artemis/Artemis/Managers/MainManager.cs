@@ -50,8 +50,8 @@ namespace Artemis.Managers
             GameStateWebServer.Start();
 
             // Start the named pipe
-            //PipeServer = new PipeServer();
-            //PipeServer.Start("artemis");
+            PipeServer = new PipeServer();
+            PipeServer.Start("artemis");
         }
 
         public PipeServer PipeServer { get; set; }

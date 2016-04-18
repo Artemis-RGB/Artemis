@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Properties;
@@ -22,8 +23,14 @@ namespace Artemis.Modules.Games.CounterStrike
             PlaceConfigFile();
 
             ProfileEditor = new ProfileEditorViewModel<CounterStrikeDataModel>(MainManager, GameModel);
-
+            ProfileEditor.PropertyChanged += ProfileUpdater;
             GameModel.Profile = ProfileEditor.SelectedProfile;
+        }
+
+        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedProfile")
+                GameModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         public ProfileEditorViewModel<CounterStrikeDataModel> ProfileEditor { get; set; }
