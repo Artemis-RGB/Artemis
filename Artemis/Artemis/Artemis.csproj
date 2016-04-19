@@ -398,6 +398,8 @@
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
+    <Compile Include="Utilities\ParentChild\ChildItemCollection.cs" />
+    <Compile Include="Utilities\ParentChild\IChildItem.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />

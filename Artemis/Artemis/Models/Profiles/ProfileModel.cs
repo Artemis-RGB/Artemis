@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Drawing;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
-using System.Xml.Serialization;
+using Artemis.Models.Interfaces;
 using Artemis.Utilities;
-using CUE.NET.Helper;
+using Artemis.Utilities.ParentChild;
+using Color = System.Windows.Media.Color;
 
 namespace Artemis.Models.Profiles
 {
@@ -10,16 +13,17 @@ namespace Artemis.Models.Profiles
     {
         public ProfileModel()
         {
-            Layers = new List<LayerModel>();
+            Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
             DrawingVisual = new DrawingVisual();
         }
+
+        public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
 
         public string Name { get; set; }
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
         public DrawingVisual DrawingVisual { get; set; }
 
-        public List<LayerModel> Layers { get; set; }
 
         protected bool Equals(ProfileModel other)
         {
@@ -56,7 +60,8 @@ namespace Artemis.Models.Profiles
             {
                 Name = "New layer",
                 Enabled = true,
-                LayerType = LayerType.KeyboardRectangle,
+                Order = -1,
+                LayerType = LayerType.Keyboard,
                 UserProps = new LayerPropertiesModel
                 {
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
@@ -70,7 +75,60 @@ namespace Artemis.Models.Profiles
             };
 
             Layers.Add(layer);
+            FixOrder();
+
             return layer;
+        }
+
+        public void Reorder(LayerModel selectedLayer, bool moveUp)
+        {
+            // Fix the sorting just in case
+            FixOrder();
+
+            int newOrder;
+            if (moveUp)
+                newOrder = selectedLayer.Order - 1;
+            else
+                newOrder = selectedLayer.Order + 1;
+
+            var target = Layers.FirstOrDefault(l => l.Order == newOrder);
+            if (target == null)
+                return;
+
+            target.Order = selectedLayer.Order;
+            selectedLayer.Order = newOrder;
+        }
+
+        public void FixOrder()
+        {
+            Layers.Sort(l => l.Order);
+            for (var i = 0; i < Layers.Count; i++)
+                Layers[i].Order = i;
+        }
+
+        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel)
+        {
+            Bitmap bitmap = null;
+            DrawingVisual.Dispatcher.Invoke(delegate
+            {
+                var visual = new DrawingVisual();
+                using (var c = visual.RenderOpen())
+                {
+                    // Setup the DrawingVisual's size
+                    c.PushClip(new RectangleGeometry(keyboardRect));
+                    c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                    // Draw the layers
+                    foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
+                        layerModel.Draw<T>(gameDataModel, c);
+
+                    // Remove the clip
+                    c.Pop();
+                }
+
+                bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
+            });
+            return bitmap;
         }
     }
 }

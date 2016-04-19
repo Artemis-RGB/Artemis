@@ -150,17 +150,13 @@
     <!-- ******* ColorBox ******* -->
     <Style TargetType="{x:Type nc:ColorBox}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="BorderThickness" Value="{DynamicResource DefaultBorderThickness}" />
         <Setter Property="Background" Value="{DynamicResource DarkerBaseBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PopupBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type nc:ColorBox}">
-                    <Border x:Name="PART_Root" Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{DynamicResource DefaultCornerRadius}">
+                    <Border x:Name="PART_Root" Background="{TemplateBinding Background}" BorderBrush="{StaticResource ControlBorderBrush}">
                         <Border.InputBindings>
                             <KeyBinding Key="Delete" Command="{x:Static nc:ColorBox.RemoveGradientStop}" />
                         </Border.InputBindings>
@@ -224,7 +220,7 @@
                                                                         Padding="0,3">
                                                                     <Path x:Name="Icon" Height="12" Width="20"
                                                                           Stretch="Fill" Fill="#FF403C3C"
-                                                                          StrokeThickness="1" Stroke="Black"
+                                                                          StrokeThickness="1" Stroke="{StaticResource ControlBorderBrush}"
                                                                           Data="M371,190L557,190 557,293 371,293 371,190z" />
                                                                 </Border>
 
@@ -552,11 +548,12 @@
                                             <!-- Reverse gradients button -->
                                             <Button Grid.Column="1" ToolTip="Reverse gradient stops"
                                                     Command="{x:Static nc:ColorBox.ReverseGradientStop}"
-                                                    x:Name="Delete" Width="38" Height="38"
-                                                    Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top"
-                                                    HorizontalAlignment="Right">
+                                                    x:Name="Delete" Width="50" Height="50"
+                                                    Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top"
+                                                    HorizontalAlignment="Right" Margin="0,-4,0,0">
                                                 <Button.Content>
-                                                    <Rectangle Fill="Black" Width="16" Height="16">
+                                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                               Width="20" Height="20">
                                                         <Rectangle.OpacityMask>
                                                             <VisualBrush
                                                                 Visual="{StaticResource appbar_arrow_left_right}"
@@ -585,7 +582,6 @@
                                                           BorderBrush="{TemplateBinding BorderBrush}"
                                                           ToolTip="Additional Properties" Height="20"
                                                           Content="Show more/less" />
-
 
                                             <StackPanel Margin="0,5,0,0"
                                                         Visibility="{Binding ElementName=PART_AdditionalPropertyOpen, Path=IsChecked, Converter={StaticResource BoolToVis}}">
