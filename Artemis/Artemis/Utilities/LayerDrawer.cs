@@ -38,10 +38,8 @@ namespace Artemis.Utilities
                 _layerModel.CalcProps.Y*Scale, _layerModel.CalcProps.Width*Scale,
                 _layerModel.CalcProps.Height*Scale);
 
-            if (_layerModel.LayerType == LayerType.KeyboardRectangle)
+            if (_layerModel.LayerType == LayerType.Keyboard)
                 _layerModel.CalcProps.Brush.Dispatcher.Invoke(() => DrawRectangle(c));
-            else if (_layerModel.LayerType == LayerType.KeyboardEllipse)
-                _layerModel.CalcProps.Brush.Dispatcher.Invoke(() => DrawEllipse(c));
         }
 
         private void UpdateAnimation()

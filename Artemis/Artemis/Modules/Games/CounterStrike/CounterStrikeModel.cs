@@ -57,28 +57,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return null;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            Bitmap bitmap = null;
-            Profile.DrawingVisual.Dispatcher.Invoke(delegate
-            {
-                var visual = new DrawingVisual();
-                using (var drawingContext = visual.RenderOpen())
-                {
-                    // Setup the DrawingVisual's size
-                    drawingContext.PushClip(new RectangleGeometry(keyboardRect));
-                    drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)),
-                        null, keyboardRect);
-
-                    // Draw the layers
-                    foreach (var layerModel in Profile.Layers)
-                        layerModel.Draw<CounterStrikeDataModel>(GameDataModel, drawingContext);
-                    
-                    // Remove the clip
-                    drawingContext.Pop();
-                }
-                
-                bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
-            });
-            return bitmap;
+            return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel);
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)

@@ -58,7 +58,7 @@
         <!-- Condition editor -->
         <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" FontSize="20" Content="Display if.." />
         <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="1"
-                BorderBrush="{StaticResource GrayBrush7}" Margin="10,0">
+                BorderBrush="{StaticResource GrayBrush7}" Margin="10,0" SnapsToDevicePixels="True">
             <ListBox Height="138" x:Name="LayerConditionVms" ScrollViewer.VerticalScrollBarVisibility="Visible">
                 <ListBox.Template>
                     <ControlTemplate>
@@ -90,9 +90,9 @@
         <!-- Colors -->
         <TextBlock Grid.Row="6" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Color(s):"
                    VerticalAlignment="Top" Height="18" />
-        <Border Grid.Row="6" Grid.Column="1" Margin="10" BorderThickness="1"
-                BorderBrush="{StaticResource ControlBorderBrush}" ToolTip="Click to edit">
-            <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" />
+        <Border Grid.Row="6" Grid.Column="1" Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
+                BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
+            <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" Height="24" />
         </Border>
 
         <!-- ContainedBrush -->
@@ -136,7 +136,7 @@
         <TextBlock Grid.Row="9" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Preview:"
                    VerticalAlignment="Top" Height="18" />
         <Border Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Margin="10" BorderThickness="1"
-                BorderBrush="{StaticResource ControlBorderBrush}">
+                BorderBrush="{StaticResource ControlBorderBrush}" SnapsToDevicePixels="True">
             <Image Source="{Binding LayerImage}" />
         </Border>
 

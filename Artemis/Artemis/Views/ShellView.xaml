@@ -8,8 +8,8 @@
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       dialogs:DialogParticipation.Register="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
                       mc:Ignorable="d"
-                      Title="Artemis" Height="800" Width="1200"
-                      MinWidth="500" MinHeight="400"
+                      Title="Artemis" Height="800" Width="1210"
+                      MinHeight="800" MinWidth="1210" 
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
     <!-- Bit of extra code to use a different icon than in the taskbar -->
     <Controls:MetroWindow.IconTemplate>

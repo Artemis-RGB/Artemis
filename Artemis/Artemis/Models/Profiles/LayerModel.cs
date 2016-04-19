@@ -5,10 +5,11 @@ using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
+using Artemis.Utilities.ParentChild;
 
 namespace Artemis.Models.Profiles
 {
-    public class LayerModel
+    public class LayerModel : IChildItem<LayerModel>, IChildItem<ProfileModel>
     {
         [XmlIgnore] private readonly LayerDrawer _drawer;
         [XmlIgnore] private bool _mustDraw;
@@ -18,7 +19,7 @@ namespace Artemis.Models.Profiles
             UserProps = new LayerPropertiesModel();
             CalcProps = new LayerPropertiesModel();
 
-            Children = new List<LayerModel>();
+            Children = new ChildItemCollection<LayerModel, LayerModel>(this);
             LayerConditions = new List<LayerConditionModel>();
             LayerProperties = new List<LayerDynamicPropertiesModel>();
 
@@ -29,9 +30,10 @@ namespace Artemis.Models.Profiles
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
+        public int Order { get; set; }
         public LayerPropertiesModel UserProps { get; set; }
 
-        public List<LayerModel> Children { get; set; }
+        public ChildItemCollection<LayerModel, LayerModel> Children { get; }
         public List<LayerConditionModel> LayerConditions { get; set; }
         public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
 
@@ -41,6 +43,28 @@ namespace Artemis.Models.Profiles
         [XmlIgnore]
         public ImageSource LayerImage => _drawer.GetThumbnail();
 
+        [XmlIgnore]
+        public LayerModel ParentLayer { get; internal set; }
+
+        [XmlIgnore]
+        public ProfileModel ParentProfile { get; internal set; }
+
+        #region IChildItem<Parent> Members
+
+        LayerModel IChildItem<LayerModel>.Parent
+        {
+            get { return ParentLayer; }
+            set { ParentLayer = value; }
+        }
+
+        ProfileModel IChildItem<ProfileModel>.Parent
+        {
+            get { return ParentProfile; }
+            set { ParentProfile = value; }
+        }
+        
+        #endregion
+
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
             return Enabled && LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
@@ -49,7 +73,7 @@ namespace Artemis.Models.Profiles
         public void DrawPreview(DrawingContext c)
         {
             GeneralHelpers.CopyProperties(CalcProps, UserProps);
-            if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
+            if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
                 _drawer.Draw(c, _mustDraw);
             else if (LayerType == LayerType.KeyboardGif)
                 _drawer.DrawGif(c);
@@ -62,9 +86,9 @@ namespace Artemis.Models.Profiles
                 return;
 
             if (LayerType == LayerType.Folder)
-                foreach (var layerModel in Children)
+                foreach (var layerModel in Children.OrderByDescending(l => l.Order))
                     layerModel.Draw<T>(dataModel, c);
-            else if (LayerType == LayerType.KeyboardRectangle || LayerType == LayerType.KeyboardEllipse)
+            else if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
                 _drawer.Draw(c);
             else if (LayerType == LayerType.KeyboardGif)
                 _drawer.DrawGif(c);
@@ -87,13 +111,38 @@ namespace Artemis.Models.Profiles
             foreach (var dynamicProperty in LayerProperties)
                 dynamicProperty.ApplyProperty<T>(dataModel, UserProps, CalcProps);
         }
+
+        public void Reorder(LayerModel selectedLayer, bool moveUp)
+        {
+            // Fix the sorting just in case
+            FixOrder();
+            
+            int newOrder;
+            if (moveUp)
+                newOrder = selectedLayer.Order - 1;
+            else
+                newOrder = selectedLayer.Order + 1;
+
+            var target = Children.FirstOrDefault(l => l.Order == newOrder);
+            if (target == null)
+                return;
+
+            target.Order = selectedLayer.Order;
+            selectedLayer.Order = newOrder;
+        }
+
+        private void FixOrder()
+        {
+            Children.Sort(l => l.Order);
+            for (var i = 0; i < Children.Count; i++)
+                Children[i].Order = i;
+        }
     }
 
     public enum LayerType
     {
         [Description("Folder")] Folder,
-        [Description("Keyboard - Rectangle")] KeyboardRectangle,
-        [Description("Keyboard - Ellipse")] KeyboardEllipse,
+        [Description("Keyboard")] Keyboard,
         [Description("Keyboard - GIF")] KeyboardGif,
         [Description("Mouse")] Mouse,
         [Description("Headset")] Headset
