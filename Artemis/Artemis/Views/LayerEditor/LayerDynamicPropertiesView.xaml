@@ -7,6 +7,7 @@
              xmlns:utilities="clr-namespace:Artemis.Utilities"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="40" d:DesignWidth="500">
 
@@ -49,7 +50,7 @@
         </ComboBox>
 
         <!-- Dynamic type -->
-        <ComboBox SelectedItem="{Binding Path=LayerDynamicPropertiesModel.LayerPropertyType}" Grid.Column="2"
+        <ComboBox SelectedItem="{Binding Path=LayerPropertyType}" Grid.Column="2"
                   ItemsSource="{Binding Source={StaticResource DynamicPropertyValues}}"
                   Margin="10,0" VerticalAlignment="Center" Height="22">
             <ComboBox.ItemTemplate>
@@ -59,22 +60,28 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <!-- PercentageOf property -->
-        <ComboBox x:Name="Sources" Grid.Column="3" Margin="10,0" MaxDropDownHeight="125"
-                  VerticalAlignment="Center" Height="22">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid MinWidth="522">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding Path=Display}" HorizontalAlignment="Left" />
-                        <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Path=DisplayType}"
-                                   HorizontalAlignment="Right" />
-                    </Grid>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <!-- PercentageOfProperty -->
+        <StackPanel Grid.Column="3" x:Name="SourcesIsVisible" VerticalAlignment="Center">
+            <ComboBox x:Name="Sources" Margin="10,0" MaxDropDownHeight="125" Height="22">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid MinWidth="522">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Path=Display}" HorizontalAlignment="Left" />
+                            <TextBlock Grid.Column="1" FontWeight="Bold" Text="{Binding Path=DisplayType}"
+                                       HorizontalAlignment="Right" />
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- PercentageOf -->
+        <StackPanel Grid.Column="3" x:Name="UserSourceIsVisible" VerticalAlignment="Center">
+            <controls:NumericUpDown Margin="10,0" Height="22" Value="{Binding Path=LayerDynamicPropertiesModel.PercentageSource, Mode=TwoWay}" />
+        </StackPanel>
     </Grid>
 </UserControl>

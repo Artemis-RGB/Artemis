@@ -135,6 +135,7 @@ namespace Artemis.Utilities
                 _layerModel.CalcProps.Animation == LayerAnimation.SlideRight ||
                 _layerModel.CalcProps.Animation == LayerAnimation.SlideUp)
             {
+                // TODO: if (_layerModel.CalcProps.ContainedBrush)
                 c.PushClip(new RectangleGeometry(_rectangle));
                 c.DrawRectangle(brush, null, _firstRect);
                 c.DrawRectangle(brush, null, _secondRect);

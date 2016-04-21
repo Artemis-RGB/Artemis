@@ -40,46 +40,8 @@
                 </StackPanel>
             </StackPanel>
 
-            <!-- Main color -->
-            <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Main boost display color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=GameSettings.MainColor, Mode=TwoWay}"
-                              Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Secondary color -->
-            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Secondary boost display color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=GameSettings.SecondaryColor, Mode=TwoWay}"
-                              Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Secondary color -->
-            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Color bar according to boost amount
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ContextualColor, Mode=TwoWay}"
-                                   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Info text -->
-            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
-                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       MaxWidth="510" TextAlignment="Justify">
-                Tip: To find a color combination you like, start an exhibition match, pickup 100 boost and play around with the colors.
-                They'll appear on your keyboard immediately! Once you're satisfied don't forget to click save changes.
-            </TextBlock>
-            <TextBlock x:Name="VersionText" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
-                       Margin="0,8"
-                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify" />
+            <!-- Profile editor -->
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
