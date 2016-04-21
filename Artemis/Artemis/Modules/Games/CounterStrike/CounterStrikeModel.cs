@@ -68,6 +68,8 @@ namespace Artemis.Modules.Games.CounterStrike
             if (!jsonString.Contains("Counter-Strike: Global Offensive"))
                 return;
 
+
+            Debug.WriteLine("Got data");
             // Parse the JSON
             GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
         }

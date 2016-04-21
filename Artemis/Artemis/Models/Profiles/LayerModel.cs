@@ -49,22 +49,6 @@ namespace Artemis.Models.Profiles
         [XmlIgnore]
         public ProfileModel ParentProfile { get; internal set; }
 
-        #region IChildItem<Parent> Members
-
-        LayerModel IChildItem<LayerModel>.Parent
-        {
-            get { return ParentLayer; }
-            set { ParentLayer = value; }
-        }
-
-        ProfileModel IChildItem<ProfileModel>.Parent
-        {
-            get { return ParentProfile; }
-            set { ParentProfile = value; }
-        }
-        
-        #endregion
-
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
             return Enabled && LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
@@ -116,7 +100,7 @@ namespace Artemis.Models.Profiles
         {
             // Fix the sorting just in case
             FixOrder();
-            
+
             int newOrder;
             if (moveUp)
                 newOrder = selectedLayer.Order - 1;
@@ -137,6 +121,22 @@ namespace Artemis.Models.Profiles
             for (var i = 0; i < Children.Count; i++)
                 Children[i].Order = i;
         }
+
+        #region IChildItem<Parent> Members
+
+        LayerModel IChildItem<LayerModel>.Parent
+        {
+            get { return ParentLayer; }
+            set { ParentLayer = value; }
+        }
+
+        ProfileModel IChildItem<ProfileModel>.Parent
+        {
+            get { return ParentProfile; }
+            set { ParentProfile = value; }
+        }
+
+        #endregion
     }
 
     public enum LayerType

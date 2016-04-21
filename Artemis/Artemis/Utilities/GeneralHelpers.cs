@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using static System.String;
 
 namespace Artemis.Utilities
@@ -62,10 +59,7 @@ namespace Artemis.Utilities
 
             if (propertyNames.Length == 1 || value == null)
                 return value;
-            else
-            {
-                return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
-            }
+            return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
         }
 
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
@@ -102,7 +96,9 @@ namespace Artemis.Utilities
                 if (friendlyName != Empty)
                     list.Add(parent);
 
-                list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(), path + $"{propertyInfo.Name}."));
+                if (propertyInfo.PropertyType.Name != "String")
+                    list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(),
+                        path + $"{propertyInfo.Name}."));
             }
             return list;
         }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 
@@ -44,7 +45,42 @@ namespace Artemis.ItemBehaviours
         {
             var item = ((BindableSelectedItemBehavior) sender).AssociatedObject
                 .ItemContainerGenerator.ContainerFromItem(e.NewValue) as TreeViewItem;
-            item?.SetValue(TreeViewItem.IsSelectedProperty, true);
+            if (item != null)
+                item.SetValue(TreeViewItem.IsSelectedProperty, true);
+            else
+                ClearTreeViewSelection(((BindableSelectedItemBehavior) sender).AssociatedObject);
+        }
+
+        /// <summary>
+        ///     Clears a TreeView's selected item recursively
+        ///     Tom Wright - http://stackoverflow.com/a/1406116/5015269
+        /// </summary>
+        /// <param name="tv"></param>
+        public static void ClearTreeViewSelection(TreeView tv)
+        {
+            if (tv != null)
+                ClearTreeViewItemsControlSelection(tv.Items, tv.ItemContainerGenerator);
+        }
+
+        /// <summary>
+        ///     Clears a TreeView's selected item recursively
+        ///     Tom Wright - http://stackoverflow.com/a/1406116/5015269
+        /// </summary>
+        /// <param name="ic"></param>
+        /// <param name="icg"></param>
+        private static void ClearTreeViewItemsControlSelection(ICollection ic, ItemContainerGenerator icg)
+        {
+            if ((ic == null) || (icg == null))
+                return;
+
+            for (var i = 0; i < ic.Count; i++)
+            {
+                var tvi = icg.ContainerFromIndex(i) as TreeViewItem;
+                if (tvi == null)
+                    continue;
+                ClearTreeViewItemsControlSelection(tvi.Items, tvi.ItemContainerGenerator);
+                tvi.IsSelected = false;
+            }
         }
 
         #endregion

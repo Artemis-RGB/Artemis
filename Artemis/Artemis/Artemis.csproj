@@ -418,8 +418,9 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditorViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerDynamicPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerEditorViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
@@ -459,11 +460,14 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditorView.xaml.cs">
-      <DependentUpon>LayerEditorView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
       <DependentUpon>LayerConditionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml.cs">
+      <DependentUpon>LayerDynamicPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerEditorView.xaml.cs">
+      <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
@@ -623,13 +627,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditorView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\LayerEditor\LayerConditionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\OverlaysView.xaml">
       <SubType>Designer</SubType>

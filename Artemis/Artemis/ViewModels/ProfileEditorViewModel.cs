@@ -15,6 +15,7 @@ using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
 using MahApps.Metro;
 
@@ -78,6 +79,7 @@ namespace Artemis.ViewModels
                 if (Equals(value, _selectedLayer)) return;
                 _selectedLayer = value;
                 NotifyOfPropertyChange(() => SelectedLayer);
+                NotifyOfPropertyChange(() => CanRemoveLayer);
             }
         }
 
@@ -105,6 +107,7 @@ namespace Artemis.ViewModels
 
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => CanAddLayer);
+                NotifyOfPropertyChange(() => CanRemoveLayer);
             }
         }
 
@@ -169,6 +172,7 @@ namespace Artemis.ViewModels
                 {
                     if (ActiveKeyboard?.PreviewSettings.Image == null)
                         return null;
+
                     ActiveKeyboard.PreviewSettings.Image.Save(memory, ImageFormat.Png);
                     memory.Position = 0;
 
@@ -186,6 +190,7 @@ namespace Artemis.ViewModels
         public PreviewSettings? PreviewSettings => ActiveKeyboard?.PreviewSettings;
 
         public bool CanAddLayer => _selectedProfile != null;
+        public bool CanRemoveLayer => _selectedProfile != null && _selectedLayer != null;
 
         private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
 
@@ -197,8 +202,13 @@ namespace Artemis.ViewModels
 
         private void PropertyChangeHandler(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "KeyboardPreview")
-                NotifyOfPropertyChange(() => KeyboardPreview);
+            if (e.PropertyName == "KeyboardPreview")
+                return;
+
+            NotifyOfPropertyChange(() => KeyboardPreview);
+
+            if (SelectedProfile != null)
+                ProfileProvider.AddOrUpdate(SelectedProfile);
         }
 
         private void LoadProfiles()
@@ -247,7 +257,7 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel<T>(ActiveKeyboard, SelectedProfile, layer);
+            _editorVm = new LayerEditorViewModel<T>(ActiveKeyboard, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;
@@ -272,6 +282,16 @@ namespace Artemis.ViewModels
 
             SelectedProfile.Layers.Remove(_selectedLayer);
             Layers.Remove(_selectedLayer);
+
+            SelectedProfile.FixOrder();
+        }
+
+        public void RemoveLayer(LayerModel layer)
+        {
+            SelectedProfile.Layers.Remove(layer);
+            Layers.Remove(layer);
+
+            SelectedProfile.FixOrder();
         }
 
         public void LayerUp()
@@ -324,8 +344,7 @@ namespace Artemis.ViewModels
 
             var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(l => l.Enabled)
                 .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
-            if (hoverLayer != null)
-                SelectedLayer = hoverLayer;
+            SelectedLayer = hoverLayer;
         }
 
         public void MouseMoveKeyboardPreview(MouseEventArgs e)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Artemis.Settings;
@@ -9,12 +8,18 @@ using Newtonsoft.Json;
 
 namespace Artemis.Utilities.GameState
 {
+    /// <summary>
+    ///     Listens for JSON calls, parses them and raises an event.
+    ///     Includes some code from https://github.com/rakijah/CSGSI
+    /// </summary>
     public class GameStateWebServer
     {
         public delegate void GameDataReceivedEventHandler(
             object sender, GameDataReceivedEventArgs gameDataReceivedEventArgs);
 
-        private readonly HttpListener _listener = new HttpListener();
+        private readonly AutoResetEvent _waitForConnection = new AutoResetEvent(false);
+
+        private HttpListener _listener;
 
         public GameStateWebServer()
         {
@@ -31,64 +36,69 @@ namespace Artemis.Utilities.GameState
             if (Running)
                 return;
 
+            Port = General.Default.GamestatePort;
+
+            _listener = new HttpListener();
+            _listener.Prefixes.Add($"http://localhost:{Port}/");
+            var listenerThread = new Thread(ListenerRun);
             try
             {
-                _listener.Prefixes.Clear();
-                Port = General.Default.GamestatePort;
-                _listener.Prefixes.Add($"http://localhost:{Port}/");
-
                 _listener.Start();
             }
-            catch (Exception)
+            catch (HttpListenerException)
             {
-                MessageBox.Show("Couldn't start the webserver. CS:GO/Dota2 effects won't work :c \n\nTry changing the port in Settings and restart Artemis.");
+                MessageBox.Show(
+                    "Couldn't start the webserver. CS:GO/Dota2 effects won't work :c \n\nTry changing the port in Settings and restart Artemis.");
             }
 
-            ThreadPool.QueueUserWorkItem(o =>
-            {
-                try
-                {
-                    while (_listener.IsListening)
-                    {
-                        ThreadPool.QueueUserWorkItem(c =>
-                        {
-                            var ctx = c as HttpListenerContext;
-                            if (ctx == null)
-                                return;
-                            try
-                            {
-                                HandleRequest(ctx.Request);
-                                var buf = Encoding.UTF8.GetBytes("ok");
-                                ctx.Response.ContentLength64 = buf.Length;
-                                ctx.Response.OutputStream.Write(buf, 0, buf.Length);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
-                            finally
-                            {
-                                // always close the stream
-                                ctx.Response.OutputStream.Close();
-                            }
-                        }, _listener.GetContext());
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
-            });
-
             Running = true;
+            listenerThread.Start();
+        }
+
+        private void ListenerRun()
+        {
+            while (Running)
+            {
+                _listener.BeginGetContext(HandleRequest, _listener);
+                _waitForConnection.WaitOne();
+                _waitForConnection.Reset();
+            }
+        }
+
+        private void HandleRequest(IAsyncResult ar)
+        {
+            HttpListenerContext context = null;
+            try
+            {
+                context = _listener.EndGetContext(ar);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Listener was Closed due to call of Stop();
+            }
+            catch (HttpListenerException)
+            {
+                // Listener was Closed due to call of Stop();
+            }
+            finally
+            {
+                _waitForConnection.Set();
+            }
+
+            if (context != null)
+            {
+                HandleRequest(context.Request);
+                context.Response.OutputStream.Close();
+            }
         }
 
         public void Stop()
         {
-            _listener.Stop();
+            _listener.Close();
+            Running = false;
         }
 
-        private string HandleRequest(HttpListenerRequest request)
+        private void HandleRequest(HttpListenerRequest request)
         {
             object json;
             using (var reader = new StreamReader(request.InputStream, request.ContentEncoding))
@@ -99,7 +109,6 @@ namespace Artemis.Utilities.GameState
 
             if (json != null)
                 OnGameDataReceived(new GameDataReceivedEventArgs(json));
-            return JsonConvert.SerializeObject(json);
         }
 
         protected virtual void OnGameDataReceived(GameDataReceivedEventArgs e)
