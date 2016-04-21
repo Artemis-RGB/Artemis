@@ -1,68 +1,67 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq.Dynamic;
-using System.Reflection;
+﻿using System.ComponentModel;
 using Artemis.Models.Interfaces;
+using Artemis.Utilities;
+using static System.Decimal;
 
 namespace Artemis.Models.Profiles
 {
     public class LayerDynamicPropertiesModel
     {
+        /// <summary>
+        ///     Property this dynamic property applies on
+        /// </summary>
         public string LayerProperty { get; set; }
-        public string GameProperty { get; set; }
-        public string RequiredOperator { get; set; }
-        public string RequiredValue { get; set; }
-        public LayerPopertyType LayerPopertyType { get; set; }
 
         /// <summary>
-        ///     Only used when LayerPropertyType is PercentageOf or PercentageOfProperty
+        ///     Property to base the percentage upon
+        /// </summary>
+        public string GameProperty { get; set; }
+
+        /// <summary>
+        ///     Percentage source, the number that defines 100%
         /// </summary>
         public string PercentageSource { get; set; }
 
-        internal void ApplyProperty<T>(IGameDataModel dataModel, LayerPropertiesModel userProps,
-            LayerPropertiesModel props)
+        /// <summary>
+        ///     Type of property
+        /// </summary>
+        public LayerPropertyType LayerPropertyType { get; set; }
+
+        internal void ApplyProperty<T>(IGameDataModel data, LayerPropertiesModel userProps, LayerPropertiesModel props)
         {
-            var dataList = new List<T> {(T) dataModel};
-
-            // Attempt to set the property
-            var layerProp = props.GetType().GetProperty(LayerProperty);
-            var layerUserProp = userProps.GetType().GetProperty(LayerProperty);
-
-            if (LayerPopertyType == LayerPopertyType.PercentageOf)
-                SetPercentageOf(props, userProps, dataModel, int.Parse(PercentageSource));
-            if (LayerPopertyType == LayerPopertyType.PercentageOfProperty)
-                SetPercentageOfProperty(props, userProps, dataModel);
+            if (LayerPropertyType == LayerPropertyType.PercentageOf)
+                Apply(props, userProps, data, int.Parse(PercentageSource));
+            if (LayerPropertyType == LayerPropertyType.PercentageOfProperty)
+                ApplyProp(props, userProps, data);
         }
 
-        private void SetPercentageOf(LayerPropertiesModel props, LayerPropertiesModel userProps,
-            IGameDataModel dataModel, int percentageSource)
+        private void Apply(LayerPropertiesModel props, LayerPropertiesModel userProps, IGameDataModel data,
+            int percentageSource)
         {
-            // Property that will be set
+            // Property to apply on
             var layerProp = props.GetType().GetProperty(LayerProperty);
-            // Property to use as a 100%
+            // User's settings
             var userProp = userProps.GetType().GetProperty(LayerProperty);
-            // Value to use as a source
-            var source = dataModel.GetType().GetProperty(GameProperty)?.GetValue(dataModel, null);
-            if (layerProp == null || userProp == null || source == null)
+            // Property to base the percentage upon
+            var gameProperty = data.GetPropValue<int>(GameProperty);
+            if (layerProp == null || userProp == null)
                 return;
 
-            var percentage = double.Parse(source.ToString())/percentageSource;
+            var percentage = ToDouble(gameProperty) / percentageSource;
             layerProp.SetValue(props, (int) (percentage*(int) userProp.GetValue(userProps, null)));
         }
 
-        private void SetPercentageOfProperty(LayerPropertiesModel props, LayerPropertiesModel userProps,
-            IGameDataModel dataModel)
+        private void ApplyProp(LayerPropertiesModel props, LayerPropertiesModel userProps, IGameDataModel data)
         {
-            var value = dataModel.GetType().GetProperty(PercentageSource)?.GetValue(dataModel, null);
-            if (value != null)
-                SetPercentageOf(props, userProps, dataModel, (int) value);
+            var value = data.GetPropValue<int>(PercentageSource);
+            Apply(props, userProps, data, value);
         }
     }
 
-    public enum LayerPopertyType
+    public enum LayerPropertyType
     {
-        PercentageOf,
-        PercentageOfProperty,
-        Color
+        [Description("None")] None,
+        [Description("% of")] PercentageOf,
+        [Description("% of property")] PercentageOfProperty
     }
 }

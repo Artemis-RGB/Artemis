@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Models.Profiles;
 
 namespace Artemis.Utilities
@@ -112,46 +111,18 @@ namespace Artemis.Utilities
             }
         }
 
-        public BitmapImage GetThumbnail()
+        public DrawingImage GetThumbnail()
         {
             if (_layerModel.UserProps.Brush == null)
                 return null;
 
-            _rectangle = new Rect(0, 0, 18, 18);
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
+                c.DrawRectangle(_layerModel.UserProps.Brush, new Pen(new SolidColorBrush(Colors.White), 1),
+                    new Rect(0, 0, 18, 18));
 
-            //var bitmap = new Bitmap(18, 18);
-
-            //using (var g = Graphics.FromImage(bitmap))
-            //{
-            //    g.SmoothingMode = SmoothingMode.AntiAlias;
-            //    if (_layerModel.LayerType == LayerType.KeyboardEllipse)
-            //    {
-            //        g.FillEllipse(_layerModel.LayerUserProperties.Brush, _rectangle);
-            //        g.DrawEllipse(new Pen(Color.Black, 1), 0, 0, 17, 17);
-            //    }
-            //    else if (_layerModel.LayerType == LayerType.KeyboardRectangle)
-            //    {
-            //        g.FillRectangle(_layerModel.LayerUserProperties.Brush, _rectangle);
-            //        g.DrawRectangle(new Pen(Color.Black, 1), 0, 0, 17, 17);
-            //    }
-            //    else
-            //        bitmap = Resources.folder;
-            //}
-
-            //using (var memory = new MemoryStream())
-            //{
-            //    bitmap.Save(memory, ImageFormat.Png);
-            //    memory.Position = 0;
-
-            //    var bitmapImage = new BitmapImage();
-            //    bitmapImage.BeginInit();
-            //    bitmapImage.StreamSource = memory;
-            //    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            //    bitmapImage.EndInit();
-
-            //    return bitmapImage;
-            //}
-            return null;
+            var image = new DrawingImage(visual.Drawing);
+            return image;
         }
 
         public void DrawRectangle(DrawingContext c)
