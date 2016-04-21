@@ -1,4 +1,5 @@
-﻿using Artemis.Managers;
+﻿using System.ComponentModel;
+using Artemis.Managers;
 using Artemis.Models;
 using Caliburn.Micro;
 

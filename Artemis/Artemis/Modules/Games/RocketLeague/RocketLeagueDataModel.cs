@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using Artemis.Models.Interfaces;
-using Artemis.Utilities;
+﻿using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    internal class RocketLeagueDataModel : IGameDataModel
+    public class RocketLeagueDataModel : IGameDataModel
     {
         public int Boost { get; set; }
-        public List<GeneralHelpers.PropertyCollection> Properties { get; }
     }
 }

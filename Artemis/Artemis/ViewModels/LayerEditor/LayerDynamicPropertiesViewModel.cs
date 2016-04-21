@@ -12,6 +12,9 @@ namespace Artemis.ViewModels.LayerEditor
         private string _name;
         private GeneralHelpers.PropertyCollection _selectedSource;
         private GeneralHelpers.PropertyCollection _selectedTarget;
+        private bool _sourcesIsVisible;
+        private bool _userSourceIsVisible;
+        private LayerPropertyType _layerPropertyType;
 
         public LayerDynamicPropertiesViewModel(string property,
             BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps, LayerModel layer)
@@ -37,6 +40,21 @@ namespace Artemis.ViewModels.LayerEditor
             Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
 
             PropertyChanged += OnPropertyChanged;
+
+            SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == LayerDynamicPropertiesModel.GameProperty);
+            SelectedSource = dataModelProps.FirstOrDefault(p => p.Path == LayerDynamicPropertiesModel.PercentageSource);
+            LayerPropertyType = LayerDynamicPropertiesModel.LayerPropertyType;
+        }
+
+        public LayerPropertyType LayerPropertyType
+        {
+            get { return _layerPropertyType; }
+            set
+            {
+                if (value == _layerPropertyType) return;
+                _layerPropertyType = value;
+                NotifyOfPropertyChange(() => LayerPropertyType);
+            }
         }
 
         public string Name
@@ -87,17 +105,40 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
-        /// <summary>
-        ///     Updates the underlying model
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        public bool SourcesIsVisible
+        {
+            get { return _sourcesIsVisible; }
+            set
+            {
+                if (value == _sourcesIsVisible) return;
+                _sourcesIsVisible = value;
+                NotifyOfPropertyChange(() => SourcesIsVisible);
+            }
+        }
+
+        public bool UserSourceIsVisible
+        {
+            get { return _userSourceIsVisible; }
+            set
+            {
+                if (value == _userSourceIsVisible) return;
+                _userSourceIsVisible = value;
+                NotifyOfPropertyChange(() => UserSourceIsVisible);
+            }
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedTarget")
                 LayerDynamicPropertiesModel.GameProperty = SelectedTarget.Path;
             if (e.PropertyName == "SelectedSource")
                 LayerDynamicPropertiesModel.PercentageSource = SelectedSource.Path;
+            if (e.PropertyName == "LayerPropertyType")
+            {
+                LayerDynamicPropertiesModel.LayerPropertyType = LayerPropertyType;
+                UserSourceIsVisible = (LayerPropertyType == LayerPropertyType.PercentageOf);
+                SourcesIsVisible = (LayerPropertyType == LayerPropertyType.PercentageOfProperty);
+            }
         }
     }
 }
