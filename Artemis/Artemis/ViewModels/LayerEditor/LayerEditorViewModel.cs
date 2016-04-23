@@ -16,6 +16,7 @@ namespace Artemis.ViewModels.LayerEditor
         private readonly BackgroundWorker _previewWorker;
         private readonly bool _wasEnabled;
         private LayerModel _layer;
+        private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
 
         public LayerEditorViewModel(KeyboardProvider activeKeyboard, LayerModel layer)
@@ -24,12 +25,15 @@ namespace Artemis.ViewModels.LayerEditor
             _wasEnabled = layer.Enabled;
 
             Layer = layer;
+            ProposedLayer = new LayerModel();
+            GeneralHelpers.CopyProperties(ProposedLayer, Layer);
             Layer.Enabled = false;
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             ProposedProperties = new LayerPropertiesModel();
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap<T>());
-            LayerConditionVms = new BindableCollection<LayerConditionViewModel<T>>(
-                layer.LayerConditions.Select(c => new LayerConditionViewModel<T>(this, c, DataModelProps)));
+            LayerConditionVms =
+                new BindableCollection<LayerConditionViewModel<T>>(
+                    layer.LayerConditions.Select(c => new LayerConditionViewModel<T>(this, c, DataModelProps)));
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", DataModelProps, layer);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, layer);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, layer);
@@ -62,6 +66,17 @@ namespace Artemis.ViewModels.LayerEditor
                 if (Equals(value, _layer)) return;
                 _layer = value;
                 NotifyOfPropertyChange(() => Layer);
+            }
+        }
+
+        public LayerModel ProposedLayer
+        {
+            get { return _proposedLayer; }
+            set
+            {
+                if (Equals(value, _proposedLayer)) return;
+                _proposedLayer = value;
+                NotifyOfPropertyChange(() => ProposedLayer);
             }
         }
 
@@ -131,6 +146,9 @@ namespace Artemis.ViewModels.LayerEditor
         public void Apply()
         {
             GeneralHelpers.CopyProperties(Layer.UserProps, ProposedProperties);
+            HeightProperties.Apply();
+            WidthProperties.Apply();
+            OpacityProperties.Apply();
         }
 
         public void DeleteCondition(LayerConditionViewModel<T> layerConditionViewModel,
