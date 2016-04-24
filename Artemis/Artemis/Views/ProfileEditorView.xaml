@@ -78,7 +78,8 @@
                                 <ContextMenu
                                     cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" />
-                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayer($datacontext)"/>
+                                    <MenuItem Header="Duplicate" cal:Message.Attach="CloneLayer($datacontext)"/>
+                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayerFromMenu($datacontext)"/>
                                     <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>

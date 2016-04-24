@@ -9,12 +9,14 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
 using MahApps.Metro;
@@ -194,12 +196,22 @@ namespace Artemis.ViewModels
 
         private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
 
+        /// <summary>
+        ///     Handles chaning the active keyboard, updating the preview image and profiles collection
+        /// </summary>
+        /// <param name="message"></param>
         public void Handle(ActiveKeyboardChanged message)
         {
             NotifyOfPropertyChange(() => KeyboardImage);
             NotifyOfPropertyChange(() => PreviewSettings);
+            LoadProfiles();
         }
 
+        /// <summary>
+        ///     Handles refreshing the layer preview
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PropertyChangeHandler(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "KeyboardPreview")
@@ -211,6 +223,9 @@ namespace Artemis.ViewModels
                 ProfileProvider.AddOrUpdate(SelectedProfile);
         }
 
+        /// <summary>
+        ///     Loads all profiles for the current game and keyboard
+        /// </summary>
         private void LoadProfiles()
         {
             Profiles.Clear();
@@ -218,6 +233,9 @@ namespace Artemis.ViewModels
             SelectedProfile = Profiles.FirstOrDefault();
         }
 
+        /// <summary>
+        ///     Adds a new profile to the current game and keyboard
+        /// </summary>
         public async void AddProfile()
         {
             var name = await _mainManager.DialogService.ShowInputDialog("Add new profile",
@@ -254,6 +272,10 @@ namespace Artemis.ViewModels
             NotifyOfPropertyChange(() => KeyboardPreview);
         }
 
+        /// <summary>
+        ///     Opens a new LayerEditorView for the given layer
+        /// </summary>
+        /// <param name="layer">The layer to open the view for</param>
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
@@ -262,8 +284,15 @@ namespace Artemis.ViewModels
 
             settings.Title = "Artemis | Edit " + layer.Name;
             manager.ShowDialog(_editorVm, null, settings);
+
+            // Refresh the layer list and reselect the last layer
+            NotifyOfPropertyChange(() => Layers);
+            SelectedLayer = layer;
         }
 
+        /// <summary>
+        ///     Adds a new layer to the profile and selects it
+        /// </summary>
         public void AddLayer()
         {
             if (_selectedProfile == null)
@@ -275,6 +304,9 @@ namespace Artemis.ViewModels
             SelectedLayer = layer;
         }
 
+        /// <summary>
+        ///     Removes the currently selected layer from the profile
+        /// </summary>
         public void RemoveLayer()
         {
             if (_selectedProfile == null || _selectedLayer == null)
@@ -286,7 +318,11 @@ namespace Artemis.ViewModels
             SelectedProfile.FixOrder();
         }
 
-        public void RemoveLayer(LayerModel layer)
+        /// <summary>
+        ///     Removes the given layer from the profile
+        /// </summary>
+        /// <param name="layer"></param>
+        public void RemoveLayerFromMenu(LayerModel layer)
         {
             SelectedProfile.Layers.Remove(layer);
             Layers.Remove(layer);
@@ -294,6 +330,23 @@ namespace Artemis.ViewModels
             SelectedProfile.FixOrder();
         }
 
+        /// <summary>
+        ///     Clones the given layer and adds it to the profile, on top of the original
+        /// </summary>
+        /// <param name="layer"></param>
+        public void CloneLayer(LayerModel layer)
+        {
+            var clone = GeneralHelpers.Clone(layer);
+            clone.Order = layer.Order - 1;
+            SelectedProfile.Layers.Add(clone);
+            Layers.Add(clone);
+
+            SelectedProfile.FixOrder();
+        }
+
+        /// <summary>
+        ///     Moves the currently selected layer up in the profile's layer tree
+        /// </summary>
         public void LayerUp()
         {
             if (SelectedLayer == null)
@@ -310,6 +363,9 @@ namespace Artemis.ViewModels
             SelectedLayer = reorderLayer;
         }
 
+        /// <summary>
+        ///     Moves the currently selected layer down in the profile's layer tree
+        /// </summary>
         public void LayerDown()
         {
             if (SelectedLayer == null)
@@ -326,12 +382,21 @@ namespace Artemis.ViewModels
             SelectedLayer = reorderLayer;
         }
 
+        /// <summary>
+        ///     Handler for clicking
+        /// </summary>
+        /// <param name="e"></param>
         public void MouseDownKeyboardPreview(MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
                 _downTime = DateTime.Now;
         }
 
+        /// <summary>
+        ///     Second handler for clicking, selects a the layer the user clicked on
+        ///     if the used clicked on an empty spot, deselects the current layer
+        /// </summary>
+        /// <param name="e"></param>
         public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
         {
             var timeSinceDown = DateTime.Now - _downTime;
@@ -347,6 +412,10 @@ namespace Artemis.ViewModels
             SelectedLayer = hoverLayer;
         }
 
+        /// <summary>
+        ///     Handler for resizing and moving the currently selected layer
+        /// </summary>
+        /// <param name="e"></param>
         public void MouseMoveKeyboardPreview(MouseEventArgs e)
         {
             var pos = e.GetPosition((Image) e.OriginalSource);
@@ -377,6 +446,13 @@ namespace Artemis.ViewModels
                 KeyboardPreviewCursor = Cursors.Hand;
         }
 
+        /// <summary>
+        ///     Handles dragging the given layer
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="hoverLayer"></param>
         private void HandleDragging(MouseEventArgs e, double x, double y, LayerModel hoverLayer)
         {
             // Reset the dragging state on mouse release
