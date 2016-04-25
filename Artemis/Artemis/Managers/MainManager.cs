@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Services;
@@ -26,7 +25,7 @@ namespace Artemis.Managers
             Events = events;
             DialogService = dialogService;
 
-            KeyboardManager = new KeyboardManager(this);
+            KeyboardManager = new KeyboardManager(this, Events);
             EffectManager = new EffectManager(this, Events);
             KeyboardHook = new KeyboardHook();
 
@@ -51,8 +50,8 @@ namespace Artemis.Managers
             GameStateWebServer.Start();
 
             // Start the named pipe
-            //PipeServer = new PipeServer();
-            //PipeServer.Start("artemis");
+            PipeServer = new PipeServer();
+            PipeServer.Start("artemis");
         }
 
         public PipeServer PipeServer { get; set; }

@@ -1,29 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionDataModel
+    public class TheDivisionDataModel : IGameDataModel
     {
-        public List<DivisionPlayer> DivisionPlayers { get; set; }
-        public GrenadeState GrenadeState { get; set; }
-        public bool LowAmmo { get; set; }
-        public bool LowHp { get; set; }
-
         public TheDivisionDataModel()
         {
-            DivisionPlayers = new List<DivisionPlayer>();
+            TestyTest = new TestTest();
         }
+
+        public PlayerState PartyMember1 { get; set; }
+        public PlayerState PartyMember2 { get; set; }
+        public PlayerState PartyMember3 { get; set; }
+
+        public bool LowAmmo { get; set; }
+        public bool LowHp { get; set; }
+        public GrenadeState GrenadeState { get; set; }
+
+        public TestTest TestyTest { get; set; }
     }
 
-    public class DivisionPlayer
+    
+    public class TestTest
     {
-        public int Id { get; set; }
-        public PlayerState PlayerState { get; set; }
-
-        public DivisionPlayer(int id)
-        {
-            Id = id;
-        }
+        public string TestS { get; set; }
+        public int TestI { get; set; }
     }
 
     public enum GrenadeState

@@ -22,7 +22,7 @@ namespace Artemis.ViewModels
             _counterStrikeVm = new CounterStrikeViewModel(mainManager) {DisplayName = "CS:GO"};
             _dota2Vm = new Dota2ViewModel(mainManager) {DisplayName = "Dota 2"};
             _witcher3Vm = new Witcher3ViewModel(mainManager) {DisplayName = "The Witcher 3"};
-           // _divisionVm = new TheDivisionViewModel(mainManager) {DisplayName = "The Division"};
+            _divisionVm = new TheDivisionViewModel(mainManager) {DisplayName = "The Division"};
         }
 
         protected override void OnActivate()
@@ -33,7 +33,7 @@ namespace Artemis.ViewModels
             ActivateItem(_counterStrikeVm);
             ActivateItem(_dota2Vm);
             ActivateItem(_witcher3Vm);
-           // ActivateItem(_divisionVm);
+            ActivateItem(_divisionVm);
         }
     }
 }

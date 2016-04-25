@@ -91,10 +91,7 @@ namespace Artemis.Properties {
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
         /// &quot;uri&quot; &quot;http://localhost:{{port}}/csgo_game_event&quot;
-        /// &quot;timeout&quot; &quot;5.0&quot;
-        /// &quot;buffer&quot;  &quot;0.1&quot;
-        /// &quot;throttle&quot; &quot;0.1&quot;
-        /// &quot;heartbeat&quot; &quot;30.0&quot;
+        /// &quot;timeout&quot; &quot;0.1&quot;
         /// &quot;data&quot;
         /// {
         ///   &quot;provider&quot;            &quot;1&quot;
@@ -116,7 +113,7 @@ namespace Artemis.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
-        ///    &quot;uri&quot;           &quot;http://localhost:4000/&quot;
+        ///    &quot;uri&quot;           &quot;http://localhost:{{port}}/&quot;
         ///    &quot;timeout&quot;       &quot;5.0&quot;
         ///    &quot;buffer&quot;        &quot;0.1&quot;
         ///    &quot;throttle&quot;      &quot;0.1&quot;
@@ -135,6 +132,56 @@ namespace Artemis.Properties {
         internal static string dotaGamestateConfiguration {
             get {
                 return ResourceManager.GetString("dotaGamestateConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder {
+            get {
+                object obj = ResourceManager.GetObject("folder", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap g910 {
+            get {
+                object obj = ResourceManager.GetObject("g910", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap k65 {
+            get {
+                object obj = ResourceManager.GetObject("k65", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap k70 {
+            get {
+                object obj = ResourceManager.GetObject("k70", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap k95 {
+            get {
+                object obj = ResourceManager.GetObject("k95", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -189,6 +236,16 @@ namespace Artemis.Properties {
         internal static string playerWitcherWs {
             get {
                 return ResourceManager.GetString("playerWitcherWs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap strafe {
+            get {
+                object obj = ResourceManager.GetObject("strafe", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Windows;
+using Size = System.Windows.Size;
 
 namespace Artemis.KeyboardProviders
 {
@@ -11,6 +13,8 @@ namespace Artemis.KeyboardProviders
         public string CantEnableText { get; set; }
 
         public List<KeyboardRegion> KeyboardRegions { get; set; }
+
+        public PreviewSettings PreviewSettings { get; set; }
 
         public abstract bool CanEnable();
         public abstract void Enable();
@@ -28,5 +32,23 @@ namespace Artemis.KeyboardProviders
         /// </summary>
         /// <returns></returns>
         public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
+
+        public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
+    }
+
+    public struct PreviewSettings
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public Thickness Margin { get; set; }
+        public Bitmap Image { get; set; }
+
+        public PreviewSettings(int width, int height, Thickness margin, Bitmap image)
+        {
+            Width = width;
+            Height = height;
+            Margin = margin;
+            Image = image;
+        }
     }
 }

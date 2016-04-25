@@ -19,11 +19,6 @@
                 <RowDefinition Height="80" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
 
             </Grid.RowDefinitions>
@@ -58,73 +53,11 @@
                 </Grid>
             </StackPanel>
 
-            <!-- Ammo display -->
-            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="130" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Display ammo on F-keys
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.AmmoEnabled, Mode=TwoWay}"
-                                   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Ammo main color -->
-            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="94" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Main ammo color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=GameSettings.AmmoMainColor, Mode=TwoWay}"
-                              Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Ammo secondary color -->
-            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="122" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Secondary ammo color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=GameSettings.AmmoSecondaryColor, Mode=TwoWay}"
-                              Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Smoke effect -->
-            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="116" VerticalAlignment="Center"
-                       Height="16" Margin="0,9,0,10">
-                Display smoked effect
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.SmokeEnabled, Mode=TwoWay}"
-                                   Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Flash effect -->
-            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="113" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Display flashed effect
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.FlashEnabled, Mode=TwoWay}"
-                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Team color -->
-            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="181" VerticalAlignment="Center"
-                       Height="16" Margin="0,9,0,10">
-                Color keyboard according to team
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.TeamColorEnabled, Mode=TwoWay}"
-                                   Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Team color -->
-            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="160" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Color keyboard red on low HP
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.LowHpEnabled, Mode=TwoWay}"
-                                   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
+            <!-- Profile editor -->
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
 
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

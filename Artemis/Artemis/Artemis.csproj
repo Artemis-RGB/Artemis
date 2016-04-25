@@ -136,6 +136,10 @@
       <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ColorBox, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f971124b2576acfc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\ColorBox.dll</HintPath>
+    </Reference>
     <Reference Include="Corale.Colore, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Colore.4.0.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
@@ -145,7 +149,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -168,11 +172,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Screna, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Screna.0.1.3\lib\Screna.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -188,8 +188,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -214,28 +219,28 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.DataGrid, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=2.6.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.6\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -249,9 +254,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
+    <Compile Include="DAL\ProfileProvider.cs" />
+    <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
+    <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
     <Compile Include="KeyboardProviders\KeyboardRegion.cs" />
@@ -269,6 +277,12 @@
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
+    <Compile Include="Models\Interfaces\GameDataModel.cs" />
+    <Compile Include="Models\Profiles\LayerConditionModel.cs" />
+    <Compile Include="Models\Profiles\LayerModel.cs" />
+    <Compile Include="Models\Profiles\LayerDynamicPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\LayerPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\ProfileModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
@@ -298,6 +312,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Modules\Games\CounterStrike\CounterStrikeDataModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2.Designer.cs">
@@ -313,6 +328,7 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Modules\Games\RocketLeague\RocketLeagueDataModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -366,11 +382,13 @@
       <DependentUpon>Offsets.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\ColorHelpers.cs" />
+    <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\GeneralHelpers.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\LayerDrawer.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
     <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
@@ -380,9 +398,12 @@
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
+    <Compile Include="Utilities\ParentChild\ChildItemCollection.cs" />
+    <Compile Include="Utilities\ParentChild\IChildItem.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
+    <Compile Include="Utilities\ValueConverters.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
@@ -397,8 +418,12 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerDynamicPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\LayerEditorViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
+    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
@@ -435,11 +460,23 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
+      <DependentUpon>LayerConditionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml.cs">
+      <DependentUpon>LayerDynamicPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\LayerEditorView.xaml.cs">
+      <DependentUpon>LayerEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileEditorView.xaml.cs">
+      <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
       <DependentUpon>ShellView.xaml</DependentUpon>
@@ -457,8 +494,8 @@
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -495,18 +532,24 @@
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\bow.png" />
-    <Resource Include="Resources\WindowsIcons-license.txt" />
-    <Resource Include="Resources\Entypo-license.txt" />
     <Content Include="logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\logo.ico" />
     <Resource Include="Resources\logo-disabled.ico" />
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
+    <Resource Include="Resources\Entypo.ttf" />
     <None Include="Resources\LogitechLED.dll" />
+    <None Include="Resources\folder.png" />
+    <Resource Include="Resources\Keyboards\k65.png" />
+    <Resource Include="Resources\Keyboards\k70.png" />
+    <Resource Include="Resources\Keyboards\k95.png" />
+    <Resource Include="Resources\Keyboards\strafe.png" />
+    <Resource Include="Resources\Keyboards\g910.png" />
+    <Resource Include="Resources\WindowsIcons-license.txt" />
+    <Resource Include="Resources\Entypo-license.txt" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
-    <Resource Include="Resources\Entypo.ttf" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
@@ -531,6 +574,14 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\Accents\CorsairYellow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ColorBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EffectsView.xaml">
       <SubType>Designer</SubType>
@@ -576,11 +627,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\LayerEditor\LayerConditionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\LayerEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\OverlaysView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
