@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -80,8 +79,8 @@ namespace Artemis
 
         private void CheckDuplicateInstances()
         {
-            if (Process.GetProcesses().Count(p => p.ProcessName.Contains(Assembly.GetExecutingAssembly()
-                .FullName.Split(',')[0]) && !p.Modules[0].FileName.Contains("vshost")) < 2)
+            var processes = Process.GetProcesses();
+            if (processes.Count(p => p.ProcessName == "Artemis") < 2)
                 return;
 
             MessageBox.Show("An instance of Artemis is already running (check your system tray).",
