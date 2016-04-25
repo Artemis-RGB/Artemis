@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -9,6 +10,7 @@ using Caliburn.Micro;
 using Caliburn.Micro.Autofac;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace Artemis
 {
@@ -20,17 +22,17 @@ namespace Artemis
 
             Initialize();
 
-            MessageBinder.SpecialValues.Add("$scaledmousex", (ctx) =>
+            MessageBinder.SpecialValues.Add("$scaledmousex", ctx =>
             {
                 var img = ctx.Source as Image;
                 var input = ctx.Source as IInputElement;
-                var e = ctx.EventArgs as System.Windows.Input.MouseEventArgs;
+                var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
                 if (img != null && e != null)
                 {
-                    Point position = e.GetPosition(img);
-                    return (int)(img.Source.Width * (position.X / img.ActualWidth));
+                    var position = e.GetPosition(img);
+                    return (int) (img.Source.Width*(position.X/img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
@@ -40,17 +42,17 @@ namespace Artemis
                 // Return 0 if no processing could be done
                 return 0;
             });
-            MessageBinder.SpecialValues.Add("$scaledmousey", (ctx) =>
+            MessageBinder.SpecialValues.Add("$scaledmousey", ctx =>
             {
                 var img = ctx.Source as Image;
                 var input = ctx.Source as IInputElement;
-                var e = ctx.EventArgs as System.Windows.Input.MouseEventArgs;
+                var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
                 if (img != null && e != null)
                 {
-                    Point position = e.GetPosition(img);
-                    return (int)(img.Source.Width * (position.Y / img.ActualWidth));
+                    var position = e.GetPosition(img);
+                    return (int) (img.Source.Width*(position.Y/img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
@@ -79,14 +81,13 @@ namespace Artemis
 
         private void CheckDuplicateInstances()
         {
-            var processes = Process.GetProcesses();
-            if (processes.Count(p => p.ProcessName == "Artemis") < 2)
+            if (Process.GetProcesses().Count(p => p.ProcessName.Contains(Assembly.GetExecutingAssembly()
+                .FullName.Split(',')[0]) && !p.Modules[0].FileName.Contains("vshost")) < 2)
                 return;
 
             MessageBox.Show("An instance of Artemis is already running (check your system tray).",
                 "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             Application.Current.Shutdown();
         }
-
     }
 }
