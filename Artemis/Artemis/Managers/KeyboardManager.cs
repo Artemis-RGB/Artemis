@@ -1,23 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
+using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
+using Caliburn.Micro;
 
 namespace Artemis.Managers
 {
     public class KeyboardManager
     {
+        private readonly IEventAggregator _events;
         private readonly MainManager _mainManager;
+        private KeyboardProvider _activeKeyboard;
 
-        public KeyboardManager(MainManager mainManager)
+        public KeyboardManager(MainManager mainManager, IEventAggregator events)
         {
             _mainManager = mainManager;
+            _events = events;
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
         }
 
         public List<KeyboardProvider> KeyboardProviders { get; set; }
-        public KeyboardProvider ActiveKeyboard { get; set; }
+
+        public KeyboardProvider ActiveKeyboard
+        {
+            get { return _activeKeyboard; }
+            set
+            {
+                _activeKeyboard = value;
+                // Let the ViewModels know
+                _events.PublishOnUIThread(new ActiveKeyboardChanged(value?.Name));
+            }
+        }
 
         /// <summary>
         ///     Enables the last keyboard according to the settings file

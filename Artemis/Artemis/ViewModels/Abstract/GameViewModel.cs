@@ -1,4 +1,5 @@
-﻿using Artemis.Managers;
+﻿using System.ComponentModel;
+using Artemis.Managers;
 using Artemis.Models;
 using Caliburn.Micro;
 
@@ -10,7 +11,7 @@ namespace Artemis.ViewModels.Abstract
 
         public GameModel GameModel { get; set; }
         public MainManager MainManager { get; set; }
-
+        public event OnLayersUpdatedCallback OnLayersUpdatedCallback;
         public GameSettings GameSettings
         {
             get { return _gameSettings; }
@@ -54,4 +55,6 @@ namespace Artemis.ViewModels.Abstract
             SaveSettings();
         }
     }
+
+    public delegate void OnLayersUpdatedCallback(object sender);
 }

@@ -1,54 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Artemis.Utilities
 {
     internal class ImageUtilities
     {
-        private static Dictionary<string, ImageCodecInfo> encoders;
-
-        /// <summary>
-        ///     A lock to prevent concurrency issues loading the encoders.
-        /// </summary>
-        private static readonly object encodersLock = new object();
-
-        /// <summary>
-        ///     A quick lookup for getting image encoders
-        /// </summary>
-        public static Dictionary<string, ImageCodecInfo> Encoders
-        {
-            //get accessor that creates the dictionary on demand
-            get
-            {
-                //if the quick lookup isn't initialised, initialise it
-                if (encoders == null)
-                {
-                    //protect against concurrency issues
-                    lock (encodersLock)
-                    {
-                        //check again, we might not have been the first person to acquire the lock (see the double checked lock pattern)
-                        if (encoders == null)
-                        {
-                            encoders = new Dictionary<string, ImageCodecInfo>();
-
-                            //get all the codecs
-                            foreach (var codec in ImageCodecInfo.GetImageEncoders())
-                            {
-                                //add each codec to the quick lookup
-                                encoders.Add(codec.MimeType.ToLower(), codec);
-                            }
-                        }
-                    }
-                }
-
-                //return the lookup
-                return encoders;
-            }
-        }
-
         /// <summary>
         ///     Resize the image to the specified width and height.
         /// </summary>
@@ -72,6 +34,47 @@ namespace Artemis.Utilities
 
             //return the resulting bitmap
             return result;
+        }
+
+        public static Bitmap BitmapSourceToBitmap(BitmapSource srs)
+        {
+            var width = srs.PixelWidth;
+            var height = srs.PixelHeight;
+            var stride = width*((srs.Format.BitsPerPixel + 7)/8);
+            var ptr = IntPtr.Zero;
+            try
+            {
+                ptr = Marshal.AllocHGlobal(height*stride);
+                srs.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height*stride, stride);
+                using (var btm = new Bitmap(width, height, stride, PixelFormat.Format1bppIndexed, ptr))
+                {
+                    // Clone the bitmap so that we can dispose it and
+                    // release the unmanaged memory at ptr
+                    return new Bitmap(btm);
+                }
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.FreeHGlobal(ptr);
+            }
+        }
+
+        public static Bitmap DrawinVisualToBitmap(DrawingVisual visual, Rect rect)
+        {
+            var bmp = new RenderTargetBitmap((int) rect.Width, (int) rect.Height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(visual);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
+            Bitmap bitmap;
+            using (var stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                bitmap = new Bitmap(stream);
+            }
+            return bitmap;
         }
     }
 }

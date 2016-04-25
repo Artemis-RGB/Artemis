@@ -28,6 +28,23 @@ namespace Artemis.Utilities
             return returnColor;
         }
 
+        public static System.Windows.Media.Color GetRandomRainbowMediaColor()
+        {
+            var colors = new List<byte>();
+            var rand = new Random();
+            for (var i = 0; i < 3; i++)
+                colors.Add((byte) rand.Next(0, 256));
+
+            var highest = colors.Max();
+            var lowest = colors.Min();
+            colors[colors.FindIndex(c => c == highest)] = 255;
+            colors[colors.FindIndex(c => c == lowest)] = 0;
+
+            var returnColor = System.Windows.Media.Color.FromArgb(255, colors[0], colors[1], colors[2]);
+
+            return returnColor;
+        }
+
         public static Color ShiftColor(Color c, int shiftAmount)
         {
             int newRed = c.R;

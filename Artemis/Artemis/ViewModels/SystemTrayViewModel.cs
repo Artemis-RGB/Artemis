@@ -25,7 +25,6 @@ namespace Artemis.ViewModels
             _shellViewModel.MainManager.Events.Subscribe(this);
             _shellViewModel.MainManager.EnableProgram();
             _checkedForUpdate = false;
-            //ActiveIcon = "../logo.ico";
 
             if (General.Default.ShowOnStartup)
                 ShowWindow();
