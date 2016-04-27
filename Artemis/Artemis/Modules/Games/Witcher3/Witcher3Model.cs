@@ -18,9 +18,8 @@ namespace Artemis.Modules.Games.Witcher3
         private KeyboardRectangle _signRect;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager, Witcher3Settings settings) : base(mainManager)
+        public Witcher3Model(MainManager mainManager, Witcher3Settings settings) : base(mainManager, settings)
         {
-            Settings = settings;
             Name = "Witcher3";
             ProcessName = "witcher3";
             Scale = 4;
@@ -30,8 +29,6 @@ namespace Artemis.Modules.Games.Witcher3
             _updateSw = new Stopwatch();
             _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
         }
-
-        public Witcher3Settings Settings { get; set; }
 
         public int Scale { get; set; }
 

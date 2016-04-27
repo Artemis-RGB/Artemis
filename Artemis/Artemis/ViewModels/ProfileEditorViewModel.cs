@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
@@ -49,6 +48,10 @@ namespace Artemis.ViewModels
 
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
+        }
+
+        public ProfileEditorViewModel()
+        {
         }
 
         public BindableCollection<ProfileModel> Profiles
@@ -105,7 +108,8 @@ namespace Artemis.ViewModels
                 _selectedProfile = value;
 
                 Layers.Clear();
-                Layers.AddRange(_selectedProfile?.Layers);
+                if (_selectedProfile != null)
+                    Layers.AddRange(_selectedProfile.Layers);
 
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => CanAddLayer);

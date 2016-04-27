@@ -15,17 +15,14 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager)
+        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager, settings)
         {
-            Settings = settings;
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
         }
-
-        public RocketLeagueSettings Settings { get; set; }
 
         public int Scale { get; set; }
 

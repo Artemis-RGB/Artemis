@@ -8,32 +8,14 @@ using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeViewModel : GameViewModel
+    public class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
     {
-        public CounterStrikeViewModel(MainManager mainManager)
+        public CounterStrikeViewModel(MainManager mainManager) : base(mainManager, new CounterStrikeModel(mainManager, new CounterStrikeSettings()))
         {
-            MainManager = mainManager;
-
-            // Settings are loaded from file by class
-            GameSettings = new CounterStrikeSettings();
-
             // Create effect model and add it to MainManager
-            GameModel = new CounterStrikeModel(mainManager, (CounterStrikeSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
-
-            ProfileEditor = new ProfileEditorViewModel<CounterStrikeDataModel>(MainManager, GameModel);
-            ProfileEditor.PropertyChanged += ProfileUpdater;
-            GameModel.Profile = ProfileEditor.SelectedProfile;
         }
-
-        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "SelectedProfile")
-                GameModel.Profile = ProfileEditor.SelectedProfile;
-        }
-
-        public ProfileEditorViewModel<CounterStrikeDataModel> ProfileEditor { get; set; }
 
         public static string Name => "CS:GO";
         public string Content => "Counter-Strike: GO Content";

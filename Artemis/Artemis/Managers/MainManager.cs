@@ -9,6 +9,8 @@ using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.LogitechDll;
 using Caliburn.Micro;
+using NLog;
+using LogManager = NLog.LogManager;
 
 namespace Artemis.Managers
 {
@@ -16,12 +18,16 @@ namespace Artemis.Managers
     {
         public delegate void PauseCallbackHandler();
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly int _fps;
         private bool _paused;
         private bool _restarting;
 
         public MainManager(IEventAggregator events, MetroDialogService dialogService)
         {
+            Logger.Info("Intializing MainManager");
+
             Events = events;
             DialogService = dialogService;
 
@@ -52,6 +58,8 @@ namespace Artemis.Managers
             // Start the named pipe
             PipeServer = new PipeServer();
             PipeServer.Start("artemis");
+
+            Logger.Info("Intialized MainManager");
         }
 
         public PipeServer PipeServer { get; set; }
@@ -80,6 +88,7 @@ namespace Artemis.Managers
         /// <returns>Whether starting was successful or not</returns>
         public bool Start(EffectModel effect = null)
         {
+            Logger.Debug("Starting MainManager");
             // Can't take control when not enabled
             if (!ProgramEnabled || UpdateWorker.CancellationPending || UpdateWorker.IsBusy || _paused)
                 return false;
@@ -109,6 +118,7 @@ namespace Artemis.Managers
         /// </summary>
         public void Stop()
         {
+            Logger.Debug("Stopping MainManager");
             if (!Running || UpdateWorker.CancellationPending || _paused)
                 return;
 
@@ -123,6 +133,7 @@ namespace Artemis.Managers
             KeyboardManager.ReleaseActiveKeyboard();
             Running = false;
 
+            Logger.Debug("Stopped MainManager");
             if (e.Error != null || !_restarting)
                 return;
 
@@ -135,6 +146,7 @@ namespace Artemis.Managers
             if (!Running || UpdateWorker.CancellationPending || _paused)
                 return;
 
+            Logger.Debug("Pausing MainManager");
             _paused = true;
         }
 
@@ -143,23 +155,26 @@ namespace Artemis.Managers
             if (!_paused)
                 return;
 
+            Logger.Debug("Unpausing MainManager");
             _paused = false;
-            PauseCallback = null;
         }
 
         public void Shutdown()
         {
+            Logger.Debug("Shutting down MainManager");
             Stop();
             ProcessWorker.CancelAsync();
             ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
-            //NamedPipeServer.StopServer();
+            PipeServer.Stop();
         }
 
         public void Restart()
         {
             if (_restarting)
                 return;
+
+            Logger.Debug("Restarting MainManager");
             if (!Running)
             {
                 Start();
@@ -175,6 +190,7 @@ namespace Artemis.Managers
         /// </summary>
         public void EnableProgram()
         {
+            Logger.Debug("Enabling program");
             ProgramEnabled = true;
             Start(EffectManager.GetLastEffect());
             Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -185,6 +201,7 @@ namespace Artemis.Managers
         /// </summary>
         public void DisableProgram()
         {
+            Logger.Debug("Disabling program");
             Stop();
             ProgramEnabled = false;
             Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -209,7 +226,15 @@ namespace Artemis.Managers
                 if (KeyboardManager.ActiveKeyboard == null || EffectManager.ActiveEffect == null)
                 {
                     Thread.Sleep(1000/_fps);
-                    Stop();
+                    Logger.Debug("No active effect/keyboard, stopping");
+
+                    if (EffectManager.PauseEffect != null)
+                    {
+                        PauseCallback?.Invoke();
+                        Thread.Sleep(1000/_fps);
+                    }
+                    else
+                        Stop();
                     continue;
                 }
 
@@ -257,8 +282,11 @@ namespace Artemis.Managers
 
         private void BackgroundWorkerExceptionCatcher(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Error != null)
-                throw e.Error;
+            if (e.Error == null)
+                return;
+
+            Logger.Error(e.Error, "Exception in the BackgroundWorker");
+            throw e.Error;
         }
 
         private void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -285,7 +313,8 @@ namespace Artemis.Managers
 
                 // Look for running games, stopping on the first one that's found.
                 var newGame = EffectManager.EnabledGames
-                    .FirstOrDefault(g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+                    .FirstOrDefault(
+                        g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
                 // If it's not already enabled, do so.
                 if (newGame != null && EffectManager.ActiveEffect != newGame)

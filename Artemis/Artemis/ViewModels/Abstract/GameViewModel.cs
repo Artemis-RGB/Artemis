@@ -1,17 +1,38 @@
 ﻿using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Modules.Games.Witcher3;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels.Abstract
 {
-    public abstract class GameViewModel : Screen
+    public abstract class GameViewModel<T> : Screen
     {
+        private bool _doActivate;
+
+        private bool _editorShown;
         private GameSettings _gameSettings;
+        private EffectModel _lastEffect;
+
+        protected GameViewModel(MainManager mainManager, GameModel gameModel)
+        {
+            MainManager = mainManager;
+            GameModel = gameModel;
+            GameSettings = gameModel.Settings;
+
+            ProfileEditor = new ProfileEditorViewModel<T>(MainManager, GameModel);
+            GameModel.Profile = ProfileEditor.SelectedProfile;
+            ProfileEditor.PropertyChanged += ProfileUpdater;
+        }
+
+        public ProfileEditorViewModel<T> ProfileEditor { get; set; }
 
         public GameModel GameModel { get; set; }
         public MainManager MainManager { get; set; }
-        public event OnLayersUpdatedCallback OnLayersUpdatedCallback;
+
         public GameSettings GameSettings
         {
             get { return _gameSettings; }
@@ -53,6 +74,63 @@ namespace Artemis.ViewModels.Abstract
             NotifyOfPropertyChange(() => GameSettings);
 
             SaveSettings();
+        }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+
+            // OnActive is triggered at odd moments, only activate the profile 
+            // preview if OnDeactivate isn't called right after it
+            _doActivate = true;
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(100);
+                if (_doActivate)
+                    SetEditorShown(true);
+            });
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
+
+            _doActivate = false;
+            SetEditorShown(false);
+        }
+
+        public void SetEditorShown(bool enable)
+        {
+            if (enable == _editorShown)
+                return;
+
+            if (enable)
+            {
+                // Store the current effect so it can be restored later
+                if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
+                    _lastEffect = MainManager.EffectManager.ActiveEffect;
+
+                MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+                MainManager.EffectManager.ChangeEffect(MainManager.EffectManager.ProfilePreviewModel);
+            }
+            else
+            {
+                if (_lastEffect != null)
+                    MainManager.EffectManager.ChangeEffect(_lastEffect, true);
+                else
+                    MainManager.EffectManager.ClearEffect();
+            }
+
+            _editorShown = enable;
+        }
+
+        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedProfile")
+                return;
+
+            GameModel.Profile = ProfileEditor.SelectedProfile;
+            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
         }
     }
 

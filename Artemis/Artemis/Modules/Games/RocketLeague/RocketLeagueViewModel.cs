@@ -1,36 +1,21 @@
-﻿using System.ComponentModel;
-using Artemis.Managers;
+﻿using Artemis.Managers;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
-using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueViewModel : GameViewModel
+    public class RocketLeagueViewModel : GameViewModel<RocketLeagueDataModel>
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager mainManager)
+        public RocketLeagueViewModel(MainManager mainManager) : base(mainManager, new RocketLeagueModel(mainManager, new RocketLeagueSettings()))
         {
-            MainManager = mainManager;
-
-            // Settings are loaded from file by class
-            GameSettings = new RocketLeagueSettings();
-
-            // Create effect model and add it to MainManager
-            GameModel = new RocketLeagueModel(mainManager, (RocketLeagueSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
-
-            ProfileEditor = new ProfileEditorViewModel<RocketLeagueDataModel>(MainManager, GameModel);
-            ProfileEditor.PropertyChanged += ProfileUpdater;
-            GameModel.Profile = ProfileEditor.SelectedProfile;
         }
-
-        public ProfileEditorViewModel<RocketLeagueDataModel> ProfileEditor { get; set; }
 
         public static string Name => "Rocket League";
 
@@ -46,12 +31,6 @@ namespace Artemis.Modules.Games.RocketLeague
         }
 
         public RocketLeagueModel RocketLeagueModel { get; set; }
-
-        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "SelectedProfile")
-                GameModel.Profile = ProfileEditor.SelectedProfile;
-        }
 
         private void SetVersionText()
         {

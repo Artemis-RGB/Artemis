@@ -9,17 +9,14 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager)
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings)
         {
-            Settings = settings;
             Name = "CounterStrike";
             ProcessName = "csgo";
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
         }
-
-        public CounterStrikeSettings Settings { get; set; }
 
         public int Scale { get; set; }
 

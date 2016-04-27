@@ -22,17 +22,14 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyHp;
         private int _trans;
 
-        public TheDivisionModel(MainManager mainManager, TheDivisionSettings settings) : base(mainManager)
+        public TheDivisionModel(MainManager mainManager, TheDivisionSettings settings) : base(mainManager, settings)
         {
-            Settings = settings;
             Name = "TheDivision";
             ProcessName = "TheDivision";
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
         }
-
-        public TheDivisionSettings Settings { get; set; }
 
         public int Scale { get; set; }
 

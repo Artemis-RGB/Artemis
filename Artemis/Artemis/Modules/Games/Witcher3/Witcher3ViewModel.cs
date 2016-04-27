@@ -4,14 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Artemis.Managers;
+using Artemis.Models.Interfaces;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public class Witcher3ViewModel : GameViewModel
+    public class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
     {
-        public Witcher3ViewModel(MainManager mainManager)
+        public Witcher3ViewModel(MainManager mainManager) : base(mainManager, new Witcher3Model(mainManager, new Witcher3Settings()))
         {
             MainManager = mainManager;
 
@@ -108,5 +109,9 @@ namespace Artemis.Modules.Games.Witcher3
 
             MainManager.DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
         }
+    }
+
+    public class Witcher3DataModel : IGameDataModel
+    {
     }
 }
