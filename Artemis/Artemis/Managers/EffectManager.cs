@@ -122,7 +122,7 @@ namespace Artemis.Managers
             var tryCount = 0;
             while (PauseEffect != null)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(500);
                 tryCount++;
                 if (tryCount > 20)
                     throw new Exception("Couldn't change effect before the time expired");

@@ -47,8 +47,20 @@ namespace Artemis.Models.Profiles
             if (layerProp == null || userProp == null)
                 return;
 
-            var percentage = ToDouble(gameProperty)/percentageSource;
-            layerProp.SetValue(props, (int) (percentage*(int) userProp.GetValue(userProps, null)));
+            var percentage = ToDouble(gameProperty) / percentageSource;
+            
+            // Opacity requires some special treatment as it causes an exception if it's < 0.0 or > 1.0
+            if (LayerProperty == "Opacity")
+            {
+                var opacity = percentage*(double) userProp.GetValue(userProps, null);
+                if (opacity < 0.0)
+                    opacity = 0.0;
+                if (opacity > 1.0)
+                    opacity = 1.0;
+                layerProp.SetValue(props, opacity);
+            }
+            else
+                layerProp.SetValue(props, (int) (percentage*(int) userProp.GetValue(userProps, null)));
         }
 
         private void ApplyProp(LayerPropertiesModel props, LayerPropertiesModel userProps, IGameDataModel data)
