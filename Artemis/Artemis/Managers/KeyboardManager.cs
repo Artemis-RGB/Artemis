@@ -75,6 +75,8 @@ namespace Artemis.Managers
             if (!keyboardProvider.CanEnable())
             {
                 _mainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                General.Default.LastKeyboard = null;
+                General.Default.Save();
                 return;
             }
 
