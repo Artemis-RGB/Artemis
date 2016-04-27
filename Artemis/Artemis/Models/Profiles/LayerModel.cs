@@ -64,10 +64,12 @@ namespace Artemis.Models.Profiles
             _mustDraw = false;
         }
 
-        public void Draw<T>(IGameDataModel dataModel, DrawingContext c)
+        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview = false)
         {
-            if (!ConditionsMet<T>(dataModel))
-                return;
+            // Conditions aren't checked during a preview because there is no game data to base them on
+            if (!preview)
+                if (!ConditionsMet<T>(dataModel))
+                    return;
 
             if (LayerType == LayerType.Folder)
                 foreach (var layerModel in Children.OrderByDescending(l => l.Order))
@@ -82,7 +84,7 @@ namespace Artemis.Models.Profiles
                 _drawer.UpdateHeadset();
         }
 
-        public void Update<T>(IGameDataModel dataModel)
+        public void Update<T>(IGameDataModel dataModel, bool preview = false)
         {
             if (LayerType == LayerType.Folder)
             {
@@ -92,6 +94,10 @@ namespace Artemis.Models.Profiles
             }
 
             GeneralHelpers.CopyProperties(CalcProps, UserProps);
+
+            // Dynamic properties aren't applied during preview because there is no game data to base them on
+            if (preview)
+                return;
             foreach (var dynamicProperty in LayerProperties)
                 dynamicProperty.ApplyProperty<T>(dataModel, UserProps, CalcProps);
         }

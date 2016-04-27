@@ -4,20 +4,25 @@ using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
 using Caliburn.Micro;
+using NLog;
+using LogManager = NLog.LogManager;
 
 namespace Artemis.Managers
 {
     public class KeyboardManager
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IEventAggregator _events;
         private readonly MainManager _mainManager;
         private KeyboardProvider _activeKeyboard;
 
         public KeyboardManager(MainManager mainManager, IEventAggregator events)
         {
+            Logger.Info("Intializing KeyboardManager");
             _mainManager = mainManager;
             _events = events;
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
+            Logger.Info("Intialized KeyboardManager");
         }
 
         public List<KeyboardProvider> KeyboardProviders { get; set; }
@@ -33,11 +38,14 @@ namespace Artemis.Managers
             }
         }
 
+        public bool CanDisable { get; set; }
+
         /// <summary>
         ///     Enables the last keyboard according to the settings file
         /// </summary>
         public void EnableLastKeyboard()
         {
+            Logger.Debug("Enabling last keyboard: {0}", General.Default.LastKeyboard);
             if (General.Default.LastKeyboard == null)
                 return;
             if (General.Default.LastKeyboard == "")
@@ -53,6 +61,7 @@ namespace Artemis.Managers
         /// <param name="keyboardProvider"></param>
         public void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
+            Logger.Debug("Enabling keyboard: {0}", keyboardProvider?.Name);
             ReleaseActiveKeyboard();
 
             if (keyboardProvider == null)
@@ -69,22 +78,25 @@ namespace Artemis.Managers
                 return;
             }
 
+            CanDisable = false;
             ActiveKeyboard = keyboardProvider;
-            ActiveKeyboard.Enable();
+            keyboardProvider.Enable();
 
             General.Default.LastKeyboard = ActiveKeyboard.Name;
             General.Default.Save();
+            CanDisable = true;
         }
 
         /// <summary>
-        ///     Releases the active keyboard
+        ///     Releases the active keyboard, if CanDisable is true
         /// </summary>
         public void ReleaseActiveKeyboard()
         {
-            if (ActiveKeyboard == null)
+            if (ActiveKeyboard == null || !CanDisable)
                 return;
 
             ActiveKeyboard.Disable();
+            Logger.Debug("Released keyboard: {0}", ActiveKeyboard?.Name);
             ActiveKeyboard = null;
         }
 
@@ -94,12 +106,14 @@ namespace Artemis.Managers
         /// <param name="keyboardProvider"></param>
         public void ChangeKeyboard(KeyboardProvider keyboardProvider)
         {
+            Logger.Debug("Changing active keyboard");
             if (keyboardProvider == ActiveKeyboard)
                 return;
 
             General.Default.LastKeyboard = keyboardProvider?.Name;
             General.Default.Save();
 
+            Logger.Debug("Restarting for keyboard change");
             _mainManager.Restart();
         }
     }

@@ -7,6 +7,7 @@ using Artemis.Utilities.Keyboard;
 
 namespace Artemis.Modules.Effects.Debug
 {
+    // TODO: Remove
     internal class DebugEffectModel : EffectModel
     {
         public DebugEffectModel(MainManager mainManager, DebugEffectSettings settings) : base(mainManager)

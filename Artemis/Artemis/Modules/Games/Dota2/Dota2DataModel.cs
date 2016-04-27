@@ -1,6 +1,6 @@
 ﻿namespace Artemis.Modules.Games.Dota2
 {
-    class Dota2DataModel
+    public class Dota2DataModel
     {
         public class Rootobject
         {

@@ -4,23 +4,12 @@ using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionViewModel : GameViewModel
+    public class TheDivisionViewModel : GameViewModel<TheDivisionDataModel>
     {
-        public TheDivisionViewModel(MainManager mainManager)
+        public TheDivisionViewModel(MainManager mainManager) : base(mainManager, new TheDivisionModel(mainManager, new TheDivisionSettings()))
         {
-            MainManager = mainManager;
-
-            // Settings are loaded from file by class
-            GameSettings = new TheDivisionSettings();
-
-            // Create effect model and add it to MainManager
-            GameModel = new TheDivisionModel(mainManager, (TheDivisionSettings) GameSettings);
             MainManager.EffectManager.EffectModels.Add(GameModel);
-
-            ProfileEditor = new ProfileEditorViewModel<TheDivisionDataModel>(MainManager, GameModel);
         }
-
-        public ProfileEditorViewModel<TheDivisionDataModel> ProfileEditor { get; set; }
 
         public static string Name => "The Division";
     }

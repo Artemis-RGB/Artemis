@@ -175,6 +175,10 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.2\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.3.0.2\lib\net45\SharpDX.dll</HintPath>
       <Private>True</Private>
@@ -299,6 +303,7 @@
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
+    <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
     <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
       <DependentUpon>TypeWave.settings</DependentUpon>
@@ -528,6 +533,12 @@
     <None Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
