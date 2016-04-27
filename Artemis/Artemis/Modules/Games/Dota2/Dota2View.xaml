@@ -10,7 +10,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-19">
         <Grid Margin="15, 5, 15, 5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -44,7 +44,6 @@
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
-
 
 
             <StackPanel Grid.Row="1"
@@ -97,9 +96,11 @@
                        Height="16" Margin="0,10,0,9">
                 Keyboard Template
             </TextBlock>
-            <ComboBox Grid.Row="5" Grid.Column="1" x:Name="KeyboardLayouts" ItemsSource="{Binding Path=KeyboardLayouts}" SelectedIndex="{Binding Path=GameSettings.KeyboardLayout}" VerticalAlignment="Center"
-                  HorizontalAlignment="Right"
-                  Width="109" Margin="0,6,0,7" />
+            <ComboBox Grid.Row="5" Grid.Column="1" x:Name="KeyboardLayouts"
+                      ItemsSource="{Binding Path=KeyboardLayouts}"
+                      SelectedIndex="{Binding Path=GameSettings.KeyboardLayout}" VerticalAlignment="Center"
+                      HorizontalAlignment="Right"
+                      Width="109" Margin="0,6,0,7" />
 
             <!-- Items Display -->
             <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
@@ -144,7 +145,8 @@
                 Display day/night
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDayCycle, Mode=TwoWay}"
-                                   Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
+                                   OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
 
             <!-- Dead Display -->
@@ -153,10 +155,9 @@
                 Show events on the keyboard
             </TextBlock>
             <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowEvents, Mode=TwoWay}"
-                                   Grid.Row="11" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
+                                   Grid.Row="11" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
+                                   OffLabel="No"
                                    Margin="0,0,-5,0" Width="114" />
-
-
 
 
             <StackPanel Grid.Column="0" Grid.Row="12" Orientation="Horizontal" VerticalAlignment="Bottom">

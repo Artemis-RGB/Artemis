@@ -57,7 +57,9 @@
             <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}"
                     VerticalAlignment="Top" HorizontalAlignment="Right">
                 <Button.Content>
-                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
                         </Rectangle.OpacityMask>

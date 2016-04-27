@@ -12,7 +12,7 @@ namespace Artemis.Utilities.LogitechDll
         {
             if (!File.Exists(LogitechPath + @"\LogitechLed.dll") || !File.Exists(LogitechPath + @"\artemis.txt"))
                 return false;
-            
+
             // Get rid of our own DLL
             File.Delete(LogitechPath + @"\LogitechLed.dll");
 

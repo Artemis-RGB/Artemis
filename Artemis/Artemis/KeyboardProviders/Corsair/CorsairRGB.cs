@@ -76,7 +76,7 @@ namespace Artemis.KeyboardProviders.Corsair
                 case "K95 RGB":
                     Height = 7;
                     Width = 25;
-                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0,-15,0,0), Resources.k95);
+                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k95);
                     KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(20, 1)));
                     KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(21, 2), new Point(25, 7)));
                     KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(5, 3), new Point(8, 3)));

@@ -18,7 +18,7 @@ namespace Artemis.Utilities.Keyboard
         {
             Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
-        
+
         public event KeyDownCallbackHandler KeyDownCallback;
     }
 }

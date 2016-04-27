@@ -81,7 +81,8 @@
 
         <!-- PercentageOf -->
         <StackPanel Grid.Column="3" x:Name="UserSourceIsVisible" VerticalAlignment="Center">
-            <controls:NumericUpDown Margin="10,0" Height="22" Value="{Binding Path=LayerDynamicPropertiesModelProposed.PercentageSource, Mode=TwoWay}" />
+            <controls:NumericUpDown Margin="10,0" Height="22"
+                                    Value="{Binding Path=LayerDynamicPropertiesModelProposed.PercentageSource, Mode=TwoWay}" />
         </StackPanel>
     </Grid>
 </UserControl>

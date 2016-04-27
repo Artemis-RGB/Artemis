@@ -33,7 +33,7 @@
         <Setter Property="IsMoveToPointEnabled" Value="True" />
         <Setter Property="Minimum" Value="0" />
         <Setter Property="Maximum" Value="1" />
-        <Setter Property="Margin" Value="2,8,2,0"/>
+        <Setter Property="Margin" Value="2,8,2,0" />
     </Style>
 
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -156,7 +156,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type nc:ColorBox}">
-                    <Border x:Name="PART_Root" Background="{TemplateBinding Background}" BorderBrush="{StaticResource ControlBorderBrush}">
+                    <Border x:Name="PART_Root" Background="{TemplateBinding Background}"
+                            BorderBrush="{StaticResource ControlBorderBrush}">
                         <Border.InputBindings>
                             <KeyBinding Key="Delete" Command="{x:Static nc:ColorBox.RemoveGradientStop}" />
                         </Border.InputBindings>
@@ -220,7 +221,8 @@
                                                                         Padding="0,3">
                                                                     <Path x:Name="Icon" Height="12" Width="20"
                                                                           Stretch="Fill" Fill="#FF403C3C"
-                                                                          StrokeThickness="1" Stroke="{StaticResource ControlBorderBrush}"
+                                                                          StrokeThickness="1"
+                                                                          Stroke="{StaticResource ControlBorderBrush}"
                                                                           Data="M371,190L557,190 557,293 371,293 371,190z" />
                                                                 </Border>
 
@@ -488,7 +490,8 @@
                                                                                                SelectedGradient="{Binding}"
                                                                                                Margin="0,0,0,2">
                                                                             <nc:GradientStopSlider.Background>
-                                                                                <SolidColorBrush Color="{Binding Color}"/>
+                                                                                <SolidColorBrush
+                                                                                    Color="{Binding Color}" />
                                                                             </nc:GradientStopSlider.Background>
                                                                         </nc:GradientStopSlider>
 
@@ -549,11 +552,13 @@
                                             <Button Grid.Column="1" ToolTip="Reverse gradient stops"
                                                     Command="{x:Static nc:ColorBox.ReverseGradientStop}"
                                                     x:Name="Delete" Width="50" Height="50"
-                                                    Style="{DynamicResource MetroCircleButtonStyle}" VerticalAlignment="Top"
+                                                    Style="{DynamicResource MetroCircleButtonStyle}"
+                                                    VerticalAlignment="Top"
                                                     HorizontalAlignment="Right" Margin="0,-4,0,0">
                                                 <Button.Content>
-                                                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                                                               Width="20" Height="20">
+                                                    <Rectangle
+                                                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                        Width="20" Height="20">
                                                         <Rectangle.OpacityMask>
                                                             <VisualBrush
                                                                 Visual="{StaticResource appbar_arrow_left_right}"

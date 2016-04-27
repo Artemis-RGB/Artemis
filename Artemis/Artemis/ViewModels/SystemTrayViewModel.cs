@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using Artemis.Events;
-using Artemis.Properties;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;

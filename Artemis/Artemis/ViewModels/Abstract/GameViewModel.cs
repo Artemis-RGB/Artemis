@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
-using Artemis.Modules.Games.Witcher3;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels.Abstract
@@ -122,8 +121,8 @@ namespace Artemis.ViewModels.Abstract
                     if (gameModel != null)
                         if (!gameModel.Enabled)
                             MainManager.EffectManager.GetLastEffect();
-                    else
-                        MainManager.EffectManager.ChangeEffect(_lastEffect, true);
+                        else
+                            MainManager.EffectManager.ChangeEffect(_lastEffect, true);
                 }
                 else
                     MainManager.EffectManager.ClearEffect();

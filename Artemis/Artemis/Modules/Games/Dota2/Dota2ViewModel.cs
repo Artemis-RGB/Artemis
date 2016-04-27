@@ -9,7 +9,8 @@ namespace Artemis.Modules.Games.Dota2
 {
     public class Dota2ViewModel : GameViewModel<Dota2DataModel>
     {
-        public Dota2ViewModel(MainManager mainManager) : base(mainManager, new Dota2Model(mainManager, new Dota2Settings()))
+        public Dota2ViewModel(MainManager mainManager)
+            : base(mainManager, new Dota2Model(mainManager, new Dota2Settings()))
         {
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();

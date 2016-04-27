@@ -1,35 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Media;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Media;
 using Artemis.Models;
 
 namespace Artemis.Modules.Games.Dota2
 {
-    class Dota2Settings : GameSettings
+    internal class Dota2Settings : GameSettings
     {
-
         public Dota2Settings()
         {
             Load();
         }
-
-
-        #region Variables
-        public string GameDirectory { get; set; }
-        public bool CanCastAbility { get; set; }
-        public bool ShowHealth { get; set; }
-        public bool ShowDayCycle { get; set; } 
-        public bool ShowMana { get; set; }
-        public bool ShowEvents { get; set; }
-        public Color MainColor { get; set; }
-        public Color ManaColor { get; set; }
-        public string KeyboardLayout { get; set; }
-        public Color AbilityCooldownColor { get; set; }
-        public Color AbilityReadyColor { get; set; }
-        #endregion
 
 
         public override void Load()
@@ -68,21 +47,35 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void ToDefault()
         {
-           
             Enabled = true;
             GameDirectory = string.Empty;
 
             KeyboardLayout = "Default";
-            MainColor = Color.FromArgb(255,255,0,0);
-            ManaColor = Color.FromArgb(255,0,0,255);
-            AbilityCooldownColor = Color.FromArgb(255,106,90,205);
-            AbilityReadyColor = Color.FromArgb(255, 0, 255, 0); 
+            MainColor = Color.FromArgb(255, 255, 0, 0);
+            ManaColor = Color.FromArgb(255, 0, 0, 255);
+            AbilityCooldownColor = Color.FromArgb(255, 106, 90, 205);
+            AbilityReadyColor = Color.FromArgb(255, 0, 255, 0);
             ShowHealth = true;
             CanCastAbility = true;
             ShowDayCycle = true;
             ShowMana = true;
             ShowEvents = true;
-
         }
+
+        #region Variables
+
+        public string GameDirectory { get; set; }
+        public bool CanCastAbility { get; set; }
+        public bool ShowHealth { get; set; }
+        public bool ShowDayCycle { get; set; }
+        public bool ShowMana { get; set; }
+        public bool ShowEvents { get; set; }
+        public Color MainColor { get; set; }
+        public Color ManaColor { get; set; }
+        public string KeyboardLayout { get; set; }
+        public Color AbilityCooldownColor { get; set; }
+        public Color AbilityReadyColor { get; set; }
+
+        #endregion
     }
 }

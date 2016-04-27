@@ -47,7 +47,7 @@ namespace Artemis.Models.Profiles
             if (layerProp == null || userProp == null)
                 return;
 
-            var percentage = ToDouble(gameProperty) / percentageSource;
+            var percentage = ToDouble(gameProperty)/percentageSource;
             layerProp.SetValue(props, (int) (percentage*(int) userProp.GetValue(userProps, null)));
         }
 
