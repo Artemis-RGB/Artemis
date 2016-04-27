@@ -125,9 +125,9 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = General.Default.LastKeyboard.Length > 0
-                ? General.Default.LastKeyboard
-                : "None";
+            SelectedKeyboardProvider = string.IsNullOrEmpty(General.Default.LastKeyboard)
+                ? "None"
+                : General.Default.LastKeyboard;
         }
     }
 }
