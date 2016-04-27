@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using Artemis.Utilities;
 using Corale.Colore.Razer.Keyboard.Effects;
 

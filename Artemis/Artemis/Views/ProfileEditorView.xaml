@@ -63,7 +63,8 @@
         <Label Grid.Column="1" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="233">
-            <TreeView x:Name="ProfileTree" ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
+            <TreeView x:Name="ProfileTree"
+                      ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>
@@ -72,14 +73,15 @@
                         Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
+                    <HierarchicalDataTemplate
+                        ItemsSource="{Binding Children, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
                         <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}">
                             <StackPanel.ContextMenu>
                                 <ContextMenu
                                     cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" />
-                                    <MenuItem Header="Duplicate" cal:Message.Attach="CloneLayer($datacontext)"/>
-                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayerFromMenu($datacontext)"/>
+                                    <MenuItem Header="Duplicate" cal:Message.Attach="CloneLayer($datacontext)" />
+                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayerFromMenu($datacontext)" />
                                     <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
@@ -106,7 +108,8 @@
         </Grid>
 
         <!-- Layer movement -->
-        <StackPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0">
+        <StackPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Margin="10,0,0,0">
             <Button x:Name="LayerUp" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}">
                 <Button.Content>
                     <Rectangle

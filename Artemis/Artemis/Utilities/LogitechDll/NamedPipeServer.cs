@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -184,6 +183,4 @@ namespace Artemis.Utilities.LogitechDll
 
         public string Data { get; set; }
     }
-
-
 }

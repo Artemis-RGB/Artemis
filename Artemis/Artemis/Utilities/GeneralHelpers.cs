@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Principal;
 using System.Windows;
 using System.Xml.Serialization;
@@ -57,7 +55,7 @@ namespace Artemis.Utilities
         }
 
         /// <summary>
-        /// Perform a deep Copy of the object.
+        ///     Perform a deep Copy of the object.
         /// </summary>
         /// <typeparam name="T">The type of object being copied.</typeparam>
         /// <param name="source">The object instance to copy.</param>
@@ -68,13 +66,13 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var serializer = new XmlSerializer(typeof(T));
+            var serializer = new XmlSerializer(typeof (T));
             Stream stream = new MemoryStream();
             using (stream)
             {
                 serializer.Serialize(stream, source);
                 stream.Seek(0, SeekOrigin.Begin);
-                return (T)serializer.Deserialize(stream);
+                return (T) serializer.Deserialize(stream);
             }
         }
 

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using Kaliko.ImageLibrary;
 using Kaliko.ImageLibrary.Filters;
@@ -54,7 +53,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
                 LinearGradientMode.Horizontal) {Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale/2};
             _botRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal);
-            
+
             Initialized = true;
         }
 
@@ -96,7 +95,8 @@ namespace Artemis.Modules.Effects.AmbientLightning
                     if (_colors.Count <= colorIndex)
                         _colors.Add(Color.FromArgb(255, averageR, averageG, averageB));
                     else
-                        _colors[colorIndex] = Color.FromArgb(255, (averageR + _colors[colorIndex].R * 5) / 6, (averageG + _colors[colorIndex].G * 5) / 6, (averageB + _colors[colorIndex].B * 5) / 6);
+                        _colors[colorIndex] = Color.FromArgb(255, (averageR + _colors[colorIndex].R*5)/6,
+                            (averageG + _colors[colorIndex].G*5)/6, (averageB + _colors[colorIndex].B*5)/6);
                     colorIndex++;
                 }
             }
@@ -108,7 +108,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
             {
                 for (var column = 0; column < 3; column++)
                 {
-                    var rectBase = new Point(rectWidth * column, rectHeight * row);
+                    var rectBase = new Point(rectWidth*column, rectHeight*row);
                     _rectangles.Add(new Rectangle(rectBase.X, rectBase.Y, rectWidth, rectHeight));
                 }
             }
@@ -133,7 +133,6 @@ namespace Artemis.Modules.Effects.AmbientLightning
             test.SaveBmp(ms);
             ms.Position = 0;
             return new Bitmap(ms);
-            
         }
     }
 }

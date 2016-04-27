@@ -19,7 +19,6 @@ namespace Artemis.Managers
         private readonly MainManager _mainManager;
         private EffectModel _activeEffect;
         private bool _clearing;
-        public EffectModel PauseEffect { get; set; }
 
         public EffectManager(MainManager mainManager, IEventAggregator events)
         {
@@ -31,6 +30,8 @@ namespace Artemis.Managers
             ProfilePreviewModel = new ProfilePreviewModel(_mainManager);
             Logger.Info("Intialized EffectManager");
         }
+
+        public EffectModel PauseEffect { get; set; }
 
         /// <summary>
         ///     Used by ViewModels to show a preview of the profile currently being edited

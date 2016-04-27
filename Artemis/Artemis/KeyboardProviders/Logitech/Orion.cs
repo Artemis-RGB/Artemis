@@ -5,7 +5,6 @@ using System.Windows;
 using Artemis.KeyboardProviders.Logitech.Utilities;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.Utilities.LogitechDll;
 using Point = System.Drawing.Point;
 
 namespace Artemis.KeyboardProviders.Logitech
@@ -27,7 +26,7 @@ namespace Artemis.KeyboardProviders.Logitech
                 new KeyboardRegion("TopRow", new Point(0, 0), new Point(18, 0)),
                 new KeyboardRegion("NumPad", new Point(17, 1), new Point(21, 6)),
                 new KeyboardRegion("QWER", new Point(2, 2), new Point(5, 2))
-        };
+            };
         }
 
         public override bool CanEnable()

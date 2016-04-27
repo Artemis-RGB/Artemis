@@ -1,5 +1,4 @@
 ﻿using Artemis.Managers;
-using Artemis.Modules.Effects.AmbientLightning;
 using Artemis.Modules.Effects.AudioVisualizer;
 using Artemis.Modules.Effects.Debug;
 using Artemis.Modules.Effects.TypeHole;

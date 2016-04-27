@@ -12,7 +12,8 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
     {
-        public Witcher3ViewModel(MainManager mainManager) : base(mainManager, new Witcher3Model(mainManager, new Witcher3Settings()))
+        public Witcher3ViewModel(MainManager mainManager)
+            : base(mainManager, new Witcher3Model(mainManager, new Witcher3Settings()))
         {
             MainManager = mainManager;
 

@@ -11,10 +11,10 @@ namespace Artemis.ViewModels
     public class GamesViewModel : Conductor<IScreen>.Collection.OneActive
     {
         private readonly CounterStrikeViewModel _counterStrikeVm;
+        private readonly TheDivisionViewModel _divisionVm;
         private readonly Dota2ViewModel _dota2Vm;
         private readonly RocketLeagueViewModel _rocketLeagueVm;
         private readonly Witcher3ViewModel _witcher3Vm;
-        private readonly TheDivisionViewModel _divisionVm;
 
         public GamesViewModel(MainManager mainManager)
         {

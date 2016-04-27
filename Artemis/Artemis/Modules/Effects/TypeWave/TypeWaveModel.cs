@@ -47,8 +47,8 @@ namespace Artemis.Modules.Effects.TypeWave
                 return;
 
             _waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX * Scale, keyMatch.PosY * Scale), 0, _randomColor)
-                : new Wave(new Point(keyMatch.PosX * Scale, keyMatch.PosY * Scale), 0,
+                ? new Wave(new Point(keyMatch.PosX*Scale, keyMatch.PosY*Scale), 0, _randomColor)
+                : new Wave(new Point(keyMatch.PosX*Scale, keyMatch.PosY*Scale), 0,
                     ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
 
@@ -72,7 +72,7 @@ namespace Artemis.Modules.Effects.TypeWave
                 // TODO: Get from settings
                 var fps = 25;
 
-                _waves[i].Size += Settings.SpreadSpeed * Scale;
+                _waves[i].Size += Settings.SpreadSpeed*Scale;
 
                 if (Settings.IsShiftColors)
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);

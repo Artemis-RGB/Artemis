@@ -11,7 +11,8 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager mainManager) : base(mainManager, new RocketLeagueModel(mainManager, new RocketLeagueSettings()))
+        public RocketLeagueViewModel(MainManager mainManager)
+            : base(mainManager, new RocketLeagueModel(mainManager, new RocketLeagueSettings()))
         {
             MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();

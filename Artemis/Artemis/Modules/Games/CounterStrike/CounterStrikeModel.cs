@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.GameState;

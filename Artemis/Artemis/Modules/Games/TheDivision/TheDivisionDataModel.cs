@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Models.Interfaces;
+﻿using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.TheDivision
 {
@@ -21,7 +20,7 @@ namespace Artemis.Modules.Games.TheDivision
         public TestTest TestyTest { get; set; }
     }
 
-    
+
     public class TestTest
     {
         public string TestS { get; set; }

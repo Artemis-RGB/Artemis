@@ -21,7 +21,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
         private readonly Factory1 _factory;
         private readonly Texture2D _screenTexture;
         private DataStream _dataStream;
-        private OutputDuplication _duplicatedOutput;
+        private readonly OutputDuplication _duplicatedOutput;
         private Resource _screenResource;
         private Surface _screenSurface;
 

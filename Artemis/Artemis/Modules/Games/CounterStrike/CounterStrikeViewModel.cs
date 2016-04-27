@@ -1,16 +1,15 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Properties;
-using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
     {
-        public CounterStrikeViewModel(MainManager mainManager) : base(mainManager, new CounterStrikeModel(mainManager, new CounterStrikeSettings()))
+        public CounterStrikeViewModel(MainManager mainManager)
+            : base(mainManager, new CounterStrikeModel(mainManager, new CounterStrikeSettings()))
         {
             // Create effect model and add it to MainManager
             MainManager.EffectManager.EffectModels.Add(GameModel);

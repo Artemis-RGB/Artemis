@@ -9,7 +9,7 @@
                       dialogs:DialogParticipation.Register="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
                       mc:Ignorable="d"
                       Title="Artemis" Height="800" Width="1210"
-                      MinHeight="800" MinWidth="1210" 
+                      MinHeight="800" MinWidth="1210"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
     <!-- Bit of extra code to use a different icon than in the taskbar -->
     <Controls:MetroWindow.IconTemplate>
@@ -64,7 +64,8 @@
             <ResourceDictionary
                 Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
         </Grid.Resources>
-        <TabControl Margin="0,10,10,10" TabStripPlacement="Left" x:Name="Items" cal:Message.Attach="[Event GotFocus] = [Action CloseSettings]">
+        <TabControl Margin="0,10,10,10" TabStripPlacement="Left" x:Name="Items"
+                    cal:Message.Attach="[Event GotFocus] = [Action CloseSettings]">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding DisplayName}" />

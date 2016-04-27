@@ -146,7 +146,7 @@ namespace Artemis.KeyboardProviders.Logitech.Utilities
             new KeyMapping(120, 121),
             new KeyMapping(121, 122),
             new KeyMapping(122, 123),
-            new KeyMapping(124, 124),
+            new KeyMapping(124, 124)
         };
 
         public static byte[] BitmapToByteArray(Bitmap b, bool remap = true)
@@ -171,10 +171,10 @@ namespace Artemis.KeyboardProviders.Logitech.Utilities
             var remapped = new byte[pixels.Length];
 
             // Every  key is 4 bytes
-            for (var i = 0; i <= pixels.Length /4; i++)
+            for (var i = 0; i <= pixels.Length/4; i++)
             {
-                var firstSByte = Keymappings[i].Source * 4;
-                var firstTByte = Keymappings[i].Target * 4;
+                var firstSByte = Keymappings[i].Source*4;
+                var firstTByte = Keymappings[i].Target*4;
 
                 for (var j = 0; j < 4; j++)
                     remapped[firstTByte + j] = pixels[firstSByte + j];

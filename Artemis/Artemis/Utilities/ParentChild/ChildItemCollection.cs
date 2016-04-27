@@ -16,8 +16,8 @@ namespace Artemis.Utilities.ParentChild
         where P : class
         where T : IChildItem<P>
     {
-        private IList<T> _collection;
         private readonly P _parent;
+        private IList<T> _collection;
 
         public ChildItemCollection(P parent)
         {
@@ -48,6 +48,11 @@ namespace Artemis.Utilities.ParentChild
         }
 
         #endregion
+
+        public void Sort(Func<T, object> func)
+        {
+            _collection = _collection.OrderBy(func).ToList();
+        }
 
         #region IList<T> Members
 
@@ -129,10 +134,5 @@ namespace Artemis.Utilities.ParentChild
         }
 
         #endregion
-
-        public void Sort(Func<T, object> func)
-        {
-            _collection = _collection.OrderBy(func).ToList();
-        }
     }
 }
