@@ -153,14 +153,13 @@ namespace Artemis.Managers
             _mainManager.Unpause();
             PauseEffect = null;
 
-            if (ActiveEffect is GameModel)
+            Logger.Debug("Finishing change effect with pause");
+            if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
                 return;
 
             // Non-game effects are stored as the new LastEffect.
             General.Default.LastEffect = ActiveEffect.Name;
             General.Default.Save();
-
-            Logger.Debug("Finishing change effect with pause");
         }
 
         /// <summary>

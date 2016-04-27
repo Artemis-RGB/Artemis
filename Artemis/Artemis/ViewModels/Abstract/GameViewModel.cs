@@ -116,7 +116,15 @@ namespace Artemis.ViewModels.Abstract
             else
             {
                 if (_lastEffect != null)
-                    MainManager.EffectManager.ChangeEffect(_lastEffect, true);
+                {
+                    // Game models are only used if they are enabled
+                    var gameModel = _lastEffect as GameModel;
+                    if (gameModel != null)
+                        if (!gameModel.Enabled)
+                            MainManager.EffectManager.GetLastEffect();
+                    else
+                        MainManager.EffectManager.ChangeEffect(_lastEffect, true);
+                }
                 else
                     MainManager.EffectManager.ClearEffect();
             }
