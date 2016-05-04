@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -57,6 +58,26 @@ namespace Artemis.Utilities
             {
                 if (ptr != IntPtr.Zero)
                     Marshal.FreeHGlobal(ptr);
+            }
+        }
+
+        public static BitmapImage BitmapToBitmapImage(Bitmap b)
+        {
+            if (b == null)
+                return null;
+
+            using (var memory = new MemoryStream())
+            {
+                b.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                return bitmapImage;
             }
         }
 

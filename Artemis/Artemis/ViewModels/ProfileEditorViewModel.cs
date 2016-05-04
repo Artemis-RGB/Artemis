@@ -1,14 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
@@ -133,7 +130,10 @@ namespace Artemis.ViewModels
                     drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                     // Draw the layers
-                    foreach (var layerModel in _selectedProfile.Layers.OrderByDescending(l => l.Order))
+                    foreach (
+                        var layerModel in
+                            _selectedProfile.Layers.OrderByDescending(l => l.Order)
+                                .Where(l => l.LayerType == LayerType.Keyboard || l.LayerType == LayerType.KeyboardGif))
                         layerModel.DrawPreview(drawingContext);
 
                     // Get the selection color
@@ -170,28 +170,7 @@ namespace Artemis.ViewModels
             }
         }
 
-        public ImageSource KeyboardImage
-        {
-            get
-            {
-                using (var memory = new MemoryStream())
-                {
-                    if (ActiveKeyboard?.PreviewSettings.Image == null)
-                        return null;
-
-                    ActiveKeyboard.PreviewSettings.Image.Save(memory, ImageFormat.Png);
-                    memory.Position = 0;
-
-                    var bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = memory;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-
-                    return bitmapImage;
-                }
-            }
-        }
+        public ImageSource KeyboardImage => ImageUtilities.BitmapToBitmapImage(ActiveKeyboard?.PreviewSettings.Image);
 
         public PreviewSettings? PreviewSettings => ActiveKeyboard?.PreviewSettings;
 
