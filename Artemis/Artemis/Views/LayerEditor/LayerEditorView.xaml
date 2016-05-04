@@ -16,6 +16,13 @@
         <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
         <ObjectDataProvider MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}"
+                            x:Key="LayerEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="profileEnumerations:LayerType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
                             x:Key="AnimationEnumValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="profileEnumerations:LayerAnimation" />
@@ -44,12 +51,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -62,6 +63,17 @@
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Text="{Binding Path=Layer.Name}" />
 
         <!-- Layer type -->
+        <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
+                   VerticalAlignment="Center" Height="18" />
+
+        <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource LayerEnumValues}}"
+                  Margin="10" SelectedItem="{Binding Path=LayerType}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <!-- Condition editor -->
         <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" FontSize="20" Content="Display if.." />
@@ -85,58 +97,104 @@
         <Label Grid.Row="4" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
                Content="Advanced" Width="97" VerticalAlignment="Bottom" />
 
-        <!-- Colors -->
-        <TextBlock Grid.Row="5" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Color(s):"
-                   VerticalAlignment="Top" Height="18" />
-        <Border Grid.Row="5" Grid.Column="1" Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
-                BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
-            <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" Height="24" />
-        </Border>
+        <!-- Advanced settings - Keyboard -->
+        <Grid x:Name="KeyboardGridIsVisible" Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0">
+            <!-- Colors -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="Color(s):"
+                       VerticalAlignment="Top" Height="18" />
+            <Border Grid.Row="0" Grid.Column="1" Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
+                    BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
+                <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" Height="24" />
+            </Border>
 
-        <!-- ContainedBrush -->
-        <TextBlock Grid.Row="5" Grid.Column="2" Margin="10" FontSize="13.333" Text="Contained colors:"
-                   VerticalAlignment="Center" Height="18" />
-        <controls:ToggleSwitch IsChecked="{Binding Path=ProposedProperties.ContainedBrush, Mode=TwoWay}" Grid.Row="5"
-                               Grid.Column="3" OnLabel="Yes" OffLabel="No" Margin="10,1,5,1" VerticalAlignment="Center"
-                               Height="36" />
+            <!-- ContainedBrush -->
+            <TextBlock Grid.Row="0" Grid.Column="2" Margin="10" FontSize="13.333" Text="Contained colors:"
+                       VerticalAlignment="Center" Height="18" />
+            <controls:ToggleSwitch IsChecked="{Binding Path=ProposedProperties.ContainedBrush, Mode=TwoWay}"
+                                   Grid.Row="0"
+                                   Grid.Column="3" OnLabel="Yes" OffLabel="No" Margin="10,1,5,1"
+                                   VerticalAlignment="Center"
+                                   Height="36" />
 
-        <!-- Animation -->
-        <TextBlock Grid.Row="6" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
-                   VerticalAlignment="Center"
-                   Height="18" />
-        <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding Source={StaticResource AnimationEnumValues}}"
-                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
-                  VerticalAlignment="Top" Height="22">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+            <!-- Animation -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
+                       VerticalAlignment="Center"
+                       Height="18" />
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Source={StaticResource AnimationEnumValues}}"
+                      Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
+                      VerticalAlignment="Top" Height="22">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
-        <!-- Animation Speed -->
-        <TextBlock Grid.Row="6" Grid.Column="2" Margin="10" FontSize="13.333" Text="Animation speed:"
-                   VerticalAlignment="Center" Height="18" />
-        <Slider x:Name="RotationSpeed" Grid.Row="6" Grid.Column="3" VerticalAlignment="Center"
-                TickPlacement="None" TickFrequency="0.05"
-                Value="{Binding Path=ProposedProperties.AnimationSpeed, Mode=TwoWay}" Minimum="0.05" Maximum="3"
-                SmallChange="1" IsSnapToTickEnabled="True" Margin="10,12,10,2" Height="24" />
+            <!-- Animation Speed -->
+            <TextBlock Grid.Row="1" Grid.Column="2" Margin="10" FontSize="13.333" Text="Animation speed:"
+                       VerticalAlignment="Center" Height="18" />
+            <Slider x:Name="RotationSpeed" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center"
+                    TickPlacement="None" TickFrequency="0.05"
+                    Value="{Binding Path=ProposedProperties.AnimationSpeed, Mode=TwoWay}" Minimum="0.05" Maximum="3"
+                    SmallChange="1" IsSnapToTickEnabled="True" Margin="10,12,10,2" Height="24" />
 
-        <!-- Dynamic -->
-        <Label Grid.Row="7" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
-               Content="Dynamic" Width="97" VerticalAlignment="Bottom" />
+            <!-- Dynamic -->
+            <Label Grid.Row="3" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
+                   Content="Dynamic" Width="97" VerticalAlignment="Bottom" />
 
-        <!-- Dynamic property views -->
-        <ContentControl Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" x:Name="HeightProperties" />
-        <ContentControl Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="4" x:Name="WidthProperties" />
-        <ContentControl Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" x:Name="OpacityProperties" />
+            <!-- Dynamic property views -->
+            <ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" x:Name="HeightProperties" />
+            <ContentControl Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" x:Name="WidthProperties" />
+            <ContentControl Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" x:Name="OpacityProperties" />
+        </Grid>
 
-        <Button Grid.Row="12" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
+        <!-- Advanced settings - Keyboard -->
+        <Grid x:Name="GifGridIsVisible" Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,13,10,0" FontSize="13.333" Text="GIF file:"
+                       VerticalAlignment="Top" Height="18" />
+            <Grid Grid.Row="0" Grid.Column="1" ColumnSpan="3" Margin="5,10,10,0" VerticalAlignment="Top">
+                <TextBox Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                         Text="{Binding Path=Layer.GifFile, Mode=TwoWay}" />
+                <Button x:Name="BrowseGif" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                        HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="25" />
+            </Grid>
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="10,13,10,0" FontSize="13.333"
+                       Foreground="{DynamicResource HighlightBrush}"
+                       Text="Note: It is recommended to use very tiny gifs (25x7 per example). Any higher will degrade performance without any noticeable quality difference."
+                       VerticalAlignment="Top" Height="Auto" TextWrapping="Wrap" />
+        </Grid>
+        <Button Grid.Row="6" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
                 Height="30" />
-        <Button Grid.Row="12" Grid.Column="1" x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
+        <Button Grid.Row="6" Grid.Column="1" x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
                 Height="30" />
+
     </Grid>
 
 </controls:MetroWindow>

@@ -149,7 +149,7 @@ namespace Artemis.Managers
             ActiveEffect?.Dispose();
 
             ActiveEffect = PauseEffect;
-            ActiveEffect.Enable();
+            ActiveEffect?.Enable();
 
             _mainManager.Unpause();
             PauseEffect = null;
@@ -159,7 +159,7 @@ namespace Artemis.Managers
                 return;
 
             // Non-game effects are stored as the new LastEffect.
-            General.Default.LastEffect = ActiveEffect.Name;
+            General.Default.LastEffect = ActiveEffect?.Name;
             General.Default.Save();
         }
 

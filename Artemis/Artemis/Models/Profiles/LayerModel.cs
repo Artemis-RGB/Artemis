@@ -29,6 +29,7 @@ namespace Artemis.Models.Profiles
 
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
+        public string GifFile { get; set; }
         public bool Enabled { get; set; }
         public int Order { get; set; }
         public LayerPropertiesModel UserProps { get; set; }
@@ -60,7 +61,7 @@ namespace Artemis.Models.Profiles
             if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
                 _drawer.Draw(c, _mustDraw);
             else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(c);
+                _drawer.DrawGif(c, _mustDraw);
             _mustDraw = false;
         }
 

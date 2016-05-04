@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Profiles;
+using Artemis.Properties;
+using Pen = System.Windows.Media.Pen;
+using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace Artemis.Utilities
 {
@@ -10,6 +16,8 @@ namespace Artemis.Utilities
         private readonly LayerModel _layerModel;
         private double _animationProgress;
         private Rect _firstRect;
+        private GifImage _gifImage;
+        private string _gifSource;
         private Rect _rectangle;
         private Rect _secondRect;
 
@@ -113,13 +121,22 @@ namespace Artemis.Utilities
 
         public DrawingImage GetThumbnail()
         {
-            if (_layerModel.UserProps.Brush == null)
-                return null;
-
+            var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
-                c.DrawRectangle(_layerModel.UserProps.Brush, new Pen(new SolidColorBrush(Colors.White), 1),
-                    new Rect(0, 0, 18, 18));
+            {
+                // Draw the appropiate icon or draw the brush
+                if (_layerModel.LayerType == LayerType.Folder)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.folder), thumbnailRect);
+                else if (_layerModel.LayerType == LayerType.Headset)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
+                else if(_layerModel.LayerType == LayerType.Mouse)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.mouse), thumbnailRect);
+                else if(_layerModel.LayerType == LayerType.KeyboardGif)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+                else if(_layerModel.LayerType == LayerType.Keyboard && _layerModel.UserProps.Brush != null)
+                    c.DrawRectangle(_layerModel.UserProps.Brush, new Pen(new SolidColorBrush(Colors.White), 1), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -153,8 +170,25 @@ namespace Artemis.Utilities
                 new Point(_rectangle.Width/2, _rectangle.Height/2), _rectangle.Width, _rectangle.Height);
         }
 
-        public void DrawGif(DrawingContext bmp)
+        public void DrawGif(DrawingContext c, bool update = true)
         {
+            if (string.IsNullOrEmpty(_layerModel.GifFile))
+                return;
+            if (!File.Exists(_layerModel.GifFile))
+                return;
+            
+            if (_layerModel.GifFile != _gifSource || _gifSource == null)
+            {
+                _gifImage = new GifImage(_layerModel.GifFile);
+                _gifSource = _layerModel.GifFile;
+            }
+
+            var gifRect = new Rect(_layerModel.CalcProps.X*Scale,
+                _layerModel.CalcProps.Y*Scale, _layerModel.CalcProps.Width*Scale,
+                _layerModel.CalcProps.Height*Scale);
+
+            var draw = update ? _gifImage.GetNextFrame() : _gifImage.GetFrame(0);
+            c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
         }
 
         public void UpdateMouse()

@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
 
@@ -67,19 +68,7 @@ namespace Artemis.Modules.Effects.Debug
 
         public void Handle(ChangeBitmap message)
         {
-            using (var memory = new MemoryStream())
-            {
-                message.Bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                ImageSource = bitmapImage;
-            }
+            ImageSource = ImageUtilities.BitmapToBitmapImage(message.Bitmap);
         }
     }
 }

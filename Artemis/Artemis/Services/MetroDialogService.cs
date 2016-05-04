@@ -33,11 +33,11 @@ namespace Artemis.Services
 {
     public class MetroDialogService : DialogService
     {
-        private readonly ShellViewModel _shellViewModel;
+        private readonly IScreen _viewModel;
 
-        public MetroDialogService(ShellViewModel shellViewModel)
+        public MetroDialogService(IScreen viewModel)
         {
-            _shellViewModel = shellViewModel;
+            _viewModel = viewModel;
         }
 
         private MetroWindow GetActiveWindow()
@@ -58,7 +58,7 @@ namespace Artemis.Services
 
         public override void ShowMessageBox(string title, string message)
         {
-            if (_shellViewModel.IsActive == false)
+            if (_viewModel.IsActive == false)
                 return;
 
             Execute.OnUIThread(() => GetActiveWindow().ShowMessageAsync(title, message));
@@ -66,7 +66,7 @@ namespace Artemis.Services
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)
         {
-            if (_shellViewModel.IsActive == false)
+            if (_viewModel.IsActive == false)
                 return null;
 
             var metroDialogSettings = new MetroDialogSettings {AffirmativeButtonText = "Yes", NegativeButtonText = "No"};
@@ -87,7 +87,7 @@ namespace Artemis.Services
 
         public override Task<string> ShowInputDialog(string title, string message)
         {
-            if (_shellViewModel.IsActive == false)
+            if (_viewModel.IsActive == false)
                 return null;
 
             return GetActiveWindow().ShowInputAsync(title, message);
@@ -95,7 +95,7 @@ namespace Artemis.Services
 
         public override bool ShowOpenDialog(out string path, string defaultExt, string filter, string initialDir = null)
         {
-            if (_shellViewModel.IsActive == false)
+            if (_viewModel.IsActive == false)
             {
                 path = null;
                 return false;

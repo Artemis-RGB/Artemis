@@ -223,6 +223,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="XamlAnimatedGif, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XamlAnimatedGif.1.1.2\lib\net45\XamlAnimatedGif.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Xceed.Wpf.AvalonDock, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
       <Private>True</Private>
@@ -391,6 +395,7 @@
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\GeneralHelpers.cs" />
+    <Compile Include="Utilities\GifImage.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
     <Compile Include="Utilities\LayerDrawer.cs" />
@@ -551,7 +556,6 @@
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <Resource Include="Resources\Entypo.ttf" />
     <None Include="Resources\LogitechLED.dll" />
-    <None Include="Resources\folder.png" />
     <Resource Include="Resources\Keyboards\k65.png" />
     <Resource Include="Resources\Keyboards\k70.png" />
     <Resource Include="Resources\Keyboards\k95.png" />
@@ -559,6 +563,10 @@
     <Resource Include="Resources\Keyboards\g910.png" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
+    <None Include="Resources\folder.png" />
+    <None Include="Resources\headset.png" />
+    <None Include="Resources\mouse.png" />
+    <None Include="Resources\gif.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <None Include="Settings\Offsets.settings">

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.KeyboardProviders;
 using Artemis.Models.Profiles;
+using Artemis.Services;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels.LayerEditor
 {
@@ -18,12 +22,15 @@ namespace Artemis.ViewModels.LayerEditor
         private LayerModel _layer;
         private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
+        private LayerType _layerType;
+        private MetroDialogService _dialogService;
 
         public LayerEditorViewModel(KeyboardProvider activeKeyboard, LayerModel layer)
         {
             _activeKeyboard = activeKeyboard;
             _wasEnabled = layer.Enabled;
 
+            _dialogService = new MetroDialogService(this);
             Layer = layer;
             ProposedLayer = new LayerModel();
             GeneralHelpers.CopyProperties(ProposedLayer, Layer);
@@ -42,10 +49,10 @@ namespace Artemis.ViewModels.LayerEditor
             _previewWorker.DoWork += PreviewWorkerOnDoWork;
             _previewWorker.RunWorkerAsync();
 
-            PropertyChanged += AnimationUiHandler;
+            PropertyChanged += GridDisplayHandler;
             PreSelect();
         }
-
+        
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
@@ -91,6 +98,9 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
+        public bool KeyboardGridIsVisible => Layer.LayerType == LayerType.Keyboard;
+        public bool GifGridIsVisible => Layer.LayerType == LayerType.KeyboardGif;
+
         public ImageSource LayerImage
         {
             get
@@ -128,12 +138,28 @@ namespace Artemis.ViewModels.LayerEditor
         public void PreSelect()
         {
             GeneralHelpers.CopyProperties(ProposedProperties, Layer.UserProps);
+            LayerType = Layer.LayerType;
         }
 
-        private void AnimationUiHandler(object sender, PropertyChangedEventArgs e)
+        public LayerType LayerType
         {
-            if (e.PropertyName != "_proposedProperties")
+            get { return _layerType; }
+            set
+            {
+                if (value == _layerType) return;
+                _layerType = value;
+                NotifyOfPropertyChange(() => LayerType);
+            }
+        }
+
+        private void GridDisplayHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "LayerType")
                 return;
+
+            Layer.LayerType = LayerType;
+            NotifyOfPropertyChange(() => KeyboardGridIsVisible);
+            NotifyOfPropertyChange(() => GifGridIsVisible);
         }
 
         public void AddCondition()
@@ -149,6 +175,9 @@ namespace Artemis.ViewModels.LayerEditor
             HeightProperties.Apply();
             WidthProperties.Apply();
             OpacityProperties.Apply();
+
+            if (!File.Exists(Layer.GifFile) && Layer.LayerType == LayerType.KeyboardGif)
+                _dialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }
 
         public void DeleteCondition(LayerConditionViewModel<T> layerConditionViewModel,
@@ -156,6 +185,14 @@ namespace Artemis.ViewModels.LayerEditor
         {
             LayerConditionVms.Remove(layerConditionViewModel);
             Layer.LayerConditions.Remove(layerConditionModel);
+        }
+
+        public void BrowseGif()
+        {
+            var dialog = new OpenFileDialog {Filter = "Animated image file (*.gif)|*.gif"};
+            var result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+                Layer.GifFile = dialog.FileName;
         }
 
         public override void CanClose(Action<bool> callback)
