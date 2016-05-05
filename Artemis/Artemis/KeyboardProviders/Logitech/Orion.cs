@@ -20,7 +20,7 @@ namespace Artemis.KeyboardProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
-            PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.g910);
+            PreviewSettings = new PreviewSettings(540, 154, new Thickness(25, -80, 0, 0), Resources.g910);
             KeyboardRegions = new List<KeyboardRegion>
             {
                 new KeyboardRegion("TopRow", new Point(0, 0), new Point(18, 0)),
