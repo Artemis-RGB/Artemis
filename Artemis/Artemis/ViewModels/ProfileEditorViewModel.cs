@@ -141,7 +141,7 @@ namespace Artemis.ViewModels
                     var pen = new Pen(new SolidColorBrush(color), 0.4);
 
                     // Draw the selection outline and resize indicator
-                    if (SelectedLayer != null && SelectedLayer.Enabled)
+                    if (SelectedLayer != null && ShouldDrawLayer(SelectedLayer))
                     {
                         var layerRect = SelectedLayer.UserProps.GetRect();
                         // Deflate the rect so that the border is drawn on the inside
@@ -390,7 +390,7 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
-            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(l => l.Enabled)
+            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
                 .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
             SelectedLayer = hoverLayer;
         }
@@ -404,7 +404,7 @@ namespace Artemis.ViewModels
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
-            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(l => l.Enabled)
+            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
                 .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
@@ -481,6 +481,11 @@ namespace Artemis.ViewModels
                 _draggingLayer.UserProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
             NotifyOfPropertyChange(() => KeyboardPreview);
+        }
+
+        private bool ShouldDrawLayer(LayerModel layer)
+        {
+            return layer.Enabled && (layer.LayerType == LayerType.Keyboard || layer.LayerType == LayerType.KeyboardGif);
         }
     }
 }

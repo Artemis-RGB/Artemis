@@ -3,14 +3,13 @@ using Artemis.Models;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
-    public class VolumeDisplaySettings : EffectSettings
+    public class VolumeDisplaySettings : OverlaySettings
     {
         public VolumeDisplaySettings()
         {
             Load();
         }
 
-        public bool Enabled { get; set; }
         public Color MainColor { get; set; }
         public Color SecondaryColor { get; set; }
 
