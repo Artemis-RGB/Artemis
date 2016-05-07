@@ -1,5 +1,4 @@
-﻿using Artemis.Modules.Effects.AmbientLightning;
-using Artemis.Modules.Effects.AudioVisualizer;
+﻿using Artemis.Modules.Effects.AudioVisualizer;
 using Artemis.Modules.Effects.Debug;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Modules.Games.CounterStrike;
@@ -19,10 +18,11 @@ namespace Artemis.NinjectModules
         public override void Load()
         {
             // Effects
-            //Bind<EffectViewModel>().To<AmbientLightningEffectViewModel>().InSingletonScope();
+            Bind<Screen>().To<EffectViewModel>(); // TODO: Needed?
             Bind<EffectViewModel>().To<AudioVisualizerViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<DebugEffectViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<TypeWaveViewModel>().InSingletonScope();
+            //Bind<EffectViewModel>().To<AmbientLightningEffectViewModel>().InSingletonScope();
 
             // Games
             Bind<Screen>().To(typeof(GameViewModel<>)); // TODO: Needed?
@@ -33,8 +33,8 @@ namespace Artemis.NinjectModules
             Bind<GameViewModel<Witcher3DataModel>>().To<Witcher3ViewModel>().InSingletonScope();
 
             // Overlays
+            Bind<Screen>().To<OverlayViewModel>(); // TODO: Needed?
             Bind<OverlayViewModel>().To<VolumeDisplayViewModel>().InSingletonScope();
-
         }
     }
 }

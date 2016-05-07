@@ -15,12 +15,15 @@ namespace Artemis.Modules.Games.Dota2
 {
     internal class Dota2Model : GameModel
     {
+        private readonly KeyboardManager _keyboardManager;
         private KeyboardRegion _abilityKeys;
         private KeyboardRegion _keyPad;
         private KeyboardRegion _topRow;
 
-        public Dota2Model(MainManager mainManager, Dota2Settings settings) : base(mainManager, settings)
+        public Dota2Model(MainManager mainManager, KeyboardManager keyboardManager, Dota2Settings settings)
+            : base(mainManager, keyboardManager, settings)
         {
+            _keyboardManager = keyboardManager;
             Name = "Dota2";
             ProcessName = "dota2";
             Settings = settings;
@@ -40,35 +43,35 @@ namespace Artemis.Modules.Games.Dota2
         public override void Enable()
         {
             Initialized = false;
-            _topRow = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
-            _keyPad = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "NumPad");
-            _abilityKeys = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "QWER");
-            HealthRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
+            _topRow = _keyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "TopRow");
+            _keyPad = _keyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "NumPad");
+            _abilityKeys = _keyboardManager.ActiveKeyboard.KeyboardRegions.First(r => r.RegionName == "QWER");
+            HealthRectangle = new KeyboardRectangle(_keyboardManager.ActiveKeyboard
                 , 0
                 , _topRow.BottomRight.Y*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {Height = Scale, ContainedBrush = false};
 
-            ManaRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
+            ManaRectangle = new KeyboardRectangle(_keyboardManager.ActiveKeyboard
                 , 0
                 , (_topRow.BottomRight.Y + 1)*Scale
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {Height = Scale, ContainedBrush = false};
 
-            EventRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
+            EventRectangle = new KeyboardRectangle(_keyboardManager.ActiveKeyboard
                 , 0
                 , _topRow.TopLeft.X + 3
                 , new List<Color>()
                 , LinearGradientMode.Horizontal)
             {
-                Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale - Scale
+                Height = _keyboardManager.ActiveKeyboard.Height*Scale - Scale
                 ,
-                Width = MainManager.KeyboardManager.ActiveKeyboard.Width*Scale - Scale - 12
+                Width = _keyboardManager.ActiveKeyboard.Width*Scale - Scale - 12
             };
 
-            DayCycleRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard
+            DayCycleRectangle = new KeyboardRectangle(_keyboardManager.ActiveKeyboard
                 , _keyPad.TopLeft.X*Scale
                 , _keyPad.TopLeft.Y*Scale
                 , new List<Color>()
@@ -96,7 +99,7 @@ namespace Artemis.Modules.Games.Dota2
                 case "3": //League of Legends
                     for (var i = 0; i < AbilityKeysRectangles.Length; i++)
                     {
-                        AbilityKeysRectangles[i] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                        AbilityKeysRectangles[i] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                             (_abilityKeys.TopLeft.X + i)*Scale - 2,
                             _abilityKeys.TopLeft.Y*Scale,
                             new List<Color>(),
@@ -108,7 +111,7 @@ namespace Artemis.Modules.Games.Dota2
                     }
                     break;
                 case "2":
-                    AbilityKeysRectangles[0] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                    AbilityKeysRectangles[0] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                         _abilityKeys.TopLeft.X*Scale - 2,
                         _abilityKeys.TopLeft.Y*Scale,
                         new List<Color>(),
@@ -117,7 +120,7 @@ namespace Artemis.Modules.Games.Dota2
                         Height = Scale,
                         Width = Scale
                     };
-                    AbilityKeysRectangles[1] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                    AbilityKeysRectangles[1] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                         (_abilityKeys.TopLeft.X + 2)*Scale - 2,
                         _abilityKeys.TopLeft.Y*Scale,
                         new List<Color>(),
@@ -126,7 +129,7 @@ namespace Artemis.Modules.Games.Dota2
                         Height = Scale,
                         Width = Scale
                     };
-                    AbilityKeysRectangles[2] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                    AbilityKeysRectangles[2] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                         (_abilityKeys.TopLeft.X + 3)*Scale - 2,
                         _abilityKeys.TopLeft.Y*Scale,
                         new List<Color>(),
@@ -135,7 +138,7 @@ namespace Artemis.Modules.Games.Dota2
                         Height = Scale,
                         Width = Scale
                     };
-                    AbilityKeysRectangles[3] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                    AbilityKeysRectangles[3] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                         (_abilityKeys.TopLeft.X + 3)*Scale - 2,
                         (_abilityKeys.TopLeft.Y + 1)*Scale,
                         new List<Color>(),
@@ -149,7 +152,7 @@ namespace Artemis.Modules.Games.Dota2
                 case "5": //Smite
                     for (var i = 0; i < AbilityKeysRectangles.Length; i++)
                     {
-                        AbilityKeysRectangles[i] = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard,
+                        AbilityKeysRectangles[i] = new KeyboardRectangle(_keyboardManager.ActiveKeyboard,
                             (_abilityKeys.TopLeft.X + i)*Scale - 3,
                             (_abilityKeys.TopLeft.Y - 1)*Scale,
                             new List<Color>(),
@@ -294,7 +297,7 @@ namespace Artemis.Modules.Games.Dota2
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = _keyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
 
             using (var g = Graphics.FromImage(bitmap))
             {

@@ -23,7 +23,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Artemis.ViewModels;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;

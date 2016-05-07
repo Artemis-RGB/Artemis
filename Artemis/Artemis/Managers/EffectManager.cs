@@ -7,6 +7,7 @@ using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
 using Caliburn.Micro;
+using Ninject;
 using NLog;
 using LogManager = NLog.LogManager;
 
@@ -16,20 +17,21 @@ namespace Artemis.Managers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IEventAggregator _events;
-        private readonly MainManager _mainManager;
         private EffectModel _activeEffect;
         private bool _clearing;
 
-        public EffectManager(MainManager mainManager, IEventAggregator events)
+        public EffectManager(IEventAggregator events)
         {
             Logger.Info("Intializing EffectManager");
-            _mainManager = mainManager;
             _events = events;
 
             EffectModels = new List<EffectModel>();
-            ProfilePreviewModel = new ProfilePreviewModel(_mainManager);
+            //ProfilePreviewModel = new ProfilePreviewModel(MainManager.Value);
             Logger.Info("Intialized EffectManager");
         }
+
+        [Inject]
+        public Lazy<MainManager> MainManager { get; set; }
 
         public EffectModel PauseEffect { get; set; }
 
@@ -107,14 +109,14 @@ namespace Artemis.Managers
 
             Logger.Debug("Changing effect to: {0}, force: {1}", effectModel?.Name, force);
             // If the main manager is running, pause it and safely change the effect
-            if (_mainManager.Running)
+            if (MainManager.Value.Running)
             {
                 ChangeEffectWithPause(effectModel);
                 return;
             }
 
             // If it's not running start it, and let the next recursion handle changing the effect
-            _mainManager.Start(effectModel);
+            MainManager.Value.Start(effectModel);
         }
 
         private void ChangeEffectWithPause(EffectModel effectModel)
@@ -137,13 +139,13 @@ namespace Artemis.Managers
             Logger.Debug("Changing effect with pause: {0}", effectModel?.Name);
 
             PauseEffect = effectModel;
-            _mainManager.Pause();
-            _mainManager.PauseCallback += ChangeEffectPauseCallback;
+            MainManager.Value.Pause();
+            MainManager.Value.PauseCallback += ChangeEffectPauseCallback;
         }
 
         private void ChangeEffectPauseCallback()
         {
-            _mainManager.PauseCallback -= ChangeEffectPauseCallback;
+            MainManager.Value.PauseCallback -= ChangeEffectPauseCallback;
 
             // Change effect logic
             ActiveEffect?.Dispose();
@@ -151,7 +153,7 @@ namespace Artemis.Managers
             ActiveEffect = PauseEffect;
             ActiveEffect?.Enable();
 
-            _mainManager.Unpause();
+            MainManager.Value.Unpause();
             PauseEffect = null;
 
             Logger.Debug("Finishing change effect with pause");
@@ -180,13 +182,13 @@ namespace Artemis.Managers
 
             _clearing = true;
             Logger.Debug("Clearing active effect");
-            _mainManager.Pause();
-            _mainManager.PauseCallback += ClearEffectPauseCallback;
+            MainManager.Value.Pause();
+            MainManager.Value.PauseCallback += ClearEffectPauseCallback;
         }
 
         private void ClearEffectPauseCallback()
         {
-            _mainManager.PauseCallback -= ClearEffectPauseCallback;
+            MainManager.Value.PauseCallback -= ClearEffectPauseCallback;
             if (PauseEffect != null)
             {
                 Logger.Debug("Cancelling clearing effect");
@@ -202,7 +204,7 @@ namespace Artemis.Managers
             _clearing = false;
 
             Logger.Debug("Finishing clearing active effect");
-            _mainManager.Unpause();
+            MainManager.Value.Unpause();
         }
 
         /// <summary>

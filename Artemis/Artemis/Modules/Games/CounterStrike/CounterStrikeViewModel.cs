@@ -6,18 +6,20 @@ using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
+    public sealed class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
     {
-        public CounterStrikeViewModel(MainManager mainManager)
-            : base(mainManager, new CounterStrikeModel(mainManager, new CounterStrikeSettings()))
+        public CounterStrikeViewModel(MainManager mainManager, EffectManager effectManager,
+            KeyboardManager keyboardManager)
+            : base(
+                mainManager, effectManager,
+                new CounterStrikeModel(mainManager, new CounterStrikeSettings(), keyboardManager))
         {
+            DisplayName = "CS:GO";
+
             // Create effect model and add it to MainManager
-            MainManager.EffectManager.EffectModels.Add(GameModel);
+            EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
         }
-
-        public static string Name => "CS:GO";
-        public string Content => "Counter-Strike: GO Content";
 
         public void BrowseDirectory()
         {

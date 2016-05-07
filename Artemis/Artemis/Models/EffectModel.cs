@@ -10,12 +10,15 @@ namespace Artemis.Models
 
         public bool Initialized;
 
+        protected KeyboardManager KeyboardManager;
+
         public MainManager MainManager;
         public string Name;
 
-        protected EffectModel(MainManager mainManager)
+        protected EffectModel(MainManager mainManager, KeyboardManager keyboardManager)
         {
             MainManager = mainManager;
+            KeyboardManager = keyboardManager;
         }
 
         public abstract void Dispose();

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
 using Artemis.Settings;
 using Caliburn.Micro;
+using Ninject;
 using NLog;
 using LogManager = NLog.LogManager;
 
@@ -13,17 +15,20 @@ namespace Artemis.Managers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IEventAggregator _events;
-        private readonly MainManager _mainManager;
         private KeyboardProvider _activeKeyboard;
 
-        public KeyboardManager(MainManager mainManager, IEventAggregator events)
+        public KeyboardManager(IEventAggregator events)
         {
             Logger.Info("Intializing KeyboardManager");
-            _mainManager = mainManager;
+
             _events = events;
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
+
             Logger.Info("Intialized KeyboardManager");
         }
+
+        [Inject]
+        public Lazy<MainManager> MainManager { get; set; }
 
         public List<KeyboardProvider> KeyboardProviders { get; set; }
 
@@ -74,7 +79,7 @@ namespace Artemis.Managers
             // Disable everything if there's no active keyboard found
             if (!keyboardProvider.CanEnable())
             {
-                _mainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                MainManager.Value.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
                 General.Default.LastKeyboard = null;
                 General.Default.Save();
                 return;
@@ -116,7 +121,7 @@ namespace Artemis.Managers
             General.Default.Save();
 
             Logger.Debug("Restarting for keyboard change");
-            _mainManager.Restart();
+            MainManager.Value.Restart();
         }
     }
 }

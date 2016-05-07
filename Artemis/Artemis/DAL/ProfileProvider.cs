@@ -47,7 +47,7 @@ namespace Artemis.DAL
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var serializer = new XmlSerializer(typeof (ProfileModel));
+            var serializer = new XmlSerializer(typeof(ProfileModel));
             using (var file = new StreamWriter(path + $@"\{prof.Name}.xml"))
             {
                 serializer.Serialize(file, prof);
@@ -64,7 +64,7 @@ namespace Artemis.DAL
 
             // Parse the JSON files into objects and add them if they are valid
             // TODO: Invalid file handling
-            var deserializer = new XmlSerializer(typeof (ProfileModel));
+            var deserializer = new XmlSerializer(typeof(ProfileModel));
             foreach (var path in profilePaths)
             {
                 using (var file = new StreamReader(path))

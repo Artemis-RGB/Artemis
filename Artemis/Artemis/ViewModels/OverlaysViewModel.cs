@@ -1,29 +1,29 @@
 ﻿using Artemis.Managers;
 using Artemis.Modules.Overlays.VolumeDisplay;
-using Caliburn.Micro;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
-    public class OverlaysViewModel : Conductor<IScreen>.Collection.OneActive
+    public sealed class OverlaysViewModel : BaseViewModel
     {
         private readonly MainManager _mainManager;
+        private readonly OverlayViewModel[] _overlayViewModels;
         private VolumeDisplayViewModel _volumeDisplayVm;
 
-        public OverlaysViewModel(MainManager mainManager)
+        public OverlaysViewModel(MainManager mainManager, OverlayViewModel[] overlayViewModels)
         {
+            DisplayName = "Overlays";
+
             _mainManager = mainManager;
+            _overlayViewModels = overlayViewModels;
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
 
-            Items.Clear();
-
-            // This VM appears to be going out of scope, so recreating it every time just to be sure.
-            _volumeDisplayVm = new VolumeDisplayViewModel(_mainManager) {DisplayName = "Volume Display"};
-            ActivateItem(_volumeDisplayVm);
-            ActiveItem = _volumeDisplayVm;
+            foreach (var overlayViewModel in _overlayViewModels)
+                ActivateItem(overlayViewModel);
         }
     }
 }

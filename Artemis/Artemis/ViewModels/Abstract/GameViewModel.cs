@@ -15,14 +15,16 @@ namespace Artemis.ViewModels.Abstract
         private bool _editorShown;
         private GameSettings _gameSettings;
         private EffectModel _lastEffect;
+        protected EffectManager EffectManager;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel)
+        protected GameViewModel(MainManager mainManager, EffectManager effectManager, GameModel gameModel)
         {
             MainManager = mainManager;
+            EffectManager = effectManager;
             GameModel = gameModel;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = new ProfileEditorViewModel<T>(MainManager, GameModel);
+            //ProfileEditor = new ProfileEditorViewModel<T>(MainManager, GameModel);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
         }
@@ -43,7 +45,7 @@ namespace Artemis.ViewModels.Abstract
             }
         }
 
-        public bool GameEnabled => MainManager.EffectManager.ActiveEffect == GameModel;
+        public bool GameEnabled => EffectManager.ActiveEffect == GameModel;
 
         public void ToggleEffect()
         {
@@ -57,14 +59,15 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the game if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(GameModel, true);
+            EffectManager.ChangeEffect(GameModel, true);
         }
 
         public async void ResetSettings()
         {
-            var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
-                    "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
+            var resetConfirm =
+                await
+                    MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
+                        "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)
                 return;
@@ -106,11 +109,11 @@ namespace Artemis.ViewModels.Abstract
             if (enable)
             {
                 // Store the current effect so it can be restored later
-                if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
-                    _lastEffect = MainManager.EffectManager.ActiveEffect;
+                if (!(EffectManager.ActiveEffect is ProfilePreviewModel))
+                    _lastEffect = EffectManager.ActiveEffect;
 
-                MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-                MainManager.EffectManager.ChangeEffect(MainManager.EffectManager.ProfilePreviewModel);
+                EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+                EffectManager.ChangeEffect(EffectManager.ProfilePreviewModel);
             }
             else
             {
@@ -120,12 +123,12 @@ namespace Artemis.ViewModels.Abstract
                     var gameModel = _lastEffect as GameModel;
                     if (gameModel != null)
                         if (!gameModel.Enabled)
-                            MainManager.EffectManager.GetLastEffect();
+                            EffectManager.GetLastEffect();
                         else
-                            MainManager.EffectManager.ChangeEffect(_lastEffect, true);
+                            EffectManager.ChangeEffect(_lastEffect, true);
                 }
                 else
-                    MainManager.EffectManager.ClearEffect();
+                    EffectManager.ClearEffect();
             }
 
             _editorShown = enable;
@@ -137,7 +140,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             GameModel.Profile = ProfileEditor.SelectedProfile;
-            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+            EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
         }
     }
 

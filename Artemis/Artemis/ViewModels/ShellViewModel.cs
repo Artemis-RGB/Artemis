@@ -1,49 +1,36 @@
 ﻿using System.Linq;
-using Artemis.Managers;
-using Artemis.Services;
+using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels
 {
     public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
-        private readonly EffectsViewModel _effectsVm;
-        private readonly GamesViewModel _gamesVm;
-        private readonly OverlaysViewModel _overlaysVm;
-        private readonly WelcomeViewModel _welcomeVm;
+        private readonly BaseViewModel[] _viewModels;
 
-        public ShellViewModel()
+        public ShellViewModel(BaseViewModel[] viewModels, IKernel kernel)
         {
-            var dialogService = new MetroDialogService(this);
-            IEventAggregator events = new EventAggregator();
+            _viewModels = viewModels;
 
-            MainManager = new MainManager(events, dialogService);
+            // Setup UI
             DisplayName = "Artemis";
-
-            _welcomeVm = new WelcomeViewModel {DisplayName = "Welcome"};
-            _effectsVm = new EffectsViewModel(MainManager) {DisplayName = "Effects"};
-            _gamesVm = new GamesViewModel(MainManager) {DisplayName = "Games"};
-            _overlaysVm = new OverlaysViewModel(MainManager) {DisplayName = "Overlays"};
-
-            Flyouts.Add(new FlyoutSettingsViewModel(MainManager));
+            Flyouts = new BindableCollection<FlyoutBaseViewModel>
+            {
+                kernel.Get<FlyoutSettingsViewModel>()
+            };
         }
 
-        public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; } =
-            new BindableCollection<FlyoutBaseViewModel>();
-
-        public MainManager MainManager { get; set; }
+        public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; }
 
         protected override void OnActivate()
         {
             base.OnActivate();
+            foreach (var screen in _viewModels)
+                ActivateItem(screen);
 
-            ActivateItem(_welcomeVm);
-            ActivateItem(_effectsVm);
-            ActivateItem(_gamesVm);
-            ActivateItem(_overlaysVm);
-
-            ActiveItem = _welcomeVm;
+            ActiveItem = _viewModels.FirstOrDefault();
         }
 
         public void Settings()

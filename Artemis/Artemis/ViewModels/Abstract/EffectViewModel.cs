@@ -6,11 +6,18 @@ namespace Artemis.ViewModels.Abstract
 {
     public abstract class EffectViewModel : Screen
     {
+        protected readonly EffectModel EffectModel;
         private EffectSettings _effectSettings;
         private bool _showDisabledPopup;
+        protected EffectManager EffectManager;
+        protected MainManager MainManager;
 
-        public EffectModel EffectModel { get; set; }
-        public MainManager MainManager { get; set; }
+        protected EffectViewModel(MainManager mainManager, EffectManager effectManager, EffectModel effectModel)
+        {
+            MainManager = mainManager;
+            EffectManager = effectManager;
+            EffectModel = effectModel;
+        }
 
         public EffectSettings EffectSettings
         {
@@ -23,7 +30,7 @@ namespace Artemis.ViewModels.Abstract
             }
         }
 
-        public bool EffectEnabled => MainManager.EffectManager.ActiveEffect == EffectModel;
+        public bool EffectEnabled => EffectManager.ActiveEffect == EffectModel;
 
         public bool ShowDisabledPopup
         {
@@ -46,9 +53,9 @@ namespace Artemis.ViewModels.Abstract
             }
 
             if (EffectEnabled)
-                MainManager.EffectManager.ClearEffect();
+                EffectManager.ClearEffect();
             else
-                MainManager.EffectManager.ChangeEffect(EffectModel);
+                EffectManager.ChangeEffect(EffectModel);
         }
 
         public void SaveSettings()
@@ -58,7 +65,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the effect if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(EffectModel, true);
+            EffectManager.ChangeEffect(EffectModel, true);
         }
 
         public async void ResetSettings()

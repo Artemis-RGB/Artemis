@@ -22,7 +22,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private int _sensitivity;
         private IWaveIn _waveIn;
 
-        public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager)
+        public AudioVisualizerModel(MainManager mainManager, KeyboardManager keyboardManager,
+            AudioVisualizerSettings settings) : base(mainManager, keyboardManager)
         {
             Settings = settings;
             Name = "Audiovisualizer";
@@ -57,7 +58,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         public override void Enable()
         {
             Initialized = false;
-            Lines = MainManager.KeyboardManager.ActiveKeyboard.Width;
+            Lines = KeyboardManager.ActiveKeyboard.Width;
 
             // TODO: Device selection
             SelectedDeviceId = new MMDeviceEnumerator()
@@ -69,7 +70,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             for (var i = 0; i < Lines; i++)
             {
                 SoundRectangles.Add(new KeyboardRectangle(
-                    MainManager.KeyboardManager.ActiveKeyboard,
+                    KeyboardManager.ActiveKeyboard,
                     0, 0, new List<Color>
                     {
                         ColorHelpers.ToDrawingColor(Settings.TopColor),
@@ -121,7 +122,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 // Apply Sensitivity setting
                 height = height*_sensitivity;
                 var keyboardHeight =
-                    (int) Math.Round(MainManager.KeyboardManager.ActiveKeyboard.Height/100.00*height*Scale);
+                    (int) Math.Round(KeyboardManager.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
@@ -131,7 +132,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 SoundRectangles[i].Width = Scale;
 
                 if (_fromBottom)
-                    SoundRectangles[i].Y = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale -
+                    SoundRectangles[i].Y = KeyboardManager.ActiveKeyboard.Height*Scale -
                                            SoundRectangles[i].Height;
             }
             _generating = false;
@@ -145,7 +146,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             // Lock the _spectrumData array while busy with it
             _generating = true;
 
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 foreach (var soundRectangle in SoundRectangles)
