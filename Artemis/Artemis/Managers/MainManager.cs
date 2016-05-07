@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -8,7 +9,9 @@ using Artemis.Services;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.LogitechDll;
+using Artemis.ViewModels;
 using Caliburn.Micro;
+using Ninject;
 using NLog;
 using LogManager = NLog.LogManager;
 
@@ -19,23 +22,26 @@ namespace Artemis.Managers
         public delegate void PauseCallbackHandler();
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly EffectManager _effectManager;
+        private readonly IEventAggregator _events;
 
         private readonly int _fps;
+        private readonly KeyboardManager _keyboardManager;
         private bool _paused;
         private bool _restarting;
 
-        public MainManager(IEventAggregator events, MetroDialogService dialogService)
+        public MainManager(IEventAggregator events, KeyboardManager keyboardManager, EffectManager effectManager)
         {
             Logger.Info("Intializing MainManager");
 
-            Events = events;
-            DialogService = dialogService;
+            _events = events;
+            _keyboardManager = keyboardManager;
+            _effectManager = effectManager;
+            _fps = 25;
 
-            KeyboardManager = new KeyboardManager(this, Events);
-            EffectManager = new EffectManager(this, Events);
+            //DialogService = dialogService;
             KeyboardHook = new KeyboardHook();
 
-            _fps = 25;
             UpdateWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
             ProcessWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
 
@@ -62,18 +68,18 @@ namespace Artemis.Managers
             Logger.Info("Intialized MainManager");
         }
 
+        [Inject]
+        public Lazy<ShellViewModel> ShellViewModel { get; set; }
+
         public PipeServer PipeServer { get; set; }
         public BackgroundWorker UpdateWorker { get; set; }
         public BackgroundWorker ProcessWorker { get; set; }
 
-        public KeyboardManager KeyboardManager { get; set; }
-        public EffectManager EffectManager { get; set; }
+        public MetroDialogService DialogService { get; set; }
 
         public KeyboardHook KeyboardHook { get; set; }
 
         public GameStateWebServer GameStateWebServer { get; set; }
-        public IEventAggregator Events { get; set; }
-        public MetroDialogService DialogService { get; set; }
 
         public bool ProgramEnabled { get; private set; }
         public bool Suspended { get; set; }
@@ -98,13 +104,13 @@ namespace Artemis.Managers
                 return true;
 
             // Only continue if a keyboard was loaded
-            KeyboardManager.EnableLastKeyboard();
-            if (KeyboardManager.ActiveKeyboard == null)
+            _keyboardManager.EnableLastKeyboard();
+            if (_keyboardManager.ActiveKeyboard == null)
                 return false;
 
             Running = true;
             if (effect != null)
-                EffectManager.ChangeEffect(effect);
+                _effectManager.ChangeEffect(effect);
 
             // Start the update worker
             if (!UpdateWorker.IsBusy)
@@ -130,7 +136,7 @@ namespace Artemis.Managers
         private void FinishStop(object sender, RunWorkerCompletedEventArgs e)
         {
             UpdateWorker.RunWorkerCompleted -= FinishStop;
-            KeyboardManager.ReleaseActiveKeyboard();
+            _keyboardManager.ReleaseActiveKeyboard();
             Running = false;
 
             Logger.Debug("Stopped MainManager");
@@ -192,8 +198,8 @@ namespace Artemis.Managers
         {
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
-            Start(EffectManager.GetLastEffect());
-            Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
+            Start(_effectManager.GetLastEffect());
+            _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 
         /// <summary>
@@ -204,7 +210,7 @@ namespace Artemis.Managers
             Logger.Debug("Disabling program");
             Stop();
             ProgramEnabled = false;
-            Events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
+            _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 
         #region Workers
@@ -223,12 +229,12 @@ namespace Artemis.Managers
                 }
 
                 // Stop if no keyboard/effect are present
-                if (KeyboardManager.ActiveKeyboard == null || EffectManager.ActiveEffect == null)
+                if (_keyboardManager.ActiveKeyboard == null || _effectManager.ActiveEffect == null)
                 {
                     Thread.Sleep(1000/_fps);
                     Logger.Debug("No active effect/keyboard, stopping");
 
-                    if (EffectManager.PauseEffect != null)
+                    if (_effectManager.PauseEffect != null)
                     {
                         PauseCallback?.Invoke();
                         Thread.Sleep(1000/_fps);
@@ -239,7 +245,7 @@ namespace Artemis.Managers
                 }
 
                 // Don't stop when the effect is still initialized, just skip this frame
-                if (!EffectManager.ActiveEffect.Initialized)
+                if (!_effectManager.ActiveEffect.Initialized)
                 {
                     Thread.Sleep(1000/_fps);
                     continue;
@@ -248,28 +254,28 @@ namespace Artemis.Managers
                 sw.Start();
 
                 // Update the current effect
-                if (EffectManager.ActiveEffect.Initialized)
-                    EffectManager.ActiveEffect.Update();
+                if (_effectManager.ActiveEffect.Initialized)
+                    _effectManager.ActiveEffect.Update();
 
                 // Get ActiveEffect's bitmap
-                var bitmap = EffectManager.ActiveEffect.Initialized
-                    ? EffectManager.ActiveEffect.GenerateBitmap()
+                var bitmap = _effectManager.ActiveEffect.Initialized
+                    ? _effectManager.ActiveEffect.GenerateBitmap()
                     : null;
 
                 // Draw enabled overlays on top
-                foreach (var overlayModel in EffectManager.EnabledOverlays)
+                foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
                     overlayModel.Update();
                     bitmap = bitmap != null ? overlayModel.GenerateBitmap(bitmap) : overlayModel.GenerateBitmap();
                 }
 
                 // If it exists, send bitmap to the device
-                if (bitmap != null && KeyboardManager.ActiveKeyboard != null)
+                if (bitmap != null && _keyboardManager.ActiveKeyboard != null)
                 {
-                    KeyboardManager.ActiveKeyboard.DrawBitmap(bitmap);
+                    _keyboardManager.ActiveKeyboard.DrawBitmap(bitmap);
 
                     // debugging TODO: Disable when window isn't shown
-                    Events.PublishOnUIThread(new ChangeBitmap(bitmap));
+                    _events.PublishOnUIThread(new ChangeBitmap(bitmap));
                 }
 
                 // Sleep according to time left this frame
@@ -302,23 +308,23 @@ namespace Artemis.Managers
                 var runningProcesses = Process.GetProcesses();
 
                 // If the currently active effect is a disabled game, get rid of it.
-                if (EffectManager.ActiveEffect != null)
-                    EffectManager.DisableInactiveGame();
+                if (_effectManager.ActiveEffect != null)
+                    _effectManager.DisableInactiveGame();
 
                 // If the currently active effect is a no longer running game, get rid of it.
-                var activeGame = EffectManager.ActiveEffect as GameModel;
+                var activeGame = _effectManager.ActiveEffect as GameModel;
                 if (activeGame != null)
                     if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
-                        EffectManager.DisableGame(activeGame);
+                        _effectManager.DisableGame(activeGame);
 
                 // Look for running games, stopping on the first one that's found.
-                var newGame = EffectManager.EnabledGames
+                var newGame = _effectManager.EnabledGames
                     .FirstOrDefault(
                         g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
                 // If it's not already enabled, do so.
-                if (newGame != null && EffectManager.ActiveEffect != newGame)
-                    EffectManager.ChangeEffect(newGame);
+                if (newGame != null && _effectManager.ActiveEffect != newGame)
+                    _effectManager.ChangeEffect(newGame);
 
                 Thread.Sleep(1000);
             }

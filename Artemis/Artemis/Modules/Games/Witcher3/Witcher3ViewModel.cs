@@ -10,19 +10,13 @@ using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
+    public sealed class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
     {
-        public Witcher3ViewModel(MainManager mainManager)
-            : base(mainManager, new Witcher3Model(mainManager, new Witcher3Settings()))
+        public Witcher3ViewModel(MainManager mainManager, KeyboardManager keyboardManager, EffectManager effectManager)
+            : base(mainManager, effectManager, new Witcher3Model(mainManager, keyboardManager, new Witcher3Settings()))
         {
-            MainManager = mainManager;
-
-            // Settings are loaded from file by class
-            GameSettings = new Witcher3Settings();
-
-            // Create effect model and add it to MainManager
-            GameModel = new Witcher3Model(mainManager, (Witcher3Settings) GameSettings);
-            MainManager.EffectManager.EffectModels.Add(GameModel);
+            DisplayName = "The Witcher 3";
+            EffectManager.EffectModels.Add(GameModel);
         }
 
         public static string Name => "The Witcher 3";

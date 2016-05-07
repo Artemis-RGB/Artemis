@@ -7,18 +7,21 @@ using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueViewModel : GameViewModel<RocketLeagueDataModel>
+    public sealed class RocketLeagueViewModel : GameViewModel<RocketLeagueDataModel>
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager mainManager)
-            : base(mainManager, new RocketLeagueModel(mainManager, new RocketLeagueSettings()))
+        public RocketLeagueViewModel(MainManager mainManager, KeyboardManager keyboardManager,
+            EffectManager effectManager)
+            : base(
+                mainManager, effectManager,
+                new RocketLeagueModel(mainManager, keyboardManager, new RocketLeagueSettings()))
         {
-            MainManager.EffectManager.EffectModels.Add(GameModel);
+            DisplayName = "Rocket League";
+
+            EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
         }
-
-        public static string Name => "Rocket League";
 
         public string VersionText
         {

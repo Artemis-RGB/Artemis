@@ -130,12 +130,13 @@ namespace Artemis.Utilities
                     c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.folder), thumbnailRect);
                 else if (_layerModel.LayerType == LayerType.Headset)
                     c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
-                else if(_layerModel.LayerType == LayerType.Mouse)
+                else if (_layerModel.LayerType == LayerType.Mouse)
                     c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.mouse), thumbnailRect);
-                else if(_layerModel.LayerType == LayerType.KeyboardGif)
+                else if (_layerModel.LayerType == LayerType.KeyboardGif)
                     c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
-                else if(_layerModel.LayerType == LayerType.Keyboard && _layerModel.UserProps.Brush != null)
-                    c.DrawRectangle(_layerModel.UserProps.Brush, new Pen(new SolidColorBrush(Colors.White), 1), thumbnailRect);
+                else if (_layerModel.LayerType == LayerType.Keyboard && _layerModel.UserProps.Brush != null)
+                    c.DrawRectangle(_layerModel.UserProps.Brush, new Pen(new SolidColorBrush(Colors.White), 1),
+                        thumbnailRect);
             }
 
             var image = new DrawingImage(visual.Drawing);
@@ -176,7 +177,7 @@ namespace Artemis.Utilities
                 return;
             if (!File.Exists(_layerModel.GifFile))
                 return;
-            
+
             if (_layerModel.GifFile != _gifSource || _gifSource == null)
             {
                 _gifImage = new GifImage(_layerModel.GifFile);

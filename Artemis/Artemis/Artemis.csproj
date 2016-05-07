@@ -308,7 +308,6 @@
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
       <DependentUpon>TypeWave.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -372,6 +371,7 @@
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
     <Compile Include="NinjectModules\ArtemisModules.cs" />
+    <Compile Include="NinjectModules\BaseModules.cs" />
     <Compile Include="NinjectModules\ManagerModules.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -416,13 +416,13 @@
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="Utilities\ValueConverters.cs" />
+    <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
     <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleViewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
     <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
@@ -451,9 +451,6 @@
     </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
       <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleView.xaml.cs">
-      <DependentUpon>TypeHoleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
       <DependentUpon>TypeWaveView.xaml</DependentUpon>
@@ -618,10 +615,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Effects\TypeHole\TypeHoleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

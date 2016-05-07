@@ -10,18 +10,20 @@ namespace Artemis.ViewModels.Flyouts
 {
     public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
     {
+        private readonly KeyboardManager _keyboardManager;
         private string _activeEffectName;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager)
+        public FlyoutSettingsViewModel(MainManager mainManager, KeyboardManager keyboardManager, IEventAggregator events)
         {
+            _keyboardManager = keyboardManager;
             MainManager = mainManager;
             Header = "Settings";
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
-            MainManager.Events.Subscribe(this);
+            events.Subscribe(this);
         }
 
         public GeneralSettings GeneralSettings
@@ -41,8 +43,7 @@ namespace Artemis.ViewModels.Flyouts
         {
             get
             {
-                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders
-                    .Select(k => k.Name));
+                var collection = new BindableCollection<string>(_keyboardManager.KeyboardProviders.Select(k => k.Name));
                 collection.Insert(0, "None");
                 return collection;
             }
@@ -59,8 +60,8 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == null)
                     return;
 
-                MainManager.KeyboardManager.ChangeKeyboard(
-                    MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(
+                _keyboardManager.ChangeKeyboard(
+                    _keyboardManager.KeyboardProviders.FirstOrDefault(
                         k => k.Name == _selectedKeyboardProvider));
             }
         }

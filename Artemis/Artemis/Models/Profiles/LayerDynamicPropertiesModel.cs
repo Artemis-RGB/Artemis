@@ -47,8 +47,8 @@ namespace Artemis.Models.Profiles
             if (layerProp == null || userProp == null)
                 return;
 
-            var percentage = ToDouble(gameProperty) / percentageSource;
-            
+            var percentage = ToDouble(gameProperty)/percentageSource;
+
             // Opacity requires some special treatment as it causes an exception if it's < 0.0 or > 1.0
             if (LayerProperty == "Opacity")
             {

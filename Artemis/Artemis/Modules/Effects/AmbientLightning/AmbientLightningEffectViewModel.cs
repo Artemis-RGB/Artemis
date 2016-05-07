@@ -5,24 +5,19 @@ using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.AmbientLightning
 {
-    internal class AmbientLightningEffectViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
+    public sealed class AmbientLightningEffectViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public AmbientLightningEffectViewModel(MainManager mainManager)
+        public AmbientLightningEffectViewModel(MainManager mainManager, KeyboardManager keyboardManager,
+            EffectManager effectManager, IEventAggregator events)
+            : base(
+                mainManager, effectManager,
+                new AmbientLightningEffectModel(mainManager, keyboardManager, new AmbientLightningEffectSettings()))
         {
-            // Subscribe to main model
-            MainManager = mainManager;
-            MainManager.Events.Subscribe(this);
+            DisplayName = "Ambient Lightning";
 
-            // Settings are loaded from file by class
-            EffectSettings = new AmbientLightningEffectSettings();
-
-            // Create effect model and add it to MainManager
-            EffectModel = new AmbientLightningEffectModel(mainManager, (AmbientLightningEffectSettings) EffectSettings);
-            MainManager.EffectManager.EffectModels.Add(EffectModel);
+            events.Subscribe(this);
+            EffectManager.EffectModels.Add(EffectModel);
         }
-
-
-        public static string Name => "Ambient Lightning";
 
         public void Handle(ActiveEffectChanged message)
         {

@@ -15,7 +15,8 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager, settings)
+        public RocketLeagueModel(MainManager mainManager, KeyboardManager keyboardManager, RocketLeagueSettings settings)
+            : base(mainManager, keyboardManager, settings)
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
@@ -72,7 +73,7 @@ namespace Artemis.Modules.Games.RocketLeague
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel);
         }
     }

@@ -5,23 +5,17 @@ using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
-    public class TypeWaveViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
+    public sealed class TypeWaveViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public TypeWaveViewModel(MainManager mainManager)
+        public TypeWaveViewModel(MainManager mainManager, KeyboardManager keyboardManager, EffectManager effectManager,
+            IEventAggregator events)
+            : base(mainManager, effectManager, new TypeWaveModel(mainManager, keyboardManager, new TypeWaveSettings()))
         {
-            // Subscribe to main model
-            MainManager = mainManager;
-            MainManager.Events.Subscribe(this);
+            DisplayName = "Type Waves";
 
-            // Settings are loaded from file by class
-            EffectSettings = new TypeWaveSettings();
-
-            // Create effect model and add it to MainManager
-            EffectModel = new TypeWaveModel(mainManager, (TypeWaveSettings) EffectSettings);
-            MainManager.EffectManager.EffectModels.Add(EffectModel);
+            events.Subscribe(this);
+            EffectManager.EffectModels.Add(EffectModel);
         }
-
-        public static string Name => "Type Waves";
 
         public void Handle(ActiveEffectChanged message)
         {

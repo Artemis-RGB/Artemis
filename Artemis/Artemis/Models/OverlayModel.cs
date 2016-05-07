@@ -8,7 +8,8 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainManager mainManager) : base(mainManager)
+        protected OverlayModel(MainManager mainManager, KeyboardManager keyboardManager)
+            : base(mainManager, keyboardManager)
         {
         }
 
@@ -26,19 +27,6 @@ namespace Artemis.Models
                     Dispose();
                 _enabled = value;
             }
-        }
-
-        public void SetEnabled(bool enabled)
-        {
-            if (Enabled == enabled)
-                return;
-
-            if (enabled)
-                Enable();
-            else
-                Dispose();
-
-            Enabled = enabled;
         }
 
         public abstract Bitmap GenerateBitmap(Bitmap bitmap);

@@ -17,13 +17,13 @@ namespace Artemis.ViewModels.LayerEditor
     public class LayerEditorViewModel<T> : Screen
     {
         private readonly KeyboardProvider _activeKeyboard;
+        private readonly MetroDialogService _dialogService;
         private readonly BackgroundWorker _previewWorker;
         private readonly bool _wasEnabled;
         private LayerModel _layer;
+        private LayerType _layerType;
         private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
-        private LayerType _layerType;
-        private MetroDialogService _dialogService;
 
         public LayerEditorViewModel(KeyboardProvider activeKeyboard, LayerModel layer)
         {
@@ -52,7 +52,7 @@ namespace Artemis.ViewModels.LayerEditor
             PropertyChanged += GridDisplayHandler;
             PreSelect();
         }
-        
+
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
@@ -126,6 +126,17 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
+        public LayerType LayerType
+        {
+            get { return _layerType; }
+            set
+            {
+                if (value == _layerType) return;
+                _layerType = value;
+                NotifyOfPropertyChange(() => LayerType);
+            }
+        }
+
         private void PreviewWorkerOnDoWork(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             while (!_previewWorker.CancellationPending)
@@ -139,17 +150,6 @@ namespace Artemis.ViewModels.LayerEditor
         {
             GeneralHelpers.CopyProperties(ProposedProperties, Layer.UserProps);
             LayerType = Layer.LayerType;
-        }
-
-        public LayerType LayerType
-        {
-            get { return _layerType; }
-            set
-            {
-                if (value == _layerType) return;
-                _layerType = value;
-                NotifyOfPropertyChange(() => LayerType);
-            }
         }
 
         private void GridDisplayHandler(object sender, PropertyChangedEventArgs e)

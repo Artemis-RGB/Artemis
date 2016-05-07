@@ -66,7 +66,7 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var serializer = new XmlSerializer(typeof (T));
+            var serializer = new XmlSerializer(typeof(T));
             Stream stream = new MemoryStream();
             using (stream)
             {
@@ -87,7 +87,7 @@ namespace Artemis.Utilities
         }
 
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
-        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof (T).GetProperties());
+        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof(T).GetProperties());
 
         private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
             string path = "")

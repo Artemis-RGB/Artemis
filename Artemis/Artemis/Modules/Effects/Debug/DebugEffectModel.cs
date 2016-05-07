@@ -10,7 +10,8 @@ namespace Artemis.Modules.Effects.Debug
     // TODO: Remove
     internal class DebugEffectModel : EffectModel
     {
-        public DebugEffectModel(MainManager mainManager, DebugEffectSettings settings) : base(mainManager)
+        public DebugEffectModel(MainManager mainManager, KeyboardManager keyboardManager, DebugEffectSettings settings)
+            : base(mainManager, keyboardManager)
         {
             Name = "Debug Effect";
             Settings = settings;
@@ -33,7 +34,7 @@ namespace Artemis.Modules.Effects.Debug
         {
             Initialized = false;
 
-            KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
+            KeyboardRectangle = new KeyboardRectangle(KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 Color.Red,
                 Color.OrangeRed,

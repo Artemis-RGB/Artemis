@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using Artemis.NinjectModules;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;
@@ -72,7 +73,7 @@ namespace Artemis
 
         protected override void Configure()
         {
-            _kernel = new StandardKernel();
+            _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
         }

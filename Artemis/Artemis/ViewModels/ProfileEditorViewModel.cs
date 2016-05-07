@@ -19,9 +19,10 @@ using MahApps.Metro;
 
 namespace Artemis.ViewModels
 {
-    public class ProfileEditorViewModel<T> : Screen, IHandle<ActiveKeyboardChanged>
+    public sealed class ProfileEditorViewModel<T> : Screen, IHandle<ActiveKeyboardChanged>
     {
         private readonly GameModel _gameModel;
+        private readonly KeyboardManager _keyboardManager;
         private readonly MainManager _mainManager;
         private DateTime _downTime;
         private LayerModel _draggingLayer;
@@ -34,14 +35,16 @@ namespace Artemis.ViewModels
         private LayerModel _selectedLayer;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(MainManager mainManager, GameModel gameModel)
+        public ProfileEditorViewModel(MainManager mainManager, KeyboardManager keyboardManager, GameModel gameModel,
+            IEventAggregator events)
         {
             _mainManager = mainManager;
+            _keyboardManager = keyboardManager;
             _gameModel = gameModel;
 
             Profiles = new BindableCollection<ProfileModel>();
             Layers = new BindableCollection<LayerModel>();
-            _mainManager.Events.Subscribe(this);
+            events.Subscribe(this);
 
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
@@ -177,7 +180,7 @@ namespace Artemis.ViewModels
         public bool CanAddLayer => _selectedProfile != null;
         public bool CanRemoveLayer => _selectedProfile != null && _selectedLayer != null;
 
-        private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
+        private KeyboardProvider ActiveKeyboard => _keyboardManager.ActiveKeyboard;
 
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection

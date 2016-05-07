@@ -3,18 +3,20 @@ using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
-    public class VolumeDisplayViewModel : OverlayViewModel
+    public sealed class VolumeDisplayViewModel : OverlayViewModel
     {
-        public VolumeDisplayViewModel(MainManager mainManager)
+        public VolumeDisplayViewModel(MainManager mainManager, KeyboardManager keyboardManager,
+            EffectManager effectManager)
+            : base(mainManager, effectManager)
         {
-            MainManager = mainManager;
+            DisplayName = "Volume Display";
 
             // Settings are loaded from file by class
             OverlaySettings = new VolumeDisplaySettings();
 
             // Create effect model and add it to MainManager
-            OverlayModel = new VolumeDisplayModel(mainManager, (VolumeDisplaySettings) OverlaySettings);
-            MainManager.EffectManager.EffectModels.Add(OverlayModel);
+            OverlayModel = new VolumeDisplayModel(mainManager, keyboardManager, (VolumeDisplaySettings) OverlaySettings);
+            EffectManager.EffectModels.Add(OverlayModel);
         }
     }
 }
