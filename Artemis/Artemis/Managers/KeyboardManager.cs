@@ -6,7 +6,6 @@ using Artemis.KeyboardProviders;
 using Artemis.Settings;
 using Caliburn.Micro;
 using NLog;
-using LogManager = NLog.LogManager;
 
 namespace Artemis.Managers
 {
@@ -15,18 +14,19 @@ namespace Artemis.Managers
     /// </summary>
     public class KeyboardManager
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IEventAggregator _events;
+        private readonly ILogger _logger;
         private KeyboardProvider _activeKeyboard;
 
-        public KeyboardManager(IEventAggregator events)
+        public KeyboardManager(IEventAggregator events, ILogger logger)
         {
-            Logger.Info("Intializing KeyboardManager");
+            _logger = logger;
+            _logger.Info("Intializing KeyboardManager");
 
             _events = events;
             KeyboardProviders = ProviderHelper.GetKeyboardProviders();
 
-            Logger.Info("Intialized KeyboardManager");
+            _logger.Info("Intialized KeyboardManager");
         }
 
         public List<KeyboardProvider> KeyboardProviders { get; set; }
@@ -47,7 +47,7 @@ namespace Artemis.Managers
         /// </summary>
         public void EnableLastKeyboard()
         {
-            Logger.Debug($"Enabling last keyboard: {General.Default.LastKeyboard}");
+            _logger.Debug($"Enabling last keyboard: {General.Default.LastKeyboard}");
             if (string.IsNullOrEmpty(General.Default.LastKeyboard))
                 return;
 
@@ -76,7 +76,7 @@ namespace Artemis.Managers
 
             lock (ActiveKeyboard)
             {
-                Logger.Debug($"Enabling keyboard: {keyboardProvider.Name}");
+                _logger.Debug($"Enabling keyboard: {keyboardProvider.Name}");
 
                 if (!wasNull)
                     ReleaseActiveKeyboard();
@@ -112,7 +112,7 @@ namespace Artemis.Managers
                 ActiveKeyboard = null;
             }
 
-            Logger.Debug($"Released keyboard: {ActiveKeyboard?.Name}");
+            _logger.Debug($"Released keyboard: {ActiveKeyboard?.Name}");
         }
     }
 }
