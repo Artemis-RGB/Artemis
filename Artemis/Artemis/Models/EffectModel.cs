@@ -7,6 +7,7 @@ namespace Artemis.Models
     public abstract class EffectModel : IDisposable
     {
         public delegate void SettingsUpdateHandler(EffectSettings settings);
+
         public bool Initialized;
         public MainManager MainManager;
         public string Name;

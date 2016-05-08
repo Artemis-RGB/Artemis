@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using Artemis.NinjectModules;
+using Artemis.InjectionModules;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;

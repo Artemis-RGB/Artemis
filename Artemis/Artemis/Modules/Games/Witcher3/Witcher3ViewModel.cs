@@ -3,16 +3,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public sealed class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
+    public sealed class Witcher3ViewModel : GameViewModel
     {
-        public Witcher3ViewModel(MainManager main) : base(main, new Witcher3Model(main, new Witcher3Settings()))
+        public Witcher3ViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+            : base(main, new Witcher3Model(main, new Witcher3Settings()), events, pFactory)
         {
             DisplayName = "The Witcher 3";
             MainManager.EffectManager.EffectModels.Add(GameModel);

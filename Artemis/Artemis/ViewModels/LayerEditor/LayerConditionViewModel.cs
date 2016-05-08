@@ -6,7 +6,7 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerConditionViewModel<T> : Screen
+    public class LayerConditionViewModel : Screen
     {
         private readonly NamedOperator[] _boolOperators =
         {
@@ -14,7 +14,7 @@ namespace Artemis.ViewModels.LayerEditor
             new NamedOperator("False", "== False")
         };
 
-        private readonly LayerEditorViewModel<T> _conditionModel;
+        private readonly LayerEditorViewModel _conditionModel;
 
         private readonly NamedOperator[] _int32Operators =
         {
@@ -39,7 +39,7 @@ namespace Artemis.ViewModels.LayerEditor
         private string _userValue;
         private bool _userValueIsVisible;
 
-        public LayerConditionViewModel(LayerEditorViewModel<T> conditionModel, LayerConditionModel layerConditionModel,
+        public LayerConditionViewModel(LayerEditorViewModel conditionModel, LayerConditionModel layerConditionModel,
             BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps)
         {
             _conditionModel = conditionModel;

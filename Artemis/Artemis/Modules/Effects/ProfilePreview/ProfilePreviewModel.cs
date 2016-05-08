@@ -10,7 +10,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
     {
         private readonly ProfilePreviewDataModel _previewDataModel;
 
-        public ProfilePreviewModel(MainManager main) : base(main)
+        public ProfilePreviewModel(MainManager mainManager) : base(mainManager)
         {
             Name = "Profile Preview";
             _previewDataModel = new ProfilePreviewDataModel();
