@@ -1,15 +1,17 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public sealed class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
+    public sealed class CounterStrikeViewModel : GameViewModel
     {
-        public CounterStrikeViewModel(MainManager main)
-            : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()))
+        public CounterStrikeViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+            : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()), events, pFactory)
         {
             DisplayName = "CS:GO";
 

@@ -53,7 +53,7 @@ namespace Artemis.ViewModels.Abstract
             if (EffectEnabled)
                 MainManager.EffectManager.ClearEffect();
             else
-                MainManager.EffectManager.ChangeEffect(EffectModel);
+                MainManager.EffectManager.ChangeEffect(EffectModel, MainManager.LoopManager);
         }
 
         public void SaveSettings()

@@ -65,7 +65,7 @@ namespace Artemis.Managers
         public Lazy<ShellViewModel> ShellViewModel { get; set; }
 
         public ILogger Logger { get; }
-        private LoopManager LoopManager { get; }
+        public LoopManager LoopManager { get; }
         public KeyboardManager KeyboardManager { get; set; }
         public EffectManager EffectManager { get; set; }
 
@@ -81,53 +81,11 @@ namespace Artemis.Managers
         public void Dispose()
         {
             Logger.Debug("Shutting down MainManager");
-            Stop();
+            LoopManager.Stop();
             ProcessWorker.CancelAsync();
             ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
             PipeServer.Stop();
-        }
-
-        /// <summary>
-        ///     Take control of the keyboard and start sending data to it
-        /// </summary>
-        /// <returns>Whether starting was successful or not</returns>
-        public bool Start(EffectModel effect = null)
-        {
-            Logger.Debug("Starting MainManager");
-            // Can't take control when not enabled
-            if (!ProgramEnabled)
-                return false;
-
-            // Do nothing if already running
-            if (Running)
-                return true;
-
-            // Only continue if a keyboard was loaded
-            KeyboardManager.EnableLastKeyboard();
-            if (KeyboardManager.ActiveKeyboard == null)
-                return false;
-
-            Running = true;
-            if (effect != null)
-                EffectManager.ChangeEffect(effect);
-
-            LoopManager.Start();
-
-            return Running;
-        }
-
-        /// <summary>
-        ///     Releases control of the keyboard and stop sending data to it
-        /// </summary>
-        public void Stop()
-        {
-            if (!Running)
-                return;
-
-            Logger.Debug("Stopping MainManager");
-
-            LoopManager.Stop();
         }
 
         /// <summary>
@@ -137,7 +95,7 @@ namespace Artemis.Managers
         {
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
-            Start(EffectManager.GetLastEffect());
+            LoopManager.Start();
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 
@@ -147,7 +105,7 @@ namespace Artemis.Managers
         public void DisableProgram()
         {
             Logger.Debug("Disabling program");
-            Stop();
+            LoopManager.Stop();
             ProgramEnabled = false;
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }

@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels.Abstract
 {
-    public abstract class GameViewModel<T> : Screen
+    public abstract class GameViewModel : Screen
     {
         private bool _doActivate;
 
@@ -16,18 +18,26 @@ namespace Artemis.ViewModels.Abstract
         private GameSettings _gameSettings;
         private EffectModel _lastEffect;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
+            IProfileEditorViewModelFactory pFactory)
         {
             MainManager = mainManager;
             GameModel = gameModel;
+            Events = events;
+            PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            //ProfileEditor = new ProfileEditorViewModel<T>(MainManager, GameModel);
+            ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
         }
 
-        public ProfileEditorViewModel<T> ProfileEditor { get; set; }
+        [Inject]
+        public ProfilePreviewModel ProfilePreviewModel { get; set; }
+        public IEventAggregator Events { get; set; }
+        public IProfileEditorViewModelFactory PFactory { get; set; }
+
+        public ProfileEditorViewModel ProfileEditor { get; set; }
 
         public GameModel GameModel { get; set; }
         public MainManager MainManager { get; set; }
@@ -57,7 +67,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the game if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(GameModel);
+            MainManager.EffectManager.ChangeEffect(GameModel, MainManager.LoopManager);
         }
 
         public async void ResetSettings()
@@ -110,8 +120,8 @@ namespace Artemis.ViewModels.Abstract
                 if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
                     _lastEffect = MainManager.EffectManager.ActiveEffect;
 
-                MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-                MainManager.EffectManager.ChangeEffect(MainManager.EffectManager.ProfilePreviewModel);
+                ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+                MainManager.EffectManager.ChangeEffect(ProfilePreviewModel, MainManager.LoopManager);
             }
             else
             {
@@ -123,7 +133,7 @@ namespace Artemis.ViewModels.Abstract
                         if (!gameModel.Enabled)
                             MainManager.EffectManager.GetLastEffect();
                         else
-                            MainManager.EffectManager.ChangeEffect(_lastEffect);
+                            MainManager.EffectManager.ChangeEffect(_lastEffect, MainManager.LoopManager);
                 }
                 else
                     MainManager.EffectManager.ClearEffect();
@@ -138,7 +148,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             GameModel.Profile = ProfileEditor.SelectedProfile;
-            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+            ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
         }
     }
 

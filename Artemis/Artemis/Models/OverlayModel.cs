@@ -8,7 +8,7 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainManager mainManager): base(mainManager)
+        protected OverlayModel(MainManager mainManager) : base(mainManager)
         {
         }
 

@@ -19,15 +19,14 @@ using MahApps.Metro;
 
 namespace Artemis.ViewModels
 {
-    public sealed class ProfileEditorViewModel<T> : Screen, IHandle<ActiveKeyboardChanged>
+    public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>
     {
         private readonly GameModel _gameModel;
-        private readonly KeyboardManager _keyboardManager;
         private readonly MainManager _mainManager;
         private DateTime _downTime;
         private LayerModel _draggingLayer;
         private Point? _draggingLayerOffset;
-        private LayerEditorViewModel<T> _editorVm;
+        private LayerEditorViewModel _editorVm;
         private Cursor _keyboardPreviewCursor;
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
@@ -35,11 +34,9 @@ namespace Artemis.ViewModels
         private LayerModel _selectedLayer;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(MainManager mainManager, KeyboardManager keyboardManager, GameModel gameModel,
-            IEventAggregator events)
+        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel)
         {
             _mainManager = mainManager;
-            _keyboardManager = keyboardManager;
             _gameModel = gameModel;
 
             Profiles = new BindableCollection<ProfileModel>();
@@ -48,10 +45,6 @@ namespace Artemis.ViewModels
 
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
-        }
-
-        public ProfileEditorViewModel()
-        {
         }
 
         public BindableCollection<ProfileModel> Profiles
@@ -180,7 +173,7 @@ namespace Artemis.ViewModels
         public bool CanAddLayer => _selectedProfile != null;
         public bool CanRemoveLayer => _selectedProfile != null && _selectedLayer != null;
 
-        private KeyboardProvider ActiveKeyboard => _keyboardManager.ActiveKeyboard;
+        private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
 
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
@@ -265,7 +258,7 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel<T>(ActiveKeyboard, layer);
+            _editorVm = new LayerEditorViewModel(ActiveKeyboard, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;

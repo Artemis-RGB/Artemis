@@ -5,7 +5,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public sealed class VolumeDisplayViewModel : OverlayViewModel
     {
-        public VolumeDisplayViewModel(MainManager mainManager): base(mainManager)
+        public VolumeDisplayViewModel(MainManager mainManager) : base(mainManager)
         {
             DisplayName = "Volume Display";
 

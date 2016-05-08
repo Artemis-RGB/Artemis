@@ -45,7 +45,18 @@ namespace Artemis.Managers
         public void Start()
         {
             Logger.Debug("Starting LoopManager");
-            // Setup
+
+            if (_keyboardManager.ActiveKeyboard == null)
+                _keyboardManager.EnableLastKeyboard();
+
+            if (_effectManager.ActiveEffect == null)
+            {
+                var lastEffect = _effectManager.GetLastEffect();
+                if (lastEffect == null)
+                    return;
+                
+                _effectManager.ChangeEffect(lastEffect);
+            }
 
             Running = true;
         }
@@ -55,7 +66,7 @@ namespace Artemis.Managers
             Logger.Debug("Stopping LoopManager");
             Running = false;
 
-            // Shut down
+            _keyboardManager.ReleaseActiveKeyboard();
         }
 
         private void Render(object sender, ElapsedEventArgs e)
@@ -63,21 +74,21 @@ namespace Artemis.Managers
             if (!Running)
                 return;
 
+            // Stop if no active keyboard/efffect
+            if (_keyboardManager.ActiveKeyboard == null || _effectManager.ActiveEffect == null)
+            {
+                Logger.Debug("No active keyboard/effect, stopping. " +
+                             $"Keyboard={_keyboardManager.ActiveKeyboard?.Name}, " +
+                             $"effect={_effectManager.ActiveEffect?.Name}");
+                Stop();
+                return;
+            }
+
             // Lock both the active keyboard and active effect so they will not change while rendering.
             lock (_keyboardManager.ActiveKeyboard)
             {
                 lock (_effectManager.ActiveEffect)
                 {
-                    // Stop if no active keyboard/efffect
-                    if (_keyboardManager.ActiveKeyboard == null || _effectManager.ActiveEffect == null)
-                    {
-                        Logger.Debug("No active keyboard/effect, stopping. " +
-                                     $"Keyboard={_keyboardManager.ActiveKeyboard?.Name}, " +
-                                     $"effect={_effectManager.ActiveEffect?.Name}");
-                        Stop();
-                        return;
-                    }
-
                     // Skip frame if effect is still initializing
                     if (_effectManager.ActiveEffect.Initialized == false)
                         return;

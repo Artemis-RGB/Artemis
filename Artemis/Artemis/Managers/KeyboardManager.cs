@@ -107,7 +107,7 @@ namespace Artemis.Managers
             {
                 if (ActiveKeyboard == null)
                     return;
-                
+
                 ActiveKeyboard.Disable();
                 ActiveKeyboard = null;
             }

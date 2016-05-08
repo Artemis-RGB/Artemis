@@ -132,6 +132,10 @@
       <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.2.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ColorBox, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f971124b2576acfc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\ColorBox.dll</HintPath>
@@ -173,6 +177,10 @@
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Factory, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Factory.3.2.1.0\lib\net45-full\Ninject.Extensions.Factory.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject.Extensions.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
@@ -274,6 +282,7 @@
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
+    <Compile Include="InjectionFactories\IProfileEditorViewModelFactory.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
@@ -379,9 +388,9 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
-    <Compile Include="NinjectModules\ArtemisModules.cs" />
-    <Compile Include="NinjectModules\BaseModules.cs" />
-    <Compile Include="NinjectModules\ManagerModules.cs" />
+    <Compile Include="InjectionModules\ArtemisModules.cs" />
+    <Compile Include="InjectionModules\BaseModules.cs" />
+    <Compile Include="InjectionModules\ManagerModules.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

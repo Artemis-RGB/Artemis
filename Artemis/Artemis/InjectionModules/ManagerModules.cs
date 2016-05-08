@@ -1,7 +1,7 @@
 ﻿using Artemis.Managers;
 using Ninject.Modules;
 
-namespace Artemis.NinjectModules
+namespace Artemis.InjectionModules
 {
     internal class ManagerModules : NinjectModule
     {

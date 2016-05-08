@@ -14,7 +14,7 @@ using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerEditorViewModel<T> : Screen
+    public class LayerEditorViewModel : Screen
     {
         private readonly KeyboardProvider _activeKeyboard;
         private readonly MetroDialogService _dialogService;
@@ -37,10 +37,10 @@ namespace Artemis.ViewModels.LayerEditor
             Layer.Enabled = false;
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             ProposedProperties = new LayerPropertiesModel();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap<T>());
+            //DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap<T>());
             LayerConditionVms =
-                new BindableCollection<LayerConditionViewModel<T>>(
-                    layer.LayerConditions.Select(c => new LayerConditionViewModel<T>(this, c, DataModelProps)));
+                new BindableCollection<LayerConditionViewModel>(
+                    layer.LayerConditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", DataModelProps, layer);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, layer);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, layer);
@@ -63,7 +63,7 @@ namespace Artemis.ViewModels.LayerEditor
 
         public BindableCollection<string> LayerTypes => new BindableCollection<string>();
 
-        public BindableCollection<LayerConditionViewModel<T>> LayerConditionVms { get; set; }
+        public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
 
         public LayerModel Layer
         {
@@ -166,7 +166,7 @@ namespace Artemis.ViewModels.LayerEditor
         {
             var condition = new LayerConditionModel();
             Layer.LayerConditions.Add(condition);
-            LayerConditionVms.Add(new LayerConditionViewModel<T>(this, condition, DataModelProps));
+            LayerConditionVms.Add(new LayerConditionViewModel(this, condition, DataModelProps));
         }
 
         public void Apply()
@@ -180,7 +180,7 @@ namespace Artemis.ViewModels.LayerEditor
                 _dialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }
 
-        public void DeleteCondition(LayerConditionViewModel<T> layerConditionViewModel,
+        public void DeleteCondition(LayerConditionViewModel layerConditionViewModel,
             LayerConditionModel layerConditionModel)
         {
             LayerConditionVms.Remove(layerConditionViewModel);
