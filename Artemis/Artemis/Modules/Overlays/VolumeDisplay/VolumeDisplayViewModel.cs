@@ -5,9 +5,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public sealed class VolumeDisplayViewModel : OverlayViewModel
     {
-        public VolumeDisplayViewModel(MainManager mainManager, KeyboardManager keyboardManager,
-            EffectManager effectManager)
-            : base(mainManager, effectManager)
+        public VolumeDisplayViewModel(MainManager mainManager): base(mainManager)
         {
             DisplayName = "Volume Display";
 
@@ -15,8 +13,8 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             OverlaySettings = new VolumeDisplaySettings();
 
             // Create effect model and add it to MainManager
-            OverlayModel = new VolumeDisplayModel(mainManager, keyboardManager, (VolumeDisplaySettings) OverlaySettings);
-            EffectManager.EffectModels.Add(OverlayModel);
+            OverlayModel = new VolumeDisplayModel(mainManager, (VolumeDisplaySettings) OverlaySettings);
+            MainManager.EffectManager.EffectModels.Add(OverlayModel);
         }
     }
 }

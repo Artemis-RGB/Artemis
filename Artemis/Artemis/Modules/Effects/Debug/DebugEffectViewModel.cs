@@ -14,16 +14,13 @@ namespace Artemis.Modules.Effects.Debug
         private ImageSource _imageSource;
         private string _selectedRectangleType;
 
-        public DebugEffectViewModel(MainManager mainManager, KeyboardManager keyboardManager,
-            EffectManager effectManager, IEventAggregator events)
-            : base(
-                mainManager, effectManager,
-                new DebugEffectModel(mainManager, keyboardManager, new DebugEffectSettings()))
+        public DebugEffectViewModel(MainManager main, IEventAggregator events)
+            : base(main, new DebugEffectModel(main, new DebugEffectSettings()))
         {
             DisplayName = "Debug Effect";
 
             events.Subscribe(this);
-            EffectManager.EffectModels.Add(EffectModel);
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public BindableCollection<string> RectangleTypes

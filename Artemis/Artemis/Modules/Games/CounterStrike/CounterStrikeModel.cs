@@ -8,8 +8,7 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings,
-            KeyboardManager keyboardManager) : base(mainManager, keyboardManager, settings)
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings)
         {
             Name = "CounterStrike";
             ProcessName = "csgo";
@@ -50,7 +49,7 @@ namespace Artemis.Modules.Games.CounterStrike
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel);
         }
 

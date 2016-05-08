@@ -5,14 +5,11 @@ namespace Artemis.Modules.Games.TheDivision
 {
     public sealed class TheDivisionViewModel : GameViewModel<TheDivisionDataModel>
     {
-        public TheDivisionViewModel(MainManager mainManager, EffectManager effectManager,
-            KeyboardManager keyboardManager)
-            : base(
-                mainManager, effectManager,
-                new TheDivisionModel(mainManager, keyboardManager, new TheDivisionSettings()))
+        public TheDivisionViewModel(MainManager main)
+            : base(main, new TheDivisionModel(main, new TheDivisionSettings()))
         {
             DisplayName = "The Division";
-            EffectManager.EffectModels.Add(GameModel);
+            MainManager.EffectManager.EffectModels.Add(GameModel);
         }
     }
 }

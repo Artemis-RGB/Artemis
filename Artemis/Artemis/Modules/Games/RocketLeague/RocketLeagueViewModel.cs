@@ -11,15 +11,12 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager mainManager, KeyboardManager keyboardManager,
-            EffectManager effectManager)
-            : base(
-                mainManager, effectManager,
-                new RocketLeagueModel(mainManager, keyboardManager, new RocketLeagueSettings()))
+        public RocketLeagueViewModel(MainManager main)
+            : base(main, new RocketLeagueModel(main, new RocketLeagueSettings()))
         {
             DisplayName = "Rocket League";
 
-            EffectManager.EffectModels.Add(GameModel);
+            MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
         }
 

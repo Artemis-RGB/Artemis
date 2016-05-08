@@ -10,8 +10,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
     {
         private readonly ProfilePreviewDataModel _previewDataModel;
 
-        public ProfilePreviewModel(MainManager mainManager, KeyboardManager keyboardManager)
-            : base(mainManager, keyboardManager)
+        public ProfilePreviewModel(MainManager main) : base(main)
         {
             Name = "Profile Preview";
             _previewDataModel = new ProfilePreviewDataModel();
@@ -41,12 +40,12 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = KeyboardManager.ActiveKeyboard.KeyboardBitmap(4);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(4);
 
             if (SelectedProfile == null)
                 return bitmap;
 
-            var keyboardRect = KeyboardManager.ActiveKeyboard.KeyboardRectangle(4);
+            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(4);
             var image = SelectedProfile.GenerateBitmap<ProfilePreviewDataModel>(keyboardRect, _previewDataModel, true);
 
             // Draw on top of everything else

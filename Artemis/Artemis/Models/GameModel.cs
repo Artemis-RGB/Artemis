@@ -6,8 +6,7 @@ namespace Artemis.Models
 {
     public abstract class GameModel : EffectModel
     {
-        protected GameModel(MainManager mainManager, KeyboardManager keyboardManager, GameSettings settings)
-            : base(mainManager, keyboardManager)
+        protected GameModel(MainManager mainManager, GameSettings settings): base(mainManager)
         {
             Settings = settings;
         }

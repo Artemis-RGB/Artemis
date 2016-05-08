@@ -6,13 +6,11 @@ namespace Artemis.ViewModels.Abstract
 {
     public abstract class OverlayViewModel : Screen
     {
-        protected readonly EffectManager EffectManager;
         protected readonly MainManager MainManager;
         private OverlaySettings _overlaySettings;
 
-        protected OverlayViewModel(MainManager mainManager, EffectManager effectManager)
+        protected OverlayViewModel(MainManager mainManager)
         {
-            EffectManager = effectManager;
             MainManager = mainManager;
         }
 

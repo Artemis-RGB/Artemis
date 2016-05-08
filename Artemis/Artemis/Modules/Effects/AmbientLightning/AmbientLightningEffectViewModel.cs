@@ -7,16 +7,13 @@ namespace Artemis.Modules.Effects.AmbientLightning
 {
     public sealed class AmbientLightningEffectViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public AmbientLightningEffectViewModel(MainManager mainManager, KeyboardManager keyboardManager,
-            EffectManager effectManager, IEventAggregator events)
-            : base(
-                mainManager, effectManager,
-                new AmbientLightningEffectModel(mainManager, keyboardManager, new AmbientLightningEffectSettings()))
+        public AmbientLightningEffectViewModel(MainManager main, IEventAggregator events)
+            : base(main, new AmbientLightningEffectModel(main, new AmbientLightningEffectSettings()))
         {
             DisplayName = "Ambient Lightning";
 
             events.Subscribe(this);
-            EffectManager.EffectModels.Add(EffectModel);
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public void Handle(ActiveEffectChanged message)

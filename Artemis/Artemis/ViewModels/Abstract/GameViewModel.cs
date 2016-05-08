@@ -15,12 +15,10 @@ namespace Artemis.ViewModels.Abstract
         private bool _editorShown;
         private GameSettings _gameSettings;
         private EffectModel _lastEffect;
-        protected EffectManager EffectManager;
 
-        protected GameViewModel(MainManager mainManager, EffectManager effectManager, GameModel gameModel)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel)
         {
             MainManager = mainManager;
-            EffectManager = effectManager;
             GameModel = gameModel;
             GameSettings = gameModel.Settings;
 
@@ -45,7 +43,7 @@ namespace Artemis.ViewModels.Abstract
             }
         }
 
-        public bool GameEnabled => EffectManager.ActiveEffect == GameModel;
+        public bool GameEnabled => MainManager.EffectManager.ActiveEffect == GameModel;
 
         public void ToggleEffect()
         {
@@ -59,7 +57,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the game if it's currently running to apply settings.
-            EffectManager.ChangeEffect(GameModel, true);
+            MainManager.EffectManager.ChangeEffect(GameModel);
         }
 
         public async void ResetSettings()
@@ -109,11 +107,11 @@ namespace Artemis.ViewModels.Abstract
             if (enable)
             {
                 // Store the current effect so it can be restored later
-                if (!(EffectManager.ActiveEffect is ProfilePreviewModel))
-                    _lastEffect = EffectManager.ActiveEffect;
+                if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
+                    _lastEffect = MainManager.EffectManager.ActiveEffect;
 
-                EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-                EffectManager.ChangeEffect(EffectManager.ProfilePreviewModel);
+                MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+                MainManager.EffectManager.ChangeEffect(MainManager.EffectManager.ProfilePreviewModel);
             }
             else
             {
@@ -123,12 +121,12 @@ namespace Artemis.ViewModels.Abstract
                     var gameModel = _lastEffect as GameModel;
                     if (gameModel != null)
                         if (!gameModel.Enabled)
-                            EffectManager.GetLastEffect();
+                            MainManager.EffectManager.GetLastEffect();
                         else
-                            EffectManager.ChangeEffect(_lastEffect, true);
+                            MainManager.EffectManager.ChangeEffect(_lastEffect);
                 }
                 else
-                    EffectManager.ClearEffect();
+                    MainManager.EffectManager.ClearEffect();
             }
 
             _editorShown = enable;
@@ -140,7 +138,7 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             GameModel.Profile = ProfileEditor.SelectedProfile;
-            EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
         }
     }
 

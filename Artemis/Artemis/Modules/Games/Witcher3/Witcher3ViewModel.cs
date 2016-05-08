@@ -12,11 +12,10 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public sealed class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
     {
-        public Witcher3ViewModel(MainManager mainManager, KeyboardManager keyboardManager, EffectManager effectManager)
-            : base(mainManager, effectManager, new Witcher3Model(mainManager, keyboardManager, new Witcher3Settings()))
+        public Witcher3ViewModel(MainManager main) : base(main, new Witcher3Model(main, new Witcher3Settings()))
         {
             DisplayName = "The Witcher 3";
-            EffectManager.EffectModels.Add(GameModel);
+            MainManager.EffectManager.EffectModels.Add(GameModel);
         }
 
         public static string Name => "The Witcher 3";
