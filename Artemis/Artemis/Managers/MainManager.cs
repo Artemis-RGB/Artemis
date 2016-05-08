@@ -24,16 +24,17 @@ namespace Artemis.Managers
         public delegate void PauseCallbackHandler();
 
         private readonly IEventAggregator _events;
+        private readonly ILogger _logger;
 
         public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
             KeyboardManager keyboardManager, EffectManager effectManager)
         {
-            Logger = logger;
+            _logger = logger;
             LoopManager = loopManager;
             KeyboardManager = keyboardManager;
             EffectManager = effectManager;
 
-            Logger.Info("Intializing MainManager");
+            _logger.Info("Intializing MainManager");
 
             _events = events;
 
@@ -58,13 +59,12 @@ namespace Artemis.Managers
             PipeServer = new PipeServer();
             PipeServer.Start("artemis");
 
-            Logger.Info("Intialized MainManager");
+            _logger.Info("Intialized MainManager");
         }
 
         [Inject]
         public Lazy<ShellViewModel> ShellViewModel { get; set; }
 
-        public ILogger Logger { get; }
         public LoopManager LoopManager { get; }
         public KeyboardManager KeyboardManager { get; set; }
         public EffectManager EffectManager { get; set; }
@@ -80,7 +80,7 @@ namespace Artemis.Managers
 
         public void Dispose()
         {
-            Logger.Debug("Shutting down MainManager");
+            _logger.Debug("Shutting down MainManager");
             LoopManager.Stop();
             ProcessWorker.CancelAsync();
             ProcessWorker.CancelAsync();
@@ -93,7 +93,7 @@ namespace Artemis.Managers
         /// </summary>
         public void EnableProgram()
         {
-            Logger.Debug("Enabling program");
+            _logger.Debug("Enabling program");
             ProgramEnabled = true;
             LoopManager.Start();
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -104,7 +104,7 @@ namespace Artemis.Managers
         /// </summary>
         public void DisableProgram()
         {
-            Logger.Debug("Disabling program");
+            _logger.Debug("Disabling program");
             LoopManager.Stop();
             ProgramEnabled = false;
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -150,7 +150,7 @@ namespace Artemis.Managers
             if (e.Error == null)
                 return;
 
-            Logger.Error(e.Error, "Exception in the BackgroundWorker");
+            _logger.Error(e.Error, "Exception in the BackgroundWorker");
             throw e.Error;
         }
     }

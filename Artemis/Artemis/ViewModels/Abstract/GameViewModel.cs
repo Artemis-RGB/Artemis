@@ -34,6 +34,7 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
+
         public IEventAggregator Events { get; set; }
         public IProfileEditorViewModelFactory PFactory { get; set; }
 

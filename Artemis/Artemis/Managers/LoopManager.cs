@@ -14,12 +14,13 @@ namespace Artemis.Managers
         private readonly EffectManager _effectManager;
         private readonly IEventAggregator _events;
         private readonly KeyboardManager _keyboardManager;
+        private readonly ILogger _logger;
         private readonly Timer _loopTimer;
 
         public LoopManager(ILogger logger, IEventAggregator events, EffectManager effectManager,
             KeyboardManager keyboardManager)
         {
-            Logger = logger;
+            _logger = logger;
             _events = events;
             _effectManager = effectManager;
             _keyboardManager = keyboardManager;
@@ -28,8 +29,6 @@ namespace Artemis.Managers
             _loopTimer.Elapsed += Render;
             _loopTimer.Start();
         }
-
-        public ILogger Logger { get; }
 
         /// <summary>
         ///     Gets whether the loop is running
@@ -44,17 +43,18 @@ namespace Artemis.Managers
 
         public void Start()
         {
-            Logger.Debug("Starting LoopManager");
+            _logger.Debug("Starting LoopManager");
 
             if (_keyboardManager.ActiveKeyboard == null)
                 _keyboardManager.EnableLastKeyboard();
 
+            // TODO: Deadlock maybe? I don't know what Resharper is on about
             if (_effectManager.ActiveEffect == null)
             {
                 var lastEffect = _effectManager.GetLastEffect();
                 if (lastEffect == null)
                     return;
-                
+
                 _effectManager.ChangeEffect(lastEffect);
             }
 
@@ -63,7 +63,7 @@ namespace Artemis.Managers
 
         public void Stop()
         {
-            Logger.Debug("Stopping LoopManager");
+            _logger.Debug("Stopping LoopManager");
             Running = false;
 
             _keyboardManager.ReleaseActiveKeyboard();
@@ -77,9 +77,9 @@ namespace Artemis.Managers
             // Stop if no active keyboard/efffect
             if (_keyboardManager.ActiveKeyboard == null || _effectManager.ActiveEffect == null)
             {
-                Logger.Debug("No active keyboard/effect, stopping. " +
-                             $"Keyboard={_keyboardManager.ActiveKeyboard?.Name}, " +
-                             $"effect={_effectManager.ActiveEffect?.Name}");
+                _logger.Debug("No active keyboard/effect, stopping. " +
+                              $"Keyboard={_keyboardManager.ActiveKeyboard?.Name}, " +
+                              $"effect={_effectManager.ActiveEffect?.Name}");
                 Stop();
                 return;
             }

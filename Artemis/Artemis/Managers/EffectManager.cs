@@ -7,7 +7,6 @@ using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
 using Caliburn.Micro;
 using NLog;
-using LogManager = NLog.LogManager;
 
 namespace Artemis.Managers
 {
@@ -16,19 +15,21 @@ namespace Artemis.Managers
     /// </summary>
     public class EffectManager
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IEventAggregator _events;
         private readonly KeyboardManager _keyboardManager;
+        private readonly ILogger _logger;
         private EffectModel _activeEffect;
 
-        public EffectManager(IEventAggregator events, KeyboardManager keyboardManager)
+        public EffectManager(IEventAggregator events, ILogger logger, KeyboardManager keyboardManager)
         {
-            Logger.Info("Intializing EffectManager");
+            _logger = logger;
+            _logger.Info("Intializing EffectManager");
+
             _events = events;
             _keyboardManager = keyboardManager;
 
             EffectModels = new List<EffectModel>();
-            Logger.Info("Intialized EffectManager");
+            _logger.Info("Intialized EffectManager");
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Artemis.Managers
         /// <returns>Whether enabling was successful or not.</returns>
         public EffectModel GetLastEffect()
         {
-            Logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
+            _logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
             return General.Default.LastEffect == null
                 ? null
                 : EffectModels.FirstOrDefault(e => e.Name == General.Default.LastEffect);
@@ -103,7 +104,7 @@ namespace Artemis.Managers
                     wasNull = true;
                     ActiveEffect = effectModel;
                 }
-                
+
                 lock (ActiveEffect)
                 {
                     if (!wasNull)
@@ -126,7 +127,7 @@ namespace Artemis.Managers
                 loopManager.Start();
             }
 
-            Logger.Debug($"Changed active effect to: {effectModel.Name}");
+            _logger.Debug($"Changed active effect to: {effectModel.Name}");
         }
 
 
@@ -147,7 +148,7 @@ namespace Artemis.Managers
                 }
             }
 
-            Logger.Debug("Cleared active effect");
+            _logger.Debug("Cleared active effect");
         }
 
         /// <summary>
@@ -156,7 +157,7 @@ namespace Artemis.Managers
         /// <param name="activeEffect"></param>
         public void DisableGame(EffectModel activeEffect)
         {
-            Logger.Debug($"Disabling game: {activeEffect?.Name}");
+            _logger.Debug($"Disabling game: {activeEffect?.Name}");
             if (GetLastEffect() == null)
                 ClearEffect();
             else
