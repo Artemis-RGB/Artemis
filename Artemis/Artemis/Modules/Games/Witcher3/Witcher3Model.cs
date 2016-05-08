@@ -18,8 +18,7 @@ namespace Artemis.Modules.Games.Witcher3
         private KeyboardRectangle _signRect;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager, KeyboardManager keyboardManager, Witcher3Settings settings)
-            : base(mainManager, keyboardManager, settings)
+        public Witcher3Model(MainManager mainManager, Witcher3Settings settings) : base(mainManager, settings)
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
@@ -45,7 +44,7 @@ namespace Artemis.Modules.Games.Witcher3
         {
             Initialized = false;
 
-            _signRect = new KeyboardRectangle(KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
+            _signRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
                 Rotate = true,
@@ -107,7 +106,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);

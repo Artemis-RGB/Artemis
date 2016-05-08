@@ -12,7 +12,6 @@ namespace Artemis.Modules.Games.TheDivision
 {
     public class TheDivisionModel : GameModel
     {
-        private readonly KeyboardManager _keyboardManager;
         private Wave _ammoWave;
         private TheDivisionDataModel _dataModel;
         private KeyboardRectangle _hpRect;
@@ -23,10 +22,8 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyHp;
         private int _trans;
 
-        public TheDivisionModel(MainManager mainManager, KeyboardManager keyboardManager, TheDivisionSettings settings)
-            : base(mainManager, keyboardManager, settings)
+        public TheDivisionModel(MainManager mainManager, TheDivisionSettings settings) : base(mainManager, settings)
         {
-            _keyboardManager = keyboardManager;
             Name = "TheDivision";
             ProcessName = "TheDivision";
             Scale = 4;
@@ -50,7 +47,7 @@ namespace Artemis.Modules.Games.TheDivision
             Initialized = false;
 
             _ammoWave = new Wave(new Point(30, 14), 0, Color.Transparent);
-            _hpRect = new KeyboardRectangle(_keyboardManager.ActiveKeyboard, 3*Scale, 0*Scale,
+            _hpRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 3*Scale, 0*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -60,7 +57,7 @@ namespace Artemis.Modules.Games.TheDivision
                 ContainedBrush = false
             };
 
-            _p2 = new KeyboardRectangle(_keyboardManager.ActiveKeyboard, 0*Scale, 1*Scale,
+            _p2 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 1*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -69,7 +66,7 @@ namespace Artemis.Modules.Games.TheDivision
                 Rotate = true,
                 ContainedBrush = false
             };
-            _p3 = new KeyboardRectangle(_keyboardManager.ActiveKeyboard, 0*Scale, 3*Scale,
+            _p3 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 3*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -78,7 +75,7 @@ namespace Artemis.Modules.Games.TheDivision
                 Rotate = true,
                 ContainedBrush = false
             };
-            _p4 = new KeyboardRectangle(_keyboardManager.ActiveKeyboard, 0*Scale, 5*Scale,
+            _p4 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 5*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -207,7 +204,7 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = _keyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);

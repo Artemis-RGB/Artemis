@@ -8,16 +8,13 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public sealed class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
     {
-        public CounterStrikeViewModel(MainManager mainManager, EffectManager effectManager,
-            KeyboardManager keyboardManager)
-            : base(
-                mainManager, effectManager,
-                new CounterStrikeModel(mainManager, new CounterStrikeSettings(), keyboardManager))
+        public CounterStrikeViewModel(MainManager main)
+            : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()))
         {
             DisplayName = "CS:GO";
 
             // Create effect model and add it to MainManager
-            EffectManager.EffectModels.Add(GameModel);
+            MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
         }
 

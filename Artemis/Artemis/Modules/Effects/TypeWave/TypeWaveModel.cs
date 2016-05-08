@@ -16,8 +16,7 @@ namespace Artemis.Modules.Effects.TypeWave
         private readonly List<Wave> _waves;
         private Color _randomColor;
 
-        public TypeWaveModel(MainManager mainManager, KeyboardManager keyboardManager, TypeWaveSettings settings)
-            : base(mainManager, keyboardManager)
+        public TypeWaveModel(MainManager mainManager, TypeWaveSettings settings) : base(mainManager)
         {
             Name = "TypeWave";
             _waves = new List<Wave>();
@@ -97,7 +96,7 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count == 0)
                 return null;
 
-            var bitmap = KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
@@ -114,7 +113,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
-                    if (KeyboardManager.ActiveKeyboard is CorsairRGB)
+                    if (MainManager.KeyboardManager.ActiveKeyboard is CorsairRGB)
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;

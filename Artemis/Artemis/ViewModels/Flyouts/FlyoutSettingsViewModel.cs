@@ -60,7 +60,7 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == null)
                     return;
 
-                _keyboardManager.ChangeKeyboard(
+                _keyboardManager.EnableKeyboard(
                     _keyboardManager.KeyboardProviders.FirstOrDefault(
                         k => k.Name == _selectedKeyboardProvider));
             }

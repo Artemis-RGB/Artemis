@@ -7,16 +7,13 @@ namespace Artemis.Modules.Effects.AudioVisualizer
 {
     public sealed class AudioVisualizerViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public AudioVisualizerViewModel(MainManager mainManager, KeyboardManager keyboardManager,
-            EffectManager effectManager, IEventAggregator events)
-            : base(
-                mainManager, effectManager,
-                new AudioVisualizerModel(mainManager, keyboardManager, new AudioVisualizerSettings()))
+        public AudioVisualizerViewModel(MainManager main, IEventAggregator events)
+            : base(main, new AudioVisualizerModel(main, new AudioVisualizerSettings()))
         {
             DisplayName = "Audio Visualization";
 
             events.Subscribe(this);
-            EffectManager.EffectModels.Add(EffectModel);
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public void Handle(ActiveEffectChanged message)

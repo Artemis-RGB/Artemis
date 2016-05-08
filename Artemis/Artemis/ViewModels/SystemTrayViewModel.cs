@@ -127,7 +127,7 @@ namespace Artemis.ViewModels
 
         public void ExitApplication()
         {
-            MainManager.Shutdown();
+            MainManager.Dispose();
             Application.Current.Shutdown();
 
             // Sometimes you need to be rough.
