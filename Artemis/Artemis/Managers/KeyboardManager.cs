@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
+using Artemis.Services;
 using Artemis.Settings;
 using Caliburn.Micro;
-using NLog;
+using Ninject;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
 {
@@ -29,6 +31,9 @@ namespace Artemis.Managers
             _logger.Info("Intialized KeyboardManager");
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
+
         public List<KeyboardProvider> KeyboardProviders { get; set; }
 
         public KeyboardProvider ActiveKeyboard
@@ -47,7 +52,7 @@ namespace Artemis.Managers
         /// </summary>
         public void EnableLastKeyboard()
         {
-            _logger.Debug($"Enabling last keyboard: {General.Default.LastKeyboard}");
+            _logger.Debug("Getting last keyboard: {0}", General.Default.LastKeyboard);
             if (string.IsNullOrEmpty(General.Default.LastKeyboard))
                 return;
 
@@ -61,22 +66,22 @@ namespace Artemis.Managers
         /// <param name="keyboardProvider"></param>
         public void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
-            if (keyboardProvider == null)
-                throw new ArgumentNullException(nameof(keyboardProvider));
-
-            if (ActiveKeyboard?.Name == keyboardProvider.Name)
-                return;
-
-            var wasNull = false;
-            if (ActiveKeyboard == null)
+            lock (this)
             {
-                wasNull = true;
-                ActiveKeyboard = keyboardProvider;
-            }
+                if (keyboardProvider == null)
+                    throw new ArgumentNullException(nameof(keyboardProvider));
 
-            lock (ActiveKeyboard)
-            {
-                _logger.Debug($"Enabling keyboard: {keyboardProvider.Name}");
+                if (ActiveKeyboard?.Name == keyboardProvider.Name)
+                    return;
+
+                var wasNull = false;
+                if (ActiveKeyboard == null)
+                {
+                    wasNull = true;
+                    ActiveKeyboard = keyboardProvider;
+                }
+
+                _logger.Debug("Enabling keyboard: {0}", keyboardProvider.Name);
 
                 if (!wasNull)
                     ReleaseActiveKeyboard();
@@ -84,9 +89,11 @@ namespace Artemis.Managers
                 // Disable everything if there's no active keyboard found
                 if (!keyboardProvider.CanEnable())
                 {
-                    // TODO: MainManager.DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                    DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                    ActiveKeyboard = null;
                     General.Default.LastKeyboard = null;
                     General.Default.Save();
+                    _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
                     return;
                 }
 
@@ -95,6 +102,7 @@ namespace Artemis.Managers
 
                 General.Default.LastKeyboard = ActiveKeyboard.Name;
                 General.Default.Save();
+                _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
             }
         }
 
@@ -103,16 +111,16 @@ namespace Artemis.Managers
         /// </summary>
         public void ReleaseActiveKeyboard()
         {
-            lock (ActiveKeyboard)
+            lock (this)
             {
                 if (ActiveKeyboard == null)
                     return;
 
+                var releaseName = ActiveKeyboard.Name;
                 ActiveKeyboard.Disable();
                 ActiveKeyboard = null;
+                _logger.Debug("Released keyboard: {0}", releaseName);
             }
-
-            _logger.Debug($"Released keyboard: {ActiveKeyboard?.Name}");
         }
     }
 }

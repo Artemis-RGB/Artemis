@@ -12,10 +12,12 @@ using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
 using MahApps.Metro;
+using Ninject;
 
 namespace Artemis.ViewModels
 {
@@ -47,6 +49,8 @@ namespace Artemis.ViewModels
             LoadProfiles();
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public BindableCollection<ProfileModel> Profiles
         {
             get { return _profiles; }
@@ -217,11 +221,11 @@ namespace Artemis.ViewModels
         /// </summary>
         public async void AddProfile()
         {
-            var name = await _mainManager.DialogService.ShowInputDialog("Add new profile",
+            var name = await DialogService.ShowInputDialog("Add new profile",
                 "Please provide a profile name unique to this game and keyboard.");
             if (name.Length < 1)
             {
-                _mainManager.DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
+                DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
                 return;
             }
 
@@ -234,7 +238,7 @@ namespace Artemis.ViewModels
 
             if (ProfileProvider.GetAll().Contains(profile))
             {
-                var overwrite = await _mainManager.DialogService.ShowQuestionMessageBox("Overwrite existing profile",
+                var overwrite = await DialogService.ShowQuestionMessageBox("Overwrite existing profile",
                     "A profile with this name already exists for this game. Would you like to overwrite it?");
                 if (!overwrite.Value)
                     return;

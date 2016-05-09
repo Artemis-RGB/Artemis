@@ -10,6 +10,7 @@ using Artemis.Models.Profiles;
 using Artemis.Services;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Ninject;
 using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels.LayerEditor
@@ -17,7 +18,6 @@ namespace Artemis.ViewModels.LayerEditor
     public class LayerEditorViewModel : Screen
     {
         private readonly KeyboardProvider _activeKeyboard;
-        private readonly MetroDialogService _dialogService;
         private readonly BackgroundWorker _previewWorker;
         private readonly bool _wasEnabled;
         private LayerModel _layer;
@@ -30,7 +30,6 @@ namespace Artemis.ViewModels.LayerEditor
             _activeKeyboard = activeKeyboard;
             _wasEnabled = layer.Enabled;
 
-            _dialogService = new MetroDialogService(this);
             Layer = layer;
             ProposedLayer = new LayerModel();
             GeneralHelpers.CopyProperties(ProposedLayer, Layer);
@@ -53,6 +52,8 @@ namespace Artemis.ViewModels.LayerEditor
             PreSelect();
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
@@ -177,7 +178,7 @@ namespace Artemis.ViewModels.LayerEditor
             OpacityProperties.Apply();
 
             if (!File.Exists(Layer.GifFile) && Layer.LayerType == LayerType.KeyboardGif)
-                _dialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
+                DialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }
 
         public void DeleteCondition(LayerConditionViewModel layerConditionViewModel,

@@ -1,5 +1,6 @@
 ﻿using Artemis.InjectionFactories;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Services;
 using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
@@ -22,6 +23,9 @@ namespace Artemis.InjectionModules
 
             // Models
             Bind<ProfilePreviewModel>().ToSelf().InSingletonScope();
+
+            // Services
+            Bind<MetroDialogService>().ToSelf().InSingletonScope();
         }
     }
 }

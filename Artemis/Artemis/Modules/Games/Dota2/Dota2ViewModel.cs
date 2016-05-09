@@ -75,7 +75,7 @@ namespace Artemis.Modules.Games.Dota2
                 return;
             }
 
-            MainManager.DialogService.ShowErrorMessageBox("Please select a valid Dota 2 directory\n\n" +
+            DialogService.ShowErrorMessageBox("Please select a valid Dota 2 directory\n\n" +
                                                           @"By default Dota 2 is in \SteamApps\common\dota 2 beta");
             ((Dota2Settings) GameSettings).GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => GameSettings);

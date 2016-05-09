@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Artemis.Events;
@@ -5,24 +6,28 @@ using Artemis.Managers;
 using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
+    public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>,
+        IHandle<ActiveEffectChanged>
     {
-        private readonly KeyboardManager _keyboardManager;
+        private readonly ILogger _logger;
         private string _activeEffectName;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager, KeyboardManager keyboardManager, IEventAggregator events)
+        public FlyoutSettingsViewModel(MainManager mainManager, IEventAggregator events, ILogger logger)
         {
-            _keyboardManager = keyboardManager;
+            _logger = logger;
+
             MainManager = mainManager;
             Header = "Settings";
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
+            PropertyChanged += KeyboardUpdater;
             events.Subscribe(this);
         }
 
@@ -43,7 +48,7 @@ namespace Artemis.ViewModels.Flyouts
         {
             get
             {
-                var collection = new BindableCollection<string>(_keyboardManager.KeyboardProviders.Select(k => k.Name));
+                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders.Select(k => k.Name));
                 collection.Insert(0, "None");
                 return collection;
             }
@@ -57,12 +62,6 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == _selectedKeyboardProvider) return;
                 _selectedKeyboardProvider = value;
                 NotifyOfPropertyChange(() => SelectedKeyboardProvider);
-                if (value == null)
-                    return;
-
-                _keyboardManager.EnableKeyboard(
-                    _keyboardManager.KeyboardProviders.FirstOrDefault(
-                        k => k.Name == _selectedKeyboardProvider));
             }
         }
 
@@ -71,6 +70,7 @@ namespace Artemis.ViewModels.Flyouts
             get { return MainManager.ProgramEnabled; }
             set
             {
+
                 if (value)
                     MainManager.EnableProgram();
                 else
@@ -98,6 +98,28 @@ namespace Artemis.ViewModels.Flyouts
         public void Handle(ToggleEnabled message)
         {
             NotifyOfPropertyChange(() => Enabled);
+        }
+
+        /// <summary>
+        ///     Takes proper action when the selected keyboard is changed in the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardUpdater(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedKeyboardProvider")
+                return;
+
+            _logger.Debug("Handling SelectedKeyboard change in UI");
+            var keyboard = MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(k => k.Name == SelectedKeyboardProvider);
+            if (keyboard != null)
+            {
+                MainManager.KeyboardManager.EnableKeyboard(keyboard);
+                MainManager.LoopManager.Start();
+            }
+            else
+                MainManager.KeyboardManager.ReleaseActiveKeyboard();
+
         }
 
         public void ToggleEnabled()

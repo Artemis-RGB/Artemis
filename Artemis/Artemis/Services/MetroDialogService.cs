@@ -27,29 +27,20 @@ using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
+using Ninject;
 
 namespace Artemis.Services
 {
     public class MetroDialogService : DialogService
     {
-        private readonly IScreen _viewModel;
-
-        public MetroDialogService(IScreen viewModel)
-        {
-            _viewModel = viewModel;
-        }
-
         private MetroWindow GetActiveWindow()
         {
             MetroWindow window = null;
 
             Execute.OnUIThread(() =>
             {
-                window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault(w => w.IsActive);
-                if (window == null)
-                {
-                    window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
-                }
+                window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault(w => w.IsActive) ??
+                         Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
             });
 
             return window;
@@ -57,7 +48,7 @@ namespace Artemis.Services
 
         public override void ShowMessageBox(string title, string message)
         {
-            if (_viewModel.IsActive == false)
+            if (GetActiveWindow() == null)
                 return;
 
             Execute.OnUIThread(() => GetActiveWindow().ShowMessageAsync(title, message));
@@ -65,7 +56,7 @@ namespace Artemis.Services
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)
         {
-            if (_viewModel.IsActive == false)
+            if (GetActiveWindow() == null)
                 return null;
 
             var metroDialogSettings = new MetroDialogSettings {AffirmativeButtonText = "Yes", NegativeButtonText = "No"};
@@ -86,7 +77,7 @@ namespace Artemis.Services
 
         public override Task<string> ShowInputDialog(string title, string message)
         {
-            if (_viewModel.IsActive == false)
+            if (GetActiveWindow() == null)
                 return null;
 
             return GetActiveWindow().ShowInputAsync(title, message);
@@ -94,7 +85,7 @@ namespace Artemis.Services
 
         public override bool ShowOpenDialog(out string path, string defaultExt, string filter, string initialDir = null)
         {
-            if (_viewModel.IsActive == false)
+            if (GetActiveWindow() == null)
             {
                 path = null;
                 return false;

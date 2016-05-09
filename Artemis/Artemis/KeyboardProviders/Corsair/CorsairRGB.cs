@@ -21,7 +21,8 @@ namespace Artemis.KeyboardProviders.Corsair
         {
             Name = "Corsair RGB Keyboards";
             CantEnableText = "Couldn't connect to your Corsair keyboard.\n" +
-                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n\n" +
+                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n" +
+                             "In CUE, make sure \"Enable SDK\" is checked under Settings > Program.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
             KeyboardRegions = new List<KeyboardRegion>();
         }
@@ -34,7 +35,8 @@ namespace Artemis.KeyboardProviders.Corsair
             {
                 try
                 {
-                    CueSDK.Initialize();
+                    if (CueSDK.ProtocolDetails == null)
+                        CueSDK.Initialize();
                 }
                 catch (CUEException e)
                 {
@@ -64,7 +66,8 @@ namespace Artemis.KeyboardProviders.Corsair
         {
             try
             {
-                CueSDK.Initialize();
+                if (CueSDK.ProtocolDetails == null)
+                    CueSDK.Initialize();
             }
             catch (WrapperException)
             {

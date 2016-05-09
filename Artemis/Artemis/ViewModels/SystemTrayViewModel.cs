@@ -2,9 +2,11 @@
 using System.Windows;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels
 {
@@ -33,6 +35,8 @@ namespace Artemis.ViewModels
                 ShowWindow();
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public MainManager MainManager { get; set; }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
@@ -110,7 +114,7 @@ namespace Artemis.ViewModels
                 return;
 
             _checkedForUpdate = true;
-            Updater.CheckForUpdate(MainManager.DialogService);
+            Updater.CheckForUpdate(DialogService);
         }
 
 

@@ -17,7 +17,7 @@ namespace Artemis.KeyboardProviders
         public PreviewSettings PreviewSettings { get; set; }
 
         public abstract bool CanEnable();
-        public abstract void Enable();
+        public abstract void Enable(); // TODO: This should be done in a background thread with a callback mechanism as it causes UI lag
         public abstract void Disable();
         public abstract void DrawBitmap(Bitmap bitmap);
 

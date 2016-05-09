@@ -1,6 +1,8 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Services;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels.Abstract
 {
@@ -14,6 +16,8 @@ namespace Artemis.ViewModels.Abstract
             MainManager = mainManager;
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public OverlayModel OverlayModel { get; set; }
 
         public OverlaySettings OverlaySettings
@@ -40,7 +44,7 @@ namespace Artemis.ViewModels.Abstract
         public async void ResetSettings()
         {
             var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset overlay settings",
+                DialogService.ShowQuestionMessageBox("Reset overlay settings",
                     "Are you sure you wish to reset this overlay's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)

@@ -43,18 +43,29 @@ namespace Artemis.Managers
 
         public void Start()
         {
+            if (Running)
+                return;
+
             _logger.Debug("Starting LoopManager");
 
             if (_keyboardManager.ActiveKeyboard == null)
                 _keyboardManager.EnableLastKeyboard();
+            // If still null, no last keyboard, so stop.
+            if (_keyboardManager.ActiveKeyboard == null)
+            {
+                _logger.Debug("Cancel LoopManager start, no keyboard");
+                return;
+            }
 
             // TODO: Deadlock maybe? I don't know what Resharper is on about
             if (_effectManager.ActiveEffect == null)
             {
                 var lastEffect = _effectManager.GetLastEffect();
                 if (lastEffect == null)
+                {
+                    _logger.Debug("Cancel LoopManager start, no effect");
                     return;
-
+                }
                 _effectManager.ChangeEffect(lastEffect);
             }
 
@@ -63,6 +74,9 @@ namespace Artemis.Managers
 
         public void Stop()
         {
+            if (!Running)
+                return;
+
             _logger.Debug("Stopping LoopManager");
             Running = false;
 
@@ -74,21 +88,26 @@ namespace Artemis.Managers
             if (!Running)
                 return;
 
-            // Stop if no active keyboard/efffect
-            if (_keyboardManager.ActiveKeyboard == null || _effectManager.ActiveEffect == null)
+            // Stop if no active keyboard
+            if (_keyboardManager.ActiveKeyboard == null)
             {
-                _logger.Debug("No active keyboard/effect, stopping. " +
-                              $"Keyboard={_keyboardManager.ActiveKeyboard?.Name}, " +
-                              $"effect={_effectManager.ActiveEffect?.Name}");
+                _logger.Debug("No active keyboard, stopping");
                 Stop();
                 return;
             }
-
             // Lock both the active keyboard and active effect so they will not change while rendering.
-            lock (_keyboardManager.ActiveKeyboard)
+            lock (_keyboardManager)
             {
-                lock (_effectManager.ActiveEffect)
+                lock (_effectManager)
                 {
+                    // Stop if no active effect
+                    if (_effectManager.ActiveEffect == null)
+                    {
+                        _logger.Debug("No active effect, stopping");
+                        Stop();
+                        return;
+                    }
+
                     // Skip frame if effect is still initializing
                     if (_effectManager.ActiveEffect.Initialized == false)
                         return;
@@ -102,16 +121,13 @@ namespace Artemis.Managers
                         ? _effectManager.ActiveEffect.GenerateBitmap()
                         : null;
 
-                    lock (_effectManager.EnabledOverlays)
+                    // Draw enabled overlays on top
+                    foreach (var overlayModel in _effectManager.EnabledOverlays)
                     {
-                        // Draw enabled overlays on top
-                        foreach (var overlayModel in _effectManager.EnabledOverlays)
-                        {
-                            overlayModel.Update();
-                            bitmap = bitmap != null
-                                ? overlayModel.GenerateBitmap(bitmap)
-                                : overlayModel.GenerateBitmap();
-                        }
+                        overlayModel.Update();
+                        bitmap = bitmap != null
+                            ? overlayModel.GenerateBitmap(bitmap)
+                            : overlayModel.GenerateBitmap();
                     }
 
                     if (bitmap == null)

@@ -38,7 +38,7 @@ namespace Artemis.Modules.Games.Witcher3
             if (!File.Exists(dialog.SelectedPath + @"\bin\x64\witcher3.exe"))
             {
                 var retry = await
-                    MainManager.DialogService.ShowQuestionMessageBox("Installation error",
+                    DialogService.ShowQuestionMessageBox("Installation error",
                         "That's not a valid Witcher 3 directory\n\n" +
                         "Default directories:\n" +
                         "Steam: \\SteamApps\\common\\The Witcher 3\n" +
@@ -61,7 +61,7 @@ namespace Artemis.Modules.Games.Witcher3
                     if (!file.Contains("modArtemis"))
                     {
                         var viewHelp = await
-                            MainManager.DialogService.ShowQuestionMessageBox("Conflicting mod found",
+                            DialogService.ShowQuestionMessageBox("Conflicting mod found",
                                 "Oh no, you have a conflicting mod!\n\n" +
                                 "Conflicting file: " + file.Remove(0, dialog.SelectedPath.Length) +
                                 "\n\nWould you like to view instructions on how to manually install the mod?");
@@ -104,7 +104,7 @@ namespace Artemis.Modules.Games.Witcher3
             File.WriteAllText(dialog.SelectedPath + @"\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",
                 Resources.playerWitcherWs);
 
-            MainManager.DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
+            DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
         }
     }
 

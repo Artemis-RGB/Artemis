@@ -71,7 +71,6 @@ namespace Artemis.Managers
 
         public PipeServer PipeServer { get; set; }
         public BackgroundWorker ProcessWorker { get; set; }
-        public MetroDialogService DialogService { get; set; }
         public KeyboardHook KeyboardHook { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
