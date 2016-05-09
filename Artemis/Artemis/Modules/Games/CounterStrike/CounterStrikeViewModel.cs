@@ -49,7 +49,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
             }
 
-            MainManager.DialogService.ShowErrorMessageBox("Please select a valid CS:GO directory\n\n" +
+            DialogService.ShowErrorMessageBox("Please select a valid CS:GO directory\n\n" +
                                                           @"By default CS:GO is in \SteamApps\common\Counter-Strike Global Offensive");
             ((CounterStrikeSettings) GameSettings).GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => GameSettings);

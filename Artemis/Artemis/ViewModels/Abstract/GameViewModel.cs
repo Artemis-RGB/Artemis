@@ -1,22 +1,22 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Services;
 using Caliburn.Micro;
 using Ninject;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.ViewModels.Abstract
 {
     public abstract class GameViewModel : Screen
     {
-        private bool _doActivate;
-
-        private bool _editorShown;
         private GameSettings _gameSettings;
-        private EffectModel _lastEffect;
+        private bool _startLoopManager;
 
         protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
             IProfileEditorViewModelFactory pFactory)
@@ -33,7 +33,12 @@ namespace Artemis.ViewModels.Abstract
         }
 
         [Inject]
+        public ILogger Logger { get; set; }
+        [Inject]
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
+
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
 
         public IEventAggregator Events { get; set; }
         public IProfileEditorViewModelFactory PFactory { get; set; }
@@ -74,9 +79,8 @@ namespace Artemis.ViewModels.Abstract
         public async void ResetSettings()
         {
             var resetConfirm =
-                await
-                    MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
-                        "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
+                await DialogService.ShowQuestionMessageBox("Reset effect settings",
+                    "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)
                 return;
@@ -90,57 +94,34 @@ namespace Artemis.ViewModels.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
+            SetEditorShown(true);
 
-            // OnActive is triggered at odd moments, only activate the profile 
-            // preview if OnDeactivate isn't called right after it
-            _doActivate = true;
+            // OnActivate gets called at odd times, only start the LoopManager if it's been active
+            // for 600ms.
+            _startLoopManager = true;
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(100);
-                if (_doActivate)
-                    SetEditorShown(true);
+                Thread.Sleep(600);
+                if (MainManager.LoopManager.Running || !_startLoopManager)
+                    return;
+
+                Logger.Debug("Starting LoopManager for profile preview");
+                MainManager.LoopManager.Start();
             });
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-
-            _doActivate = false;
             SetEditorShown(false);
+
+            _startLoopManager = false;
         }
 
         public void SetEditorShown(bool enable)
         {
-            if (enable == _editorShown)
-                return;
-
-            if (enable)
-            {
-                // Store the current effect so it can be restored later
-                if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
-                    _lastEffect = MainManager.EffectManager.ActiveEffect;
-
-                ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-                MainManager.EffectManager.ChangeEffect(ProfilePreviewModel, MainManager.LoopManager);
-            }
-            else
-            {
-                if (_lastEffect != null)
-                {
-                    // Game models are only used if they are enabled
-                    var gameModel = _lastEffect as GameModel;
-                    if (gameModel != null)
-                        if (!gameModel.Enabled)
-                            MainManager.EffectManager.GetLastEffect();
-                        else
-                            MainManager.EffectManager.ChangeEffect(_lastEffect, MainManager.LoopManager);
-                }
-                else
-                    MainManager.EffectManager.ClearEffect();
-            }
-
-            _editorShown = enable;
+            MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
+            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = enable ? ProfileEditor.SelectedProfile : null;
         }
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)

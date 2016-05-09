@@ -1,6 +1,8 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Services;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels.Abstract
 {
@@ -17,6 +19,8 @@ namespace Artemis.ViewModels.Abstract
             EffectModel = effectModel;
         }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public EffectSettings EffectSettings
         {
             get { return _effectSettings; }
@@ -69,7 +73,7 @@ namespace Artemis.ViewModels.Abstract
         public async void ResetSettings()
         {
             var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
+                DialogService.ShowQuestionMessageBox("Reset effect settings",
                     "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)
