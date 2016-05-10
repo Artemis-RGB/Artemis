@@ -13,7 +13,7 @@ using Point = System.Drawing.Point;
 
 namespace Artemis.KeyboardProviders.Corsair
 {
-    internal class CorsairRGB : KeyboardProvider
+    public class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
 
