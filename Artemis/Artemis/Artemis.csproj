@@ -292,7 +292,6 @@
     <Compile Include="KeyboardProviders\Logitech\Utilities\KeyMap.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\LogitechGSDK.cs" />
     <Compile Include="KeyboardProviders\Logitech\Utilities\OrionUtilities.cs" />
-    <Compile Include="KeyboardProviders\ProviderHelper.cs" />
     <Compile Include="KeyboardProviders\Razer\BlackWidow.cs" />
     <Compile Include="KeyboardProviders\Razer\Utilities\RazerUtilities.cs" />
     <Compile Include="Managers\EffectManager.cs" />

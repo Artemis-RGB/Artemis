@@ -20,13 +20,13 @@ namespace Artemis.Managers
         private readonly ILogger _logger;
         private KeyboardProvider _activeKeyboard;
 
-        public KeyboardManager(IEventAggregator events, ILogger logger)
+        public KeyboardManager(IEventAggregator events, ILogger logger, List<KeyboardProvider> keyboardProviders)
         {
             _logger = logger;
             _logger.Info("Intializing KeyboardManager");
 
             _events = events;
-            KeyboardProviders = ProviderHelper.GetKeyboardProviders();
+            KeyboardProviders = keyboardProviders;
 
             _logger.Info("Intialized KeyboardManager");
         }

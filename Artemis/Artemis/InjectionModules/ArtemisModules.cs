@@ -1,4 +1,8 @@
-﻿using Artemis.Modules.Effects.AudioVisualizer;
+﻿using Artemis.KeyboardProviders;
+using Artemis.KeyboardProviders.Corsair;
+using Artemis.KeyboardProviders.Logitech;
+using Artemis.KeyboardProviders.Razer;
+using Artemis.Modules.Effects.AudioVisualizer;
 using Artemis.Modules.Effects.Debug;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Modules.Games.CounterStrike;
@@ -31,6 +35,11 @@ namespace Artemis.InjectionModules
 
             // Overlays
             Bind<OverlayViewModel>().To<VolumeDisplayViewModel>().InSingletonScope();
+
+            // Keyboard Providers
+            Bind<KeyboardProvider>().To<CorsairRGB>().InSingletonScope();
+            Bind<KeyboardProvider>().To<Orion>().InSingletonScope();
+            Bind<KeyboardProvider>().To<BlackWidow>().InSingletonScope();
         }
     }
 }
