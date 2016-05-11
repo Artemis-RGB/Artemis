@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.InjectionFactories;
@@ -16,7 +15,6 @@ namespace Artemis.ViewModels.Abstract
     public abstract class GameViewModel : Screen
     {
         private GameSettings _gameSettings;
-        private bool _startLoopManager;
 
         protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
             IProfileEditorViewModelFactory pFactory)
@@ -34,6 +32,7 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public ILogger Logger { get; set; }
+
         [Inject]
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
 
@@ -94,39 +93,38 @@ namespace Artemis.ViewModels.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
-            SetEditorShown(true);
-
-            // OnActivate gets called at odd times, only start the LoopManager if it's been active
-            // for 600ms.
-            _startLoopManager = true;
-            Task.Factory.StartNew(() =>
-            {
-                Thread.Sleep(600);
-                if (MainManager.LoopManager.Running || !_startLoopManager)
-                    return;
-
-                Logger.Debug("Starting LoopManager for profile preview");
-                MainManager.LoopManager.Start();
-            });
+            Task.Factory.StartNew(HandleActivationSwitch);
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-            SetEditorShown(false);
-
-            _startLoopManager = false;
+            Task.Factory.StartNew(HandleActivationSwitch);
         }
 
-        public void SetEditorShown(bool enable)
+        private void HandleActivationSwitch()
         {
-            MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
-            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = enable ? ProfileEditor.SelectedProfile : null;
+            Thread.Sleep(600);
+            if (IsActive)
+            {
+                if (!MainManager.LoopManager.Running)
+                {
+                    Logger.Debug("Starting LoopManager for profile preview");
+                    MainManager.LoopManager.Start();
+                }
+                MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
+                ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+            }
+            else
+            {
+                MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
+                ProfilePreviewModel.SelectedProfile = null;
+            }
         }
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "SelectedProfile")
+            if (e.PropertyName != "SelectedProfile" && IsActive)
                 return;
 
             GameModel.Profile = ProfileEditor.SelectedProfile;

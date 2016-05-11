@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using Artemis.KeyboardProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 
@@ -27,10 +28,16 @@ namespace Artemis.DAL
         ///     Get all profiles matching the provided game
         /// </summary>
         /// <param name="game">The game to match</param>
+        /// <param name="keyboard">The keyboard to match</param>
         /// <returns>All profiles matching the provided game</returns>
-        public static List<ProfileModel> GetAll(GameModel game)
+        public static List<ProfileModel> GetAll(GameModel game, KeyboardProvider keyboard)
         {
-            return GetAll().Where(g => g.GameName.Equals(game.Name)).ToList();
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
+            if (keyboard == null)
+                throw new ArgumentNullException(nameof(keyboard));
+
+            return GetAll().Where(g => g.GameName.Equals(game.Name) && g.KeyboardName.Equals(keyboard.Name)).ToList();
         }
 
         /// <summary>
@@ -40,6 +47,8 @@ namespace Artemis.DAL
         /// <param name="prof">The profile to add or update</param>
         public static void AddOrUpdate(ProfileModel prof)
         {
+            if (prof == null)
+                throw new ArgumentNullException(nameof(prof));
             if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
                 throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardName are required");
 

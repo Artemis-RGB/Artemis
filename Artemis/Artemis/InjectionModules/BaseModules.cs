@@ -17,6 +17,7 @@ namespace Artemis.InjectionModules
             Bind<IScreen>().To<ShellViewModel>().InSingletonScope();
             Bind<IProfileEditorViewModelFactory>().ToFactory();
 
+            Bind<BaseViewModel>().To<WelcomeViewModel>().InSingletonScope();
             Bind<BaseViewModel>().To<EffectsViewModel>().InSingletonScope();
             Bind<BaseViewModel>().To<GamesViewModel>().InSingletonScope();
             Bind<BaseViewModel>().To<OverlaysViewModel>().InSingletonScope();

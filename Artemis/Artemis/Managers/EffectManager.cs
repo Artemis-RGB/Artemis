@@ -79,6 +79,9 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
+            if (_keyboardManager.ChangingKeyboard)
+                return;
+            
             // Make sure the preview model should still be active
             if (ActiveEffect is ProfilePreviewModel)
             {
@@ -133,41 +136,39 @@ namespace Artemis.Managers
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
 
-            lock (_keyboardManager)
+            if (_keyboardManager.ActiveKeyboard == null)
+                _keyboardManager.EnableLastKeyboard();
+            // If still null, no last keyboard, so stop.
+            if (_keyboardManager.ActiveKeyboard == null)
+                return;
+
+            // Game models are only used if they are enabled
+            var gameModel = effectModel as GameModel;
+            if (gameModel != null)
+                if (!gameModel.Enabled)
+                    return;
+
+            var wasNull = false;
+            if (ActiveEffect == null)
             {
-                lock (this)
-                {
-                    if (_keyboardManager.ActiveKeyboard == null)
-                        _keyboardManager.EnableLastKeyboard();
-                    // If still null, no last keyboard, so stop.
-                    if (_keyboardManager.ActiveKeyboard == null)
-                        return;
+                wasNull = true;
+                ActiveEffect = effectModel;
+            }
 
-                    // Game models are only used if they are enabled
-                    var gameModel = effectModel as GameModel;
-                    if (gameModel != null)
-                        if (!gameModel.Enabled)
-                            return;
+            lock (ActiveEffect)
+            {
+                if (!wasNull)
+                    ActiveEffect.Dispose();
 
-                    var wasNull = false;
-                    if (ActiveEffect == null)
-                    {
-                        wasNull = true;
-                        ActiveEffect = effectModel;
-                    }
-                    if (!wasNull)
-                        ActiveEffect.Dispose();
+                ActiveEffect = effectModel;
+                ActiveEffect.Enable();
 
-                    ActiveEffect = effectModel;
-                    ActiveEffect.Enable();
+                if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
+                    return;
 
-                    if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
-                        return;
-
-                    // Non-game effects are stored as the new LastEffect.
-                    General.Default.LastEffect = ActiveEffect?.Name;
-                    General.Default.Save();
-                }
+                // Non-game effects are stored as the new LastEffect.
+                General.Default.LastEffect = ActiveEffect?.Name;
+                General.Default.Save();
             }
 
             if (loopManager != null && !loopManager.Running)
@@ -185,17 +186,18 @@ namespace Artemis.Managers
         /// </summary>
         public void ClearEffect()
         {
-            lock (_keyboardManager)
-            {
-                lock (this)
-                {
-                    ActiveEffect.Dispose();
-                    ActiveEffect = null;
+            if (ActiveEffect == null)
+                return;
 
-                    General.Default.LastEffect = null;
-                    General.Default.Save();
-                }
+            lock (ActiveEffect)
+            {
+                ActiveEffect.Dispose();
+                ActiveEffect = null;
+
+                General.Default.LastEffect = null;
+                General.Default.Save();
             }
+
 
             _logger.Debug("Cleared active effect");
         }

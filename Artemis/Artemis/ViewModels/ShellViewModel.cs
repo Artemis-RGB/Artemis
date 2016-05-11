@@ -10,9 +10,11 @@ namespace Artemis.ViewModels
     {
         private readonly BaseViewModel[] _viewModels;
 
-        public ShellViewModel(BaseViewModel[] viewModels, IKernel kernel)
+        public ShellViewModel(IKernel kernel, IEventAggregator events, BaseViewModel[] viewModels)
         {
             _viewModels = viewModels;
+
+            events.Subscribe(this);
 
             // Setup UI
             DisplayName = "Artemis";
