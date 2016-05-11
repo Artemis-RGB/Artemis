@@ -119,7 +119,7 @@ namespace Artemis.ViewModels.Flyouts
                 MainManager.LoopManager.Start();
             }
             else
-                MainManager.KeyboardManager.ReleaseActiveKeyboard();
+                MainManager.KeyboardManager.ReleaseActiveKeyboard(true);
         }
 
         public void ToggleEnabled()

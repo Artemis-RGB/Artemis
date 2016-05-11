@@ -298,6 +298,7 @@
     <Compile Include="Managers\KeyboardManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
+    <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />

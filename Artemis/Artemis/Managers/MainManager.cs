@@ -27,12 +27,13 @@ namespace Artemis.Managers
         private readonly ILogger _logger;
 
         public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
-            KeyboardManager keyboardManager, EffectManager effectManager)
+            KeyboardManager keyboardManager, EffectManager effectManager, ProfileManager profileManager)
         {
             _logger = logger;
             LoopManager = loopManager;
             KeyboardManager = keyboardManager;
             EffectManager = effectManager;
+            ProfileManager = profileManager;
 
             _logger.Info("Intializing MainManager");
 
@@ -68,13 +69,13 @@ namespace Artemis.Managers
         public LoopManager LoopManager { get; }
         public KeyboardManager KeyboardManager { get; set; }
         public EffectManager EffectManager { get; set; }
+        public ProfileManager ProfileManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
         public BackgroundWorker ProcessWorker { get; set; }
         public KeyboardHook KeyboardHook { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
-        public bool Suspended { get; set; }
         public bool Running { get; private set; }
 
         public void Dispose()

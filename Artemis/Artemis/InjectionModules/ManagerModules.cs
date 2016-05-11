@@ -10,6 +10,7 @@ namespace Artemis.InjectionModules
             Bind<MainManager>().ToSelf().InSingletonScope();
             Bind<KeyboardManager>().ToSelf().InSingletonScope();
             Bind<EffectManager>().ToSelf().InSingletonScope();
+            Bind<ProfileManager>().ToSelf().InSingletonScope();
         }
     }
 }
