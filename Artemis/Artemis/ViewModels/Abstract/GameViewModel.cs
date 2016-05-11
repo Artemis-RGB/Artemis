@@ -28,6 +28,7 @@ namespace Artemis.ViewModels.Abstract
             ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
+            Events.Subscribe(this);
         }
 
         [Inject]
@@ -89,39 +90,7 @@ namespace Artemis.ViewModels.Abstract
 
             SaveSettings();
         }
-
-        protected override void OnActivate()
-        {
-            base.OnActivate();
-            Task.Factory.StartNew(HandleActivationSwitch);
-        }
-
-        protected override void OnDeactivate(bool close)
-        {
-            base.OnDeactivate(close);
-            Task.Factory.StartNew(HandleActivationSwitch);
-        }
-
-        private void HandleActivationSwitch()
-        {
-            Thread.Sleep(600);
-            if (IsActive)
-            {
-                if (!MainManager.LoopManager.Running)
-                {
-                    Logger.Debug("Starting LoopManager for profile preview");
-                    MainManager.LoopManager.Start();
-                }
-                MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
-                ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-            }
-            else
-            {
-                MainManager.EffectManager.ProfilePreviewModel = ProfilePreviewModel;
-                ProfilePreviewModel.SelectedProfile = null;
-            }
-        }
-
+        
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "SelectedProfile" && IsActive)

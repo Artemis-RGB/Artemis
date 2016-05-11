@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
@@ -20,9 +19,8 @@ namespace Artemis.Managers
         private readonly KeyboardManager _keyboardManager;
         private readonly ILogger _logger;
         private EffectModel _activeEffect;
-        private EffectModel _prePreviewEffect;
 
-        public EffectManager(IEventAggregator events, ILogger logger, KeyboardManager keyboardManager)
+        public EffectManager(ILogger logger, IEventAggregator events, KeyboardManager keyboardManager)
         {
             _logger = logger;
             _logger.Info("Intializing EffectManager");
@@ -31,10 +29,6 @@ namespace Artemis.Managers
             _keyboardManager = keyboardManager;
 
             EffectModels = new List<EffectModel>();
-
-            var profilePreviewTimer = new Timer(500);
-            profilePreviewTimer.Elapsed += SetupProfilePreview;
-            profilePreviewTimer.Start();
 
             _logger.Info("Intialized EffectManager");
         }
@@ -70,46 +64,6 @@ namespace Artemis.Managers
         public IEnumerable<GameModel> EnabledGames
         {
             get { return EffectModels.OfType<GameModel>().Where(g => g.Enabled); }
-        }
-
-        /// <summary>
-        ///     Keeps track of profiles being previewed and sets up the active efffect accordingly
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SetupProfilePreview(object sender, ElapsedEventArgs e)
-        {
-            if (_keyboardManager.ChangingKeyboard)
-                return;
-            
-            // Make sure the preview model should still be active
-            if (ActiveEffect is ProfilePreviewModel)
-            {
-                // Should not be active if no selected profile is set
-                if (ProfilePreviewModel.SelectedProfile != null)
-                    return;
-
-                if (_prePreviewEffect != null)
-                {
-                    _logger.Debug("Change back effect after profile preview");
-                    ChangeEffect(_prePreviewEffect);
-                }
-                else
-                {
-                    _logger.Debug("Clear effect after profile preview");
-                    ClearEffect(); // TODO: This fails to lock
-                }
-            }
-            // Else make sure preview model indeed shouldn't be active
-            else
-            {
-                if (ProfilePreviewModel?.SelectedProfile == null)
-                    return;
-
-                _prePreviewEffect = ActiveEffect;
-                _logger.Debug("Activate profile preview");
-                ChangeEffect(ProfilePreviewModel);
-            }
         }
 
         /// <summary>

@@ -111,9 +111,10 @@ namespace Artemis.Managers
         }
 
         /// <summary>
-        ///     Releases the active keyboard, if CanDisable is true
+        ///     Releases the active keyboard
         /// </summary>
-        public void ReleaseActiveKeyboard()
+        /// <param name="save">Whether to save the LastKeyboard (making it null)</param>
+        public void ReleaseActiveKeyboard(bool save = false)
         {
             lock (this)
             {
@@ -127,8 +128,11 @@ namespace Artemis.Managers
                 ActiveKeyboard.Disable();
                 ActiveKeyboard = null;
 
-                General.Default.LastKeyboard = null;
-                General.Default.Save();
+                if (save)
+                {
+                    General.Default.LastKeyboard = null;
+                    General.Default.Save();
+                }
 
                 _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, null));
                 _logger.Debug("Released keyboard: {0}", releaseName);

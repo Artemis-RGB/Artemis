@@ -1,4 +1,6 @@
-﻿using Artemis.ViewModels.Abstract;
+﻿using Artemis.Managers;
+using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
@@ -6,10 +8,13 @@ namespace Artemis.ViewModels
     {
         private readonly GameViewModel[] _gameViewModels;
 
-        public GamesViewModel(GameViewModel[] gameViewModels)
+        public GamesViewModel(GameViewModel[] gameViewModels, ProfileManager profileManager, ProfilePreviewModel profilePreviewModel)
         {
             DisplayName = "Games";
             _gameViewModels = gameViewModels;
+
+            profileManager.ProfilePreviewModel = profilePreviewModel;
+            profileManager.GameViewModels.AddRange(_gameViewModels);
         }
 
         protected override void OnActivate()
