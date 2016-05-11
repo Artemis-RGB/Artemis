@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Timers;
 using Artemis.Events;
 using Caliburn.Micro;
@@ -57,7 +58,6 @@ namespace Artemis.Managers
                 return;
             }
 
-            // TODO: Deadlock maybe? I don't know what Resharper is on about
             if (_effectManager.ActiveEffect == null)
             {
                 var lastEffect = _effectManager.GetLastEffect();
@@ -88,6 +88,18 @@ namespace Artemis.Managers
             if (!Running)
                 return;
 
+            // Stop if no active effect
+            if (_effectManager.ActiveEffect == null)
+            {
+                _logger.Debug("No active effect, stopping");
+                Stop();
+                return;
+            }
+            var renderEffect = _effectManager.ActiveEffect;
+
+            if (_keyboardManager.ChangingKeyboard)
+                return;
+
             // Stop if no active keyboard
             if (_keyboardManager.ActiveKeyboard == null)
             {
@@ -95,50 +107,47 @@ namespace Artemis.Managers
                 Stop();
                 return;
             }
-            // Lock both the active keyboard and active effect so they will not change while rendering.
-            lock (_keyboardManager)
+
+            lock (_keyboardManager.ActiveKeyboard)
             {
-                lock (_effectManager)
+                // Skip frame if effect is still initializing
+                if (renderEffect.Initialized == false)
+                    return;
+
+                // Update the current effect
+                if (renderEffect.Initialized)
+                    renderEffect.Update();
+
+                // Get ActiveEffect's bitmap
+                var bitmap = renderEffect.Initialized
+                    ? renderEffect.GenerateBitmap()
+                    : null;
+
+                // Draw enabled overlays on top
+                foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
-                    // Stop if no active effect
-                    if (_effectManager.ActiveEffect == null)
-                    {
-                        _logger.Debug("No active effect, stopping");
-                        Stop();
-                        return;
-                    }
-
-                    // Skip frame if effect is still initializing
-                    if (_effectManager.ActiveEffect.Initialized == false)
-                        return;
-
-                    // Update the current effect
-                    if (_effectManager.ActiveEffect.Initialized)
-                        _effectManager.ActiveEffect.Update();
-
-                    // Get ActiveEffect's bitmap
-                    var bitmap = _effectManager.ActiveEffect.Initialized
-                        ? _effectManager.ActiveEffect.GenerateBitmap()
-                        : null;
-
-                    // Draw enabled overlays on top
-                    foreach (var overlayModel in _effectManager.EnabledOverlays)
-                    {
-                        overlayModel.Update();
-                        bitmap = bitmap != null
-                            ? overlayModel.GenerateBitmap(bitmap)
-                            : overlayModel.GenerateBitmap();
-                    }
-
-                    if (bitmap == null)
-                        return;
-
-                    // If it exists, send bitmap to the device
-                    _keyboardManager.ActiveKeyboard.DrawBitmap(bitmap);
-
-                    // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
-                    _events.PublishOnUIThread(new ChangeBitmap(bitmap));
+                    overlayModel.Update();
+                    bitmap = bitmap != null
+                        ? overlayModel.GenerateBitmap(bitmap)
+                        : overlayModel.GenerateBitmap();
                 }
+
+                if (bitmap == null)
+                    return;
+
+                // Fill the bitmap's background with blackness to avoid trailing colors on some keyboards
+                using (var g = Graphics.FromImage(bitmap))
+                {
+                    var preFix = (Bitmap)bitmap.Clone();
+                    g.Clear(Color.Black);
+                    g.DrawImage(preFix, 0, 0);
+                }
+
+                // If it exists, send bitmap to the device
+                _keyboardManager.ActiveKeyboard?.DrawBitmap(bitmap);
+
+                // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
+                _events.PublishOnUIThread(new ChangeBitmap(bitmap));
             }
         }
     }

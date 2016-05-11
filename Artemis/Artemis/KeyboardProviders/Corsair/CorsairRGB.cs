@@ -123,17 +123,10 @@ namespace Artemis.KeyboardProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
-            using (var g = Graphics.FromImage(fixedBmp))
-            {
-                g.Clear(Color.Black);
-                g.DrawImage(bitmap, 0, 0);
-            }
-
-            var fixedImage = ImageUtilities.ResizeImage(fixedBmp, Width, Height);
+            var image = ImageUtilities.ResizeImage(bitmap, Width, Height);
             var brush = new ImageBrush
             {
-                Image = fixedImage
+                Image = image
             };
 
             _keyboard.Brush = brush;

@@ -18,7 +18,6 @@ namespace Artemis.Managers
     {
         private readonly IEventAggregator _events;
         private readonly ILogger _logger;
-        private KeyboardProvider _activeKeyboard;
 
         public KeyboardManager(IEventAggregator events, ILogger logger, List<KeyboardProvider> keyboardProviders)
         {
@@ -36,16 +35,9 @@ namespace Artemis.Managers
 
         public List<KeyboardProvider> KeyboardProviders { get; set; }
 
-        public KeyboardProvider ActiveKeyboard
-        {
-            get { return _activeKeyboard; }
-            set
-            {
-                _activeKeyboard = value;
-                // Let the ViewModels know
-                _events.PublishOnUIThread(new ActiveKeyboardChanged(value?.Name));
-            }
-        }
+        public KeyboardProvider ActiveKeyboard { get; set; }
+
+        public bool ChangingKeyboard { get; private set; }
 
         /// <summary>
         ///     Enables the last keyboard according to the settings file
@@ -68,11 +60,19 @@ namespace Artemis.Managers
         {
             lock (this)
             {
+                ChangingKeyboard = true;
+
                 if (keyboardProvider == null)
                     throw new ArgumentNullException(nameof(keyboardProvider));
 
                 if (ActiveKeyboard?.Name == keyboardProvider.Name)
+                {
+                    ChangingKeyboard = false;
                     return;
+                }
+
+                // Store the old keyboard so it can be used in the event we're raising later
+                var oldKeyboard = ActiveKeyboard;
 
                 var wasNull = false;
                 if (ActiveKeyboard == null)
@@ -94,6 +94,7 @@ namespace Artemis.Managers
                     General.Default.LastKeyboard = null;
                     General.Default.Save();
                     _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
+                    ChangingKeyboard = false;
                     return;
                 }
 
@@ -102,6 +103,9 @@ namespace Artemis.Managers
 
                 General.Default.LastKeyboard = ActiveKeyboard.Name;
                 General.Default.Save();
+
+                ChangingKeyboard = false;
+                _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
                 _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
             }
         }
@@ -116,9 +120,17 @@ namespace Artemis.Managers
                 if (ActiveKeyboard == null)
                     return;
 
+                // Store the old keyboard so it can be used in the event we're raising later
+                var oldKeyboard = ActiveKeyboard;
+
                 var releaseName = ActiveKeyboard.Name;
                 ActiveKeyboard.Disable();
                 ActiveKeyboard = null;
+
+                General.Default.LastKeyboard = null;
+                General.Default.Save();
+
+                _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, null));
                 _logger.Debug("Released keyboard: {0}", releaseName);
             }
         }

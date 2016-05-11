@@ -35,13 +35,8 @@ namespace Artemis.Modules.Effects.Debug
 
             KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
             {
-                Color.Red,
-                Color.OrangeRed,
-                Color.Yellow,
-                Color.Green,
-                Color.Blue,
-                Color.Purple,
-                Color.DeepPink
+                Color.FromArgb(0, 226, 190),
+                Color.FromArgb(0, 208, 255)
             }, LinearGradientMode.Horizontal);
 
             Initialized = true;

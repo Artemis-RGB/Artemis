@@ -1,12 +1,16 @@
-﻿namespace Artemis.Events
+﻿using Artemis.KeyboardProviders;
+
+namespace Artemis.Events
 {
     public class ActiveKeyboardChanged
     {
-        public ActiveKeyboardChanged(string activeKeyboard)
+        public ActiveKeyboardChanged(KeyboardProvider oldKeyboard, KeyboardProvider newKeyboard)
         {
-            ActiveKeyboard = activeKeyboard;
+            OldKeyboard = oldKeyboard;
+            NewKeyboard = newKeyboard;
         }
 
-        public string ActiveKeyboard { get; set; }
+        public KeyboardProvider OldKeyboard { get; set; }
+        public KeyboardProvider NewKeyboard { get; set; }
     }
 }

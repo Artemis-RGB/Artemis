@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using Caliburn.Micro;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
-    public sealed class WelcomeViewModel : Screen
+    public sealed class WelcomeViewModel : BaseViewModel
     {
         public WelcomeViewModel()
         {

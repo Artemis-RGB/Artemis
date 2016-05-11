@@ -212,7 +212,10 @@ namespace Artemis.ViewModels
         private void LoadProfiles()
         {
             Profiles.Clear();
-            Profiles.AddRange(ProfileProvider.GetAll(_gameModel));
+            if (_gameModel == null || ActiveKeyboard == null)
+                return;
+
+            Profiles.AddRange(ProfileProvider.GetAll(_gameModel, ActiveKeyboard));
             SelectedProfile = Profiles.FirstOrDefault();
         }
 
