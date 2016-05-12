@@ -21,12 +21,6 @@ namespace Artemis.KeyboardProviders.Logitech
             Height = 6;
             Width = 21;
             PreviewSettings = new PreviewSettings(540, 154, new Thickness(25, -80, 0, 0), Resources.g910);
-            KeyboardRegions = new List<KeyboardRegion>
-            {
-                new KeyboardRegion("TopRow", new Point(0, 0), new Point(18, 0)),
-                new KeyboardRegion("NumPad", new Point(17, 1), new Point(21, 6)),
-                new KeyboardRegion("QWER", new Point(2, 2), new Point(5, 2))
-            };
         }
 
         public override bool CanEnable()

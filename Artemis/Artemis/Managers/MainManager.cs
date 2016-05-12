@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using Artemis.Events;
 using Artemis.Models;
-using Artemis.Services;
+using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.LogitechDll;
@@ -126,20 +126,31 @@ namespace Artemis.Managers
                 if (EffectManager.ActiveEffect != null)
                     EffectManager.DisableInactiveGame();
 
+                if (EffectManager.ActiveEffect is ProfilePreviewModel)
+                    return;
+
                 // If the currently active effect is a no longer running game, get rid of it.
                 var activeGame = EffectManager.ActiveEffect as GameModel;
                 if (activeGame != null)
+                {
                     if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
+                    {
+                        _logger.Info("Disabling game: {0}", activeGame.Name);
                         EffectManager.DisableGame(activeGame);
+                    }
+                }
 
                 // Look for running games, stopping on the first one that's found.
                 var newGame = EffectManager.EnabledGames
-                    .FirstOrDefault(
-                        g => runningProcesses.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+                    .FirstOrDefault(g => runningProcesses
+                        .Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
                 // If it's not already enabled, do so.
                 if (newGame != null && EffectManager.ActiveEffect != newGame)
-                    EffectManager.ChangeEffect(newGame);
+                {
+                    _logger.Info("Detected and enabling game: {0}", newGame.Name);
+                    EffectManager.ChangeEffect(newGame, LoopManager);
+                }
 
                 Thread.Sleep(1000);
             }

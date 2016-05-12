@@ -10,7 +10,7 @@ namespace Artemis.Modules.Games.Dota2
 {
     public sealed class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+        public Dota2ViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory) 
             : base(main, new Dota2Model(main, new Dota2Settings()), events, pFactory)
         {
             DisplayName = "Dota 2";
@@ -18,20 +18,7 @@ namespace Artemis.Modules.Games.Dota2
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
         }
-
-        public BindableCollection<string> KeyboardLayouts => new BindableCollection<string>(new[]
-        {
-            "Default",
-            "MMO",
-            "WASD",
-            "League of Legends",
-            "Heros of Newearth",
-            "Smite"
-        });
-
-        public static string Name => "Dota 2";
-        public string Content => "Dota 2 Content";
-
+        
         public void BrowseDirectory()
         {
             var dialog = new FolderBrowserDialog {SelectedPath = ((Dota2Settings) GameSettings).GameDirectory};
@@ -70,8 +57,7 @@ namespace Artemis.Modules.Games.Dota2
                         "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
                         cfgFile);
                 }
-
-
+                
                 return;
             }
 

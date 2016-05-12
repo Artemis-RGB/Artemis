@@ -135,13 +135,15 @@ namespace Artemis.Managers
                 if (bitmap == null)
                     return;
 
-                // Fill the bitmap's background with blackness to avoid trailing colors on some keyboards
-                using (var g = Graphics.FromImage(bitmap))
+                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
+                var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
+                using (var g = Graphics.FromImage(fixedBmp))
                 {
-                    var preFix = (Bitmap)bitmap.Clone();
                     g.Clear(Color.Black);
-                    g.DrawImage(preFix, 0, 0);
+                    g.DrawImage(bitmap, 0, 0);
                 }
+
+                bitmap = fixedBmp;
 
                 // If it exists, send bitmap to the device
                 _keyboardManager.ActiveKeyboard?.DrawBitmap(bitmap);

@@ -265,7 +265,7 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel(ActiveKeyboard, layer);
+            _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, ActiveKeyboard, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;

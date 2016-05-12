@@ -133,9 +133,6 @@ namespace Artemis.ViewModels
         {
             MainManager.Dispose();
             Application.Current.Shutdown();
-
-            // Sometimes you need to be rough.
-            Environment.Exit(0);
         }
     }
 }
