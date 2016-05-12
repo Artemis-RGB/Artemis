@@ -60,7 +60,7 @@ namespace Artemis.Models.Profiles
                 layerProp.SetValue(props, opacity);
             }
             else
-                layerProp.SetValue(props, (int) (percentage*(int) userProp.GetValue(userProps, null)));
+                layerProp.SetValue(props, percentage*(double) userProp.GetValue(userProps, null));
         }
 
         private void ApplyProp(LayerPropertiesModel props, LayerPropertiesModel userProps, IGameDataModel data)

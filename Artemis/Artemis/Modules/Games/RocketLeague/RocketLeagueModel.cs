@@ -15,7 +15,8 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager, settings)
+        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings)
+            : base(mainManager, settings, new RocketLeagueDataModel())
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
@@ -41,7 +42,6 @@ namespace Artemis.Modules.Games.RocketLeague
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             _memory = new Memory(tempProcess);
-            GameDataModel = new RocketLeagueDataModel();
 
             Initialized = true;
         }

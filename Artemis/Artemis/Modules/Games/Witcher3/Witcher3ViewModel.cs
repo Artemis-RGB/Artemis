@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
-using Artemis.Models.Interfaces;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
@@ -106,9 +105,5 @@ namespace Artemis.Modules.Games.Witcher3
 
             DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
         }
-    }
-
-    public class Witcher3DataModel : IGameDataModel
-    {
     }
 }

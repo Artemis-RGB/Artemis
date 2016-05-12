@@ -94,13 +94,20 @@ namespace Artemis.Managers
                 _keyboardManager.EnableLastKeyboard();
             // If still null, no last keyboard, so stop.
             if (_keyboardManager.ActiveKeyboard == null)
+            {
+                _logger.Debug("Cancelling effect change, no LastKeyboard");
                 return;
+            }
 
             // Game models are only used if they are enabled
             var gameModel = effectModel as GameModel;
             if (gameModel != null)
                 if (!gameModel.Enabled)
+                {
+                    _logger.Debug("Cancelling effect change, provided game not enabled");
                     return;
+                }
+                    
 
             var wasNull = false;
             if (ActiveEffect == null)
@@ -116,13 +123,6 @@ namespace Artemis.Managers
 
                 ActiveEffect = effectModel;
                 ActiveEffect.Enable();
-
-                if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
-                    return;
-
-                // Non-game effects are stored as the new LastEffect.
-                General.Default.LastEffect = ActiveEffect?.Name;
-                General.Default.Save();
             }
 
             if (loopManager != null && !loopManager.Running)
@@ -132,6 +132,13 @@ namespace Artemis.Managers
             }
 
             _logger.Debug("Changed active effect to: {0}", effectModel.Name);
+
+            if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
+                return;
+
+            // Non-game effects are stored as the new LastEffect.
+            General.Default.LastEffect = ActiveEffect?.Name;
+            General.Default.Save();
         }
 
 

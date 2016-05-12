@@ -6,6 +6,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.KeyboardProviders;
+using Artemis.Models;
+using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
 using Artemis.Services;
 using Artemis.Utilities;
@@ -15,7 +17,7 @@ using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerEditorViewModel : Screen
+    public sealed class LayerEditorViewModel : Screen
     {
         private readonly KeyboardProvider _activeKeyboard;
         private readonly BackgroundWorker _previewWorker;
@@ -25,7 +27,7 @@ namespace Artemis.ViewModels.LayerEditor
         private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
 
-        public LayerEditorViewModel(KeyboardProvider activeKeyboard, LayerModel layer)
+        public LayerEditorViewModel(IGameDataModel gameDataModel, KeyboardProvider activeKeyboard, LayerModel layer)
         {
             _activeKeyboard = activeKeyboard;
             _wasEnabled = layer.Enabled;
@@ -36,7 +38,7 @@ namespace Artemis.ViewModels.LayerEditor
             Layer.Enabled = false;
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             ProposedProperties = new LayerPropertiesModel();
-            //DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap<T>());
+            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
             LayerConditionVms =
                 new BindableCollection<LayerConditionViewModel>(
                     layer.LayerConditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));

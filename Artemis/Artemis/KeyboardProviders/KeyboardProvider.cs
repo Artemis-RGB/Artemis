@@ -12,8 +12,6 @@ namespace Artemis.KeyboardProviders
         public int Width { get; set; }
         public string CantEnableText { get; set; }
 
-        public List<KeyboardRegion> KeyboardRegions { get; set; }
-
         public PreviewSettings PreviewSettings { get; set; }
 
         public abstract bool CanEnable();

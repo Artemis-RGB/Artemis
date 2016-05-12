@@ -15,7 +15,6 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             DisplayName = "CS:GO";
 
-            // Create effect model and add it to MainManager
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
         }

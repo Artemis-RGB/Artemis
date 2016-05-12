@@ -368,6 +368,8 @@
       <DependentUpon>TheDivisionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\TheWitcherDataModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -8,7 +8,7 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings)
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings, new CounterStrikeDataModel())
         {
             Name = "CounterStrike";
             ProcessName = "csgo";
@@ -29,7 +29,6 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             Initialized = false;
 
-            GameDataModel = new CounterStrikeDataModel();
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
 
             Initialized = true;

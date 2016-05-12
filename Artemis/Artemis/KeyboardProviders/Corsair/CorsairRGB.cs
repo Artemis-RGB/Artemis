@@ -24,7 +24,6 @@ namespace Artemis.KeyboardProviders.Corsair
                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n" +
                              "In CUE, make sure \"Enable SDK\" is checked under Settings > Program.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
-            KeyboardRegions = new List<KeyboardRegion>();
         }
 
         public override bool CanEnable()
@@ -74,40 +73,29 @@ namespace Artemis.KeyboardProviders.Corsair
                 /*CUE is already initialized*/
             }
             _keyboard = CueSDK.KeyboardSDK;
-            switch (_keyboard.DeviceInfo.Model)
+            if (_keyboard.DeviceInfo.Model == "K95 RGB")
             {
-                case "K95 RGB":
-                    Height = 7;
-                    Width = 25;
-                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k95);
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(20, 1)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(21, 2), new Point(25, 7)));
-                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(5, 3), new Point(8, 3)));
-                    break;
-                case "K70 RGB":
-                    Height = 7;
-                    Width = 21;
-                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k70);
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(21, 7)));
-                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
-                    break;
-                case "K65 RGB":
-                    Height = 7;
-                    Width = 18;
-                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k65);
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(17, 2), new Point(20, 7)));
-                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(2, 3), new Point(5, 3)));
-                    break;
-                case "STRAFE RGB":
-                    Height = 6;
-                    Width = 22;
-                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.strafe);
-                    KeyboardRegions.Add(new KeyboardRegion("TopRow", new Point(0, 1), new Point(18, 1)));
-                    KeyboardRegions.Add(new KeyboardRegion("NumPad", new Point(18, 2), new Point(22, 7)));
-                    KeyboardRegions.Add(new KeyboardRegion("QWER", new Point(1, 3), new Point(4, 3)));
-                    break;
+                Height = 7;
+                Width = 25;
+                PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k95);
+            }
+            else if (_keyboard.DeviceInfo.Model == "K70 RGB")
+            {
+                Height = 7;
+                Width = 21;
+                PreviewSettings = new PreviewSettings(626, 195, new Thickness(0, -25, 0, 0), Resources.k70);
+            }
+            else if (_keyboard.DeviceInfo.Model == "K65 RGB")
+            {
+                Height = 7;
+                Width = 18;
+                PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
+            }
+            else if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
+            {
+                Height = 6;
+                Width = 22;
+                PreviewSettings = new PreviewSettings(620, 215, new Thickness(0, -15, 0, 0), Resources.strafe);
             }
         }
 

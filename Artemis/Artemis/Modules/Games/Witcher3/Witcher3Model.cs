@@ -18,7 +18,8 @@ namespace Artemis.Modules.Games.Witcher3
         private KeyboardRectangle _signRect;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager, Witcher3Settings settings) : base(mainManager, settings)
+        public Witcher3Model(MainManager mainManager, Witcher3Settings settings)
+            : base(mainManager, settings, new TheWitcherDataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
@@ -64,6 +65,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Update()
         {
+            var gameDataModel = (TheWitcherDataModel) GameDataModel;
             // Witcher effect is very static and reads from disk, don't want to update too often.
             if (_updateSw.ElapsedMilliseconds < 500)
                 return;
@@ -72,10 +74,8 @@ namespace Artemis.Modules.Games.Witcher3
             if (_witcherSettings == null)
                 return;
 
-            var reader = new StreamReader(File.Open(_witcherSettings,
-                FileMode.Open,
-                FileAccess.Read,
-                FileShare.ReadWrite));
+            var reader = new StreamReader(
+                File.Open(_witcherSettings, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
             var configContent = reader.ReadToEnd();
             reader.Close();
 
@@ -87,32 +87,30 @@ namespace Artemis.Modules.Games.Witcher3
             switch (sign)
             {
                 case "ST_Aard\r":
-                    _signRect.Colors = new List<Color> {Color.DeepSkyBlue, Color.Blue};
+                    gameDataModel.WitcherSign = WitcherSign.Aard;
                     break;
                 case "ST_Yrden\r":
-                    _signRect.Colors = new List<Color> {Color.Purple, Color.DeepPink};
+                    gameDataModel.WitcherSign = WitcherSign.Yrden;
                     break;
                 case "ST_Igni\r":
-                    _signRect.Colors = new List<Color> {Color.DarkOrange, Color.Red};
+                    gameDataModel.WitcherSign = WitcherSign.Igni;
                     break;
                 case "ST_Quen\r":
-                    _signRect.Colors = new List<Color> {Color.DarkOrange, Color.FromArgb(232, 193, 0)};
+                    gameDataModel.WitcherSign = WitcherSign.Quen;
                     break;
                 case "ST_Axii\r":
-                    _signRect.Colors = new List<Color> {Color.LawnGreen, Color.DarkGreen};
+                    gameDataModel.WitcherSign = WitcherSign.Axii;
                     break;
             }
         }
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.Clear(Color.Transparent);
-                _signRect.Draw(g);
-            }
-            return bitmap;
+            if (Profile == null || GameDataModel == null)
+                return null;
+
+            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            return Profile.GenerateBitmap<TheWitcherDataModel>(keyboardRect, GameDataModel);
         }
     }
 }
