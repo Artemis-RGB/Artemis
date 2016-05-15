@@ -26,6 +26,7 @@ namespace Artemis.ViewModels.LayerEditor
         private LayerType _layerType;
         private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
+        private LayerKeyboardViewModel _layerKeyboardViewModel;
 
         public LayerEditorViewModel(IGameDataModel gameDataModel, KeyboardProvider activeKeyboard, LayerModel layer)
         {
@@ -161,8 +162,25 @@ namespace Artemis.ViewModels.LayerEditor
                 return;
 
             Layer.LayerType = LayerType;
+
+            if (LayerType != LayerType.Keyboard && LayerType != LayerType.KeyboardGif)
+                LayerKeyboardViewModel = null;
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) && LayerKeyboardViewModel == null)
+                LayerKeyboardViewModel = new LayerKeyboardViewModel();
+
             NotifyOfPropertyChange(() => KeyboardGridIsVisible);
             NotifyOfPropertyChange(() => GifGridIsVisible);
+        }
+
+        public LayerKeyboardViewModel LayerKeyboardViewModel
+        {
+            get { return _layerKeyboardViewModel; }
+            set
+            {
+                if (Equals(value, _layerKeyboardViewModel)) return;
+                _layerKeyboardViewModel = value;
+                NotifyOfPropertyChange(() => LayerKeyboardViewModel);
+            }
         }
 
         public void AddCondition()

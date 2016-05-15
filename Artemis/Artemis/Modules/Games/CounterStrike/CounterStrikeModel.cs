@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -17,6 +19,7 @@ namespace Artemis.Modules.Games.CounterStrike
             Initialized = false;
         }
 
+        public ILogger Logger { get; set; }
         public int Scale { get; set; }
 
         public override void Dispose()
@@ -61,7 +64,16 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             // Parse the JSON
-            GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
+            try
+            {
+                GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Failed to deserialize CS:GO JSON");
+                throw;
+            }
+            
         }
     }
 }

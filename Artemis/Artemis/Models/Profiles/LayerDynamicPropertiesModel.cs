@@ -27,7 +27,7 @@ namespace Artemis.Models.Profiles
         /// </summary>
         public LayerPropertyType LayerPropertyType { get; set; }
 
-        internal void ApplyProperty<T>(IGameDataModel data, LayerPropertiesModel userProps, LayerPropertiesModel props)
+        internal void ApplyProperty(IGameDataModel data, LayerPropertiesModel userProps, LayerPropertiesModel props)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
                 Apply(props, userProps, data, int.Parse(PercentageSource));
