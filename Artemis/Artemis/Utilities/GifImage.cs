@@ -57,7 +57,7 @@ namespace Artemis.Utilities
         public Image GetFrame(int index)
         {
             _gifImage.SelectActiveFrame(_dimension, index); //find the frame
-            return (Image) _gifImage.Clone(); //return a copy of it
+            return _gifImage;
         }
     }
 }

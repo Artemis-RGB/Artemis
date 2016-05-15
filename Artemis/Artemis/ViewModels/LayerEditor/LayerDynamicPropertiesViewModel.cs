@@ -6,7 +6,7 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerDynamicPropertiesViewModel : Screen
+    public class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
         private readonly LayerModel _layer;
         private readonly string _property;

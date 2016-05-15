@@ -100,7 +100,7 @@ namespace Artemis.Models.Profiles
             if (preview)
                 return;
             foreach (var dynamicProperty in LayerProperties)
-                dynamicProperty.ApplyProperty<T>(dataModel, UserProps, CalcProps);
+                dynamicProperty.ApplyProperty(dataModel, UserProps, CalcProps);
         }
 
         public void Reorder(LayerModel selectedLayer, bool moveUp)
