@@ -12,6 +12,7 @@ using Artemis.KeyboardProviders;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Models.Profiles.Properties;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
@@ -51,6 +52,7 @@ namespace Artemis.ViewModels
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
         public BindableCollection<ProfileModel> Profiles
         {
             get { return _profiles; }
@@ -130,11 +132,13 @@ namespace Artemis.ViewModels
                     drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                     // Draw the layers
-                    foreach (
-                        var layerModel in
-                            _selectedProfile.Layers.OrderByDescending(l => l.Order)
-                                .Where(l => l.LayerType == LayerType.Keyboard || l.LayerType == LayerType.KeyboardGif))
-                        layerModel.DrawPreview(drawingContext);
+                    foreach (var layerModel in _selectedProfile.Layers
+                        .OrderByDescending(l => l.Order)
+                        .Where(l => l.LayerType == LayerType.Keyboard ||
+                                    l.LayerType == LayerType.KeyboardGif))
+                    {
+                        layerModel.Draw<object>(null, drawingContext, true);
+                    }
 
                     // Get the selection color
                     var color = (Color) ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
@@ -143,7 +147,7 @@ namespace Artemis.ViewModels
                     // Draw the selection outline and resize indicator
                     if (SelectedLayer != null && ShouldDrawLayer(SelectedLayer))
                     {
-                        var layerRect = SelectedLayer.UserProps.GetRect();
+                        var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
                         // Deflate the rect so that the border is drawn on the inside
                         layerRect.Inflate(-0.2, -0.2);
 
@@ -226,6 +230,11 @@ namespace Artemis.ViewModels
         {
             var name = await DialogService.ShowInputDialog("Add new profile",
                 "Please provide a profile name unique to this game and keyboard.");
+
+            // Null when the user cancelled
+            if (name == null)
+                return;
+
             if (name.Length < 1)
             {
                 DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
@@ -265,7 +274,7 @@ namespace Artemis.ViewModels
         public void LayerEditor(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, ActiveKeyboard, layer);
+            _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, layer);
             dynamic settings = new ExpandoObject();
 
             settings.Title = "Artemis | Edit " + layer.Name;
@@ -340,10 +349,10 @@ namespace Artemis.ViewModels
 
             var reorderLayer = SelectedLayer;
 
-            if (SelectedLayer.ParentLayer != null)
-                SelectedLayer.ParentLayer.Reorder(SelectedLayer, true);
+            if (SelectedLayer.Parent != null)
+                SelectedLayer.Parent.Reorder(SelectedLayer, true);
             else
-                SelectedLayer.ParentProfile.Reorder(SelectedLayer, true);
+                SelectedLayer.Profile.Reorder(SelectedLayer, true);
 
             NotifyOfPropertyChange(() => Layers);
             SelectedLayer = reorderLayer;
@@ -359,10 +368,10 @@ namespace Artemis.ViewModels
 
             var reorderLayer = SelectedLayer;
 
-            if (SelectedLayer.ParentLayer != null)
-                SelectedLayer.ParentLayer.Reorder(SelectedLayer, false);
+            if (SelectedLayer.Parent != null)
+                SelectedLayer.Parent.Reorder(SelectedLayer, false);
             else
-                SelectedLayer.ParentProfile.Reorder(SelectedLayer, false);
+                SelectedLayer.Profile.Reorder(SelectedLayer, false);
 
             NotifyOfPropertyChange(() => Layers);
             SelectedLayer = reorderLayer;
@@ -394,7 +403,7 @@ namespace Artemis.ViewModels
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
             var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
-                .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
+                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
             SelectedLayer = hoverLayer;
         }
 
@@ -408,7 +417,7 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
             var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
-                .FirstOrDefault(l => l.UserProps.GetRect(1).Contains(x, y));
+                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
 
@@ -422,7 +431,7 @@ namespace Artemis.ViewModels
             // Turn the mouse pointer into a hand if hovering over an active layer
             if (hoverLayer == SelectedLayer)
             {
-                var rect = hoverLayer.UserProps.GetRect(1);
+                var rect = ((KeyboardPropertiesModel) hoverLayer.Properties).GetRect(1);
                 KeyboardPreviewCursor =
                     Math.Sqrt(Math.Pow(x - rect.BottomRight.X, 2) + Math.Pow(y - rect.BottomRight.Y, 2)) < 0.6
                         ? Cursors.SizeNWSE
@@ -456,8 +465,10 @@ namespace Artemis.ViewModels
             // Setup the dragging state on mouse press
             if (_draggingLayerOffset == null && hoverLayer != null && e.LeftButton == MouseButtonState.Pressed)
             {
-                var layerRect = hoverLayer.UserProps.GetRect(1);
-                _draggingLayerOffset = new Point(x - SelectedLayer.UserProps.X, y - SelectedLayer.UserProps.Y);
+                var layerRect = ((KeyboardPropertiesModel) hoverLayer.Properties).GetRect(1);
+                var selectedProps = (KeyboardPropertiesModel) SelectedLayer.Properties;
+
+                _draggingLayerOffset = new Point(x - selectedProps.X, y - selectedProps.Y);
                 _draggingLayer = hoverLayer;
                 if (Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) + Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6)
                     _resizing = true;
@@ -468,20 +479,22 @@ namespace Artemis.ViewModels
             if (_draggingLayerOffset == null || _draggingLayer == null || (_draggingLayer != SelectedLayer))
                 return;
 
+            var draggingProps = (KeyboardPropertiesModel) _draggingLayer?.Properties;
+
             // If no setup or reset was done, handle the actual dragging action
             if (_resizing)
             {
-                _draggingLayer.UserProps.Width = (int) Math.Round(x - _draggingLayer.UserProps.X);
-                _draggingLayer.UserProps.Height = (int) Math.Round(y - _draggingLayer.UserProps.Y);
-                if (_draggingLayer.UserProps.Width < 1)
-                    _draggingLayer.UserProps.Width = 1;
-                if (_draggingLayer.UserProps.Height < 1)
-                    _draggingLayer.UserProps.Height = 1;
+                draggingProps.Width = (int) Math.Round(x - draggingProps.X);
+                draggingProps.Height = (int) Math.Round(y - draggingProps.Y);
+                if (draggingProps.Width < 1)
+                    draggingProps.Width = 1;
+                if (draggingProps.Height < 1)
+                    draggingProps.Height = 1;
             }
             else
             {
-                _draggingLayer.UserProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
-                _draggingLayer.UserProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
+                draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
+                draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
             NotifyOfPropertyChange(() => KeyboardPreview);
         }

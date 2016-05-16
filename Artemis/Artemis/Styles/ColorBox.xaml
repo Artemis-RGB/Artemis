@@ -446,11 +446,6 @@
                                                     <nc:GradientStopAdder Height="20" Focusable="False"
                                                                           IsTabStop="False" FocusVisualStyle="{x:Null}"
                                                                           ColorBox="{Binding RelativeSource={RelativeSource TemplatedParent}}">
-                                                        <nc:GradientStopAdder.Background>
-                                                            <LinearGradientBrush
-                                                                GradientStops="{Binding Brush.GradientStops, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                StartPoint="0, .5" EndPoint="1, .5" />
-                                                        </nc:GradientStopAdder.Background>
                                                         <Button.Style>
                                                             <Style TargetType="Button">
                                                                 <Setter Property="Template">

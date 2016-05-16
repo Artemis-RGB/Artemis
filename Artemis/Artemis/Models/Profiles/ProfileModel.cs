@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
+using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Color = System.Windows.Media.Color;
@@ -22,12 +24,14 @@ namespace Artemis.Models.Profiles
         public string Name { get; set; }
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
+
+        [XmlIgnore]
         public DrawingVisual DrawingVisual { get; set; }
-
-
+        
         protected bool Equals(ProfileModel other)
         {
-            return string.Equals(Name, other.Name) && string.Equals(KeyboardName, other.KeyboardName) &&
+            return string.Equals(Name, other.Name) &&
+                   string.Equals(KeyboardName, other.KeyboardName) &&
                    string.Equals(GameName, other.GameName);
         }
 
@@ -62,7 +66,7 @@ namespace Artemis.Models.Profiles
                 Enabled = true,
                 Order = -1,
                 LayerType = LayerType.Keyboard,
-                UserProps = new LayerPropertiesModel
+                Properties = new KeyboardPropertiesModel
                 {
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
                     Animation = LayerAnimation.None,

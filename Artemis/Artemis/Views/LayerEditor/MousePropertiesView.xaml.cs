@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Artemis.Views.LayerEditor
 {
     /// <summary>
-    /// Interaction logic for LayerKeyboardView.xaml
+    /// Interaction logic for MousePropertiesView.xaml
     /// </summary>
-    public partial class LayerKeyboardView : UserControl
+    public partial class MousePropertiesView : UserControl
     {
-        public LayerKeyboardView()
+        public MousePropertiesView()
         {
             InitializeComponent();
         }

@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Linq;
-using Artemis.Models.Profiles;
+using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerDynamicPropertiesViewModel : PropertyChangedBase
+    public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
-        private readonly LayerModel _layer;
+        private readonly KeyboardPropertiesModel _keyboardProperties;
         private readonly string _property;
-        private LayerDynamicPropertiesModel _layerDynamicPropertiesModelProposed;
+        private DynamicPropertiesModel _proposed;
         private LayerPropertyType _layerPropertyType;
         private string _name;
         private GeneralHelpers.PropertyCollection _selectedSource;
@@ -18,24 +18,21 @@ namespace Artemis.ViewModels.LayerEditor
         private bool _sourcesIsVisible;
         private bool _userSourceIsVisible;
 
-        public LayerDynamicPropertiesViewModel(string property,
-            BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps, LayerModel layer)
+        public LayerDynamicPropertiesViewModel(string property, BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps, KeyboardPropertiesModel keyboardProperties)
         {
             _property = property;
-            _layer = layer;
+            _keyboardProperties = keyboardProperties;
 
             // Look for the existing property model
-            LayerDynamicPropertiesModelProposed = new LayerDynamicPropertiesModel();
-            var original = _layer.LayerProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            Proposed = new DynamicPropertiesModel();
+            var original = _keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
             if (original == null)
             {
-                LayerDynamicPropertiesModelProposed.LayerProperty = property;
-                LayerDynamicPropertiesModelProposed.LayerPropertyType = LayerPropertyType.None;
+                Proposed.LayerProperty = property;
+                Proposed.LayerPropertyType = LayerPropertyType.None;
             }
             else
-            {
-                GeneralHelpers.CopyProperties(LayerDynamicPropertiesModelProposed, original);
-            }
+                GeneralHelpers.CopyProperties(Proposed, original);
 
             Name = property + ":";
             Targets = new BindableCollection<GeneralHelpers.PropertyCollection>();
@@ -45,11 +42,9 @@ namespace Artemis.ViewModels.LayerEditor
 
             PropertyChanged += OnPropertyChanged;
 
-            SelectedTarget =
-                dataModelProps.FirstOrDefault(p => p.Path == LayerDynamicPropertiesModelProposed.GameProperty);
-            SelectedSource =
-                dataModelProps.FirstOrDefault(p => p.Path == LayerDynamicPropertiesModelProposed.PercentageSource);
-            LayerPropertyType = LayerDynamicPropertiesModelProposed.LayerPropertyType;
+            SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);
+            SelectedSource = dataModelProps.FirstOrDefault(p => p.Path == Proposed.PercentageProperty);
+            LayerPropertyType = Proposed.LayerPropertyType;
         }
 
         public LayerPropertyType LayerPropertyType
@@ -74,18 +69,16 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
-        public LayerDynamicPropertiesModel LayerDynamicPropertiesModelProposed
+        public DynamicPropertiesModel Proposed
         {
-            get { return _layerDynamicPropertiesModelProposed; }
+            get { return _proposed; }
             set
             {
-                if (Equals(value, _layerDynamicPropertiesModelProposed)) return;
-                _layerDynamicPropertiesModelProposed = value;
-                NotifyOfPropertyChange(() => LayerDynamicPropertiesModelProposed);
+                if (Equals(value, _proposed)) return;
+                _proposed = value;
+                NotifyOfPropertyChange(() => Proposed);
             }
         }
-
-        public BindableCollection<GeneralHelpers.PropertyCollection> Targets { get; set; }
 
         public GeneralHelpers.PropertyCollection SelectedTarget
         {
@@ -97,8 +90,6 @@ namespace Artemis.ViewModels.LayerEditor
                 NotifyOfPropertyChange(() => SelectedTarget);
             }
         }
-
-        public BindableCollection<GeneralHelpers.PropertyCollection> Sources { get; set; }
 
         public GeneralHelpers.PropertyCollection SelectedSource
         {
@@ -133,15 +124,19 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
+        public BindableCollection<GeneralHelpers.PropertyCollection> Targets { get; set; }
+
+        public BindableCollection<GeneralHelpers.PropertyCollection> Sources { get; set; }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedTarget")
-                LayerDynamicPropertiesModelProposed.GameProperty = SelectedTarget.Path;
+                Proposed.GameProperty = SelectedTarget.Path;
             if (e.PropertyName == "SelectedSource")
-                LayerDynamicPropertiesModelProposed.PercentageSource = SelectedSource.Path;
+                Proposed.PercentageProperty = SelectedSource.Path;
             if (e.PropertyName == "LayerPropertyType")
             {
-                LayerDynamicPropertiesModelProposed.LayerPropertyType = LayerPropertyType;
+                Proposed.LayerPropertyType = LayerPropertyType;
                 UserSourceIsVisible = LayerPropertyType == LayerPropertyType.PercentageOf;
                 SourcesIsVisible = LayerPropertyType == LayerPropertyType.PercentageOfProperty;
             }
@@ -149,11 +144,11 @@ namespace Artemis.ViewModels.LayerEditor
 
         public void Apply()
         {
-            var original = _layer.LayerProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            var original = _keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
             if (original == null)
-                _layer.LayerProperties.Add(LayerDynamicPropertiesModelProposed);
+                _keyboardProperties.DynamicProperties.Add(Proposed);
             else
-                GeneralHelpers.CopyProperties(original, LayerDynamicPropertiesModelProposed);
+                GeneralHelpers.CopyProperties(original, Proposed);
         }
     }
 }

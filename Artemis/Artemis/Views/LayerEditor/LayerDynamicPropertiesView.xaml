@@ -3,11 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.Views.LayerEditor"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
              mc:Ignorable="d"
              d:DesignHeight="40" d:DesignWidth="500">
 
@@ -17,7 +16,7 @@
                             ObjectType="{x:Type sys:Enum}"
                             x:Key="DynamicPropertyValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerPropertyType" />
+                <x:Type TypeName="properties:LayerPropertyType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>
@@ -81,8 +80,7 @@
 
         <!-- PercentageOf -->
         <StackPanel Grid.Column="3" x:Name="UserSourceIsVisible" VerticalAlignment="Center">
-            <controls:NumericUpDown Margin="10,0" Height="22"
-                                    Value="{Binding Path=LayerDynamicPropertiesModelProposed.PercentageSource, Mode=TwoWay}" />
+            <controls:NumericUpDown Margin="10,0" Height="22" Value="{Binding Path=Proposed.PercentageSource, Mode=TwoWay}" />
         </StackPanel>
     </Grid>
 </UserControl>

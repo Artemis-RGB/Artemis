@@ -62,9 +62,6 @@ namespace Artemis.Modules.Games.RocketLeague
                 ((RocketLeagueDataModel) GameDataModel).Boost = 0;
             if (((RocketLeagueDataModel) GameDataModel).Boost > 100)
                 ((RocketLeagueDataModel) GameDataModel).Boost = 100;
-
-            foreach (var layerModel in Profile.Layers)
-                layerModel.Update<RocketLeagueDataModel>(GameDataModel);
         }
 
         public override Bitmap GenerateBitmap()

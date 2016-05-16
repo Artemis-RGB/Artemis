@@ -1,0 +1,128 @@
+﻿using System.Drawing;
+using System.IO;
+using System.Windows;
+using System.Windows.Media;
+using Artemis.Models.Profiles;
+using Artemis.Models.Profiles.Properties;
+using Artemis.Properties;
+using Pen = System.Windows.Media.Pen;
+using Point = System.Windows.Point;
+using Size = System.Windows.Size;
+
+namespace Artemis.Utilities.Layers
+{
+    public static class Drawer
+    {
+        public static void Draw(DrawingContext c, KeyboardPropertiesModel props)
+        {
+            if (props.Brush == null)
+                return;
+
+            const int scale = 4;
+
+            // Set up variables for this frame
+            var rect = new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
+            var s1 = new Rect();
+            var s2 = new Rect();
+
+            if (props.Animation == LayerAnimation.SlideRight)
+            {
+                s1 = new Rect(new Point(rect.X + props.AnimationProgress, rect.Y), new Size(rect.Width, rect.Height));
+                s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + 1, rect.Height));
+            }
+            if (props.Animation == LayerAnimation.SlideLeft)
+            {
+                s1 = new Rect(new Point(rect.X - props.AnimationProgress, rect.Y), new Size(rect.Width + 1, rect.Height));
+                s2 = new Rect(new Point(s1.X + rect.Width, rect.Y), new Size(rect.Width, rect.Height));
+            }
+            if (props.Animation == LayerAnimation.SlideDown)
+            {
+                s1 = new Rect(new Point(rect.X, rect.Y + props.AnimationProgress), new Size(rect.Width, rect.Height));
+                s2 = new Rect(new Point(s1.X, s1.Y - rect.Height), new Size(rect.Width, rect.Height));
+            }
+            if (props.Animation == LayerAnimation.SlideUp)
+            {
+                s1 = new Rect(new Point(rect.X, rect.Y - props.AnimationProgress), new Size(rect.Width, rect.Height));
+                s2 = new Rect(new Point(s1.X, s1.Y + rect.Height), new Size(rect.Width, rect.Height));
+            }
+
+            props.Brush.Dispatcher.Invoke(() => DrawRectangle(c, props, rect, s1, s2));
+        }
+
+        private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel properties, Rect rectangle,
+            Rect slide1, Rect slide2)
+        {
+            // TODO: Implement clipping modes
+            // Most animation types can be drawn regularly
+            if (properties.Animation == LayerAnimation.None ||
+                properties.Animation == LayerAnimation.Grow ||
+                properties.Animation == LayerAnimation.Pulse)
+            {
+                c.DrawRectangle(properties.Brush, null, rectangle);
+            }
+            // Sliding animations however, require offsetting two rects
+            else
+            {
+                c.PushClip(new RectangleGeometry(rectangle));
+                c.DrawRectangle(properties.Brush, null, slide1);
+                c.DrawRectangle(properties.Brush, null, slide2);
+                c.Pop();
+            }
+        }
+
+        public static void DrawGif(DrawingContext c, KeyboardPropertiesModel properties, GifImage gifImage,
+            bool update = true)
+        {
+            if (string.IsNullOrEmpty(properties.GifFile))
+                return;
+            if (!File.Exists(properties.GifFile))
+                return;
+
+            const int scale = 4;
+
+            // Only reconstruct GifImage if the underlying source has changed
+            if (gifImage == null)
+                gifImage = new GifImage(properties.GifFile);
+            if (gifImage.Source != properties.GifFile)
+                gifImage = new GifImage(properties.GifFile);
+
+            var gifRect = new Rect(properties.X*scale, properties.Y*scale, properties.Width*scale,
+                properties.Height*scale);
+
+            var draw = update ? gifImage.GetNextFrame() : gifImage.GetFrame(0);
+            c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
+        }
+
+        public static void UpdateMouse(LayerPropertiesModel properties)
+        {
+        }
+
+        public static void UpdateHeadset(LayerPropertiesModel properties)
+        {
+        }
+
+        public static DrawingImage GetThumbnail(LayerModel layerModel)
+        {
+            var thumbnailRect = new Rect(0, 0, 18, 18);
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
+            {
+                // Draw the appropiate icon or draw the brush
+                if (layerModel.LayerType == LayerType.Folder)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.folder), thumbnailRect);
+                else if (layerModel.LayerType == LayerType.Headset)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
+                else if (layerModel.LayerType == LayerType.Mouse)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.mouse), thumbnailRect);
+                else if (layerModel.LayerType == LayerType.KeyboardGif)
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+                else if (layerModel.LayerType == LayerType.Keyboard && layerModel.Properties.Brush != null)
+                    c.DrawRectangle(layerModel.Properties.Brush, new Pen(new SolidColorBrush(Colors.White), 1),
+                        thumbnailRect);
+            }
+
+            var image = new DrawingImage(visual.Drawing);
+            return image;
+        }
+    }
+}
