@@ -31,11 +31,6 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override void Update()
         {
-            if (SelectedProfile == null)
-                return;
-
-            foreach (var layerModel in SelectedProfile.Layers)
-                layerModel.Update<ProfilePreviewDataModel>(_previewDataModel, true);
         }
 
         public override Bitmap GenerateBitmap()

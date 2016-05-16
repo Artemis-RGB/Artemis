@@ -83,7 +83,6 @@ namespace Artemis.Managers
             _logger.Debug("Shutting down MainManager");
             LoopManager.Stop();
             ProcessWorker.CancelAsync();
-            ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
             PipeServer.Stop();
         }

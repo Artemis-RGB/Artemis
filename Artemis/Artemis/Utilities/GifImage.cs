@@ -21,9 +21,13 @@ namespace Artemis.Utilities
             _dimension = new FrameDimension(_gifImage.FrameDimensionsList[0]); //gets the GUID
             _frameCount = _gifImage.GetFrameCount(_dimension); //total frames in the animation
 
+            Source = path;
+
             var item = _gifImage.GetPropertyItem(0x5100); // FrameDelay in libgdiplus
             _delay = (item.Value[0] + item.Value[1]*256)*10; // Time is in 1/100th of a second
         }
+
+        public string Source { get; set; }
 
         /// <summary>
         ///     Whether the gif should play backwards when it reaches the end

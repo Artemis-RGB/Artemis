@@ -10,6 +10,7 @@
                       Title="Artemis | Edit Layer" Height="750" Width="630"
                       xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
                       xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
+                      xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../../Resources/bow.png"
                       ResizeMode="NoResize">
     <controls:MetroWindow.Resources>
@@ -19,20 +20,6 @@
                             x:Key="LayerEnumValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="profileEnumerations:LayerType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="AnimationEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerAnimation" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="DynamicPropertyValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerPropertyType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </controls:MetroWindow.Resources>
@@ -97,12 +84,9 @@
         <Label Grid.Row="4" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
                Content="Advanced" Width="97" VerticalAlignment="Bottom" />
 
-        <!-- Advanced settings - Keyboard -->
-        <ContentControl Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0" x:Name="LayerAdvancedKeyboardViewModel" />
+        <!-- Advanced settings -->
+        <ContentControl Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0" x:Name="LayerPropertiesViewModel" />
 
-        <!-- Advanced settings - Mouse -->
-        <ContentControl Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0" x:Name="MouseProperties" />
-        
         <Button Grid.Row="6" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
                 Height="30" />

@@ -1,106 +1,87 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
+using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
+using Artemis.Utilities.Layers;
 using Artemis.Utilities.ParentChild;
 
 namespace Artemis.Models.Profiles
 {
     public class LayerModel : IChildItem<LayerModel>, IChildItem<ProfileModel>
     {
-        [XmlIgnore] private readonly LayerDrawer _drawer;
-        [XmlIgnore] private bool _mustDraw;
-
         public LayerModel()
         {
-            UserProps = new LayerPropertiesModel();
-            CalcProps = new LayerPropertiesModel();
-
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
-            LayerConditions = new List<LayerConditionModel>();
-            LayerProperties = new List<LayerDynamicPropertiesModel>();
-
-            _mustDraw = true;
-            _drawer = new LayerDrawer(this, 4);
         }
 
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
-        public string GifFile { get; set; }
         public bool Enabled { get; set; }
         public int Order { get; set; }
-        public LayerPropertiesModel UserProps { get; set; }
-
+        public LayerPropertiesModel Properties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
-        public List<LayerConditionModel> LayerConditions { get; set; }
-        public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
 
         [XmlIgnore]
-        public LayerPropertiesModel CalcProps { get; set; }
+        public ImageSource LayerImage => GetThumbnail();
 
         [XmlIgnore]
-        public ImageSource LayerImage => _drawer.GetThumbnail();
+        public LayerModel Parent { get; internal set; }
 
         [XmlIgnore]
-        public LayerModel ParentLayer { get; internal set; }
-
+        public ProfileModel Profile { get; internal set; }
         [XmlIgnore]
-        public ProfileModel ParentProfile { get; internal set; }
+        public GifImage GifImage { get; set; }
 
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
-            return Enabled && LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
-        }
-
-        public void DrawPreview(DrawingContext c)
-        {
-            GeneralHelpers.CopyProperties(CalcProps, UserProps);
-            if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
-                _drawer.Draw(c, _mustDraw);
-            else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(c, _mustDraw);
-            _mustDraw = false;
+            return Enabled && Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
         public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview = false)
         {
-            // Conditions aren't checked during a preview because there is no game data to base them on
+            // Don't draw when the layer is disabled
+            if (!Enabled)
+                return; 
+
+            // Preview simply shows the properties as they are. When not previewing they are applied
+            LayerPropertiesModel properties;
             if (!preview)
+            {
                 if (!ConditionsMet<T>(dataModel))
-                    return;
+                    return; // Don't draw the layer when not previewing and the conditions arent met
+                properties = Properties.GetAppliedProperties(dataModel);
+            }
+            else
+                properties = GeneralHelpers.Clone(Properties);
 
-            if (LayerType == LayerType.Folder)
-                foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-                    layerModel.Draw<T>(dataModel, c);
-            else if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
-                _drawer.Draw(c);
-            else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(c);
-            else if (LayerType == LayerType.Mouse)
-                _drawer.UpdateMouse();
-            else if (LayerType == LayerType.Headset)
-                _drawer.UpdateHeadset();
-        }
+            // Update animations on layer types that support them
+            if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) properties);
 
-        public void Update<T>(IGameDataModel dataModel, bool preview = false)
-        {
+            // Folders are drawn recursively
             if (LayerType == LayerType.Folder)
             {
-                foreach (var layerModel in Children)
-                    layerModel.Update<T>(dataModel);
-                return;
+                foreach (var layerModel in Children.OrderByDescending(l => l.Order))
+                    layerModel.Draw<T>(dataModel, c);
             }
+            // All other types are handles by the Drawer helper
+            else if (LayerType == LayerType.Keyboard)
+                Drawer.Draw(c, (KeyboardPropertiesModel) properties);
+            else if (LayerType == LayerType.KeyboardGif)
+                Drawer.DrawGif(c, (KeyboardPropertiesModel) properties, GifImage);
+            else if (LayerType == LayerType.Mouse)
+                Drawer.UpdateMouse(properties);
+            else if (LayerType == LayerType.Headset)
+                Drawer.UpdateHeadset(properties);
+        }
 
-            GeneralHelpers.CopyProperties(CalcProps, UserProps);
-
-            // Dynamic properties aren't applied during preview because there is no game data to base them on
-            if (preview)
-                return;
-            foreach (var dynamicProperty in LayerProperties)
-                dynamicProperty.ApplyProperty(dataModel, UserProps, CalcProps);
+        private ImageSource GetThumbnail()
+        {
+            // TODO
+            return null;
         }
 
         public void Reorder(LayerModel selectedLayer, bool moveUp)
@@ -133,14 +114,14 @@ namespace Artemis.Models.Profiles
 
         LayerModel IChildItem<LayerModel>.Parent
         {
-            get { return ParentLayer; }
-            set { ParentLayer = value; }
+            get { return Parent; }
+            set { Parent = value; }
         }
 
         ProfileModel IChildItem<ProfileModel>.Parent
         {
-            get { return ParentProfile; }
-            set { ParentProfile = value; }
+            get { return Profile; }
+            set { Profile = value; }
         }
 
         #endregion

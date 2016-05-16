@@ -114,7 +114,7 @@ namespace Artemis.Managers
                 if (renderEffect.Initialized == false)
                     return;
 
-                // Update the current effect
+                // ApplyProperties the current effect
                 if (renderEffect.Initialized)
                     renderEffect.Update();
 

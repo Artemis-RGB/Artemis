@@ -39,11 +39,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Update()
         {
-            if (Profile == null || GameDataModel == null)
-                return;
-
-            foreach (var layerModel in Profile.Layers)
-                layerModel.Update<CounterStrikeDataModel>(GameDataModel);
+            // TODO: Set up active weapon in the datamodel
         }
 
         public override Bitmap GenerateBitmap()
