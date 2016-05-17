@@ -32,12 +32,14 @@ namespace Artemis.ViewModels.LayerEditor
             Layer = layer;
             Layer.Enabled = false;
 
+            if (Layer.Properties == null)
+                Layer.SetupProperties();
+
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(layer.Properties.Conditions
                 .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
-
-
+            
             PropertyChanged += PropertiesViewModelHandler;
             PreSelect();
         }
@@ -120,7 +122,12 @@ namespace Artemis.ViewModels.LayerEditor
             if (e.PropertyName != "LayerType")
                 return;
 
-            Layer.LayerType = LayerType;
+            // Update the model
+            if (Layer.LayerType != LayerType)
+            {
+                Layer.LayerType = LayerType;
+                Layer.SetupProperties();
+            }
 
             // Update the KeyboardPropertiesViewModel if it's being used
             var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;
@@ -165,17 +172,7 @@ namespace Artemis.ViewModels.LayerEditor
             LayerConditionVms.Remove(layerConditionViewModel);
             Layer.Properties.Conditions.Remove(layerConditionModel);
         }
-
-        public void BrowseGif()
-        {
-            if (Layer.LayerType != LayerType.KeyboardGif)
-                return;
-            var dialog = new OpenFileDialog {Filter = "Animated image file (*.gif)|*.gif"};
-            var result = dialog.ShowDialog();
-            if (result == DialogResult.OK)
-                ((KeyboardPropertiesModel) Layer.Properties).GifFile = dialog.FileName;
-        }
-
+        
         public override void CanClose(Action<bool> callback)
         {
             _layer.Enabled = _wasEnabled;

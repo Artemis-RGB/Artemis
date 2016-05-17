@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -46,12 +47,17 @@ namespace Artemis.ViewModels
             Layers = new BindableCollection<LayerModel>();
             events.Subscribe(this);
 
+            PreviewTimer = new Timer(40);
+            PreviewTimer.Elapsed += (sender, args) => NotifyOfPropertyChange(() => KeyboardPreview);
+
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
         }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
+        public Timer PreviewTimer { get; set; }
 
         public BindableCollection<ProfileModel> Profiles
         {
@@ -204,8 +210,6 @@ namespace Artemis.ViewModels
             if (e.PropertyName == "KeyboardPreview")
                 return;
 
-            NotifyOfPropertyChange(() => KeyboardPreview);
-
             if (SelectedProfile != null)
                 ProfileProvider.AddOrUpdate(SelectedProfile);
         }
@@ -260,11 +264,6 @@ namespace Artemis.ViewModels
 
             LoadProfiles();
             SelectedProfile = profile;
-        }
-
-        public void ToggleEnabled(LayerModel layer)
-        {
-            NotifyOfPropertyChange(() => KeyboardPreview);
         }
 
         /// <summary>
@@ -496,7 +495,6 @@ namespace Artemis.ViewModels
                 draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
                 draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
-            NotifyOfPropertyChange(() => KeyboardPreview);
         }
 
         private bool ShouldDrawLayer(LayerModel layer)

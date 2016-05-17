@@ -41,6 +41,9 @@ namespace Artemis.Modules.Games.RocketLeague
             _pointer = JsonConvert.DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague);
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+            if (tempProcess == null)
+                return;
+            
             _memory = new Memory(tempProcess);
 
             Initialized = true;

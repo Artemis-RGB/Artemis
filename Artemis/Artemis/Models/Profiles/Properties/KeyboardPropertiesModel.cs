@@ -26,7 +26,7 @@ namespace Artemis.Models.Profiles.Properties
         public List<DynamicPropertiesModel> DynamicProperties { get; set; }
 
         [XmlIgnore]
-        public int AnimationProgress { get; set; }
+        public double AnimationProgress { get; set; }
 
         public Rect GetRect(int scale = 4)
         {

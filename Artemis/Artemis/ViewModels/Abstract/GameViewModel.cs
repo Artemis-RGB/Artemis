@@ -99,6 +99,18 @@ namespace Artemis.ViewModels.Abstract
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
         }
+
+        protected override void OnActivate()
+        {
+            base.OnActivate();
+            ProfileEditor.PreviewTimer.Start();
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
+            ProfileEditor.PreviewTimer.Stop();
+        }
     }
 
     public delegate void OnLayersUpdatedCallback(object sender);

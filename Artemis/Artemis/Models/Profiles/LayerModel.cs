@@ -25,13 +25,14 @@ namespace Artemis.Models.Profiles
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
         [XmlIgnore]
-        public ImageSource LayerImage => GetThumbnail();
+        public ImageSource LayerImage => Drawer.DrawThumbnail(this);
 
         [XmlIgnore]
         public LayerModel Parent { get; internal set; }
 
         [XmlIgnore]
         public ProfileModel Profile { get; internal set; }
+
         [XmlIgnore]
         public GifImage GifImage { get; set; }
 
@@ -44,22 +45,26 @@ namespace Artemis.Models.Profiles
         {
             // Don't draw when the layer is disabled
             if (!Enabled)
-                return; 
+                return;
 
             // Preview simply shows the properties as they are. When not previewing they are applied
-            LayerPropertiesModel properties;
+            LayerPropertiesModel appliedProperties;
             if (!preview)
             {
                 if (!ConditionsMet<T>(dataModel))
                     return; // Don't draw the layer when not previewing and the conditions arent met
-                properties = Properties.GetAppliedProperties(dataModel);
+                appliedProperties = Properties.GetAppliedProperties(dataModel);
             }
             else
-                properties = GeneralHelpers.Clone(Properties);
+                appliedProperties = GeneralHelpers.Clone(Properties);
 
             // Update animations on layer types that support them
             if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) properties);
+            {
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties);
+                ((KeyboardPropertiesModel) appliedProperties).AnimationProgress =
+                    ((KeyboardPropertiesModel) Properties).AnimationProgress;
+            }
 
             // Folders are drawn recursively
             if (LayerType == LayerType.Folder)
@@ -69,19 +74,35 @@ namespace Artemis.Models.Profiles
             }
             // All other types are handles by the Drawer helper
             else if (LayerType == LayerType.Keyboard)
-                Drawer.Draw(c, (KeyboardPropertiesModel) properties);
+                Drawer.Draw(c, (KeyboardPropertiesModel) appliedProperties);
             else if (LayerType == LayerType.KeyboardGif)
-                Drawer.DrawGif(c, (KeyboardPropertiesModel) properties, GifImage);
+                GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
             else if (LayerType == LayerType.Mouse)
-                Drawer.UpdateMouse(properties);
+                Drawer.UpdateMouse(appliedProperties);
             else if (LayerType == LayerType.Headset)
-                Drawer.UpdateHeadset(properties);
+                Drawer.UpdateHeadset(appliedProperties);
         }
 
-        private ImageSource GetThumbnail()
+        public void SetupProperties()
         {
-            // TODO
-            return null;
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
+                !(Properties is KeyboardPropertiesModel))
+            {
+                Properties = new KeyboardPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
+                    Animation = LayerAnimation.None,
+                    Height = 1,
+                    Width = 1,
+                    X = 0,
+                    Y = 0,
+                    Opacity = 1
+                };
+            }
+            else if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
+                Properties = new MousePropertiesModel();
+            else if (!(Properties is GenericPropertiesModel))
+                Properties = new GenericPropertiesModel();
         }
 
         public void Reorder(LayerModel selectedLayer, bool moveUp)
