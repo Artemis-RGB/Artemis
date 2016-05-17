@@ -310,6 +310,7 @@
     <Compile Include="Models\Profiles\Properties\DynamicPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\KeyboardPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\LayerPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\GenericPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\MousePropertiesModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />

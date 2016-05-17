@@ -66,7 +66,7 @@ namespace Artemis.KeyboardProviders.Corsair
             try
             {
                 if (CueSDK.ProtocolDetails == null)
-                    CueSDK.Initialize();
+                    CueSDK.Initialize(true);
             }
             catch (WrapperException)
             {

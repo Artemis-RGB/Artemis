@@ -123,6 +123,12 @@ namespace Artemis.Managers
 
                 ActiveEffect = effectModel;
                 ActiveEffect.Enable();
+                if (!ActiveEffect.Initialized)
+                {
+                    _logger.Debug("Cancelling effect change, couldn't initialize the effect ({0})", effectModel.Name);
+                    ActiveEffect = null;
+                    return;
+                }
             }
 
             if (loopManager != null && !loopManager.Running)

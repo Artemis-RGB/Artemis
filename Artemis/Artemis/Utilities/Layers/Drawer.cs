@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -52,8 +53,13 @@ namespace Artemis.Utilities.Layers
         private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel properties, Rect rectangle,
             Rect slide1, Rect slide2)
         {
+            // Apply the pulse animation
             var brush = properties.Brush.CloneCurrentValue();
             brush.Opacity = properties.Opacity;
+            if (properties.Animation == LayerAnimation.Pulse)
+                brush.Opacity = (Math.Sin(properties.AnimationProgress * Math.PI) + 1) * (properties.Opacity / 2);
+            else
+                brush.Opacity = properties.Opacity;
 
             // TODO: Implement clipping modes
             // Most animation types can be drawn regularly
@@ -73,13 +79,13 @@ namespace Artemis.Utilities.Layers
             }
         }
 
-        public static void DrawGif(DrawingContext c, KeyboardPropertiesModel properties, GifImage gifImage,
+        public static GifImage DrawGif(DrawingContext c, KeyboardPropertiesModel properties, GifImage gifImage,
             bool update = true)
         {
             if (string.IsNullOrEmpty(properties.GifFile))
-                return;
+                return null;
             if (!File.Exists(properties.GifFile))
-                return;
+                return null;
 
             const int scale = 4;
 
@@ -94,6 +100,7 @@ namespace Artemis.Utilities.Layers
 
             var draw = update ? gifImage.GetNextFrame() : gifImage.GetFrame(0);
             c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
+            return gifImage;
         }
 
         public static void UpdateMouse(LayerPropertiesModel properties)
@@ -104,7 +111,7 @@ namespace Artemis.Utilities.Layers
         {
         }
 
-        public static DrawingImage GetThumbnail(LayerModel layerModel)
+        public static ImageSource DrawThumbnail(LayerModel layerModel)
         {
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();

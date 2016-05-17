@@ -1,4 +1,6 @@
-﻿using Artemis.Models.Interfaces;
+﻿using System.Windows.Forms;
+using Artemis.Models.Interfaces;
+using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -24,6 +26,17 @@ namespace Artemis.ViewModels.LayerEditor
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, keyboardProperties);
         }
 
+        public KeyboardPropertiesModel ProposedProperties
+        {
+            get { return _proposedProperties; }
+            set
+            {
+                if (Equals(value, _proposedProperties)) return;
+                _proposedProperties = value;
+                NotifyOfPropertyChange(() => ProposedProperties);
+            }
+        }
+
         public bool IsGif
         {
             get { return _isGif; }
@@ -36,23 +49,26 @@ namespace Artemis.ViewModels.LayerEditor
         }
 
         public bool ShowGif => IsGif;
+
         public bool ShowBrush => !IsGif;
 
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
 
         public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
+
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
+
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
-        public KeyboardPropertiesModel ProposedProperties
+        public void BrowseGif()
         {
-            get { return _proposedProperties; }
-            set
-            {
-                if (Equals(value, _proposedProperties)) return;
-                _proposedProperties = value;
-                NotifyOfPropertyChange(() => ProposedProperties);
-            }
+            var dialog = new OpenFileDialog { Filter = "Animated image file (*.gif)|*.gif" };
+            var result = dialog.ShowDialog();
+            if (result != DialogResult.OK)
+                return;
+
+            ProposedProperties.GifFile = dialog.FileName;
+            NotifyOfPropertyChange(() => ProposedProperties);
         }
 
         public override LayerPropertiesModel GetAppliedProperties()
