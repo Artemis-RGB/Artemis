@@ -52,20 +52,23 @@ namespace Artemis.Utilities.Layers
         private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel properties, Rect rectangle,
             Rect slide1, Rect slide2)
         {
+            var brush = properties.Brush.CloneCurrentValue();
+            brush.Opacity = properties.Opacity;
+
             // TODO: Implement clipping modes
             // Most animation types can be drawn regularly
             if (properties.Animation == LayerAnimation.None ||
                 properties.Animation == LayerAnimation.Grow ||
                 properties.Animation == LayerAnimation.Pulse)
             {
-                c.DrawRectangle(properties.Brush, null, rectangle);
+                c.DrawRectangle(brush, null, rectangle);
             }
             // Sliding animations however, require offsetting two rects
             else
             {
                 c.PushClip(new RectangleGeometry(rectangle));
-                c.DrawRectangle(properties.Brush, null, slide1);
-                c.DrawRectangle(properties.Brush, null, slide2);
+                c.DrawRectangle(brush, null, slide1);
+                c.DrawRectangle(brush, null, slide2);
                 c.Pop();
             }
         }
