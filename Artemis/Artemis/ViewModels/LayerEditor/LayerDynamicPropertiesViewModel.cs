@@ -8,7 +8,6 @@ namespace Artemis.ViewModels.LayerEditor
 {
     public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
-        private readonly KeyboardPropertiesModel _keyboardProperties;
         private readonly string _property;
         private DynamicPropertiesModel _proposed;
         private LayerPropertyType _layerPropertyType;
@@ -21,11 +20,10 @@ namespace Artemis.ViewModels.LayerEditor
         public LayerDynamicPropertiesViewModel(string property, BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps, KeyboardPropertiesModel keyboardProperties)
         {
             _property = property;
-            _keyboardProperties = keyboardProperties;
 
             // Look for the existing property model
             Proposed = new DynamicPropertiesModel();
-            var original = _keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            var original = keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
             if (original == null)
             {
                 Proposed.LayerProperty = property;
@@ -142,13 +140,13 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
-        public void Apply()
+        public void Apply(KeyboardPropertiesModel keyboardProperties)
         {
-            var original = _keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
-            if (original == null)
-                _keyboardProperties.DynamicProperties.Add(Proposed);
-            else
-                GeneralHelpers.CopyProperties(original, Proposed);
+            var original = keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            if (original != null)
+                keyboardProperties.DynamicProperties.Remove(original);
+
+            keyboardProperties.DynamicProperties.Add(Proposed);
         }
     }
 }

@@ -57,9 +57,10 @@ namespace Artemis.ViewModels.LayerEditor
 
         public override LayerPropertiesModel GetAppliedProperties()
         {
-            HeightProperties.Apply();
-            WidthProperties.Apply();
-            OpacityProperties.Apply();
+            
+            HeightProperties.Apply(ProposedProperties);
+            WidthProperties.Apply(ProposedProperties);
+            OpacityProperties.Apply(ProposedProperties);
 
             return GeneralHelpers.Clone(ProposedProperties);
         }

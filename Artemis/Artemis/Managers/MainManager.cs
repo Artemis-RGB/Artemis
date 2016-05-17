@@ -1,8 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
+using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
@@ -25,6 +24,7 @@ namespace Artemis.Managers
 
         private readonly IEventAggregator _events;
         private readonly ILogger _logger;
+        private readonly Timer _processTimer;
 
         public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
             KeyboardManager keyboardManager, EffectManager effectManager, ProfileManager profileManager)
@@ -38,19 +38,15 @@ namespace Artemis.Managers
             _logger.Info("Intializing MainManager");
 
             _events = events;
-
-            //DialogService = dialogService;
-            KeyboardHook = new KeyboardHook();
-
-            ProcessWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
-            ProcessWorker.DoWork += ProcessWorker_DoWork;
-            ProcessWorker.RunWorkerCompleted += BackgroundWorkerExceptionCatcher;
-
-            // Process worker will always run (and just do nothing when ProgramEnabled is false)
-            ProcessWorker.RunWorkerAsync();
+            
+            _processTimer = new Timer(1000);
+            _processTimer.Elapsed += ScanProcesses;
+            _processTimer.Start();
 
             ProgramEnabled = false;
             Running = false;
+
+            KeyboardHook = new KeyboardHook(); // TODO: DI
 
             // Create and start the web server
             GameStateWebServer = new GameStateWebServer();
@@ -72,7 +68,6 @@ namespace Artemis.Managers
         public ProfileManager ProfileManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
-        public BackgroundWorker ProcessWorker { get; set; }
         public KeyboardHook KeyboardHook { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
@@ -81,8 +76,10 @@ namespace Artemis.Managers
         public void Dispose()
         {
             _logger.Debug("Shutting down MainManager");
+
+            _processTimer.Stop();
+            _processTimer.Dispose();
             LoopManager.Stop();
-            ProcessWorker.CancelAsync();
             GameStateWebServer.Stop();
             PipeServer.Stop();
         }
@@ -109,59 +106,46 @@ namespace Artemis.Managers
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 
-        private void ProcessWorker_DoWork(object sender, DoWorkEventArgs e)
+        /// <summary>
+        ///     Manages active games by keeping an eye on their processes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ScanProcesses(object sender, ElapsedEventArgs e)
         {
-            while (!ProcessWorker.CancellationPending)
-            {
-                if (!ProgramEnabled)
-                {
-                    Thread.Sleep(1000);
-                    continue;
-                }
-
-                var runningProcesses = Process.GetProcesses();
-
-                // If the currently active effect is a disabled game, get rid of it.
-                if (EffectManager.ActiveEffect != null)
-                    EffectManager.DisableInactiveGame();
-
-                if (EffectManager.ActiveEffect is ProfilePreviewModel)
-                    return;
-
-                // If the currently active effect is a no longer running game, get rid of it.
-                var activeGame = EffectManager.ActiveEffect as GameModel;
-                if (activeGame != null)
-                {
-                    if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
-                    {
-                        _logger.Info("Disabling game: {0}", activeGame.Name);
-                        EffectManager.DisableGame(activeGame);
-                    }
-                }
-
-                // Look for running games, stopping on the first one that's found.
-                var newGame = EffectManager.EnabledGames
-                    .FirstOrDefault(g => runningProcesses
-                        .Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
-
-                // If it's not already enabled, do so.
-                if (newGame != null && EffectManager.ActiveEffect != newGame)
-                {
-                    _logger.Info("Detected and enabling game: {0}", newGame.Name);
-                    EffectManager.ChangeEffect(newGame, LoopManager);
-                }
-
-                Thread.Sleep(1000);
-            }
-        }
-
-        private void BackgroundWorkerExceptionCatcher(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error == null)
+            if (!ProgramEnabled)
                 return;
 
-            _logger.Error(e.Error, "Exception in the BackgroundWorker");
-            throw e.Error;
+            var runningProcesses = Process.GetProcesses();
+
+            // If the currently active effect is a disabled game, get rid of it.
+            if (EffectManager.ActiveEffect != null)
+                EffectManager.DisableInactiveGame();
+
+            if (EffectManager.ActiveEffect is ProfilePreviewModel)
+                return;
+
+            // If the currently active effect is a no longer running game, get rid of it.
+            var activeGame = EffectManager.ActiveEffect as GameModel;
+            if (activeGame != null)
+            {
+                if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
+                {
+                    _logger.Info("Disabling game: {0}", activeGame.Name);
+                    EffectManager.DisableGame(activeGame);
+                }
+            }
+
+            // Look for running games, stopping on the first one that's found.
+            var newGame = EffectManager.EnabledGames
+                .FirstOrDefault(g => runningProcesses
+                    .Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+
+            if (newGame == null || EffectManager.ActiveEffect == newGame)
+                return;
+            // If it's not already enabled, do so.
+            _logger.Info("Detected and enabling game: {0}", newGame.Name);
+            EffectManager.ChangeEffect(newGame, LoopManager);
         }
     }
 }
