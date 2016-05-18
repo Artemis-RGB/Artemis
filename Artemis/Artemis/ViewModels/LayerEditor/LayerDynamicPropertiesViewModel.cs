@@ -9,15 +9,19 @@ namespace Artemis.ViewModels.LayerEditor
     public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
         private readonly string _property;
-        private DynamicPropertiesModel _proposed;
+        private BindableCollection<string> _layerPropertyOptions;
         private LayerPropertyType _layerPropertyType;
         private string _name;
+        private DynamicPropertiesModel _proposed;
+        private string _selectedLayerPropertyOption;
         private GeneralHelpers.PropertyCollection _selectedSource;
         private GeneralHelpers.PropertyCollection _selectedTarget;
         private bool _sourcesIsVisible;
         private bool _userSourceIsVisible;
 
-        public LayerDynamicPropertiesViewModel(string property, BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps, KeyboardPropertiesModel keyboardProperties)
+        public LayerDynamicPropertiesViewModel(string property,
+            BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps,
+            KeyboardPropertiesModel keyboardProperties)
         {
             _property = property;
 
@@ -27,22 +31,37 @@ namespace Artemis.ViewModels.LayerEditor
             if (original == null)
             {
                 Proposed.LayerProperty = property;
-                Proposed.LayerPropertyType = LayerPropertyType.None;
+                Proposed.LayerPropertyType = LayerPropertyType.PercentageOf;
             }
             else
                 GeneralHelpers.CopyProperties(Proposed, original);
 
             Name = property + ":";
-            Targets = new BindableCollection<GeneralHelpers.PropertyCollection>();
+
+            var nullTarget = new GeneralHelpers.PropertyCollection {Display = "None"};
+            Targets = new BindableCollection<GeneralHelpers.PropertyCollection> {nullTarget};
             Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
             Sources = new BindableCollection<GeneralHelpers.PropertyCollection>();
             Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
+            UserSourceIsVisible = LayerPropertyType == LayerPropertyType.PercentageOf;
+            SourcesIsVisible = LayerPropertyType == LayerPropertyType.PercentageOfProperty;
 
             PropertyChanged += OnPropertyChanged;
 
+            // Preselect according to the model
             SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);
             SelectedSource = dataModelProps.FirstOrDefault(p => p.Path == Proposed.PercentageProperty);
             LayerPropertyType = Proposed.LayerPropertyType;
+            // Set up a default for SelectedTarget if it was null
+            if (SelectedTarget.Display == null)
+                SelectedTarget = nullTarget;
+
+            if (property == "Width")
+                LayerPropertyOptions = new BindableCollection<string> { "Left to right", "Right to left" };
+            else if (property == "Height")
+                LayerPropertyOptions = new BindableCollection<string> { "Downwards", "Upwards" };
+            else if (property == "Opacity")
+                LayerPropertyOptions = new BindableCollection<string> { "Increase", "Decrease" };
         }
 
         public LayerPropertyType LayerPropertyType
@@ -86,6 +105,7 @@ namespace Artemis.ViewModels.LayerEditor
                 if (value.Equals(_selectedTarget)) return;
                 _selectedTarget = value;
                 NotifyOfPropertyChange(() => SelectedTarget);
+                NotifyOfPropertyChange(() => ControlsEnabled);
             }
         }
 
@@ -97,6 +117,28 @@ namespace Artemis.ViewModels.LayerEditor
                 if (value.Equals(_selectedSource)) return;
                 _selectedSource = value;
                 NotifyOfPropertyChange(() => SelectedSource);
+            }
+        }
+
+        public BindableCollection<string> LayerPropertyOptions
+        {
+            get { return _layerPropertyOptions; }
+            set
+            {
+                if (Equals(value, _layerPropertyOptions)) return;
+                _layerPropertyOptions = value;
+                NotifyOfPropertyChange(() => LayerPropertyOptions);
+            }
+        }
+
+        public string SelectedLayerPropertyOption
+        {
+            get { return _selectedLayerPropertyOption; }
+            set
+            {
+                if (value == _selectedLayerPropertyOption) return;
+                _selectedLayerPropertyOption = value;
+                NotifyOfPropertyChange(() => SelectedLayerPropertyOption);
             }
         }
 
@@ -121,6 +163,8 @@ namespace Artemis.ViewModels.LayerEditor
                 NotifyOfPropertyChange(() => UserSourceIsVisible);
             }
         }
+
+        public bool ControlsEnabled => SelectedTarget.Display != "None" && SelectedTarget.Path != null;
 
         public BindableCollection<GeneralHelpers.PropertyCollection> Targets { get; set; }
 
