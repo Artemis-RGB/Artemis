@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
 using static System.Decimal;
@@ -32,7 +31,12 @@ namespace Artemis.Models.Profiles.Properties
         ///     Type of property
         /// </summary>
         public LayerPropertyType LayerPropertyType { get; set; }
-        
+
+        /// <summary>
+        ///     Extra options on top of the selected properties
+        /// </summary>
+        public LayerPropertyOptions LayerPropertyOptions { get; set; }
+
         internal void ApplyProperty(IGameDataModel dataModel, KeyboardPropertiesModel properties)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
@@ -53,7 +57,7 @@ namespace Artemis.Models.Profiles.Properties
                 return;
 
             var percentage = ToDouble(gameProperty)/percentageSource;
-            var appliedValue = percentage*(double)layerProp.GetValue(properties);
+            var appliedValue = percentage*(double) layerProp.GetValue(properties);
 
             // Opacity requires some special treatment as it causes an exception if it's < 0.0 or > 1.0
             if (LayerProperty == "Opacity")
@@ -80,5 +84,13 @@ namespace Artemis.Models.Profiles.Properties
         [Description("None")] None,
         [Description("% of")] PercentageOf,
         [Description("% of property")] PercentageOfProperty
+    }
+
+    public enum LayerPropertyOptions
+    {
+        [Description("Left to right")] LeftToRight,
+        [Description("Right to left")] RightToLeft,
+        [Description("Downwards")] Downwards,
+        [Description("Upwards")] Upwards
     }
 }
