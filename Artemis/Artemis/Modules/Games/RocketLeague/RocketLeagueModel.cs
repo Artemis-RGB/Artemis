@@ -73,7 +73,7 @@ namespace Artemis.Modules.Games.RocketLeague
                 return null;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel);
+            return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel, false, true);
         }
     }
 }

@@ -110,7 +110,7 @@ namespace Artemis.Modules.Games.Witcher3
                 return null;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<TheWitcherDataModel>(keyboardRect, GameDataModel);
+            return Profile.GenerateBitmap<TheWitcherDataModel>(keyboardRect, GameDataModel, false, true);
         }
     }
 }
