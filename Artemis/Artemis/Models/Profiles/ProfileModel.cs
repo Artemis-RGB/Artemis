@@ -110,7 +110,7 @@ namespace Artemis.Models.Profiles
                 Layers[i].Order = i;
         }
 
-        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview = false)
+        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview, bool updateAnimations)
         {
             Bitmap bitmap = null;
             DrawingVisual.Dispatcher.Invoke(delegate
@@ -124,7 +124,7 @@ namespace Artemis.Models.Profiles
 
                     // Draw the layers
                     foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
-                        layerModel.Draw<T>(gameDataModel, c, preview);
+                        layerModel.Draw<T>(gameDataModel, c, preview, updateAnimations);
 
                     // Remove the clip
                     c.Pop();

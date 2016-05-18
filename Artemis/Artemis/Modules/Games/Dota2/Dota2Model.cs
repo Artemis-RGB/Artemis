@@ -62,7 +62,7 @@ namespace Artemis.Modules.Games.Dota2
                 return null;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<Dota2DataModel>(keyboardRect, GameDataModel);
+            return Profile.GenerateBitmap<Dota2DataModel>(keyboardRect, GameDataModel, false, true);
         }
 
 

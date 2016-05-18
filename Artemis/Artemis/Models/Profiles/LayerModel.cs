@@ -41,7 +41,7 @@ namespace Artemis.Models.Profiles
             return Enabled && Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
-        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview = false)
+        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
             // Don't draw when the layer is disabled
             if (!Enabled)
@@ -59,22 +59,21 @@ namespace Artemis.Models.Profiles
                 appliedProperties = GeneralHelpers.Clone(Properties);
 
             // Update animations on layer types that support them
-            if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) && updateAnimations)
             {
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties);
-                ((KeyboardPropertiesModel) appliedProperties).AnimationProgress =
-                    ((KeyboardPropertiesModel) Properties).AnimationProgress;
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties,
+                    (KeyboardPropertiesModel) appliedProperties);
             }
 
             // Folders are drawn recursively
             if (LayerType == LayerType.Folder)
             {
                 foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-                    layerModel.Draw<T>(dataModel, c);
+                    layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
             }
             // All other types are handles by the Drawer helper
             else if (LayerType == LayerType.Keyboard)
-                Drawer.Draw(c, (KeyboardPropertiesModel) appliedProperties);
+                Drawer.Draw(c, (KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties);
             else if (LayerType == LayerType.KeyboardGif)
                 GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
             else if (LayerType == LayerType.Mouse)
@@ -129,6 +128,15 @@ namespace Artemis.Models.Profiles
             Children.Sort(l => l.Order);
             for (var i = 0; i < Children.Count; i++)
                 Children[i].Order = i;
+        }
+
+        /// <summary>
+        /// Returns whether the layer meets the requirements to be drawn
+        /// </summary>
+        /// <returns></returns>
+        public bool MustDraw()
+        {
+            return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
         }
 
         #region IChildItem<Parent> Members

@@ -41,7 +41,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
                 return bitmap;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(4);
-            var image = SelectedProfile.GenerateBitmap<ProfilePreviewDataModel>(keyboardRect, _previewDataModel, true);
+            var image = SelectedProfile.GenerateBitmap<ProfilePreviewDataModel>(keyboardRect, _previewDataModel, true, true);
 
             // Draw on top of everything else
             using (var g = Graphics.FromImage(bitmap))

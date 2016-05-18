@@ -48,7 +48,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return null;
 
             var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel);
+            return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel, false, true);
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)

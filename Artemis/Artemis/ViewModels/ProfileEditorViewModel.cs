@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.KeyboardProviders;
@@ -31,6 +32,7 @@ namespace Artemis.ViewModels
         private LayerModel _draggingLayer;
         private Point? _draggingLayerOffset;
         private LayerEditorViewModel _editorVm;
+        private ImageSource _keyboardPreview;
         private Cursor _keyboardPreviewCursor;
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
@@ -45,10 +47,13 @@ namespace Artemis.ViewModels
 
             Profiles = new BindableCollection<ProfileModel>();
             Layers = new BindableCollection<LayerModel>();
+            ActiveKeyboard = _mainManager.KeyboardManager.ActiveKeyboard;
+
             events.Subscribe(this);
 
             PreviewTimer = new Timer(40);
-            PreviewTimer.Elapsed += (sender, args) => NotifyOfPropertyChange(() => KeyboardPreview);
+            PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
+
 
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
@@ -124,59 +129,12 @@ namespace Artemis.ViewModels
 
         public ImageSource KeyboardPreview
         {
-            get
+            get { return _keyboardPreview; }
+            set
             {
-                if (_selectedProfile == null || ActiveKeyboard == null)
-                    return null;
-
-                var keyboardRect = ActiveKeyboard.KeyboardRectangle(4);
-                var visual = new DrawingVisual();
-                using (var drawingContext = visual.RenderOpen())
-                {
-                    // Setup the DrawingVisual's size
-                    drawingContext.PushClip(new RectangleGeometry(keyboardRect));
-                    drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
-
-                    // Draw the layers
-                    foreach (var layerModel in _selectedProfile.Layers
-                        .OrderByDescending(l => l.Order)
-                        .Where(l => l.LayerType == LayerType.Keyboard ||
-                                    l.LayerType == LayerType.KeyboardGif))
-                    {
-                        layerModel.Draw<object>(null, drawingContext, true);
-                    }
-
-                    // Get the selection color
-                    var color = (Color) ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
-                    var pen = new Pen(new SolidColorBrush(color), 0.4);
-
-                    // Draw the selection outline and resize indicator
-                    if (SelectedLayer != null && ShouldDrawLayer(SelectedLayer))
-                    {
-                        var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
-                        // Deflate the rect so that the border is drawn on the inside
-                        layerRect.Inflate(-0.2, -0.2);
-
-                        // Draw an outline around the selected layer
-                        drawingContext.DrawRectangle(null, pen, layerRect);
-                        // Draw a resize indicator in the bottom-right
-                        drawingContext.DrawLine(pen,
-                            new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
-                            new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
-                        drawingContext.DrawLine(pen,
-                            new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
-                            new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
-                        drawingContext.DrawLine(pen,
-                            new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
-                            new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
-                    }
-
-                    // Remove the clip
-                    drawingContext.Pop();
-                }
-                var image = new DrawingImage(visual.Drawing);
-
-                return image;
+                if (Equals(value, _keyboardPreview)) return;
+                _keyboardPreview = value;
+                NotifyOfPropertyChange(() => KeyboardPreview);
             }
         }
 
@@ -187,7 +145,7 @@ namespace Artemis.ViewModels
         public bool CanAddLayer => _selectedProfile != null;
         public bool CanRemoveLayer => _selectedProfile != null && _selectedLayer != null;
 
-        private KeyboardProvider ActiveKeyboard => _mainManager.KeyboardManager.ActiveKeyboard;
+        private KeyboardProvider ActiveKeyboard { get; set; }
 
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
@@ -195,6 +153,7 @@ namespace Artemis.ViewModels
         /// <param name="message"></param>
         public void Handle(ActiveKeyboardChanged message)
         {
+            ActiveKeyboard = _mainManager.KeyboardManager.ActiveKeyboard;
             NotifyOfPropertyChange(() => KeyboardImage);
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
@@ -401,8 +360,13 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
-            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
-                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
+            var hoverLayer = SelectedProfile.Layers
+                .OrderBy(l => l.Order)
+                .Where(l => l.MustDraw())
+                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
+                    .GetRect(1)
+                    .Contains(x, y));
+
             SelectedLayer = hoverLayer;
         }
 
@@ -415,7 +379,7 @@ namespace Artemis.ViewModels
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
-            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(ShouldDrawLayer)
+            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
@@ -438,6 +402,62 @@ namespace Artemis.ViewModels
             }
             else
                 KeyboardPreviewCursor = Cursors.Hand;
+        }
+
+        private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
+        {
+                Application.Current.Dispatcher.Invoke(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
+        }
+
+        /// <summary>
+        ///     Generates a new image for the keyboard preview
+        /// </summary>
+        public void UpdateKeyboardPreview()
+        {
+            if (_selectedProfile == null || ActiveKeyboard == null)
+                return;
+            
+            var keyboardRect = ActiveKeyboard.KeyboardRectangle(4);
+            var visual = new DrawingVisual();
+            using (var drawingContext = visual.RenderOpen())
+            {
+                // Setup the DrawingVisual's size
+                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                // Draw the layers
+                foreach (var layer in _selectedProfile.Layers.OrderByDescending(l => l.Order).Where(l => l.MustDraw()))
+                    layer.Draw<object>(null, drawingContext, true, false);
+
+                // Get the selection color
+                var color = (Color) ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
+                var pen = new Pen(new SolidColorBrush(color), 0.4);
+
+                // Draw the selection outline and resize indicator
+                if (SelectedLayer != null && SelectedLayer.MustDraw())
+                {
+                    var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
+                    // Deflate the rect so that the border is drawn on the inside
+                    layerRect.Inflate(-0.2, -0.2);
+
+                    // Draw an outline around the selected layer
+                    drawingContext.DrawRectangle(null, pen, layerRect);
+                    // Draw a resize indicator in the bottom-right
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
+                }
+
+                // Remove the clip
+                drawingContext.Pop();
+            }
+            KeyboardPreview = new DrawingImage(visual.Drawing);
         }
 
         /// <summary>
@@ -495,11 +515,6 @@ namespace Artemis.ViewModels
                 draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
                 draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
-        }
-
-        private bool ShouldDrawLayer(LayerModel layer)
-        {
-            return layer.Enabled && (layer.LayerType == LayerType.Keyboard || layer.LayerType == LayerType.KeyboardGif);
         }
     }
 }

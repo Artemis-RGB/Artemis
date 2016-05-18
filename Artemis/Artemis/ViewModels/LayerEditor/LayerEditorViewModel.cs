@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
@@ -10,14 +8,12 @@ using Artemis.Services;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using Ninject;
-using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels.LayerEditor
 {
     public sealed class LayerEditorViewModel : Screen
     {
         private readonly IGameDataModel _gameDataModel;
-        private readonly bool _wasEnabled;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private LayerType _layerType;
@@ -27,10 +23,8 @@ namespace Artemis.ViewModels.LayerEditor
         public LayerEditorViewModel(IGameDataModel gameDataModel, LayerModel layer)
         {
             _gameDataModel = gameDataModel;
-            _wasEnabled = layer.Enabled;
 
             Layer = layer;
-            Layer.Enabled = false;
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
@@ -39,7 +33,7 @@ namespace Artemis.ViewModels.LayerEditor
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(layer.Properties.Conditions
                 .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
-            
+
             PropertyChanged += PropertiesViewModelHandler;
             PreSelect();
         }
@@ -171,12 +165,6 @@ namespace Artemis.ViewModels.LayerEditor
         {
             LayerConditionVms.Remove(layerConditionViewModel);
             Layer.Properties.Conditions.Remove(layerConditionModel);
-        }
-        
-        public override void CanClose(Action<bool> callback)
-        {
-            _layer.Enabled = _wasEnabled;
-            base.CanClose(callback);
         }
     }
 }
