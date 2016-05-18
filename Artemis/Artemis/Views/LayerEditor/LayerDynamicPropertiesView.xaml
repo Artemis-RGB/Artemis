@@ -23,10 +23,11 @@
     <Grid>
         <!-- Height -->
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="65*" />
+            <ColumnDefinition Width="50*" />
             <ColumnDefinition Width="86*" />
             <ColumnDefinition Width="65*" />
             <ColumnDefinition Width="86*" />
+            <ColumnDefinition Width="75*" />
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="Name" Grid.Column="0" Margin="10" FontSize="13.333" VerticalAlignment="Center" Height="18" />
 
@@ -51,7 +52,8 @@
         <!-- Dynamic type -->
         <ComboBox SelectedItem="{Binding Path=LayerPropertyType}" Grid.Column="2"
                   ItemsSource="{Binding Source={StaticResource DynamicPropertyValues}}"
-                  Margin="10,0" VerticalAlignment="Center" Height="22">
+                  Margin="10,0" VerticalAlignment="Center" Height="22"
+                  IsEnabled="{Binding Path=ControlsEnabled}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
@@ -61,7 +63,8 @@
 
         <!-- PercentageOfProperty -->
         <StackPanel Grid.Column="3" x:Name="SourcesIsVisible" VerticalAlignment="Center">
-            <ComboBox x:Name="Sources" Margin="10,0" MaxDropDownHeight="125" Height="22">
+            <ComboBox x:Name="Sources" Margin="10,0" MaxDropDownHeight="125" Height="22"
+                      IsEnabled="{Binding Path=ControlsEnabled}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <Grid MinWidth="522">
@@ -80,7 +83,13 @@
 
         <!-- PercentageOf -->
         <StackPanel Grid.Column="3" x:Name="UserSourceIsVisible" VerticalAlignment="Center">
-            <controls:NumericUpDown Margin="10,0" Height="22" Value="{Binding Path=Proposed.PercentageSource, Mode=TwoWay}" />
+            <controls:NumericUpDown Margin="10,0" Height="22"
+                                    Value="{Binding Path=Proposed.PercentageSource, Mode=TwoWay}"
+                                    IsEnabled="{Binding Path=ControlsEnabled}" />
         </StackPanel>
+
+        <!-- Extra option -->
+        <ComboBox Grid.Column="4" x:Name="LayerPropertyOptions" VerticalAlignment="Center" Margin="10,0"
+                  IsEnabled="{Binding Path=ControlsEnabled}" />
     </Grid>
 </UserControl>

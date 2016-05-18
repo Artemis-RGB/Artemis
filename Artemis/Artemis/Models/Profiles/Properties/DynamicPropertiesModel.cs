@@ -81,7 +81,6 @@ namespace Artemis.Models.Profiles.Properties
 
     public enum LayerPropertyType
     {
-        [Description("None")] None,
         [Description("% of")] PercentageOf,
         [Description("% of property")] PercentageOfProperty
     }
@@ -91,6 +90,8 @@ namespace Artemis.Models.Profiles.Properties
         [Description("Left to right")] LeftToRight,
         [Description("Right to left")] RightToLeft,
         [Description("Downwards")] Downwards,
-        [Description("Upwards")] Upwards
+        [Description("Upwards")] Upwards,
+        [Description("Increase")] Increase,
+        [Description("Decrease")] Decrease
     }
 }

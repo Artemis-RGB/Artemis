@@ -154,7 +154,8 @@ namespace Artemis.Managers
             // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
             _events.PublishOnUIThread(new ChangeBitmap(bitmap));
 
-            Monitor.Exit(_keyboardManager.ActiveKeyboard);
+            if (_keyboardManager.ActiveKeyboard != null)
+                Monitor.Exit(_keyboardManager.ActiveKeyboard);
         }
     }
 }
