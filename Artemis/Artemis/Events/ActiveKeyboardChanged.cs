@@ -1,4 +1,4 @@
-﻿using Artemis.KeyboardProviders;
+﻿using Artemis.DeviceProviders;
 
 namespace Artemis.Events
 {

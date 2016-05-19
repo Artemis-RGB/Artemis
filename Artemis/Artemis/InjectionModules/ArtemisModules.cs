@@ -1,7 +1,7 @@
-﻿using Artemis.KeyboardProviders;
-using Artemis.KeyboardProviders.Corsair;
-using Artemis.KeyboardProviders.Logitech;
-using Artemis.KeyboardProviders.Razer;
+﻿using Artemis.DeviceProviders;
+using Artemis.DeviceProviders.Corsair;
+using Artemis.DeviceProviders.Logitech;
+using Artemis.DeviceProviders.Razer;
 using Artemis.Modules.Effects.AudioVisualizer;
 using Artemis.Modules.Effects.Debug;
 using Artemis.Modules.Effects.TypeWave;
