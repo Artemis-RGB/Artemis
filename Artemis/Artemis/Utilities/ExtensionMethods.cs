@@ -61,6 +61,9 @@ namespace Artemis.Utilities
         /// <returns></returns>
         public static T GetPropValue<T>(this object obj, string name)
         {
+            if (name == null)
+                return default(T);
+
             var retVal = GetPropValue(obj, name);
             if (retVal == null)
                 return default(T);

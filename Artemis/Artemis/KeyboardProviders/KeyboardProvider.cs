@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows;
 using Size = System.Windows.Size;
 
 namespace Artemis.KeyboardProviders
 {
-    public abstract class KeyboardProvider
+    public abstract class KeyboardProvider : DeviceProvider
     {
+        protected KeyboardProvider()
+        {
+            Type = DeviceType.Keyboard;
+        }
+
         public string Name { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
@@ -15,7 +19,8 @@ namespace Artemis.KeyboardProviders
         public PreviewSettings PreviewSettings { get; set; }
 
         public abstract bool CanEnable();
-        public abstract void Enable(); // TODO: This should be done in a background thread with a callback mechanism as it causes UI lag
+        public abstract void Enable();
+        // TODO: This should be done in a background thread with a callback mechanism as it causes UI lag
         public abstract void Disable();
         public abstract void DrawBitmap(Bitmap bitmap);
 
@@ -32,6 +37,18 @@ namespace Artemis.KeyboardProviders
         public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
 
         public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
+    }
+
+    public class DeviceProvider
+    {
+        public DeviceType Type { get; set; }
+    }
+
+    public enum DeviceType
+    {
+        Keyboard,
+        Mouse,
+        Headset
     }
 
     public struct PreviewSettings

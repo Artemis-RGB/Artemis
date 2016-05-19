@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Timers;
 using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
-using Timer = System.Timers.Timer;
 
 namespace Artemis.Managers
 {
@@ -110,52 +108,49 @@ namespace Artemis.Managers
                 return;
             }
 
-            if (!Monitor.TryEnter(_keyboardManager.ActiveKeyboard))
-                return;
-
-            // Skip frame if effect is still initializing
-            if (renderEffect.Initialized == false)
-                return;
-
-            // ApplyProperties the current effect
-            if (renderEffect.Initialized)
-                renderEffect.Update();
-
-            // Get ActiveEffect's bitmap
-            var bitmap = renderEffect.Initialized
-                ? renderEffect.GenerateBitmap()
-                : null;
-
-            // Draw enabled overlays on top
-            foreach (var overlayModel in _effectManager.EnabledOverlays)
+            lock (_keyboardManager.ActiveKeyboard)
             {
-                overlayModel.Update();
-                bitmap = bitmap != null
-                    ? overlayModel.GenerateBitmap(bitmap)
-                    : overlayModel.GenerateBitmap();
+                // Skip frame if effect is still initializing
+                if (renderEffect.Initialized == false)
+                    return;
+
+                // ApplyProperties the current effect
+                if (renderEffect.Initialized)
+                    renderEffect.Update();
+
+                // Get ActiveEffect's bitmap
+                var bitmap = renderEffect.Initialized
+                    ? renderEffect.GenerateBitmap()
+                    : null;
+
+                // Draw enabled overlays on top
+                foreach (var overlayModel in _effectManager.EnabledOverlays)
+                {
+                    overlayModel.Update();
+                    bitmap = bitmap != null
+                        ? overlayModel.GenerateBitmap(bitmap)
+                        : overlayModel.GenerateBitmap();
+                }
+
+                if (bitmap == null)
+                    return;
+
+                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
+                var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
+                using (var g = Graphics.FromImage(fixedBmp))
+                {
+                    g.Clear(Color.Black);
+                    g.DrawImage(bitmap, 0, 0);
+                }
+
+                bitmap = fixedBmp;
+
+                // If it exists, send bitmap to the device
+                _keyboardManager.ActiveKeyboard?.DrawBitmap(bitmap);
+
+                // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
+                _events.PublishOnUIThread(new ChangeBitmap(bitmap));
             }
-
-            if (bitmap == null)
-                return;
-
-            // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-            var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
-            using (var g = Graphics.FromImage(fixedBmp))
-            {
-                g.Clear(Color.Black);
-                g.DrawImage(bitmap, 0, 0);
-            }
-
-            bitmap = fixedBmp;
-
-            // If it exists, send bitmap to the device
-            _keyboardManager.ActiveKeyboard?.DrawBitmap(bitmap);
-
-            // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
-            _events.PublishOnUIThread(new ChangeBitmap(bitmap));
-
-            if (_keyboardManager.ActiveKeyboard != null)
-                Monitor.Exit(_keyboardManager.ActiveKeyboard);
         }
     }
 }

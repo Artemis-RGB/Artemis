@@ -248,7 +248,7 @@ namespace Artemis.ViewModels
         /// </summary>
         public void AddLayer()
         {
-            if (_selectedProfile == null)
+            if (SelectedProfile == null)
                 return;
 
             var layer = SelectedProfile.AddLayer();
@@ -262,7 +262,7 @@ namespace Artemis.ViewModels
         /// </summary>
         public void RemoveLayer()
         {
-            if (_selectedProfile == null || _selectedLayer == null)
+            if (SelectedProfile == null || _selectedLayer == null)
                 return;
 
             SelectedProfile.Layers.Remove(_selectedLayer);
@@ -352,6 +352,9 @@ namespace Artemis.ViewModels
         /// <param name="e"></param>
         public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
         {
+            if (SelectedProfile == null)
+                return;
+
             var timeSinceDown = DateTime.Now - _downTime;
             if (!(timeSinceDown.TotalMilliseconds < 500))
                 return;
@@ -376,6 +379,9 @@ namespace Artemis.ViewModels
         /// <param name="e"></param>
         public void MouseMoveKeyboardPreview(MouseEventArgs e)
         {
+            if (SelectedProfile == null)
+                return;
+
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
@@ -406,7 +412,7 @@ namespace Artemis.ViewModels
 
         private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
         {
-                Application.Current.Dispatcher.Invoke(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
+            Application.Current.Dispatcher.Invoke(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
         }
 
         /// <summary>
@@ -414,9 +420,12 @@ namespace Artemis.ViewModels
         /// </summary>
         public void UpdateKeyboardPreview()
         {
-            if (_selectedProfile == null || ActiveKeyboard == null)
+            if (SelectedProfile == null || ActiveKeyboard == null)
+            {
+                KeyboardPreview = new DrawingImage();
                 return;
-            
+            }
+
             var keyboardRect = ActiveKeyboard.KeyboardRectangle(4);
             var visual = new DrawingVisual();
             using (var drawingContext = visual.RenderOpen())
