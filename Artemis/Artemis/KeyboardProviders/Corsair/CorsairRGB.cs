@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Artemis.Properties;
@@ -9,7 +8,6 @@ using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using CUE.NET.Exceptions;
-using Point = System.Drawing.Point;
 
 namespace Artemis.KeyboardProviders.Corsair
 {

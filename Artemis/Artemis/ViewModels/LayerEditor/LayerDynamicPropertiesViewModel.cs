@@ -9,11 +9,10 @@ namespace Artemis.ViewModels.LayerEditor
     public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
         private readonly string _property;
-        private BindableCollection<string> _layerPropertyOptions;
+        private BindableCollection<LayerPropertyOptions> _layerPropertyOptions;
         private LayerPropertyType _layerPropertyType;
         private string _name;
         private DynamicPropertiesModel _proposed;
-        private string _selectedLayerPropertyOption;
         private GeneralHelpers.PropertyCollection _selectedSource;
         private GeneralHelpers.PropertyCollection _selectedTarget;
         private bool _sourcesIsVisible;
@@ -36,32 +35,8 @@ namespace Artemis.ViewModels.LayerEditor
             else
                 GeneralHelpers.CopyProperties(Proposed, original);
 
-            Name = property + ":";
-
-            var nullTarget = new GeneralHelpers.PropertyCollection {Display = "None"};
-            Targets = new BindableCollection<GeneralHelpers.PropertyCollection> {nullTarget};
-            Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
-            Sources = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
-            UserSourceIsVisible = LayerPropertyType == LayerPropertyType.PercentageOf;
-            SourcesIsVisible = LayerPropertyType == LayerPropertyType.PercentageOfProperty;
-
             PropertyChanged += OnPropertyChanged;
-
-            // Preselect according to the model
-            SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);
-            SelectedSource = dataModelProps.FirstOrDefault(p => p.Path == Proposed.PercentageProperty);
-            LayerPropertyType = Proposed.LayerPropertyType;
-            // Set up a default for SelectedTarget if it was null
-            if (SelectedTarget.Display == null)
-                SelectedTarget = nullTarget;
-
-            if (property == "Width")
-                LayerPropertyOptions = new BindableCollection<string> { "Left to right", "Right to left" };
-            else if (property == "Height")
-                LayerPropertyOptions = new BindableCollection<string> { "Downwards", "Upwards" };
-            else if (property == "Opacity")
-                LayerPropertyOptions = new BindableCollection<string> { "Increase", "Decrease" };
+            SetupControls(dataModelProps);
         }
 
         public LayerPropertyType LayerPropertyType
@@ -120,7 +95,7 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
-        public BindableCollection<string> LayerPropertyOptions
+        public BindableCollection<LayerPropertyOptions> LayerPropertyOptions
         {
             get { return _layerPropertyOptions; }
             set
@@ -128,17 +103,6 @@ namespace Artemis.ViewModels.LayerEditor
                 if (Equals(value, _layerPropertyOptions)) return;
                 _layerPropertyOptions = value;
                 NotifyOfPropertyChange(() => LayerPropertyOptions);
-            }
-        }
-
-        public string SelectedLayerPropertyOption
-        {
-            get { return _selectedLayerPropertyOption; }
-            set
-            {
-                if (value == _selectedLayerPropertyOption) return;
-                _selectedLayerPropertyOption = value;
-                NotifyOfPropertyChange(() => SelectedLayerPropertyOption);
             }
         }
 
@@ -170,13 +134,70 @@ namespace Artemis.ViewModels.LayerEditor
 
         public BindableCollection<GeneralHelpers.PropertyCollection> Sources { get; set; }
 
+        private void SetupControls(BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps)
+        {
+            Name = _property + ":";
+
+            // Populate target combobox
+            Targets = new BindableCollection<GeneralHelpers.PropertyCollection>
+            {
+                new GeneralHelpers.PropertyCollection {Display = "None"}
+            };
+            Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
+
+            // Populate sources combobox
+            Sources = new BindableCollection<GeneralHelpers.PropertyCollection>();
+            Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
+
+            // Preselect according to the model
+            SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);
+            SelectedSource = dataModelProps.FirstOrDefault(p => p.Path == Proposed.PercentageProperty);
+            LayerPropertyType = Proposed.LayerPropertyType;
+
+            // Populate the extra options combobox
+            switch (_property)
+            {
+                case "Width":
+                    LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
+                    {
+                        Models.Profiles.Properties.LayerPropertyOptions.LeftToRight,
+                        Models.Profiles.Properties.LayerPropertyOptions.RightToLeft
+                    };
+                    break;
+                case "Height":
+                    LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
+                    {
+                        Models.Profiles.Properties.LayerPropertyOptions.Downwards,
+                        Models.Profiles.Properties.LayerPropertyOptions.Upwards
+                    };
+                    break;
+                case "Opacity":
+                    LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
+                    {
+                        Models.Profiles.Properties.LayerPropertyOptions.Increase,
+                        Models.Profiles.Properties.LayerPropertyOptions.Decrease
+                    };
+                    break;
+            }
+
+            UserSourceIsVisible = LayerPropertyType == LayerPropertyType.PercentageOf;
+            SourcesIsVisible = LayerPropertyType == LayerPropertyType.PercentageOfProperty;
+
+            // Set up a default for SelectedTarget if it was null
+            if (SelectedTarget.Display == null)
+                SelectedTarget = Targets.FirstOrDefault();
+            // Set up a default for the extra option if it fell outside the range
+            if (!LayerPropertyOptions.Contains(Proposed.LayerPropertyOptions))
+                Proposed.LayerPropertyOptions = LayerPropertyOptions.FirstOrDefault();
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "SelectedTarget")
                 Proposed.GameProperty = SelectedTarget.Path;
-            if (e.PropertyName == "SelectedSource")
+            else if (e.PropertyName == "SelectedSource")
                 Proposed.PercentageProperty = SelectedSource.Path;
-            if (e.PropertyName == "LayerPropertyType")
+            else if (e.PropertyName == "LayerPropertyType")
             {
                 Proposed.LayerPropertyType = LayerPropertyType;
                 UserSourceIsVisible = LayerPropertyType == LayerPropertyType.PercentageOf;

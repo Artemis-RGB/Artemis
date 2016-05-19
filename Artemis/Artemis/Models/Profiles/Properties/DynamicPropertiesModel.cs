@@ -45,31 +45,49 @@ namespace Artemis.Models.Profiles.Properties
                 ApplyPercentageOfProperty(dataModel, properties);
         }
 
-        private void ApplyPercentageOf(IGameDataModel dataModel, KeyboardPropertiesModel properties,
-            double percentageSource)
+        private void ApplyPercentageOf(IGameDataModel dataModel, KeyboardPropertiesModel properties, double src)
         {
-            // Property to apply on
-            var layerProp = properties.GetType().GetProperty(LayerProperty);
-            // Property to base the percentage upon
-            var gameProperty = dataModel.GetPropValue<int>(GameProperty);
-
-            if (layerProp == null)
+            if (GameProperty == null)
                 return;
 
-            var percentage = ToDouble(gameProperty)/percentageSource;
-            var appliedValue = percentage*(double) layerProp.GetValue(properties);
+            var gameProperty = dataModel.GetPropValue<int>(GameProperty);
+            var percentage = ToDouble(gameProperty)/src;
 
-            // Opacity requires some special treatment as it causes an exception if it's < 0.0 or > 1.0
-            if (LayerProperty == "Opacity")
-            {
-                appliedValue = percentage;
-                if (appliedValue < 0.0)
-                    appliedValue = 0.0;
-                if (appliedValue > 1.0)
-                    appliedValue = 1.0;
-            }
+            if (LayerProperty == "Width")
+                ApplyWidth(properties, percentage);
+            else if (LayerProperty == "Height")
+                ApplyHeight(properties, percentage);
+            else if (LayerProperty == "Opacity")
+                ApplyOpacity(properties, percentage);
+        }
 
-            layerProp.SetValue(properties, appliedValue);
+        private void ApplyWidth(KeyboardPropertiesModel properties, double percentage)
+        {
+            var newWidth = percentage * properties.Width;
+            var difference = properties.Width - newWidth;
+            properties.Width = newWidth;
+
+            // Apply the right to left option
+            if (LayerPropertyOptions == LayerPropertyOptions.RightToLeft)
+                properties.X = properties.X + difference;
+        }
+
+        private void ApplyHeight(KeyboardPropertiesModel properties, double percentage)
+        {
+            properties.Height = percentage*properties.Height;
+        }
+
+        private void ApplyOpacity(KeyboardPropertiesModel properties, double percentage)
+        {
+            properties.Opacity = percentage*properties.Opacity;
+            if (properties.Opacity < 0.0)
+                properties.Opacity = 0.0;
+            if (properties.Opacity > 1.0)
+                properties.Opacity = 1.0;
+
+            // Apply the inverse/decrease option
+            if (LayerPropertyOptions == LayerPropertyOptions.Decrease)
+                properties.Opacity = 1.0 - properties.Opacity;
         }
 
         private void ApplyPercentageOfProperty(IGameDataModel dataModel, KeyboardPropertiesModel properties)

@@ -12,9 +12,7 @@
 
     <UserControl.Resources>
         <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="DynamicPropertyValues">
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="DynamicPropertyValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="properties:LayerPropertyType" />
             </ObjectDataProvider.MethodParameters>
@@ -89,7 +87,15 @@
         </StackPanel>
 
         <!-- Extra option -->
-        <ComboBox Grid.Column="4" x:Name="LayerPropertyOptions" VerticalAlignment="Center" Margin="10,0"
-                  IsEnabled="{Binding Path=ControlsEnabled}" />
+        <ComboBox SelectedItem="{Binding Path=Proposed.LayerPropertyOptions}" Grid.Column="4"
+                  ItemsSource="{Binding Path=LayerPropertyOptions}"
+                  Margin="10,0" VerticalAlignment="Center" Height="22"
+                  IsEnabled="{Binding Path=ControlsEnabled}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
     </Grid>
 </UserControl>
