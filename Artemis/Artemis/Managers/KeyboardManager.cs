@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.DeviceProviders;
 using Artemis.Events;
-using Artemis.KeyboardProviders;
 using Artemis.Services;
 using Artemis.Settings;
 using Caliburn.Micro;

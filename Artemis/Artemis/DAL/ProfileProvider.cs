@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-using Artemis.KeyboardProviders;
+using Artemis.DeviceProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 
