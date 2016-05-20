@@ -2,9 +2,11 @@
 using System.Drawing;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 using Ninject.Extensions.Logging;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -47,8 +49,18 @@ namespace Artemis.Modules.Games.CounterStrike
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel, false, true);
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Headset,  false, true);
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)

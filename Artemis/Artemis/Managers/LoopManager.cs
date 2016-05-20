@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Timers;
 using Artemis.Events;
 using Caliburn.Micro;
@@ -14,17 +15,17 @@ namespace Artemis.Managers
     {
         private readonly EffectManager _effectManager;
         private readonly IEventAggregator _events;
-        private readonly KeyboardManager _keyboardManager;
+        private readonly DeviceManager _deviceManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
 
         public LoopManager(ILogger logger, IEventAggregator events, EffectManager effectManager,
-            KeyboardManager keyboardManager)
+            DeviceManager deviceManager)
         {
             _logger = logger;
             _events = events;
             _effectManager = effectManager;
-            _keyboardManager = keyboardManager;
+            _deviceManager = deviceManager;
 
             _loopTimer = new Timer(40);
             _loopTimer.Elapsed += Render;
@@ -49,10 +50,10 @@ namespace Artemis.Managers
 
             _logger.Debug("Starting LoopManager");
 
-            if (_keyboardManager.ActiveKeyboard == null)
-                _keyboardManager.EnableLastKeyboard();
+            if (_deviceManager.ActiveKeyboard == null)
+                _deviceManager.EnableLastKeyboard();
             // If still null, no last keyboard, so stop.
-            if (_keyboardManager.ActiveKeyboard == null)
+            if (_deviceManager.ActiveKeyboard == null)
             {
                 _logger.Debug("Cancel LoopManager start, no keyboard");
                 return;
@@ -80,7 +81,7 @@ namespace Artemis.Managers
             _logger.Debug("Stopping LoopManager");
             Running = false;
 
-            _keyboardManager.ReleaseActiveKeyboard();
+            _deviceManager.ReleaseActiveKeyboard();
         }
 
         private void Render(object sender, ElapsedEventArgs e)
@@ -97,18 +98,18 @@ namespace Artemis.Managers
             }
             var renderEffect = _effectManager.ActiveEffect;
 
-            if (_keyboardManager.ChangingKeyboard)
+            if (_deviceManager.ChangingKeyboard)
                 return;
 
             // Stop if no active keyboard
-            if (_keyboardManager.ActiveKeyboard == null)
+            if (_deviceManager.ActiveKeyboard == null)
             {
                 _logger.Debug("No active keyboard, stopping");
                 Stop();
                 return;
             }
 
-            lock (_keyboardManager.ActiveKeyboard)
+            lock (_deviceManager.ActiveKeyboard)
             {
                 // Skip frame if effect is still initializing
                 if (renderEffect.Initialized == false)
@@ -146,7 +147,12 @@ namespace Artemis.Managers
                 bitmap = fixedBmp;
 
                 // If it exists, send bitmap to the device
-                _keyboardManager.ActiveKeyboard?.DrawBitmap(bitmap);
+                _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
+
+                foreach (var mouse in _deviceManager.MiceProviders.Where(m => m.CanUse))
+                    mouse.UpdateDevice(renderEffect.GenerateMouseBrush());
+                foreach (var headset in _deviceManager.HeadsetProviders.Where(h => h.CanUse))
+                    headset.UpdateDevice(renderEffect.GenerateHeadsetBrush());
 
                 // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
                 _events.PublishOnUIThread(new ChangeBitmap(bitmap));

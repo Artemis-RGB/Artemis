@@ -3,10 +3,12 @@ using System.Drawing;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -72,8 +74,18 @@ namespace Artemis.Modules.Games.RocketLeague
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel, false, true);
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 }

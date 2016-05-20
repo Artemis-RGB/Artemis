@@ -47,7 +47,7 @@ namespace Artemis.ViewModels
 
             Profiles = new BindableCollection<ProfileModel>();
             Layers = new BindableCollection<LayerModel>();
-            ActiveKeyboard = _mainManager.KeyboardManager.ActiveKeyboard;
+            ActiveKeyboard = _mainManager.DeviceManager.ActiveKeyboard;
 
             events.Subscribe(this);
 
@@ -153,7 +153,7 @@ namespace Artemis.ViewModels
         /// <param name="message"></param>
         public void Handle(ActiveKeyboardChanged message)
         {
-            ActiveKeyboard = _mainManager.KeyboardManager.ActiveKeyboard;
+            ActiveKeyboard = _mainManager.DeviceManager.ActiveKeyboard;
             NotifyOfPropertyChange(() => KeyboardImage);
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
@@ -412,7 +412,7 @@ namespace Artemis.ViewModels
 
         private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
+            Application.Current.Dispatcher.InvokeAsync(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
         }
 
         /// <summary>

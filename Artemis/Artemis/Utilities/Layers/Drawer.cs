@@ -81,6 +81,7 @@ namespace Artemis.Utilities.Layers
                 c.PushClip(new RectangleGeometry(clip));
                 c.DrawRectangle(brush, null, slide1);
                 c.DrawRectangle(brush, null, slide2);
+                c.Pop();
             }
             c.Pop();
         }

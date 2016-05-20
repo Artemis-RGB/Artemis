@@ -49,7 +49,7 @@ namespace Artemis.ViewModels.Flyouts
             get
             {
                 var collection =
-                    new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders.Select(k => k.Name));
+                    new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
                 collection.Insert(0, "None");
                 return collection;
             }
@@ -111,15 +111,15 @@ namespace Artemis.ViewModels.Flyouts
                 return;
 
             _logger.Debug("Handling SelectedKeyboard change in UI");
-            var keyboard = MainManager.KeyboardManager.KeyboardProviders
+            var keyboard = MainManager.DeviceManager.KeyboardProviders
                 .FirstOrDefault(k => k.Name == SelectedKeyboardProvider);
             if (keyboard != null)
             {
-                MainManager.KeyboardManager.EnableKeyboard(keyboard);
+                MainManager.DeviceManager.EnableKeyboard(keyboard);
                 MainManager.LoopManager.Start();
             }
             else
-                MainManager.KeyboardManager.ReleaseActiveKeyboard(true);
+                MainManager.DeviceManager.ReleaseActiveKeyboard(true);
         }
 
         public void ToggleEnabled()

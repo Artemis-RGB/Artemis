@@ -9,11 +9,11 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeBar
     {
-        private readonly KeyboardManager _keyboardManager;
+        private readonly DeviceManager _deviceManager;
 
-        public VolumeBar(KeyboardManager keyboardManager, VolumeDisplaySettings settings)
+        public VolumeBar(DeviceManager deviceManager, VolumeDisplaySettings settings)
         {
-            _keyboardManager = keyboardManager;
+            _deviceManager = deviceManager;
             Settings = settings;
             Transparancy = 255;
             Scale = 4;
@@ -30,14 +30,14 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public void Draw(Graphics g)
         {
-            var volumeRect = new KeyboardRectangle(_keyboardManager.ActiveKeyboard, 0, 0, new List<Color>
+            var volumeRect = new KeyboardRectangle(_deviceManager.ActiveKeyboard, 0, 0, new List<Color>
             {
                 ColorHelpers.ToDrawingColor(Settings.MainColor),
                 ColorHelpers.ToDrawingColor(Settings.SecondaryColor)
             },
                 LinearGradientMode.Horizontal)
             {
-                Width = (int) (_keyboardManager.ActiveKeyboard.Width*Scale/100.00*Volume),
+                Width = (int) (_deviceManager.ActiveKeyboard.Width*Scale/100.00*Volume),
                 ContainedBrush = false
             };
             volumeRect.Draw(g);

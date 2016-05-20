@@ -36,10 +36,15 @@ namespace Artemis.InjectionModules
             // Overlays
             Bind<OverlayViewModel>().To<VolumeDisplayViewModel>().InSingletonScope();
 
-            // Keyboard Providers
-            Bind<KeyboardProvider>().To<CorsairRGB>().InSingletonScope();
-            Bind<KeyboardProvider>().To<Orion>().InSingletonScope();
-            Bind<KeyboardProvider>().To<BlackWidow>().InSingletonScope();
+            // Device Providers
+            // Keyboards
+            Bind<DeviceProvider>().To<CorsairRGB>().InSingletonScope();
+            Bind<DeviceProvider>().To<Orion>().InSingletonScope();
+            Bind<DeviceProvider>().To<BlackWidow>().InSingletonScope();
+            // Mice
+            Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
+            // Headsets
+            Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
         }
     }
 }

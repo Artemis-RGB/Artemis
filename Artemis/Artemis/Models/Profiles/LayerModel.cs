@@ -65,21 +65,59 @@ namespace Artemis.Models.Profiles
                     (KeyboardPropertiesModel) appliedProperties);
             }
 
-            // Folders are drawn recursively
-            if (LayerType == LayerType.Folder)
+            switch (LayerType)
             {
-                foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-                    layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
+                // Folders are drawn recursively
+                case LayerType.Folder:
+                    foreach (var layerModel in Children.OrderByDescending(l => l.Order))
+                        layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
+                    break;
+                case LayerType.Keyboard:
+                    Drawer.Draw(c, (KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties);
+                    break;
+                case LayerType.KeyboardGif:
+                    GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
+                    break;
             }
-            // All other types are handles by the Drawer helper
-            else if (LayerType == LayerType.Keyboard)
-                Drawer.Draw(c, (KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties);
-            else if (LayerType == LayerType.KeyboardGif)
-                GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
-            else if (LayerType == LayerType.Mouse)
-                Drawer.UpdateMouse(appliedProperties);
-            else if (LayerType == LayerType.Headset)
-                Drawer.UpdateHeadset(appliedProperties);
+        }
+
+        public Brush GenerateBrush<T>(LayerType type, IGameDataModel dataModel, bool preview, bool updateAnimations)
+        {
+            if (!Enabled)
+                return null;
+            if (LayerType != LayerType.Folder && LayerType != type)
+                return null;
+
+            // Preview simply shows the properties as they are. When not previewing they are applied
+            LayerPropertiesModel appliedProperties;
+            if (!preview)
+            {
+                if (!ConditionsMet<T>(dataModel))
+                    return null; // Don't return the brush when not previewing and the conditions arent met
+                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => Properties.GetAppliedProperties(dataModel));
+            }
+            else
+                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => GeneralHelpers.Clone(Properties));
+
+            // TODO: Animations
+            // Update animations on layer types that support them
+            //if (LayerType != LayerType.Folder && updateAnimations)
+            //{
+            //    AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel)Properties,
+            //        (KeyboardPropertiesModel)appliedProperties);
+            //}
+
+            if (LayerType != LayerType.Folder)
+                return appliedProperties.Brush;
+
+            Brush res = null;
+            foreach (var layerModel in Children.OrderByDescending(l => l.Order))
+            {
+                var brush = layerModel.GenerateBrush<T>(type, dataModel, preview, updateAnimations);
+                if (brush != null)
+                    res = brush;
+            }
+            return res;
         }
 
         public void SetupProperties()
@@ -99,9 +137,15 @@ namespace Artemis.Models.Profiles
                 };
             }
             else if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
-                Properties = new MousePropertiesModel();
-            else if (!(Properties is GenericPropertiesModel))
-                Properties = new GenericPropertiesModel();
+                Properties = new MousePropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
+                };
+            else if (LayerType == LayerType.Headset && !(Properties is HeadsetPropertiesModel))
+                Properties = new HeadsetPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
+                };
         }
 
         public void Reorder(LayerModel selectedLayer, bool moveUp)
@@ -131,7 +175,7 @@ namespace Artemis.Models.Profiles
         }
 
         /// <summary>
-        /// Returns whether the layer meets the requirements to be drawn
+        ///     Returns whether the layer meets the requirements to be drawn
         /// </summary>
         /// <returns></returns>
         public bool MustDraw()

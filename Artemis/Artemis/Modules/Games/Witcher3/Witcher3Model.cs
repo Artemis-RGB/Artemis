@@ -7,7 +7,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.Keyboard;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.Witcher3
 {
@@ -45,7 +47,7 @@ namespace Artemis.Modules.Games.Witcher3
         {
             Initialized = false;
 
-            _signRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
+            _signRect = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
                 Rotate = true,
@@ -109,8 +111,18 @@ namespace Artemis.Modules.Games.Witcher3
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<TheWitcherDataModel>(keyboardRect, GameDataModel, false, true);
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<TheWitcherDataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<TheWitcherDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 }

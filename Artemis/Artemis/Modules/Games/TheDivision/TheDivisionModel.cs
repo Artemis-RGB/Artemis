@@ -3,10 +3,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using Artemis.Utilities.LogitechDll;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.TheDivision
 {
@@ -46,7 +48,7 @@ namespace Artemis.Modules.Games.TheDivision
             Initialized = false;
 
             _ammoWave = new Wave(new Point(30, 14), 0, Color.Transparent);
-            _hpRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 3*Scale, 0*Scale,
+            _hpRect = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 3*Scale, 0*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -56,7 +58,7 @@ namespace Artemis.Modules.Games.TheDivision
                 ContainedBrush = false
             };
 
-            _p2 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 1*Scale,
+            _p2 = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0*Scale, 1*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -65,7 +67,7 @@ namespace Artemis.Modules.Games.TheDivision
                 Rotate = true,
                 ContainedBrush = false
             };
-            _p3 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 3*Scale,
+            _p3 = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0*Scale, 3*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -74,7 +76,7 @@ namespace Artemis.Modules.Games.TheDivision
                 Rotate = true,
                 ContainedBrush = false
             };
-            _p4 = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0*Scale, 5*Scale,
+            _p4 = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0*Scale, 5*Scale,
                 new List<Color>(),
                 LinearGradientMode.Horizontal)
             {
@@ -204,7 +206,7 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
@@ -238,6 +240,16 @@ namespace Artemis.Modules.Games.TheDivision
                 }
             }
             return bitmap;
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 }

@@ -85,8 +85,7 @@
                                     <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
-                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}"
-                                      cal:Message.Attach="ToggleEnabled($datacontext)" />
+                            <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}" />
                             <Image Height="18" Width="18" Source="{Binding LayerImage}" />
                             <TextBlock Margin="5,0,0,0" Text="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>

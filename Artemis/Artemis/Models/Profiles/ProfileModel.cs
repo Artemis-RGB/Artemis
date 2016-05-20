@@ -7,6 +7,7 @@ using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 
 namespace Artemis.Models.Profiles
@@ -113,7 +114,7 @@ namespace Artemis.Models.Profiles
         public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview, bool updateAnimations)
         {
             Bitmap bitmap = null;
-            DrawingVisual.Dispatcher.Invoke(delegate
+            DrawingVisual.Dispatcher.Invoke(() =>
             {
                 var visual = new DrawingVisual();
                 using (var c = visual.RenderOpen())
@@ -133,6 +134,20 @@ namespace Artemis.Models.Profiles
                 bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
             });
             return bitmap;
+        }
+
+        public Brush GenerateBrush<T>(IGameDataModel gameDataModel, LayerType type, bool preview, bool updateAnimations)
+        {
+            Brush result = null;
+            // Draw the layers
+            foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
+            {
+                var generated = layerModel.GenerateBrush<T>(type, gameDataModel, preview, updateAnimations);
+                if (generated != null)
+                    result = generated;
+            }
+
+            return result;
         }
     }
 }

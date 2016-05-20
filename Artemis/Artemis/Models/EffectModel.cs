@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Artemis.Managers;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Models
 {
@@ -27,5 +28,8 @@ namespace Artemis.Models
 
         // Called after every update
         public abstract Bitmap GenerateBitmap();
+
+        public abstract Brush GenerateMouseBrush();
+        public abstract Brush GenerateHeadsetBrush();
     }
 }

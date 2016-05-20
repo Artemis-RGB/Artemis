@@ -22,8 +22,6 @@ namespace Artemis.DeviceProviders
 
         public abstract bool CanEnable();
         public abstract void Enable();
-        // TODO: This should be done in a background thread with a callback mechanism as it causes UI lag
-        public abstract void Disable();
         public abstract void DrawBitmap(Bitmap bitmap);
 
         /// <summary>
@@ -43,6 +41,11 @@ namespace Artemis.DeviceProviders
         public override void UpdateDevice(Brush brush)
         {
             throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
+        }
+
+        public override bool TryEnable()
+        {
+            throw new NotImplementedException("KeyboardProvider doesn't implement TryEnable, use CanEnable instead.");
         }
     }
 

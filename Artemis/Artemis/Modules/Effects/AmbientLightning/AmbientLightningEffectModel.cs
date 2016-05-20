@@ -9,6 +9,7 @@ using Artemis.Models;
 using Artemis.Utilities.Keyboard;
 using Kaliko.ImageLibrary;
 using Kaliko.ImageLibrary.Filters;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.AmbientLightning
 {
@@ -49,9 +50,9 @@ namespace Artemis.Modules.Effects.AmbientLightning
 
             _colors = new List<Color>();
             _screenCapturer = new ScreenCapture();
-            _topRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
-                LinearGradientMode.Horizontal) {Height = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale/2};
-            _botRect = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>(),
+            _topRect = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0, 0, new List<Color>(),
+                LinearGradientMode.Horizontal) {Height = MainManager.DeviceManager.ActiveKeyboard.Height*Scale/2};
+            _botRect = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0, 0, new List<Color>(),
                 LinearGradientMode.Horizontal);
 
             Initialized = true;
@@ -102,8 +103,8 @@ namespace Artemis.Modules.Effects.AmbientLightning
             }
 
             // Put the resulting colors in 6 rectangles, their size differs per keyboard
-            var rectWidth = MainManager.KeyboardManager.ActiveKeyboard.Width/3*Scale;
-            var rectHeight = MainManager.KeyboardManager.ActiveKeyboard.Height/2*Scale;
+            var rectWidth = MainManager.DeviceManager.ActiveKeyboard.Width/3*Scale;
+            var rectHeight = MainManager.DeviceManager.ActiveKeyboard.Height/2*Scale;
             for (var row = 0; row < 2; row++)
             {
                 for (var column = 0; column < 3; column++)
@@ -116,7 +117,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
 
         public override Bitmap GenerateBitmap()
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 var i = 0;
@@ -133,6 +134,16 @@ namespace Artemis.Modules.Effects.AmbientLightning
             test.SaveBmp(ms);
             ms.Position = 0;
             return new Bitmap(ms);
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return null;
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return null;
         }
     }
 }

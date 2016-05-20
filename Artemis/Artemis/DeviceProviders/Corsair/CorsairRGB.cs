@@ -61,45 +61,39 @@ namespace Artemis.DeviceProviders.Corsair
         /// </summary>
         public override void Enable()
         {
-            try
-            {
-                if (CueSDK.ProtocolDetails == null)
-                    CueSDK.Initialize(true);
-            }
-            catch (WrapperException)
-            {
-                /*CUE is already initialized*/
-            }
+            if (CueSDK.ProtocolDetails == null)
+                CueSDK.Initialize(true);
+
             _keyboard = CueSDK.KeyboardSDK;
-            if (_keyboard.DeviceInfo.Model == "K95 RGB")
+            switch (_keyboard.DeviceInfo.Model)
             {
-                Height = 7;
-                Width = 25;
-                PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k95);
-            }
-            else if (_keyboard.DeviceInfo.Model == "K70 RGB")
-            {
-                Height = 7;
-                Width = 21;
-                PreviewSettings = new PreviewSettings(626, 195, new Thickness(0, -25, 0, 0), Resources.k70);
-            }
-            else if (_keyboard.DeviceInfo.Model == "K65 RGB")
-            {
-                Height = 7;
-                Width = 18;
-                PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
-            }
-            else if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
-            {
-                Height = 6;
-                Width = 22;
-                PreviewSettings = new PreviewSettings(620, 215, new Thickness(0, -15, 0, 0), Resources.strafe);
+                case "K95 RGB":
+                    Height = 7;
+                    Width = 25;
+                    PreviewSettings = new PreviewSettings(626, 175, new Thickness(0, -15, 0, 0), Resources.k95);
+                    break;
+                case "K70 RGB":
+                    Height = 7;
+                    Width = 21;
+                    PreviewSettings = new PreviewSettings(626, 195, new Thickness(0, -25, 0, 0), Resources.k70);
+                    break;
+                case "K65 RGB":
+                    Height = 7;
+                    Width = 18;
+                    PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
+                    break;
+                case "STRAFE RGB":
+                    Height = 6;
+                    Width = 22;
+                    PreviewSettings = new PreviewSettings(620, 215, new Thickness(0, -15, 0, 0), Resources.strafe);
+                    break;
             }
         }
 
         public override void Disable()
         {
-            CueSDK.Reinitialize();
+            if (CueSDK.ProtocolDetails != null)
+                CueSDK.Reinitialize();
         }
 
         /// <summary>
