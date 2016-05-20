@@ -25,7 +25,6 @@ namespace Artemis.ViewModels.LayerEditor
             _gameDataModel = gameDataModel;
 
             Layer = layer;
-
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
@@ -108,7 +107,7 @@ namespace Artemis.ViewModels.LayerEditor
         public void PreSelect()
         {
             LayerType = Layer.LayerType;
-            GeneralHelpers.CopyProperties(ProposedProperties, Layer.Properties);
+            ProposedProperties = GeneralHelpers.Clone(Layer.Properties);
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
@@ -138,7 +137,9 @@ namespace Artemis.ViewModels.LayerEditor
                 };
             }
             else if (LayerType == LayerType.Mouse && !(LayerPropertiesViewModel is MousePropertiesViewModel))
-                LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel);
+                LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel, Layer.Properties);
+            else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
+                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_gameDataModel, Layer.Properties);
 
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }
@@ -146,13 +147,15 @@ namespace Artemis.ViewModels.LayerEditor
         public void AddCondition()
         {
             var condition = new LayerConditionModel();
-            Layer.Properties.Conditions.Add(condition);
             LayerConditionVms.Add(new LayerConditionViewModel(this, condition, DataModelProps));
         }
 
         public void Apply()
         {
             Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
+            Layer.Properties.Conditions.Clear();
+            foreach (var conditionViewModel in LayerConditionVms)
+                Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
             if (Layer.LayerType != LayerType.KeyboardGif)
                 return; // Don't bother checking for a GIF path unless the type is GIF

@@ -9,11 +9,11 @@ using CUE.NET.Exceptions;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairMice : DeviceProvider
+    internal class CorsairHeadsets : DeviceProvider
     {
-        public CorsairMice()
+        public CorsairHeadsets()
         {
-            Type = DeviceType.Mouse;
+            Type = DeviceType.Headset;
         }
 
         public override bool TryEnable()
@@ -33,8 +33,8 @@ namespace Artemis.DeviceProviders.Corsair
             if (!CanUse || brush == null)
                 return;
 
-            var leds = CueSDK.MouseSDK.Leds.Count();
-            var rect = new Rect(new Size(leds*5, leds*5));
+            var leds = CueSDK.HeadsetSDK.Leds.Count();
+            var rect = new Rect(new Size(leds * 5, leds * 5));
             var img = brush.Dispatcher.Invoke(() =>
             {
                 var visual = new DrawingVisual();
@@ -45,12 +45,12 @@ namespace Artemis.DeviceProviders.Corsair
 
             var ledIndex = 0;
             // Color each LED according to one of the pixels
-            foreach (var corsairLed in CueSDK.MouseSDK.Leds)
+            foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
             {
-                corsairLed.Color = img.GetPixel(ledIndex*5, ledIndex*5);
+                corsairLed.Color = img.GetPixel(ledIndex * 5, ledIndex * 5);
                 ledIndex++;
             }
-            CueSDK.MouseSDK.Update(true);
+            CueSDK.HeadsetSDK.Update(true);
         }
 
         private static bool CanInitializeSdk()

@@ -16,17 +16,17 @@ namespace Artemis.Managers
     public class EffectManager
     {
         private readonly IEventAggregator _events;
-        private readonly KeyboardManager _keyboardManager;
+        private readonly DeviceManager _deviceManager;
         private readonly ILogger _logger;
         private EffectModel _activeEffect;
 
-        public EffectManager(ILogger logger, IEventAggregator events, KeyboardManager keyboardManager)
+        public EffectManager(ILogger logger, IEventAggregator events, DeviceManager deviceManager)
         {
             _logger = logger;
             _logger.Info("Intializing EffectManager");
 
             _events = events;
-            _keyboardManager = keyboardManager;
+            _deviceManager = deviceManager;
 
             EffectModels = new List<EffectModel>();
 
@@ -90,10 +90,10 @@ namespace Artemis.Managers
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
 
-            if (_keyboardManager.ActiveKeyboard == null)
-                _keyboardManager.EnableLastKeyboard();
+            if (_deviceManager.ActiveKeyboard == null)
+                _deviceManager.EnableLastKeyboard();
             // If still null, no last keyboard, so stop.
-            if (_keyboardManager.ActiveKeyboard == null)
+            if (_deviceManager.ActiveKeyboard == null)
             {
                 _logger.Debug("Cancelling effect change, no LastKeyboard");
                 return;

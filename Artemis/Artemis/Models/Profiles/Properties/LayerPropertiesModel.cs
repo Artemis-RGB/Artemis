@@ -11,6 +11,8 @@ namespace Artemis.Models.Profiles.Properties
     [XmlInclude(typeof(MatrixTransform))]
     [XmlInclude(typeof(KeyboardPropertiesModel))]
     [XmlInclude(typeof(MousePropertiesModel))]
+    [XmlInclude(typeof(HeadsetPropertiesModel))]
+    [XmlInclude(typeof(GenericPropertiesModel))]
     public abstract class LayerPropertiesModel
     {
         protected LayerPropertiesModel()

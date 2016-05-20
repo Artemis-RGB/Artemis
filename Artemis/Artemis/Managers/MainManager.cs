@@ -27,11 +27,11 @@ namespace Artemis.Managers
         private readonly Timer _processTimer;
 
         public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
-            KeyboardManager keyboardManager, EffectManager effectManager, ProfileManager profileManager)
+            DeviceManager deviceManager, EffectManager effectManager, ProfileManager profileManager)
         {
             _logger = logger;
             LoopManager = loopManager;
-            KeyboardManager = keyboardManager;
+            DeviceManager = deviceManager;
             EffectManager = effectManager;
             ProfileManager = profileManager;
 
@@ -63,7 +63,7 @@ namespace Artemis.Managers
         public Lazy<ShellViewModel> ShellViewModel { get; set; }
 
         public LoopManager LoopManager { get; }
-        public KeyboardManager KeyboardManager { get; set; }
+        public DeviceManager DeviceManager { get; set; }
         public EffectManager EffectManager { get; set; }
         public ProfileManager ProfileManager { get; set; }
 

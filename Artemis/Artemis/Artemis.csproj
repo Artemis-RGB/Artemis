@@ -279,6 +279,7 @@
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsiarHeadsets.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
@@ -296,7 +297,7 @@
     <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
     <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
     <Compile Include="Managers\EffectManager.cs" />
-    <Compile Include="Managers\KeyboardManager.cs" />
+    <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
@@ -309,6 +310,7 @@
     <Compile Include="Models\Profiles\LayerModel.cs" />
     <Compile Include="Models\Profiles\ProfileModel.cs" />
     <Compile Include="Models\Profiles\Properties\DynamicPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\HeadsetPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\KeyboardPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\LayerPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\GenericPropertiesModel.cs" />
@@ -461,6 +463,7 @@
     <Compile Include="ViewModels\LayerEditor\LayerDynamicPropertiesViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerEditorViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\HeadsetPropertiesViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
@@ -497,6 +500,9 @@
     </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\HeadsetPropertiesView.xaml.cs">
+      <DependentUpon>HeadsetPropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LayerEditor\KeyboardPropertiesView.xaml.cs">
       <DependentUpon>KeyboardPropertiesView.xaml</DependentUpon>
@@ -677,6 +683,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Games\Witcher3\Witcher3View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\HeadsetPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

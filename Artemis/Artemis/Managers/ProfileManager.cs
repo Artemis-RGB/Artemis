@@ -11,16 +11,16 @@ namespace Artemis.Managers
     public class ProfileManager
     {
         private readonly EffectManager _effectManager;
-        private readonly KeyboardManager _keyboardManager;
+        private readonly DeviceManager _deviceManager;
         private readonly LoopManager _loopManager;
         private readonly ILogger _logger;
         private EffectModel _prePreviewEffect;
 
-        public ProfileManager(ILogger logger, EffectManager effectManager, KeyboardManager keyboardManager, LoopManager loopManager)
+        public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager, LoopManager loopManager)
         {
             _logger = logger;
             _effectManager = effectManager;
-            _keyboardManager = keyboardManager;
+            _deviceManager = deviceManager;
             _loopManager = loopManager;
 
             GameViewModels = new List<GameViewModel>();
@@ -41,7 +41,7 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (_keyboardManager.ChangingKeyboard || ProfilePreviewModel == null)
+            if (_deviceManager.ChangingKeyboard || ProfilePreviewModel == null)
                 return;
 
             var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);

@@ -9,8 +9,6 @@
                       mc:Ignorable="d"
                       Title="Artemis | Edit Layer" Height="750" Width="630"
                       xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
-                      xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
-                      xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../../Resources/bow.png"
                       ResizeMode="NoResize">
     <controls:MetroWindow.Resources>

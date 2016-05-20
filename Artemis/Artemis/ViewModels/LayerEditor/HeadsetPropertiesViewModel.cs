@@ -4,11 +4,11 @@ using Artemis.Utilities;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class MousePropertiesViewModel : LayerPropertiesViewModel
+    public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
     {
         private LayerPropertiesModel _proposedProperties;
 
-        public MousePropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
+        public HeadsetPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
             : base(gameDataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);

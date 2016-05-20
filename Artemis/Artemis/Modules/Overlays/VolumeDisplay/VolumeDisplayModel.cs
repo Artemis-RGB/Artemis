@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
 using NAudio.CoreAudioApi;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
@@ -15,7 +16,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             Name = "VolumeDisplay";
             Enabled = Settings.Enabled;
 
-            VolumeDisplay = new VolumeBar(MainManager.KeyboardManager, settings);
+            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, settings);
         }
 
         public VolumeBar VolumeDisplay { get; set; }
@@ -63,7 +64,19 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override Bitmap GenerateBitmap()
         {
-            return GenerateBitmap(MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(4));
+            return GenerateBitmap(MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4));
+        }
+
+        // TODO: Color according to volume
+        public override Brush GenerateMouseBrush()
+        {
+            return null;
+        }
+
+        // TODO: Color according to volume
+        public override Brush GenerateHeadsetBrush()
+        {
+            return null;
         }
 
         public override Bitmap GenerateBitmap(Bitmap bitmap)

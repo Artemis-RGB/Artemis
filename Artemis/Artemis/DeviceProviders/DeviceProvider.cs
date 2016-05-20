@@ -19,6 +19,16 @@ namespace Artemis.DeviceProviders
         /// </summary>
         /// <param name="brush"></param>
         public abstract void UpdateDevice(Brush brush);
+
+        /// <summary>
+        ///     Tries to enable the device and updates CanUse accordingly
+        /// </summary>
+        public abstract bool TryEnable();
+
+        /// <summary>
+        ///     Disables the device
+        /// </summary>
+        public abstract void Disable();
     }
 
     public enum DeviceType

@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.Dota2
 {
@@ -61,10 +63,19 @@ namespace Artemis.Modules.Games.Dota2
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
             return Profile.GenerateBitmap<Dota2DataModel>(keyboardRect, GameDataModel, false, true);
         }
 
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<Dota2DataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<Dota2DataModel>(GameDataModel, LayerType.Headset, false, true);
+        }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
         {
