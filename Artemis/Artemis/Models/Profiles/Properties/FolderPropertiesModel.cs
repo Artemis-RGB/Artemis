@@ -3,7 +3,7 @@ using Artemis.Utilities;
 
 namespace Artemis.Models.Profiles.Properties
 {
-    public class GenericPropertiesModel : LayerPropertiesModel
+    public class FolderPropertiesModel : LayerPropertiesModel
     {
         public override LayerPropertiesModel GetAppliedProperties(IGameDataModel dataModel)
         {

@@ -1,11 +1,10 @@
 ﻿using System.Windows.Forms;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
-namespace Artemis.ViewModels.LayerEditor
+namespace Artemis.ViewModels.LayerEditor.Properties
 {
     public class KeyboardPropertiesViewModel : LayerPropertiesViewModel
     {

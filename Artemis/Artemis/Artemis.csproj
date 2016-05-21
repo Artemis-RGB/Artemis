@@ -313,7 +313,7 @@
     <Compile Include="Models\Profiles\Properties\HeadsetPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\KeyboardPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\LayerPropertiesModel.cs" />
-    <Compile Include="Models\Profiles\Properties\GenericPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\FolderPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\MousePropertiesModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
@@ -458,13 +458,14 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\KeyboardPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\Properties\KeyboardPropertiesViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerDynamicPropertiesViewModel.cs" />
     <Compile Include="ViewModels\LayerEditor\LayerEditorViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\LayerPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\HeadsetPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\MousePropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\Properties\LayerPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\Properties\HeadsetPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\Properties\FolderPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditor\Properties\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
@@ -501,10 +502,13 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\HeadsetPropertiesView.xaml.cs">
+    <Compile Include="Views\LayerEditor\Properties\FolderPropertiesView.xaml.cs">
+      <DependentUpon>FolderPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LayerEditor\Properties\HeadsetPropertiesView.xaml.cs">
       <DependentUpon>HeadsetPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\KeyboardPropertiesView.xaml.cs">
+    <Compile Include="Views\LayerEditor\Properties\KeyboardPropertiesView.xaml.cs">
       <DependentUpon>KeyboardPropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
@@ -516,7 +520,7 @@
     <Compile Include="Views\LayerEditor\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\MousePropertiesView.xaml.cs">
+    <Compile Include="Views\LayerEditor\Properties\MousePropertiesView.xaml.cs">
       <DependentUpon>MousePropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
@@ -686,11 +690,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditor\HeadsetPropertiesView.xaml">
+    <Page Include="Views\LayerEditor\Properties\FolderPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditor\KeyboardPropertiesView.xaml">
+    <Page Include="Views\LayerEditor\Properties\HeadsetPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LayerEditor\Properties\KeyboardPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -706,7 +714,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\LayerEditor\MousePropertiesView.xaml">
+    <Page Include="Views\LayerEditor\Properties\MousePropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

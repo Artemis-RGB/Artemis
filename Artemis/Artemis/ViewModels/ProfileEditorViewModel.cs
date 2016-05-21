@@ -119,7 +119,7 @@ namespace Artemis.ViewModels
 
                 Layers.Clear();
                 if (_selectedProfile != null)
-                    Layers.AddRange(_selectedProfile.Layers);
+                    Layers.AddRange(SelectedProfile.Layers);
 
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => CanAddLayer);
@@ -142,8 +142,8 @@ namespace Artemis.ViewModels
 
         public PreviewSettings? PreviewSettings => ActiveKeyboard?.PreviewSettings;
 
-        public bool CanAddLayer => _selectedProfile != null;
-        public bool CanRemoveLayer => _selectedProfile != null && _selectedLayer != null;
+        public bool CanAddLayer => SelectedProfile != null;
+        public bool CanRemoveLayer => SelectedProfile != null && _selectedLayer != null;
 
         private KeyboardProvider ActiveKeyboard { get; set; }
 
@@ -312,7 +312,10 @@ namespace Artemis.ViewModels
             else
                 SelectedLayer.Profile.Reorder(SelectedLayer, true);
 
-            NotifyOfPropertyChange(() => Layers);
+            // Update the UI
+            Layers.Clear();
+            if (SelectedProfile != null)
+                Layers.AddRange(SelectedProfile.Layers);
             SelectedLayer = reorderLayer;
         }
 
@@ -331,7 +334,10 @@ namespace Artemis.ViewModels
             else
                 SelectedLayer.Profile.Reorder(SelectedLayer, false);
 
-            NotifyOfPropertyChange(() => Layers);
+            // Update the UI
+            Layers.Clear();
+            if (SelectedProfile != null)
+                Layers.AddRange(SelectedProfile.Layers);
             SelectedLayer = reorderLayer;
         }
 
@@ -363,7 +369,7 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
-            var hoverLayer = SelectedProfile.Layers
+            var hoverLayer = SelectedProfile.GetAllLayers()
                 .OrderBy(l => l.Order)
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
@@ -385,7 +391,7 @@ namespace Artemis.ViewModels
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
-            var hoverLayer = SelectedProfile.Layers.OrderBy(l => l.Order).Where(l => l.MustDraw())
+            var hoverLayer = SelectedProfile.GetAllLayers().OrderBy(l => l.Order).Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
@@ -435,7 +441,13 @@ namespace Artemis.ViewModels
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                foreach (var layer in _selectedProfile.Layers.OrderByDescending(l => l.Order).Where(l => l.MustDraw()))
+                var drawLayers = SelectedProfile.GetAllLayers()
+                    .OrderByDescending(l => l.Order)
+                    .Where(l => l.Enabled &&
+                                (l.LayerType == LayerType.Keyboard ||
+                                 l.LayerType == LayerType.KeyboardGif ||
+                                 l.LayerType == LayerType.Folder));
+                foreach (var layer in drawLayers)
                     layer.Draw<object>(null, drawingContext, true, false);
 
                 // Get the selection color

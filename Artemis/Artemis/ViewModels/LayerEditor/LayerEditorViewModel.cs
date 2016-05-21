@@ -6,6 +6,7 @@ using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Services;
 using Artemis.Utilities;
+using Artemis.ViewModels.LayerEditor.Properties;
 using Caliburn.Micro;
 using Ninject;
 
@@ -127,6 +128,13 @@ namespace Artemis.ViewModels.LayerEditor
             if (model != null)
                 model.IsGif = LayerType == LayerType.KeyboardGif;
 
+            // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
+            if (LayerType != LayerType.Folder && LayerPropertiesViewModel is FolderPropertiesViewModel)
+            {
+                foreach (var child in Layer.Children)
+                    child.Parent = Layer.Parent;
+            }
+
             // Apply the proper PropertiesViewModel
             if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
                 !(LayerPropertiesViewModel is KeyboardPropertiesViewModel))
@@ -140,6 +148,8 @@ namespace Artemis.ViewModels.LayerEditor
                 LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel, Layer.Properties);
             else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
                 LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_gameDataModel, Layer.Properties);
+            else if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, Layer.Properties);
 
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }

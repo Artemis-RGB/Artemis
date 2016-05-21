@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
@@ -20,6 +21,7 @@ namespace Artemis.Models.Profiles
         public string Name { get; set; }
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
+        public bool Expanded { get; set; }
         public int Order { get; set; }
         public LayerPropertiesModel Properties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
@@ -167,7 +169,7 @@ namespace Artemis.Models.Profiles
             selectedLayer.Order = newOrder;
         }
 
-        private void FixOrder()
+        public void FixOrder()
         {
             Children.Sort(l => l.Order);
             for (var i = 0; i < Children.Count; i++)
@@ -181,6 +183,18 @@ namespace Artemis.Models.Profiles
         public bool MustDraw()
         {
             return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
+        }
+
+        public IEnumerable<LayerModel> GetAllLayers()
+        {
+            var layers = new List<LayerModel>();
+            foreach (var layerModel in Children)
+            {
+                layers.Add(layerModel);
+                layers.AddRange(layerModel.Children);
+            }
+
+            return layers;
         }
 
         #region IChildItem<Parent> Members

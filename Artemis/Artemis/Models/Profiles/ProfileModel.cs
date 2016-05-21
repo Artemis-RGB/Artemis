@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -28,7 +29,7 @@ namespace Artemis.Models.Profiles
 
         [XmlIgnore]
         public DrawingVisual DrawingVisual { get; set; }
-        
+
         protected bool Equals(ProfileModel other)
         {
             return string.Equals(Name, other.Name) &&
@@ -100,6 +101,34 @@ namespace Artemis.Models.Profiles
             if (target == null)
                 return;
 
+            if (target.LayerType == LayerType.Folder)
+            {
+                if (selectedLayer.Parent == null)
+                    selectedLayer.Profile.Layers.Remove(selectedLayer);
+                else
+                    selectedLayer.Parent.Children.Remove(selectedLayer);
+
+                target.Children.Add(selectedLayer);
+                
+                        
+                if (moveUp)
+                {
+                    var parentTarget = target.Children.OrderBy(c => c.Order).LastOrDefault();
+                    if (parentTarget != null)
+                        selectedLayer.Order = parentTarget.Order + 1;
+                    else
+                        selectedLayer.Order = 1;
+                }
+                else
+                {
+                    var parentTarget = target.Children.OrderBy(c => c.Order).LastOrDefault();
+                    if (parentTarget != null)
+                        selectedLayer.Order = parentTarget.Order - 1;
+                    else
+                        selectedLayer.Order = 1;
+                }
+                target.FixOrder();
+            }
             target.Order = selectedLayer.Order;
             selectedLayer.Order = newOrder;
         }
@@ -111,7 +140,8 @@ namespace Artemis.Models.Profiles
                 Layers[i].Order = i;
         }
 
-        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview, bool updateAnimations)
+        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview,
+            bool updateAnimations)
         {
             Bitmap bitmap = null;
             DrawingVisual.Dispatcher.Invoke(() =>
@@ -148,6 +178,21 @@ namespace Artemis.Models.Profiles
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Gives all the layers and their children in a flat list
+        /// </summary>
+        public List<LayerModel> GetAllLayers()
+        {
+            var layers = new List<LayerModel>();
+            foreach (var layerModel in Layers)
+            {
+                layers.Add(layerModel);
+                layers.AddRange(layerModel.GetAllLayers());
+            }
+            
+            return layers;
         }
     }
 }
