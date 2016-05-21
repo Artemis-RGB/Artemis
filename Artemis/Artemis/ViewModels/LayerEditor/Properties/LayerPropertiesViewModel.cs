@@ -2,7 +2,7 @@
 using Artemis.Models.Profiles.Properties;
 using Caliburn.Micro;
 
-namespace Artemis.ViewModels.LayerEditor
+namespace Artemis.ViewModels.LayerEditor.Properties
 {
     public abstract class LayerPropertiesViewModel : PropertyChangedBase
     {

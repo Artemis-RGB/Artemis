@@ -2,7 +2,7 @@
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 
-namespace Artemis.ViewModels.LayerEditor
+namespace Artemis.ViewModels.LayerEditor.Properties
 {
     public class MousePropertiesViewModel : LayerPropertiesViewModel
     {

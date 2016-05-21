@@ -12,7 +12,7 @@ namespace Artemis.Models.Profiles.Properties
     [XmlInclude(typeof(KeyboardPropertiesModel))]
     [XmlInclude(typeof(MousePropertiesModel))]
     [XmlInclude(typeof(HeadsetPropertiesModel))]
-    [XmlInclude(typeof(GenericPropertiesModel))]
+    [XmlInclude(typeof(FolderPropertiesModel))]
     public abstract class LayerPropertiesModel
     {
         protected LayerPropertiesModel()

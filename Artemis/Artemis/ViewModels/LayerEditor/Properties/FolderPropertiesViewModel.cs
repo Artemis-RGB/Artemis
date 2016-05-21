@@ -2,13 +2,13 @@
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 
-namespace Artemis.ViewModels.LayerEditor
+namespace Artemis.ViewModels.LayerEditor.Properties
 {
-    public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
+    public class FolderPropertiesViewModel : LayerPropertiesViewModel
     {
         private LayerPropertiesModel _proposedProperties;
 
-        public HeadsetPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
+        public FolderPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
             : base(gameDataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
