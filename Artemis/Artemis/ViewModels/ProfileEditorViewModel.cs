@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +23,7 @@ using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
 using MahApps.Metro;
 using Ninject;
+using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels
 {
@@ -238,9 +241,27 @@ namespace Artemis.ViewModels
             settings.Title = "Artemis | Edit " + layer.Name;
             manager.ShowDialog(_editorVm, null, settings);
 
-            // Refresh the layer list and reselect the last layer
-            NotifyOfPropertyChange(() => Layers);
-            SelectedLayer = layer;
+            // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
+            if (layer.LayerType != LayerType.Folder && layer.Children.Any())
+            {
+                while (layer.Children.Any())
+                {
+                    var child = layer.Children[0];
+                    layer.Children.Remove(child);
+                    if (layer.Parent != null)
+                    {
+                        layer.Parent.Children.Add(child);
+                        layer.Parent.FixOrder();
+                    }
+                    else
+                    {
+                        layer.Profile.Layers.Add(child);
+                        layer.Profile.FixOrder();
+                    }
+                }
+            }
+
+            UpdateLayerList(layer);
         }
 
         /// <summary>
@@ -302,21 +323,7 @@ namespace Artemis.ViewModels
         /// </summary>
         public void LayerUp()
         {
-            if (SelectedLayer == null)
-                return;
-
-            var reorderLayer = SelectedLayer;
-
-            if (SelectedLayer.Parent != null)
-                SelectedLayer.Parent.Reorder(SelectedLayer, true);
-            else
-                SelectedLayer.Profile.Reorder(SelectedLayer, true);
-
-            // Update the UI
-            Layers.Clear();
-            if (SelectedProfile != null)
-                Layers.AddRange(SelectedProfile.Layers);
-            SelectedLayer = reorderLayer;
+            MoveLayer(true);
         }
 
         /// <summary>
@@ -324,21 +331,41 @@ namespace Artemis.ViewModels
         /// </summary>
         public void LayerDown()
         {
+            MoveLayer(false);
+        }
+
+        /// <summary>
+        ///     Moves the currently selected layer up or down in the profile's layer tree
+        /// </summary>
+        /// <param name="moveUp"></param>
+        private void MoveLayer(bool moveUp)
+        {
             if (SelectedLayer == null)
                 return;
 
             var reorderLayer = SelectedLayer;
 
             if (SelectedLayer.Parent != null)
-                SelectedLayer.Parent.Reorder(SelectedLayer, false);
+                SelectedLayer.Parent.Reorder(SelectedLayer, moveUp);
             else
-                SelectedLayer.Profile.Reorder(SelectedLayer, false);
+                SelectedLayer.Profile.Reorder(SelectedLayer, moveUp);
 
+            UpdateLayerList(reorderLayer);
+        }
+
+        private void UpdateLayerList(LayerModel selectModel)
+        {
             // Update the UI
             Layers.Clear();
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
-            SelectedLayer = reorderLayer;
+
+            // A small delay to allow the profile list to rebuild
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(20);
+                SelectedLayer = selectModel;
+            });
         }
 
         /// <summary>
@@ -369,7 +396,7 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
-            var hoverLayer = SelectedProfile.GetAllLayers()
+            var hoverLayer = SelectedProfile.GetEnabledLayers()
                 .OrderBy(l => l.Order)
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
@@ -391,8 +418,10 @@ namespace Artemis.ViewModels
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
-            var hoverLayer = SelectedProfile.GetAllLayers().OrderBy(l => l.Order).Where(l => l.MustDraw())
-                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties).GetRect(1).Contains(x, y));
+            var hoverLayer = SelectedProfile.GetEnabledLayers()
+                .Where(l => l.MustDraw())
+                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
+                .GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
 
@@ -441,7 +470,7 @@ namespace Artemis.ViewModels
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                var drawLayers = SelectedProfile.GetAllLayers()
+                var drawLayers = SelectedProfile.Layers
                     .OrderByDescending(l => l.Order)
                     .Where(l => l.Enabled &&
                                 (l.LayerType == LayerType.Keyboard ||

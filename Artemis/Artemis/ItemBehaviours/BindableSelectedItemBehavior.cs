@@ -6,6 +6,9 @@ using System.Windows.Interactivity;
 
 namespace Artemis.ItemBehaviours
 {
+    /// <summary>
+    ///     Chaitanya Kadamati - http://stackoverflow.com/a/33233162/5015269
+    /// </summary>
     public class BindableSelectedItemBehavior : Behavior<TreeView>
     {
         protected override void OnAttached()
@@ -18,9 +21,7 @@ namespace Artemis.ItemBehaviours
         {
             base.OnDetaching();
             if (AssociatedObject != null)
-            {
                 AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
-            }
         }
 
         private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -44,10 +45,14 @@ namespace Artemis.ItemBehaviours
         {
             var behavior = sender as BindableSelectedItemBehavior;
             var tree = behavior?.AssociatedObject;
-            if (tree == null) return;
+            if (tree == null)
+                return;
+
             if (e.NewValue == null)
+            {
                 foreach (var item in tree.Items.OfType<TreeViewItem>())
                     item.SetValue(TreeViewItem.IsSelectedProperty, false);
+            }
             var treeViewItem = e.NewValue as TreeViewItem;
             if (treeViewItem != null)
                 treeViewItem.SetValue(TreeViewItem.IsSelectedProperty, true);
@@ -56,7 +61,9 @@ namespace Artemis.ItemBehaviours
                 var itemsHostProperty = tree.GetType()
                     .GetProperty("ItemsHost", BindingFlags.NonPublic | BindingFlags.Instance);
                 var itemsHost = itemsHostProperty?.GetValue(tree, null) as Panel;
-                if (itemsHost == null) return;
+                if (itemsHost == null)
+                    return;
+
                 foreach (var item in itemsHost.Children.OfType<TreeViewItem>())
                 {
                     if (WalkTreeViewItem(item, e.NewValue))

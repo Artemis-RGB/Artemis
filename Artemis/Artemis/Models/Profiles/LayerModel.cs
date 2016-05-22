@@ -155,6 +155,30 @@ namespace Artemis.Models.Profiles
             // Fix the sorting just in case
             FixOrder();
 
+            // Possibly remove selectedLayer from a folder
+            if (selectedLayer.Parent?.LayerType == LayerType.Folder)
+            {
+                var parent = selectedLayer.Parent;
+                var siblings = parent.Children;
+                if ((selectedLayer == siblings.FirstOrDefault() && moveUp) ||
+                    (selectedLayer == siblings.LastOrDefault() && !moveUp))
+                {
+                    // If selectedLayer is on the edge of a folder and moved off of it, remove it from the folder
+                    parent.Children.Remove(selectedLayer);
+                    if (parent.Parent != null)
+                        parent.Parent.Children.Add(selectedLayer);
+                    else
+                        parent.Profile.Layers.Add(selectedLayer);
+
+                    if (moveUp)
+                        selectedLayer.Order = parent.Order - 1;
+                    else
+                        selectedLayer.Order = parent.Order + 1;
+
+                    return;
+                }
+            }
+
             int newOrder;
             if (moveUp)
                 newOrder = selectedLayer.Order - 1;
@@ -165,6 +189,47 @@ namespace Artemis.Models.Profiles
             if (target == null)
                 return;
 
+            ApplyReorder(selectedLayer, target, newOrder, moveUp);
+        }
+
+
+        public static void ApplyReorder(LayerModel selectedLayer, LayerModel target, int newOrder, bool moveUp)
+        {
+            if (target.LayerType == LayerType.Folder)
+            {
+                if (selectedLayer.Parent == null)
+                    selectedLayer.Profile.Layers.Remove(selectedLayer);
+                else
+                    selectedLayer.Parent.Children.Remove(selectedLayer);
+
+                target.Children.Add(selectedLayer);
+                selectedLayer.Parent = target;
+
+                if (moveUp)
+                {
+                    var parentTarget = target.Children.OrderBy(c => c.Order).LastOrDefault();
+                    if (parentTarget != null)
+                    {
+                        parentTarget.Order--;
+                        selectedLayer.Order = parentTarget.Order + 1;
+                    }
+                    else
+                        selectedLayer.Order = 1;
+                }
+                else
+                {
+                    var parentTarget = target.Children.OrderBy(c => c.Order).FirstOrDefault();
+                    if (parentTarget != null)
+                    {
+                        parentTarget.Order++;
+                        selectedLayer.Order = parentTarget.Order - 1;
+                    }
+                    else
+                        selectedLayer.Order = 1;
+                }
+                target.FixOrder();
+                return;
+            }
             target.Order = selectedLayer.Order;
             selectedLayer.Order = newOrder;
         }
@@ -190,6 +255,8 @@ namespace Artemis.Models.Profiles
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children)
             {
+                if (!layerModel.Enabled)
+                    continue;
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.Children);
             }
