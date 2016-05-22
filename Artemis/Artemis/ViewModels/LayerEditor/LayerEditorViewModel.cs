@@ -108,6 +108,10 @@ namespace Artemis.ViewModels.LayerEditor
         public void PreSelect()
         {
             LayerType = Layer.LayerType;
+
+            if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, Layer.Properties);
+
             ProposedProperties = GeneralHelpers.Clone(Layer.Properties);
         }
 
@@ -127,13 +131,6 @@ namespace Artemis.ViewModels.LayerEditor
             var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model != null)
                 model.IsGif = LayerType == LayerType.KeyboardGif;
-
-            // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
-            if (LayerType != LayerType.Folder && LayerPropertiesViewModel is FolderPropertiesViewModel)
-            {
-                foreach (var child in Layer.Children)
-                    child.Parent = Layer.Parent;
-            }
 
             // Apply the proper PropertiesViewModel
             if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
@@ -162,7 +159,8 @@ namespace Artemis.ViewModels.LayerEditor
 
         public void Apply()
         {
-            Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
+            if (LayerPropertiesViewModel != null)
+                Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);

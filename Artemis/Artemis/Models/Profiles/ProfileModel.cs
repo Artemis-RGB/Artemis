@@ -88,7 +88,6 @@ namespace Artemis.Models.Profiles
 
         public void Reorder(LayerModel selectedLayer, bool moveUp)
         {
-            // Fix the sorting just in case
             FixOrder();
 
             int newOrder;
@@ -101,36 +100,7 @@ namespace Artemis.Models.Profiles
             if (target == null)
                 return;
 
-            if (target.LayerType == LayerType.Folder)
-            {
-                if (selectedLayer.Parent == null)
-                    selectedLayer.Profile.Layers.Remove(selectedLayer);
-                else
-                    selectedLayer.Parent.Children.Remove(selectedLayer);
-
-                target.Children.Add(selectedLayer);
-                
-                        
-                if (moveUp)
-                {
-                    var parentTarget = target.Children.OrderBy(c => c.Order).LastOrDefault();
-                    if (parentTarget != null)
-                        selectedLayer.Order = parentTarget.Order + 1;
-                    else
-                        selectedLayer.Order = 1;
-                }
-                else
-                {
-                    var parentTarget = target.Children.OrderBy(c => c.Order).LastOrDefault();
-                    if (parentTarget != null)
-                        selectedLayer.Order = parentTarget.Order - 1;
-                    else
-                        selectedLayer.Order = 1;
-                }
-                target.FixOrder();
-            }
-            target.Order = selectedLayer.Order;
-            selectedLayer.Order = newOrder;
+            LayerModel.ApplyReorder(selectedLayer, target, newOrder, moveUp);
         }
 
         public void FixOrder()
@@ -181,17 +151,19 @@ namespace Artemis.Models.Profiles
         }
 
         /// <summary>
-        /// Gives all the layers and their children in a flat list
+        ///     Gives all the layers and their children in a flat list
         /// </summary>
-        public List<LayerModel> GetAllLayers()
+        public List<LayerModel> GetEnabledLayers()
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers)
             {
+                if (!layerModel.Enabled)
+                    continue;
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetAllLayers());
             }
-            
+
             return layers;
         }
     }
