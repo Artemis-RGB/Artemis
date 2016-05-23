@@ -14,7 +14,7 @@ namespace Artemis.Utilities.Layers
             if (animateProperties.Animation == LayerAnimation.SlideRight ||
                 animateProperties.Animation == LayerAnimation.SlideLeft)
             {
-                if (progress > animateProperties.Width*scale)
+                if (progress + 1 >= animateProperties.Width*scale)
                     progress = 0;
             }
 
@@ -22,7 +22,7 @@ namespace Artemis.Utilities.Layers
             if (animateProperties.Animation == LayerAnimation.SlideDown ||
                 animateProperties.Animation == LayerAnimation.SlideUp)
             {
-                if (progress > animateProperties.Height*scale)
+                if (progress + 1 >= animateProperties.Height*scale)
                     progress = 0;
             }
 

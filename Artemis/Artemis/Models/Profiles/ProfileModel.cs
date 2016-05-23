@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -146,7 +147,7 @@ namespace Artemis.Models.Profiles
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetAllLayers());
             }
-
+            
             return layers;
         }
     }

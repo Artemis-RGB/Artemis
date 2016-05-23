@@ -74,7 +74,12 @@ namespace Artemis.Models.Profiles.Properties
 
         private void ApplyHeight(KeyboardPropertiesModel properties, double percentage)
         {
-            properties.Height = percentage*properties.Height;
+            var newHeight = percentage*properties.Height;
+            var difference = properties.Height - newHeight;
+            properties.Height = newHeight;
+
+            if (LayerPropertyOptions == LayerPropertyOptions.Downwards)
+                properties.Y = properties.Y + difference;
         }
 
         private void ApplyOpacity(KeyboardPropertiesModel properties, double percentage)
