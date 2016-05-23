@@ -154,13 +154,13 @@ namespace Artemis.ViewModels
 
         public void DragOver(IDropInfo dropInfo)
         {
-            var sourceItem = dropInfo.Data as LayerModel;
-            var targetItem = dropInfo.TargetItem as LayerModel;
-            if (sourceItem == null || targetItem == null)
+            var source = dropInfo.Data as LayerModel;
+            var target = dropInfo.TargetItem as LayerModel;
+            if (source == null || target == null || source == target)
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                targetItem.LayerType == LayerType.Folder)
+                target.LayerType == LayerType.Folder)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -174,42 +174,45 @@ namespace Artemis.ViewModels
 
         public void Drop(IDropInfo dropInfo)
         {
-            var sourceItem = dropInfo.Data as LayerModel;
-            var targetItem = dropInfo.TargetItem as LayerModel;
-            if (sourceItem == null || targetItem == null || sourceItem == targetItem)
+            var source = dropInfo.Data as LayerModel;
+            var target = dropInfo.TargetItem as LayerModel;
+            if (source == null || target == null || source == target)
                 return;
 
-            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                targetItem.LayerType == LayerType.Folder)
-            {
-                // Insert into folder
-
+            // Don't allow a folder to become it's own child, that's just weird
+            if (target.Parent == source)
                 return;
-            }
 
             // Remove the source from it's old profile/parent
-            if (sourceItem.Parent == null)
-                sourceItem.Profile.Layers.Remove(sourceItem);
+            if (source.Parent == null)
+                source.Profile.Layers.Remove(source);
             else
-                sourceItem.Parent.Children.Remove(sourceItem);
+                source.Parent.Children.Remove(source);
 
-            // Insert the source into it's new profile/parent and update the order
-            if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
-                sourceItem.Order = targetItem.Order + 1;
-            else
-                sourceItem.Order = targetItem.Order - 1;
-            if (targetItem.Parent == null)
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
+                target.LayerType == LayerType.Folder)
             {
-                targetItem.Profile.Layers.Add(sourceItem);
-                targetItem.Profile.FixOrder();
+                // Insert into folder
+                source.Order = -1;
+                target.Children.Add(source);
+                target.FixOrder();
             }
             else
             {
-                targetItem.Parent.Children.Add(sourceItem);
-                targetItem.Parent.FixOrder();
+                // Insert the source into it's new profile/parent and update the order
+                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
+                    source.Order = target.Order + 1;
+                else
+                    source.Order = target.Order - 1;
+                if (target.Parent == null)
+                    target.Profile.Layers.Add(source);
+                else
+                    target.Parent.Children.Add(source);
             }
 
-            UpdateLayerList(sourceItem);
+            target.Profile?.FixOrder();
+            target.Parent?.FixOrder();
+            UpdateLayerList(source);
         }
 
         /// <summary>
@@ -424,7 +427,6 @@ namespace Artemis.ViewModels
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
             var hoverLayer = SelectedProfile.GetEnabledLayers()
-                .OrderBy(l => l.Order)
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
                     .GetRect(1)
