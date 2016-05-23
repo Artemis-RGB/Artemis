@@ -18,16 +18,18 @@ using Artemis.Models;
 using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Services;
+using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Artemis.ViewModels.LayerEditor;
 using Caliburn.Micro;
+using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro;
 using Ninject;
 using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels
 {
-    public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>
+    public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>, IDropTarget
     {
         private readonly GameModel _gameModel;
         private readonly MainManager _mainManager;
@@ -149,6 +151,66 @@ namespace Artemis.ViewModels
         public bool CanRemoveLayer => SelectedProfile != null && _selectedLayer != null;
 
         private KeyboardProvider ActiveKeyboard { get; set; }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var sourceItem = dropInfo.Data as LayerModel;
+            var targetItem = dropInfo.TargetItem as LayerModel;
+            if (sourceItem == null || targetItem == null)
+                return;
+
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
+                targetItem.LayerType == LayerType.Folder)
+            {
+                dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                dropInfo.DropTargetAdorner = typeof(DropTargetMetroInsertionAdorner);
+                dropInfo.Effects = DragDropEffects.Move;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var sourceItem = dropInfo.Data as LayerModel;
+            var targetItem = dropInfo.TargetItem as LayerModel;
+            if (sourceItem == null || targetItem == null || sourceItem == targetItem)
+                return;
+
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
+                targetItem.LayerType == LayerType.Folder)
+            {
+                // Insert into folder
+
+                return;
+            }
+
+            // Remove the source from it's old profile/parent
+            if (sourceItem.Parent == null)
+                sourceItem.Profile.Layers.Remove(sourceItem);
+            else
+                sourceItem.Parent.Children.Remove(sourceItem);
+
+            // Insert the source into it's new profile/parent and update the order
+            if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
+                sourceItem.Order = targetItem.Order + 1;
+            else
+                sourceItem.Order = targetItem.Order - 1;
+            if (targetItem.Parent == null)
+            {
+                targetItem.Profile.Layers.Add(sourceItem);
+                targetItem.Profile.FixOrder();
+            }
+            else
+            {
+                targetItem.Parent.Children.Add(sourceItem);
+                targetItem.Parent.FixOrder();
+            }
+
+            UpdateLayerList(sourceItem);
+        }
 
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
@@ -318,41 +380,6 @@ namespace Artemis.ViewModels
             SelectedProfile.FixOrder();
         }
 
-        /// <summary>
-        ///     Moves the currently selected layer up in the profile's layer tree
-        /// </summary>
-        public void LayerUp()
-        {
-            MoveLayer(true);
-        }
-
-        /// <summary>
-        ///     Moves the currently selected layer down in the profile's layer tree
-        /// </summary>
-        public void LayerDown()
-        {
-            MoveLayer(false);
-        }
-
-        /// <summary>
-        ///     Moves the currently selected layer up or down in the profile's layer tree
-        /// </summary>
-        /// <param name="moveUp"></param>
-        private void MoveLayer(bool moveUp)
-        {
-            if (SelectedLayer == null)
-                return;
-
-            var reorderLayer = SelectedLayer;
-
-            if (SelectedLayer.Parent != null)
-                SelectedLayer.Parent.Reorder(SelectedLayer, moveUp);
-            else
-                SelectedLayer.Profile.Reorder(SelectedLayer, moveUp);
-
-            UpdateLayerList(reorderLayer);
-        }
-
         private void UpdateLayerList(LayerModel selectModel)
         {
             // Update the UI
@@ -421,7 +448,7 @@ namespace Artemis.ViewModels
             var hoverLayer = SelectedProfile.GetEnabledLayers()
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
-                .GetRect(1).Contains(x, y));
+                    .GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
 

@@ -86,23 +86,6 @@ namespace Artemis.Models.Profiles
             return layer;
         }
 
-        public void Reorder(LayerModel selectedLayer, bool moveUp)
-        {
-            FixOrder();
-
-            int newOrder;
-            if (moveUp)
-                newOrder = selectedLayer.Order - 1;
-            else
-                newOrder = selectedLayer.Order + 1;
-
-            var target = Layers.FirstOrDefault(l => l.Order == newOrder);
-            if (target == null)
-                return;
-
-            LayerModel.ApplyReorder(selectedLayer, target, newOrder, moveUp);
-        }
-
         public void FixOrder()
         {
             Layers.Sort(l => l.Order);
