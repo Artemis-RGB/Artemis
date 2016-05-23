@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
+             xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
              mc:Ignorable="d"
              d:DesignHeight="473" Width="1055">
     <UserControl.Resources>
@@ -14,7 +15,6 @@
     </UserControl.Resources>
     <Grid Width="Auto" Height="Auto">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
@@ -27,7 +27,7 @@
         <!-- Preview -->
         <Label Grid.Column="0" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Preview" />
         <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
-                BorderThickness="3" Width="750" Height="400">
+                BorderThickness="3" Width="800" Height="400">
             <Border>
                 <Border.Effect>
                     <!-- TODO: Pulse 10-20 -->
@@ -64,6 +64,9 @@
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
                 BorderThickness="3" Margin="10,0,0,0" Height="400" Width="233">
             <TreeView x:Name="ProfileTree"
+                      dragDrop:DragDrop.IsDragSource="True"
+                      dragDrop:DragDrop.IsDropTarget="True"
+                      dragDrop:DragDrop.DropHandler="{Binding}"
                       ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
@@ -113,29 +116,6 @@
 
         <!-- Layer movement -->
         <StackPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Margin="10,0,0,0">
-            <Button x:Name="LayerUp" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}">
-                <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="16" Height="16">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_arrow_up}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-            <Button x:Name="LayerDown" Width="40" Height="40" Style="{DynamicResource MetroCircleButtonStyle}">
-                <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="16" Height="16">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_arrow_down}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
-        </StackPanel>
+                    Margin="10,0,0,0"/>
     </Grid>
 </UserControl>
