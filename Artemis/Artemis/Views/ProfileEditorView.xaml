@@ -52,11 +52,54 @@
             <Label Content="Active profile" />
             <ComboBox Width="110" VerticalAlignment="Top" x:Name="Profiles" DisplayMemberPath="Name"
                       Margin="5,0,0,0" />
-            <Button x:Name="AddProfile" Content="Add profile" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,0" />
-            <Button x:Name="RemoveProfile" Content="Remove profile" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right"
-                    Margin="10,0,0,0" />
+            <Button x:Name="AddProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Add profile">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="DuplicateProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate profile">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="EditProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename profile">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_edit}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="RemoveProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete profile">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
         </StackPanel>
 
         <!-- Layer list -->
@@ -101,21 +144,18 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Border>
-        <Grid Grid.Column="1" Grid.Row="2" Margin="10,5,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" x:Name="AddLayer" Content="Add layer" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" />
-            <Button Grid.Column="3" x:Name="RemoveLayer" Content="Remove layer" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" Width="95" />
-        </Grid>
-
-        <!-- Layer movement -->
-        <StackPanel Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Margin="10,0,0,0"/>
+        <Button Grid.Column="1" Grid.Row="2" Margin="10,5,0,0" x:Name="AddLayer" VerticalAlignment="Top"
+                Style="{DynamicResource SquareButtonStyle}"
+                Width="26" Height="26" ToolTip="Add layer" HorizontalAlignment="Right">
+            <Button.Content>
+                <Rectangle
+                    Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                    Width="12" Height="12">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button.Content>
+        </Button>
     </Grid>
 </UserControl>

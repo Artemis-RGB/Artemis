@@ -41,7 +41,7 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (_deviceManager.ChangingKeyboard || ProfilePreviewModel == null)
+            if (_deviceManager.ActiveKeyboard == null ||_deviceManager.ChangingKeyboard || ProfilePreviewModel == null)
                 return;
 
             var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);

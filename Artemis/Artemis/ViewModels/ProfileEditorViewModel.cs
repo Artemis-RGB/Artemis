@@ -568,10 +568,9 @@ namespace Artemis.ViewModels
 
                 _draggingLayerOffset = new Point(x - selectedProps.X, y - selectedProps.Y);
                 _draggingLayer = hoverLayer;
-                if (Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) + Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6)
-                    _resizing = true;
-                else
-                    _resizing = false;
+                // Detect dragging if cursor is in the bottom right
+                _resizing = Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) +
+                                      Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6;
             }
 
             if (_draggingLayerOffset == null || _draggingLayer == null || (_draggingLayer != SelectedLayer))
