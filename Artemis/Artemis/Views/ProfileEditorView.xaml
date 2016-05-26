@@ -65,7 +65,7 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
-            <Button x:Name="EditProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+            <Button x:Name="RenameProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename profile">
                 <Button.Content>
                     <Rectangle
@@ -89,7 +89,7 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
-            <Button x:Name="RemoveProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+            <Button x:Name="DeleteProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete profile">
                 <Button.Content>
                     <Rectangle

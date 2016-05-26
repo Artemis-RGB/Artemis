@@ -263,45 +263,6 @@ namespace Artemis.ViewModels
             SelectedProfile = Profiles.FirstOrDefault();
         }
 
-        /// <summary>
-        ///     Adds a new profile to the current game and keyboard
-        /// </summary>
-        public async void AddProfile()
-        {
-            var name = await DialogService.ShowInputDialog("Add new profile",
-                "Please provide a profile name unique to this game and keyboard.");
-
-            // Null when the user cancelled
-            if (name == null)
-                return;
-
-            if (name.Length < 1)
-            {
-                DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
-                return;
-            }
-
-            var profile = new ProfileModel
-            {
-                Name = name,
-                KeyboardName = ActiveKeyboard.Name,
-                GameName = _gameModel.Name
-            };
-
-            if (ProfileProvider.GetAll().Contains(profile))
-            {
-                var overwrite = await DialogService.ShowQuestionMessageBox("Overwrite existing profile",
-                    "A profile with this name already exists for this game. Would you like to overwrite it?");
-                if (!overwrite.Value)
-                    return;
-            }
-
-            ProfileProvider.AddOrUpdate(profile);
-
-            LoadProfiles();
-            SelectedProfile = profile;
-        }
-
         public void EditLayer()
         {
             if (SelectedLayer == null)
@@ -620,6 +581,115 @@ namespace Artemis.ViewModels
             }
         }
 
+        /// <summary>
+        ///     Adds a new profile to the current game and keyboard
+        /// </summary>
+        public async void AddProfile()
+        {
+            var name = await DialogService.ShowInputDialog("Add new profile",
+                "Please provide a profile name unique to this game and keyboard.");
+
+            // Null when the user cancelled
+            if (name == null)
+                return;
+
+            if (name.Length < 1)
+            {
+                DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
+                return;
+            }
+
+            var profile = new ProfileModel
+            {
+                Name = name,
+                KeyboardName = ActiveKeyboard.Name,
+                GameName = _gameModel.Name
+            };
+
+            if (ProfileProvider.GetAll().Contains(profile))
+            {
+                var overwrite = await DialogService.ShowQuestionMessageBox("Overwrite existing profile",
+                    "A profile with this name already exists for this game. Would you like to overwrite it?");
+                if (!overwrite.Value)
+                    return;
+            }
+
+            ProfileProvider.AddOrUpdate(profile);
+
+            LoadProfiles();
+            SelectedProfile = profile;
+        }
+
+        public async void RenameProfile()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            var oldName = SelectedProfile.Name;
+            SelectedProfile.Name =
+                await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
+            // Verify the name
+            while (ProfileProvider.GetAll().Contains(SelectedProfile))
+            {
+                SelectedProfile.Name =
+                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
+
+                // Null when the user cancelled
+                if (string.IsNullOrEmpty(SelectedProfile.Name))
+                {
+                    SelectedProfile.Name = oldName;
+                    return;
+                }
+            }
+
+            var newName = SelectedProfile.Name;
+            SelectedProfile.Name = oldName;
+            ProfileProvider.RenameProfile(SelectedProfile, newName);
+
+            LoadProfiles();
+            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newName);
+        }
+
+        public async void DuplicateProfile()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            var newProfile = GeneralHelpers.Clone(SelectedProfile);
+            newProfile.Name =
+                await DialogService.ShowInputDialog("Duplicate profile", "Please enter a unique profile name");
+            // Verify the name
+            while (ProfileProvider.GetAll().Contains(newProfile))
+            {
+                newProfile.Name =
+                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique profile name");
+
+                // Null when the user cancelled
+                if (string.IsNullOrEmpty(SelectedProfile.Name))
+                    return;
+            }
+
+            ProfileProvider.AddOrUpdate(newProfile);
+            LoadProfiles();
+            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newProfile.Name);
+        }
+
+        public async void DeleteProfile()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            var confirm = await
+                DialogService.ShowQuestionMessageBox("Delete profile",
+                    $"Are you sure you want to delete the profile named: {SelectedProfile.Name}?\n\n" +
+                    "This cannot be undone.");
+            if (!confirm.Value)
+                return;
+
+            ProfileProvider.DeleteProfile(SelectedProfile);
+            LoadProfiles();
+        }
+
         public async void ImportProfile()
         {
             var dialog = new OpenFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
@@ -672,6 +742,19 @@ namespace Artemis.ViewModels
             LoadProfiles();
 
             SelectedProfile = Profiles.FirstOrDefault(p => p.Name == profile.Name);
+        }
+
+        public void ExportProfile()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            var dialog = new SaveFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var result = dialog.ShowDialog();
+            if (result != DialogResult.OK)
+                return;
+
+            ProfileProvider.ExportProfile(SelectedProfile, dialog.FileName);
         }
     }
 }
