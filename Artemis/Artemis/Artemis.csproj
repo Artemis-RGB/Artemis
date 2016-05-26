@@ -196,7 +196,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.3\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -283,7 +283,7 @@
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsiarHeadsets.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />

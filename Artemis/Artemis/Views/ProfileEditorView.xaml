@@ -7,9 +7,10 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
              mc:Ignorable="d"
-             d:DesignHeight="473" Width="1055">
+             d:DesignHeight="510" Width="1055">
     <UserControl.Resources>
         <utilities:LayerOrderConverter x:Key="LayerOrderConverter" />
     </UserControl.Resources>
@@ -64,18 +65,6 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
-            <Button x:Name="DuplicateProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate profile">
-                <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
-                        <Rectangle.OpacityMask>
-                            <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
-                        </Rectangle.OpacityMask>
-                    </Rectangle>
-                </Button.Content>
-            </Button>
             <Button x:Name="EditProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename profile">
                 <Button.Content>
@@ -84,6 +73,18 @@
                         Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_edit}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="DuplicateProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate profile">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
                     </Rectangle>
                 </Button.Content>
@@ -98,6 +99,38 @@
                             <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
                     </Rectangle>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
+            <Button x:Name="ImportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Height="26" HorizontalAlignment="Right" ToolTip="Import profile">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle
+                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                            Width="12" Height="12" Margin="3,0">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_cabinet_in}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <TextBlock Margin="2,0,2,0">import profile</TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button x:Name="ExportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding ProfileSelected}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle
+                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                            Width="12" Height="12" Margin="3,0">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_cabinet_out}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <TextBlock Margin="2,0,2,0">export profile</TextBlock>
+                    </StackPanel>
                 </Button.Content>
             </Button>
         </StackPanel>
@@ -144,18 +177,59 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Border>
-        <Button Grid.Column="1" Grid.Row="2" Margin="10,5,0,0" x:Name="AddLayer" VerticalAlignment="Top"
-                Style="{DynamicResource SquareButtonStyle}"
-                Width="26" Height="26" ToolTip="Add layer" HorizontalAlignment="Right">
-            <Button.Content>
-                <Rectangle
-                    Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                    Width="12" Height="12">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>
-            </Button.Content>
-        </Button>
+        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="10,5,0,0" HorizontalAlignment="Right">
+            <Button x:Name="AddLayer" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding ProfileSelected}"
+                    Width="26" Height="26" ToolTip="Add layer" HorizontalAlignment="Left">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="EditLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename layer"
+                    IsEnabled="{Binding Path=LayerSelected}">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_edit}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="CloneLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate layer"
+                    IsEnabled="{Binding Path=LayerSelected}">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+            <Button x:Name="RemoveLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete layer"
+                    IsEnabled="{Binding Path=LayerSelected}">
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
+        </StackPanel>
     </Grid>
 </UserControl>

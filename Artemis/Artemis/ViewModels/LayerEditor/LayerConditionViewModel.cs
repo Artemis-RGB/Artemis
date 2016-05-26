@@ -6,7 +6,7 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels.LayerEditor
 {
-    public class LayerConditionViewModel : Screen
+    public sealed class LayerConditionViewModel : Screen
     {
         private readonly NamedOperator[] _boolOperators =
         {
@@ -32,9 +32,10 @@ namespace Artemis.ViewModels.LayerEditor
             new NamedOperator("Not equal to", "!=")
         };
 
+        private bool _enumValueIsVisible;
         private bool _preselecting;
-
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
+        private string _selectedEnum;
         private NamedOperator _selectedOperator;
         private string _userValue;
         private bool _userValueIsVisible;
@@ -48,12 +49,20 @@ namespace Artemis.ViewModels.LayerEditor
             LayerConditionModel = layerConditionModel;
             DataModelProps = dataModelProps;
             Operators = new BindableCollection<NamedOperator>();
+            Enums = new BindableCollection<string>();
 
             PropertyChanged += UpdateModel;
             PropertyChanged += UpdateForm;
 
             PreSelect();
         }
+
+        public LayerConditionModel LayerConditionModel { get; set; }
+
+        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
+
+        public BindableCollection<NamedOperator> Operators { get; set; }
+        public BindableCollection<string> Enums { get; set; }
 
         public string UserValue
         {
@@ -65,10 +74,6 @@ namespace Artemis.ViewModels.LayerEditor
                 NotifyOfPropertyChange(() => UserValue);
             }
         }
-
-        public LayerConditionModel LayerConditionModel { get; set; }
-        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-        public BindableCollection<NamedOperator> Operators { get; set; }
 
         public GeneralHelpers.PropertyCollection SelectedDataModelProp
         {
@@ -93,6 +98,17 @@ namespace Artemis.ViewModels.LayerEditor
             }
         }
 
+        public bool EnumValueIsVisible
+        {
+            get { return _enumValueIsVisible; }
+            set
+            {
+                if (value == _enumValueIsVisible) return;
+                _enumValueIsVisible = value;
+                NotifyOfPropertyChange(() => EnumValueIsVisible);
+            }
+        }
+
         public NamedOperator SelectedOperator
         {
             get { return _selectedOperator; }
@@ -101,6 +117,17 @@ namespace Artemis.ViewModels.LayerEditor
                 if (value.Equals(_selectedOperator)) return;
                 _selectedOperator = value;
                 NotifyOfPropertyChange(() => SelectedOperator);
+            }
+        }
+
+        public string SelectedEnum
+        {
+            get { return _selectedEnum; }
+            set
+            {
+                if (value == _selectedEnum) return;
+                _selectedEnum = value;
+                NotifyOfPropertyChange(() => SelectedEnum);
             }
         }
 
@@ -115,31 +142,34 @@ namespace Artemis.ViewModels.LayerEditor
                 return;
 
             Operators.Clear();
+            UserValueIsVisible = false;
+            EnumValueIsVisible = false;
+
+            switch (SelectedDataModelProp.Type)
+            {
+                case "Int32":
+                    Operators.AddRange(_int32Operators);
+                    UserValueIsVisible = true;
+                    break;
+                case "Boolean":
+                    Operators.AddRange(_boolOperators);
+                    break;
+                default:
+                    Operators.AddRange(_operators);
+                    UserValueIsVisible = true;
+                    break;
+            }
+
+            // Setup Enum selection if needed
             if (SelectedDataModelProp.EnumValues != null)
             {
-                Operators.AddRange(
-                    SelectedDataModelProp.EnumValues.Select(val => new NamedOperator(val.SplitCamelCase(), "== " + val)));
-                UserValueIsVisible = false;
+                Enums.AddRange(SelectedDataModelProp.EnumValues);
+                EnumValueIsVisible = true;
             }
-            else
-                switch (SelectedDataModelProp.Type)
-                {
-                    case "Int32":
-                        Operators.AddRange(_int32Operators);
-                        UserValueIsVisible = true;
-                        break;
-                    case "Boolean":
-                        Operators.AddRange(_boolOperators);
-                        UserValueIsVisible = false;
-                        break;
-                    default:
-                        Operators.AddRange(_operators);
-                        UserValueIsVisible = true;
-                        break;
-                }
 
             SelectedOperator = Operators.First();
         }
+
 
         /// <summary>
         ///     Handles saving user input to the model
@@ -156,13 +186,14 @@ namespace Artemis.ViewModels.LayerEditor
             // Only care about these fields
             if (e.PropertyName != "UserValue" &&
                 e.PropertyName != "SelectedOperator" &&
-                e.PropertyName != "SelectedDataModelProp")
+                e.PropertyName != "SelectedDataModelProp" &&
+                e.PropertyName != "SelectedEnum")
                 return;
 
             LayerConditionModel.Field = SelectedDataModelProp.Path;
             LayerConditionModel.Operator = SelectedOperator.Value;
-            LayerConditionModel.Value = UserValue;
             LayerConditionModel.Type = SelectedDataModelProp.Type;
+            LayerConditionModel.Value = SelectedDataModelProp.Type == "Enum" ? SelectedEnum : UserValue;
         }
 
         /// <summary>
@@ -173,8 +204,12 @@ namespace Artemis.ViewModels.LayerEditor
             _preselecting = true;
             SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == LayerConditionModel.Field);
             SelectedOperator = Operators.FirstOrDefault(o => o.Value == LayerConditionModel.Operator);
-            UserValue = LayerConditionModel.Value;
             LayerConditionModel.Type = SelectedDataModelProp.Type;
+            if (LayerConditionModel.Type =="Enum")
+                SelectedEnum = LayerConditionModel.Value;
+            else
+                UserValue = LayerConditionModel.Value;
+
             _preselecting = false;
         }
 
