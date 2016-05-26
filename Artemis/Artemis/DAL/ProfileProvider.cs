@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
@@ -87,6 +86,9 @@ namespace Artemis.DAL
             return profiles;
         }
 
+        /// <summary>
+        ///     Makes sure the profile directory structure is in order and places default profiles
+        /// </summary>
         private static void CheckProfiles()
         {
             // Create the directory structure
@@ -94,9 +96,13 @@ namespace Artemis.DAL
                 return;
 
             Directory.CreateDirectory(ProfileFolder);
-            Debug.WriteLine("Place presets");
         }
 
+        /// <summary>
+        ///     Attempts to load a profile from a given path
+        /// </summary>
+        /// <param name="path">The absolute path to load the profile from</param>
+        /// <returns>The loaded profile, or null if invalid</returns>
         public static ProfileModel LoadProfileIfValid(string path)
         {
             try
@@ -114,6 +120,48 @@ namespace Artemis.DAL
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        ///     Exports the given profile to the provided path in XML
+        /// </summary>
+        /// <param name="selectedProfile">The profile to export</param>
+        /// <param name="path">The path to save the profile to</param>
+        public static void ExportProfile(ProfileModel selectedProfile, string path)
+        {
+            var serializer = new XmlSerializer(typeof(ProfileModel));
+            using (var file = new StreamWriter(path))
+            {
+                serializer.Serialize(file, selectedProfile);
+            }
+        }
+
+        /// <summary>
+        ///     Renames the profile on the model and filesystem
+        /// </summary>
+        /// <param name="profile">The profile to rename</param>
+        /// <param name="name">The new name</param>
+        public static void RenameProfile(ProfileModel profile, string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return;
+
+            // Remove the old file
+            var path = ProfileFolder + $@"\{profile.KeyboardName}\{profile.GameName}\{profile.Name}.xml";
+            if (File.Exists(path))
+                File.Delete(path);
+
+            // Update the profile, creating a new file
+            profile.Name = name;
+            AddOrUpdate(profile);
+        }
+
+        public static void DeleteProfile(ProfileModel profile)
+        {
+            // Remove the file
+            var path = ProfileFolder + $@"\{profile.KeyboardName}\{profile.GameName}\{profile.Name}.xml";
+            if (File.Exists(path))
+                File.Delete(path);
         }
     }
 }
