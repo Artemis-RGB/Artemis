@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
@@ -11,6 +10,8 @@ using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace Artemis.Models.Profiles
 {
@@ -137,18 +138,38 @@ namespace Artemis.Models.Profiles
         /// <summary>
         ///     Gives all the layers and their children in a flat list
         /// </summary>
-        public List<LayerModel> GetEnabledLayers()
+        public List<LayerModel> GetLayers(bool ignoreEnabled = true)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers)
             {
-                if (!layerModel.Enabled)
+                if (ignoreEnabled && !layerModel.Enabled)
+                {
                     continue;
+                }
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetAllLayers());
+                layers.AddRange(layerModel.GetAllLayers(ignoreEnabled));
             }
-            
+
             return layers;
+        }
+
+        public void FixBoundaries(Rect keyboardRectangle)
+        {
+            foreach (var layer in GetLayers(false))
+            {
+                if (layer.LayerType != LayerType.Keyboard && layer.LayerType != LayerType.KeyboardGif)
+                    continue;
+
+                var props = (KeyboardPropertiesModel) layer.Properties;
+                var layerRect = new Rect(new Point(props.X, props.Y), new Size(props.Width, props.Height));
+                if (keyboardRectangle.Contains(layerRect))
+                    continue;
+
+                props.X = 0;
+                props.Y = 0;
+                layer.Properties = props;
+            }
         }
     }
 }

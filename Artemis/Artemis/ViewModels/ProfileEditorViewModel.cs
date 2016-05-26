@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -25,6 +26,13 @@ using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro;
 using Ninject;
+using Application = System.Windows.Application;
+using Cursor = System.Windows.Input.Cursor;
+using Cursors = System.Windows.Input.Cursors;
+using DragDropEffects = System.Windows.DragDropEffects;
+using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Screen = Caliburn.Micro.Screen;
 using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels
@@ -45,7 +53,8 @@ namespace Artemis.ViewModels
         private LayerModel _selectedLayer;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel)
+        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel,
+            MetroDialogService dialogService)
         {
             _mainManager = mainManager;
             _gameModel = gameModel;
@@ -53,12 +62,12 @@ namespace Artemis.ViewModels
             Profiles = new BindableCollection<ProfileModel>();
             Layers = new BindableCollection<LayerModel>();
             ActiveKeyboard = _mainManager.DeviceManager.ActiveKeyboard;
+            DialogService = dialogService;
 
             events.Subscribe(this);
 
             PreviewTimer = new Timer(40);
             PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
-
 
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
@@ -99,7 +108,7 @@ namespace Artemis.ViewModels
                 if (Equals(value, _selectedLayer)) return;
                 _selectedLayer = value;
                 NotifyOfPropertyChange(() => SelectedLayer);
-                NotifyOfPropertyChange(() => CanRemoveLayer);
+                NotifyOfPropertyChange(() => LayerSelected);
             }
         }
 
@@ -127,8 +136,8 @@ namespace Artemis.ViewModels
                     Layers.AddRange(SelectedProfile.Layers);
 
                 NotifyOfPropertyChange(() => SelectedProfile);
-                NotifyOfPropertyChange(() => CanAddLayer);
-                NotifyOfPropertyChange(() => CanRemoveLayer);
+                NotifyOfPropertyChange(() => ProfileSelected);
+                NotifyOfPropertyChange(() => LayerSelected);
             }
         }
 
@@ -147,8 +156,8 @@ namespace Artemis.ViewModels
 
         public PreviewSettings? PreviewSettings => ActiveKeyboard?.PreviewSettings;
 
-        public bool CanAddLayer => SelectedProfile != null;
-        public bool CanRemoveLayer => SelectedProfile != null && _selectedLayer != null;
+        public bool ProfileSelected => SelectedProfile != null;
+        public bool LayerSelected => SelectedProfile != null && _selectedLayer != null;
 
         private KeyboardProvider ActiveKeyboard { get; set; }
 
@@ -293,6 +302,14 @@ namespace Artemis.ViewModels
             SelectedProfile = profile;
         }
 
+        public void EditLayer()
+        {
+            if (SelectedLayer == null)
+                return;
+
+            LayerEditor(SelectedLayer);
+        }
+
         /// <summary>
         ///     Opens a new LayerEditorView for the given layer
         /// </summary>
@@ -369,6 +386,14 @@ namespace Artemis.ViewModels
             SelectedProfile.FixOrder();
         }
 
+        public void CloneLayer()
+        {
+            if (SelectedLayer == null)
+                return;
+
+            CloneLayer(SelectedLayer);
+        }
+
         /// <summary>
         ///     Clones the given layer and adds it to the profile, on top of the original
         /// </summary>
@@ -426,7 +451,7 @@ namespace Artemis.ViewModels
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
 
-            var hoverLayer = SelectedProfile.GetEnabledLayers()
+            var hoverLayer = SelectedProfile.GetLayers()
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
                     .GetRect(1)
@@ -447,7 +472,7 @@ namespace Artemis.ViewModels
             var pos = e.GetPosition((Image) e.OriginalSource);
             var x = pos.X/((double) ActiveKeyboard.PreviewSettings.Width/ActiveKeyboard.Width);
             var y = pos.Y/((double) ActiveKeyboard.PreviewSettings.Height/ActiveKeyboard.Height);
-            var hoverLayer = SelectedProfile.GetEnabledLayers()
+            var hoverLayer = SelectedProfile.GetLayers()
                 .Where(l => l.MustDraw())
                 .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
                     .GetRect(1).Contains(x, y));
@@ -593,6 +618,60 @@ namespace Artemis.ViewModels
                 draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
                 draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
+        }
+
+        public async void ImportProfile()
+        {
+            var dialog = new OpenFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var result = dialog.ShowDialog();
+            if (result != DialogResult.OK)
+                return;
+
+            var profile = ProfileProvider.LoadProfileIfValid(dialog.FileName);
+            if (profile == null)
+            {
+                DialogService.ShowErrorMessageBox("Oh noes, the profile you provided is invalid. " +
+                                                  "If this keeps happening, please make an issue on GitHub and provide the profile.");
+                return;
+            }
+
+            // Verify the game
+            if (profile.GameName != _gameModel.Name)
+            {
+                DialogService.ShowErrorMessageBox(
+                    $"Oh oops! This profile is ment for {profile.GameName}, not {_gameModel.Name} :c");
+                return;
+            }
+
+            // Verify the keyboard
+            if (profile.KeyboardName != _mainManager.DeviceManager.ActiveKeyboard.Name)
+            {
+                var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
+                    $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardName}. " +
+                    "You can still import it but you'll probably have to do some adjusting\n\n" +
+                    "Continue?");
+                if (!adjustKeyboard.Value)
+                    return;
+
+                profile.KeyboardName = _mainManager.DeviceManager.ActiveKeyboard.Name;
+                profile.FixBoundaries(_mainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(1));
+            }
+
+            // Verify the name
+            while (ProfileProvider.GetAll().Contains(profile))
+            {
+                profile.Name = await DialogService.ShowInputDialog("Rename imported profile",
+                    "A profile with this name already exists for this game. Please enter a new name");
+
+                // Null when the user cancelled
+                if (string.IsNullOrEmpty(profile.Name))
+                    return;
+            }
+
+            ProfileProvider.AddOrUpdate(profile);
+            LoadProfiles();
+
+            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == profile.Name);
         }
     }
 }

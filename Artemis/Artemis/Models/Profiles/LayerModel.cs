@@ -166,12 +166,12 @@ namespace Artemis.Models.Profiles
             return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
         }
 
-        public IEnumerable<LayerModel> GetAllLayers()
+        public IEnumerable<LayerModel> GetAllLayers(bool ignoreEnabled)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children)
             {
-                if (!layerModel.Enabled)
+                if (ignoreEnabled && !layerModel.Enabled)
                     continue;
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.Children);

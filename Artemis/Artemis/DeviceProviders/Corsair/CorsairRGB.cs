@@ -33,7 +33,7 @@ namespace Artemis.DeviceProviders.Corsair
                 try
                 {
                     if (CueSDK.ProtocolDetails == null)
-                        CueSDK.Initialize();
+                        CueSDK.Initialize(true);
                 }
                 catch (CUEException e)
                 {
@@ -46,7 +46,7 @@ namespace Artemis.DeviceProviders.Corsair
                 }
                 catch (WrapperException)
                 {
-                    CueSDK.Reinitialize();
+                    CueSDK.Reinitialize(true);
                     return true;
                 }
 
@@ -93,7 +93,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Disable()
         {
             if (CueSDK.ProtocolDetails != null)
-                CueSDK.Reinitialize();
+                CueSDK.Reinitialize(true);
         }
 
         /// <summary>

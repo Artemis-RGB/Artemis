@@ -96,5 +96,24 @@ namespace Artemis.DAL
             Directory.CreateDirectory(ProfileFolder);
             Debug.WriteLine("Place presets");
         }
+
+        public static ProfileModel LoadProfileIfValid(string path)
+        {
+            try
+            {
+                var deserializer = new XmlSerializer(typeof(ProfileModel));
+                using (var file = new StreamReader(path))
+                {
+                    var prof = (ProfileModel) deserializer.Deserialize(file);
+                    if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
+                        return null;
+                    return prof;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
     }
 }
