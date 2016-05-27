@@ -38,22 +38,6 @@ namespace Artemis.Utilities
             Environment.Exit(0);
         }
 
-        public static bool IsRunAsAdministrator()
-        {
-            var wi = WindowsIdentity.GetCurrent();
-            var wp = new WindowsPrincipal(wi);
-
-            return wp.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        public static void CopyProperties(object dest, object src)
-        {
-            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
-            {
-                item.SetValue(dest, item.GetValue(src));
-            }
-        }
-
         /// <summary>
         ///     Perform a deep Copy of the object.
         /// </summary>
@@ -87,7 +71,6 @@ namespace Artemis.Utilities
         }
 
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
-        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof(T).GetProperties());
 
         private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
             string path = "")

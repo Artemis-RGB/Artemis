@@ -6,6 +6,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Services;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
@@ -103,13 +104,13 @@ namespace Artemis.ViewModels.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
-            ProfileEditor.PreviewTimer.Start();
+            ProfileEditor.ProfileViewModel.Activate();
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-            ProfileEditor.PreviewTimer.Stop();
+            ProfileEditor.ProfileViewModel.Deactivate();
         }
     }
 

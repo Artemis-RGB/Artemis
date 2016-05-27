@@ -101,7 +101,7 @@ namespace Artemis.Models.Profiles
             else
                 appliedProperties = Properties.Brush.Dispatcher.Invoke(() => GeneralHelpers.Clone(Properties));
 
-            // TODO: Animations
+            // TODO: Mouse/headset animations
             // Update animations on layer types that support them
             //if (LayerType != LayerType.Folder && updateAnimations)
             //{

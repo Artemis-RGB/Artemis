@@ -3,6 +3,7 @@ using System.Linq;
 using System.Timers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Settings;
 using Artemis.ViewModels.Abstract;
 using Ninject.Extensions.Logging;
 
@@ -10,13 +11,14 @@ namespace Artemis.Managers
 {
     public class ProfileManager
     {
-        private readonly EffectManager _effectManager;
         private readonly DeviceManager _deviceManager;
-        private readonly LoopManager _loopManager;
+        private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
+        private readonly LoopManager _loopManager;
         private EffectModel _prePreviewEffect;
 
-        public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager, LoopManager loopManager)
+        public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
+            LoopManager loopManager)
         {
             _logger = logger;
             _effectManager = effectManager;
@@ -41,7 +43,8 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (_deviceManager.ActiveKeyboard == null ||_deviceManager.ChangingKeyboard || ProfilePreviewModel == null)
+            if (string.IsNullOrEmpty(General.Default.LastKeyboard) || _deviceManager.ChangingKeyboard ||
+                ProfilePreviewModel == null)
                 return;
 
             var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);
@@ -73,7 +76,7 @@ namespace Artemis.Managers
 
                 // LoopManager might be running, this method won't do any harm in that case.
                 _loopManager.Start();
-                
+
                 if (!ReferenceEquals(ProfilePreviewModel.SelectedProfile, activePreview.ProfileEditor.SelectedProfile))
                     ProfilePreviewModel.SelectedProfile = activePreview.ProfileEditor.SelectedProfile;
             }

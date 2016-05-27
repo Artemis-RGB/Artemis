@@ -1,0 +1,116 @@
+﻿<UserControl x:Class="Artemis.Views.Profiles.Properties.KeyboardPropertiesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
+             xmlns:utilities="clr-namespace:Artemis.Utilities"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}"
+                            x:Key="AnimationEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="properties:LayerAnimation" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <!-- Colors -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <!-- Animation -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
+                       VerticalAlignment="Center"
+                       Height="18" />
+        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Source={StaticResource AnimationEnumValues}}"
+                      Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
+                      VerticalAlignment="Top" Height="22">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <!-- Animation Speed -->
+        <TextBlock Grid.Row="0" Grid.Column="2" Margin="10" FontSize="13.333" Text="Animation speed:"
+                       VerticalAlignment="Center" Height="18" />
+        <Slider x:Name="RotationSpeed" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center"
+                    TickPlacement="None" TickFrequency="0.05"
+                    Value="{Binding Path=ProposedProperties.AnimationSpeed, Mode=TwoWay}" Minimum="0.05" Maximum="3"
+                    SmallChange="0" IsSnapToTickEnabled="True" Margin="10,12,10,2" Height="24" />
+
+        <!-- ClippingType -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="10, 13, 10, 10" FontSize="13.333" Text="Clipping type:"
+                       VerticalAlignment="Center" Height="23"/>
+        <controls:ToggleSwitch IsChecked="{Binding Path=ProposedProperties.Contain, Mode=TwoWay}"
+                                   Grid.Row="1"
+                                   Grid.Column="1" OnLabel="Contain" OffLabel="Cut-off" Margin="10,1,5,1"
+                                   VerticalAlignment="Center"
+                                   Height="36" />
+
+        <!-- Colors -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Orientation="Horizontal" x:Name="ShowBrush">
+            <TextBlock Margin="10,13,10,0" FontSize="13.333" Text="Color(s):"
+                       VerticalAlignment="Top" Height="18" Width="130" />
+            <Border Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
+                    BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
+                <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" Height="24" Width="134" />
+            </Border>
+        </StackPanel>
+
+        <!-- GIF settings -->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" x:Name="ShowGif">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,5,10,0" FontSize="13.333" Text="GIF file:"
+                       VerticalAlignment="Top" Height="18" />
+            <Grid Grid.Row="0" Grid.Column="1" ColumnSpan="3" Margin="5,2,10,0" VerticalAlignment="Top">
+                <TextBox Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                         Text="{Binding Path=ProposedProperties.GifFile, Mode=TwoWay}" />
+                <Button x:Name="BrowseGif" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                        HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="25" />
+            </Grid>
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="10,2,10,10" FontSize="13.333"
+                       Foreground="{DynamicResource HighlightBrush}"
+                       Text="Note: It is recommended to use very tiny gifs (25x7 per example, for size per keyboard see FAQ). Any higher will degrade performance without any noticeable quality difference."
+                       VerticalAlignment="Top" Height="Auto" TextWrapping="Wrap" />
+        </Grid>
+
+        <!-- Dynamic -->
+        <Label Grid.Row="3" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
+                   Content="Dynamic" Width="97" VerticalAlignment="Bottom" />
+
+        <!-- Dynamic property views -->
+        <ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" x:Name="HeightProperties" />
+        <ContentControl Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" x:Name="WidthProperties" />
+        <ContentControl Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" x:Name="OpacityProperties" />
+    </Grid>
+</UserControl>
