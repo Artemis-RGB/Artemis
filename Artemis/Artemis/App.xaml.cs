@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
 using Artemis.Utilities;
@@ -14,10 +15,18 @@ namespace Artemis
     {
         public App()
         {
-            if (!GeneralHelpers.IsRunAsAdministrator())
+            if (!IsRunAsAdministrator())
                 GeneralHelpers.RunAsAdministrator();
 
             InitializeComponent();
+        }
+
+        private static bool IsRunAsAdministrator()
+        {
+            var wi = WindowsIdentity.GetCurrent();
+            var wp = new WindowsPrincipal(wi);
+
+            return wp.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         public bool DoHandle { get; set; }

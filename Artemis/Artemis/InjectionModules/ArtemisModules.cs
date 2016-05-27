@@ -20,6 +20,8 @@ namespace Artemis.InjectionModules
     {
         public override void Load()
         {
+            #region Modules
+
             // Effects
             Bind<EffectViewModel>().To<AudioVisualizerViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<DebugEffectViewModel>().InSingletonScope();
@@ -36,7 +38,10 @@ namespace Artemis.InjectionModules
             // Overlays
             Bind<OverlayViewModel>().To<VolumeDisplayViewModel>().InSingletonScope();
 
-            // Device Providers
+            #endregion
+
+            #region Devices
+
             // Keyboards
             Bind<DeviceProvider>().To<CorsairRGB>().InSingletonScope();
             Bind<DeviceProvider>().To<Orion>().InSingletonScope();
@@ -45,6 +50,8 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
             // Headsets
             Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
+
+            #endregion
         }
     }
 }

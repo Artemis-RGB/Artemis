@@ -154,6 +154,10 @@ namespace Artemis.Models.Profiles
             return layers;
         }
 
+        /// <summary>
+        ///     Looks at all the layers wthin the profile and makes sure they are within boundaries of the given rectangle
+        /// </summary>
+        /// <param name="keyboardRectangle"></param>
         public void FixBoundaries(Rect keyboardRectangle)
         {
             foreach (var layer in GetLayers(false))

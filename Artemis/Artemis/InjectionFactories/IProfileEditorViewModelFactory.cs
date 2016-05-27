@@ -1,6 +1,7 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
 using Artemis.ViewModels;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
 namespace Artemis.InjectionFactories

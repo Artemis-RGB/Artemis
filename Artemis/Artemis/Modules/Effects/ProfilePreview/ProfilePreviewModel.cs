@@ -36,6 +36,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override Bitmap GenerateBitmap()
         {
+            if (MainManager.DeviceManager.ActiveKeyboard == null)
+                return null;
             var bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4);
 
             if (SelectedProfile == null)
