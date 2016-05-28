@@ -49,6 +49,8 @@ namespace Artemis.Utilities.GameState
             {
                 MessageBox.Show("Couldn't start the webserver. CS:GO/Dota2 effects won't work :c \n\n" +
                                 "Try changing the port in Settings and restart Artemis.");
+                Running = false;
+                return;
             }
 
             Running = true;

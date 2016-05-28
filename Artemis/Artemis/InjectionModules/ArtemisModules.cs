@@ -7,6 +7,7 @@ using Artemis.Modules.Effects.Debug;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Modules.Games.CounterStrike;
 using Artemis.Modules.Games.Dota2;
+using Artemis.Modules.Games.Overwatch;
 using Artemis.Modules.Games.RocketLeague;
 using Artemis.Modules.Games.TheDivision;
 using Artemis.Modules.Games.Witcher3;
@@ -34,6 +35,7 @@ namespace Artemis.InjectionModules
             Bind<GameViewModel>().To<RocketLeagueViewModel>().InSingletonScope();
             Bind<GameViewModel>().To<TheDivisionViewModel>().InSingletonScope();
             Bind<GameViewModel>().To<Witcher3ViewModel>().InSingletonScope();
+            Bind<GameViewModel>().To<OverwatchViewModel>().InSingletonScope();
 
             // Overlays
             Bind<OverlayViewModel>().To<VolumeDisplayViewModel>().InSingletonScope();

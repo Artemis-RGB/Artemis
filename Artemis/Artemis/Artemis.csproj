@@ -359,6 +359,9 @@
     <Compile Include="Modules\Games\Dota2\Dota2DataModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchView.xaml.cs">
+      <DependentUpon>OverwatchView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
       <DependentUpon>RocketLeague.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -378,6 +381,15 @@
       <DependentUpon>TheDivisionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchDataModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\Overwatch.Designer.cs">
+      <DependentUpon>Overwatch.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Modules\Games\Overwatch\OverwatchModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchSettings.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\TheWitcherDataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
@@ -582,6 +594,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TheDivision.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Modules\Games\Overwatch\Overwatch.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Overwatch.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Games\Witcher3\Witcher3.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Witcher3.Designer.cs</LastGenOutput>
@@ -634,6 +650,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
