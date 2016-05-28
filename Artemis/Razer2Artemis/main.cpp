@@ -32,7 +32,11 @@
 #include "Logger.h"
 
 #include <filesystem>
+#include <sstream>
 
+TCHAR szName[] = TEXT("overwatchMmf");
+TCHAR szMsg[] = TEXT("Message from first process.");
+#define BUF_SIZE 2000
 
 static bool g_hasInitialised = false;
 const char* game = "";
@@ -42,39 +46,75 @@ void cleanup()
 	CLogger::EndLogging();
 }
 
+HANDLE hMapFile;
+
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID)
 {
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-	{
-		atexit(cleanup);
+		{
+			atexit(cleanup);
 
-		CLogger::InitLogging("Log.txt");
-		CLogger::SetLogLevel(LogLevel::Debug);
+			CLogger::InitLogging("Log.txt");
+			CLogger::SetLogLevel(LogLevel::Debug);
 
-		// Get the process that loaded the DLL
-		TCHAR overwatchFind[] = _T("Overwatch");
-		TCHAR szPath[MAX_PATH];
-		GetModuleFileName(NULL, szPath, MAX_PATH);
+			// Get the process that loaded the DLL
+			TCHAR overwatchFind[] = _T("Overwatch");
+			TCHAR szPath[MAX_PATH];
+			GetModuleFileName(nullptr, szPath, MAX_PATH);
 
-		if (_tcscmp(szPath, overwatchFind) != 0)
-			game = "overwatch";
+			if (_tcscmp(szPath, overwatchFind) != 0)
+				game = "overwatch";
 
-		CLogger::OutputLog("Attached to process.", LogLevel::Debug);
-	}
-	break;
+			CLogger::OutputLog("Attached to process.", LogLevel::Debug);
+
+			// Setup mmf
+			hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, BUF_SIZE, szName);
+
+			if (hMapFile == nullptr)
+			{
+				CLogger::OutputLog("Could not create file mapping object (error %i)", LogLevel::Debug, GetLastError());
+			}
+		}
+		break;
 
 	case DLL_PROCESS_DETACH:
-	{
-		cleanup();
-
-		CLogger::OutputLog_s("Detached from process.", LogLevel::Debug);
-	}
-	break;
+		{
+			CLogger::OutputLog_s("Detached from process.", LogLevel::Debug);
+			CloseHandle(hMapFile);
+			cleanup();
+		}
+		break;
 	}
 
 	return true;
+}
+
+void WriteMmf(const char* msg)
+{
+	if (hMapFile == nullptr)
+	{
+		CLogger::OutputLog_s("Could not write to mmf", LogLevel::Debug);
+		return;
+	}
+
+	LPCTSTR pBuf;
+	pBuf = static_cast<LPTSTR>(MapViewOfFile(hMapFile, // handle to map object
+	                                         FILE_MAP_ALL_ACCESS, // read/write permission
+	                                         0,
+	                                         0,
+	                                         BUF_SIZE));
+
+	if (pBuf == nullptr)
+	{
+		CLogger::OutputLog("Could not map view of file (error %i)", LogLevel::Debug, GetLastError());
+		CloseHandle(hMapFile);
+		return;
+	}
+
+	CopyMemory((PVOID)pBuf, msg, (_tcslen(msg) * sizeof(TCHAR)));
+	UnmapViewOfFile(pBuf);
 }
 
 RZRESULT Init()
@@ -98,7 +138,22 @@ RZRESULT CreateEffect(RZDEVICEID DeviceId, ChromaSDK::EFFECT_TYPE Effect, PRZPAR
 
 RZRESULT CreateKeyboardEffect(ChromaSDK::Keyboard::EFFECT_TYPE Effect, PRZPARAM pParam, RZEFFECTID* pEffectId)
 {
-	CLogger::OutputLog_s("Razer CreateKeyboardEffect called.", LogLevel::Debug);
+	std::ostringstream os;
+	auto keys = *static_cast<struct CUSTOM_KEY_EFFECT_TYPE*>(pParam);
+
+	for (auto y = 0; y < 6; y++)
+	{
+		for (auto x = 0; x < 22; x++)
+		{
+			auto r = (int) GetRValue(keys.Color[y][x]);
+			auto g = (int) GetGValue(keys.Color[y][x]);
+			auto b = (int) GetGValue(keys.Color[y][x]);
+			os << " [" << x << "][" << y << "](" << r << "," << g << "," << b << ")";
+		}
+	}
+
+	CLogger::OutputLog_s("Razer CreateKeyboardEffect called", LogLevel::Debug);
+	WriteMmf(os.str().c_str());
 	return 0;
 }
 

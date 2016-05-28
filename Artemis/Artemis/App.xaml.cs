@@ -15,8 +15,8 @@ namespace Artemis
     {
         public App()
         {
-            if (!IsRunAsAdministrator())
-                GeneralHelpers.RunAsAdministrator();
+            //if (!IsRunAsAdministrator())
+            //    GeneralHelpers.RunAsAdministrator();
 
             InitializeComponent();
         }
