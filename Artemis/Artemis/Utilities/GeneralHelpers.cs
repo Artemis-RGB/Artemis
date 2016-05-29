@@ -83,6 +83,8 @@ namespace Artemis.Utilities
                     friendlyName = "(Number)";
                 else if (propertyInfo.PropertyType.Name == "String")
                     friendlyName = "(Text)";
+                else if (propertyInfo.PropertyType.Name == "Boolean")
+                    friendlyName = "(Yes/no)";
                 if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
                     friendlyName = "(Choice)";
 

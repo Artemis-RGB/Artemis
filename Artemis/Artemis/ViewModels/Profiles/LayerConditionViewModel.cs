@@ -10,8 +10,7 @@ namespace Artemis.ViewModels.Profiles
     {
         private readonly NamedOperator[] _boolOperators =
         {
-            new NamedOperator("True", "== True"),
-            new NamedOperator("False", "== False")
+            new NamedOperator("Equal to", "==")
         };
 
         private readonly LayerEditorViewModel _conditionModel;
@@ -114,7 +113,6 @@ namespace Artemis.ViewModels.Profiles
             get { return _selectedOperator; }
             set
             {
-                if (value.Equals(_selectedOperator)) return;
                 _selectedOperator = value;
                 NotifyOfPropertyChange(() => SelectedOperator);
             }
@@ -142,6 +140,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             Operators.Clear();
+            Enums.Clear();
             UserValueIsVisible = false;
             EnumValueIsVisible = false;
 
@@ -153,6 +152,9 @@ namespace Artemis.ViewModels.Profiles
                     break;
                 case "Boolean":
                     Operators.AddRange(_boolOperators);
+                    Enums.Add("True");
+                    Enums.Add("False");
+                    EnumValueIsVisible = true;
                     break;
                 default:
                     Operators.AddRange(_operators);
@@ -193,7 +195,13 @@ namespace Artemis.ViewModels.Profiles
             LayerConditionModel.Field = SelectedDataModelProp.Path;
             LayerConditionModel.Operator = SelectedOperator.Value;
             LayerConditionModel.Type = SelectedDataModelProp.Type;
-            LayerConditionModel.Value = SelectedDataModelProp.Type == "Enum" ? SelectedEnum : UserValue;
+
+            if (SelectedDataModelProp.Type == "Enum" || SelectedDataModelProp.Type == "Boolean")
+                LayerConditionModel.Value = SelectedEnum;
+            else
+                LayerConditionModel.Value = UserValue;
+
+            UpdateForm(sender, e);
         }
 
         /// <summary>

@@ -48,6 +48,7 @@ namespace Artemis.ViewModels.Profiles
 
             events.Subscribe(this);
 
+            ProfileViewModel.PropertyChanged += PropertyChangeHandler;
             PropertyChanged += PropertyChangeHandler;
             LoadProfiles();
         }
