@@ -155,7 +155,7 @@ namespace Artemis.Managers
                     headset.UpdateDevice(renderEffect.GenerateHeadsetBrush());
 
                 // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
-                _events.PublishOnUIThread(new ChangeBitmap(bitmap));
+                //_events.PublishOnUIThread(new ChangeBitmap(bitmap));
             }
         }
     }

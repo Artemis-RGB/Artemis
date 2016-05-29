@@ -1,24 +1,36 @@
-﻿using System.Drawing;
-using System.IO;
-using System.IO.MemoryMappedFiles;
+﻿using System;
+using System.Drawing;
+using System.Linq.Dynamic;
+using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Utilities;
+using Artemis.Utilities.DataReaders;
+using Caliburn.Micro;
 using Brush = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
-        public OverwatchModel(MainManager mainManager, OverwatchSettings settings)
+        private readonly IEventAggregator _events;
+
+        public OverwatchModel(IEventAggregator events, MainManager mainManager, OverwatchSettings settings)
             : base(mainManager, settings, new OverwatchDataModel())
         {
+            _events = events;
             Name = "Overwatch";
-            ProcessName = "notepad";
+            ProcessName = "Overwatch";
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
+
+            MmfReader = new MmfReader("overwatchMmf");
         }
+
+        public MmfReader MmfReader { get; set; }
 
         public int Scale { get; set; }
 
@@ -35,41 +47,27 @@ namespace Artemis.Modules.Games.Overwatch
         public override void Update()
         {
             var gameDataModel = (OverwatchDataModel) GameDataModel;
-            var mffData = ReadMmf("overwatchMmf");
-            if (mffData == null)
+            var colors = MmfReader.GetColorArray();
+            if (colors == null)
                 return;
-            var data = mffData.Split(' ');
-        }
 
-        private string ReadMmf(string overwatchmff)
-        {
-            try
+            var bitmap = new Bitmap(22, 6);
+
+            using (var g = Graphics.FromImage(bitmap))
             {
-                // opening not-persistent, pagefile-based memory-mapped file
-                using (var mmf = MemoryMappedFile.OpenExisting(overwatchmff))
+                for (var y = 0; y < 6; y++)
                 {
-                    // open the stream to read from the file
-                    using (var stream = mmf.CreateViewStream())
+                    for (var x = 0; x < 22; x++)
                     {
-                        // Read from the shared memory, just for this example we know there is a string
-                        var reader = new BinaryReader(stream);
-                        var res = string.Empty;
-                        string str;
-                        do
-                        {
-                            str = reader.ReadString();
-                            if (!string.IsNullOrEmpty(str) && str[0] != 0)
-                                res = res + str;
-                        } while (!string.IsNullOrEmpty(str));
-                        return res;
+                        g.DrawRectangle(new Pen(ColorHelpers.ToDrawingColor(colors[y, x])), y, x, 1, 1 );
                     }
                 }
             }
-            catch (FileNotFoundException)
-            {
-                return null;
-                //ignored
-            }
+            _events.PublishOnUIThread(new ChangeBitmap(bitmap));
+            if (colors[0, 0].Equals(Color.FromRgb(55, 30, 0)))
+                gameDataModel.Status = OverwatchStatus.InMainMenu;
+            else if (colors[0, 0].Equals(Color.FromRgb(3, 5, 11)))
+                gameDataModel.Status = OverwatchStatus.InGame;
         }
 
         public override Bitmap GenerateBitmap()
