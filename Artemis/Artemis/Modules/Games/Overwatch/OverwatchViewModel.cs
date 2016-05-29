@@ -8,7 +8,7 @@ namespace Artemis.Modules.Games.Overwatch
     public sealed class OverwatchViewModel : GameViewModel
     {
         public OverwatchViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
-            : base(main, new OverwatchModel(main, new OverwatchSettings()), events, pFactory)
+            : base(main, new OverwatchModel(events, main, new OverwatchSettings()), events, pFactory)
         {
             DisplayName = "Overwatch";
             MainManager.EffectManager.EffectModels.Add(GameModel);

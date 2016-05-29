@@ -2,6 +2,7 @@
 using Artemis.DeviceProviders.Razer.Utilities;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
+using Corale.Colore.Razer.Keyboard;
 using Constants = Corale.Colore.Razer.Keyboard.Constants;
 
 namespace Artemis.DeviceProviders.Razer
@@ -42,7 +43,6 @@ namespace Artemis.DeviceProviders.Razer
         public override void DrawBitmap(Bitmap bitmap)
         {
             var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
-
             Chroma.Instance.Keyboard.SetCustom(razerArray);
         }
     }
