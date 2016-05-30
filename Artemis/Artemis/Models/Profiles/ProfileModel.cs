@@ -28,6 +28,7 @@ namespace Artemis.Models.Profiles
         public string Name { get; set; }
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
+        public bool IsDefault { get; set; }
 
         [XmlIgnore]
         public DrawingVisual DrawingVisual { get; set; }
@@ -56,36 +57,6 @@ namespace Artemis.Models.Profiles
                 hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
             }
-        }
-
-        /// <summary>
-        ///     Adds a new layer with default settings to the profile
-        /// </summary>
-        /// <returns>The newly added layer</returns>
-        public LayerModel AddLayer()
-        {
-            var layer = new LayerModel
-            {
-                Name = "New layer",
-                Enabled = true,
-                Order = -1,
-                LayerType = LayerType.Keyboard,
-                Properties = new KeyboardPropertiesModel
-                {
-                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
-                    Animation = LayerAnimation.None,
-                    Height = 1,
-                    Width = 1,
-                    X = 0,
-                    Y = 0,
-                    Opacity = 1
-                }
-            };
-
-            Layers.Add(layer);
-            FixOrder();
-
-            return layer;
         }
 
         public void FixOrder()

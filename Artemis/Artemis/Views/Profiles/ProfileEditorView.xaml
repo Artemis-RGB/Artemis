@@ -158,10 +158,10 @@
                             <StackPanel.ContextMenu>
                                 <ContextMenu
                                     cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="Rename" />
+                                    <MenuItem Header="Rename" cal:Message.Attach="RenameLayer($datacontext)" />
                                     <MenuItem Header="Duplicate" cal:Message.Attach="CloneLayer($datacontext)" />
-                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayerFromMenu($datacontext)" />
-                                    <MenuItem Header="Properties" cal:Message.Attach="LayerEditor($datacontext)" />
+                                    <MenuItem Header="Delete" cal:Message.Attach="RemoveLayer($datacontext)" />
+                                    <MenuItem Header="Properties" cal:Message.Attach="EditLayer($datacontext)" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <CheckBox VerticalAlignment="Center" ToolTip="Layer enabled" IsChecked="{Binding Enabled}" />
@@ -192,7 +192,7 @@
                 </Button.Content>
             </Button>
             <Button x:Name="EditLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename layer"
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Edit layer"
                     IsEnabled="{Binding Path=LayerSelected}">
                 <Button.Content>
                     <Rectangle

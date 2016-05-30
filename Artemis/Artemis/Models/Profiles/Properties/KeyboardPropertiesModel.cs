@@ -24,6 +24,8 @@ namespace Artemis.Models.Profiles.Properties
         public double AnimationSpeed { get; set; }
         public string GifFile { get; set; }
         public List<DynamicPropertiesModel> DynamicProperties { get; set; }
+
+        [XmlIgnore]
         public double AnimationProgress { get; set; }
 
         public Rect GetRect(int scale = 4)

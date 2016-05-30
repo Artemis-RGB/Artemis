@@ -120,12 +120,18 @@ namespace Artemis.ViewModels.Profiles
             if (e.PropertyName != "LayerType")
                 return;
 
+            // Store the brush in case the user wants to reuse it
+            var oldBrush = LayerPropertiesViewModel?.GetAppliedProperties().Brush;
+
             // Update the model
             if (Layer.LayerType != LayerType)
             {
                 Layer.LayerType = LayerType;
                 Layer.SetupProperties();
             }
+
+            if (oldBrush != null)
+                Layer.Properties.Brush = oldBrush;
 
             // Update the KeyboardPropertiesViewModel if it's being used
             var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;

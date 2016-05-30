@@ -59,12 +59,11 @@ namespace Artemis.Models.Profiles
             }
             else
                 appliedProperties = GeneralHelpers.Clone(Properties);
-
+            
             // Update animations on layer types that support them
-            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) && updateAnimations)
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif))
             {
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties,
-                    (KeyboardPropertiesModel) appliedProperties);
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties, updateAnimations);
             }
 
             switch (LayerType)
@@ -195,6 +194,27 @@ namespace Artemis.Models.Profiles
         }
 
         #endregion
+
+        public static LayerModel CreateLayer()
+        {
+            return new LayerModel
+            {
+                Name = "New layer",
+                Enabled = true,
+                Order = -1,
+                LayerType = LayerType.Keyboard,
+                Properties = new KeyboardPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
+                    Animation = LayerAnimation.None,
+                    Height = 1,
+                    Width = 1,
+                    X = 0,
+                    Y = 0,
+                    Opacity = 1
+                }
+            };
+        }
     }
 
     public enum LayerType
