@@ -4,10 +4,11 @@ namespace Artemis.Utilities.Layers
 {
     public static class AnimationUpdater
     {
-        public static void UpdateAnimation(KeyboardPropertiesModel properties, KeyboardPropertiesModel appliedProperties)
+        public static void UpdateAnimation(KeyboardPropertiesModel properties, KeyboardPropertiesModel appliedProperties, bool updateAnimations)
         {
             const int scale = 4;
             var animateProperties = properties.Contain ? appliedProperties : properties;
+            appliedProperties.AnimationProgress = properties.AnimationProgress;
             var progress = appliedProperties.AnimationProgress;
 
             // Horizontal sliding
@@ -40,8 +41,10 @@ namespace Artemis.Utilities.Layers
             }
 
             appliedProperties.AnimationProgress = progress;
-            // Store the animation progress in the actual model for the next frame
-            properties.AnimationProgress = progress;
+
+            // If not previewing, store the animation progress in the actual model for the next frame
+            if (updateAnimations)
+                properties.AnimationProgress = progress;
         }
     }
 }

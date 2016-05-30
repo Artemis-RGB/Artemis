@@ -6,7 +6,10 @@ using Artemis.Managers;
 using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
-using Ninject.Extensions.Logging;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using ILogger = Ninject.Extensions.Logging.ILogger;
 
 namespace Artemis.ViewModels.Flyouts
 {
@@ -15,6 +18,7 @@ namespace Artemis.ViewModels.Flyouts
     {
         private readonly ILogger _logger;
         private string _activeEffectName;
+        private bool _enableDebug;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
@@ -29,6 +33,20 @@ namespace Artemis.ViewModels.Flyouts
 
             PropertyChanged += KeyboardUpdater;
             events.Subscribe(this);
+            ApplyLogging();
+        }
+
+        public MainManager MainManager { get; set; }
+
+        public bool EnableDebug
+        {
+            get { return _enableDebug; }
+            set
+            {
+                if (value == _enableDebug) return;
+                _enableDebug = value;
+                NotifyOfPropertyChange(() => EnableDebug);
+            }
         }
 
         public GeneralSettings GeneralSettings
@@ -41,8 +59,6 @@ namespace Artemis.ViewModels.Flyouts
                 NotifyOfPropertyChange(() => GeneralSettings);
             }
         }
-
-        public MainManager MainManager { get; set; }
 
         public BindableCollection<string> KeyboardProviders
         {
@@ -98,6 +114,27 @@ namespace Artemis.ViewModels.Flyouts
         public void Handle(ToggleEnabled message)
         {
             NotifyOfPropertyChange(() => Enabled);
+        }
+
+        // TODO https://github.com/ninject/Ninject.Extensions.Logging/issues/35
+        private void ApplyLogging()
+        {
+            var c = NLog.LogManager.Configuration;
+            var file = c.FindTargetByName("file") as FileTarget;
+            if (file == null)
+                return;
+
+            var rule = c.LoggingRules.FirstOrDefault(r => r.Targets.Contains(file));
+            if (rule == null)
+                return;
+
+            if (EnableDebug)
+                rule.EnableLoggingForLevel(LogLevel.Debug);
+            else
+                rule.DisableLoggingForLevel(LogLevel.Debug);
+
+            NLog.LogManager.ReconfigExistingLoggers();
+            _logger.Info("Set debug logging to: {0}", EnableDebug);
         }
 
         /// <summary>

@@ -6,11 +6,13 @@ using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using NLog;
 
 namespace Artemis.DAL
 {
     public static class ProfileProvider
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
         private static readonly string ProfileFolder =
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
 
@@ -56,9 +58,12 @@ namespace Artemis.DAL
                 Directory.CreateDirectory(path);
 
             var serializer = new XmlSerializer(typeof(ProfileModel));
-            using (var file = new StreamWriter(path + $@"\{prof.Name}.xml"))
+
+            // Could use a StreamWriter but should serializing fail this method doesn't ruin the existing XML file
+            using (var xml = new StringWriter())
             {
-                serializer.Serialize(file, prof);
+                serializer.Serialize(xml, prof);
+                File.WriteAllText(path + $@"\{prof.Name}.xml", xml.ToString());
             }
         }
 
@@ -71,16 +76,23 @@ namespace Artemis.DAL
             var profilePaths = Directory.GetFiles(ProfileFolder, "*.xml", SearchOption.AllDirectories);
 
             // Parse the JSON files into objects and add them if they are valid
-            // TODO: Invalid file handling
             var deserializer = new XmlSerializer(typeof(ProfileModel));
             foreach (var path in profilePaths)
             {
-                using (var file = new StreamReader(path))
+                try
                 {
-                    var prof = (ProfileModel) deserializer.Deserialize(file);
-                    if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
-                        profiles.Add(prof);
+                    using (var file = new StreamReader(path))
+                    {
+                        var prof = (ProfileModel)deserializer.Deserialize(file);
+                        if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
+                            profiles.Add(prof);
+                    }
                 }
+                catch (InvalidOperationException e)
+                {
+                    _logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
+                }
+                
             }
 
             return profiles;

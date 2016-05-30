@@ -75,12 +75,12 @@ namespace Artemis.Services
             }
         }
 
-        public override Task<string> ShowInputDialog(string title, string message)
+        public override Task<string> ShowInputDialog(string title, string message, MetroDialogSettings settings = null)
         {
             if (GetActiveWindow() == null)
                 return null;
 
-            return GetActiveWindow().ShowInputAsync(title, message);
+            return GetActiveWindow().ShowInputAsync(title, message, settings);
         }
 
         public override bool ShowOpenDialog(out string path, string defaultExt, string filter, string initialDir = null)

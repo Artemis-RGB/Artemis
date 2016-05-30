@@ -17,6 +17,7 @@ using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
+using MahApps.Metro.Controls.Dialogs;
 using Ninject;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
@@ -191,6 +192,12 @@ namespace Artemis.ViewModels.Profiles
             if (e.PropertyName == "KeyboardPreview")
                 return;
 
+            if (e.PropertyName == "SelectedLayer")
+            {
+                NotifyOfPropertyChange(() => LayerSelected);
+                return;
+            }
+
             if (SelectedProfile != null)
                 ProfileProvider.AddOrUpdate(SelectedProfile);
 
@@ -203,9 +210,8 @@ namespace Artemis.ViewModels.Profiles
             Layers.Clear();
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
-            // Update booleans
+
             NotifyOfPropertyChange(() => ProfileSelected);
-            NotifyOfPropertyChange(() => LayerSelected);
         }
 
         /// <summary>
@@ -226,14 +232,14 @@ namespace Artemis.ViewModels.Profiles
             if (ProfileViewModel.SelectedLayer == null)
                 return;
 
-            LayerEditor(ProfileViewModel.SelectedLayer);
+            EditLayer(ProfileViewModel.SelectedLayer);
         }
 
         /// <summary>
         ///     Opens a new LayerEditorView for the given layer
         /// </summary>
         /// <param name="layer">The layer to open the view for</param>
-        public void LayerEditor(LayerModel layer)
+        public void EditLayer(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
             _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, layer);
@@ -273,10 +279,27 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return;
 
-            var layer = SelectedProfile.AddLayer();
-            Layers.Add(layer);
+            // Create a new layer
+            var layer = LayerModel.CreateLayer();
 
-            ProfileViewModel.SelectedLayer = layer;
+            // If there is a selected layer and it has a parent, bind the new layer to it
+            if (ProfileViewModel.SelectedLayer?.Parent != null)
+            {
+                layer.Order = ProfileViewModel.SelectedLayer.Order + 1;
+                ProfileViewModel.SelectedLayer.Parent.Children.Add(layer);
+                ProfileViewModel.SelectedLayer.Parent.FixOrder();
+            }
+            else
+            {
+                // If there was no parent but there is a layer selected, put it below the selected layer
+                if (ProfileViewModel.SelectedLayer != null)
+                    layer.Order = ProfileViewModel.SelectedLayer.Order + 1;
+
+                SelectedProfile.Layers.Add(layer);
+                SelectedProfile.FixOrder();
+            }
+
+            UpdateLayerList(layer);
         }
 
         /// <summary>
@@ -284,27 +307,58 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void RemoveLayer()
         {
-            if (SelectedProfile == null || ProfileViewModel.SelectedLayer == null)
-                return;
-
-            SelectedProfile.Layers.Remove(ProfileViewModel.SelectedLayer);
-            Layers.Remove(ProfileViewModel.SelectedLayer);
-
-            SelectedProfile.FixOrder();
+            RemoveLayer(ProfileViewModel.SelectedLayer);
         }
 
         /// <summary>
         ///     Removes the given layer from the profile
         /// </summary>
         /// <param name="layer"></param>
-        public void RemoveLayerFromMenu(LayerModel layer)
+        public void RemoveLayer(LayerModel layer)
         {
-            SelectedProfile.Layers.Remove(layer);
-            Layers.Remove(layer);
+            if (layer == null)
+                return;
 
-            SelectedProfile.FixOrder();
+            if (layer.Parent != null)
+            {
+                var parent = layer.Parent;
+                layer.Parent.Children.Remove(layer);
+                parent.FixOrder();
+            }
+            else if (layer.Profile != null)
+            {
+                var profile = layer.Profile;
+                layer.Profile.Layers.Remove(layer);
+                profile.FixOrder();
+            }
+
+            // Extra cleanup in case of a wonky layer that has no parent
+            if (SelectedProfile.Layers.Contains(layer))
+                SelectedProfile.Layers.Remove(layer);
+
+            UpdateLayerList(null);
         }
 
+        public async void RenameLayer(LayerModel layer)
+        {
+            if (layer == null)
+                return;
+
+            var newName =
+                await
+                    DialogService.ShowInputDialog("Rename layer", "Please enter a name for the layer",
+                        new MetroDialogSettings {DefaultText = layer.Name});
+            // Null when the user cancelled
+            if (string.IsNullOrEmpty(newName))
+                return;
+
+            layer.Name = newName;
+            UpdateLayerList(layer);
+        }
+
+        /// <summary>
+        ///     Clones the currently selected layer and adds it to the profile, on top of the original
+        /// </summary>
         public void CloneLayer()
         {
             if (ProfileViewModel.SelectedLayer == null)
@@ -320,11 +374,20 @@ namespace Artemis.ViewModels.Profiles
         public void CloneLayer(LayerModel layer)
         {
             var clone = GeneralHelpers.Clone(layer);
-            clone.Order = layer.Order - 1;
-            SelectedProfile.Layers.Add(clone);
-            Layers.Add(clone);
+            clone.Order++;
 
-            SelectedProfile.FixOrder();
+            if (layer.Parent != null)
+            {
+                layer.Parent.Children.Add(clone);
+                layer.Parent.FixOrder();
+            }
+            else if (layer.Profile != null)
+            {
+                layer.Profile.Layers.Add(clone);
+                layer.Profile.FixOrder();
+            }
+
+            UpdateLayerList(clone);
         }
 
         private void UpdateLayerList(LayerModel selectModel)
@@ -333,6 +396,9 @@ namespace Artemis.ViewModels.Profiles
             Layers.Clear();
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
+
+            if (selectModel == null)
+                return;
 
             // A small delay to allow the profile list to rebuild
             Task.Factory.StartNew(() =>
