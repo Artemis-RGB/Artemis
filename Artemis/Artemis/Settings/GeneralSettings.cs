@@ -10,11 +10,11 @@ namespace Artemis.Settings
 {
     public class GeneralSettings
     {
-        private readonly Accent _artemisAccent = ThemeManager.GetAccent("Teal");
-        private readonly Accent _corsairAccent = new Accent("CorsairYellow",
-            new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
-        private readonly AppTheme _darkTheme = ThemeManager.GetAppTheme("BaseDark");
-        private readonly AppTheme _lightTheme = ThemeManager.GetAppTheme("BaseLight");
+        public GeneralSettings()
+        {
+            ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+            ApplyTheme();
+        }
 
         public int GamestatePort
         {
@@ -105,22 +105,25 @@ namespace Artemis.Settings
             ApplyGamestatePort();
         }
 
-        // TODO: http://visionarycoder.com/2015/01/06/setting-themeaccent-with-mahapps-metro/
         private void ApplyTheme()
         {
             switch (Theme)
             {
                 case "Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, _artemisAccent, _lightTheme);
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                        ThemeManager.GetAppTheme("BaseLight"));
                     break;
                 case "Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, _artemisAccent, _darkTheme);
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                        ThemeManager.GetAppTheme("BaseDark"));
                     break;
                 case "Corsair Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, _corsairAccent, _lightTheme);
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                        ThemeManager.GetAppTheme("BaseLight"));
                     break;
                 case "Corsair Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, _corsairAccent, _darkTheme);
+                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                        ThemeManager.GetAppTheme("BaseDark"));
                     break;
             }
         }
