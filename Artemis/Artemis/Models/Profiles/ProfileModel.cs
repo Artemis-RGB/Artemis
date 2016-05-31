@@ -26,9 +26,9 @@ namespace Artemis.Models.Profiles
         public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
 
         public string Name { get; set; }
+        public bool IsDefault { get; set; }
         public string KeyboardName { get; set; }
         public string GameName { get; set; }
-        public bool IsDefault { get; set; }
 
         [XmlIgnore]
         public DrawingVisual DrawingVisual { get; set; }

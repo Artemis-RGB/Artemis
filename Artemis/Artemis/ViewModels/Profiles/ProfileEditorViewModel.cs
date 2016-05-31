@@ -59,6 +59,8 @@ namespace Artemis.ViewModels.Profiles
 
         public ProfileViewModel ProfileViewModel { get; set; }
 
+        public bool EditorEnabled => SelectedProfile != null && !SelectedProfile.IsDefault;
+
         public BindableCollection<ProfileModel> Profiles
         {
             get { return _profiles; }
@@ -204,6 +206,8 @@ namespace Artemis.ViewModels.Profiles
             if (e.PropertyName != "SelectedProfile")
                 return;
 
+            // Update editor enabled state
+            NotifyOfPropertyChange(() => EditorEnabled);
             // Update ProfileViewModel
             ProfileViewModel.SelectedProfile = SelectedProfile;
             // Update interface
@@ -524,6 +528,7 @@ namespace Artemis.ViewModels.Profiles
                     return;
             }
 
+            newProfile.IsDefault = false;
             ProfileProvider.AddOrUpdate(newProfile);
             LoadProfiles();
             SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newProfile.Name);

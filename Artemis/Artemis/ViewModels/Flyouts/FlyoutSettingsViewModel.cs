@@ -7,9 +7,9 @@ using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
-using NLog.Config;
 using NLog.Targets;
 using ILogger = Ninject.Extensions.Logging.ILogger;
+using LogManager = NLog.LogManager;
 
 namespace Artemis.ViewModels.Flyouts
 {
@@ -71,6 +71,20 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
+        public BindableCollection<string> Themes
+            => new BindableCollection<string> {"Light", "Dark", "Corsair Light", "Corsair Dark"};
+
+        public string SelectedTheme
+        {
+            get { return GeneralSettings.Theme; }
+            set
+            {
+                if (value == GeneralSettings.Theme) return;
+                GeneralSettings.Theme = value;
+                NotifyOfPropertyChange(() => SelectedTheme);
+            }
+        }
+
         public string SelectedKeyboardProvider
         {
             get { return _selectedKeyboardProvider; }
@@ -119,7 +133,7 @@ namespace Artemis.ViewModels.Flyouts
         // TODO https://github.com/ninject/Ninject.Extensions.Logging/issues/35
         private void ApplyLogging()
         {
-            var c = NLog.LogManager.Configuration;
+            var c = LogManager.Configuration;
             var file = c.FindTargetByName("file") as FileTarget;
             if (file == null)
                 return;
@@ -133,7 +147,7 @@ namespace Artemis.ViewModels.Flyouts
             else
                 rule.DisableLoggingForLevel(LogLevel.Debug);
 
-            NLog.LogManager.ReconfigExistingLoggers();
+            LogManager.ReconfigExistingLoggers();
             _logger.Info("Set debug logging to: {0}", EnableDebug);
         }
 
