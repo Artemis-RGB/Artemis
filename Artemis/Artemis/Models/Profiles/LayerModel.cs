@@ -19,10 +19,10 @@ namespace Artemis.Models.Profiles
         }
 
         public string Name { get; set; }
+        public int Order { get; set; }
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
         public bool Expanded { get; set; }
-        public int Order { get; set; }
         public LayerPropertiesModel Properties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 

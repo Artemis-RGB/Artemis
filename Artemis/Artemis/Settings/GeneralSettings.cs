@@ -2,12 +2,20 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
+using System.Windows;
 using Artemis.Utilities;
+using MahApps.Metro;
 
 namespace Artemis.Settings
 {
     public class GeneralSettings
     {
+        private readonly Accent _artemisAccent = ThemeManager.GetAccent("Teal");
+        private readonly Accent _corsairAccent = new Accent("CorsairYellow",
+            new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+        private readonly AppTheme _darkTheme = ThemeManager.GetAppTheme("BaseDark");
+        private readonly AppTheme _lightTheme = ThemeManager.GetAppTheme("BaseLight");
+
         public int GamestatePort
         {
             get { return General.Default.GamestatePort; }
@@ -58,6 +66,16 @@ namespace Artemis.Settings
             }
         }
 
+        public string Theme
+        {
+            get { return General.Default.Theme; }
+            set
+            {
+                if (General.Default.Theme == value) return;
+                General.Default.Theme = value;
+            }
+        }
+
         private void ApplyGamestatePort()
         {
             // TODO: Restart Gamestate server with new port
@@ -83,7 +101,28 @@ namespace Artemis.Settings
             General.Default.Save();
 
             ApplyAutorun();
+            ApplyTheme();
             ApplyGamestatePort();
+        }
+
+        // TODO: http://visionarycoder.com/2015/01/06/setting-themeaccent-with-mahapps-metro/
+        private void ApplyTheme()
+        {
+            switch (Theme)
+            {
+                case "Light":
+                    ThemeManager.ChangeAppStyle(Application.Current, _artemisAccent, _lightTheme);
+                    break;
+                case "Dark":
+                    ThemeManager.ChangeAppStyle(Application.Current, _artemisAccent, _darkTheme);
+                    break;
+                case "Corsair Light":
+                    ThemeManager.ChangeAppStyle(Application.Current, _corsairAccent, _lightTheme);
+                    break;
+                case "Corsair Dark":
+                    ThemeManager.ChangeAppStyle(Application.Current, _corsairAccent, _darkTheme);
+                    break;
+            }
         }
 
         public void ResetSettings()
@@ -93,6 +132,7 @@ namespace Artemis.Settings
             Autorun = true;
             CheckForUpdates = true;
             ShowOnStartup = true;
+            Theme = "Light";
 
             SaveSettings();
         }

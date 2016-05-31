@@ -117,8 +117,11 @@ namespace Artemis.ViewModels.Profiles
                     layer.Draw<object>(null, drawingContext, true, false);
 
                 // Get the selection color
-                var color = (Color) ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
-                var pen = new Pen(new SolidColorBrush(color), 0.4);
+                var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
+                if (accentColor == null)
+                    return;
+
+                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
 
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
@@ -168,7 +171,7 @@ namespace Artemis.ViewModels.Profiles
         /// <param name="e"></param>
         public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
         {
-            if (SelectedProfile == null)
+            if (SelectedProfile == null || SelectedProfile.IsDefault)
                 return;
 
             var timeSinceDown = DateTime.Now - _downTime;

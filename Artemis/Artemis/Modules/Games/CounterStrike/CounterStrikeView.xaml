@@ -7,14 +7,14 @@
              mc:Ignorable="d"
              d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Margin="15, 5, 15, 5">
+        <Grid Margin="15,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="80" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -39,8 +39,8 @@
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="16" Content="CS:GO Directory" FontFamily="Segoe UI Semibold" Foreground="#535353"
-                       Width="130" HorizontalAlignment="Left" />
+
+                <Label FontSize="20" HorizontalAlignment="Left" Content="CS:GO Directory" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                              Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
@@ -52,7 +52,7 @@
             </StackPanel>
 
             <!-- Profile editor -->
-            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">

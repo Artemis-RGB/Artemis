@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -33,7 +34,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Disable()
         {
             if (CueSDK.ProtocolDetails != null)
-                CueSDK.Reinitialize(true);
+                CueSDK.Reinitialize();
         }
 
         public override void UpdateDevice(Brush brush)
@@ -65,36 +66,29 @@ namespace Artemis.DeviceProviders.Corsair
 
         private static bool CanInitializeSdk()
         {
-            // Try for about 10 seconds, in case CUE isn't started yet
-            var tries = 0;
-            while (tries < 9)
+            // If already initialized, return result right away
+            if (CueSDK.ProtocolDetails != null)
+                return CueSDK.HeadsetSDK != null;
+
+            // Else try to enable the SDK
+            for (var tries = 0; tries < 9; tries++)
             {
+                if (CueSDK.ProtocolDetails != null)
+                    break;
+
                 try
                 {
-                    if (CueSDK.ProtocolDetails == null)
-                        CueSDK.Initialize(true);
-                    else
-                        return true;
+                    CueSDK.Initialize();
                 }
-                catch (CUEException e)
+                catch (Exception)
                 {
-                    if (e.Error != CorsairError.ServerNotFound)
-                        return true;
-
-                    tries++;
-                    Thread.Sleep(1000);
-                    continue;
+                    Thread.Sleep(2000);
                 }
-                catch (WrapperException)
-                {
-                    CueSDK.Reinitialize(true);
-                    return true;
-                }
-
-                return true;
             }
 
-            return false;
+            if (CueSDK.ProtocolDetails == null)
+                return false;
+            return CueSDK.HeadsetSDK != null;
         }
     }
 }

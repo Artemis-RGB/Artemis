@@ -1,13 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
-using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
-using CUE.NET.Exceptions;
 
 namespace Artemis.DeviceProviders.Corsair
 {
@@ -26,34 +25,29 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override bool CanEnable()
         {
-            // Try for about 10 seconds, in case CUE isn't started yet
-            var tries = 0;
-            while (tries < 9)
+            // If already initialized, return result right away
+            if (CueSDK.ProtocolDetails != null)
+                return CueSDK.KeyboardSDK != null;
+
+            // Else try to enable the SDK
+            for (var tries = 0; tries < 9; tries++)
             {
+                if (CueSDK.ProtocolDetails != null)
+                    break;
+
                 try
                 {
-                    if (CueSDK.ProtocolDetails == null)
-                        CueSDK.Initialize(true);
+                    CueSDK.Initialize();
                 }
-                catch (CUEException e)
+                catch (Exception)
                 {
-                    if (e.Error == CorsairError.ServerNotFound)
-                    {
-                        tries++;
-                        Thread.Sleep(1000);
-                        continue;
-                    }
+                    Thread.Sleep(2000);
                 }
-                catch (WrapperException)
-                {
-                    CueSDK.Reinitialize(true);
-                    return true;
-                }
-
-                return true;
             }
 
-            return false;
+            if (CueSDK.ProtocolDetails == null)
+                return false;
+            return CueSDK.KeyboardSDK != null;
         }
 
         /// <summary>
@@ -62,7 +56,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Enable()
         {
             if (CueSDK.ProtocolDetails == null)
-                CueSDK.Initialize(true);
+                CueSDK.Initialize();
 
             _keyboard = CueSDK.KeyboardSDK;
             switch (_keyboard.DeviceInfo.Model)
@@ -93,7 +87,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Disable()
         {
             if (CueSDK.ProtocolDetails != null)
-                CueSDK.Reinitialize(true);
+                CueSDK.Reinitialize();
         }
 
         /// <summary>
