@@ -3,9 +3,13 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
@@ -19,6 +23,7 @@ using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
+using Application = System.Windows.Application;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -248,8 +253,19 @@ namespace Artemis.ViewModels.Profiles
             IWindowManager manager = new WindowManager();
             _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, layer);
             dynamic settings = new ExpandoObject();
+            var iconImage = new Image
+            {
+                Source = (DrawingImage) Application.Current.MainWindow.Resources["BowIcon"],
+                Stretch = Stretch.Uniform,
+                Margin = new Thickness(20)
+            };
+            iconImage.Arrange(new Rect(0, 0, 100, 100));
+            var bitmap = new RenderTargetBitmap(100, 100, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(iconImage);
 
             settings.Title = "Artemis | Edit " + layer.Name;
+            settings.Icon = bitmap;
+
             manager.ShowDialog(_editorVm, null, settings);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
