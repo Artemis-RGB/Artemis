@@ -635,6 +635,7 @@
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
     <None Include="Resources\RzChromaSDK64.dll" />
+    <Resource Include="Resources\Keyboards\blackwidow.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <None Include="Settings\Offsets.settings">

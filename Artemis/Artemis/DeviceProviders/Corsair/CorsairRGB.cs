@@ -69,17 +69,17 @@ namespace Artemis.DeviceProviders.Corsair
                 case "K70 RGB":
                     Height = 7;
                     Width = 21;
-                    PreviewSettings = new PreviewSettings(676, 195, new Thickness(0, -25, 0, 0), Resources.k70);
+                    PreviewSettings = new PreviewSettings(676, 210, new Thickness(0, -25, 0, 0), Resources.k70);
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
-                    PreviewSettings = new PreviewSettings(660, 240, new Thickness(0, -30, 0, 0), Resources.k65);
+                    PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
                     break;
                 case "STRAFE RGB":
-                    Height = 6;
+                    Height = 7;
                     Width = 22;
-                    PreviewSettings = new PreviewSettings(670, 215, new Thickness(0, -15, 0, 0), Resources.strafe);
+                    PreviewSettings = new PreviewSettings(665, 215, new Thickness(0, -5, 0, 0), Resources.strafe);
                     break;
             }
         }
