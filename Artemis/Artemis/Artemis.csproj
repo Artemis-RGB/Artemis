@@ -390,7 +390,6 @@
     <Compile Include="Modules\Games\Overwatch\OverwatchModel.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchSettings.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchViewModel.cs" />
-    <Compile Include="Modules\Games\Witcher3\TheWitcherDataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
@@ -635,6 +634,7 @@
     <None Include="Resources\gif.png" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
+    <None Include="Resources\RzChromaSDK64.dll" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <None Include="Settings\Offsets.settings">

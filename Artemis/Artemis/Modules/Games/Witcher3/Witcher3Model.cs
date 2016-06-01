@@ -21,7 +21,7 @@ namespace Artemis.Modules.Games.Witcher3
         private string _witcherSettings;
 
         public Witcher3Model(MainManager mainManager, Witcher3Settings settings)
-            : base(mainManager, settings, new TheWitcherDataModel())
+            : base(mainManager, settings, new Witcher3DataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
@@ -67,7 +67,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Update()
         {
-            var gameDataModel = (TheWitcherDataModel) GameDataModel;
+            var gameDataModel = (Witcher3DataModel) GameDataModel;
             // Witcher effect is very static and reads from disk, don't want to update too often.
             if (_updateSw.ElapsedMilliseconds < 500)
                 return;
@@ -112,17 +112,17 @@ namespace Artemis.Modules.Games.Witcher3
                 return null;
 
             var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<TheWitcherDataModel>(keyboardRect, GameDataModel, false, true);
+            return Profile.GenerateBitmap<Witcher3DataModel>(keyboardRect, GameDataModel, false, true);
         }
 
         public override Brush GenerateMouseBrush()
         {
-            return Profile.GenerateBrush<TheWitcherDataModel>(GameDataModel, LayerType.Mouse, false, true);
+            return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
-            return Profile.GenerateBrush<TheWitcherDataModel>(GameDataModel, LayerType.Headset, false, true);
+            return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 }

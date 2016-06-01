@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
@@ -26,7 +24,8 @@ namespace Artemis.ViewModels.Abstract
             PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel);
+            ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel,
+                GameSettings.LastProfile);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
             Events.Subscribe(this);
@@ -91,14 +90,19 @@ namespace Artemis.ViewModels.Abstract
 
             SaveSettings();
         }
-        
+
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "SelectedProfile" && IsActive)
                 return;
-
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+
+            if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
+                ProfileEditor.ProfileViewModel.SelectedProfile == null)
+                return;
+            GameSettings.LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
+            GameSettings.Save();
         }
 
         protected override void OnActivate()

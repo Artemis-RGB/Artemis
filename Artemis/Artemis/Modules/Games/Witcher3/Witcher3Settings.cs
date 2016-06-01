@@ -12,11 +12,13 @@ namespace Artemis.Modules.Games.Witcher3
         public sealed override void Load()
         {
             Enabled = Witcher3.Default.Enabled;
+            LastProfile = Witcher3.Default.LastProfile;
         }
 
         public sealed override void Save()
         {
             Witcher3.Default.Enabled = Enabled;
+            Witcher3.Default.LastProfile = LastProfile;
 
             Witcher3.Default.Save();
         }

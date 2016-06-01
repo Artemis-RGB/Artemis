@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 using static System.String;
 
 namespace Artemis.Utilities
@@ -110,6 +110,33 @@ namespace Artemis.Utilities
                         path + $"{propertyInfo.Name}."));
             }
             return list;
+        }
+
+        public static string FindSteamGame(string relativePath)
+        {
+            var key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
+            if (key == null)
+                return null;
+            var path = key.GetValue("SteamPath").ToString();
+            var libFile = path + @"\steamapps\libraryfolders.vdf";
+            if (!File.Exists(libFile))
+                return null;
+
+            // Try the main SteamApps folder
+            if (File.Exists(path + "\\SteamApps\\common" + relativePath))
+                return Path.GetDirectoryName(path + "\\SteamApps\\common" + relativePath);
+
+            // If not found in the main folder, try all the libraries found in the vdf file.
+            var content = File.ReadAllText(libFile);
+            var matches = Regex.Matches(content, "\"\\d\"\\t\\t\"(.*)\"");
+            foreach (Match match in matches)
+            {
+                var library = match.Groups[1].Value;
+                library = library.Replace("\\\\", "\\") + "\\SteamApps\\common";
+                if (File.Exists(library + relativePath))
+                    return Path.GetDirectoryName(library + relativePath);
+            }
+            return null;
         }
 
         public struct PropertyCollection

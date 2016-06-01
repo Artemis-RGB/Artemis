@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -42,7 +41,7 @@ namespace Artemis.ViewModels.Profiles
         private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel,
-            ProfileViewModel profileViewModel, MetroDialogService dialogService)
+            ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile)
         {
             _mainManager = mainManager;
             _gameModel = gameModel;
@@ -51,6 +50,7 @@ namespace Artemis.ViewModels.Profiles
             Layers = new BindableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
             DialogService = dialogService;
+            LastProfile = lastProfile;
 
             events.Subscribe(this);
 
@@ -61,6 +61,8 @@ namespace Artemis.ViewModels.Profiles
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
+        public string LastProfile { get; set; }
 
         public ProfileViewModel ProfileViewModel { get; set; }
 
@@ -233,7 +235,13 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             Profiles.AddRange(ProfileProvider.GetAll(_gameModel, _mainManager.DeviceManager.ActiveKeyboard));
-            SelectedProfile = Profiles.FirstOrDefault();
+
+            // If a profile name was provided, try to load it
+            ProfileModel lastProfileModel = null;
+            if (!string.IsNullOrEmpty(LastProfile))
+                lastProfileModel = Profiles.FirstOrDefault(p => p.Name == LastProfile);
+
+            SelectedProfile = lastProfileModel ?? Profiles.FirstOrDefault();
         }
 
         public void EditLayer()

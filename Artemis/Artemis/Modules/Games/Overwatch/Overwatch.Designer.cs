@@ -34,5 +34,29 @@ namespace Artemis.Modules.Games.Overwatch {
                 this["Enabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string LastProfile {
+            get {
+                return ((string)(this["LastProfile"]));
+            }
+            set {
+                this["LastProfile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GameDirectory {
+            get {
+                return ((string)(this["GameDirectory"]));
+            }
+            set {
+                this["GameDirectory"] = value;
+            }
+        }
     }
 }

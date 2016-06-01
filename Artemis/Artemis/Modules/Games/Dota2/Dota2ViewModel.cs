@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Properties;
+using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
 
@@ -14,11 +15,28 @@ namespace Artemis.Modules.Games.Dota2
             : base(main, new Dota2Model(main, new Dota2Settings()), events, pFactory)
         {
             DisplayName = "Dota 2";
-
             MainManager.EffectManager.EffectModels.Add(GameModel);
+
+            FindGameDir();
             PlaceConfigFile();
         }
-        
+
+        public void FindGameDir()
+        {
+            var gameSettings = (Dota2Settings)GameSettings;
+            // If already propertly set up, don't do anything
+            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
+                File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
+                return;
+
+            var dir = GeneralHelpers.FindSteamGame(@"\dota 2 beta\game\bin\win32\dota2.exe");
+            // Remove subdirectories where they stuck the executable
+            dir = dir?.Substring(0, dir.Length - 15);
+
+            gameSettings.GameDirectory = dir ?? string.Empty;
+            gameSettings.Save();
+        }
+
         public void BrowseDirectory()
         {
             var dialog = new FolderBrowserDialog {SelectedPath = ((Dota2Settings) GameSettings).GameDirectory};

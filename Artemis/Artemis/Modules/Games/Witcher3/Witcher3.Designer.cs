@@ -34,5 +34,17 @@ namespace Artemis.Modules.Games.Witcher3 {
                 this["Enabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string LastProfile {
+            get {
+                return ((string)(this["LastProfile"]));
+            }
+            set {
+                this["LastProfile"] = value;
+            }
+        }
     }
 }
