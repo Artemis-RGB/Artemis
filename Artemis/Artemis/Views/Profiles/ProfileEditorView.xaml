@@ -30,9 +30,8 @@
         BorderThickness="3" Width="800" Height="400">
             <Border>
                 <Border.Effect>
-                    <!-- TODO: Pulse 10-20 -->
                     <DropShadowEffect ShadowDepth="0" Color="{DynamicResource HighlightColor}" Opacity="1"
-                                      BlurRadius="20" />
+                                      BlurRadius="{Binding Path=ProfileViewModel.BlurRadius, Mode=OneWay}" />
                 </Border.Effect>
                 <Grid>
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=ProfileViewModel.KeyboardImage}" Margin="50" />

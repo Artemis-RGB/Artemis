@@ -19,6 +19,8 @@ namespace Artemis.ViewModels.Profiles
     public class ProfileViewModel : PropertyChangedBase, IHandle<ActiveKeyboardChanged>
     {
         private readonly DeviceManager _deviceManager;
+        private double _blurProgress;
+        private double _blurRadius;
         private DateTime _downTime;
         private LayerModel _draggingLayer;
         private Point? _draggingLayerOffset;
@@ -61,6 +63,16 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
+        public double BlurRadius
+        {
+            get { return _blurRadius; }
+            set
+            {
+                if (value.Equals(_blurRadius)) return;
+                _blurRadius = value;
+                NotifyOfPropertyChange(() => BlurRadius);
+            }
+        }
 
         public ImageSource KeyboardImage
         {
@@ -98,6 +110,11 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void UpdateKeyboardPreview()
         {
+            if (_blurProgress > 2)
+                _blurProgress = 0;
+            _blurProgress = _blurProgress + 0.025;
+            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
+
             if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
             {
                 KeyboardPreview = new DrawingImage();

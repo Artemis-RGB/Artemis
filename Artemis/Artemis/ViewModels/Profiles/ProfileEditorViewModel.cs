@@ -608,6 +608,7 @@ namespace Artemis.ViewModels.Profiles
                     return;
 
                 profile.KeyboardName = _mainManager.DeviceManager.ActiveKeyboard.Name;
+                profile.IsDefault = false;
                 profile.FixBoundaries(_mainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(1));
             }
 
