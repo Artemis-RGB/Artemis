@@ -11,33 +11,31 @@ namespace Artemis.Utilities.Layers
             appliedProperties.AnimationProgress = properties.AnimationProgress;
             var progress = appliedProperties.AnimationProgress;
 
-            // Horizontal sliding
-            if (animateProperties.Animation == LayerAnimation.SlideRight ||
-                animateProperties.Animation == LayerAnimation.SlideLeft)
+            switch (animateProperties.Animation)
             {
-                if (progress + 1 >= animateProperties.Width*scale)
-                    progress = 0;
-            }
-
-            // Vertical sliding
-            if (animateProperties.Animation == LayerAnimation.SlideDown ||
-                animateProperties.Animation == LayerAnimation.SlideUp)
-            {
-                if (progress + 1 >= animateProperties.Height*scale)
-                    progress = 0;
-            }
-
-            // Pulse animation
-            if (animateProperties.Animation == LayerAnimation.Pulse)
-            {
-                if (progress > 2)
-                    progress = 0;
-
-                progress = progress + animateProperties.AnimationSpeed/2;
-            }
-            else
-            {
-                progress = progress + animateProperties.AnimationSpeed*2;
+                case LayerAnimation.SlideRight:
+                case LayerAnimation.SlideLeft:
+                    if (progress + 1 >= animateProperties.Width*scale)
+                        progress = 0;
+                    break;
+                case LayerAnimation.SlideDown:
+                case LayerAnimation.SlideUp:
+                    if (progress + 1 >= animateProperties.Height*scale)
+                        progress = 0;
+                    break;
+                case LayerAnimation.Pulse:
+                    if (progress > 2)
+                        progress = 0;
+                    progress = progress + animateProperties.AnimationSpeed/2;
+                    break;
+                case LayerAnimation.Grow:
+                    if (progress > 10)
+                        progress = 0;
+                    progress = progress + animateProperties.AnimationSpeed / 2.5;
+                    break;
+                default:
+                    progress = progress + animateProperties.AnimationSpeed*2;
+                    break;
             }
 
             appliedProperties.AnimationProgress = progress;

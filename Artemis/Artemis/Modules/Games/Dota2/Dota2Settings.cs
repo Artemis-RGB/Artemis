@@ -29,14 +29,16 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Save()
         {
+            Dota2.Default.Enabled = Enabled;
+            Dota2.Default.LastProfile = LastProfile;
+            Dota2.Default.GameDirectory = GameDirectory;
+
             Dota2.Default.KeyboardLayout = KeyboardLayout;
             Dota2.Default.MainColor = MainColor;
             Dota2.Default.ManaColor = ManaColor;
             Dota2.Default.ShowDayCycle = ShowDayCycle;
             Dota2.Default.ShowHealth = ShowHealth;
             Dota2.Default.CanCastAbility = CanCastAbility;
-            Dota2.Default.Enabled = Enabled;
-            Dota2.Default.GameDirectory = GameDirectory;
             Dota2.Default.ShowMana = ShowMana;
             Dota2.Default.ShowEvents = ShowEvents;
             Dota2.Default.AbilityCooldownColor = AbilityCooldownColor;

@@ -64,10 +64,14 @@ namespace Artemis.ViewModels.Profiles
 
         public ImageSource KeyboardImage
         {
-            get
-            {
-                return ImageUtilities.BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image);
-            }
+            get { return ImageUtilities.BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image); }
+        }
+
+        public bool Activated { get; set; }
+
+        public void Handle(ActiveKeyboardChanged message)
+        {
+            NotifyOfPropertyChange(() => KeyboardImage);
         }
 
         private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
@@ -77,11 +81,13 @@ namespace Artemis.ViewModels.Profiles
 
         public void Activate()
         {
+            Activated = true;
             PreviewTimer.Start();
         }
 
         public void Deactivate()
         {
+            Activated = false;
             PreviewTimer.Stop();
         }
 
@@ -300,10 +306,5 @@ namespace Artemis.ViewModels.Profiles
         }
 
         #endregion
-
-        public void Handle(ActiveKeyboardChanged message)
-        {
-            NotifyOfPropertyChange(() => KeyboardImage);
-        }
     }
 }

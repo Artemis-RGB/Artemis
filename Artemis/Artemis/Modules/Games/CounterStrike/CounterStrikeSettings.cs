@@ -24,6 +24,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public sealed override void Load()
         {
             Enabled = CounterStrike.Default.Enabled;
+            LastProfile = CounterStrike.Default.LastProfile;
             GameDirectory = CounterStrike.Default.GameDirectory;
 
             AmmoEnabled = CounterStrike.Default.AmmoEnabled;

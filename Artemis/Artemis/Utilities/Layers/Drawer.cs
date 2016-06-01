@@ -59,13 +59,30 @@ namespace Artemis.Utilities.Layers
             Rect rectangle,
             Rect slide1, Rect slide2)
         {
-            // Apply the pulse animation
             var brush = properties.Brush.CloneCurrentValue();
             brush.Opacity = properties.Opacity;
+
+            // Apply the pulse animation
             if (properties.Animation == LayerAnimation.Pulse)
                 brush.Opacity = (Math.Sin(properties.AnimationProgress*Math.PI) + 1)*(properties.Opacity/2);
             else
                 brush.Opacity = properties.Opacity;
+
+            if (properties.Animation == LayerAnimation.Grow)
+            {
+                // Take an offset of 4 to allow layers to slightly leave their bounds
+                var progress = (6.0 - properties.AnimationProgress)*10.0;
+                if (progress < 0)
+                {
+                    brush.Opacity = 1 + (0.025*progress);
+                    if (brush.Opacity < 0)
+                        brush.Opacity = 0;
+                    if (brush.Opacity > 1)
+                        brush.Opacity = 1;
+                }
+                rectangle.Inflate(-rectangle.Width/100.0*progress, -rectangle.Height/100.0*progress);
+                clip.Inflate(-clip.Width/100.0*progress, -clip.Height/100.0*progress);
+            }
 
             c.PushClip(new RectangleGeometry(clip));
             // Most animation types can be drawn regularly
