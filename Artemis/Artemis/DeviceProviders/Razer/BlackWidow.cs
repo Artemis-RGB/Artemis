@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
+using System.Windows;
 using Artemis.DeviceProviders.Razer.Utilities;
+using Artemis.Properties;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
 using Corale.Colore.Razer.Keyboard;
@@ -15,10 +17,16 @@ namespace Artemis.DeviceProviders.Razer
             CantEnableText = "Couldn't connect to your Razer BlackWidow Chroma.\n" +
                              "Please check your cables and try updating Razer Synapse.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
+
+            Height = Constants.MaxRows;
+            Width = Constants.MaxColumns;
+            PreviewSettings = new PreviewSettings(665, 175, new Thickness(0, -15, 0, 0), Resources.blackwidow);
         }
 
         public override bool CanEnable()
         {
+            return true;
+
             if (!Chroma.IsSdkAvailable())
                 return false;
 
@@ -30,18 +38,19 @@ namespace Artemis.DeviceProviders.Razer
 
         public override void Enable()
         {
+            return;
             Chroma.Instance.Initialize();
-            Height = Constants.MaxRows;
-            Width = Constants.MaxColumns;
         }
 
         public override void Disable()
         {
+            return;
             Chroma.Instance.Uninitialize();
         }
 
         public override void DrawBitmap(Bitmap bitmap)
         {
+            return;
             var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
             Chroma.Instance.Keyboard.SetCustom(razerArray);
         }
