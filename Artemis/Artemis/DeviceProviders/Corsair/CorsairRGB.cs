@@ -107,8 +107,9 @@ namespace Artemis.DeviceProviders.Corsair
                 using (var g = Graphics.FromImage(strafeBitmap))
                 {
                     g.DrawImage(image, new Point(0, 0));
-                    g.DrawImage(image, new Rectangle(0, 0, 22, 8), new Rectangle(0, 2, 22, 6), GraphicsUnit.Pixel);
+                    g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
                 }
+
                 image = strafeBitmap;
             }
 
