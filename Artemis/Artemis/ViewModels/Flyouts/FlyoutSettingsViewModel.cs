@@ -133,6 +133,7 @@ namespace Artemis.ViewModels.Flyouts
         // TODO https://github.com/ninject/Ninject.Extensions.Logging/issues/35
         private void ApplyLogging()
         {
+            return;
             var c = LogManager.Configuration;
             var file = c.FindTargetByName("file") as FileTarget;
             if (file == null)
