@@ -4,6 +4,7 @@ using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.Utilities.LogitechDll;
 
 namespace Artemis.DeviceProviders.Logitech
 {
@@ -21,10 +22,11 @@ namespace Artemis.DeviceProviders.Logitech
             PreviewSettings = new PreviewSettings(540, 154, new Thickness(25, -80, 0, 0), Resources.g910);
         }
 
+        // TODO: https://github.com/SpoinkyNL/Artemis/issues/86
         public override bool CanEnable()
         {
-            //if (DllManager.RestoreDll())
-            //    RestoreDll();
+            if (DllManager.RestoreDll())
+                RestoreDll();
             int majorNum = 0, minorNum = 0, buildNum = 0;
 
             LogitechGSDK.LogiLedInit();

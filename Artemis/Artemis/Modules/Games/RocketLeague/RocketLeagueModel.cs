@@ -80,11 +80,17 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override Brush GenerateMouseBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
