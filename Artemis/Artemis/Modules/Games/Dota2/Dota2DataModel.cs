@@ -23,6 +23,7 @@ namespace Artemis.Modules.Games.Dota2
 
     public class Map
     {
+        public int dayCyclePercentage;
         public string name { get; set; }
         public long matchid { get; set; }
         public int game_time { get; set; }

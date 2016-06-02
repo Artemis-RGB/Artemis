@@ -23,7 +23,6 @@ namespace Artemis.Modules.Games.Dota2
 
         public int Scale { get; set; }
         public new Dota2Settings Settings { get; set; }
-        public Dota2DataModel D2Json { get; set; }
 
         public override void Dispose()
         {
@@ -41,20 +40,17 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Update()
         {
-            if (D2Json?.map == null)
-                return;
-
             UpdateDay();
         }
 
         private void UpdateDay()
         {
-            if (D2Json?.map?.daytime == null)
+            var dataModel = GameDataModel as Dota2DataModel;
+            if (dataModel?.map?.daytime == null)
                 return;
 
-            var timeLeft = 240 - D2Json.map.clock_time%240;
-            var timePercentage = 100.00/240*timeLeft;
-            // TODO: Insert timePercentage into the DataModel as it will be useful when creating profiles
+            var timeLeft = 240 - dataModel.map.clock_time%240;
+            dataModel.map.dayCyclePercentage = (int) (100.00 / 240 * timeLeft);
         }
 
 
@@ -69,11 +65,17 @@ namespace Artemis.Modules.Games.Dota2
 
         public override Brush GenerateMouseBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<Dota2DataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<Dota2DataModel>(GameDataModel, LayerType.Headset, false, true);
         }
 
@@ -86,7 +88,7 @@ namespace Artemis.Modules.Games.Dota2
                 return;
 
             // Parse the JSON
-            D2Json = JsonConvert.DeserializeObject<Dota2DataModel>(jsonString);
+            GameDataModel = JsonConvert.DeserializeObject<Dota2DataModel>(jsonString);
         }
     }
 }

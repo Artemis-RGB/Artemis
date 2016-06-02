@@ -117,11 +117,17 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override Brush GenerateMouseBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }

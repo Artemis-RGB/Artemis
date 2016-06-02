@@ -139,12 +139,18 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override Brush GenerateMouseBrush()
         {
-            return Profile?.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Mouse, false, true);
+            if (Profile == null || GameDataModel == null)
+                return null;
+
+            return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
-            return Profile?.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Headset, false, true);
+            if (Profile == null || GameDataModel == null)
+                return null;
+
+            return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 

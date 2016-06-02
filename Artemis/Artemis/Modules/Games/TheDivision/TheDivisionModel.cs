@@ -244,11 +244,17 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override Brush GenerateMouseBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }

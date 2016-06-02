@@ -55,11 +55,17 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override Brush GenerateMouseBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
         public override Brush GenerateHeadsetBrush()
         {
+            if (Profile == null || GameDataModel == null)
+                return null;
+
             return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Headset,  false, true);
         }
 
