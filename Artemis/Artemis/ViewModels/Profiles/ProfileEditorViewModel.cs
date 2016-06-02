@@ -150,9 +150,17 @@ namespace Artemis.ViewModels.Profiles
 
             // Remove the source from it's old profile/parent
             if (source.Parent == null)
+            {
+                var profile = source.Profile;
                 source.Profile.Layers.Remove(source);
+                profile.FixOrder();
+            }
             else
+            {
+                var parent = source.Parent;
                 source.Parent.Children.Remove(source);
+                parent.FixOrder();
+            }
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
                 target.LayerType == LayerType.Folder)
@@ -165,18 +173,14 @@ namespace Artemis.ViewModels.Profiles
             else
             {
                 // Insert the source into it's new profile/parent and update the order
-                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
-                    source.Order = target.Order + 1;
+                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem ||
+                    dropInfo.InsertPosition ==
+                    (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem))
+                    target.InsertAfter(source);
                 else
-                    source.Order = target.Order - 1;
-                if (target.Parent == null)
-                    target.Profile.Layers.Add(source);
-                else
-                    target.Parent.Children.Add(source);
+                    target.InsertBefore(source);
             }
 
-            target.Profile?.FixOrder();
-            target.Parent?.FixOrder();
             UpdateLayerList(source);
         }
 
@@ -310,19 +314,10 @@ namespace Artemis.ViewModels.Profiles
             // Create a new layer
             var layer = LayerModel.CreateLayer();
 
-            // If there is a selected layer and it has a parent, bind the new layer to it
-            if (ProfileViewModel.SelectedLayer?.Parent != null)
-            {
-                layer.Order = ProfileViewModel.SelectedLayer.Order + 1;
-                ProfileViewModel.SelectedLayer.Parent.Children.Add(layer);
-                ProfileViewModel.SelectedLayer.Parent.FixOrder();
-            }
+            if (ProfileViewModel.SelectedLayer != null)
+                ProfileViewModel.SelectedLayer.InsertAfter(layer);
             else
             {
-                // If there was no parent but there is a layer selected, put it below the selected layer
-                if (ProfileViewModel.SelectedLayer != null)
-                    layer.Order = ProfileViewModel.SelectedLayer.Order + 1;
-
                 SelectedProfile.Layers.Add(layer);
                 SelectedProfile.FixOrder();
             }
@@ -385,7 +380,7 @@ namespace Artemis.ViewModels.Profiles
         }
 
         /// <summary>
-        ///     Clones the currently selected layer and adds it to the profile, on top of the original
+        ///     Clones the currently selected layer and adds it to the profile, after the original
         /// </summary>
         public void CloneLayer()
         {
@@ -396,24 +391,13 @@ namespace Artemis.ViewModels.Profiles
         }
 
         /// <summary>
-        ///     Clones the given layer and adds it to the profile, on top of the original
+        ///     Clones the given layer and adds it to the profile, after the original
         /// </summary>
         /// <param name="layer"></param>
         public void CloneLayer(LayerModel layer)
         {
             var clone = GeneralHelpers.Clone(layer);
-            clone.Order++;
-
-            if (layer.Parent != null)
-            {
-                layer.Parent.Children.Add(clone);
-                layer.Parent.FixOrder();
-            }
-            else if (layer.Profile != null)
-            {
-                layer.Profile.Layers.Add(clone);
-                layer.Profile.FixOrder();
-            }
+            layer.InsertAfter(clone);
 
             UpdateLayerList(clone);
         }

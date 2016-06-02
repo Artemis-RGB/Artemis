@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
@@ -59,11 +60,12 @@ namespace Artemis.Models.Profiles
             }
             else
                 appliedProperties = GeneralHelpers.Clone(Properties);
-            
+
             // Update animations on layer types that support them
-            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif))
+            if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
             {
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties, updateAnimations);
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties,
+                    (KeyboardPropertiesModel) appliedProperties, updateAnimations);
             }
 
             switch (LayerType)
@@ -148,7 +150,7 @@ namespace Artemis.Models.Profiles
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
                 };
         }
-        
+
         public void FixOrder()
         {
             Children.Sort(l => l.Order);
@@ -179,22 +181,6 @@ namespace Artemis.Models.Profiles
             return layers;
         }
 
-        #region IChildItem<Parent> Members
-
-        LayerModel IChildItem<LayerModel>.Parent
-        {
-            get { return Parent; }
-            set { Parent = value; }
-        }
-
-        ProfileModel IChildItem<ProfileModel>.Parent
-        {
-            get { return Profile; }
-            set { Profile = value; }
-        }
-
-        #endregion
-
         public static LayerModel CreateLayer()
         {
             return new LayerModel
@@ -215,6 +201,56 @@ namespace Artemis.Models.Profiles
                 }
             };
         }
+
+        public void InsertBefore(LayerModel source)
+        {
+            source.Order = Order;
+            Insert(source);
+        }
+
+        public void InsertAfter(LayerModel source)
+        {
+            source.Order = Order + 1;
+            Insert(source);
+        }
+
+        private void Insert(LayerModel source)
+        {
+            if (Parent != null)
+            {
+                foreach (var child in Parent.Children.OrderBy(c => c.Order))
+                {
+                    if (child.Order >= source.Order)
+                        child.Order++;
+                }
+                Parent.Children.Add(source);
+            }
+            else if (Profile != null)
+            {
+                foreach (var layer in Profile.Layers.OrderBy(l => l.Order))
+                {
+                    if (layer.Order >= source.Order)
+                        layer.Order++;
+                }
+                Profile.Layers.Add(source);
+            }
+        }
+        
+        #region IChildItem<Parent> Members
+
+        LayerModel IChildItem<LayerModel>.Parent
+        {
+            get { return Parent; }
+            set { Parent = value; }
+        }
+
+        ProfileModel IChildItem<ProfileModel>.Parent
+        {
+            get { return Profile; }
+            set { Profile = value; }
+        }
+
+        #endregion
     }
 
     public enum LayerType
