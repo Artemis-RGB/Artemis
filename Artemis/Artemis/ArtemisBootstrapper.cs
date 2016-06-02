@@ -20,7 +20,7 @@ namespace Artemis
 
         public ArtemisBootstrapper()
         {
-            //CheckDuplicateInstances();
+            CheckDuplicateInstances();
             Initialize();
             BindSpecialValues();
         }

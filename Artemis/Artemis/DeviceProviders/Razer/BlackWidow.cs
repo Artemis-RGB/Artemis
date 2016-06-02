@@ -4,7 +4,6 @@ using Artemis.DeviceProviders.Razer.Utilities;
 using Artemis.Properties;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
-using Corale.Colore.Razer.Keyboard;
 using Constants = Corale.Colore.Razer.Keyboard.Constants;
 
 namespace Artemis.DeviceProviders.Razer
@@ -25,8 +24,6 @@ namespace Artemis.DeviceProviders.Razer
 
         public override bool CanEnable()
         {
-            return true;
-
             if (!Chroma.IsSdkAvailable())
                 return false;
 
@@ -38,19 +35,16 @@ namespace Artemis.DeviceProviders.Razer
 
         public override void Enable()
         {
-            return;
             Chroma.Instance.Initialize();
         }
 
         public override void Disable()
         {
-            return;
             Chroma.Instance.Uninitialize();
         }
 
         public override void DrawBitmap(Bitmap bitmap)
         {
-            return;
             var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
             Chroma.Instance.Keyboard.SetCustom(razerArray);
         }

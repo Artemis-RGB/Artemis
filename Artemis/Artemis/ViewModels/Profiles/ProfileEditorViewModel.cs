@@ -560,6 +560,12 @@ namespace Artemis.ViewModels.Profiles
 
         public async void ImportProfile()
         {
+            if (_mainManager.DeviceManager.ActiveKeyboard == null)
+            {
+                DialogService.ShowMessageBox("Cannot import profile.",
+                    "To import a profile, please select a keyboard in the options menu first.");
+                return;
+            }
             var dialog = new OpenFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
