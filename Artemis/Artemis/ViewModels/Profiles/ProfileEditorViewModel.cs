@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
@@ -33,18 +34,20 @@ namespace Artemis.ViewModels.Profiles
     public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>, IDropTarget
     {
         private readonly GameModel _gameModel;
+        private readonly ILayerEditorVmFactory _layerEditorVmFactory;
         private readonly MainManager _mainManager;
-        private LayerEditorViewModel _editorVm;
         private ImageSource _keyboardPreview;
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
         private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel,
-            ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile)
+            ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile,
+            ILayerEditorVmFactory layerEditorVmFactory)
         {
             _mainManager = mainManager;
             _gameModel = gameModel;
+            _layerEditorVmFactory = layerEditorVmFactory;
 
             Profiles = new BindableCollection<ProfileModel>();
             Layers = new BindableCollection<LayerModel>();
@@ -263,7 +266,7 @@ namespace Artemis.ViewModels.Profiles
         public void EditLayer(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            _editorVm = new LayerEditorViewModel(_gameModel.GameDataModel, layer);
+            var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.GameDataModel, layer);
             dynamic settings = new ExpandoObject();
             var iconImage = new Image
             {
@@ -278,7 +281,7 @@ namespace Artemis.ViewModels.Profiles
             settings.Title = "Artemis | Edit " + layer.Name;
             settings.Icon = bitmap;
 
-            manager.ShowDialog(_editorVm, null, settings);
+            manager.ShowDialog(editorVm, null, settings);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (layer.LayerType != LayerType.Folder && layer.Children.Any())

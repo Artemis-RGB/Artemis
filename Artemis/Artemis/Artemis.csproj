@@ -289,7 +289,8 @@
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
-    <Compile Include="InjectionFactories\IProfileEditorViewModelFactory.cs" />
+    <Compile Include="InjectionFactories\ILayerEditorVmFactory.cs" />
+    <Compile Include="InjectionFactories\IProfileEditorVmFactory.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairRGB.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />

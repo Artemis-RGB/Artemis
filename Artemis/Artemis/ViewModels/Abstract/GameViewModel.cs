@@ -16,7 +16,7 @@ namespace Artemis.ViewModels.Abstract
         private GameSettings _gameSettings;
 
         protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
-            IProfileEditorViewModelFactory pFactory)
+            IProfileEditorVmFactory pFactory)
         {
             MainManager = mainManager;
             GameModel = gameModel;
@@ -24,7 +24,7 @@ namespace Artemis.ViewModels.Abstract
             PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel,
+            ProfileEditor = PFactory.CreateProfileEditorVm(Events, mainManager, gameModel,
                 GameSettings.LastProfile);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
@@ -41,7 +41,7 @@ namespace Artemis.ViewModels.Abstract
         public MetroDialogService DialogService { get; set; }
 
         public IEventAggregator Events { get; set; }
-        public IProfileEditorViewModelFactory PFactory { get; set; }
+        public IProfileEditorVmFactory PFactory { get; set; }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
 

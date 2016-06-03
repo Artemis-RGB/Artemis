@@ -13,7 +13,7 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public sealed class Witcher3ViewModel : GameViewModel
     {
-        public Witcher3ViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+        public Witcher3ViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new Witcher3Model(main, new Witcher3Settings()), events, pFactory)
         {
             DisplayName = "The Witcher 3";

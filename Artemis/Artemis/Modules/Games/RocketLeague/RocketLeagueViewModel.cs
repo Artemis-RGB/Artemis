@@ -13,7 +13,7 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+        public RocketLeagueViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new RocketLeagueModel(main, new RocketLeagueSettings()), events, pFactory)
         {
             DisplayName = "Rocket League";
