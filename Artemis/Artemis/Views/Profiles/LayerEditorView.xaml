@@ -45,7 +45,7 @@
         <!-- Layer name -->
         <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,12" FontSize="13.333" Text="Name:"
                    VerticalAlignment="Center" Height="18" />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Text="{Binding Path=Layer.Name}" />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Text="{Binding Path=ProposedLayer.Name}" />
 
         <!-- Layer type -->
         <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"

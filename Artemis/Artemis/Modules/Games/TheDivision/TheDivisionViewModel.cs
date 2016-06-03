@@ -7,7 +7,7 @@ namespace Artemis.Modules.Games.TheDivision
 {
     public sealed class TheDivisionViewModel : GameViewModel
     {
-        public TheDivisionViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+        public TheDivisionViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new TheDivisionModel(main, new TheDivisionSettings()), events, pFactory)
         {
             DisplayName = "The Division";

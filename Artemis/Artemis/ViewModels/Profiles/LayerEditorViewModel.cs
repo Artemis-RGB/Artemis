@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
@@ -8,6 +10,7 @@ using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Properties;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using Ninject;
 
 namespace Artemis.ViewModels.Profiles
@@ -26,6 +29,8 @@ namespace Artemis.ViewModels.Profiles
             _gameDataModel = gameDataModel;
 
             Layer = layer;
+            ProposedLayer = GeneralHelpers.Clone(layer);
+
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
@@ -37,6 +42,8 @@ namespace Artemis.ViewModels.Profiles
             PropertyChanged += PropertiesViewModelHandler;
             PreSelect();
         }
+
+        public bool ModelChanged { get; set; }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
@@ -69,17 +76,6 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public LayerPropertiesModel ProposedProperties
-        {
-            get { return _proposedProperties; }
-            set
-            {
-                if (Equals(value, _proposedProperties)) return;
-                _proposedProperties = value;
-                NotifyOfPropertyChange(() => ProposedProperties);
-            }
-        }
-
         public LayerType LayerType
         {
             get { return _layerType; }
@@ -102,17 +98,15 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public bool KeyboardGridIsVisible => Layer.LayerType == LayerType.Keyboard;
-        public bool GifGridIsVisible => Layer.LayerType == LayerType.KeyboardGif;
+        public bool KeyboardGridIsVisible => ProposedLayer.LayerType == LayerType.Keyboard;
+        public bool GifGridIsVisible => ProposedLayer.LayerType == LayerType.KeyboardGif;
 
         public void PreSelect()
         {
-            LayerType = Layer.LayerType;
+            LayerType = ProposedLayer.LayerType;
 
             if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, Layer.Properties);
-
-            ProposedProperties = GeneralHelpers.Clone(Layer.Properties);
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
@@ -124,14 +118,14 @@ namespace Artemis.ViewModels.Profiles
             var oldBrush = LayerPropertiesViewModel?.GetAppliedProperties().Brush;
 
             // Update the model
-            if (Layer.LayerType != LayerType)
+            if (ProposedLayer.LayerType != LayerType)
             {
-                Layer.LayerType = LayerType;
-                Layer.SetupProperties();
+                ProposedLayer.LayerType = LayerType;
+                ProposedLayer.SetupProperties();
             }
 
             if (oldBrush != null)
-                Layer.Properties.Brush = oldBrush;
+                ProposedLayer.Properties.Brush = oldBrush;
 
             // Update the KeyboardPropertiesViewModel if it's being used
             var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;
@@ -142,17 +136,17 @@ namespace Artemis.ViewModels.Profiles
             if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
                 !(LayerPropertiesViewModel is KeyboardPropertiesViewModel))
             {
-                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_gameDataModel, Layer.Properties)
+                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_gameDataModel, ProposedLayer.Properties)
                 {
                     IsGif = LayerType == LayerType.KeyboardGif
                 };
             }
             else if (LayerType == LayerType.Mouse && !(LayerPropertiesViewModel is MousePropertiesViewModel))
-                LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel, Layer.Properties);
+                LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
             else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
-                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_gameDataModel, Layer.Properties);
+                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
             else if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, Layer.Properties);
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
 
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }
@@ -165,11 +159,17 @@ namespace Artemis.ViewModels.Profiles
 
         public void Apply()
         {
+            Layer.Name = ProposedLayer.Name;
+            Layer.LayerType = ProposedLayer.LayerType;
+
             if (LayerPropertiesViewModel != null)
                 Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
+            {
+
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+            }
 
             if (Layer.LayerType != LayerType.KeyboardGif)
                 return; // Don't bother checking for a GIF path unless the type is GIF
@@ -182,6 +182,30 @@ namespace Artemis.ViewModels.Profiles
         {
             LayerConditionVms.Remove(layerConditionViewModel);
             Layer.Properties.Conditions.Remove(layerConditionModel);
+        }
+
+        public override async void CanClose(Action<bool> callback)
+        {
+            // Create a fake layer and apply the properties to it
+            var fakeLayer = GeneralHelpers.Clone(ProposedLayer);
+            if (LayerPropertiesViewModel != null)
+                fakeLayer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
+            fakeLayer.Properties.Conditions.Clear();
+            foreach (var conditionViewModel in LayerConditionVms)
+                fakeLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+
+
+            var fake = GeneralHelpers.Serialize(fakeLayer);
+            var real = GeneralHelpers.Serialize(Layer);
+
+            if (fake.Equals(real))
+            {
+                callback(true);
+                return;
+            }
+
+            var close = await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
+            callback(close.Value);
         }
     }
 }

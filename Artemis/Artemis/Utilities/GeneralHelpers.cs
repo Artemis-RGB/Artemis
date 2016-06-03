@@ -60,6 +60,21 @@ namespace Artemis.Utilities
             }
         }
 
+        public static string Serialize<T>(T source)
+        {
+            // Don't serialize a null object, simply return the default for that object
+            if (ReferenceEquals(source, null))
+                return null;
+
+            var serializer = new XmlSerializer(typeof(T));
+            var stream = new StringWriter();
+            using (stream)
+            {
+                serializer.Serialize(stream, source);
+                return stream.ToString();
+            }
+        }
+
         public static object GetPropertyValue(object o, string path)
         {
             var propertyNames = path.Split('.');

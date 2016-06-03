@@ -11,7 +11,7 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public sealed class CounterStrikeViewModel : GameViewModel
     {
-        public CounterStrikeViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+        public CounterStrikeViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()), events, pFactory)
         {
             DisplayName = "CS:GO";
