@@ -13,6 +13,7 @@ namespace Artemis.DeviceProviders.Razer
         public BlackWidow()
         {
             Name = "Razer BlackWidow Chroma";
+            Slug = "razer-blackwidow-chroma";
             CantEnableText = "Couldn't connect to your Razer BlackWidow Chroma.\n" +
                              "Please check your cables and try updating Razer Synapse.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";

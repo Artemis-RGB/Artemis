@@ -52,6 +52,7 @@ namespace Artemis.Models.Profiles
 
             // Preview simply shows the properties as they are. When not previewing they are applied
             LayerPropertiesModel appliedProperties;
+            Properties.Brush.Freeze();
             if (!preview)
             {
                 if (!ConditionsMet<T>(dataModel))
@@ -97,10 +98,10 @@ namespace Artemis.Models.Profiles
             {
                 if (!ConditionsMet<T>(dataModel))
                     return null; // Don't return the brush when not previewing and the conditions arent met
-                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => Properties.GetAppliedProperties(dataModel));
+                appliedProperties = Properties.GetAppliedProperties(dataModel);
             }
             else
-                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => GeneralHelpers.Clone(Properties));
+                appliedProperties = GeneralHelpers.Clone(Properties);
 
             // TODO: Mouse/headset animations
             // Update animations on layer types that support them

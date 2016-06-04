@@ -27,7 +27,7 @@ namespace Artemis.Models.Profiles
 
         public string Name { get; set; }
         public bool IsDefault { get; set; }
-        public string KeyboardName { get; set; }
+        public string KeyboardSlug { get; set; }
         public string GameName { get; set; }
 
         [XmlIgnore]
@@ -36,7 +36,7 @@ namespace Artemis.Models.Profiles
         protected bool Equals(ProfileModel other)
         {
             return string.Equals(Name, other.Name) &&
-                   string.Equals(KeyboardName, other.KeyboardName) &&
+                   string.Equals(KeyboardSlug, other.KeyboardSlug) &&
                    string.Equals(GameName, other.GameName);
         }
 
@@ -53,7 +53,7 @@ namespace Artemis.Models.Profiles
             unchecked
             {
                 var hashCode = Name?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ (KeyboardName?.GetHashCode() ?? 0);
+                hashCode = (hashCode*397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
                 hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
             }
@@ -69,27 +69,22 @@ namespace Artemis.Models.Profiles
         public Bitmap GenerateBitmap<T>(Rect keyboardRect, IGameDataModel gameDataModel, bool preview,
             bool updateAnimations)
         {
-            Bitmap bitmap = null;
-            DrawingVisual.Dispatcher.Invoke(() =>
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
             {
-                var visual = new DrawingVisual();
-                using (var c = visual.RenderOpen())
-                {
-                    // Setup the DrawingVisual's size
-                    c.PushClip(new RectangleGeometry(keyboardRect));
-                    c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+                // Setup the DrawingVisual's size
+                c.PushClip(new RectangleGeometry(keyboardRect));
+                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
-                    // Draw the layers
-                    foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
-                        layerModel.Draw<T>(gameDataModel, c, preview, updateAnimations);
+                // Draw the layers
+                foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
+                    layerModel.Draw<T>(gameDataModel, c, preview, updateAnimations);
 
-                    // Remove the clip
-                    c.Pop();
-                }
+                // Remove the clip
+                c.Pop();
+            }
 
-                bitmap = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
-            });
-            return bitmap;
+            return ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect); 
         }
 
         public Brush GenerateBrush<T>(IGameDataModel gameDataModel, LayerType type, bool preview, bool updateAnimations)

@@ -14,6 +14,7 @@ namespace Artemis.DeviceProviders
         }
 
         public string Name { get; set; }
+        public string Slug { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
         public string CantEnableText { get; set; }

@@ -42,13 +42,11 @@ namespace Artemis.DeviceProviders.Corsair
 
             var leds = CueSDK.HeadsetSDK.Leds.Count();
             var rect = new Rect(new Size(leds * 20, leds * 20));
-            var img = brush.Dispatcher.Invoke(() =>
-            {
-                var visual = new DrawingVisual();
-                using (var c = visual.RenderOpen())
-                    c.DrawRectangle(brush, null, rect);
-                return ImageUtilities.DrawinVisualToBitmap(visual, rect);
-            });
+
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
+                c.DrawRectangle(brush, null, rect);
+            var img =  ImageUtilities.DrawinVisualToBitmap(visual, rect);
 
             var ledIndex = 0;
             // Color each LED according to one of the pixels

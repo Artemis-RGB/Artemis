@@ -23,7 +23,7 @@
                        VerticalAlignment="Top" Height="18" Width="130" />
             <Border Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
                     BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
-                <ncore:ColorBox Brush="{Binding Path=ProposedProperties.Brush, Mode=TwoWay}" Height="24" Width="134" />
+                <ncore:ColorBox Brush="{Binding Path=Brush, Mode=TwoWay}" Height="24" Width="134" />
             </Border>
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="10,2,10,10" FontSize="13.333"

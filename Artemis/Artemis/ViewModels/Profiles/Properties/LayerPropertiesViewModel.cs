@@ -1,4 +1,5 @@
-﻿using Artemis.Models.Interfaces;
+﻿using System.Windows.Media;
+using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Properties;
 using Caliburn.Micro;
 

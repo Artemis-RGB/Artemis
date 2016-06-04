@@ -463,7 +463,7 @@ namespace Artemis.ViewModels.Profiles
             if (name == null)
                 return;
 
-            if (name.Length < 1)
+            if (name.Length < 2)
             {
                 DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
                 return;
@@ -472,7 +472,7 @@ namespace Artemis.ViewModels.Profiles
             var profile = new ProfileModel
             {
                 Name = name,
-                KeyboardName = _mainManager.DeviceManager.ActiveKeyboard.Name,
+                KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug,
                 GameName = _gameModel.Name
             };
 
@@ -496,16 +496,24 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             var oldName = SelectedProfile.Name;
-            SelectedProfile.Name =
-                await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
+            SelectedProfile.Name = await DialogService
+                .ShowInputDialog("Rename profile", "Please enter a unique new profile name");
+
+            // Null when the user cancelled
+            if (string.IsNullOrEmpty(SelectedProfile.Name) || SelectedProfile.Name.Length < 2)
+            {
+                SelectedProfile.Name = oldName;
+                return;
+            }
+
             // Verify the name
             while (ProfileProvider.GetAll().Contains(SelectedProfile))
             {
-                SelectedProfile.Name =
-                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
+                SelectedProfile.Name = await DialogService.
+                    ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(SelectedProfile.Name))
+                if (string.IsNullOrEmpty(SelectedProfile.Name) || SelectedProfile.Name.Length < 2)
                 {
                     SelectedProfile.Name = oldName;
                     return;
@@ -591,16 +599,16 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the keyboard
-            if (profile.KeyboardName != _mainManager.DeviceManager.ActiveKeyboard.Name)
+            if (profile.KeyboardSlug != _mainManager.DeviceManager.ActiveKeyboard.Slug)
             {
                 var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
-                    $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardName}. " +
+                    $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardSlug}. " +
                     "You can still import it but you'll probably have to do some adjusting\n\n" +
                     "Continue?");
                 if (!adjustKeyboard.Value)
                     return;
 
-                profile.KeyboardName = _mainManager.DeviceManager.ActiveKeyboard.Name;
+                profile.KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug;
                 profile.IsDefault = false;
                 profile.FixBoundaries(_mainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(1));
             }

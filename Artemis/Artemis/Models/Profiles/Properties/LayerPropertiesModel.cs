@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
+using Artemis.Utilities;
 
 namespace Artemis.Models.Profiles.Properties
 {
@@ -15,6 +16,8 @@ namespace Artemis.Models.Profiles.Properties
     [XmlInclude(typeof(FolderPropertiesModel))]
     public abstract class LayerPropertiesModel
     {
+        private Brush _brush;
+
         protected LayerPropertiesModel()
         {
             Conditions = new List<LayerConditionModel>();
@@ -23,6 +26,16 @@ namespace Artemis.Models.Profiles.Properties
         public abstract LayerPropertiesModel GetAppliedProperties(IGameDataModel dataModel);
 
         public List<LayerConditionModel> Conditions { get; set; }
-        public Brush Brush { get; set; }
+
+        public Brush Brush
+        {
+            get { return _brush; }
+            set
+            {
+                var cloned = value.Dispatcher.Invoke(() => GeneralHelpers.CloneAlt(value));
+                cloned.Freeze();
+                _brush = cloned;
+            }
+        }
     }
 }

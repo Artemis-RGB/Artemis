@@ -88,36 +88,16 @@ namespace Artemis.ViewModels.Profiles
 
         private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
         {
-            Application.Current.Dispatcher.InvokeAsync(UpdateKeyboardPreview, DispatcherPriority.ContextIdle);
-        }
-
-        public void Activate()
-        {
-            Activated = true;
-            PreviewTimer.Start();
-        }
-
-        public void Deactivate()
-        {
-            Activated = false;
-            PreviewTimer.Stop();
-        }
-
-        #region Drawing
-
-        /// <summary>
-        ///     Generates a new image for the keyboard preview
-        /// </summary>
-        public void UpdateKeyboardPreview()
-        {
             if (_blurProgress > 2)
                 _blurProgress = 0;
             _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
+            BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
 
             if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
             {
-                KeyboardPreview = new DrawingImage();
+                var preview = new DrawingImage();
+                preview.Freeze();
+                KeyboardPreview = preview;
                 return;
             }
 
@@ -144,12 +124,12 @@ namespace Artemis.ViewModels.Profiles
                 if (accentColor == null)
                     return;
 
-                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
+                var pen = new Pen(new SolidColorBrush((Color)accentColor), 0.4);
 
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
                 {
-                    var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
+                    var layerRect = ((KeyboardPropertiesModel)SelectedLayer.Properties).GetRect();
                     // Deflate the rect so that the border is drawn on the inside
                     layerRect.Inflate(-0.2, -0.2);
 
@@ -170,10 +150,22 @@ namespace Artemis.ViewModels.Profiles
                 // Remove the clip
                 drawingContext.Pop();
             }
-            KeyboardPreview = new DrawingImage(visual.Drawing);
+            var drawnPreview = new DrawingImage(visual.Drawing);
+            drawnPreview.Freeze();
+            KeyboardPreview = drawnPreview;
         }
 
-        #endregion
+        public void Activate()
+        {
+            Activated = true;
+            PreviewTimer.Start();
+        }
+
+        public void Deactivate()
+        {
+            Activated = false;
+            PreviewTimer.Stop();
+        }
 
         #region Processing
 

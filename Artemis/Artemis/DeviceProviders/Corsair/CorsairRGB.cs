@@ -72,7 +72,7 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(665, 215, new Thickness(0, -5, 0, 0), Resources.strafe);
                     break;
             }
-
+            Slug = "corsair-"+_keyboard.DeviceInfo.Model.Replace(' ', '-').ToLower();
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 

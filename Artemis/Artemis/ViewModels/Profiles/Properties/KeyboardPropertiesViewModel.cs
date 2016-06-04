@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
@@ -10,12 +11,14 @@ namespace Artemis.ViewModels.Profiles.Properties
     {
         private bool _isGif;
         private KeyboardPropertiesModel _proposedProperties;
+        private Brush _brush;
 
         public KeyboardPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
             : base(gameDataModel)
         {
             var keyboardProperties = (KeyboardPropertiesModel) properties;
             ProposedProperties = GeneralHelpers.Clone(keyboardProperties);
+            Brush = GeneralHelpers.CloneAlt(ProposedProperties.Brush);
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
@@ -24,6 +27,7 @@ namespace Artemis.ViewModels.Profiles.Properties
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, keyboardProperties);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, keyboardProperties);
         }
+
 
         public KeyboardPropertiesModel ProposedProperties
         {
@@ -77,7 +81,20 @@ namespace Artemis.ViewModels.Profiles.Properties
             WidthProperties.Apply(ProposedProperties);
             OpacityProperties.Apply(ProposedProperties);
 
-            return GeneralHelpers.Clone(ProposedProperties);
+            var properties = GeneralHelpers.Clone(ProposedProperties);
+            properties.Brush = Brush;
+            return properties;
+        }
+
+        public Brush Brush
+        {
+            get { return _brush; }
+            set
+            {
+                if (Equals(value, _brush)) return;
+                _brush = value;
+                NotifyOfPropertyChange(() => Brush);
+            }
         }
     }
 }
