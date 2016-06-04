@@ -1,11 +1,11 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Threading;
 using System.Windows;
 using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
+using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
 using Point = System.Drawing.Point;
 
@@ -14,6 +14,7 @@ namespace Artemis.DeviceProviders.Corsair
     public class CorsairRGB : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
+        private ImageBrush _keyboardBrush;
 
         public CorsairRGB()
         {
@@ -26,29 +27,13 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override bool CanEnable()
         {
-            // If already initialized, return result right away
-            if (CueSDK.ProtocolDetails != null)
-                return CueSDK.KeyboardSDK != null;
-
-            // Else try to enable the SDK
             for (var tries = 0; tries < 9; tries++)
             {
-                if (CueSDK.ProtocolDetails != null)
-                    break;
-
-                try
-                {
-                    CueSDK.Initialize();
-                }
-                catch (Exception)
-                {
-                    Thread.Sleep(2000);
-                }
+                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
+                    return true;
+                Thread.Sleep(2000);
             }
-
-            if (CueSDK.ProtocolDetails == null)
-                return false;
-            return CueSDK.KeyboardSDK != null;
+            return false;
         }
 
         /// <summary>
@@ -56,7 +41,7 @@ namespace Artemis.DeviceProviders.Corsair
         /// </summary>
         public override void Enable()
         {
-            if (CueSDK.ProtocolDetails == null)
+            if (!CueSDK.IsInitialized)
                 CueSDK.Initialize();
 
             _keyboard = CueSDK.KeyboardSDK;
@@ -83,11 +68,13 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(665, 215, new Thickness(0, -5, 0, 0), Resources.strafe);
                     break;
             }
+
+            _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 
         public override void Disable()
         {
-            if (CueSDK.ProtocolDetails != null)
+            if (CueSDK.IsInitialized)
                 CueSDK.Reinitialize();
         }
 
@@ -113,12 +100,7 @@ namespace Artemis.DeviceProviders.Corsair
                 image = strafeBitmap;
             }
 
-            var brush = new ImageBrush
-            {
-                Image = image
-            };
-
-            _keyboard.Brush = brush;
+            _keyboardBrush.Image = image;
             _keyboard.Update();
         }
     }
