@@ -129,10 +129,9 @@ namespace Artemis.Utilities
 
         public static string FindSteamGame(string relativePath)
         {
-            var key = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
-            if (key == null)
+            var path = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam")?.GetValue("SteamPath")?.ToString();
+            if (path == null)
                 return null;
-            var path = key.GetValue("SteamPath").ToString();
             var libFile = path + @"\steamapps\libraryfolders.vdf";
             if (!File.Exists(libFile))
                 return null;
