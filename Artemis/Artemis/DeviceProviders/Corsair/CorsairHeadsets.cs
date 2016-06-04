@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Devices.Generic.Enums;
-using CUE.NET.Exceptions;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
@@ -24,8 +22,8 @@ namespace Artemis.DeviceProviders.Corsair
         public override bool TryEnable()
         {
             CanUse = CanInitializeSdk();
-            if (CanUse)
-                CueSDK.HeadsetSDK.UpdateMode = UpdateMode.Manual;
+            if (CanUse && !CueSDK.IsInitialized)
+                CueSDK.Initialize();
 
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
             return CanUse;
@@ -33,7 +31,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            if (CueSDK.ProtocolDetails != null)
+            if (CueSDK.IsInitialized)
                 CueSDK.Reinitialize();
         }
 
@@ -43,7 +41,7 @@ namespace Artemis.DeviceProviders.Corsair
                 return;
 
             var leds = CueSDK.HeadsetSDK.Leds.Count();
-            var rect = new Rect(new Size(leds*20, leds*20));
+            var rect = new Rect(new Size(leds * 20, leds * 20));
             var img = brush.Dispatcher.Invoke(() =>
             {
                 var visual = new DrawingVisual();
@@ -58,37 +56,22 @@ namespace Artemis.DeviceProviders.Corsair
             {
                 corsairLed.Color = ledIndex == 0
                     ? img.GetPixel(0, 0)
-                    : img.GetPixel((ledIndex + 1)*20 - 1, (ledIndex + 1)*20 - 1);
+                    : img.GetPixel((ledIndex + 1) * 20 - 1, (ledIndex + 1) * 20 - 1);
                 ledIndex++;
             }
-            CueSDK.HeadsetSDK.Update(true);
+
+            CueSDK.HeadsetSDK.Update();
         }
 
         private static bool CanInitializeSdk()
         {
-            // If already initialized, return result right away
-            if (CueSDK.ProtocolDetails != null)
-                return CueSDK.HeadsetSDK != null;
-
-            // Else try to enable the SDK
             for (var tries = 0; tries < 9; tries++)
             {
-                if (CueSDK.ProtocolDetails != null)
-                    break;
-
-                try
-                {
-                    CueSDK.Initialize();
-                }
-                catch (Exception)
-                {
-                    Thread.Sleep(2000);
-                }
+                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Headset))
+                    return true;
+                Thread.Sleep(2000);
             }
-
-            if (CueSDK.ProtocolDetails == null)
-                return false;
-            return CueSDK.HeadsetSDK != null;
+            return false;
         }
     }
 }
