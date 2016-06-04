@@ -65,6 +65,10 @@ namespace Artemis.DeviceProviders.Corsair
 
         private static bool CanInitializeSdk()
         {
+            // This will skip the check-loop if the SDK is initialized
+            if (CueSDK.IsInitialized)
+                return CueSDK.IsSDKAvailable(CorsairDeviceType.Headset);
+
             for (var tries = 0; tries < 9; tries++)
             {
                 if (CueSDK.IsSDKAvailable(CorsairDeviceType.Headset))

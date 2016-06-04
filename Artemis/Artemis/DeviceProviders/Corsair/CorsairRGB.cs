@@ -27,6 +27,10 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override bool CanEnable()
         {
+            // This will skip the check-loop if the SDK is initialized
+            if (CueSDK.IsInitialized)
+                return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
+
             for (var tries = 0; tries < 9; tries++)
             {
                 if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
