@@ -51,8 +51,7 @@ namespace Artemis.Utilities.Layers
             }
 
             var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);
-
-            applied.Brush.Dispatcher.Invoke(() => DrawRectangle(c, applied, clip, rect, s1, s2));
+            DrawRectangle(c, applied, clip, rect, s1, s2);
         }
 
         private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel properties, Rect clip,

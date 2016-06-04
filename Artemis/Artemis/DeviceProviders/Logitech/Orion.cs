@@ -13,6 +13,7 @@ namespace Artemis.DeviceProviders.Logitech
         public Orion()
         {
             Name = "Logitech G910 RGB";
+            Slug = "logitech-g910";
             CantEnableText = "Couldn't connect to your Logitech G910.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
                              "A minimum version of 8.81.15 is required.\n\n" +

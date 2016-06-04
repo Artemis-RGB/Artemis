@@ -38,7 +38,7 @@ namespace Artemis.DAL
             if (keyboard == null)
                 throw new ArgumentNullException(nameof(keyboard));
 
-            return GetAll().Where(g => g.GameName.Equals(game.Name) && g.KeyboardName.Equals(keyboard.Name)).ToList();
+            return GetAll().Where(g => g.GameName.Equals(game.Name) && g.KeyboardSlug.Equals(keyboard.Slug)).ToList();
         }
 
         /// <summary>
@@ -50,10 +50,10 @@ namespace Artemis.DAL
         {
             if (prof == null)
                 throw new ArgumentNullException(nameof(prof));
-            if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
-                throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardName are required");
+            if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
+                throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
-            var path = ProfileFolder + $@"\{prof.KeyboardName}\{prof.GameName}";
+            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
@@ -84,7 +84,7 @@ namespace Artemis.DAL
                     using (var file = new StreamReader(path))
                     {
                         var prof = (ProfileModel)deserializer.Deserialize(file);
-                        if (prof.GameName?.Length > 1 && prof.KeyboardName?.Length > 1 && prof.Name?.Length > 1)
+                        if (prof.GameName?.Length > 1 && prof.KeyboardSlug?.Length > 1 && prof.Name?.Length > 1)
                             profiles.Add(prof);
                     }
                 }
@@ -123,7 +123,7 @@ namespace Artemis.DAL
                 using (var file = new StreamReader(path))
                 {
                     var prof = (ProfileModel) deserializer.Deserialize(file);
-                    if (!(prof.GameName?.Length > 1) || !(prof.KeyboardName?.Length > 1) || !(prof.Name?.Length > 1))
+                    if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
                         return null;
                     return prof;
                 }
@@ -159,7 +159,7 @@ namespace Artemis.DAL
                 return;
 
             // Remove the old file
-            var path = ProfileFolder + $@"\{profile.KeyboardName}\{profile.GameName}\{profile.Name}.xml";
+            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.xml";
             if (File.Exists(path))
                 File.Delete(path);
 
@@ -171,7 +171,7 @@ namespace Artemis.DAL
         public static void DeleteProfile(ProfileModel profile)
         {
             // Remove the file
-            var path = ProfileFolder + $@"\{profile.KeyboardName}\{profile.GameName}\{profile.Name}.xml";
+            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.xml";
             if (File.Exists(path))
                 File.Delete(path);
         }
