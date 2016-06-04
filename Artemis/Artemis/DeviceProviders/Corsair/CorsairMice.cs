@@ -31,7 +31,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            if (CueSDK.ProtocolDetails != null)
+            if (CueSDK.IsInitialized)
                 CueSDK.Reinitialize();
         }
 
@@ -60,14 +60,14 @@ namespace Artemis.DeviceProviders.Corsair
                 ledIndex++;
             }
 
-            CueSDK.MouseSDK.Update(true);
+            CueSDK.MouseSDK.Update();
         }
 
         private static bool CanInitializeSdk()
         {
             for (var tries = 0; tries < 9; tries++)
             {
-                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
+                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Mouse))
                     return true;
                 Thread.Sleep(2000);
             }
