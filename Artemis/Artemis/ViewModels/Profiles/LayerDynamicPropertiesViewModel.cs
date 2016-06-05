@@ -3,6 +3,7 @@ using System.Linq;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Castle.Core.Internal;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -211,7 +212,8 @@ namespace Artemis.ViewModels.Profiles
             if (original != null)
                 keyboardProperties.DynamicProperties.Remove(original);
 
-            keyboardProperties.DynamicProperties.Add(Proposed);
+            if (!Proposed.GameProperty.IsNullOrEmpty())
+                keyboardProperties.DynamicProperties.Add(Proposed);
         }
     }
 }

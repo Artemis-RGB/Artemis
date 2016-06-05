@@ -5,9 +5,9 @@ namespace Artemis.Models.Profiles.Properties
 {
     public class FolderPropertiesModel : LayerPropertiesModel
     {
-        public override LayerPropertiesModel GetAppliedProperties(IGameDataModel dataModel)
+        public override AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false)
         {
-            return GeneralHelpers.Clone(this); 
+            return new AppliedProperties();
         }
     }
 }

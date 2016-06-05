@@ -23,8 +23,6 @@ namespace Artemis.Models.Profiles.Properties
             Conditions = new List<LayerConditionModel>();
         }
 
-        public abstract LayerPropertiesModel GetAppliedProperties(IGameDataModel dataModel);
-
         public List<LayerConditionModel> Conditions { get; set; }
 
         public Brush Brush
@@ -32,10 +30,35 @@ namespace Artemis.Models.Profiles.Properties
             get { return _brush; }
             set
             {
-                var cloned = value.Dispatcher.Invoke(() => GeneralHelpers.CloneAlt(value));
+                if (value == null)
+                {
+                    _brush = null;
+                    return;
+                }
+
+                if (value.IsFrozen)
+                {
+                    _brush = value;
+                    return;
+                }
+
+                // Clone the brush off of the UI thread and freeze it
+                var cloned = value.Dispatcher.Invoke(value.CloneCurrentValue);
                 cloned.Freeze();
                 _brush = cloned;
             }
         }
+
+        public abstract AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false);
+    }
+
+    public struct AppliedProperties
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double Opacity { get; set; }
+        public Brush Brush { get; set; }
     }
 }

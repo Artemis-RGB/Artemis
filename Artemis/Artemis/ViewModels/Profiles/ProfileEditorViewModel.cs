@@ -172,6 +172,7 @@ namespace Artemis.ViewModels.Profiles
                 source.Order = -1;
                 target.Children.Add(source);
                 target.FixOrder();
+                target.Expanded = true;
             }
             else
             {

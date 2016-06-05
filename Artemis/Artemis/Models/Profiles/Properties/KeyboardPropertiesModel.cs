@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
@@ -33,15 +35,31 @@ namespace Artemis.Models.Profiles.Properties
             return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }
 
-        public override LayerPropertiesModel GetAppliedProperties(IGameDataModel dataModel)
+        public override AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false)
         {
-            var properties = GeneralHelpers.Clone(this);
+            var applied = new AppliedProperties
+            {
+                X = X,
+                Y = Y,
+                Width = Width,
+                Height = Height,
+                Opacity = Opacity,
+                Brush = Brush.CloneCurrentValue()
+            };
 
-            foreach (var dynamicProperty in properties.DynamicProperties)
-                dynamicProperty.ApplyProperty(dataModel, properties);
-            properties.Brush.Opacity = Opacity;
+            if (ignoreDynamic)
+                return applied;
 
-            return properties;
+            foreach (var dynamicProperty in DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, applied);
+
+            if (Math.Abs(applied.Opacity - 1) > 0.001)
+            {
+                applied.Brush = Brush.CloneCurrentValue();
+                applied.Brush.Opacity = applied.Opacity;
+            }
+
+            return applied;
         }
     }
 

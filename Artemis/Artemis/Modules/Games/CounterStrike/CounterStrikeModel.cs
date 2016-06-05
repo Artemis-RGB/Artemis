@@ -84,7 +84,7 @@ namespace Artemis.Modules.Games.CounterStrike
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Failed to deserialize CS:GO JSON");
+                Logger?.Error(ex, "Failed to deserialize CS:GO JSON");
                 throw;
             }
             

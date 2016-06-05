@@ -63,7 +63,6 @@ namespace Artemis.Utilities.LogitechDll
         private void HandleMessage(byte[] buffer)
         {
             var request = Encoding.ASCII.GetString(buffer);
-            Debug.WriteLine(request);
             PipeMessage?.Invoke(request);
         }
 
@@ -106,7 +105,6 @@ namespace Artemis.Utilities.LogitechDll
 
                 // Convert byte buffer to string
                 var stringData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-                Debug.WriteLine(stringData + Environment.NewLine);
 
                 // Pass message back to calling form
                 PipeMessage?.Invoke(stringData);

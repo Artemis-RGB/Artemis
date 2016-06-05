@@ -9,16 +9,16 @@ namespace Artemis.ViewModels.Profiles.Properties
 {
     public class KeyboardPropertiesViewModel : LayerPropertiesViewModel
     {
+        private Brush _brush;
         private bool _isGif;
         private KeyboardPropertiesModel _proposedProperties;
-        private Brush _brush;
 
         public KeyboardPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
             : base(gameDataModel)
         {
             var keyboardProperties = (KeyboardPropertiesModel) properties;
             ProposedProperties = GeneralHelpers.Clone(keyboardProperties);
-            Brush = GeneralHelpers.CloneAlt(ProposedProperties.Brush);
+            Brush = ProposedProperties.Brush.CloneCurrentValue();
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
@@ -51,6 +51,17 @@ namespace Artemis.ViewModels.Profiles.Properties
             }
         }
 
+        public Brush Brush
+        {
+            get { return _brush; }
+            set
+            {
+                if (Equals(value, _brush)) return;
+                _brush = value;
+                NotifyOfPropertyChange(() => Brush);
+            }
+        }
+
         public bool ShowGif => IsGif;
 
         public bool ShowBrush => !IsGif;
@@ -65,7 +76,7 @@ namespace Artemis.ViewModels.Profiles.Properties
 
         public void BrowseGif()
         {
-            var dialog = new OpenFileDialog { Filter = "Animated image file (*.gif)|*.gif" };
+            var dialog = new OpenFileDialog {Filter = "Animated image file (*.gif)|*.gif"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
@@ -76,7 +87,6 @@ namespace Artemis.ViewModels.Profiles.Properties
 
         public override LayerPropertiesModel GetAppliedProperties()
         {
-            
             HeightProperties.Apply(ProposedProperties);
             WidthProperties.Apply(ProposedProperties);
             OpacityProperties.Apply(ProposedProperties);
@@ -84,17 +94,6 @@ namespace Artemis.ViewModels.Profiles.Properties
             var properties = GeneralHelpers.Clone(ProposedProperties);
             properties.Brush = Brush;
             return properties;
-        }
-
-        public Brush Brush
-        {
-            get { return _brush; }
-            set
-            {
-                if (Equals(value, _brush)) return;
-                _brush = value;
-                NotifyOfPropertyChange(() => Brush);
-            }
         }
     }
 }

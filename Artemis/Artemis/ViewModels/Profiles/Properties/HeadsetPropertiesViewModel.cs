@@ -14,7 +14,7 @@ namespace Artemis.ViewModels.Profiles.Properties
             : base(gameDataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
-            Brush = GeneralHelpers.CloneAlt(ProposedProperties.Brush);
+            Brush = ProposedProperties.Brush.CloneCurrentValue();
         }
 
         public Brush Brush
