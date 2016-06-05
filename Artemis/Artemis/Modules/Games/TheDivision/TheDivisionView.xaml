@@ -7,8 +7,8 @@
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="416.495" d:DesignWidth="553.608">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Margin="15, 5, 15, 5">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="15, 5, 5, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -20,11 +20,12 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows lots of things, I should change this." />
+                                    Text="Shows verious game states and events on the keyboard." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -36,14 +37,15 @@
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify">
-                Note: For this game to work with Artemis, please open up your Division settings, navigate to 3rd Party and set LED keyboard support to Yes. (This only works if you have Artemis running before starting the game)
+                       TextAlignment="Justify" Margin="5,0,0,0">
+                For this game to work with Artemis, please open up your Division settings, navigate to 3rd Party
+                and set LED keyboard support to Yes. (This only works if you have Artemis running before starting the game)
             </TextBlock>
 
             <!-- Profile editor -->
-            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">

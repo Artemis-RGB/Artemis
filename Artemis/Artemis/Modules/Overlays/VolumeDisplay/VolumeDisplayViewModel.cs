@@ -1,60 +1,20 @@
 ﻿using Artemis.Managers;
-using Caliburn.Micro;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
-    public class VolumeDisplayViewModel : Screen
+    public sealed class VolumeDisplayViewModel : OverlayViewModel
     {
-        private VolumeDisplaySettings _volumeDisplaySettings;
-
-        public VolumeDisplayViewModel(MainManager mainManager)
+        public VolumeDisplayViewModel(MainManager mainManager) : base(mainManager)
         {
-            MainManager = mainManager;
+            DisplayName = "Volume Display";
 
             // Settings are loaded from file by class
-            VolumeDisplaySettings = new VolumeDisplaySettings();
+            OverlaySettings = new VolumeDisplaySettings();
 
             // Create effect model and add it to MainManager
-            VolumeDisplayModel = new VolumeDisplayModel(mainManager, VolumeDisplaySettings);
-            MainManager.EffectManager.EffectModels.Add(VolumeDisplayModel);
-        }
-
-        public static string Name => "Volume Display";
-
-        public MainManager MainManager { get; set; }
-        public VolumeDisplayModel VolumeDisplayModel { get; set; }
-
-        public VolumeDisplaySettings VolumeDisplaySettings
-        {
-            get { return _volumeDisplaySettings; }
-            set
-            {
-                if (Equals(value, _volumeDisplaySettings)) return;
-                _volumeDisplaySettings = value;
-                NotifyOfPropertyChange(() => VolumeDisplaySettings);
-            }
-        }
-
-        public void ToggleEffect()
-        {
-            VolumeDisplayModel.Enabled = _volumeDisplaySettings.Enabled;
-        }
-
-        public void SaveSettings()
-        {
-            if (VolumeDisplayModel == null)
-                return;
-
-            VolumeDisplaySettings.Save();
-        }
-
-        public void ResetSettings()
-        {
-            // TODO: Confirmation dialog (Generic MVVM approach)
-            VolumeDisplaySettings.ToDefault();
-            NotifyOfPropertyChange(() => VolumeDisplaySettings);
-
-            SaveSettings();
+            OverlayModel = new VolumeDisplayModel(mainManager, (VolumeDisplaySettings) OverlaySettings);
+            MainManager.EffectManager.EffectModels.Add(OverlayModel);
         }
     }
 }

@@ -1,10 +1,15 @@
 ﻿using System.Diagnostics;
-using Caliburn.Micro;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
-    public class WelcomeViewModel : Screen
+    public sealed class WelcomeViewModel : BaseViewModel
     {
+        public WelcomeViewModel()
+        {
+            DisplayName = "Welcome";
+        }
+
         public void NavigateTo(string url)
         {
             Process.Start(new ProcessStartInfo(url));

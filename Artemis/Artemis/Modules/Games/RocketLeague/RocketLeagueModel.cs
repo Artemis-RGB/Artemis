@@ -3,10 +3,12 @@ using System.Drawing;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -15,7 +17,8 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings) : base(mainManager, settings)
+        public RocketLeagueModel(MainManager mainManager, RocketLeagueSettings settings)
+            : base(mainManager, settings, new RocketLeagueDataModel())
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
@@ -40,8 +43,10 @@ namespace Artemis.Modules.Games.RocketLeague
             _pointer = JsonConvert.DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague);
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+            if (tempProcess == null)
+                return;
+            
             _memory = new Memory(tempProcess);
-            GameDataModel = new RocketLeagueDataModel();
 
             Initialized = true;
         }
@@ -62,9 +67,6 @@ namespace Artemis.Modules.Games.RocketLeague
                 ((RocketLeagueDataModel) GameDataModel).Boost = 0;
             if (((RocketLeagueDataModel) GameDataModel).Boost > 100)
                 ((RocketLeagueDataModel) GameDataModel).Boost = 100;
-
-            foreach (var layerModel in Profile.Layers)
-                layerModel.Update<RocketLeagueDataModel>(GameDataModel);
         }
 
         public override Bitmap GenerateBitmap()
@@ -72,8 +74,18 @@ namespace Artemis.Modules.Games.RocketLeague
             if (Profile == null || GameDataModel == null)
                 return null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
+            return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel, false, true);
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Mouse, false, true);
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
@@ -6,21 +7,19 @@ using System.Windows.Interactivity;
 namespace Artemis.ItemBehaviours
 {
     /// <summary>
-    ///     Steve Greatrex - http://stackoverflow.com/a/5118406/5015269
+    ///     Chaitanya Kadamati - http://stackoverflow.com/a/33233162/5015269
     /// </summary>
     public class BindableSelectedItemBehavior : Behavior<TreeView>
     {
         protected override void OnAttached()
         {
             base.OnAttached();
-
             AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
         }
 
         protected override void OnDetaching()
         {
             base.OnDetaching();
-
             if (AssociatedObject != null)
                 AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
         }
@@ -38,49 +37,59 @@ namespace Artemis.ItemBehaviours
             set { SetValue(SelectedItemProperty, value); }
         }
 
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem",
-            typeof (object), typeof (BindableSelectedItemBehavior), new UIPropertyMetadata(null, OnSelectedItemChanged));
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register("SelectedItem", typeof(object), typeof(BindableSelectedItemBehavior),
+                new UIPropertyMetadata(null, OnSelectedItemChanged));
 
         private static void OnSelectedItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var item = ((BindableSelectedItemBehavior) sender).AssociatedObject
-                .ItemContainerGenerator.ContainerFromItem(e.NewValue) as TreeViewItem;
-            if (item != null)
-                item.SetValue(TreeViewItem.IsSelectedProperty, true);
-            else
-                ClearTreeViewSelection(((BindableSelectedItemBehavior) sender).AssociatedObject);
-        }
-
-        /// <summary>
-        ///     Clears a TreeView's selected item recursively
-        ///     Tom Wright - http://stackoverflow.com/a/1406116/5015269
-        /// </summary>
-        /// <param name="tv"></param>
-        public static void ClearTreeViewSelection(TreeView tv)
-        {
-            if (tv != null)
-                ClearTreeViewItemsControlSelection(tv.Items, tv.ItemContainerGenerator);
-        }
-
-        /// <summary>
-        ///     Clears a TreeView's selected item recursively
-        ///     Tom Wright - http://stackoverflow.com/a/1406116/5015269
-        /// </summary>
-        /// <param name="ic"></param>
-        /// <param name="icg"></param>
-        private static void ClearTreeViewItemsControlSelection(ICollection ic, ItemContainerGenerator icg)
-        {
-            if ((ic == null) || (icg == null))
+            var behavior = sender as BindableSelectedItemBehavior;
+            var tree = behavior?.AssociatedObject;
+            if (tree == null)
                 return;
 
-            for (var i = 0; i < ic.Count; i++)
+            if (e.NewValue == null)
             {
-                var tvi = icg.ContainerFromIndex(i) as TreeViewItem;
-                if (tvi == null)
-                    continue;
-                ClearTreeViewItemsControlSelection(tvi.Items, tvi.ItemContainerGenerator);
-                tvi.IsSelected = false;
+                foreach (var item in tree.Items.OfType<TreeViewItem>())
+                    item.SetValue(TreeViewItem.IsSelectedProperty, false);
             }
+            var treeViewItem = e.NewValue as TreeViewItem;
+            if (treeViewItem != null)
+                treeViewItem.SetValue(TreeViewItem.IsSelectedProperty, true);
+            else
+            {
+                var itemsHostProperty = tree.GetType()
+                    .GetProperty("ItemsHost", BindingFlags.NonPublic | BindingFlags.Instance);
+                var itemsHost = itemsHostProperty?.GetValue(tree, null) as Panel;
+                if (itemsHost == null)
+                    return;
+
+                foreach (var item in itemsHost.Children.OfType<TreeViewItem>())
+                {
+                    if (WalkTreeViewItem(item, e.NewValue))
+                        break;
+                }
+            }
+        }
+
+        public static bool WalkTreeViewItem(TreeViewItem treeViewItem, object selectedValue)
+        {
+            if (treeViewItem.DataContext == selectedValue)
+            {
+                treeViewItem.SetValue(TreeViewItem.IsSelectedProperty, true);
+                treeViewItem.Focus();
+                return true;
+            }
+            var itemsHostProperty = treeViewItem.GetType()
+                .GetProperty("ItemsHost", BindingFlags.NonPublic | BindingFlags.Instance);
+            var itemsHost = itemsHostProperty?.GetValue(treeViewItem, null) as Panel;
+            if (itemsHost == null) return false;
+            foreach (var item in itemsHost.Children.OfType<TreeViewItem>())
+            {
+                if (WalkTreeViewItem(item, selectedValue))
+                    break;
+            }
+            return false;
         }
 
         #endregion

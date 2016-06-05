@@ -6,8 +6,8 @@
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="386.842" d:DesignWidth="554.887">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Margin="15, 5, 15, 5">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="15, 5, 5, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -16,8 +16,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
                 <Label FontSize="20" HorizontalAlignment="Left">
@@ -34,19 +34,15 @@
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
             </StackPanel>
-            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
+            <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       MaxWidth="510" TextAlignment="Justify">
+                       TextAlignment="Justify" Margin="5,0,0,10">
                 Artemis requires the latest Witcher 3 version and mod to be installed in order to work. If you don't use any (conflicting) Witcher 3 mods, the mod can automatically be installed.
             </TextBlock>
-
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
-                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify">
-                Note: If you do use conflicting mods, we'll let you know what to do.
-            </TextBlock>
-            <Button Grid.Row="3" Grid.Column="0" x:Name="AutoInstall" Content="Try automatic mod install" Width="160"
-                    Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Left" Margin="0,20,0,0" />
+            <Button Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" x:Name="AutoInstall" Content="Try automatic mod install" Width="160" Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Left" />
+            
+            <!-- Profile editor -->
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">

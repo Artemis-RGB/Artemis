@@ -1,33 +1,50 @@
 ﻿using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Services;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
+using Ninject;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.ViewModels.Abstract
 {
-    public abstract class GameViewModel<T> : Screen
+    public abstract class GameViewModel : Screen
     {
-        private bool _doActivate;
-
-        private bool _editorShown;
         private GameSettings _gameSettings;
-        private EffectModel _lastEffect;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
+            IProfileEditorViewModelFactory pFactory)
         {
             MainManager = mainManager;
             GameModel = gameModel;
+            Events = events;
+            PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = new ProfileEditorViewModel<T>(MainManager, GameModel);
+            ProfileEditor = PFactory.CreateProfileEditorViewModel(Events, mainManager, gameModel);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
+            Events.Subscribe(this);
         }
 
-        public ProfileEditorViewModel<T> ProfileEditor { get; set; }
+        [Inject]
+        public ILogger Logger { get; set; }
+
+        [Inject]
+        public ProfilePreviewModel ProfilePreviewModel { get; set; }
+
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
+
+        public IEventAggregator Events { get; set; }
+        public IProfileEditorViewModelFactory PFactory { get; set; }
+
+        public ProfileEditorViewModel ProfileEditor { get; set; }
 
         public GameModel GameModel { get; set; }
         public MainManager MainManager { get; set; }
@@ -57,13 +74,13 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the game if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(GameModel, true);
+            MainManager.EffectManager.ChangeEffect(GameModel, MainManager.LoopManager);
         }
 
         public async void ResetSettings()
         {
-            var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
+            var resetConfirm =
+                await DialogService.ShowQuestionMessageBox("Reset effect settings",
                     "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)
@@ -74,70 +91,26 @@ namespace Artemis.ViewModels.Abstract
 
             SaveSettings();
         }
+        
+        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedProfile" && IsActive)
+                return;
+
+            GameModel.Profile = ProfileEditor.SelectedProfile;
+            ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+        }
 
         protected override void OnActivate()
         {
             base.OnActivate();
-
-            // OnActive is triggered at odd moments, only activate the profile 
-            // preview if OnDeactivate isn't called right after it
-            _doActivate = true;
-            Task.Factory.StartNew(() =>
-            {
-                Thread.Sleep(100);
-                if (_doActivate)
-                    SetEditorShown(true);
-            });
+            ProfileEditor.ProfileViewModel.Activate();
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-
-            _doActivate = false;
-            SetEditorShown(false);
-        }
-
-        public void SetEditorShown(bool enable)
-        {
-            if (enable == _editorShown)
-                return;
-
-            if (enable)
-            {
-                // Store the current effect so it can be restored later
-                if (!(MainManager.EffectManager.ActiveEffect is ProfilePreviewModel))
-                    _lastEffect = MainManager.EffectManager.ActiveEffect;
-
-                MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
-                MainManager.EffectManager.ChangeEffect(MainManager.EffectManager.ProfilePreviewModel);
-            }
-            else
-            {
-                if (_lastEffect != null)
-                {
-                    // Game models are only used if they are enabled
-                    var gameModel = _lastEffect as GameModel;
-                    if (gameModel != null)
-                        if (!gameModel.Enabled)
-                            MainManager.EffectManager.GetLastEffect();
-                        else
-                            MainManager.EffectManager.ChangeEffect(_lastEffect, true);
-                }
-                else
-                    MainManager.EffectManager.ClearEffect();
-            }
-
-            _editorShown = enable;
-        }
-
-        private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != "SelectedProfile")
-                return;
-
-            GameModel.Profile = ProfileEditor.SelectedProfile;
-            MainManager.EffectManager.ProfilePreviewModel.SelectedProfile = ProfileEditor.SelectedProfile;
+            ProfileEditor.ProfileViewModel.Deactivate();
         }
     }
 

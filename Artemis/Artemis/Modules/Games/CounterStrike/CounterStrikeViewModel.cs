@@ -1,23 +1,23 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeViewModel : GameViewModel<CounterStrikeDataModel>
+    public sealed class CounterStrikeViewModel : GameViewModel
     {
-        public CounterStrikeViewModel(MainManager mainManager)
-            : base(mainManager, new CounterStrikeModel(mainManager, new CounterStrikeSettings()))
+        public CounterStrikeViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+            : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()), events, pFactory)
         {
-            // Create effect model and add it to MainManager
+            DisplayName = "CS:GO";
+
             MainManager.EffectManager.EffectModels.Add(GameModel);
             PlaceConfigFile();
         }
-
-        public static string Name => "CS:GO";
-        public string Content => "Counter-Strike: GO Content";
 
         public void BrowseDirectory()
         {
@@ -48,7 +48,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
             }
 
-            MainManager.DialogService.ShowErrorMessageBox("Please select a valid CS:GO directory\n\n" +
+            DialogService.ShowErrorMessageBox("Please select a valid CS:GO directory\n\n" +
                                                           @"By default CS:GO is in \SteamApps\common\Counter-Strike Global Offensive");
             ((CounterStrikeSettings) GameSettings).GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => GameSettings);

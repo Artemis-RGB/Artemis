@@ -1,17 +1,26 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Services;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels.Abstract
 {
     public abstract class EffectViewModel : Screen
     {
+        protected readonly EffectModel EffectModel;
         private EffectSettings _effectSettings;
         private bool _showDisabledPopup;
+        protected MainManager MainManager;
 
-        public EffectModel EffectModel { get; set; }
-        public MainManager MainManager { get; set; }
+        protected EffectViewModel(MainManager mainManager, EffectModel effectModel)
+        {
+            MainManager = mainManager;
+            EffectModel = effectModel;
+        }
 
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
         public EffectSettings EffectSettings
         {
             get { return _effectSettings; }
@@ -48,7 +57,7 @@ namespace Artemis.ViewModels.Abstract
             if (EffectEnabled)
                 MainManager.EffectManager.ClearEffect();
             else
-                MainManager.EffectManager.ChangeEffect(EffectModel);
+                MainManager.EffectManager.ChangeEffect(EffectModel, MainManager.LoopManager);
         }
 
         public void SaveSettings()
@@ -58,13 +67,13 @@ namespace Artemis.ViewModels.Abstract
                 return;
 
             // Restart the effect if it's currently running to apply settings.
-            MainManager.EffectManager.ChangeEffect(EffectModel, true);
+            MainManager.EffectManager.ChangeEffect(EffectModel);
         }
 
         public async void ResetSettings()
         {
             var resetConfirm = await
-                MainManager.DialogService.ShowQuestionMessageBox("Reset effect settings",
+                DialogService.ShowQuestionMessageBox("Reset effect settings",
                     "Are you sure you wish to reset this effect's settings? \nAny changes you made will be lost.");
 
             if (!resetConfirm.Value)

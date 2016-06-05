@@ -3,25 +3,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
-using Artemis.Models.Interfaces;
 using Artemis.Properties;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public class Witcher3ViewModel : GameViewModel<Witcher3DataModel>
+    public sealed class Witcher3ViewModel : GameViewModel
     {
-        public Witcher3ViewModel(MainManager mainManager)
-            : base(mainManager, new Witcher3Model(mainManager, new Witcher3Settings()))
+        public Witcher3ViewModel(MainManager main, IEventAggregator events, IProfileEditorViewModelFactory pFactory)
+            : base(main, new Witcher3Model(main, new Witcher3Settings()), events, pFactory)
         {
-            MainManager = mainManager;
-
-            // Settings are loaded from file by class
-            GameSettings = new Witcher3Settings();
-
-            // Create effect model and add it to MainManager
-            GameModel = new Witcher3Model(mainManager, (Witcher3Settings) GameSettings);
+            DisplayName = "The Witcher 3";
             MainManager.EffectManager.EffectModels.Add(GameModel);
         }
 
@@ -42,7 +37,7 @@ namespace Artemis.Modules.Games.Witcher3
             if (!File.Exists(dialog.SelectedPath + @"\bin\x64\witcher3.exe"))
             {
                 var retry = await
-                    MainManager.DialogService.ShowQuestionMessageBox("Installation error",
+                    DialogService.ShowQuestionMessageBox("Installation error",
                         "That's not a valid Witcher 3 directory\n\n" +
                         "Default directories:\n" +
                         "Steam: \\SteamApps\\common\\The Witcher 3\n" +
@@ -65,7 +60,7 @@ namespace Artemis.Modules.Games.Witcher3
                     if (!file.Contains("modArtemis"))
                     {
                         var viewHelp = await
-                            MainManager.DialogService.ShowQuestionMessageBox("Conflicting mod found",
+                            DialogService.ShowQuestionMessageBox("Conflicting mod found",
                                 "Oh no, you have a conflicting mod!\n\n" +
                                 "Conflicting file: " + file.Remove(0, dialog.SelectedPath.Length) +
                                 "\n\nWould you like to view instructions on how to manually install the mod?");
@@ -108,11 +103,7 @@ namespace Artemis.Modules.Games.Witcher3
             File.WriteAllText(dialog.SelectedPath + @"\mods\modArtemis\content\scripts\game\player\playerWitcher.ws",
                 Resources.playerWitcherWs);
 
-            MainManager.DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
+            DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
         }
-    }
-
-    public class Witcher3DataModel : IGameDataModel
-    {
     }
 }

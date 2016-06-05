@@ -28,19 +28,6 @@ namespace Artemis.Models
             }
         }
 
-        public void SetEnabled(bool enabled)
-        {
-            if (Enabled == enabled)
-                return;
-
-            if (enabled)
-                Enable();
-            else
-                Dispose();
-
-            Enabled = enabled;
-        }
-
         public abstract Bitmap GenerateBitmap(Bitmap bitmap);
     }
 }

@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.KeyboardProviders;
+using Artemis.DeviceProviders;
 
 namespace Artemis.Utilities.Keyboard
 {

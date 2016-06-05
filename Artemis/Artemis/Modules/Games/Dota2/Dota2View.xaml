@@ -4,36 +4,27 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             mc:Ignorable="d" d:DesignWidth="635" Height="515.691">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,-19">
-        <Grid Margin="15, 5, 15, 5">
+             mc:Ignorable="d"
+             d:DesignHeight="476.986" d:DesignWidth="538.772">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Margin="15,5,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="80" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows game states and events from Dota 2." />
+                                    Text="Shows verious game states and events on the keyboard." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -45,130 +36,31 @@
                 </StackPanel>
             </StackPanel>
 
-
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="16" Content="Dota 2 Directory" FontFamily="Segoe UI Semibold" Foreground="#535353"
-                       Width="130" HorizontalAlignment="Left" />
+                <Label FontSize="20" HorizontalAlignment="Left" Content="Dota 2 Directory" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                              Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
                              cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
                     <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                             HorizontalAlignment="Right" Width="25"
-                            Style="{DynamicResource SquareButtonStyle}" Height="25" />
+                            Style="{DynamicResource SquareButtonStyle}" Height="26" Margin="0,-2,0,0" />
                 </Grid>
             </StackPanel>
 
-            <!-- Main Color -->
-            <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Main keyboard color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=GameSettings.MainColor, Mode=TwoWay}"
-                              Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
+            <!-- Profile editor -->
+            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
 
-            <!-- Ability Ready Color -->
-            <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Ability Ready Color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="AbilityReadyColor"
-                              SelectedColor="{Binding Path=GameSettings.AbilityReadyColor, Mode=TwoWay}"
-                              Grid.Row="3" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Ability on Cooldown Color -->
-            <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Width="147" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Ability on Cooldown Color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="AbilityCooldownColor"
-                              SelectedColor="{Binding Path=GameSettings.AbilityCooldownColor, Mode=TwoWay}"
-                              Grid.Row="4" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Abilities Display -->
-            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Keyboard Template
-            </TextBlock>
-            <ComboBox Grid.Row="5" Grid.Column="1" x:Name="KeyboardLayouts"
-                      ItemsSource="{Binding Path=KeyboardLayouts}"
-                      SelectedIndex="{Binding Path=GameSettings.KeyboardLayout}" VerticalAlignment="Center"
-                      HorizontalAlignment="Right"
-                      Width="109" Margin="0,6,0,7" />
-
-            <!-- Items Display -->
-            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Castable Abilities
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.CanCastAbility, Mode=TwoWay}"
-                                   Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Health Display -->
-            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Display health
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowHealth, Mode=TwoWay}"
-                                   Grid.Row="7" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Mana Display-->
-            <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Display mana
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowMana, Mode=TwoWay}"
-                                   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes" OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Mana Color -->
-            <TextBlock Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Width="114" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Mana color
-            </TextBlock>
-            <xctk:ColorPicker x:Name="ManaColor"
-                              SelectedColor="{Binding Path=GameSettings.ManaColor, Mode=TwoWay}"
-                              Grid.Row="9" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
-            <!-- Daytime Display -->
-            <TextBlock Grid.Row="10" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Display day/night
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowDayCycle, Mode=TwoWay}"
-                                   Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
-                                   OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-            <!-- Dead Display -->
-            <TextBlock Grid.Row="11" Grid.Column="0" HorizontalAlignment="Left" Width="168" VerticalAlignment="Center"
-                       Height="16" Margin="0,10,0,9">
-                Show events on the keyboard
-            </TextBlock>
-            <controls:ToggleSwitch IsChecked="{Binding Path=GameSettings.ShowEvents, Mode=TwoWay}"
-                                   Grid.Row="11" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
-                                   OffLabel="No"
-                                   Margin="0,0,-5,0" Width="114" />
-
-
-            <StackPanel Grid.Column="0" Grid.Row="12" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <!-- Buttons -->
+            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
                         Margin="10,0,0,0"
                         Style="{DynamicResource SquareButtonStyle}" />
             </StackPanel>
-
-
         </Grid>
     </ScrollViewer>
 </UserControl>

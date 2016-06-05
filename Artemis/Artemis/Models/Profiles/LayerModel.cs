@@ -4,145 +4,217 @@ using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
+using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
+using Artemis.Utilities.Layers;
 using Artemis.Utilities.ParentChild;
 
 namespace Artemis.Models.Profiles
 {
     public class LayerModel : IChildItem<LayerModel>, IChildItem<ProfileModel>
     {
-        [XmlIgnore] private readonly LayerDrawer _drawer;
-        [XmlIgnore] private bool _mustDraw;
-
         public LayerModel()
         {
-            UserProps = new LayerPropertiesModel();
-            CalcProps = new LayerPropertiesModel();
-
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
-            LayerConditions = new List<LayerConditionModel>();
-            LayerProperties = new List<LayerDynamicPropertiesModel>();
-
-            _mustDraw = true;
-            _drawer = new LayerDrawer(this, 4);
         }
 
         public string Name { get; set; }
+        public int Order { get; set; }
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
-        public int Order { get; set; }
-        public LayerPropertiesModel UserProps { get; set; }
-
+        public bool Expanded { get; set; }
+        public LayerPropertiesModel Properties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
-        public List<LayerConditionModel> LayerConditions { get; set; }
-        public List<LayerDynamicPropertiesModel> LayerProperties { get; set; }
 
         [XmlIgnore]
-        public LayerPropertiesModel CalcProps { get; set; }
+        public ImageSource LayerImage => Drawer.DrawThumbnail(this);
 
         [XmlIgnore]
-        public ImageSource LayerImage => _drawer.GetThumbnail();
+        public LayerModel Parent { get; internal set; }
 
         [XmlIgnore]
-        public LayerModel ParentLayer { get; internal set; }
+        public ProfileModel Profile { get; internal set; }
 
         [XmlIgnore]
-        public ProfileModel ParentProfile { get; internal set; }
+        public GifImage GifImage { get; set; }
 
         public bool ConditionsMet<T>(IGameDataModel dataModel)
         {
-            return Enabled && LayerConditions.All(cm => cm.ConditionMet<T>(dataModel));
+            return Enabled && Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
-        public void DrawPreview(DrawingContext c)
+        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
-            GeneralHelpers.CopyProperties(CalcProps, UserProps);
-            if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
-                _drawer.Draw(c, _mustDraw);
-            else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(c);
-            _mustDraw = false;
-        }
-
-        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview = false)
-        {
-            // Conditions aren't checked during a preview because there is no game data to base them on
-            if (!preview)
-                if (!ConditionsMet<T>(dataModel))
-                    return;
-
-            if (LayerType == LayerType.Folder)
-                foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-                    layerModel.Draw<T>(dataModel, c);
-            else if (LayerType == LayerType.Keyboard || LayerType == LayerType.Keyboard)
-                _drawer.Draw(c);
-            else if (LayerType == LayerType.KeyboardGif)
-                _drawer.DrawGif(c);
-            else if (LayerType == LayerType.Mouse)
-                _drawer.UpdateMouse();
-            else if (LayerType == LayerType.Headset)
-                _drawer.UpdateHeadset();
-        }
-
-        public void Update<T>(IGameDataModel dataModel, bool preview = false)
-        {
-            if (LayerType == LayerType.Folder)
-            {
-                foreach (var layerModel in Children)
-                    layerModel.Update<T>(dataModel);
+            // Don't draw when the layer is disabled
+            if (!Enabled)
                 return;
+
+            // Preview simply shows the properties as they are. When not previewing they are applied
+            LayerPropertiesModel appliedProperties;
+            if (!preview)
+            {
+                if (!ConditionsMet<T>(dataModel))
+                    return; // Don't draw the layer when not previewing and the conditions arent met
+                appliedProperties = Properties.GetAppliedProperties(dataModel);
+            }
+            else
+                appliedProperties = GeneralHelpers.Clone(Properties);
+            
+            // Update animations on layer types that support them
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif))
+            {
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties, updateAnimations);
             }
 
-            GeneralHelpers.CopyProperties(CalcProps, UserProps);
-
-            // Dynamic properties aren't applied during preview because there is no game data to base them on
-            if (preview)
-                return;
-            foreach (var dynamicProperty in LayerProperties)
-                dynamicProperty.ApplyProperty<T>(dataModel, UserProps, CalcProps);
+            switch (LayerType)
+            {
+                // Folders are drawn recursively
+                case LayerType.Folder:
+                    foreach (var layerModel in Children.OrderByDescending(l => l.Order))
+                        layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
+                    break;
+                case LayerType.Keyboard:
+                    Drawer.Draw(c, (KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties);
+                    break;
+                case LayerType.KeyboardGif:
+                    GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
+                    break;
+            }
         }
 
-        public void Reorder(LayerModel selectedLayer, bool moveUp)
+        public Brush GenerateBrush<T>(LayerType type, IGameDataModel dataModel, bool preview, bool updateAnimations)
         {
-            // Fix the sorting just in case
-            FixOrder();
+            if (!Enabled)
+                return null;
+            if (LayerType != LayerType.Folder && LayerType != type)
+                return null;
 
-            int newOrder;
-            if (moveUp)
-                newOrder = selectedLayer.Order - 1;
+            // Preview simply shows the properties as they are. When not previewing they are applied
+            LayerPropertiesModel appliedProperties;
+            if (!preview)
+            {
+                if (!ConditionsMet<T>(dataModel))
+                    return null; // Don't return the brush when not previewing and the conditions arent met
+                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => Properties.GetAppliedProperties(dataModel));
+            }
             else
-                newOrder = selectedLayer.Order + 1;
+                appliedProperties = Properties.Brush.Dispatcher.Invoke(() => GeneralHelpers.Clone(Properties));
 
-            var target = Children.FirstOrDefault(l => l.Order == newOrder);
-            if (target == null)
-                return;
+            // TODO: Mouse/headset animations
+            // Update animations on layer types that support them
+            //if (LayerType != LayerType.Folder && updateAnimations)
+            //{
+            //    AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel)Properties,
+            //        (KeyboardPropertiesModel)appliedProperties);
+            //}
 
-            target.Order = selectedLayer.Order;
-            selectedLayer.Order = newOrder;
+            if (LayerType != LayerType.Folder)
+                return appliedProperties.Brush;
+
+            Brush res = null;
+            foreach (var layerModel in Children.OrderByDescending(l => l.Order))
+            {
+                var brush = layerModel.GenerateBrush<T>(type, dataModel, preview, updateAnimations);
+                if (brush != null)
+                    res = brush;
+            }
+            return res;
         }
 
-        private void FixOrder()
+        public void SetupProperties()
+        {
+            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
+                !(Properties is KeyboardPropertiesModel))
+            {
+                Properties = new KeyboardPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
+                    Animation = LayerAnimation.None,
+                    Height = 1,
+                    Width = 1,
+                    X = 0,
+                    Y = 0,
+                    Opacity = 1
+                };
+            }
+            else if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
+                Properties = new MousePropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
+                };
+            else if (LayerType == LayerType.Headset && !(Properties is HeadsetPropertiesModel))
+                Properties = new HeadsetPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
+                };
+        }
+        
+        public void FixOrder()
         {
             Children.Sort(l => l.Order);
             for (var i = 0; i < Children.Count; i++)
                 Children[i].Order = i;
         }
 
+        /// <summary>
+        ///     Returns whether the layer meets the requirements to be drawn
+        /// </summary>
+        /// <returns></returns>
+        public bool MustDraw()
+        {
+            return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
+        }
+
+        public IEnumerable<LayerModel> GetAllLayers(bool ignoreEnabled)
+        {
+            var layers = new List<LayerModel>();
+            foreach (var layerModel in Children)
+            {
+                if (ignoreEnabled && !layerModel.Enabled)
+                    continue;
+                layers.Add(layerModel);
+                layers.AddRange(layerModel.Children);
+            }
+
+            return layers;
+        }
+
         #region IChildItem<Parent> Members
 
         LayerModel IChildItem<LayerModel>.Parent
         {
-            get { return ParentLayer; }
-            set { ParentLayer = value; }
+            get { return Parent; }
+            set { Parent = value; }
         }
 
         ProfileModel IChildItem<ProfileModel>.Parent
         {
-            get { return ParentProfile; }
-            set { ParentProfile = value; }
+            get { return Profile; }
+            set { Profile = value; }
         }
 
         #endregion
+
+        public static LayerModel CreateLayer()
+        {
+            return new LayerModel
+            {
+                Name = "New layer",
+                Enabled = true,
+                Order = -1,
+                LayerType = LayerType.Keyboard,
+                Properties = new KeyboardPropertiesModel
+                {
+                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
+                    Animation = LayerAnimation.None,
+                    Height = 1,
+                    Width = 1,
+                    X = 0,
+                    Y = 0,
+                    Opacity = 1
+                }
+            };
+        }
     }
 
     public enum LayerType

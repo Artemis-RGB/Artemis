@@ -3,11 +3,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Artemis.KeyboardProviders.Corsair;
-using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.DeviceProviders.Corsair;
+using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
@@ -96,7 +97,7 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count == 0)
                 return null;
 
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            var bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
@@ -113,7 +114,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
-                    if (MainManager.KeyboardManager.ActiveKeyboard is CorsairRGB)
+                    if (MainManager.DeviceManager.ActiveKeyboard is CorsairRGB)
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;
@@ -133,6 +134,16 @@ namespace Artemis.Modules.Effects.TypeWave
                 }
             }
             return bitmap;
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return null;
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return null;
         }
     }
 

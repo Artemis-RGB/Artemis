@@ -22,6 +22,7 @@
 
 using System;
 using System.Threading.Tasks;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Artemis.Services
 {
@@ -41,7 +42,7 @@ namespace Artemis.Services
 
         public abstract bool ShowOpenDialog(out string path, string defaultExt, string filter, string initialDir = null);
 
-        public abstract Task<string> ShowInputDialog(string title, string message);
+        public abstract Task<string> ShowInputDialog(string title, string message, MetroDialogSettings settings = null);
 
         public abstract Task<bool?> ShowQuestionMessageBox(string title, string message);
     }

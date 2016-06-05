@@ -5,23 +5,16 @@ using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {
-    public class AudioVisualizerViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
+    public sealed class AudioVisualizerViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public AudioVisualizerViewModel(MainManager mainManager)
+        public AudioVisualizerViewModel(MainManager main, IEventAggregator events)
+            : base(main, new AudioVisualizerModel(main, new AudioVisualizerSettings()))
         {
-            // Subscribe to main model
-            MainManager = mainManager;
-            MainManager.Events.Subscribe(this);
+            DisplayName = "Audio Visualization";
 
-            // Settings are loaded from file by class
-            EffectSettings = new AudioVisualizerSettings();
-
-            // Create effect model and add it to MainManager
-            EffectModel = new AudioVisualizerModel(mainManager, (AudioVisualizerSettings) EffectSettings);
+            events.Subscribe(this);
             MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
-
-        public static string Name => "Audio Visualizer";
 
         public void Handle(ActiveEffectChanged message)
         {

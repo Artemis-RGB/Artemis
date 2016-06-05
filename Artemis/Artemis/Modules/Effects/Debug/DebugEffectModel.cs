@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Utilities.Keyboard;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.Debug
 {
@@ -33,15 +34,10 @@ namespace Artemis.Modules.Effects.Debug
         {
             Initialized = false;
 
-            KeyboardRectangle = new KeyboardRectangle(MainManager.KeyboardManager.ActiveKeyboard, 0, 0, new List<Color>
+            KeyboardRectangle = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0, 0, new List<Color>
             {
-                Color.Red,
-                Color.OrangeRed,
-                Color.Yellow,
-                Color.Green,
-                Color.Blue,
-                Color.Purple,
-                Color.DeepPink
+                Color.FromArgb(0, 226, 190),
+                Color.FromArgb(0, 208, 255)
             }, LinearGradientMode.Horizontal);
 
             Initialized = true;
@@ -67,6 +63,16 @@ namespace Artemis.Modules.Effects.Debug
                 KeyboardRectangle.Draw(g);
             }
             return bitmap;
+        }
+
+        public override Brush GenerateMouseBrush()
+        {
+            return null;
+        }
+
+        public override Brush GenerateHeadsetBrush()
+        {
+            return null;
         }
     }
 }

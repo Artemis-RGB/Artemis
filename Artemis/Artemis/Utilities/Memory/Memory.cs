@@ -46,13 +46,21 @@ namespace Artemis.Utilities.Memory
         /// <returns></returns>
         protected ProcessModule FindModule(string name)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
-            foreach (ProcessModule module in Process.Modules)
+            try
             {
-                if (module.ModuleName.ToLower() == name.ToLower())
-                    return module;
+                if (string.IsNullOrEmpty(name))
+                    throw new ArgumentNullException("name");
+                foreach (ProcessModule module in Process.Modules)
+                {
+                    if (module.ModuleName.ToLower() == name.ToLower())
+                        return module;
+                }
             }
+            catch (Exception)
+            {
+                return null;
+            }
+
             return null;
         }
 

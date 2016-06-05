@@ -1,40 +1,30 @@
 ﻿using System;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.Debug
 {
-    internal class DebugEffectViewModel : EffectViewModel, IHandle<ChangeBitmap>, IHandle<ActiveEffectChanged>
+    internal sealed class DebugEffectViewModel : EffectViewModel, IHandle<ChangeBitmap>, IHandle<ActiveEffectChanged>
     {
         private ImageSource _imageSource;
         private string _selectedRectangleType;
 
-        public DebugEffectViewModel(MainManager mainManager)
+        public DebugEffectViewModel(MainManager main, IEventAggregator events)
+            : base(main, new DebugEffectModel(main, new DebugEffectSettings()))
         {
-            // Subscribe to main model
-            MainManager = mainManager;
-            MainManager.Events.Subscribe(this);
+            DisplayName = "Debug Effect";
 
-            // Settings are loaded from file by class
-            EffectSettings = new DebugEffectSettings();
-
-            // Create effect model and add it to MainManager
-            EffectModel = new DebugEffectModel(mainManager, (DebugEffectSettings) EffectSettings);
+            events.Subscribe(this);
             MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
-
-        public static string Name => "Debug Effect";
-
         public BindableCollection<string> RectangleTypes
-            => new BindableCollection<string>(Enum.GetNames(typeof (LinearGradientMode)));
+            => new BindableCollection<string>(Enum.GetNames(typeof(LinearGradientMode)));
 
         public string SelectedRectangleType
         {
@@ -46,7 +36,7 @@ namespace Artemis.Modules.Effects.Debug
                 NotifyOfPropertyChange(() => SelectedRectangleType);
 
                 ((DebugEffectSettings) EffectSettings).Type =
-                    (LinearGradientMode) Enum.Parse(typeof (LinearGradientMode), value);
+                    (LinearGradientMode) Enum.Parse(typeof(LinearGradientMode), value);
             }
         }
 
@@ -67,19 +57,7 @@ namespace Artemis.Modules.Effects.Debug
 
         public void Handle(ChangeBitmap message)
         {
-            using (var memory = new MemoryStream())
-            {
-                message.Bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                ImageSource = bitmapImage;
-            }
+            ImageSource = ImageUtilities.BitmapToBitmapImage(message.Bitmap);
         }
     }
 }

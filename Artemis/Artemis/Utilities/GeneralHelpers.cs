@@ -38,22 +38,6 @@ namespace Artemis.Utilities
             Environment.Exit(0);
         }
 
-        public static bool IsRunAsAdministrator()
-        {
-            var wi = WindowsIdentity.GetCurrent();
-            var wp = new WindowsPrincipal(wi);
-
-            return wp.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        public static void CopyProperties(object dest, object src)
-        {
-            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
-            {
-                item.SetValue(dest, item.GetValue(src));
-            }
-        }
-
         /// <summary>
         ///     Perform a deep Copy of the object.
         /// </summary>
@@ -66,7 +50,7 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var serializer = new XmlSerializer(typeof (T));
+            var serializer = new XmlSerializer(typeof(T));
             Stream stream = new MemoryStream();
             using (stream)
             {
@@ -87,7 +71,6 @@ namespace Artemis.Utilities
         }
 
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
-        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof (T).GetProperties());
 
         private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
             string path = "")
@@ -100,6 +83,8 @@ namespace Artemis.Utilities
                     friendlyName = "(Number)";
                 else if (propertyInfo.PropertyType.Name == "String")
                     friendlyName = "(Text)";
+                else if (propertyInfo.PropertyType.Name == "Boolean")
+                    friendlyName = "(Yes/no)";
                 if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
                     friendlyName = "(Choice)";
 

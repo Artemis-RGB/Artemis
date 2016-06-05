@@ -120,20 +120,20 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.0.0-rc1-177\lib\net45\Autofac.dll</HintPath>
+    <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.2.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Autofac, Version=2.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.AutofacBootstrap.2.0.9-beta\lib\net40\Caliburn.Micro.Autofac.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Platform, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.2.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ColorBox, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f971124b2576acfc, processorArchitecture=MSIL">
@@ -146,6 +146,10 @@
     </Reference>
     <Reference Include="CUE.NET, Version=1.0.2.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CUE.NET.1.0.2.2\lib\net45\CUE.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GongSolutions.Wpf.DragDrop, Version=0.1.4.3, Culture=neutral, PublicKeyToken=d19974ea350ccea1, processorArchitecture=MSIL">
+      <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -175,8 +179,24 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Factory, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Factory.3.2.1.0\lib\net45-full\Ninject.Extensions.Factory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Logging.3.2.3.0\lib\net45-full\Ninject.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Logging.NLog4, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Logging.nlog4.3.2.3.0\lib\net45-full\Ninject.Extensions.Logging.NLog4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.2\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -202,7 +222,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -259,34 +282,43 @@
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
+    <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="Events\ChangeBitmap.cs" />
+    <Compile Include="InjectionFactories\IProfileEditorViewModelFactory.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
-    <Compile Include="KeyboardProviders\Corsair\CorsairRGB.cs" />
-    <Compile Include="KeyboardProviders\KeyboardProvider.cs" />
-    <Compile Include="KeyboardProviders\KeyboardRegion.cs" />
-    <Compile Include="KeyboardProviders\Logitech\Orion.cs" />
-    <Compile Include="KeyboardProviders\Logitech\Utilities\KeyboardNames.cs" />
-    <Compile Include="KeyboardProviders\Logitech\Utilities\KeyMap.cs" />
-    <Compile Include="KeyboardProviders\Logitech\Utilities\LogitechGSDK.cs" />
-    <Compile Include="KeyboardProviders\Logitech\Utilities\OrionUtilities.cs" />
-    <Compile Include="KeyboardProviders\ProviderHelper.cs" />
-    <Compile Include="KeyboardProviders\Razer\BlackWidow.cs" />
-    <Compile Include="KeyboardProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairRGB.cs" />
+    <Compile Include="DeviceProviders\KeyboardProvider.cs" />
+    <Compile Include="DeviceProviders\Logitech\Orion.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\KeyboardNames.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\KeyMap.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\LogitechGSDK.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />
+    <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
+    <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
     <Compile Include="Managers\EffectManager.cs" />
-    <Compile Include="Managers\KeyboardManager.cs" />
+    <Compile Include="Managers\DeviceManager.cs" />
+    <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
+    <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\EffectSettings.cs" />
     <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\Interfaces\GameDataModel.cs" />
+    <Compile Include="Models\OverlaySettings.cs" />
     <Compile Include="Models\Profiles\LayerConditionModel.cs" />
     <Compile Include="Models\Profiles\LayerModel.cs" />
-    <Compile Include="Models\Profiles\LayerDynamicPropertiesModel.cs" />
-    <Compile Include="Models\Profiles\LayerPropertiesModel.cs" />
     <Compile Include="Models\Profiles\ProfileModel.cs" />
+    <Compile Include="Models\Profiles\Properties\DynamicPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\HeadsetPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\KeyboardPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\LayerPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\FolderPropertiesModel.cs" />
+    <Compile Include="Models\Profiles\Properties\MousePropertiesModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
     <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
@@ -304,7 +336,6 @@
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
       <DependentUpon>TypeWave.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -328,6 +359,9 @@
     <Compile Include="Modules\Games\Dota2\Dota2DataModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchView.xaml.cs">
+      <DependentUpon>OverwatchView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
       <DependentUpon>RocketLeague.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -347,6 +381,17 @@
       <DependentUpon>TheDivisionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchDataModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\Overwatch.Designer.cs">
+      <DependentUpon>Overwatch.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Modules\Games\Overwatch\OverwatchModel.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchSettings.cs" />
+    <Compile Include="Modules\Games\Overwatch\OverwatchViewModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\TheWitcherDataModel.cs" />
+    <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -367,6 +412,9 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
+    <Compile Include="InjectionModules\ArtemisModules.cs" />
+    <Compile Include="InjectionModules\BaseModules.cs" />
+    <Compile Include="InjectionModules\ManagerModules.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -386,14 +434,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Offsets.settings</DependentUpon>
     </Compile>
+    <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
+    <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
+    <Compile Include="Utilities\DataReaders\MmfReader.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
     <Compile Include="Utilities\GeneralHelpers.cs" />
+    <Compile Include="Utilities\GifImage.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
-    <Compile Include="Utilities\LayerDrawer.cs" />
+    <Compile Include="Utilities\Layers\AnimationUpdater.cs" />
+    <Compile Include="Utilities\Layers\Drawer.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
     <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
@@ -409,12 +462,13 @@
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="Utilities\ValueConverters.cs" />
+    <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
+    <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleViewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
     <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
@@ -423,12 +477,18 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\LayerConditionViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\LayerDynamicPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\LayerEditor\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\Properties\KeyboardPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerConditionViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerDynamicPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\Properties\LayerPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\Properties\HeadsetPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\Properties\FolderPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\Properties\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
-    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
@@ -443,9 +503,6 @@
     </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
       <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\TypeHole\TypeHoleView.xaml.cs">
-      <DependentUpon>TypeHoleView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
       <DependentUpon>TypeWaveView.xaml</DependentUpon>
@@ -465,14 +522,26 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3View.xaml.cs">
       <DependentUpon>Witcher3View.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\LayerConditionView.xaml.cs">
+    <Compile Include="Views\Profiles\Properties\FolderPropertiesView.xaml.cs">
+      <DependentUpon>FolderPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\Properties\HeadsetPropertiesView.xaml.cs">
+      <DependentUpon>HeadsetPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\Properties\KeyboardPropertiesView.xaml.cs">
+      <DependentUpon>KeyboardPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\LayerConditionView.xaml.cs">
       <DependentUpon>LayerConditionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml.cs">
+    <Compile Include="Views\Profiles\LayerDynamicPropertiesView.xaml.cs">
       <DependentUpon>LayerDynamicPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LayerEditor\LayerEditorView.xaml.cs">
+    <Compile Include="Views\Profiles\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\Properties\MousePropertiesView.xaml.cs">
+      <DependentUpon>MousePropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
@@ -480,7 +549,7 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProfileEditorView.xaml.cs">
+    <Compile Include="Views\Profiles\ProfileEditorView.xaml.cs">
       <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
@@ -526,6 +595,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TheDivision.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Modules\Games\Overwatch\Overwatch.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Overwatch.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Games\Witcher3\Witcher3.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Witcher3.Designer.cs</LastGenOutput>
@@ -551,12 +624,15 @@
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <Resource Include="Resources\Entypo.ttf" />
     <None Include="Resources\LogitechLED.dll" />
-    <None Include="Resources\folder.png" />
     <Resource Include="Resources\Keyboards\k65.png" />
     <Resource Include="Resources\Keyboards\k70.png" />
     <Resource Include="Resources\Keyboards\k95.png" />
     <Resource Include="Resources\Keyboards\strafe.png" />
     <Resource Include="Resources\Keyboards\g910.png" />
+    <None Include="Resources\folder.png" />
+    <None Include="Resources\headset.png" />
+    <None Include="Resources\mouse.png" />
+    <None Include="Resources\gif.png" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <Resource Include="Resources\Entypo-license.txt" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
@@ -578,6 +654,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\Games\TheDivision\TheDivisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -586,10 +666,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Styles\Accents\CorsairYellow.xaml">
+    <Page Include="Resources\IconsNonShared.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Resource Include="Styles\Accents\CorsairYellow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
+    </Resource>
     <Page Include="Styles\ColorBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -603,10 +687,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Effects\TypeHole\TypeHoleView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -638,17 +718,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditor\LayerConditionView.xaml">
+    <Page Include="Views\Profiles\Properties\FolderPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditor\LayerDynamicPropertiesView.xaml">
+    <Page Include="Views\Profiles\Properties\HeadsetPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LayerEditor\LayerEditorView.xaml">
+    <Page Include="Views\Profiles\Properties\KeyboardPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerConditionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerDynamicPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Profiles\Properties\MousePropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OverlaysView.xaml">
       <SubType>Designer</SubType>
@@ -658,7 +754,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ProfileEditorView.xaml">
+    <Page Include="Views\Profiles\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
