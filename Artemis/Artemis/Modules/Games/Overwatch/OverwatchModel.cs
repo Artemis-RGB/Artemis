@@ -141,7 +141,7 @@ namespace Artemis.Modules.Games.Overwatch
         {
             if (Profile == null || GameDataModel == null)
                 return null;
-
+            return null;
             return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Mouse, false, true);
         }
 
@@ -149,7 +149,7 @@ namespace Artemis.Modules.Games.Overwatch
         {
             if (Profile == null || GameDataModel == null)
                 return null;
-
+            return null;
             return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Headset, false, true);
         }
     }

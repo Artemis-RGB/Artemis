@@ -78,9 +78,8 @@ namespace Artemis.Modules.Games.Overwatch
             }
             catch (Exception e)
             {
-                Logger.Error(e, "Couldn't place Overwatch DLL, Overwatch support won't work.");
+                Logger?.Error(e, "Couldn't place Overwatch DLL, Overwatch support won't work.");
             }
-            
         }
     }
 }

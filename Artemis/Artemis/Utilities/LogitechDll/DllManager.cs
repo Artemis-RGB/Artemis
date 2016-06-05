@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Artemis.Properties;
 using Microsoft.Win32;
 
@@ -13,16 +14,24 @@ namespace Artemis.Utilities.LogitechDll
             if (!File.Exists(LogitechPath + @"\LogitechLed.dll") || !File.Exists(LogitechPath + @"\artemis.txt"))
                 return false;
 
-            // Get rid of our own DLL
-            File.Delete(LogitechPath + @"\LogitechLed.dll");
+            try
+            {
+                // Get rid of our own DLL
+                File.Delete(LogitechPath + @"\LogitechLed.dll");
 
-            // Restore the backup
-            if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
-                File.Copy(LogitechPath + @"\LogitechLed.dll.bak", LogitechPath + @"\LogitechLed.dll");
+                // Restore the backup
+                if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                    File.Copy(LogitechPath + @"\LogitechLed.dll.bak", LogitechPath + @"\LogitechLed.dll");
 
-            File.Delete(LogitechPath + @"\artemis.txt");
+                File.Delete(LogitechPath + @"\artemis.txt");
 
-            return true;
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
         }
 
         public static void PlaceDll()
@@ -35,8 +44,11 @@ namespace Artemis.Utilities.LogitechDll
 
             // Backup the existing DLL
             if (File.Exists(LogitechPath + @"\LogitechLed.dll"))
-                File.Move(LogitechPath + @"\LogitechLed.dll",
-                    LogitechPath + @"\LogitechLed.dll.bak");
+            {
+                if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                    File.Delete(LogitechPath + @"\LogitechLed.dll.bak");
+                File.Move(LogitechPath + @"\LogitechLed.dll", LogitechPath + @"\LogitechLed.dll.bak");
+            }
 
             // Copy our own DLL in place
             File.WriteAllBytes(LogitechPath + @"\LogitechLED.dll",

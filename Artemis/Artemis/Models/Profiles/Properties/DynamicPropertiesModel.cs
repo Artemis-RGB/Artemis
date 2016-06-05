@@ -37,7 +37,7 @@ namespace Artemis.Models.Profiles.Properties
         /// </summary>
         public LayerPropertyOptions LayerPropertyOptions { get; set; }
 
-        internal void ApplyProperty(IGameDataModel dataModel, KeyboardPropertiesModel properties)
+        internal void ApplyProperty(IGameDataModel dataModel, AppliedProperties properties)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
                 ApplyPercentageOf(dataModel, properties, PercentageSource);
@@ -45,7 +45,7 @@ namespace Artemis.Models.Profiles.Properties
                 ApplyPercentageOfProperty(dataModel, properties);
         }
 
-        private void ApplyPercentageOf(IGameDataModel dataModel, KeyboardPropertiesModel properties, double src)
+        private void ApplyPercentageOf(IGameDataModel dataModel, AppliedProperties properties, double src)
         {
             if (GameProperty == null)
                 return;
@@ -61,7 +61,7 @@ namespace Artemis.Models.Profiles.Properties
                 ApplyOpacity(properties, percentage);
         }
 
-        private void ApplyWidth(KeyboardPropertiesModel properties, double percentage)
+        private void ApplyWidth(AppliedProperties properties, double percentage)
         {
             var newWidth = percentage * properties.Width;
             var difference = properties.Width - newWidth;
@@ -72,7 +72,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.X = properties.X + difference;
         }
 
-        private void ApplyHeight(KeyboardPropertiesModel properties, double percentage)
+        private void ApplyHeight(AppliedProperties properties, double percentage)
         {
             var newHeight = percentage*properties.Height;
             var difference = properties.Height - newHeight;
@@ -82,7 +82,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.Y = properties.Y + difference;
         }
 
-        private void ApplyOpacity(KeyboardPropertiesModel properties, double percentage)
+        private void ApplyOpacity(AppliedProperties properties, double percentage)
         {
             properties.Opacity = percentage*properties.Opacity;
             if (properties.Opacity < 0.0)
@@ -95,7 +95,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.Opacity = 1.0 - properties.Opacity;
         }
 
-        private void ApplyPercentageOfProperty(IGameDataModel dataModel, KeyboardPropertiesModel properties)
+        private void ApplyPercentageOfProperty(IGameDataModel dataModel, AppliedProperties properties)
         {
             var value = dataModel.GetPropValue<int>(PercentageProperty);
             ApplyPercentageOf(dataModel, properties, value);

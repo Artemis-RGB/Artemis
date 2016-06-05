@@ -104,17 +104,13 @@ namespace Artemis.Models.Profiles
         /// <summary>
         ///     Gives all the layers and their children in a flat list
         /// </summary>
-        public List<LayerModel> GetLayers(bool ignoreEnabled = true)
+        public List<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers)
             {
-                if (ignoreEnabled && !layerModel.Enabled)
-                {
-                    continue;
-                }
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetAllLayers(ignoreEnabled));
+                layers.AddRange(layerModel.GetLayers());
             }
 
             return layers;
@@ -126,7 +122,7 @@ namespace Artemis.Models.Profiles
         /// <param name="keyboardRectangle"></param>
         public void FixBoundaries(Rect keyboardRectangle)
         {
-            foreach (var layer in GetLayers(false))
+            foreach (var layer in GetLayers())
             {
                 if (layer.LayerType != LayerType.Keyboard && layer.LayerType != LayerType.KeyboardGif)
                     continue;

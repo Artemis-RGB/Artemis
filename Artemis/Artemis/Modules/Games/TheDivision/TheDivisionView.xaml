@@ -25,7 +25,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows verious game states and events on the keyboard." />
+                                    Text="Shows verious game states and events on the keyboard. (BETA, uses much CPU!)" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

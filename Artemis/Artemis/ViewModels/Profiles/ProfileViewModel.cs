@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models.Profiles;
@@ -91,7 +90,7 @@ namespace Artemis.ViewModels.Profiles
             if (_blurProgress > 2)
                 _blurProgress = 0;
             _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
+            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
 
             if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
             {
@@ -112,10 +111,8 @@ namespace Artemis.ViewModels.Profiles
                 // Draw the layers
                 var drawLayers = SelectedProfile.Layers
                     .OrderByDescending(l => l.Order)
-                    .Where(l => l.Enabled &&
-                                (l.LayerType == LayerType.Keyboard ||
-                                 l.LayerType == LayerType.KeyboardGif ||
-                                 l.LayerType == LayerType.Folder));
+                    .Where(l => l.MustDraw() || (l.Enabled && l.LayerType == LayerType.Folder))
+                    .ToList();
                 foreach (var layer in drawLayers)
                     layer.Draw<object>(null, drawingContext, true, false);
 
@@ -124,12 +121,12 @@ namespace Artemis.ViewModels.Profiles
                 if (accentColor == null)
                     return;
 
-                var pen = new Pen(new SolidColorBrush((Color)accentColor), 0.4);
+                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
 
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
                 {
-                    var layerRect = ((KeyboardPropertiesModel)SelectedLayer.Properties).GetRect();
+                    var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
                     // Deflate the rect so that the border is drawn on the inside
                     layerRect.Inflate(-0.2, -0.2);
 

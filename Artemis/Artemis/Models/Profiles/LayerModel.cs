@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
@@ -51,8 +50,7 @@ namespace Artemis.Models.Profiles
                 return;
 
             // Preview simply shows the properties as they are. When not previewing they are applied
-            LayerPropertiesModel appliedProperties;
-            Properties.Brush.Freeze();
+            AppliedProperties appliedProperties;
             if (!preview)
             {
                 if (!ConditionsMet<T>(dataModel))
@@ -60,13 +58,12 @@ namespace Artemis.Models.Profiles
                 appliedProperties = Properties.GetAppliedProperties(dataModel);
             }
             else
-                appliedProperties = GeneralHelpers.Clone(Properties);
+                appliedProperties = Properties.GetAppliedProperties(dataModel, true);
 
             // Update animations on layer types that support them
             if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
             {
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties,
-                    (KeyboardPropertiesModel) appliedProperties, updateAnimations);
+                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, updateAnimations);
             }
 
             switch (LayerType)
@@ -77,10 +74,10 @@ namespace Artemis.Models.Profiles
                         layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
                     break;
                 case LayerType.Keyboard:
-                    Drawer.Draw(c, (KeyboardPropertiesModel) Properties, (KeyboardPropertiesModel) appliedProperties);
+                    Drawer.Draw(c, (KeyboardPropertiesModel) Properties, appliedProperties);
                     break;
                 case LayerType.KeyboardGif:
-                    GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) appliedProperties, GifImage);
+                    GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel)Properties, appliedProperties, GifImage);
                     break;
             }
         }
@@ -93,23 +90,17 @@ namespace Artemis.Models.Profiles
                 return null;
 
             // Preview simply shows the properties as they are. When not previewing they are applied
-            LayerPropertiesModel appliedProperties;
+            AppliedProperties appliedProperties;
             if (!preview)
             {
                 if (!ConditionsMet<T>(dataModel))
-                    return null; // Don't return the brush when not previewing and the conditions arent met
+                    return null; // Return null when not previewing and the conditions arent met
                 appliedProperties = Properties.GetAppliedProperties(dataModel);
             }
             else
-                appliedProperties = GeneralHelpers.Clone(Properties);
+                appliedProperties = Properties.GetAppliedProperties(dataModel, true);
 
             // TODO: Mouse/headset animations
-            // Update animations on layer types that support them
-            //if (LayerType != LayerType.Folder && updateAnimations)
-            //{
-            //    AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel)Properties,
-            //        (KeyboardPropertiesModel)appliedProperties);
-            //}
 
             if (LayerType != LayerType.Folder)
                 return appliedProperties.Brush;
@@ -165,18 +156,24 @@ namespace Artemis.Models.Profiles
         /// <returns></returns>
         public bool MustDraw()
         {
+            // If any of the parents are disabled, this layer must not be drawn
+            var parent = Parent;
+            while (parent != null)
+            {
+                if (!parent.Enabled)
+                    return false;
+                parent = parent.Parent;
+            }
             return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
         }
 
-        public IEnumerable<LayerModel> GetAllLayers(bool ignoreEnabled)
+        public IEnumerable<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children)
             {
-                if (ignoreEnabled && !layerModel.Enabled)
-                    continue;
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.Children);
+                layers.AddRange(layerModel.GetLayers());
             }
 
             return layers;
@@ -236,7 +233,7 @@ namespace Artemis.Models.Profiles
                 Profile.Layers.Add(source);
             }
         }
-        
+
         #region IChildItem<Parent> Members
 
         LayerModel IChildItem<LayerModel>.Parent

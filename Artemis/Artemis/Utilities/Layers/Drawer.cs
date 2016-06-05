@@ -14,7 +14,7 @@ namespace Artemis.Utilities.Layers
 {
     public static class Drawer
     {
-        public static void Draw(DrawingContext c, KeyboardPropertiesModel props, KeyboardPropertiesModel applied)
+        public static void Draw(DrawingContext c, KeyboardPropertiesModel props, AppliedProperties applied)
         {
             if (applied.Brush == null)
                 return;
@@ -28,56 +28,52 @@ namespace Artemis.Utilities.Layers
             var s1 = new Rect();
             var s2 = new Rect();
 
-            if (applied.Animation == LayerAnimation.SlideRight)
+            if (props.Animation == LayerAnimation.SlideRight)
             {
-                s1 = new Rect(new Point(rect.X + applied.AnimationProgress, rect.Y), new Size(rect.Width, rect.Height));
-                s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + 1, rect.Height));
+                s1 = new Rect(new Point(rect.X + props.AnimationProgress, rect.Y), new Size(rect.Width, rect.Height));
+                s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + 0.05, rect.Height));
             }
-            if (applied.Animation == LayerAnimation.SlideLeft)
+            if (props.Animation == LayerAnimation.SlideLeft)
             {
-                s1 = new Rect(new Point(rect.X - applied.AnimationProgress, rect.Y),
-                    new Size(rect.Width + 1, rect.Height));
+                s1 = new Rect(new Point(rect.X - props.AnimationProgress, rect.Y),
+                    new Size(rect.Width + 0.05, rect.Height));
                 s2 = new Rect(new Point(s1.X + rect.Width, rect.Y), new Size(rect.Width, rect.Height));
             }
-            if (applied.Animation == LayerAnimation.SlideDown)
+            if (props.Animation == LayerAnimation.SlideDown)
             {
-                s1 = new Rect(new Point(rect.X, rect.Y + applied.AnimationProgress), new Size(rect.Width, rect.Height));
+                s1 = new Rect(new Point(rect.X, rect.Y + props.AnimationProgress), new Size(rect.Width, rect.Height));
                 s2 = new Rect(new Point(s1.X, s1.Y - rect.Height), new Size(rect.Width, rect.Height));
             }
-            if (applied.Animation == LayerAnimation.SlideUp)
+            if (props.Animation == LayerAnimation.SlideUp)
             {
-                s1 = new Rect(new Point(rect.X, rect.Y - applied.AnimationProgress), new Size(rect.Width, rect.Height));
+                s1 = new Rect(new Point(rect.X, rect.Y - props.AnimationProgress), new Size(rect.Width, rect.Height));
                 s2 = new Rect(new Point(s1.X, s1.Y + rect.Height), new Size(rect.Width, rect.Height));
             }
 
             var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);
-            DrawRectangle(c, applied, clip, rect, s1, s2);
+            DrawRectangle(c, props, applied, clip, rect, s1, s2);
         }
 
-        private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel properties, Rect clip,
-            Rect rectangle,
-            Rect slide1, Rect slide2)
+        private static void DrawRectangle(DrawingContext c, KeyboardPropertiesModel props, AppliedProperties applied,
+            Rect clip, Rect rectangle, Rect slide1, Rect slide2)
         {
-            var brush = properties.Brush.CloneCurrentValue();
-            brush.Opacity = properties.Opacity;
-
             // Apply the pulse animation
-            if (properties.Animation == LayerAnimation.Pulse)
-                brush.Opacity = (Math.Sin(properties.AnimationProgress*Math.PI) + 1)*(properties.Opacity/2);
+            if (props.Animation == LayerAnimation.Pulse)
+                applied.Brush.Opacity = (Math.Sin(props.AnimationProgress*Math.PI) + 1)*(props.Opacity/2);
             else
-                brush.Opacity = properties.Opacity;
+                applied.Brush.Opacity = props.Opacity;
 
-            if (properties.Animation == LayerAnimation.Grow)
+            if (props.Animation == LayerAnimation.Grow)
             {
                 // Take an offset of 4 to allow layers to slightly leave their bounds
-                var progress = (6.0 - properties.AnimationProgress)*10.0;
+                var progress = (6.0 - props.AnimationProgress)*10.0;
                 if (progress < 0)
                 {
-                    brush.Opacity = 1 + (0.025*progress);
-                    if (brush.Opacity < 0)
-                        brush.Opacity = 0;
-                    if (brush.Opacity > 1)
-                        brush.Opacity = 1;
+                    applied.Brush.Opacity = 1 + 0.025*progress;
+                    if (applied.Brush.Opacity < 0)
+                        applied.Brush.Opacity = 0;
+                    if (applied.Brush.Opacity > 1)
+                        applied.Brush.Opacity = 1;
                 }
                 rectangle.Inflate(-rectangle.Width/100.0*progress, -rectangle.Height/100.0*progress);
                 clip.Inflate(-clip.Width/100.0*progress, -clip.Height/100.0*progress);
@@ -85,41 +81,41 @@ namespace Artemis.Utilities.Layers
 
             c.PushClip(new RectangleGeometry(clip));
             // Most animation types can be drawn regularly
-            if (properties.Animation == LayerAnimation.None ||
-                properties.Animation == LayerAnimation.Grow ||
-                properties.Animation == LayerAnimation.Pulse)
+            if (props.Animation == LayerAnimation.None ||
+                props.Animation == LayerAnimation.Grow ||
+                props.Animation == LayerAnimation.Pulse)
             {
-                c.DrawRectangle(brush, null, rectangle);
+                c.DrawRectangle(applied.Brush, null, rectangle);
             }
             // Sliding animations however, require offsetting two rects
             else
             {
                 c.PushClip(new RectangleGeometry(clip));
-                c.DrawRectangle(brush, null, slide1);
-                c.DrawRectangle(brush, null, slide2);
+                c.DrawRectangle(applied.Brush, null, slide1);
+                c.DrawRectangle(applied.Brush, null, slide2);
                 c.Pop();
             }
             c.Pop();
         }
 
-        public static GifImage DrawGif(DrawingContext c, KeyboardPropertiesModel properties, GifImage gifImage,
-            bool update = true)
+        public static GifImage DrawGif(DrawingContext c, KeyboardPropertiesModel props, AppliedProperties applied,
+            GifImage gifImage, bool update = true)
         {
-            if (string.IsNullOrEmpty(properties.GifFile))
+            if (string.IsNullOrEmpty(props.GifFile))
                 return null;
-            if (!File.Exists(properties.GifFile))
+            if (!File.Exists(props.GifFile))
                 return null;
 
             const int scale = 4;
 
             // Only reconstruct GifImage if the underlying source has changed
             if (gifImage == null)
-                gifImage = new GifImage(properties.GifFile);
-            if (gifImage.Source != properties.GifFile)
-                gifImage = new GifImage(properties.GifFile);
+                gifImage = new GifImage(props.GifFile);
+            if (gifImage.Source != props.GifFile)
+                gifImage = new GifImage(props.GifFile);
 
-            var gifRect = new Rect(properties.X*scale, properties.Y*scale, properties.Width*scale,
-                properties.Height*scale);
+            var gifRect = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale,
+                applied.Height*scale);
 
             var draw = update ? gifImage.GetNextFrame() : gifImage.GetFrame(0);
             c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
