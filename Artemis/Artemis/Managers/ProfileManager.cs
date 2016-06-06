@@ -54,16 +54,14 @@ namespace Artemis.Managers
                 if (_effectManager.ActiveEffect != ProfilePreviewModel)
                     return;
 
-                if (_prePreviewEffect != null)
-                {
-                    _logger.Debug("Change back effect after profile preview");
-                    _effectManager.ChangeEffect(_prePreviewEffect);
-                }
-                else
-                {
-                    _logger.Debug("Clear effect after profile preview");
-                    _effectManager.ClearEffect();
-                }
+                _logger.Debug("Clear effect after profile preview");
+                _effectManager.ClearEffect();
+
+                if (_prePreviewEffect == null || _prePreviewEffect is GameModel)
+                    return;
+
+                _logger.Debug("Change back effect after profile preview");
+                _effectManager.ChangeEffect(_prePreviewEffect);
             }
             else
             {
