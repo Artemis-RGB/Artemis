@@ -58,7 +58,8 @@ namespace Artemis.DeviceProviders.Corsair
                 ledIndex++;
             }
 
-            CueSDK.HeadsetSDK.Update();
+            // Flush is required for headset to work reliably on CUE2 for some reason
+            CueSDK.HeadsetSDK.Update(true);
         }
 
         private static bool CanInitializeSdk()

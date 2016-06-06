@@ -335,7 +335,12 @@
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
-    <Compile Include="Modules\Effects\Debug\DebugEffectModel.cs" />
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml.cs">
+      <DependentUpon>WindowsProfileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileViewModel.cs" />
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileDataModel.cs" />
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
       <DependentUpon>TypeWave.settings</DependentUpon>
@@ -408,7 +413,6 @@
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
-    <Compile Include="Modules\Effects\Debug\DebugEffectSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
@@ -468,7 +472,6 @@
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
-    <Compile Include="Modules\Effects\Debug\DebugEffectViewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
     <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
@@ -497,9 +500,6 @@
     </Compile>
     <Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
       <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\Debug\DebugEffectView.xaml.cs">
-      <DependentUpon>DebugEffectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
       <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
@@ -658,6 +658,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -685,10 +689,6 @@
     <Page Include="Views\EffectsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Effects\Debug\DebugEffectView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
       <SubType>Designer</SubType>

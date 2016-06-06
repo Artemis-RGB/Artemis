@@ -51,6 +51,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             _sampleAggregator.PerformFFT = false;
             _sampleAggregator.FftCalculated -= FftCalculated;
 
+            if (_waveIn == null)
+                return;
             _waveIn.StopRecording();
             _waveIn.DataAvailable -= OnDataAvailable;
             _waveIn = null;

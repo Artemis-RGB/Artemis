@@ -33,7 +33,7 @@ namespace Artemis.ViewModels.Profiles
 {
     public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>, IDropTarget
     {
-        private readonly GameModel _gameModel;
+        private readonly EffectModel _gameModel;
         private readonly ILayerEditorVmFactory _layerEditorVmFactory;
         private readonly MainManager _mainManager;
         private ImageSource _keyboardPreview;
@@ -41,7 +41,7 @@ namespace Artemis.ViewModels.Profiles
         private BindableCollection<ProfileModel> _profiles;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, GameModel gameModel,
+        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, EffectModel gameModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile,
             ILayerEditorVmFactory layerEditorVmFactory)
         {
