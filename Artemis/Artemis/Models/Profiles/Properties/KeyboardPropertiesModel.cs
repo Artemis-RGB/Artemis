@@ -51,7 +51,7 @@ namespace Artemis.Models.Profiles.Properties
                 return applied;
 
             foreach (var dynamicProperty in DynamicProperties)
-                dynamicProperty.ApplyProperty(dataModel, applied);
+                dynamicProperty.ApplyProperty(dataModel, ref applied);
 
             if (Math.Abs(applied.Opacity - 1) > 0.001)
             {

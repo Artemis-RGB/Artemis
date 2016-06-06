@@ -37,15 +37,15 @@ namespace Artemis.Models.Profiles.Properties
         /// </summary>
         public LayerPropertyOptions LayerPropertyOptions { get; set; }
 
-        internal void ApplyProperty(IDataModel dataModel, AppliedProperties properties)
+        internal void ApplyProperty(IDataModel dataModel, ref AppliedProperties properties)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
-                ApplyPercentageOf(dataModel, properties, PercentageSource);
+                ApplyPercentageOf(dataModel, ref properties, PercentageSource);
             if (LayerPropertyType == LayerPropertyType.PercentageOfProperty)
-                ApplyPercentageOfProperty(dataModel, properties);
+                ApplyPercentageOfProperty(dataModel, ref properties);
         }
 
-        private void ApplyPercentageOf(IDataModel dataModel, AppliedProperties properties, double src)
+        private void ApplyPercentageOf(IDataModel dataModel, ref AppliedProperties properties, double src)
         {
             if (GameProperty == null)
                 return;
@@ -54,14 +54,14 @@ namespace Artemis.Models.Profiles.Properties
             var percentage = ToDouble(gameProperty)/src;
 
             if (LayerProperty == "Width")
-                ApplyWidth(properties, percentage);
+                ApplyWidth(ref properties, percentage);
             else if (LayerProperty == "Height")
-                ApplyHeight(properties, percentage);
+                ApplyHeight(ref properties, percentage);
             else if (LayerProperty == "Opacity")
-                ApplyOpacity(properties, percentage);
+                ApplyOpacity(ref properties, percentage);
         }
 
-        private void ApplyWidth(AppliedProperties properties, double percentage)
+        private void ApplyWidth(ref AppliedProperties properties, double percentage)
         {
             var newWidth = percentage * properties.Width;
             var difference = properties.Width - newWidth;
@@ -72,7 +72,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.X = properties.X + difference;
         }
 
-        private void ApplyHeight(AppliedProperties properties, double percentage)
+        private void ApplyHeight(ref AppliedProperties properties, double percentage)
         {
             var newHeight = percentage*properties.Height;
             var difference = properties.Height - newHeight;
@@ -82,7 +82,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.Y = properties.Y + difference;
         }
 
-        private void ApplyOpacity(AppliedProperties properties, double percentage)
+        private void ApplyOpacity(ref AppliedProperties properties, double percentage)
         {
             properties.Opacity = percentage*properties.Opacity;
             if (properties.Opacity < 0.0)
@@ -95,10 +95,10 @@ namespace Artemis.Models.Profiles.Properties
                 properties.Opacity = 1.0 - properties.Opacity;
         }
 
-        private void ApplyPercentageOfProperty(IDataModel dataModel, AppliedProperties properties)
+        private void ApplyPercentageOfProperty(IDataModel dataModel, ref AppliedProperties properties)
         {
             var value = dataModel.GetPropValue<int>(PercentageProperty);
-            ApplyPercentageOf(dataModel, properties, value);
+            ApplyPercentageOf(dataModel, ref properties, value);
         }
     }
 
