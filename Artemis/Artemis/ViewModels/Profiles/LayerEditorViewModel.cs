@@ -17,16 +17,16 @@ namespace Artemis.ViewModels.Profiles
 {
     public sealed class LayerEditorViewModel : Screen
     {
-        private readonly IGameDataModel _gameDataModel;
+        private readonly IDataModel _dataModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private LayerType _layerType;
         private LayerModel _proposedLayer;
         private LayerPropertiesModel _proposedProperties;
 
-        public LayerEditorViewModel(IGameDataModel gameDataModel, LayerModel layer)
+        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer)
         {
-            _gameDataModel = gameDataModel;
+            _dataModel = dataModel;
 
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
@@ -35,7 +35,7 @@ namespace Artemis.ViewModels.Profiles
                 Layer.SetupProperties();
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
+            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(dataModel));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(layer.Properties.Conditions
                 .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
@@ -106,7 +106,7 @@ namespace Artemis.ViewModels.Profiles
             LayerType = ProposedLayer.LayerType;
 
             if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
@@ -136,17 +136,17 @@ namespace Artemis.ViewModels.Profiles
             if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
                 !(LayerPropertiesViewModel is KeyboardPropertiesViewModel))
             {
-                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_gameDataModel, ProposedLayer.Properties)
+                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_dataModel, ProposedLayer.Properties)
                 {
                     IsGif = LayerType == LayerType.KeyboardGif
                 };
             }
             else if (LayerType == LayerType.Mouse && !(LayerPropertiesViewModel is MousePropertiesViewModel))
-                LayerPropertiesViewModel = new MousePropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
+                LayerPropertiesViewModel = new MousePropertiesViewModel(_dataModel, ProposedLayer.Properties);
             else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
-                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
+                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_dataModel, ProposedLayer.Properties);
             else if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_gameDataModel, ProposedLayer.Properties);
+                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
 
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }

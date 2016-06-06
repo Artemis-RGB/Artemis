@@ -2,7 +2,7 @@
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeDataModel : IGameDataModel
+    public class CounterStrikeDataModel : IDataModel
     {
         public Provider provider { get; set; }
         public Map map { get; set; }

@@ -7,11 +7,11 @@ namespace Artemis.ViewModels.Profiles.Properties
 {
     public abstract class LayerPropertiesViewModel : PropertyChangedBase
     {
-        public IGameDataModel GameDataModel { get; set; }
+        public IDataModel DataModel { get; set; }
 
-        protected LayerPropertiesViewModel(IGameDataModel gameDataModel)
+        protected LayerPropertiesViewModel(IDataModel dataModel)
         {
-            GameDataModel = gameDataModel;
+            DataModel = dataModel;
         }
 
         public abstract LayerPropertiesModel GetAppliedProperties();

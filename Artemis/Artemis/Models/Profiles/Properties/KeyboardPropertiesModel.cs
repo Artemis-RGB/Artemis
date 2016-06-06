@@ -35,7 +35,7 @@ namespace Artemis.Models.Profiles.Properties
             return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }
 
-        public override AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false)
+        public override AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false)
         {
             var applied = new AppliedProperties
             {

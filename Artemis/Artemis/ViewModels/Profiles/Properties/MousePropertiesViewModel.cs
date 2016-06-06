@@ -11,8 +11,8 @@ namespace Artemis.ViewModels.Profiles.Properties
         private LayerPropertiesModel _proposedProperties;
         private Brush _brush;
 
-        public MousePropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
-            : base(gameDataModel)
+        public MousePropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+            : base(dataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
             Brush = ProposedProperties.Brush.CloneCurrentValue();

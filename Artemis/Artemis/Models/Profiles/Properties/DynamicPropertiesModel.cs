@@ -37,7 +37,7 @@ namespace Artemis.Models.Profiles.Properties
         /// </summary>
         public LayerPropertyOptions LayerPropertyOptions { get; set; }
 
-        internal void ApplyProperty(IGameDataModel dataModel, AppliedProperties properties)
+        internal void ApplyProperty(IDataModel dataModel, AppliedProperties properties)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
                 ApplyPercentageOf(dataModel, properties, PercentageSource);
@@ -45,7 +45,7 @@ namespace Artemis.Models.Profiles.Properties
                 ApplyPercentageOfProperty(dataModel, properties);
         }
 
-        private void ApplyPercentageOf(IGameDataModel dataModel, AppliedProperties properties, double src)
+        private void ApplyPercentageOf(IDataModel dataModel, AppliedProperties properties, double src)
         {
             if (GameProperty == null)
                 return;
@@ -95,7 +95,7 @@ namespace Artemis.Models.Profiles.Properties
                 properties.Opacity = 1.0 - properties.Opacity;
         }
 
-        private void ApplyPercentageOfProperty(IGameDataModel dataModel, AppliedProperties properties)
+        private void ApplyPercentageOfProperty(IDataModel dataModel, AppliedProperties properties)
         {
             var value = dataModel.GetPropValue<int>(PercentageProperty);
             ApplyPercentageOf(dataModel, properties, value);

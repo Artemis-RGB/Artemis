@@ -7,6 +7,6 @@ namespace Artemis.InjectionFactories
 {
     public interface ILayerEditorVmFactory
     {
-        LayerEditorViewModel CreateLayerEditorVm(IGameDataModel gameDataModel, LayerModel layer);
+        LayerEditorViewModel CreateLayerEditorVm(IDataModel dataModel, LayerModel layer);
     }
 }

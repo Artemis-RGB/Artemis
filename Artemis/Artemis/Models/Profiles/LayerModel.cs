@@ -38,51 +38,31 @@ namespace Artemis.Models.Profiles
         [XmlIgnore]
         public GifImage GifImage { get; set; }
 
-        public bool ConditionsMet<T>(IGameDataModel dataModel)
+        public bool ConditionsMet<T>(IDataModel dataModel)
         {
             return Enabled && Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
         }
 
-        public void Draw<T>(IGameDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
+        public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
-            // Don't draw when the layer is disabled
-            if (!Enabled)
+            if (LayerType != LayerType.Keyboard && LayerType != LayerType.KeyboardGif)
                 return;
 
             // Preview simply shows the properties as they are. When not previewing they are applied
-            AppliedProperties appliedProperties;
-            if (!preview)
-            {
-                if (!ConditionsMet<T>(dataModel))
-                    return; // Don't draw the layer when not previewing and the conditions arent met
-                appliedProperties = Properties.GetAppliedProperties(dataModel);
-            }
-            else
-                appliedProperties = Properties.GetAppliedProperties(dataModel, true);
+            var appliedProperties = !preview
+                ? Properties.GetAppliedProperties(dataModel)
+                : Properties.GetAppliedProperties(dataModel, true);
 
-            // Update animations on layer types that support them
-            if (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif)
-            {
-                AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, updateAnimations);
-            }
-
-            switch (LayerType)
-            {
-                // Folders are drawn recursively
-                case LayerType.Folder:
-                    foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-                        layerModel.Draw<T>(dataModel, c, preview, updateAnimations);
-                    break;
-                case LayerType.Keyboard:
-                    Drawer.Draw(c, (KeyboardPropertiesModel) Properties, appliedProperties);
-                    break;
-                case LayerType.KeyboardGif:
-                    GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel)Properties, appliedProperties, GifImage);
-                    break;
-            }
+            // Update animations
+            AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, updateAnimations);
+            
+            if (LayerType == LayerType.Keyboard)
+                Drawer.Draw(c, (KeyboardPropertiesModel) Properties, appliedProperties);
+            else if (LayerType == LayerType.KeyboardGif)
+                GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) Properties, appliedProperties, GifImage);
         }
 
-        public Brush GenerateBrush<T>(LayerType type, IGameDataModel dataModel, bool preview, bool updateAnimations)
+        public Brush GenerateBrush<T>(LayerType type, IDataModel dataModel, bool preview, bool updateAnimations)
         {
             if (!Enabled)
                 return null;
@@ -249,6 +229,39 @@ namespace Artemis.Models.Profiles
         }
 
         #endregion
+
+        /// <summary>
+        ///     Generates a flat list containing all layers that must be rendered on the keyboard,
+        ///     the first mouse layer to be rendered and the first headset layer to be rendered
+        /// </summary>
+        /// <typeparam name="T">The game data model to base the conditions on</typeparam>
+        /// <param name="dataModel">Instance of said game data model</param>
+        /// <param name="includeMice">Whether or not to include mice in the list</param>
+        /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
+        /// <param name="ignoreConditions"></param>
+        /// <returns>A flat list containing all layers that must be rendered</returns>
+        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets, bool ignoreConditions = false)
+        {
+            var layers = new List<LayerModel>();
+            foreach (var layerModel in Children.OrderByDescending(c => c.Order))
+            {
+                if (!layerModel.Enabled ||
+                    !includeMice && layerModel.LayerType == LayerType.Mouse ||
+                    !includeHeadsets && layerModel.LayerType == LayerType.Headset)
+                    continue;
+
+                if (!ignoreConditions)
+                {
+                    if (!layerModel.ConditionsMet<T>(dataModel))
+                        continue;
+                }
+
+                layers.Add(layerModel);
+                layers.AddRange(layerModel.GetRenderLayers<T>(dataModel, includeMice, includeHeadsets, ignoreConditions));
+            }
+
+            return layers;
+        }
     }
 
     public enum LayerType

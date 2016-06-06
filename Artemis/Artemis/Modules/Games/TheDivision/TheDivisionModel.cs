@@ -74,7 +74,7 @@ namespace Artemis.Modules.Games.TheDivision
         // Parses Division key data to game data
         private void InterpertrateDivisionKey(IReadOnlyList<int> parts)
         {
-            var gameDataModel = (TheDivisionDataModel) GameDataModel;
+            var gameDataModel = (TheDivisionDataModel) DataModel;
             var keyCode = parts[1];
             var rPer = parts[2];
             var gPer = parts[3];
@@ -131,29 +131,9 @@ namespace Artemis.Modules.Games.TheDivision
             // DataModel updating is done whenever a pipe message is received
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<TheDivisionDataModel>(keyboardRect, GameDataModel, false, true);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Mouse, false, true);
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<TheDivisionDataModel>(GameDataModel, LayerType.Headset, false, true);
+            return Profile.GetRenderLayers<TheDivisionDataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 }

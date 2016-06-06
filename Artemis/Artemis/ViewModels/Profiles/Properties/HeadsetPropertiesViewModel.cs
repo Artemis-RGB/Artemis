@@ -10,8 +10,8 @@ namespace Artemis.ViewModels.Profiles.Properties
         private LayerPropertiesModel _proposedProperties;
         private Brush _brush;
 
-        public HeadsetPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
-            : base(gameDataModel)
+        public HeadsetPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+            : base(dataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
             Brush = ProposedProperties.Brush.CloneCurrentValue();

@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.Keyboard;
-using Kaliko.ImageLibrary;
-using Kaliko.ImageLibrary.Filters;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.AmbientLightning
 {
@@ -22,7 +19,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
         private KeyboardRectangle _topRect;
 
         public AmbientLightningEffectModel(MainManager mainManager, AmbientLightningEffectSettings settings)
-            : base(mainManager)
+            : base(mainManager, null)
         {
             Name = "Ambient Lightning";
             Settings = settings;
@@ -115,33 +112,7 @@ namespace Artemis.Modules.Effects.AmbientLightning
             }
         }
 
-        public override Bitmap GenerateBitmap()
-        {
-            var bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                var i = 0;
-                foreach (var rectangle in _rectangles)
-                {
-                    g.FillRectangle(new SolidBrush(_colors[i]), rectangle);
-                    i++;
-                }
-            }
-
-            var test = new KalikoImage(bitmap);
-            test.ApplyFilter(new GaussianBlurFilter(8f));
-            var ms = new MemoryStream();
-            test.SaveBmp(ms);
-            ms.Position = 0;
-            return new Bitmap(ms);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            return null;
-        }
-
-        public override Brush GenerateHeadsetBrush()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
             return null;
         }

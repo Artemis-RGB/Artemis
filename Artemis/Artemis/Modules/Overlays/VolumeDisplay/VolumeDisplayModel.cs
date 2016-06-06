@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using NAudio.CoreAudioApi;
 using Brush = System.Windows.Media.Brush;
 
@@ -62,24 +64,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             }
         }
 
-        public override Bitmap GenerateBitmap()
-        {
-            return GenerateBitmap(MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4));
-        }
-
-        // TODO: Color according to volume
-        public override Brush GenerateMouseBrush()
-        {
-            return null;
-        }
-
-        // TODO: Color according to volume
-        public override Brush GenerateHeadsetBrush()
-        {
-            return null;
-        }
-
-        public override Bitmap GenerateBitmap(Bitmap bitmap)
+        public Bitmap GenerateBitmap(Bitmap bitmap)
         {
             if (VolumeDisplay == null)
                 return bitmap;
@@ -92,6 +77,11 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             return bitmap;
         }
 
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        {
+            return null;
+        }
+
         private void KeyPressTask(KeyEventArgs e)
         {
             if (e.KeyCode != Keys.VolumeUp && e.KeyCode != Keys.VolumeDown)
@@ -99,6 +89,12 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
             VolumeDisplay.Ttl = 1000;
             VolumeDisplay.Transparancy = 255;
+        }
+
+        public override void RenderOverlay(ref Bitmap keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+            bool renderHeadsets)
+        {
+            keyboard= GenerateBitmap(keyboard ?? MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4));
         }
     }
 }

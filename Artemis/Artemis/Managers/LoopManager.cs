@@ -120,19 +120,29 @@ namespace Artemis.Managers
                     renderEffect.Update();
 
                 // Get ActiveEffect's bitmap
-                var bitmap = renderEffect.Initialized
-                    ? renderEffect.GenerateBitmap()
-                    : null;
+                Bitmap bitmap = null;
+                System.Windows.Media.Brush mouseBrush = null;
+                System.Windows.Media.Brush headsetBrush = null;
+                var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
+                var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
-                // Draw enabled overlays on top
+                if (renderEffect.Initialized)
+                    renderEffect.Render(out bitmap, out mouseBrush, out headsetBrush, mice.Any(), headsets.Any());
+
+                // Draw enabled overlays on top of the renderEffect
                 foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
                     overlayModel.Update();
-                    bitmap = bitmap != null
-                        ? overlayModel.GenerateBitmap(bitmap)
-                        : overlayModel.GenerateBitmap();
+                    overlayModel.RenderOverlay(ref bitmap, ref mouseBrush, ref headsetBrush, mice.Any(), headsets.Any());
                 }
 
+                // Update mice and headsets
+                foreach (var mouse in mice)
+                    mouse.UpdateDevice(mouseBrush);
+                foreach (var headset in headsets)
+                    headset.UpdateDevice(headsetBrush);
+
+                // If no bitmap was generated this frame is done
                 if (bitmap == null)
                     return;
 
@@ -146,16 +156,8 @@ namespace Artemis.Managers
 
                 bitmap = fixedBmp;
 
-                // If it exists, send bitmap to the device
+                // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
-
-                foreach (var mouse in _deviceManager.MiceProviders.Where(m => m.CanUse))
-                    mouse.UpdateDevice(renderEffect.GenerateMouseBrush());
-                foreach (var headset in _deviceManager.HeadsetProviders.Where(h => h.CanUse))
-                    headset.UpdateDevice(renderEffect.GenerateHeadsetBrush());
-
-                // debugging TODO: Disable when window isn't shown (in Debug VM, or get rid of it, w/e)
-                //_events.PublishOnUIThread(new ChangeBitmap(bitmap));
             }
         }
     }
