@@ -2,7 +2,7 @@
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueDataModel : IGameDataModel
+    public class RocketLeagueDataModel : IDataModel
     {
         public int Boost { get; set; }
     }

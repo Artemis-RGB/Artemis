@@ -4,9 +4,9 @@ namespace Artemis.Models.Profiles.Properties
 {
     public class HeadsetPropertiesModel : LayerPropertiesModel
     {
-        public override AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false)
+        public override AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false)
         {
-            return new AppliedProperties();
+            return new AppliedProperties {Brush = Brush};
         }
     }
 }

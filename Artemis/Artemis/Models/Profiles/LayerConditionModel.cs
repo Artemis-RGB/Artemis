@@ -12,7 +12,7 @@ namespace Artemis.Models.Profiles
         public string Operator { get; set; }
         public string Type { get; set; }
 
-        public bool ConditionMet<T>(IGameDataModel subject)
+        public bool ConditionMet<T>(IDataModel subject)
         {
             if (string.IsNullOrEmpty(Field) || string.IsNullOrEmpty(Value) || string.IsNullOrEmpty(Type))
                 return false;

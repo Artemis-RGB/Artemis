@@ -2,7 +2,7 @@
 
 namespace Artemis.Modules.Games.Dota2
 {
-    public class Dota2DataModel : IGameDataModel
+    public class Dota2DataModel : IDataModel
     {
         public Provider provider { get; set; }
         public Map map { get; set; }

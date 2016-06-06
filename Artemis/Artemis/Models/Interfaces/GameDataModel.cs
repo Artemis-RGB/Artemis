@@ -1,6 +1,6 @@
 ﻿namespace Artemis.Models.Interfaces
 {
-    public interface IGameDataModel
+    public interface IDataModel
     {
     }
 }

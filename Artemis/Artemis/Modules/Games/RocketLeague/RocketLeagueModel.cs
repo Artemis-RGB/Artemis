@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
@@ -8,7 +8,6 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -45,7 +44,7 @@ namespace Artemis.Modules.Games.RocketLeague
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             if (tempProcess == null)
                 return;
-            
+
             _memory = new Memory(tempProcess);
 
             Initialized = true;
@@ -53,45 +52,25 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Update()
         {
-            if (Profile == null || GameDataModel == null || _memory == null)
+            if (Profile == null || DataModel == null || _memory == null)
                 return;
 
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
             var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
             var boostFloat = _memory.ReadFloat(boostAddress)*100/3;
 
-            ((RocketLeagueDataModel) GameDataModel).Boost = (int) Math.Ceiling(boostFloat);
+            ((RocketLeagueDataModel) DataModel).Boost = (int) Math.Ceiling(boostFloat);
 
             // Take care of any reading errors resulting in an OutOfMemory on draw
-            if (((RocketLeagueDataModel) GameDataModel).Boost < 0)
-                ((RocketLeagueDataModel) GameDataModel).Boost = 0;
-            if (((RocketLeagueDataModel) GameDataModel).Boost > 100)
-                ((RocketLeagueDataModel) GameDataModel).Boost = 100;
+            if (((RocketLeagueDataModel) DataModel).Boost < 0)
+                ((RocketLeagueDataModel) DataModel).Boost = 0;
+            if (((RocketLeagueDataModel) DataModel).Boost > 100)
+                ((RocketLeagueDataModel) DataModel).Boost = 100;
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<RocketLeagueDataModel>(keyboardRect, GameDataModel, false, true);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Mouse, false, true);
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<RocketLeagueDataModel>(GameDataModel, LayerType.Headset, false, true);
+            return Profile.GetRenderLayers<RocketLeagueDataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 }

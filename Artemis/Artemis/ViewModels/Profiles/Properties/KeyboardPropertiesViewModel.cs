@@ -13,15 +13,15 @@ namespace Artemis.ViewModels.Profiles.Properties
         private bool _isGif;
         private KeyboardPropertiesModel _proposedProperties;
 
-        public KeyboardPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
-            : base(gameDataModel)
+        public KeyboardPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+            : base(dataModel)
         {
             var keyboardProperties = (KeyboardPropertiesModel) properties;
             ProposedProperties = GeneralHelpers.Clone(keyboardProperties);
             Brush = ProposedProperties.Brush.CloneCurrentValue();
 
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(gameDataModel));
+            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(dataModel));
 
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", DataModelProps, keyboardProperties);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, keyboardProperties);

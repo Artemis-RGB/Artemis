@@ -77,8 +77,8 @@ namespace Artemis.Managers
                 // LoopManager might be running, this method won't do any harm in that case.
                 _loopManager.Start();
 
-                if (!ReferenceEquals(ProfilePreviewModel.SelectedProfile, activePreview.ProfileEditor.SelectedProfile))
-                    ProfilePreviewModel.SelectedProfile = activePreview.ProfileEditor.SelectedProfile;
+                if (!ReferenceEquals(ProfilePreviewModel.Profile, activePreview.ProfileEditor.SelectedProfile))
+                    ProfilePreviewModel.Profile = activePreview.ProfileEditor.SelectedProfile;
             }
         }
     }

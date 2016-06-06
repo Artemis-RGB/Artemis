@@ -31,7 +31,7 @@ namespace Artemis.Utilities.DataReaders
             if (string.IsNullOrEmpty(mffString))
                 return null;
             var intermediateArray = mffString.Split('|');
-            if (intermediateArray[0] == "1")
+            if (intermediateArray[0] == "1" || intermediateArray.Length < 2)
                 return null;
             var array = intermediateArray[1].Substring(1).Split(' ');
             if (!array.Any())

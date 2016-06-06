@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.Keyboard;
 using Brush = System.Windows.Media.Brush;
 
@@ -11,7 +12,7 @@ namespace Artemis.Modules.Effects.Debug
     // TODO: Remove
     internal class DebugEffectModel : EffectModel
     {
-        public DebugEffectModel(MainManager mainManager, DebugEffectSettings settings) : base(mainManager)
+        public DebugEffectModel(MainManager mainManager, DebugEffectSettings settings) : base(mainManager, null)
         {
             Name = "Debug Effect";
             Settings = settings;
@@ -53,26 +54,22 @@ namespace Artemis.Modules.Effects.Debug
             Scale = Settings.Scale;
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            var bitmap = new Bitmap(21*Scale, 6*Scale);
+            return null;
+        }
 
-            using (var g = Graphics.FromImage(bitmap))
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        {
+            mouse = null;
+            headset = null;
+
+            keyboard = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            using (var g = Graphics.FromImage(keyboard))
             {
                 g.Clear(Color.Transparent);
                 KeyboardRectangle.Draw(g);
             }
-            return bitmap;
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            return null;
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            return null;
         }
     }
 }

@@ -2,7 +2,7 @@ using Artemis.Models.Interfaces;
 
 namespace Artemis.Modules.Games.Overwatch
 {
-    public class OverwatchDataModel : IGameDataModel
+    public class OverwatchDataModel : IDataModel
     {
         public OverwatchStatus Status { get; set; }
         public OverwatchCharacter Character { get; set; }

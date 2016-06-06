@@ -9,6 +9,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
+using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using MahApps.Metro;
@@ -109,12 +110,10 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                var drawLayers = SelectedProfile.Layers
-                    .OrderByDescending(l => l.Order)
-                    .Where(l => l.MustDraw() || (l.Enabled && l.LayerType == LayerType.Folder))
-                    .ToList();
+                var drawLayers = SelectedProfile.GetRenderLayers<ProfilePreviewDataModel>(
+                    new ProfilePreviewDataModel(), false, false, true);
                 foreach (var layer in drawLayers)
-                    layer.Draw<object>(null, drawingContext, true, false);
+                    layer.Draw(null, drawingContext, true, false);
 
                 // Get the selection color
                 var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];

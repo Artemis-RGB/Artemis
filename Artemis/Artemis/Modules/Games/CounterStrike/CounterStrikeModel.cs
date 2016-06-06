@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
@@ -44,31 +46,6 @@ namespace Artemis.Modules.Games.CounterStrike
             // TODO: Set up active weapon in the datamodel
         }
 
-        public override Bitmap GenerateBitmap()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel, false, true);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Mouse, false, true);
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<CounterStrikeDataModel>(GameDataModel, LayerType.Headset,  false, true);
-        }
-
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
         {
             var jsonString = e.Json.ToString();
@@ -80,7 +57,7 @@ namespace Artemis.Modules.Games.CounterStrike
             // Parse the JSON
             try
             {
-                GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
+                DataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
             }
             catch (Exception ex)
             {
@@ -88,6 +65,11 @@ namespace Artemis.Modules.Games.CounterStrike
                 throw;
             }
             
+        }
+
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        {
+            return Profile.GetRenderLayers<CounterStrikeDataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 }

@@ -267,7 +267,7 @@ namespace Artemis.ViewModels.Profiles
         public void EditLayer(LayerModel layer)
         {
             IWindowManager manager = new WindowManager();
-            var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.GameDataModel, layer);
+            var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
             dynamic settings = new ExpandoObject();
             var iconImage = new Image
             {

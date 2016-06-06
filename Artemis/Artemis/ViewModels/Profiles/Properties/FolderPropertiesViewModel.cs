@@ -8,8 +8,8 @@ namespace Artemis.ViewModels.Profiles.Properties
     {
         private LayerPropertiesModel _proposedProperties;
 
-        public FolderPropertiesViewModel(IGameDataModel gameDataModel, LayerPropertiesModel properties)
-            : base(gameDataModel)
+        public FolderPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+            : base(dataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
         }

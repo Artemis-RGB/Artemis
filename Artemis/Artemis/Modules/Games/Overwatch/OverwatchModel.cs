@@ -4,11 +4,11 @@ using System.Linq;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Caliburn.Micro;
-using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 
 namespace Artemis.Modules.Games.Overwatch
@@ -29,6 +29,11 @@ namespace Artemis.Modules.Games.Overwatch
 
             MmfReader = new MmfReader("overwatchMmf");
             LoadOverwatchCharacters();
+        }
+
+        public OverwatchModel(MainManager mainManager, GameSettings settings, IDataModel dataModel)
+            : base(mainManager, settings, dataModel)
+        {
         }
 
         public List<CharacterColor> OverwatchCharacters { get; set; }
@@ -85,7 +90,7 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override void Update()
         {
-            var gameDataModel = (OverwatchDataModel) GameDataModel;
+            var gameDataModel = (OverwatchDataModel) DataModel;
             var colors = MmfReader.GetColorArray();
             if (colors == null)
                 return;
@@ -128,29 +133,9 @@ namespace Artemis.Modules.Games.Overwatch
             gameDataModel.UltimateReady = !characterMatch.Color.Equals(colors[2, 2]);
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<OverwatchDataModel>(keyboardRect, GameDataModel, false, true);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-            return null;
-            return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Mouse, false, true);
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-            return null;
-            return Profile.GenerateBrush<OverwatchDataModel>(GameDataModel, LayerType.Headset, false, true);
+            return Profile.GetRenderLayers<OverwatchDataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 

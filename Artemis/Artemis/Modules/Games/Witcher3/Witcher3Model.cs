@@ -9,7 +9,6 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 using Artemis.Utilities.Keyboard;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.Witcher3
 {
@@ -67,7 +66,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Update()
         {
-            var gameDataModel = (Witcher3DataModel) GameDataModel;
+            var gameDataModel = (Witcher3DataModel) DataModel;
             // Witcher effect is very static and reads from disk, don't want to update too often.
             if (_updateSw.ElapsedMilliseconds < 500)
                 return;
@@ -106,29 +105,9 @@ namespace Artemis.Modules.Games.Witcher3
             }
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<Witcher3DataModel>(keyboardRect, GameDataModel, false, true);
-        }
-
-        public override Brush GenerateMouseBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Mouse, false, true);
-        }
-
-        public override Brush GenerateHeadsetBrush()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            return Profile.GenerateBrush<Witcher3DataModel>(GameDataModel, LayerType.Headset, false, true);
+            return Profile.GetRenderLayers<Witcher3DataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 }

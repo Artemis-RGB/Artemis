@@ -49,7 +49,7 @@ namespace Artemis.Models.Profiles.Properties
             }
         }
 
-        public abstract AppliedProperties GetAppliedProperties(IGameDataModel dataModel, bool ignoreDynamic = false);
+        public abstract AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false);
     }
 
     public struct AppliedProperties
