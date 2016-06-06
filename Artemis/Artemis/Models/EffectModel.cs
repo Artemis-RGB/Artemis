@@ -31,6 +31,7 @@ namespace Artemis.Models
         // Called every frame
         public abstract void Update();
 
+        // Used by profile system
         public IDataModel DataModel { get; set; }
         public ProfileModel Profile { get; set; }
 

@@ -19,12 +19,13 @@ namespace Artemis.Modules.Effects.WindowsProfile
             DisplayName = "Windows Profile";
             PFactory = pFactory;
             ProfilePreviewModel = profilePreviewModel;
-            EffectSettings = ((WindowsProfileModel) EffectModel).Settings;
+            EffectSettings = ((WindowsProfileModel)EffectModel).Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel) EffectModel,
-                ((WindowsProfileSettings) EffectSettings).LastProfile);
+            ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel)EffectModel,
+                ((WindowsProfileSettings)EffectSettings).LastProfile);
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
+            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
@@ -42,7 +43,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
                 ProfileEditor.ProfileViewModel.SelectedProfile == null)
                 return;
-            ((WindowsProfileSettings) EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
+            ((WindowsProfileSettings)EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             EffectSettings.Save();
         }
 
