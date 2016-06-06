@@ -8,6 +8,6 @@ namespace Artemis.InjectionFactories
     public interface IProfileEditorVmFactory
     {
         ProfileEditorViewModel CreateProfileEditorVm(IEventAggregator events, MainManager mainManager,
-            GameModel gameModel, string lastProfile);
+            EffectModel gameModel, string lastProfile);
     }
 }

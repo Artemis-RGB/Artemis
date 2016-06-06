@@ -11,9 +11,10 @@ namespace Artemis.Modules.Effects.TypeWave
             : base(main, new TypeWaveModel(main, new TypeWaveSettings()))
         {
             DisplayName = "Type Waves";
-
             events.Subscribe(this);
+
             MainManager.EffectManager.EffectModels.Add(EffectModel);
+            EffectSettings = ((TypeWaveModel)EffectModel).Settings;
         }
 
         public void Handle(ActiveEffectChanged message)

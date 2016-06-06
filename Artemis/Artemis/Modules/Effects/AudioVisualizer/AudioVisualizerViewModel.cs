@@ -11,9 +11,10 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             : base(main, new AudioVisualizerModel(main, new AudioVisualizerSettings()))
         {
             DisplayName = "Audio Visualization";
-
             events.Subscribe(this);
+
             MainManager.EffectManager.EffectModels.Add(EffectModel);
+            EffectSettings = ((AudioVisualizerModel)EffectModel).Settings;
         }
 
         public void Handle(ActiveEffectChanged message)

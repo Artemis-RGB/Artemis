@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 using Ninject.Extensions.Logging;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings, new CounterStrikeDataModel())
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings)
+            : base(mainManager, settings, new CounterStrikeDataModel())
         {
             Name = "CounterStrike";
             ProcessName = "csgo";
@@ -64,7 +62,6 @@ namespace Artemis.Modules.Games.CounterStrike
                 Logger?.Error(ex, "Failed to deserialize CS:GO JSON");
                 throw;
             }
-            
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)

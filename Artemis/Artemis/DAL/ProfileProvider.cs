@@ -31,7 +31,7 @@ namespace Artemis.DAL
         /// <param name="game">The game to match</param>
         /// <param name="keyboard">The keyboard to match</param>
         /// <returns>All profiles matching the provided game</returns>
-        public static List<ProfileModel> GetAll(GameModel game, KeyboardProvider keyboard)
+        public static List<ProfileModel> GetAll(EffectModel game, KeyboardProvider keyboard)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));

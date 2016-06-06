@@ -82,6 +82,7 @@ namespace Artemis.Managers
             _processTimer.Stop();
             _processTimer.Dispose();
             LoopManager.Stop();
+            EffectManager.ActiveEffect.Dispose();
             GameStateWebServer.Stop();
             PipeServer.Stop();
         }

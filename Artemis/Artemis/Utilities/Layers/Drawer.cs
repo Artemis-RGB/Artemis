@@ -31,7 +31,7 @@ namespace Artemis.Utilities.Layers
             if (props.Animation == LayerAnimation.SlideRight)
             {
                 s1 = new Rect(new Point(rect.X + props.AnimationProgress, rect.Y), new Size(rect.Width, rect.Height));
-                s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + 0.05, rect.Height));
+                s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + 1, rect.Height));
             }
             if (props.Animation == LayerAnimation.SlideLeft)
             {
@@ -99,7 +99,7 @@ namespace Artemis.Utilities.Layers
         }
 
         public static GifImage DrawGif(DrawingContext c, KeyboardPropertiesModel props, AppliedProperties applied,
-            GifImage gifImage, bool update = true)
+            GifImage gifImage)
         {
             if (string.IsNullOrEmpty(props.GifFile))
                 return null;
@@ -117,8 +117,12 @@ namespace Artemis.Utilities.Layers
             var gifRect = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale,
                 applied.Height*scale);
 
-            var draw = update ? gifImage.GetNextFrame() : gifImage.GetFrame(0);
-            c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
+            lock (gifImage)
+            {
+                var draw = gifImage.GetNextFrame();
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), gifRect);
+            }
+
             return gifImage;
         }
 
