@@ -51,9 +51,9 @@ namespace Artemis.Models
             // Render the keyboard layer-by-layer
             keyboard = Profile.GenerateBitmap(renderLayers, DataModel, MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), false, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
-            mouse = Profile.GenerateBrush(renderLayers.FirstOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
+            mouse = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
             // Render the first enabled headset (will default to null if renderHeadsets was false)
-            headset = Profile.GenerateBrush(renderLayers.FirstOrDefault(l => l.LayerType == LayerType.Headset), DataModel);
+            headset = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset), DataModel);
         }
 
         public abstract List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets);

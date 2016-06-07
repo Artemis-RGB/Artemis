@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Artemis.Events;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
@@ -10,7 +11,7 @@ using Caliburn.Micro;
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     // TODO: This effect is a hybrid between a regular effect and a game, may want to clean this up
-    public sealed class WindowsProfileViewModel : EffectViewModel
+    public sealed class WindowsProfileViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
         public WindowsProfileViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory,
             ProfilePreviewModel profilePreviewModel)
@@ -20,10 +21,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
             PFactory = pFactory;
             ProfilePreviewModel = profilePreviewModel;
             EffectSettings = ((WindowsProfileModel)EffectModel).Settings;
-
             ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel)EffectModel,
                 ((WindowsProfileSettings)EffectSettings).LastProfile);
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
+
+            events.Subscribe(this);
             ProfileEditor.PropertyChanged += ProfileUpdater;
             MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
@@ -57,6 +59,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             base.OnDeactivate(close);
             ProfileEditor.ProfileViewModel.Deactivate();
+        }
+
+        public void Handle(ActiveEffectChanged message)
+        {
+            NotifyOfPropertyChange(() => EffectEnabled);
         }
     }
 

@@ -22,7 +22,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
 
             </Grid.RowDefinitions>
@@ -80,38 +79,28 @@
                                    Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" OnLabel="Yes"
                                    OffLabel="No" Margin="0,0,-5,0" Width="114" />
 
-            <!-- Bars amount -->
-            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                       Height="16" Margin="0,8">
-                Bars amount (less bars means thicker bars)
-            </TextBlock>
-            <Slider x:Name="Bars" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
-                    HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
-                    Value="{Binding Path=EffectSettings.Bars, Mode=TwoWay}" Minimum="2" Maximum="21"
-                    SmallChange="1" IsSnapToTickEnabled="True" />
-
             <!-- Sensitivity -->
-            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+            <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
                 Volume sensitivity multiplier
             </TextBlock>
-            <Slider x:Name="Sensitivity" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"
+            <Slider x:Name="Sensitivity" Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
                     Value="{Binding Path=EffectSettings.Sensitivity, Mode=TwoWay}" Minimum="1" Maximum="10"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Fade speed -->
-            <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+            <TextBlock Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">
                 Bar fade-out speed
             </TextBlock>
-            <Slider x:Name="FadeSpeed" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"
+            <Slider x:Name="FadeSpeed" Grid.Row="6" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="BottomRight" TickFrequency="1"
                     Value="{Binding Path=EffectSettings.FadeSpeed, Mode=TwoWay}" Minimum="1" Maximum="3"
                     SmallChange="1" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="8" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="7" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
