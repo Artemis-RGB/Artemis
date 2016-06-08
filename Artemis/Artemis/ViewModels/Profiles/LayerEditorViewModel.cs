@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Timers;
-using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Properties;
@@ -11,7 +9,6 @@ using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Properties;
 using Caliburn.Micro;
-using Newtonsoft.Json;
 using Ninject;
 
 namespace Artemis.ViewModels.Profiles
@@ -169,7 +166,6 @@ namespace Artemis.ViewModels.Profiles
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
             {
-
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
             }
 
@@ -206,7 +202,8 @@ namespace Artemis.ViewModels.Profiles
                 return;
             }
 
-            var close = await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
+            var close =
+                await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
             callback(close.Value);
         }
     }

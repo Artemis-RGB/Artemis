@@ -14,7 +14,7 @@ namespace Artemis.Modules.Effects.TypeWave
             events.Subscribe(this);
 
             MainManager.EffectManager.EffectModels.Add(EffectModel);
-            EffectSettings = ((TypeWaveModel)EffectModel).Settings;
+            EffectSettings = ((TypeWaveModel) EffectModel).Settings;
         }
 
         public void Handle(ActiveEffectChanged message)

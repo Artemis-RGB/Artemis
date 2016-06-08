@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Timers;
@@ -19,7 +18,6 @@ namespace Artemis.Managers
         private readonly IEventAggregator _events;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
-        private int _fpsCount;
 
         public LoopManager(ILogger logger, IEventAggregator events, EffectManager effectManager,
             DeviceManager deviceManager)
@@ -33,14 +31,6 @@ namespace Artemis.Managers
             _loopTimer = new Timer(40);
             _loopTimer.Elapsed += Render;
             _loopTimer.Start();
-
-            var fpsTimer = new Timer(1000);
-            fpsTimer.Elapsed += delegate
-            {
-                Debug.WriteLine(_fpsCount);
-                _fpsCount = 0;
-            };
-            fpsTimer.Start();
         }
 
         /// <summary>
@@ -155,10 +145,7 @@ namespace Artemis.Managers
 
                 // If no bitmap was generated this frame is done
                 if (bitmap == null)
-                {
-                    _fpsCount++;
                     return;
-                }
 
                 // Fill the bitmap's background with black to avoid trailing colors on some keyboards
                 var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
@@ -172,8 +159,6 @@ namespace Artemis.Managers
 
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
-
-                _fpsCount++;
             }
         }
     }

@@ -266,6 +266,16 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap none {
+            get {
+                object obj = ResourceManager.GetObject("none", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /***********************************************************************/
         ////** 	© 2015 CD PROJEKT S.A. All rights reserved.
         ////** 	THE WITCHER® is a trademark of CD PROJEKT S. A.

@@ -55,7 +55,7 @@ namespace Artemis.Models.Profiles
 
             // Update animations
             AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, updateAnimations);
-            
+
             if (LayerType == LayerType.Keyboard)
                 Drawer.Draw(c, (KeyboardPropertiesModel) Properties, appliedProperties);
             else if (LayerType == LayerType.KeyboardGif)
@@ -214,22 +214,6 @@ namespace Artemis.Models.Profiles
             }
         }
 
-        #region IChildItem<Parent> Members
-
-        LayerModel IChildItem<LayerModel>.Parent
-        {
-            get { return Parent; }
-            set { Parent = value; }
-        }
-
-        ProfileModel IChildItem<ProfileModel>.Parent
-        {
-            get { return Profile; }
-            set { Profile = value; }
-        }
-
-        #endregion
-
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -240,7 +224,8 @@ namespace Artemis.Models.Profiles
         /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets, bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets,
+            bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children.OrderByDescending(c => c.Order))
@@ -262,6 +247,22 @@ namespace Artemis.Models.Profiles
 
             return layers;
         }
+
+        #region IChildItem<Parent> Members
+
+        LayerModel IChildItem<LayerModel>.Parent
+        {
+            get { return Parent; }
+            set { Parent = value; }
+        }
+
+        ProfileModel IChildItem<ProfileModel>.Parent
+        {
+            get { return Profile; }
+            set { Profile = value; }
+        }
+
+        #endregion
     }
 
     public enum LayerType

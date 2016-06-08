@@ -41,12 +41,12 @@ namespace Artemis.DeviceProviders.Corsair
                 return;
 
             var leds = CueSDK.MouseSDK.Leds.Count();
-            var rect = new Rect(new Size(leds * 20, leds * 20));
+            var rect = new Rect(new Size(leds*20, leds*20));
 
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
                 c.DrawRectangle(brush, null, rect);
-            var img =  ImageUtilities.DrawinVisualToBitmap(visual, rect);
+            var img = ImageUtilities.DrawinVisualToBitmap(visual, rect);
 
             var ledIndex = 0;
             // Color each LED according to one of the pixels
@@ -54,7 +54,7 @@ namespace Artemis.DeviceProviders.Corsair
             {
                 corsairLed.Color = ledIndex == 0
                     ? img.GetPixel(0, 0)
-                    : img.GetPixel((ledIndex + 1) * 20 - 1, (ledIndex + 1) * 20 - 1);
+                    : img.GetPixel((ledIndex + 1)*20 - 1, (ledIndex + 1)*20 - 1);
                 ledIndex++;
             }
 

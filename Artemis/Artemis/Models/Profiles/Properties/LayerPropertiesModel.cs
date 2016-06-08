@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
-using Artemis.Utilities;
 
 namespace Artemis.Models.Profiles.Properties
 {

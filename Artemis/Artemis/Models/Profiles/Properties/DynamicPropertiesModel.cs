@@ -63,7 +63,7 @@ namespace Artemis.Models.Profiles.Properties
 
         private void ApplyWidth(ref AppliedProperties properties, double percentage)
         {
-            var newWidth = percentage * properties.Width;
+            var newWidth = percentage*properties.Width;
             var difference = properties.Width - newWidth;
             properties.Width = newWidth;
 

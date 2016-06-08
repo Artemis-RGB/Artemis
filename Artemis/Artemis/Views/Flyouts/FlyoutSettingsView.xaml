@@ -57,7 +57,7 @@
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Themes" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
-        
+
         <!-- Keyboard selection -->
         <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />

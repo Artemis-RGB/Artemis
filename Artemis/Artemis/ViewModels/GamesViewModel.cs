@@ -8,7 +8,8 @@ namespace Artemis.ViewModels
     {
         private readonly GameViewModel[] _gameViewModels;
 
-        public GamesViewModel(GameViewModel[] gameViewModels, ProfileManager profileManager, ProfilePreviewModel profilePreviewModel)
+        public GamesViewModel(GameViewModel[] gameViewModels, ProfileManager profileManager,
+            ProfilePreviewModel profilePreviewModel)
         {
             DisplayName = "Games";
             _gameViewModels = gameViewModels;

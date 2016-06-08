@@ -1,5 +1,4 @@
 ﻿using System.Windows.Media;
-using System.Windows.Navigation;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Properties;
 using Artemis.Utilities;
@@ -8,8 +7,8 @@ namespace Artemis.ViewModels.Profiles.Properties
 {
     public class MousePropertiesViewModel : LayerPropertiesViewModel
     {
-        private LayerPropertiesModel _proposedProperties;
         private Brush _brush;
+        private LayerPropertiesModel _proposedProperties;
 
         public MousePropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
             : base(dataModel)

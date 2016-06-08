@@ -1,18 +1,17 @@
 using Artemis.Models.Interfaces;
-using SpotifyAPI.Local.Models;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     public class WindowsProfileDataModel : IDataModel
     {
-        public CpuDataModel Cpu { get; set; }
-        public Spotify Spotify { get; set; }
-
         public WindowsProfileDataModel()
         {
             Spotify = new Spotify();
             Cpu = new CpuDataModel();
         }
+
+        public CpuDataModel Cpu { get; set; }
+        public Spotify Spotify { get; set; }
     }
 
     public class CpuDataModel
@@ -26,6 +25,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Core7Usage { get; set; }
         public int Core8Usage { get; set; }
     }
+
     public class Spotify
     {
         public bool Running { get; set; }
@@ -37,5 +37,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public bool Repeat { get; set; }
         public bool Shuffle { get; set; }
         public bool Playing { get; set; }
+        public int SongLength { get; set; }
     }
 }

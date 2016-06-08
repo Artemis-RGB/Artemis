@@ -18,6 +18,7 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
         public OverlayModel OverlayModel { get; set; }
 
         public OverlaySettings OverlaySettings

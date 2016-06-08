@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
 using SpotifyAPI.Local;
-using SpotifyAPI.Local.Models;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
@@ -13,14 +14,14 @@ namespace Artemis.Modules.Effects.WindowsProfile
     {
         private List<PerformanceCounter> _cores;
         private int _cpuFrames;
-        private readonly SpotifyLocalAPI _spotify;
+        private SpotifyLocalAPI _spotify;
+        private bool _spotifySetupBusy;
 
         public WindowsProfileModel(MainManager mainManager, WindowsProfileSettings settings)
             : base(mainManager, new WindowsProfileDataModel())
         {
             Name = "WindowsProfile";
             Settings = settings;
-            _spotify = new SpotifyLocalAPI();
         }
 
         public WindowsProfileSettings Settings { get; set; }
@@ -32,19 +33,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public override void Enable()
         {
-            // Setup CPU cores
-            _cores = GetPerformanceCounters();
-            var coreCount = _cores.Count;
-            while (coreCount < 8)
-            {
-                _cores.Add(null);
-                coreCount++;
-            }
-
-            if (SpotifyLocalAPI.IsSpotifyRunning())
-            {
-                _spotify.Connect();
-            }
+            SetupCpu();
+            SetupSpotify();
 
             Initialized = true;
         }
@@ -54,6 +44,19 @@ namespace Artemis.Modules.Effects.WindowsProfile
             var dataModel = (WindowsProfileDataModel) DataModel;
             UpdateCpu(dataModel);
             UpdateSpotify(dataModel);
+        }
+
+        #region CPU
+
+        private void SetupCpu()
+        {
+            _cores = GetPerformanceCounters();
+            var coreCount = _cores.Count;
+            while (coreCount < 8)
+            {
+                _cores.Add(null);
+                coreCount++;
+            }
         }
 
         private void UpdateCpu(WindowsProfileDataModel dataModel)
@@ -67,26 +70,26 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
             // Update cores, not ideal but data models don't support lists. 
             if (_cores[0] != null)
-                dataModel.Cpu.Core1Usage = (int)_cores[0].NextValue();
+                dataModel.Cpu.Core1Usage = (int) _cores[0].NextValue();
             if (_cores[1] != null)
-                dataModel.Cpu.Core2Usage = (int)_cores[1].NextValue();
+                dataModel.Cpu.Core2Usage = (int) _cores[1].NextValue();
             if (_cores[2] != null)
-                dataModel.Cpu.Core3Usage = (int)_cores[2].NextValue();
+                dataModel.Cpu.Core3Usage = (int) _cores[2].NextValue();
             if (_cores[3] != null)
-                dataModel.Cpu.Core4Usage = (int)_cores[3].NextValue();
+                dataModel.Cpu.Core4Usage = (int) _cores[3].NextValue();
             if (_cores[4] != null)
-                dataModel.Cpu.Core5Usage = (int)_cores[4].NextValue();
+                dataModel.Cpu.Core5Usage = (int) _cores[4].NextValue();
             if (_cores[5] != null)
-                dataModel.Cpu.Core6Usage = (int)_cores[5].NextValue();
+                dataModel.Cpu.Core6Usage = (int) _cores[5].NextValue();
             if (_cores[6] != null)
-                dataModel.Cpu.Core7Usage = (int)_cores[6].NextValue();
+                dataModel.Cpu.Core7Usage = (int) _cores[6].NextValue();
             if (_cores[7] != null)
-                dataModel.Cpu.Core8Usage = (int)_cores[7].NextValue();
+                dataModel.Cpu.Core8Usage = (int) _cores[7].NextValue();
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<WindowsProfileDataModel>(DataModel, renderMice, renderHeadsets, true);
+            return Profile.GetRenderLayers<WindowsProfileDataModel>(DataModel, renderMice, renderHeadsets, false);
         }
 
         public static List<PerformanceCounter> GetPerformanceCounters()
@@ -101,29 +104,66 @@ namespace Artemis.Modules.Effects.WindowsProfile
             return performanceCounters;
         }
 
+        #endregion
+
+        #region Spotify
+
+        public void SetupSpotify()
+        {
+            if (_spotifySetupBusy)
+                return;
+
+            _spotifySetupBusy = true;
+            _spotify = new SpotifyLocalAPI {ListenForEvents = true};
+            _spotify.OnPlayStateChange += UpdateSpotifyPlayState;
+            _spotify.OnTrackChange += UpdateSpotifyTrack;
+            _spotify.OnTrackTimeChange += UpdateSpotifyTrackTime;
+
+            // Connecting can sometimes use a little bit more conviction
+            Task.Factory.StartNew(() =>
+            {
+                var tryCount = 0;
+                while (tryCount <= 10)
+                {
+                    tryCount++;
+                    var connected = _spotify.Connect();
+                    if (connected)
+                        break;
+                    Thread.Sleep(1000);
+                }
+                _spotifySetupBusy = false;
+            });
+        }
+
         public void UpdateSpotify(WindowsProfileDataModel dataModel)
         {
-            StatusResponse status = _spotify.GetStatus();
-            if (status == null)
-            {
-                dataModel.Spotify.Running = false;
-                return;
-            }
+            if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
+                SetupSpotify();
 
-            dataModel.Spotify.Running = true;
-            dataModel.Spotify.SpotifyVolume = (int)(status.Volume * 100);
-            dataModel.Spotify.Repeat = status.Repeat;
-            dataModel.Spotify.Shuffle = status.Shuffle;
-            dataModel.Spotify.Playing = status.Playing;
-
-            // Only update track info if not null
-            if (status.Track == null)
-                return;
-
-            dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
-            dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
-            dataModel.Spotify.SongPercentCompleted = (int)(status.PlayingPosition / status.Track.Length * 100.0);
-            dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
+            dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
         }
+
+        private void UpdateSpotifyPlayState(object sender, PlayStateEventArgs e)
+        {
+            ((WindowsProfileDataModel) DataModel).Spotify.Playing = e.Playing;
+        }
+
+        private void UpdateSpotifyTrack(object sender, TrackChangeEventArgs e)
+        {
+            var dataModel = (WindowsProfileDataModel) DataModel;
+            dataModel.Spotify.Artist = e.NewTrack.ArtistResource?.Name;
+            dataModel.Spotify.SongName = e.NewTrack.TrackResource?.Name;
+            dataModel.Spotify.Album = e.NewTrack.AlbumResource?.Name;
+            dataModel.Spotify.SongLength = e.NewTrack.Length;
+        }
+
+        private void UpdateSpotifyTrackTime(object sender, TrackTimeChangeEventArgs e)
+        {
+            var dataModel = (WindowsProfileDataModel) DataModel;
+            if (dataModel.Spotify.SongLength > 0)
+                dataModel.Spotify.SongPercentCompleted = (int) (e.TrackTime/dataModel.Spotify.SongLength*100.0);
+        }
+
+        #endregion
     }
 }

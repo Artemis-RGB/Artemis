@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using Artemis.Models;
+﻿using Artemis.Models;
 
 namespace Artemis.Modules.Games.RocketLeague
 {

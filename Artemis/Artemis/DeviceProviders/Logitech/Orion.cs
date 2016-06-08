@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
 using System.Threading;
 using System.Windows;
-using Microsoft.Win32;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.LogitechDll;
+using Microsoft.Win32;
 
 namespace Artemis.DeviceProviders.Logitech
 {
@@ -28,12 +28,14 @@ namespace Artemis.DeviceProviders.Logitech
         {
             //Check to see if VC++ 2012 x64 is installed.
 
-            if (Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
+            if (
+                Registry.LocalMachine.OpenSubKey(
+                    @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
                 CantEnableText = "Couldn't connect to your Logitech G910.\n" +
-                            "The Visual C 2012 Redistributable could not be found, which is required.\n" +
-                            "Please download it by going to the following URL:\n\n" +
-                            "https://www.microsoft.com/download/confirmation.aspx?id=30679";
+                                 "The Visual C 2012 Redistributable could not be found, which is required.\n" +
+                                 "Please download it by going to the following URL:\n\n" +
+                                 "https://www.microsoft.com/download/confirmation.aspx?id=30679";
 
                 return false;
             }

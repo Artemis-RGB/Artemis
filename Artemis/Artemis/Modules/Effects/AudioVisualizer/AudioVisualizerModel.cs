@@ -140,7 +140,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             }
             _generating = false;
         }
-        
+
         private void OnDataAvailable(object sender, WaveInEventArgs e)
         {
             var buffer = e.Buffer;
@@ -190,7 +190,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             return null;
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
         {
             keyboard = null;
             mouse = null;

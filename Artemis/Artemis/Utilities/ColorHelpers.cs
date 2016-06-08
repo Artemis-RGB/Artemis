@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Windows.Media;
-using Brush = System.Windows.Media.Brush;
-using Color = System.Drawing.Color;
 
 namespace Artemis.Utilities
 {

@@ -44,7 +44,7 @@ namespace Artemis.Utilities.DataReaders
                 {
                     if (intermediate.Length > 16)
                         continue;
-                    
+
                     // Can't parse to a byte directly since it may contain values >254
                     var parts = intermediate.Split(',').Select(int.Parse).ToArray();
                     if (parts[0] >= 5 && parts[1] >= 21)

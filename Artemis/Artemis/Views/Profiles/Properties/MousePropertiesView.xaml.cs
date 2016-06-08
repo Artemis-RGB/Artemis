@@ -3,7 +3,7 @@
 namespace Artemis.Views.Profiles.Properties
 {
     /// <summary>
-    /// Interaction logic for MousePropertiesView.xaml
+    ///     Interaction logic for MousePropertiesView.xaml
     /// </summary>
     public partial class MousePropertiesView : UserControl
     {

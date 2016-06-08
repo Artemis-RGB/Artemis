@@ -43,7 +43,7 @@ namespace Artemis.Models
             mouse = null;
             headset = null;
 
-            if (Profile == null || DataModel == null)
+            if (Profile == null || DataModel == null || MainManager.DeviceManager.ActiveKeyboard == null)
                 return;
 
             // Get all enabled layers who's conditions are met

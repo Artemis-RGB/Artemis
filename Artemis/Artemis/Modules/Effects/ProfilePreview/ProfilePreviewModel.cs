@@ -35,7 +35,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
             return Profile.GetRenderLayers<ProfilePreviewDataModel>(DataModel, renderMice, renderHeadsets, true);
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
         {
             keyboard = null;
             mouse = null;
@@ -48,11 +49,13 @@ namespace Artemis.Modules.Effects.ProfilePreview
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            keyboard = Profile?.GenerateBitmap(renderLayers, DataModel, MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), true, true);
+            keyboard = Profile?.GenerateBitmap(renderLayers, DataModel,
+                MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), true, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
             mouse = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
             // Render the first enabled headset (will default to null if renderHeadsets was false)
-            headset = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset), DataModel);
+            headset = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset),
+                DataModel);
         }
     }
 

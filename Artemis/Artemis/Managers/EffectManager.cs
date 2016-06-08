@@ -15,8 +15,8 @@ namespace Artemis.Managers
     /// </summary>
     public class EffectManager
     {
-        private readonly IEventAggregator _events;
         private readonly DeviceManager _deviceManager;
+        private readonly IEventAggregator _events;
         private readonly ILogger _logger;
         private EffectModel _activeEffect;
 
@@ -107,7 +107,7 @@ namespace Artemis.Managers
                     _logger.Debug("Cancelling effect change, provided game not enabled");
                     return;
                 }
-                    
+
 
             var wasNull = false;
             if (ActiveEffect == null)

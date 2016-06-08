@@ -1,5 +1,4 @@
 ﻿using Artemis.Models.Interfaces;
-using Artemis.Utilities;
 
 namespace Artemis.Models.Profiles.Properties
 {

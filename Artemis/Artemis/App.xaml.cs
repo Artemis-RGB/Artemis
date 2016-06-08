@@ -2,7 +2,6 @@
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
-using Artemis.Utilities;
 using NLog;
 using WpfExceptionViewer;
 
@@ -21,6 +20,8 @@ namespace Artemis
             InitializeComponent();
         }
 
+        public bool DoHandle { get; set; }
+
         private static bool IsRunAsAdministrator()
         {
             var wi = WindowsIdentity.GetCurrent();
@@ -28,8 +29,6 @@ namespace Artemis
 
             return wp.IsInRole(WindowsBuiltInRole.Administrator);
         }
-
-        public bool DoHandle { get; set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {

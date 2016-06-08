@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Utilities;
 using NLog;
 
 namespace Artemis.DAL
 {
     public static class ProfileProvider
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly string ProfileFolder =
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
+        private static readonly string ProfileFolder = Environment
+            .GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
+
+        private static bool _installedDefaults;
 
         /// <summary>
         ///     Get all profiles
@@ -93,7 +97,7 @@ namespace Artemis.DAL
                 }
                 catch (InvalidOperationException e)
                 {
-                    _logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
+                    Logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
                 }
             }
 
@@ -105,13 +109,20 @@ namespace Artemis.DAL
         /// </summary>
         private static void InstallDefaults()
         {
-            var test = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            //var stream =
-            //    Assembly.GetExecutingAssembly()
-            //        .GetManifestResourceStream("Artemis.Properties.Resources.logo.jpg");
+            // Only install the defaults once per session
+            if (_installedDefaults)
+                return;
+            _installedDefaults = true;
 
-            //Resources.
-            //ZipPackage.Open(Re.defaultProfiles)
+            // Load the ZIP from resources
+            var stream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Artemis.Resources.Keyboards.default-profiles.zip");
+
+            // Extract it over the old defaults in case one was updated
+            if (stream == null)
+                return;
+            var archive = new ZipArchive(stream);
+            archive.ExtractToDirectory(ProfileFolder, true);
         }
 
         /// <summary>

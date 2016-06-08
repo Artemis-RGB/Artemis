@@ -38,7 +38,7 @@ namespace Artemis.Managers
             _logger.Info("Intializing MainManager");
 
             _events = events;
-            
+
             _processTimer = new Timer(1000);
             _processTimer.Elapsed += ScanProcesses;
             _processTimer.Start();

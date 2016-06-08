@@ -11,7 +11,7 @@ namespace Artemis.Modules.Games.Dota2
 {
     public sealed class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory) 
+        public Dota2ViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new Dota2Model(main, new Dota2Settings()), events, pFactory)
         {
             DisplayName = "Dota 2";
@@ -23,7 +23,7 @@ namespace Artemis.Modules.Games.Dota2
 
         public void FindGameDir()
         {
-            var gameSettings = (Dota2Settings)GameSettings;
+            var gameSettings = (Dota2Settings) GameSettings;
             // If already propertly set up, don't do anything
             if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
                 File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
@@ -75,12 +75,12 @@ namespace Artemis.Modules.Games.Dota2
                         "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
                         cfgFile);
                 }
-                
+
                 return;
             }
 
             DialogService.ShowErrorMessageBox("Please select a valid Dota 2 directory\n\n" +
-                                                          @"By default Dota 2 is in \SteamApps\common\dota 2 beta");
+                                              @"By default Dota 2 is in \SteamApps\common\dota 2 beta");
             ((Dota2Settings) GameSettings).GameDirectory = string.Empty;
             NotifyOfPropertyChange(() => GameSettings);
 

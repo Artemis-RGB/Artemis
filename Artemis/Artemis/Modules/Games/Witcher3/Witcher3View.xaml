@@ -39,8 +39,10 @@
                        TextAlignment="Justify" Margin="5,0,0,10">
                 Artemis requires the latest Witcher 3 version and mod to be installed in order to work. If you don't use any (conflicting) Witcher 3 mods, the mod can automatically be installed.
             </TextBlock>
-            <Button Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" x:Name="AutoInstall" Content="Try automatic mod install" Width="160" Style="{DynamicResource SquareButtonStyle}" HorizontalAlignment="Left" />
-            
+            <Button Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" x:Name="AutoInstall"
+                    Content="Try automatic mod install" Width="160" Style="{DynamicResource SquareButtonStyle}"
+                    HorizontalAlignment="Left" />
+
             <!-- Profile editor -->
             <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
 
