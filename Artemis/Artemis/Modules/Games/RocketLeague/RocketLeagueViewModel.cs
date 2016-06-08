@@ -1,24 +1,26 @@
-﻿using Artemis.Managers;
+﻿using Artemis.InjectionFactories;
+using Artemis.Managers;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Artemis.ViewModels.Abstract;
+using Caliburn.Micro;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueViewModel : GameViewModel<RocketLeagueDataModel>
+    public sealed class RocketLeagueViewModel : GameViewModel
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager mainManager)
-            : base(mainManager, new RocketLeagueModel(mainManager, new RocketLeagueSettings()))
+        public RocketLeagueViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
+            : base(main, new RocketLeagueModel(main, new RocketLeagueSettings()), events, pFactory)
         {
+            DisplayName = "Rocket League";
+
             MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
         }
-
-        public static string Name => "Rocket League";
 
         public string VersionText
         {

@@ -30,10 +30,10 @@
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable overlay" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                    <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=VolumeDisplaySettings.Enabled, Mode=TwoWay}"
+                    <ToggleButton x:Name="OverlayEnabled" Margin="0 3 0 0" Width="25" Height="25"
+                                  IsChecked="{Binding Path=OverlaySettings.Enabled, Mode=TwoWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                                  cal:Message.Attach="[Event Click] = [Action ToggleOverlay]" />
                 </StackPanel>
             </StackPanel>
 
@@ -43,7 +43,7 @@
                 Main volume display color
             </TextBlock>
             <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=VolumeDisplaySettings.MainColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=OverlaySettings.MainColor, Mode=TwoWay}"
                               Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 
@@ -53,7 +53,7 @@
                 Secondary volume display color
             </TextBlock>
             <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=VolumeDisplaySettings.SecondaryColor, Mode=TwoWay}"
+                              SelectedColor="{Binding Path=OverlaySettings.SecondaryColor, Mode=TwoWay}"
                               Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
                               VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
 

@@ -14,7 +14,7 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 103;
+        public static int CurrentVersion = 110;
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
@@ -26,7 +26,7 @@ namespace Artemis.Utilities
                 return null;
 
             var viewUpdate = await
-                dialogService.ShowQuestionMessageBox("Update available",
+                dialogService.ShowQuestionMessageBox("ApplyProperties available",
                     $"A new version of Artemis is available, version {newRelease["tag_name"].Value<string>()}.\n" +
                     "Do you wish to view the update on GitHub now?\n\n" +
                     "Note: You can disable update notifications in the settings menu");

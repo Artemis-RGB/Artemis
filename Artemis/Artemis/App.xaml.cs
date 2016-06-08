@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
-using Artemis.Utilities;
+using NLog;
 using WpfExceptionViewer;
 
 namespace Artemis
@@ -13,13 +14,21 @@ namespace Artemis
     {
         public App()
         {
-            if (!GeneralHelpers.IsRunAsAdministrator())
-                GeneralHelpers.RunAsAdministrator();
+            //if (!IsRunAsAdministrator())
+            //    GeneralHelpers.RunAsAdministrator();
 
             InitializeComponent();
         }
 
         public bool DoHandle { get; set; }
+
+        private static bool IsRunAsAdministrator()
+        {
+            var wi = WindowsIdentity.GetCurrent();
+            var wp = new WindowsPrincipal(wi);
+
+            return wp.IsInRole(WindowsBuiltInRole.Administrator);
+        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -40,7 +49,6 @@ namespace Artemis
             }
         }
 
-
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var ex = e.ExceptionObject as Exception;
@@ -49,6 +57,8 @@ namespace Artemis
 
         private static ExceptionViewer GetArtemisExceptionViewer(Exception e)
         {
+            var logger = LogManager.GetCurrentClassLogger();
+            logger.Fatal(e, "Unhandled exception, showing dialog and shutting down.");
             return new ExceptionViewer("An unexpected error occurred in Artemis.", e)
             {
                 Title = "Artemis - Exception :c",

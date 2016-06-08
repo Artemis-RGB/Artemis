@@ -5,11 +5,13 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {
@@ -22,7 +24,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private int _sensitivity;
         private IWaveIn _waveIn;
 
-        public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager)
+        public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager, null)
         {
             Settings = settings;
             Name = "Audiovisualizer";
@@ -49,6 +51,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             _sampleAggregator.PerformFFT = false;
             _sampleAggregator.FftCalculated -= FftCalculated;
 
+            if (_waveIn == null)
+                return;
             _waveIn.StopRecording();
             _waveIn.DataAvailable -= OnDataAvailable;
             _waveIn = null;
@@ -57,7 +61,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         public override void Enable()
         {
             Initialized = false;
-            Lines = MainManager.KeyboardManager.ActiveKeyboard.Width;
+            Lines = MainManager.DeviceManager.ActiveKeyboard.Width;
 
             // TODO: Device selection
             SelectedDeviceId = new MMDeviceEnumerator()
@@ -69,7 +73,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             for (var i = 0; i < Lines; i++)
             {
                 SoundRectangles.Add(new KeyboardRectangle(
-                    MainManager.KeyboardManager.ActiveKeyboard,
+                    MainManager.DeviceManager.ActiveKeyboard,
                     0, 0, new List<Color>
                     {
                         ColorHelpers.ToDrawingColor(Settings.TopColor),
@@ -121,7 +125,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 // Apply Sensitivity setting
                 height = height*_sensitivity;
                 var keyboardHeight =
-                    (int) Math.Round(MainManager.KeyboardManager.ActiveKeyboard.Height/100.00*height*Scale);
+                    (int) Math.Round(MainManager.DeviceManager.ActiveKeyboard.Height/100.00*height*Scale);
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
@@ -131,29 +135,10 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 SoundRectangles[i].Width = Scale;
 
                 if (_fromBottom)
-                    SoundRectangles[i].Y = MainManager.KeyboardManager.ActiveKeyboard.Height*Scale -
+                    SoundRectangles[i].Y = MainManager.DeviceManager.ActiveKeyboard.Height*Scale -
                                            SoundRectangles[i].Height;
             }
             _generating = false;
-        }
-
-        public override Bitmap GenerateBitmap()
-        {
-            if (SpectrumData == null || SoundRectangles == null)
-                return null;
-
-            // Lock the _spectrumData array while busy with it
-            _generating = true;
-
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                foreach (var soundRectangle in SoundRectangles)
-                    soundRectangle.Draw(g);
-            }
-
-            _generating = false;
-            return bitmap;
         }
 
         private void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -198,6 +183,34 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     y = 0;
                 SpectrumData.Add((byte) y);
             }
+        }
+
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        {
+            return null;
+        }
+
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
+        {
+            keyboard = null;
+            mouse = null;
+            headset = null;
+
+            if (SpectrumData == null || SoundRectangles == null)
+                return;
+
+            // Lock the _spectrumData array while busy with it
+            _generating = true;
+
+            keyboard = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                foreach (var soundRectangle in SoundRectangles)
+                    soundRectangle.Draw(g);
+            }
+
+            _generating = false;
         }
     }
 }

@@ -12,11 +12,13 @@ namespace Artemis.Modules.Games.TheDivision
         public sealed override void Load()
         {
             Enabled = TheDivision.Default.Enabled;
+            LastProfile = TheDivision.Default.LastProfile;
         }
 
         public sealed override void Save()
         {
             TheDivision.Default.Enabled = Enabled;
+            TheDivision.Default.LastProfile = LastProfile;
 
             TheDivision.Default.Save();
         }

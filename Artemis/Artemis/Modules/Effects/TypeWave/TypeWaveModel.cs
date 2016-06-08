@@ -3,11 +3,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Artemis.KeyboardProviders.Corsair;
-using Artemis.KeyboardProviders.Logitech.Utilities;
+using Artemis.DeviceProviders.Corsair;
+using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
@@ -16,7 +18,7 @@ namespace Artemis.Modules.Effects.TypeWave
         private readonly List<Wave> _waves;
         private Color _randomColor;
 
-        public TypeWaveModel(MainManager mainManager, TypeWaveSettings settings) : base(mainManager)
+        public TypeWaveModel(MainManager mainManager, TypeWaveSettings settings) : base(mainManager, null)
         {
             Name = "TypeWave";
             _waves = new List<Wave>();
@@ -91,13 +93,23 @@ namespace Artemis.Modules.Effects.TypeWave
             }
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            if (_waves.Count == 0)
-                return null;
+            return null;
+        }
 
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(Scale);
-            using (var g = Graphics.FromImage(bitmap))
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
+        {
+            keyboard = null;
+            mouse = null;
+            headset = null;
+
+            if (_waves.Count == 0)
+                return;
+
+            keyboard = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
+            using (var g = Graphics.FromImage(keyboard))
             {
                 g.Clear(Color.Transparent);
                 g.SmoothingMode = SmoothingMode.HighQuality;
@@ -113,7 +125,7 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
-                    if (MainManager.KeyboardManager.ActiveKeyboard is CorsairRGB)
+                    if (MainManager.DeviceManager.ActiveKeyboard is CorsairRGB)
                         fillColor = Color.Black;
                     else
                         fillColor = Color.Transparent;
@@ -132,7 +144,6 @@ namespace Artemis.Modules.Effects.TypeWave
                         _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
                 }
             }
-            return bitmap;
         }
     }
 

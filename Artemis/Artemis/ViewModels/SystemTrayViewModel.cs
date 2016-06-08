@@ -1,33 +1,43 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using Artemis.Events;
+using Artemis.Managers;
+using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Ninject;
 
 namespace Artemis.ViewModels
 {
     public class SystemTrayViewModel : Screen, IHandle<ToggleEnabled>
     {
         private readonly ShellViewModel _shellViewModel;
-
         private readonly IWindowManager _windowManager;
         private string _activeIcon;
         private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
 
-        public SystemTrayViewModel(IWindowManager windowManager, ShellViewModel shellViewModel)
+        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events, ShellViewModel shellViewModel,
+            MainManager mainManager)
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
-            _shellViewModel.MainManager.Events.Subscribe(this);
-            _shellViewModel.MainManager.EnableProgram();
             _checkedForUpdate = false;
+
+            MainManager = mainManager;
+
+            events.Subscribe(this);
+            MainManager.EnableProgram();
 
             if (General.Default.ShowOnStartup)
                 ShowWindow();
         }
+
+        [Inject]
+        public MetroDialogService DialogService { get; set; }
+
+        public MainManager MainManager { get; set; }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
 
@@ -76,9 +86,9 @@ namespace Artemis.ViewModels
         public void ToggleEnabled()
         {
             if (Enabled)
-                _shellViewModel.MainManager.DisableProgram();
+                MainManager.DisableProgram();
             else
-                _shellViewModel.MainManager.EnableProgram();
+                MainManager.EnableProgram();
         }
 
         protected override void OnActivate()
@@ -104,7 +114,7 @@ namespace Artemis.ViewModels
                 return;
 
             _checkedForUpdate = true;
-            Updater.CheckForUpdate(_shellViewModel.MainManager.DialogService);
+            Updater.CheckForUpdate(DialogService);
         }
 
 
@@ -121,11 +131,8 @@ namespace Artemis.ViewModels
 
         public void ExitApplication()
         {
-            _shellViewModel.MainManager.Shutdown();
+            MainManager.Dispose();
             Application.Current.Shutdown();
-
-            // Sometimes you need to be rough.
-            Environment.Exit(0);
         }
     }
 }
