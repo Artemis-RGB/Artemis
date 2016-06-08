@@ -1,0 +1,17 @@
+LIBRARY Razer2Artemis.dll
+
+EXPORTS
+	
+	CreateEffect
+	CreateHeadsetEffect
+	CreateKeyboardEffect
+	CreateKeypadEffect
+	CreateMouseEffect
+	CreateMousepadEffect
+	DeleteEffect
+	Init
+	QueryDevice
+	RegisterEventNotification
+	SetEffect
+	UnInit
+	UnregisterEventNotification

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using Artemis.Events;
@@ -5,23 +6,47 @@ using Artemis.Managers;
 using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
+using NLog;
+using NLog.Targets;
+using ILogger = Ninject.Extensions.Logging.ILogger;
+using LogManager = NLog.LogManager;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>, IHandle<ActiveEffectChanged>
+    public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>,
+        IHandle<ActiveEffectChanged>
     {
+        private readonly ILogger _logger;
         private string _activeEffectName;
+        private bool _enableDebug;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager)
+        public FlyoutSettingsViewModel(MainManager mainManager, IEventAggregator events, ILogger logger)
         {
+            _logger = logger;
+
             MainManager = mainManager;
             Header = "Settings";
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
-            MainManager.Events.Subscribe(this);
+            PropertyChanged += KeyboardUpdater;
+            events.Subscribe(this);
+            ApplyLogging();
+        }
+
+        public MainManager MainManager { get; set; }
+
+        public bool EnableDebug
+        {
+            get { return _enableDebug; }
+            set
+            {
+                if (value == _enableDebug) return;
+                _enableDebug = value;
+                NotifyOfPropertyChange(() => EnableDebug);
+            }
         }
 
         public GeneralSettings GeneralSettings
@@ -35,16 +60,28 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        public MainManager MainManager { get; set; }
-
         public BindableCollection<string> KeyboardProviders
         {
             get
             {
-                var collection = new BindableCollection<string>(MainManager.KeyboardManager.KeyboardProviders
-                    .Select(k => k.Name));
+                var collection =
+                    new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
                 collection.Insert(0, "None");
                 return collection;
+            }
+        }
+
+        public BindableCollection<string> Themes
+            => new BindableCollection<string> {"Light", "Dark", "Corsair Light", "Corsair Dark"};
+
+        public string SelectedTheme
+        {
+            get { return GeneralSettings.Theme; }
+            set
+            {
+                if (value == GeneralSettings.Theme) return;
+                GeneralSettings.Theme = value;
+                NotifyOfPropertyChange(() => SelectedTheme);
             }
         }
 
@@ -56,12 +93,6 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == _selectedKeyboardProvider) return;
                 _selectedKeyboardProvider = value;
                 NotifyOfPropertyChange(() => SelectedKeyboardProvider);
-                if (value == null)
-                    return;
-
-                MainManager.KeyboardManager.ChangeKeyboard(
-                    MainManager.KeyboardManager.KeyboardProviders.FirstOrDefault(
-                        k => k.Name == _selectedKeyboardProvider));
             }
         }
 
@@ -97,6 +128,49 @@ namespace Artemis.ViewModels.Flyouts
         public void Handle(ToggleEnabled message)
         {
             NotifyOfPropertyChange(() => Enabled);
+        }
+
+        // TODO https://github.com/ninject/Ninject.Extensions.Logging/issues/35
+        private void ApplyLogging()
+        {
+            return;
+            var c = LogManager.Configuration;
+            var file = c.FindTargetByName("file") as FileTarget;
+            if (file == null)
+                return;
+
+            var rule = c.LoggingRules.FirstOrDefault(r => r.Targets.Contains(file));
+            if (rule == null)
+                return;
+
+            if (EnableDebug)
+                rule.EnableLoggingForLevel(LogLevel.Debug);
+            rule.DisableLoggingForLevel(LogLevel.Debug);
+
+            LogManager.ReconfigExistingLoggers();
+            _logger.Info("Set debug logging to: {0}", EnableDebug);
+        }
+
+        /// <summary>
+        ///     Takes proper action when the selected keyboard is changed in the UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeyboardUpdater(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedKeyboardProvider")
+                return;
+
+            _logger.Debug("Handling SelectedKeyboard change in UI");
+            var keyboard = MainManager.DeviceManager.KeyboardProviders
+                .FirstOrDefault(k => k.Name == SelectedKeyboardProvider);
+            if (keyboard != null)
+            {
+                MainManager.DeviceManager.EnableKeyboard(keyboard);
+                MainManager.LoopManager.Start();
+            }
+            else
+                MainManager.DeviceManager.ReleaseActiveKeyboard(true);
         }
 
         public void ToggleEnabled()

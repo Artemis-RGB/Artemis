@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Artemis.Managers;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Models
 {
@@ -8,7 +9,7 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainManager mainManager) : base(mainManager)
+        protected OverlayModel(MainManager mainManager) : base(mainManager, null)
         {
         }
 
@@ -28,19 +29,7 @@ namespace Artemis.Models
             }
         }
 
-        public void SetEnabled(bool enabled)
-        {
-            if (Enabled == enabled)
-                return;
-
-            if (enabled)
-                Enable();
-            else
-                Dispose();
-
-            Enabled = enabled;
-        }
-
-        public abstract Bitmap GenerateBitmap(Bitmap bitmap);
+        public abstract void RenderOverlay(ref Bitmap keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+            bool renderHeadsets);
     }
 }

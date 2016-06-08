@@ -2,7 +2,7 @@
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionDataModel : IGameDataModel
+    public class TheDivisionDataModel : IDataModel
     {
         public TheDivisionDataModel()
         {

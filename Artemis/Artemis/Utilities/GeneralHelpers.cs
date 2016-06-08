@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 using static System.String;
 
 namespace Artemis.Utilities
@@ -38,22 +38,6 @@ namespace Artemis.Utilities
             Environment.Exit(0);
         }
 
-        public static bool IsRunAsAdministrator()
-        {
-            var wi = WindowsIdentity.GetCurrent();
-            var wp = new WindowsPrincipal(wi);
-
-            return wp.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        public static void CopyProperties(object dest, object src)
-        {
-            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
-            {
-                item.SetValue(dest, item.GetValue(src));
-            }
-        }
-
         /// <summary>
         ///     Perform a deep Copy of the object.
         /// </summary>
@@ -66,13 +50,28 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var serializer = new XmlSerializer(typeof (T));
+            var serializer = new XmlSerializer(typeof(T));
             Stream stream = new MemoryStream();
             using (stream)
             {
                 serializer.Serialize(stream, source);
                 stream.Seek(0, SeekOrigin.Begin);
                 return (T) serializer.Deserialize(stream);
+            }
+        }
+
+        public static string Serialize<T>(T source)
+        {
+            // Don't serialize a null object, simply return the default for that object
+            if (ReferenceEquals(source, null))
+                return null;
+
+            var serializer = new XmlSerializer(typeof(T));
+            var stream = new StringWriter();
+            using (stream)
+            {
+                serializer.Serialize(stream, source);
+                return stream.ToString();
             }
         }
 
@@ -87,7 +86,6 @@ namespace Artemis.Utilities
         }
 
         public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
-        public static List<PropertyCollection> GenerateTypeMap<T>() => GenerateTypeMap(typeof (T).GetProperties());
 
         private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
             string path = "")
@@ -100,6 +98,8 @@ namespace Artemis.Utilities
                     friendlyName = "(Number)";
                 else if (propertyInfo.PropertyType.Name == "String")
                     friendlyName = "(Text)";
+                else if (propertyInfo.PropertyType.Name == "Boolean")
+                    friendlyName = "(Yes/no)";
                 if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
                     friendlyName = "(Choice)";
 
@@ -125,6 +125,32 @@ namespace Artemis.Utilities
                         path + $"{propertyInfo.Name}."));
             }
             return list;
+        }
+
+        public static string FindSteamGame(string relativePath)
+        {
+            var path = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam")?.GetValue("SteamPath")?.ToString();
+            if (path == null)
+                return null;
+            var libFile = path + @"\steamapps\libraryfolders.vdf";
+            if (!File.Exists(libFile))
+                return null;
+
+            // Try the main SteamApps folder
+            if (File.Exists(path + "\\SteamApps\\common" + relativePath))
+                return Path.GetDirectoryName(path + "\\SteamApps\\common" + relativePath);
+
+            // If not found in the main folder, try all the libraries found in the vdf file.
+            var content = File.ReadAllText(libFile);
+            var matches = Regex.Matches(content, "\"\\d\"\\t\\t\"(.*)\"");
+            foreach (Match match in matches)
+            {
+                var library = match.Groups[1].Value;
+                library = library.Replace("\\\\", "\\") + "\\SteamApps\\common";
+                if (File.Exists(library + relativePath))
+                    return Path.GetDirectoryName(library + relativePath);
+            }
+            return null;
         }
 
         public struct PropertyCollection

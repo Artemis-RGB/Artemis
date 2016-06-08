@@ -1,14 +1,18 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Models.Profiles;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings) : base(mainManager, settings)
+        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings)
+            : base(mainManager, settings, new CounterStrikeDataModel())
         {
             Name = "CounterStrike";
             ProcessName = "csgo";
@@ -17,6 +21,7 @@ namespace Artemis.Modules.Games.CounterStrike
             Initialized = false;
         }
 
+        public ILogger Logger { get; set; }
         public int Scale { get; set; }
 
         public override void Dispose()
@@ -29,7 +34,6 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             Initialized = false;
 
-            GameDataModel = new CounterStrikeDataModel();
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
 
             Initialized = true;
@@ -37,20 +41,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Update()
         {
-            if (Profile == null || GameDataModel == null)
-                return;
-
-            foreach (var layerModel in Profile.Layers)
-                layerModel.Update<CounterStrikeDataModel>(GameDataModel);
-        }
-
-        public override Bitmap GenerateBitmap()
-        {
-            if (Profile == null || GameDataModel == null)
-                return null;
-
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(Scale);
-            return Profile.GenerateBitmap<CounterStrikeDataModel>(keyboardRect, GameDataModel);
+            // TODO: Set up active weapon in the datamodel
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)
@@ -62,7 +53,20 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             // Parse the JSON
-            GameDataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
+            try
+            {
+                DataModel = JsonConvert.DeserializeObject<CounterStrikeDataModel>(jsonString);
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex, "Failed to deserialize CS:GO JSON");
+                throw;
+            }
+        }
+
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        {
+            return Profile.GetRenderLayers<CounterStrikeDataModel>(DataModel, renderMice, renderHeadsets);
         }
     }
 }

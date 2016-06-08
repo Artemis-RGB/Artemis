@@ -42,12 +42,12 @@ namespace Artemis.Utilities.LogitechDll
 
                 while (Running)
                 {
-                    var namedPipeServerStream = new NamedPipeServerStream(_pipeName, PipeDirection.In, 100,
-                        PipeTransmissionMode.Byte, PipeOptions.None, 100, 100, security);
+                    var namedPipeServerStream = new NamedPipeServerStream(_pipeName, PipeDirection.In, 254,
+                        PipeTransmissionMode.Byte, PipeOptions.None, 254, 254, security);
 
                     namedPipeServerStream.WaitForConnection();
-                    var buffer = new byte[100];
-                    namedPipeServerStream.Read(buffer, 0, 100);
+                    var buffer = new byte[254];
+                    namedPipeServerStream.Read(buffer, 0, 254);
                     namedPipeServerStream.Close();
 
                     var task = new Task(() => HandleMessage(buffer));
@@ -77,8 +77,8 @@ namespace Artemis.Utilities.LogitechDll
                 // Set to class level var so we can re-use in the async callback method
                 _pipeName = pipeName;
                 // Create the new async pipe 
-                var pipeServer = new NamedPipeServerStream(pipeName, PipeDirection.In, 100, PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous, 100, 100, security);
+                var pipeServer = new NamedPipeServerStream(pipeName, PipeDirection.In, 254, PipeTransmissionMode.Byte,
+                    PipeOptions.Asynchronous, 254, 254, security);
 
                 // Wait for a connection
                 pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, pipeServer);
@@ -105,7 +105,6 @@ namespace Artemis.Utilities.LogitechDll
 
                 // Convert byte buffer to string
                 var stringData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
-                Debug.WriteLine(stringData + Environment.NewLine);
 
                 // Pass message back to calling form
                 PipeMessage?.Invoke(stringData);
@@ -117,8 +116,8 @@ namespace Artemis.Utilities.LogitechDll
                 var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
                 security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl, AccessControlType.Allow));
 
-                pipeServer = new NamedPipeServerStream(_pipeName, PipeDirection.In, 100, PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous, 100, 100, security);
+                pipeServer = new NamedPipeServerStream(_pipeName, PipeDirection.In, 254, PipeTransmissionMode.Byte,
+                    PipeOptions.Asynchronous, 254, 254, security);
 
                 // Recursively wait for the connection again and again....
                 pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, pipeServer);

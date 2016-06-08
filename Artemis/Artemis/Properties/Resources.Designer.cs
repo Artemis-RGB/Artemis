@@ -80,6 +80,16 @@ namespace Artemis.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap blackwidow {
+            get {
+                object obj = ResourceManager.GetObject("blackwidow", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bow {
             get {
                 object obj = ResourceManager.GetObject("bow", resourceCulture);
@@ -107,6 +117,26 @@ namespace Artemis.Properties {
         internal static string csgoGamestateConfiguration {
             get {
                 return ResourceManager.GetString("csgoGamestateConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] defaultProfiles {
+            get {
+                object obj = ResourceManager.GetObject("defaultProfiles", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap demo_gif {
+            get {
+                object obj = ResourceManager.GetObject("demo_gif", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -151,6 +181,26 @@ namespace Artemis.Properties {
         internal static System.Drawing.Bitmap g910 {
             get {
                 object obj = ResourceManager.GetObject("g910", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap gif {
+            get {
+                object obj = ResourceManager.GetObject("gif", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap headset {
+            get {
+                object obj = ResourceManager.GetObject("headset", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -216,6 +266,26 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap mouse {
+            get {
+                object obj = ResourceManager.GetObject("mouse", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap none {
+            get {
+                object obj = ResourceManager.GetObject("none", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /***********************************************************************/
         ////** 	© 2015 CD PROJEKT S.A. All rights reserved.
         ////** 	THE WITCHER® is a trademark of CD PROJEKT S. A.
@@ -236,6 +306,16 @@ namespace Artemis.Properties {
         internal static string playerWitcherWs {
             get {
                 return ResourceManager.GetString("playerWitcherWs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] RzChromaSDK64 {
+            get {
+                object obj = ResourceManager.GetObject("RzChromaSDK64", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

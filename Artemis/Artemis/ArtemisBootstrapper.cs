@@ -1,27 +1,34 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using Artemis.InjectionModules;
 using Artemis.ViewModels;
-using Autofac;
 using Caliburn.Micro;
-using Caliburn.Micro.Autofac;
+using Ninject;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace Artemis
 {
-    public class ArtemisBootstrapper : AutofacBootstrapper<SystemTrayViewModel>
+    public class ArtemisBootstrapper : BootstrapperBase
     {
+        private IKernel _kernel;
+
         public ArtemisBootstrapper()
         {
             CheckDuplicateInstances();
-
             Initialize();
+            BindSpecialValues();
+        }
 
+        public Mutex Mutex { get; set; }
+
+        private void BindSpecialValues()
+        {
             MessageBinder.SpecialValues.Add("$scaledmousex", ctx =>
             {
                 var img = ctx.Source as Image;
@@ -64,14 +71,35 @@ namespace Artemis
             });
         }
 
-        protected override void ConfigureContainer(ContainerBuilder builder)
+        protected override void Configure()
         {
-            base.ConfigureContainer(builder);
+            _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
+            _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
+            _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
+        }
 
-            // create a window manager instance to be used by everyone asking for one (including Caliburn.Micro)
-            builder.RegisterInstance<IWindowManager>(new WindowManager());
-            builder.RegisterType<SystemTrayViewModel>();
-            builder.RegisterType<ShellViewModel>();
+        protected override void OnExit(object sender, EventArgs e)
+        {
+            _kernel.Dispose();
+            base.OnExit(sender, e);
+        }
+
+        protected override object GetInstance(Type service, string key)
+        {
+            if (service == null)
+                throw new ArgumentNullException(nameof(service));
+
+            return _kernel.Get(service);
+        }
+
+        protected override IEnumerable<object> GetAllInstances(Type service)
+        {
+            return _kernel.GetAll(service);
+        }
+
+        protected override void BuildUp(object instance)
+        {
+            _kernel.Inject(instance);
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
@@ -81,8 +109,9 @@ namespace Artemis
 
         private void CheckDuplicateInstances()
         {
-            if (Process.GetProcesses().Count(p => p.ProcessName.Contains(Assembly.GetExecutingAssembly()
-                .FullName.Split(',')[0]) && !p.Modules[0].FileName.Contains("vshost")) < 2)
+            bool aIsNewInstance;
+            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            if (aIsNewInstance)
                 return;
 
             MessageBox.Show("An instance of Artemis is already running (check your system tray).",

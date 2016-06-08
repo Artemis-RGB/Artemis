@@ -1,41 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
 using Caliburn.Micro;
-using NLog;
-using LogManager = NLog.LogManager;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
 {
+    /// <summary>
+    ///     Manages the effects
+    /// </summary>
     public class EffectManager
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly DeviceManager _deviceManager;
         private readonly IEventAggregator _events;
-        private readonly MainManager _mainManager;
+        private readonly ILogger _logger;
         private EffectModel _activeEffect;
-        private bool _clearing;
 
-        public EffectManager(MainManager mainManager, IEventAggregator events)
+        public EffectManager(ILogger logger, IEventAggregator events, DeviceManager deviceManager)
         {
-            Logger.Info("Intializing EffectManager");
-            _mainManager = mainManager;
+            _logger = logger;
+            _logger.Info("Intializing EffectManager");
+
             _events = events;
+            _deviceManager = deviceManager;
 
             EffectModels = new List<EffectModel>();
-            ProfilePreviewModel = new ProfilePreviewModel(_mainManager);
-            Logger.Info("Intialized EffectManager");
+
+            _logger.Info("Intialized EffectManager");
         }
 
-        public EffectModel PauseEffect { get; set; }
-
-        /// <summary>
-        ///     Used by ViewModels to show a preview of the profile currently being edited
-        /// </summary>
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
 
         /// <summary>
@@ -75,134 +72,101 @@ namespace Artemis.Managers
         /// <returns>Whether enabling was successful or not.</returns>
         public EffectModel GetLastEffect()
         {
-            Logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
-            if (General.Default.LastEffect == null)
-                return null;
-
-            var effect = EffectModels.FirstOrDefault(e => e.Name == General.Default.LastEffect);
-
-            // Fall back to the first effect found, in case settings are messed up
-            return effect;
+            _logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
+            return General.Default.LastEffect == null
+                ? null
+                : EffectModels.FirstOrDefault(e => e.Name == General.Default.LastEffect);
         }
 
         /// <summary>
         ///     Disables the current effect and changes it to the provided effect.
         /// </summary>
-        /// <param name="effectModel"></param>
-        /// <param name="force">Changes the effect, even if it's already running (effectively restarting it)</param>
-        public void ChangeEffect(EffectModel effectModel, bool force = false)
+        /// <param name="effectModel">The effect to activate</param>
+        /// <param name="loopManager">Optionally pass the LoopManager to automatically start it, if it's not running.</param>
+        public void ChangeEffect(EffectModel effectModel, LoopManager loopManager = null)
         {
+            if (effectModel == null)
+                throw new ArgumentNullException(nameof(effectModel));
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
+
+            if (_deviceManager.ActiveKeyboard == null)
+                _deviceManager.EnableLastKeyboard();
+            // If still null, no last keyboard, so stop.
+            if (_deviceManager.ActiveKeyboard == null)
+            {
+                _logger.Debug("Cancelling effect change, no LastKeyboard");
+                return;
+            }
 
             // Game models are only used if they are enabled
             var gameModel = effectModel as GameModel;
             if (gameModel != null)
                 if (!gameModel.Enabled)
+                {
+                    _logger.Debug("Cancelling effect change, provided game not enabled");
                     return;
+                }
 
-            if (ActiveEffect != null)
-                if (effectModel.Name == ActiveEffect.Name && !force)
+
+            var wasNull = false;
+            if (ActiveEffect == null)
+            {
+                wasNull = true;
+                ActiveEffect = effectModel;
+            }
+
+            lock (ActiveEffect)
+            {
+                if (!wasNull)
+                    ActiveEffect.Dispose();
+
+                ActiveEffect = effectModel;
+                ActiveEffect.Enable();
+                if (!ActiveEffect.Initialized)
+                {
+                    _logger.Debug("Cancelling effect change, couldn't initialize the effect ({0})", effectModel.Name);
+                    ActiveEffect = null;
                     return;
-
-            Logger.Debug("Changing effect to: {0}, force: {1}", effectModel?.Name, force);
-            // If the main manager is running, pause it and safely change the effect
-            if (_mainManager.Running)
-            {
-                ChangeEffectWithPause(effectModel);
-                return;
+                }
             }
 
-            // If it's not running start it, and let the next recursion handle changing the effect
-            _mainManager.Start(effectModel);
-        }
-
-        private void ChangeEffectWithPause(EffectModel effectModel)
-        {
-            var tryCount = 0;
-            while (PauseEffect != null)
+            if (loopManager != null && !loopManager.Running)
             {
-                Thread.Sleep(500);
-                tryCount++;
-                if (tryCount > 20)
-                    throw new Exception("Couldn't change effect before the time expired");
+                _logger.Debug("Starting LoopManager for effect change");
+                loopManager.Start();
             }
 
-            // Don't interrupt an ongoing effect change
-            if (PauseEffect != null)
-            {
-                Logger.Debug("Change effect with pause cancelled");
-                return;
-            }
-            Logger.Debug("Changing effect with pause: {0}", effectModel?.Name);
+            _logger.Debug("Changed active effect to: {0}", effectModel.Name);
 
-            PauseEffect = effectModel;
-            _mainManager.Pause();
-            _mainManager.PauseCallback += ChangeEffectPauseCallback;
-        }
-
-        private void ChangeEffectPauseCallback()
-        {
-            _mainManager.PauseCallback -= ChangeEffectPauseCallback;
-
-            // Change effect logic
-            ActiveEffect?.Dispose();
-
-            ActiveEffect = PauseEffect;
-            ActiveEffect.Enable();
-
-            _mainManager.Unpause();
-            PauseEffect = null;
-
-            Logger.Debug("Finishing change effect with pause");
             if (ActiveEffect is GameModel || ActiveEffect is ProfilePreviewModel)
                 return;
 
             // Non-game effects are stored as the new LastEffect.
-            General.Default.LastEffect = ActiveEffect.Name;
+            General.Default.LastEffect = ActiveEffect?.Name;
             General.Default.Save();
         }
+
 
         /// <summary>
         ///     Clears the current effect
         /// </summary>
         public void ClearEffect()
         {
-            if (_clearing)
-                return;
-
-            // Don't mess with the ActiveEffect if in the process of changing the effect.
-            if (PauseEffect != null)
-                return;
-
             if (ActiveEffect == null)
                 return;
 
-            _clearing = true;
-            Logger.Debug("Clearing active effect");
-            _mainManager.Pause();
-            _mainManager.PauseCallback += ClearEffectPauseCallback;
-        }
-
-        private void ClearEffectPauseCallback()
-        {
-            _mainManager.PauseCallback -= ClearEffectPauseCallback;
-            if (PauseEffect != null)
+            lock (ActiveEffect)
             {
-                Logger.Debug("Cancelling clearing effect");
-                return;
+                ActiveEffect.Dispose();
+                ActiveEffect = null;
+
+                General.Default.LastEffect = null;
+                General.Default.Save();
             }
 
-            ActiveEffect.Dispose();
-            ActiveEffect = null;
 
-            General.Default.LastEffect = null;
-            General.Default.Save();
-
-            _clearing = false;
-
-            Logger.Debug("Finishing clearing active effect");
-            _mainManager.Unpause();
+            _logger.Debug("Cleared active effect");
         }
 
         /// <summary>
@@ -211,7 +175,7 @@ namespace Artemis.Managers
         /// <param name="activeEffect"></param>
         public void DisableGame(EffectModel activeEffect)
         {
-            Logger.Debug("Disabling game: {0}", activeEffect?.Name);
+            _logger.Debug("Disabling game: {0}", activeEffect?.Name);
             if (GetLastEffect() == null)
                 ClearEffect();
             else

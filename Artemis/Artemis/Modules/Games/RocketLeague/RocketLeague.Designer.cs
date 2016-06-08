@@ -37,37 +37,13 @@ namespace Artemis.Modules.Games.RocketLeague {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF5000")]
-        public global::System.Windows.Media.Color MainColor {
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string LastProfile {
             get {
-                return ((global::System.Windows.Media.Color)(this["MainColor"]));
+                return ((string)(this["LastProfile"]));
             }
             set {
-                this["MainColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#FFFF0000")]
-        public global::System.Windows.Media.Color SecondaryColor {
-            get {
-                return ((global::System.Windows.Media.Color)(this["SecondaryColor"]));
-            }
-            set {
-                this["SecondaryColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ContextualColor {
-            get {
-                return ((bool)(this["ContextualColor"]));
-            }
-            set {
-                this["ContextualColor"] = value;
+                this["LastProfile"] = value;
             }
         }
     }

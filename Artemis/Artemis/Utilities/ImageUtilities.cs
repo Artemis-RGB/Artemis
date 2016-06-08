@@ -1,11 +1,9 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Artemis.Utilities
 {
@@ -36,27 +34,23 @@ namespace Artemis.Utilities
             return result;
         }
 
-        public static Bitmap BitmapSourceToBitmap(BitmapSource srs)
+        public static BitmapImage BitmapToBitmapImage(Bitmap b)
         {
-            var width = srs.PixelWidth;
-            var height = srs.PixelHeight;
-            var stride = width*((srs.Format.BitsPerPixel + 7)/8);
-            var ptr = IntPtr.Zero;
-            try
+            if (b == null)
+                return null;
+
+            using (var memory = new MemoryStream())
             {
-                ptr = Marshal.AllocHGlobal(height*stride);
-                srs.CopyPixels(new Int32Rect(0, 0, width, height), ptr, height*stride, stride);
-                using (var btm = new Bitmap(width, height, stride, PixelFormat.Format1bppIndexed, ptr))
-                {
-                    // Clone the bitmap so that we can dispose it and
-                    // release the unmanaged memory at ptr
-                    return new Bitmap(btm);
-                }
-            }
-            finally
-            {
-                if (ptr != IntPtr.Zero)
-                    Marshal.FreeHGlobal(ptr);
+                b.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                return bitmapImage;
             }
         }
 

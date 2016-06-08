@@ -1,27 +1,24 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {
     public class ProfilePreviewModel : EffectModel
     {
-        private readonly ProfilePreviewDataModel _previewDataModel;
-
-        public ProfilePreviewModel(MainManager mainManager) : base(mainManager)
+        public ProfilePreviewModel(MainManager mainManager) : base(mainManager, new ProfilePreviewDataModel())
         {
             Name = "Profile Preview";
-            _previewDataModel = new ProfilePreviewDataModel();
         }
-
-        public ProfileModel SelectedProfile { get; set; }
 
         public override void Dispose()
         {
             Initialized = false;
-            SelectedProfile = null;
         }
 
         public override void Enable()
@@ -31,32 +28,38 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override void Update()
         {
-            if (SelectedProfile == null)
-                return;
-
-            foreach (var layerModel in SelectedProfile.Layers)
-                layerModel.Update<ProfilePreviewDataModel>(_previewDataModel, true);
         }
 
-        public override Bitmap GenerateBitmap()
+        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            var bitmap = MainManager.KeyboardManager.ActiveKeyboard.KeyboardBitmap(4);
+            return Profile.GetRenderLayers<ProfilePreviewDataModel>(DataModel, renderMice, renderHeadsets, true);
+        }
 
-            if (SelectedProfile == null)
-                return bitmap;
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
+        {
+            keyboard = null;
+            mouse = null;
+            headset = null;
 
-            var keyboardRect = MainManager.KeyboardManager.ActiveKeyboard.KeyboardRectangle(4);
-            var image = SelectedProfile.GenerateBitmap<ProfilePreviewDataModel>(keyboardRect, _previewDataModel, true);
+            if (Profile == null || DataModel == null)
+                return;
 
-            // Draw on top of everything else
-            using (var g = Graphics.FromImage(bitmap))
-                g.DrawImage(image, 0, 0);
+            // Get all enabled layers who's conditions are met
+            var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
-            return bitmap;
+            // Render the keyboard layer-by-layer
+            keyboard = Profile?.GenerateBitmap(renderLayers, DataModel,
+                MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), true, true);
+            // Render the first enabled mouse (will default to null if renderMice was false)
+            mouse = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
+            // Render the first enabled headset (will default to null if renderHeadsets was false)
+            headset = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset),
+                DataModel);
         }
     }
 
-    public class ProfilePreviewDataModel : IGameDataModel
+    public class ProfilePreviewDataModel : IDataModel
     {
     }
 }

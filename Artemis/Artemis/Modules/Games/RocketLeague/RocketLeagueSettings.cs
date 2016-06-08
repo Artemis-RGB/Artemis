@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using Artemis.Models;
+﻿using Artemis.Models;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -10,24 +9,16 @@ namespace Artemis.Modules.Games.RocketLeague
             Load();
         }
 
-        public Color MainColor { get; set; }
-        public Color SecondaryColor { get; set; }
-        public bool ContextualColor { get; set; }
-
         public sealed override void Load()
         {
             Enabled = RocketLeague.Default.Enabled;
-            MainColor = RocketLeague.Default.MainColor;
-            SecondaryColor = RocketLeague.Default.SecondaryColor;
-            ContextualColor = RocketLeague.Default.ContextualColor;
+            LastProfile = RocketLeague.Default.LastProfile;
         }
 
         public sealed override void Save()
         {
             RocketLeague.Default.Enabled = Enabled;
-            RocketLeague.Default.MainColor = MainColor;
-            RocketLeague.Default.SecondaryColor = SecondaryColor;
-            RocketLeague.Default.ContextualColor = ContextualColor;
+            RocketLeague.Default.LastProfile = LastProfile;
 
             RocketLeague.Default.Save();
         }
@@ -35,9 +26,6 @@ namespace Artemis.Modules.Games.RocketLeague
         public sealed override void ToDefault()
         {
             Enabled = true;
-            MainColor = Color.FromArgb(255, 255, 80, 0);
-            SecondaryColor = Color.FromArgb(255, 255, 0, 0);
-            ContextualColor = false;
         }
     }
 }
