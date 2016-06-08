@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Timers;
-using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
+using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Managers
 {
@@ -13,11 +14,12 @@ namespace Artemis.Managers
     /// </summary>
     public class LoopManager : IDisposable
     {
+        private readonly DeviceManager _deviceManager;
         private readonly EffectManager _effectManager;
         private readonly IEventAggregator _events;
-        private readonly DeviceManager _deviceManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
+        private int _fpsCount;
 
         public LoopManager(ILogger logger, IEventAggregator events, EffectManager effectManager,
             DeviceManager deviceManager)
@@ -27,9 +29,18 @@ namespace Artemis.Managers
             _effectManager = effectManager;
             _deviceManager = deviceManager;
 
+            // Setup timers
             _loopTimer = new Timer(40);
             _loopTimer.Elapsed += Render;
             _loopTimer.Start();
+
+            var fpsTimer = new Timer(1000);
+            fpsTimer.Elapsed += delegate
+            {
+                Debug.WriteLine(_fpsCount);
+                _fpsCount = 0;
+            };
+            fpsTimer.Start();
         }
 
         /// <summary>
@@ -121,8 +132,8 @@ namespace Artemis.Managers
 
                 // Get ActiveEffect's bitmap
                 Bitmap bitmap = null;
-                System.Windows.Media.Brush mouseBrush = null;
-                System.Windows.Media.Brush headsetBrush = null;
+                Brush mouseBrush = null;
+                Brush headsetBrush = null;
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
@@ -144,7 +155,10 @@ namespace Artemis.Managers
 
                 // If no bitmap was generated this frame is done
                 if (bitmap == null)
+                {
+                    _fpsCount++;
                     return;
+                }
 
                 // Fill the bitmap's background with black to avoid trailing colors on some keyboards
                 var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
@@ -158,6 +172,8 @@ namespace Artemis.Managers
 
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
+
+                _fpsCount++;
             }
         }
     }

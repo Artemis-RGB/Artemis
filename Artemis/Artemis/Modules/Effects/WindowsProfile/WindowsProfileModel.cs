@@ -105,16 +105,25 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             StatusResponse status = _spotify.GetStatus();
             if (status == null)
+            {
+                dataModel.Spotify.Running = false;
                 return;
+            }
 
-            dataModel.Spotify.Artist = status.Track.ArtistResource.Name;
-            dataModel.Spotify.SongName = status.Track.TrackResource.Name;
-            dataModel.Spotify.SongPercentCompleted = (int) (status.PlayingPosition/status.Track.Length*100.0);
+            dataModel.Spotify.Running = true;
             dataModel.Spotify.SpotifyVolume = (int)(status.Volume * 100);
-            dataModel.Spotify.Album = status.Track.AlbumResource.Name;
             dataModel.Spotify.Repeat = status.Repeat;
             dataModel.Spotify.Shuffle = status.Shuffle;
             dataModel.Spotify.Playing = status.Playing;
+
+            // Only update track info if not null
+            if (status.Track == null)
+                return;
+
+            dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
+            dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
+            dataModel.Spotify.SongPercentCompleted = (int)(status.PlayingPosition / status.Track.Length * 100.0);
+            dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
         }
     }
 }

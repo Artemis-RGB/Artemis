@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
@@ -40,6 +41,7 @@ namespace Artemis.ViewModels.Profiles
                 .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
             PropertyChanged += PropertiesViewModelHandler;
+
             PreSelect();
         }
 

@@ -23,6 +23,10 @@ namespace Artemis.Models
             DataModel = dataModel;
         }
 
+        // Used by profile system
+        public IDataModel DataModel { get; set; }
+        public ProfileModel Profile { get; set; }
+
         public abstract void Dispose();
 
         // Called on creation
@@ -31,12 +35,9 @@ namespace Artemis.Models
         // Called every frame
         public abstract void Update();
 
-        // Used by profile system
-        public IDataModel DataModel { get; set; }
-        public ProfileModel Profile { get; set; }
-
         // Called after every update
-        public virtual void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public virtual void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
         {
             keyboard = null;
             mouse = null;
@@ -49,7 +50,8 @@ namespace Artemis.Models
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            keyboard = Profile.GenerateBitmap(renderLayers, DataModel, MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), false, true);
+            keyboard = Profile.GenerateBitmap(renderLayers, DataModel,
+                MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(4), false, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
             mouse = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
             // Render the first enabled headset (will default to null if renderHeadsets was false)
