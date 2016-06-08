@@ -1,4 +1,3 @@
-
 //! \file RzErrors.h
 //! \brief Error codes for Chroma SDK. If the error is not defined here, refer to WinError.h from the Windows SDK.
 

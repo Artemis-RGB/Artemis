@@ -69,7 +69,10 @@ namespace Artemis.ViewModels.Profiles
 
         public ProfileViewModel ProfileViewModel { get; set; }
 
-        public bool EditorEnabled => SelectedProfile != null && !SelectedProfile.IsDefault;
+        public bool EditorEnabled
+            =>
+                SelectedProfile != null && !SelectedProfile.IsDefault &&
+                _mainManager.DeviceManager.ActiveKeyboard != null;
 
         public BindableCollection<ProfileModel> Profiles
         {
@@ -457,6 +460,13 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public async void AddProfile()
         {
+            if (_mainManager.DeviceManager.ActiveKeyboard == null)
+            {
+                DialogService.ShowMessageBox("Cannot add profile.",
+                    "To add a profile, please select a keyboard in the options menu first.");
+                return;
+            }
+
             var name = await DialogService.ShowInputDialog("Add new profile",
                 "Please provide a profile name unique to this game and keyboard.");
 

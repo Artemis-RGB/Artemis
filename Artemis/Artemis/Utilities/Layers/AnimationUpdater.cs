@@ -15,13 +15,13 @@ namespace Artemis.Utilities.Layers
                 case LayerAnimation.SlideLeft:
                     if (progress + 1 >= properties.Width*scale)
                         progress = 0;
-                    progress = progress + properties.AnimationSpeed * 2;
+                    progress = progress + properties.AnimationSpeed*2;
                     break;
                 case LayerAnimation.SlideDown:
                 case LayerAnimation.SlideUp:
                     if (progress + 1 >= properties.Height*scale)
                         progress = 0;
-                    progress = progress + properties.AnimationSpeed * 2;
+                    progress = progress + properties.AnimationSpeed*2;
                     break;
                 case LayerAnimation.Pulse:
                     if (progress > 2)
@@ -31,7 +31,7 @@ namespace Artemis.Utilities.Layers
                 case LayerAnimation.Grow:
                     if (progress > 10)
                         progress = 0;
-                    progress = progress + properties.AnimationSpeed / 2.5;
+                    progress = progress + properties.AnimationSpeed/2.5;
                     break;
                 default:
                     progress = progress + properties.AnimationSpeed*2;

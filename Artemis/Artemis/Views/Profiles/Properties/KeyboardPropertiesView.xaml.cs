@@ -3,7 +3,7 @@
 namespace Artemis.Views.Profiles.Properties
 {
     /// <summary>
-    /// Interaction logic for KeyboardPropertiesView.xaml
+    ///     Interaction logic for KeyboardPropertiesView.xaml
     /// </summary>
     public partial class KeyboardPropertiesView : UserControl
     {

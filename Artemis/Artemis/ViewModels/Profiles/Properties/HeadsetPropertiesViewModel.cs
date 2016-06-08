@@ -7,8 +7,8 @@ namespace Artemis.ViewModels.Profiles.Properties
 {
     public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
     {
-        private LayerPropertiesModel _proposedProperties;
         private Brush _brush;
+        private LayerPropertiesModel _proposedProperties;
 
         public HeadsetPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
             : base(dataModel)

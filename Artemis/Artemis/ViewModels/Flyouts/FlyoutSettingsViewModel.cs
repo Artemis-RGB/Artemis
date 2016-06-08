@@ -145,8 +145,7 @@ namespace Artemis.ViewModels.Flyouts
 
             if (EnableDebug)
                 rule.EnableLoggingForLevel(LogLevel.Debug);
-            else
-                rule.DisableLoggingForLevel(LogLevel.Debug);
+            rule.DisableLoggingForLevel(LogLevel.Debug);
 
             LogManager.ReconfigExistingLoggers();
             _logger.Info("Set debug logging to: {0}", EnableDebug);

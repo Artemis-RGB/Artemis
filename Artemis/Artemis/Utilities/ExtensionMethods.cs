@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace Artemis.Utilities
 {
@@ -15,6 +17,30 @@ namespace Artemis.Utilities
         public static string SplitCamelCase(this string str)
         {
             return Regex.Replace(Regex.Replace(str, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+        }
+
+        #endregion
+
+        #region Zip files
+
+        public static void ExtractToDirectory(this ZipArchive archive, string destinationDirectoryName, bool overwrite)
+        {
+            if (!overwrite)
+            {
+                archive.ExtractToDirectory(destinationDirectoryName);
+                return;
+            }
+            foreach (var file in archive.Entries)
+            {
+                var completeFileName = Path.Combine(destinationDirectoryName, file.FullName);
+                if (file.Name == "")
+                {
+                    // Assuming Empty for Directory
+                    Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
+                    continue;
+                }
+                file.ExtractToFile(completeFileName, true);
+            }
         }
 
         #endregion

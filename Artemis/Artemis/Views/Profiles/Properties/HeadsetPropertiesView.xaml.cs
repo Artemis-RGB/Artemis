@@ -3,7 +3,7 @@
 namespace Artemis.Views.Profiles.Properties
 {
     /// <summary>
-    /// Interaction logic for HeadsetPropertiesView.xaml
+    ///     Interaction logic for HeadsetPropertiesView.xaml
     /// </summary>
     public partial class HeadsetPropertiesView : UserControl
     {

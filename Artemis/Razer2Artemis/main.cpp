@@ -84,7 +84,8 @@ RZRESULT CreateEffect(RZDEVICEID DeviceId, ChromaSDK::EFFECT_TYPE Effect, PRZPAR
 RZRESULT CreateKeyboardEffect(ChromaSDK::Keyboard::EFFECT_TYPE Effect, PRZPARAM pParam, RZEFFECTID* pEffectId)
 {
 	std::string res = "";
-	if (Effect == Keyboard::CHROMA_CUSTOM) {
+	if (Effect == Keyboard::CHROMA_CUSTOM)
+	{
 		res += "0|";
 		auto keys = *static_cast<struct Keyboard::CUSTOM_EFFECT_TYPE*>(pParam);
 
@@ -99,7 +100,8 @@ RZRESULT CreateKeyboardEffect(ChromaSDK::Keyboard::EFFECT_TYPE Effect, PRZPARAM 
 			}
 		}
 	}
-	else if (Effect == Keyboard::CHROMA_CUSTOM_KEY) {
+	else if (Effect == Keyboard::CHROMA_CUSTOM_KEY)
+	{
 		res += "1|";
 		auto keys = *static_cast<struct Keyboard::CUSTOM_KEY_EFFECT_TYPE*>(pParam);
 

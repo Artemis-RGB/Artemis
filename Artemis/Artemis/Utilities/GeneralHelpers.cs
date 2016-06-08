@@ -5,8 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Markup;
-using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using static System.String;

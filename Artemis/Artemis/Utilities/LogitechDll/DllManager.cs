@@ -31,7 +31,6 @@ namespace Artemis.Utilities.LogitechDll
             {
                 return false;
             }
-            
         }
 
         public static void PlaceDll()

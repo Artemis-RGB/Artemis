@@ -21,6 +21,7 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
         public EffectSettings EffectSettings
         {
             get { return _effectSettings; }

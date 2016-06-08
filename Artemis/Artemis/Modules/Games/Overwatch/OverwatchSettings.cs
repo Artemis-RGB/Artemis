@@ -9,6 +9,8 @@ namespace Artemis.Modules.Games.Overwatch
             Load();
         }
 
+        public string GameDirectory { get; set; }
+
         public sealed override void Load()
         {
             Enabled = Overwatch.Default.Enabled;
@@ -24,8 +26,6 @@ namespace Artemis.Modules.Games.Overwatch
 
             Overwatch.Default.Save();
         }
-
-        public string GameDirectory { get; set; }
 
         public sealed override void ToDefault()
         {

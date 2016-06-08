@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
@@ -37,6 +36,7 @@ namespace Artemis.ViewModels
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
         public MainManager MainManager { get; set; }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;

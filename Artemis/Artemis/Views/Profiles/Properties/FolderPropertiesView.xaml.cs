@@ -3,7 +3,7 @@
 namespace Artemis.Views.Profiles.Properties
 {
     /// <summary>
-    /// Interaction logic for FolderPropertiesView.xaml
+    ///     Interaction logic for FolderPropertiesView.xaml
     /// </summary>
     public partial class FolderPropertiesView : UserControl
     {

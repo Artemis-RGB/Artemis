@@ -219,6 +219,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Linq.Dynamic, Version=1.0.5840.25917, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Linq.Dynamic.1.0.6\lib\net40\System.Linq.Dynamic.dll</HintPath>
       <Private>True</Private>
@@ -339,6 +341,12 @@
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfile.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>WindowsProfile.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileSettings.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml.cs">
       <DependentUpon>WindowsProfileView.xaml</DependentUpon>
     </Compile>
@@ -583,6 +591,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Modules\Effects\WindowsProfile\WindowsProfile.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>WindowsProfile.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Games\CounterStrike\CounterStrike.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
@@ -644,6 +656,7 @@
     <Resource Include="Resources\Entypo-license.txt" />
     <None Include="Resources\RzChromaSDK64.dll" />
     <Resource Include="Resources\Keyboards\blackwidow.png" />
+    <None Include="Resources\Keyboards\none.png" />
     <Content Include="Resources\Witcher3\playerWitcher.txt" />
     <Content Include="Resources\Witcher3\artemis.txt" />
     <None Include="Settings\Offsets.settings">

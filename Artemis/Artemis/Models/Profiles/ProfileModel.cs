@@ -126,7 +126,8 @@ namespace Artemis.Models.Profiles
         /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets, bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets,
+            bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))

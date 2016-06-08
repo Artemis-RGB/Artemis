@@ -6,7 +6,7 @@ namespace Artemis.Models.Profiles.Properties
     {
         public override AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false)
         {
-            return new AppliedProperties { Brush = Brush };
+            return new AppliedProperties {Brush = Brush};
         }
     }
 }

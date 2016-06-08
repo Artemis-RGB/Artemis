@@ -14,7 +14,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             events.Subscribe(this);
 
             MainManager.EffectManager.EffectModels.Add(EffectModel);
-            EffectSettings = ((AudioVisualizerModel)EffectModel).Settings;
+            EffectSettings = ((AudioVisualizerModel) EffectModel).Settings;
         }
 
         public void Handle(ActiveEffectChanged message)

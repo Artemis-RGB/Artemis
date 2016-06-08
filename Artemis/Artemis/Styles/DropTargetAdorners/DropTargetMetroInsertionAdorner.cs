@@ -50,7 +50,7 @@ namespace Artemis.Styles.DropTargetAdorners
             // Create the pen and triangle in a static constructor and freeze them to improve performance.
             const int triangleSize = 5;
 
-            var color = (Color)ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
+            var color = (Color) ThemeManager.DetectAppStyle(Application.Current).Item2.Resources["AccentColor"];
             m_Pen = new Pen(new SolidColorBrush(color), 2);
             m_Pen.Freeze();
 
@@ -59,7 +59,7 @@ namespace Artemis.Styles.DropTargetAdorners
             var secondLine = new LineSegment(new Point(0, triangleSize), false);
             secondLine.Freeze();
 
-            var figure = new PathFigure { StartPoint = new Point(triangleSize, 0) };
+            var figure = new PathFigure {StartPoint = new Point(triangleSize, 0)};
             figure.Segments.Add(firstLine);
             figure.Segments.Add(secondLine);
             figure.Freeze();
@@ -109,7 +109,7 @@ namespace Artemis.Styles.DropTargetAdorners
                     }
                 }
 
-                var itemContainer = (UIElement)itemParent.ItemContainerGenerator.ContainerFromIndex(index);
+                var itemContainer = (UIElement) itemParent.ItemContainerGenerator.ContainerFromIndex(index);
 
                 if (itemContainer != null)
                 {

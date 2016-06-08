@@ -27,7 +27,6 @@ using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
-using Ninject;
 
 namespace Artemis.Services
 {

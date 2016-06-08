@@ -2,7 +2,6 @@
 using Artemis.Events;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
-using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
@@ -20,9 +19,9 @@ namespace Artemis.Modules.Effects.WindowsProfile
             DisplayName = "Windows Profile";
             PFactory = pFactory;
             ProfilePreviewModel = profilePreviewModel;
-            EffectSettings = ((WindowsProfileModel)EffectModel).Settings;
-            ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel)EffectModel,
-                ((WindowsProfileSettings)EffectSettings).LastProfile);
+            EffectSettings = ((WindowsProfileModel) EffectModel).Settings;
+            ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel) EffectModel,
+                ((WindowsProfileSettings) EffectSettings).LastProfile);
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
             events.Subscribe(this);
@@ -35,6 +34,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public IProfileEditorVmFactory PFactory { get; set; }
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
 
+        public void Handle(ActiveEffectChanged message)
+        {
+            NotifyOfPropertyChange(() => EffectEnabled);
+        }
+
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "SelectedProfile" && IsActive)
@@ -45,7 +49,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
                 ProfileEditor.ProfileViewModel.SelectedProfile == null)
                 return;
-            ((WindowsProfileSettings)EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
+            ((WindowsProfileSettings) EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             EffectSettings.Save();
         }
 
@@ -59,26 +63,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             base.OnDeactivate(close);
             ProfileEditor.ProfileViewModel.Deactivate();
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            NotifyOfPropertyChange(() => EffectEnabled);
-        }
-    }
-
-    public class WindowsProfileSettings : GameSettings
-    {
-        public override void Load()
-        {
-        }
-
-        public override void Save()
-        {
-        }
-
-        public override void ToDefault()
-        {
         }
     }
 }

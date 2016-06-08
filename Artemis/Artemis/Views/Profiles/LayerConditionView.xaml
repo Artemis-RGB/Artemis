@@ -55,7 +55,7 @@
             </StackPanel>
             <StackPanel Grid.Column="0" x:Name="EnumValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <ComboBox x:Name="Enums" Width="110" MaxDropDownHeight="125" HorizontalAlignment="Center"
-                  VerticalAlignment="Top"/>
+                          VerticalAlignment="Top" />
             </StackPanel>
             <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}"
                     VerticalAlignment="Top" HorizontalAlignment="Right">

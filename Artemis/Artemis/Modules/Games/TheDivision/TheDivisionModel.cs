@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Managers;
@@ -7,7 +6,6 @@ using Artemis.Models;
 using Artemis.Models.Profiles;
 using Artemis.Utilities;
 using Artemis.Utilities.LogitechDll;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Games.TheDivision
 {
@@ -94,7 +92,7 @@ namespace Artemis.Modules.Games.TheDivision
                     newState = PlayerState.Offline;
 
                 if (playerId == 1)
-                    gameDataModel.LowHp = (newState == PlayerState.Hit);
+                    gameDataModel.LowHp = newState == PlayerState.Hit;
                 else if (playerId == 2)
                     gameDataModel.PartyMember1 = newState;
                 else if (playerId == 3)

@@ -98,7 +98,8 @@ namespace Artemis.Modules.Effects.TypeWave
             return null;
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+            bool renderHeadsets)
         {
             keyboard = null;
             mouse = null;
@@ -120,7 +121,7 @@ namespace Artemis.Modules.Effects.TypeWave
                     if (_waves[i].Size == 0)
                         continue;
                     var path = new GraphicsPath();
-                    path.AddEllipse(_waves[i].Point.X - _waves[i].Size / 2, _waves[i].Point.Y - _waves[i].Size / 2,
+                    path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
                         _waves[i].Size, _waves[i].Size);
 
                     Color fillColor;
@@ -131,7 +132,7 @@ namespace Artemis.Modules.Effects.TypeWave
 
                     var pthGrBrush = new PathGradientBrush(path)
                     {
-                        SurroundColors = new[] { _waves[i].Color },
+                        SurroundColors = new[] {_waves[i].Color},
                         CenterColor = fillColor
                     };
 
@@ -139,8 +140,8 @@ namespace Artemis.Modules.Effects.TypeWave
                     pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
 
                     g.FillPath(pthGrBrush, path);
-                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size / 2,
-                        _waves[i].Point.Y - _waves[i].Size / 2, _waves[i].Size, _waves[i].Size);
+                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
+                        _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
                 }
             }
         }
