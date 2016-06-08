@@ -8,6 +8,7 @@ namespace Artemis.InjectionModules
         public override void Load()
         {
             Bind<MainManager>().ToSelf().InSingletonScope();
+            Bind<LoopManager>().ToSelf().InSingletonScope();
             Bind<DeviceManager>().ToSelf().InSingletonScope();
             Bind<EffectManager>().ToSelf().InSingletonScope();
             Bind<ProfileManager>().ToSelf().InSingletonScope();

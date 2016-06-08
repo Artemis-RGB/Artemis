@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
-using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
 using Artemis.ViewModels.Abstract;
@@ -15,7 +14,6 @@ namespace Artemis.Managers
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly LoopManager _loopManager;
-        private EffectModel _prePreviewEffect;
 
         public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
             LoopManager loopManager)
@@ -54,21 +52,18 @@ namespace Artemis.Managers
                 if (_effectManager.ActiveEffect != ProfilePreviewModel)
                     return;
 
-                _logger.Debug("Clear effect after profile preview");
-                _effectManager.ClearEffect();
-
-                if (_prePreviewEffect == null || _prePreviewEffect is GameModel)
-                    return;
-
-                _logger.Debug("Change back effect after profile preview");
-                _effectManager.ChangeEffect(_prePreviewEffect);
+                _logger.Debug("Loading last effect after profile preview");
+                var lastEffect = _effectManager.GetLastEffect();
+                if (lastEffect != null)
+                    _effectManager.ChangeEffect(lastEffect);
+                else
+                    _effectManager.ClearEffect();
             }
             else
             {
                 if (_effectManager.ActiveEffect != ProfilePreviewModel)
                 {
                     _logger.Debug("Activate profile preview");
-                    _prePreviewEffect = _effectManager.ActiveEffect;
                     _effectManager.ChangeEffect(ProfilePreviewModel);
                 }
 

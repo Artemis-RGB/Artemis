@@ -1,4 +1,5 @@
 using Artemis.Models.Interfaces;
+using SpotifyAPI.Local.Models;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
@@ -27,6 +28,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
     }
     public class Spotify
     {
+        public bool Running { get; set; }
         public string Artist { get; set; }
         public string SongName { get; set; }
         public int SongPercentCompleted { get; set; }
