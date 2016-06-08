@@ -121,6 +121,16 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] defaultProfiles {
+            get {
+                object obj = ResourceManager.GetObject("defaultProfiles", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
         ///    &quot;uri&quot;           &quot;http://localhost:{{port}}/&quot;

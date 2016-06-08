@@ -629,6 +629,7 @@
     <Resource Include="Resources\logo-disabled.ico" />
     <Resource Include="Resources\Dota2\dotaGamestateConfiguration.txt" />
     <Resource Include="Resources\Entypo.ttf" />
+    <EmbeddedResource Include="Resources\Keyboards\default-profiles.zip" />
     <None Include="Resources\LogitechLED.dll" />
     <Resource Include="Resources\Keyboards\k65.png" />
     <Resource Include="Resources\Keyboards\k70.png" />
