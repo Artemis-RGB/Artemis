@@ -8,6 +8,8 @@ using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Artemis.Models.Profiles.Properties;
+using Artemis.Properties;
 using Artemis.Utilities;
 using NLog;
 
@@ -123,6 +125,26 @@ namespace Artemis.DAL
                 return;
             var archive = new ZipArchive(stream);
             archive.ExtractToDirectory(ProfileFolder, true);
+
+            // Extract the demo GIF file
+            var gifPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\demo-gif.gif";
+            Resources.demo_gif.Save(gifPath);
+
+            // Set the GIF path on each demo profile
+            var demoProfiles = GetAll().Where(d => d.Name == "Demo (Duplicate to keep changes)");
+            foreach (var demoProfile in demoProfiles)
+            {
+                var gifLayer = demoProfile
+                    .Layers.FirstOrDefault(l => l.Name == "Demo - GIFs")?
+                    .Children.FirstOrDefault(c => c.Name == "GIF");
+
+                if (gifLayer == null)
+                    continue;
+
+                ((KeyboardPropertiesModel) gifLayer.Properties).GifFile = gifPath;
+                AddOrUpdate(demoProfile);
+            }
+            
         }
 
         /// <summary>

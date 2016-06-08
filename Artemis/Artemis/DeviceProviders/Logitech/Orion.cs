@@ -28,9 +28,8 @@ namespace Artemis.DeviceProviders.Logitech
         {
             //Check to see if VC++ 2012 x64 is installed.
 
-            if (
-                Registry.LocalMachine.OpenSubKey(
-                    @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
+            if (Registry.LocalMachine.OpenSubKey(
+                @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
                 CantEnableText = "Couldn't connect to your Logitech G910.\n" +
                                  "The Visual C 2012 Redistributable could not be found, which is required.\n" +

@@ -13,13 +13,13 @@ namespace Artemis.Utilities.Layers
             {
                 case LayerAnimation.SlideRight:
                 case LayerAnimation.SlideLeft:
-                    if (progress + 1 >= properties.Width*scale)
+                    if (progress + properties.AnimationSpeed * 2 >= properties.Width*scale)
                         progress = 0;
                     progress = progress + properties.AnimationSpeed*2;
                     break;
                 case LayerAnimation.SlideDown:
                 case LayerAnimation.SlideUp:
-                    if (progress + 1 >= properties.Height*scale)
+                    if (progress + properties.AnimationSpeed * 2 >= properties.Height*scale)
                         progress = 0;
                     progress = progress + properties.AnimationSpeed*2;
                     break;

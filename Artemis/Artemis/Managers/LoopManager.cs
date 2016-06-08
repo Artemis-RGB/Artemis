@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Linq;
 using System.Timers;
-using Caliburn.Micro;
 using Ninject.Extensions.Logging;
 using Brush = System.Windows.Media.Brush;
 
@@ -15,15 +14,12 @@ namespace Artemis.Managers
     {
         private readonly DeviceManager _deviceManager;
         private readonly EffectManager _effectManager;
-        private readonly IEventAggregator _events;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
 
-        public LoopManager(ILogger logger, IEventAggregator events, EffectManager effectManager,
-            DeviceManager deviceManager)
+        public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
         {
             _logger = logger;
-            _events = events;
             _effectManager = effectManager;
             _deviceManager = deviceManager;
 

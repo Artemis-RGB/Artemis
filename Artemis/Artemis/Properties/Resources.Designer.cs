@@ -131,6 +131,16 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap demo_gif {
+            get {
+                object obj = ResourceManager.GetObject("demo_gif", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &quot;Artemis&quot;
         ///{
         ///    &quot;uri&quot;           &quot;http://localhost:{{port}}/&quot;
