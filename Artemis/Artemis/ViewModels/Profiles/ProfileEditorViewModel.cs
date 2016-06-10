@@ -255,6 +255,14 @@ namespace Artemis.ViewModels.Profiles
             SelectedProfile = lastProfileModel ?? Profiles.FirstOrDefault();
         }
 
+        public void EditLayerFromDoubleClick()
+        {
+            if (ProfileViewModel.SelectedLayer?.LayerType == LayerType.Folder)
+                return;
+
+            EditLayer();
+        }
+
         public void EditLayer()
         {
             if (ProfileViewModel.SelectedLayer == null)

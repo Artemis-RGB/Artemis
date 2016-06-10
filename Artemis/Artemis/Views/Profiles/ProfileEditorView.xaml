@@ -154,7 +154,8 @@
                       dragDrop:DragDrop.IsDropTarget="True"
                       dragDrop:DragDrop.DropHandler="{Binding}"
                       ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}"
-                      IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
+                      IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                      cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]">
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior
                         SelectedItem="{Binding ProfileViewModel.SelectedLayer, Mode=TwoWay}" />

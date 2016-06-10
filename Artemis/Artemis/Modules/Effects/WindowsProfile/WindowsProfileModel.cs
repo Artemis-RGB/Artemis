@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
+using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     public class WindowsProfileModel : EffectModel
     {
+        private readonly ILogger _logger;
         private List<PerformanceCounter> _cores;
         private int _cpuFrames;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
+        private bool _triedCpuFix;
 
-        public WindowsProfileModel(MainManager mainManager, WindowsProfileSettings settings)
+        public WindowsProfileModel(ILogger logger, MainManager mainManager, WindowsProfileSettings settings)
             : base(mainManager, new WindowsProfileDataModel())
         {
+            _logger = logger;
             Name = "WindowsProfile";
             Settings = settings;
         }
@@ -50,17 +54,28 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         private void SetupCpu()
         {
-            _cores = GetPerformanceCounters();
-            var coreCount = _cores.Count;
-            while (coreCount < 8)
+            try
             {
-                _cores.Add(null);
-                coreCount++;
+                _cores = GetPerformanceCounters();
+                var coreCount = _cores.Count;
+                while (coreCount < 8)
+                {
+                    _cores.Add(null);
+                    coreCount++;
+                }
             }
+            catch (InvalidOperationException)
+            {
+                _logger.Warn("Failed to setup CPU information, try running \"lodctr /R\" as administrator.");
+            }
+            
         }
 
         private void UpdateCpu(WindowsProfileDataModel dataModel)
         {
+            if (_cores == null)
+                return;
+            
             // CPU is only updated every 15 frames, the performance counter gives 0 if updated too often
             _cpuFrames++;
             if (_cpuFrames < 16)
