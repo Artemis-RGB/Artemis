@@ -9,22 +9,29 @@ using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 110;
+        public static int CurrentVersion = 111;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
+            Logger.Info("Checking for updates - Current version: 1.1.1");
             if (!General.Default.CheckForUpdates)
                 return null;
 
             var newRelease = IsUpdateAvailable();
             if (newRelease == null)
+            {
+                Logger.Info("No update found.");
                 return null;
+            }
 
+            Logger.Info("Found new version - {0}.", newRelease["tag_name"].Value<string>());
             var viewUpdate = await
                 dialogService.ShowQuestionMessageBox("ApplyProperties available",
                     $"A new version of Artemis is available, version {newRelease["tag_name"].Value<string>()}.\n" +

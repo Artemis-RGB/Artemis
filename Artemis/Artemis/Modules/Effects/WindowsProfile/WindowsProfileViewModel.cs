@@ -6,15 +6,16 @@ using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     // TODO: This effect is a hybrid between a regular effect and a game, may want to clean this up
     public sealed class WindowsProfileViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
     {
-        public WindowsProfileViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory,
-            ProfilePreviewModel profilePreviewModel)
-            : base(main, new WindowsProfileModel(main, new WindowsProfileSettings()))
+        public WindowsProfileViewModel(ILogger logger, MainManager main, IEventAggregator events,
+            IProfileEditorVmFactory pFactory, ProfilePreviewModel profilePreviewModel)
+            : base(main, new WindowsProfileModel(logger, main, new WindowsProfileSettings()))
         {
             DisplayName = "Windows Profile";
             PFactory = pFactory;
