@@ -65,7 +65,7 @@
                 <ControlTemplate TargetType="Thumb">
                     <Grid>
                         <Path Data="M0,3 L5,3 L7,0 L9,3 L14,3 L14,16 L0,16 Z" Height="16" Width="14"
-                              Fill="{DynamicResource BaseBorderBrush}" />
+                              Fill="White" />
 
                         <Path Data="M1,4 L5,4 L7,1 L9,4 L13,4 L13,15 L1,15 Z" Height="16" Width="14"
                               Fill="{TemplateBinding Background}" />
@@ -82,8 +82,9 @@
                 <ControlTemplate TargetType="Slider">
                     <Track x:Name="PART_Track">
                         <Track.Thumb>
-                            <Thumb Style="{StaticResource SliderThumbStyle}" Background="{TemplateBinding Background}"
-                                   BorderBrush="{TemplateBinding BorderBrush}" />
+                            <Thumb Style="{StaticResource SliderThumbStyle}"
+                                   Background="{TemplateBinding Background}"
+                                   BorderBrush="{TemplateBinding BorderBrush}"/>
                         </Track.Thumb>
                     </Track>
                 </ControlTemplate>
@@ -490,11 +491,9 @@
                                                                                                SelectedGradient="{Binding}"
                                                                                                Margin="0,0,0,2">
                                                                             <nc:GradientStopSlider.Background>
-                                                                                <SolidColorBrush
-                                                                                    Color="{Binding Color}" />
+                                                                                <SolidColorBrush Color="{Binding Color}"/>
                                                                             </nc:GradientStopSlider.Background>
                                                                         </nc:GradientStopSlider>
-
                                                                         <ControlTemplate.Triggers>
                                                                             <Trigger Property="IsMouseOver"
                                                                                      Value="True">

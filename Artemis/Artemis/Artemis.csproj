@@ -156,10 +156,6 @@
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Kaliko.ImageLibrary, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageLibrary.2.0.5\lib\net45\Kaliko.ImageLibrary.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -197,18 +193,6 @@
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.3.0.2\lib\net45\SharpDX.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D11.3.0.2\lib\net45\SharpDX.Direct3D11.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DXGI.3.0.2\lib\net45\SharpDX.DXGI.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -326,13 +310,6 @@
     <Compile Include="Models\Profiles\Properties\LayerPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\FolderPropertiesModel.cs" />
     <Compile Include="Models\Profiles\Properties\MousePropertiesModel.cs" />
-    <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectModel.cs" />
-    <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectSettings.cs" />
-    <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml.cs">
-      <DependentUpon>AmbientLightningEffectView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\AmbientLightning\AmbientLightningEffectViewModel.cs" />
-    <Compile Include="Modules\Effects\AmbientLightning\ScreenCapture.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
       <DependentUpon>AudioVisualization.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -673,10 +650,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Modules\Effects\AmbientLightning\AmbientLightningEffectView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
