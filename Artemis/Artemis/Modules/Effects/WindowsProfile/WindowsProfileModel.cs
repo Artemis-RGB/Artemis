@@ -8,13 +8,69 @@ using Artemis.Models;
 using Artemis.Models.Profiles;
 using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
+using System.Runtime.InteropServices;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
+    static class PerformanceInfo
+    {
+        [DllImport("psapi.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation PerformanceInformation, [In] int Size);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PerformanceInformation
+        {
+            public int Size;
+            public IntPtr CommitTotal;
+            public IntPtr CommitLimit;
+            public IntPtr CommitPeak;
+            public IntPtr PhysicalTotal;
+            public IntPtr PhysicalAvailable;
+            public IntPtr SystemCache;
+            public IntPtr KernelTotal;
+            public IntPtr KernelPaged;
+            public IntPtr KernelNonPaged;
+            public IntPtr PageSize;
+            public int HandlesCount;
+            public int ProcessCount;
+            public int ThreadCount;
+        }
+
+        public static Int64 GetPhysicalAvailableMemoryInMiB()
+        {
+            PerformanceInformation pi = new PerformanceInformation();
+            if (GetPerformanceInfo(out pi, Marshal.SizeOf(pi)))
+            {
+                return Convert.ToInt64((pi.PhysicalAvailable.ToInt64() * pi.PageSize.ToInt64() / 1048576));
+            }
+            else
+            {
+                return -1;
+            }
+
+        }
+
+        public static Int64 GetTotalMemoryInMiB()
+        {
+            PerformanceInformation pi = new PerformanceInformation();
+            if (GetPerformanceInfo(out pi, Marshal.SizeOf(pi)))
+            {
+                return Convert.ToInt64((pi.PhysicalTotal.ToInt64() * pi.PageSize.ToInt64() / 1048576));
+            }
+            else
+            {
+                return -1;
+            }
+
+        }
+    }
+
     public class WindowsProfileModel : EffectModel
     {
         private readonly ILogger _logger;
         private List<PerformanceCounter> _cores;
+        private PerformanceCounter _overallCPU;
         private int _cpuFrames;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
@@ -63,6 +119,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
                     _cores.Add(null);
                     coreCount++;
                 }
+                _overallCPU = GetOverallPerformanceCounter();
             }
             catch (InvalidOperationException)
             {
@@ -73,7 +130,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         private void UpdateCpu(WindowsProfileDataModel dataModel)
         {
-            if (_cores == null)
+            if (_cores == null || _overallCPU == null)
                 return;
             
             // CPU is only updated every 15 frames, the performance counter gives 0 if updated too often
@@ -100,11 +157,32 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 dataModel.Cpu.Core7Usage = (int) _cores[6].NextValue();
             if (_cores[7] != null)
                 dataModel.Cpu.Core8Usage = (int) _cores[7].NextValue();
+
+            //From Ted - Let's get overall RAM and CPU usage here           
+            dataModel.Performance.CPUUsage = (int)_overallCPU.NextValue();
+
+            Int64 phav = PerformanceInfo.GetPhysicalAvailableMemoryInMiB();
+            Int64 tot = PerformanceInfo.GetTotalMemoryInMiB();
+            decimal percentFree = ((decimal)phav / (decimal)tot) * 100;
+            decimal percentOccupied = 100 - percentFree;
+
+            dataModel.Performance.RAMUsage = (int)percentOccupied;
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
             return Profile.GetRenderLayers<WindowsProfileDataModel>(DataModel, renderMice, renderHeadsets, false);
+        }
+
+        public static PerformanceCounter GetOverallPerformanceCounter()
+        {
+            PerformanceCounter cpuCounter = new PerformanceCounter();
+
+            cpuCounter.CategoryName = "Processor";
+            cpuCounter.CounterName = "% Processor Time";
+            cpuCounter.InstanceName = "_Total";
+
+            return cpuCounter;
         }
 
         public static List<PerformanceCounter> GetPerformanceCounters()
