@@ -7,17 +7,20 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
+using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
 namespace Artemis.DeviceProviders.Corsair
 {
     public class CorsairRGB : KeyboardProvider
     {
+        public ILogger Logger { get; set; }
         private CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
-        public CorsairRGB()
+        public CorsairRGB(ILogger logger)
         {
+            Logger = logger;
             Name = "Corsair RGB Keyboards";
             CantEnableText = "Couldn't connect to your Corsair keyboard.\n" +
                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n" +
@@ -57,6 +60,7 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(676, 190, new Thickness(0, -15, 0, 0), Resources.k95);
                     break;
                 case "K70 RGB":
+                case "K70 RGB RAPIDFIRE":
                     Height = 7;
                     Width = 21;
                     PreviewSettings = new PreviewSettings(676, 210, new Thickness(0, -25, 0, 0), Resources.k70);
@@ -72,6 +76,7 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(665, 215, new Thickness(0, -5, 0, 0), Resources.strafe);
                     break;
             }
+            Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             Slug = "corsair-" + _keyboard.DeviceInfo.Model.Replace(' ', '-').ToLower();
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }

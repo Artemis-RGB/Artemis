@@ -15,7 +15,7 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 111;
+        public static int CurrentVersion = 112;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
