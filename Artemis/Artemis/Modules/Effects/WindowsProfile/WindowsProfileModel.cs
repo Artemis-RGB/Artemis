@@ -119,6 +119,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
                     _cores.Add(null);
                     coreCount++;
                 }
+                _overallCPU = GetOverallPerformanceCounter();
             }
             catch (InvalidOperationException)
             {
@@ -129,7 +130,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         private void UpdateCpu(WindowsProfileDataModel dataModel)
         {
-            if (_cores == null)
+            if (_cores == null || _overallCPU == null)
                 return;
             
             // CPU is only updated every 15 frames, the performance counter gives 0 if updated too often
