@@ -106,7 +106,7 @@ namespace Artemis.Managers
                         var thread = new Thread(
                         () =>
                         {
-                            Thread.Sleep(500);
+                            Thread.Sleep(500 * i);
                             asynchEnable = keyboardProvider.CanEnable();
                         });
                         _logger.Warn("Failed enabling keyboard: {0}, re-attempt {1} of 10", keyboardProvider.Name, i);
