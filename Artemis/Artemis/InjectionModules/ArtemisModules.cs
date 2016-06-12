@@ -3,6 +3,7 @@ using Artemis.DeviceProviders.Corsair;
 using Artemis.DeviceProviders.Logitech;
 using Artemis.DeviceProviders.Razer;
 using Artemis.Modules.Effects.AudioVisualizer;
+using Artemis.Modules.Effects.Bubbles;
 using Artemis.Modules.Effects.TypeWave;
 using Artemis.Modules.Effects.WindowsProfile;
 using Artemis.Modules.Games.CounterStrike;
@@ -26,6 +27,7 @@ namespace Artemis.InjectionModules
             // Effects
             Bind<EffectViewModel>().To<AudioVisualizerViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<TypeWaveViewModel>().InSingletonScope();
+            Bind<EffectViewModel>().To<BubblesViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<WindowsProfileViewModel>().InSingletonScope();
 
             // Games

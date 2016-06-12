@@ -318,6 +318,18 @@
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
+    <Compile Include="Modules\Effects\Bubbles\Bubble.cs" />
+    <Compile Include="Modules\Effects\Bubbles\Bubbles.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Bubbles.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\Bubbles\BubblesSettings.cs" />
+    <Compile Include="Modules\Effects\Bubbles\BubblesModel.cs" />
+    <Compile Include="Modules\Effects\Bubbles\BubblesView.xaml.cs">
+      <DependentUpon>BubblesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Effects\Bubbles\BubblesViewModel.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfile.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -564,6 +576,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>AudioVisualization.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Modules\Effects\Bubbles\Bubbles.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Bubbles.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Effects\TypeWave\TypeWave.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
@@ -650,6 +666,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Modules\Effects\Bubbles\BubblesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
