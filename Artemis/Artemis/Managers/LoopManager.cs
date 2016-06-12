@@ -144,17 +144,20 @@ namespace Artemis.Managers
                     return;
 
                 // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height);
-                using (var g = Graphics.FromImage(fixedBmp))
+                // Bitmaps needs to be disposd!
+                using (var fixedBmp = new Bitmap(bitmap.Width, bitmap.Height))
                 {
-                    g.Clear(Color.Black);
-                    g.DrawImage(bitmap, 0, 0);
+                    using (var g = Graphics.FromImage(fixedBmp))
+                    {
+                        g.Clear(Color.Black);
+                        g.DrawImage(bitmap, 0, 0);
+                    }
+
+                    bitmap = fixedBmp;
+
+                    // Update the keyboard
+                    _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
                 }
-
-                bitmap = fixedBmp;
-
-                // Update the keyboard
-                _deviceManager.ActiveKeyboard?.DrawBitmap(bitmap);
             }
         }
     }
