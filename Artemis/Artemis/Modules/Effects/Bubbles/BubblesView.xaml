@@ -107,7 +107,7 @@
             </TextBlock>
             <Slider x:Name="Size" Grid.Row="7" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
-                    Value="{Binding Path=EffectSettings.BubbleSize, Mode=TwoWay}" Minimum="40" Maximum="180"
+                    Value="{Binding Path=EffectSettings.BubbleSize, Mode=TwoWay}" Minimum="10" Maximum="50"
                     SmallChange="10" IsSnapToTickEnabled="True" />
 
             <!-- speed -->
@@ -117,7 +117,7 @@
             </TextBlock>
             <Slider x:Name="MoveSpeed" Grid.Row="8" Grid.Column="1" VerticalAlignment="Center"
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
-                    Value="{Binding Path=EffectSettings.MoveSpeed, Mode=TwoWay}" Minimum="1" Maximum="50"
+                    Value="{Binding Path=EffectSettings.MoveSpeed, Mode=TwoWay}" Minimum="1" Maximum="15"
                     SmallChange="10" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->
