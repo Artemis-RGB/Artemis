@@ -7,6 +7,8 @@ namespace Artemis.Utilities
 {
     public static class ColorHelpers
     {
+        private static readonly Random _rand = new Random();
+
         /// <summary>
         ///     Comes up with a 'pure' psuedo-random color
         /// </summary>
@@ -14,9 +16,8 @@ namespace Artemis.Utilities
         public static Color GetRandomRainbowColor()
         {
             var colors = new List<int>();
-            var rand = new Random();
             for (var i = 0; i < 3; i++)
-                colors.Add(rand.Next(0, 256));
+                colors.Add(_rand.Next(0, 256));
 
             var highest = colors.Max();
             var lowest = colors.Min();
@@ -31,9 +32,8 @@ namespace Artemis.Utilities
         public static System.Windows.Media.Color GetRandomRainbowMediaColor()
         {
             var colors = new List<byte>();
-            var rand = new Random();
             for (var i = 0; i < 3; i++)
-                colors.Add((byte) rand.Next(0, 256));
+                colors.Add((byte)_rand.Next(0, 256));
 
             var highest = colors.Max();
             var lowest = colors.Min();
