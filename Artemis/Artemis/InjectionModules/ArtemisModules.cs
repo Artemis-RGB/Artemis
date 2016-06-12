@@ -27,7 +27,7 @@ namespace Artemis.InjectionModules
             // Effects
             Bind<EffectViewModel>().To<AudioVisualizerViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<TypeWaveViewModel>().InSingletonScope();
-            Bind<EffectViewModel>().To<BubblesViewModel>().InSingletonScope();
+            //Bind<EffectViewModel>().To<BubblesViewModel>().InSingletonScope(); TODO: Performance
             Bind<EffectViewModel>().To<WindowsProfileViewModel>().InSingletonScope();
 
             // Games
