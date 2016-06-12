@@ -18,6 +18,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
     public class CpuDataModel
     {
+        public int TotalUsage { get; set; }
         public int Core1Usage { get; set; }
         public int Core2Usage { get; set; }
         public int Core3Usage { get; set; }
@@ -30,7 +31,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
     public class PerformanceDataModel
     {
-        public int CPUUsage { get; set; }
         public int RAMUsage { get; set; }
     }
 
