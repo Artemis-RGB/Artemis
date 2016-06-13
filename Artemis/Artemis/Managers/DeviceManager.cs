@@ -94,22 +94,23 @@ namespace Artemis.Managers
 
                 if (!wasNull)
                     ReleaseActiveKeyboard();
-                bool asynchEnable = false;
+                var asynchEnable = false;
                 if (keyboardProvider.CanEnable())
                 {
                     FinishEnableKeyboard(keyboardProvider, oldKeyboard);
                 }
                 else
                 {
-                    for (int i = 1; i <= 10; i++)
+                    for (var i = 1; i <= 10; i++)
                     {
-                        var thread = new Thread(
-                        () =>
+                        var thread = new Thread(() =>
                         {
-                            Thread.Sleep(500 * i);
+                            Thread.Sleep(500*i);
                             asynchEnable = keyboardProvider.CanEnable();
                         });
+
                         _logger.Warn("Failed enabling keyboard: {0}, re-attempt {1} of 10", keyboardProvider.Name, i);
+
                         thread.Start();
                         if (asynchEnable)
                             break;
@@ -125,10 +126,9 @@ namespace Artemis.Managers
                         _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
                         ChangingKeyboard = false;
                         return;
-                    }                   
+                    }
                     FinishEnableKeyboard(keyboardProvider, oldKeyboard);
                 }
-                
             }
         }
 
