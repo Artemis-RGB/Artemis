@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows;
 using Artemis.Managers;
 using Artemis.Models;
@@ -17,10 +16,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         private static readonly Random _random = new Random();
 
-        private const int SCALE = 25;
-
         private readonly List<Bubble> _bubbles = new List<Bubble>();
-        private Bitmap _bitmap;
 
         public BubblesSettings Settings { get; }
 
@@ -32,6 +28,7 @@ namespace Artemis.Modules.Effects.Bubbles
             : base(mainManager, null)
         {
             Name = "Bubbles";
+            KeyboardScale = 25;
             Settings = settings;
             Initialized = false;
         }
@@ -42,8 +39,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Enable()
         {
-            Rect rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(SCALE);
-            _bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(SCALE);
+            Rect rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
 
             for (int i = 0; i < Settings.BubbleCount; i++)
             {
@@ -62,14 +58,13 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Dispose()
         {
-            _bitmap?.Dispose();
             _bubbles.Clear();
             Initialized = false;
         }
 
         public override void Update()
         {
-            Rect keyboardRectangle = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(SCALE);
+            Rect keyboardRectangle = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             foreach (Bubble bubble in _bubbles)
             {
                 if (Settings.IsShiftColors)
@@ -80,20 +75,13 @@ namespace Artemis.Modules.Effects.Bubbles
             }
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
         {
-            keyboard = _bitmap;
             mouse = null;
             headset = null;
-            
-            using (Graphics g = Graphics.FromImage(keyboard))
-            {
-                g.Clear(Color.Transparent);
-                g.SmoothingMode = SmoothingMode.None;
 
-                foreach (Bubble bubble in _bubbles)
-                    bubble.Draw(g);
-            }
+            foreach (Bubble bubble in _bubbles)
+                bubble.Draw(keyboard);
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)

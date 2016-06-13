@@ -25,10 +25,7 @@ namespace Artemis.Modules.Effects.TypeWave
             _randomColor = Color.Red;
             Settings = settings;
             Initialized = false;
-            Scale = 4;
         }
-
-        public int Scale { get; set; }
 
         public TypeWaveSettings Settings { get; set; }
 
@@ -49,8 +46,8 @@ namespace Artemis.Modules.Effects.TypeWave
                 return;
 
             _waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX*Scale, keyMatch.PosY*Scale), 0, _randomColor)
-                : new Wave(new Point(keyMatch.PosX*Scale, keyMatch.PosY*Scale), 0,
+                ? new Wave(new Point(keyMatch.PosX * KeyboardScale, keyMatch.PosY * KeyboardScale), 0, _randomColor)
+                : new Wave(new Point(keyMatch.PosX * KeyboardScale, keyMatch.PosY * KeyboardScale), 0,
                     ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
 
@@ -74,12 +71,12 @@ namespace Artemis.Modules.Effects.TypeWave
                 // TODO: Get from settings
                 var fps = 25;
 
-                _waves[i].Size += Settings.SpreadSpeed*Scale;
+                _waves[i].Size += Settings.SpreadSpeed * KeyboardScale;
 
                 if (Settings.IsShiftColors)
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
 
-                var decreaseAmount = 255/(Settings.TimeToLive/fps);
+                var decreaseAmount = 255 / (Settings.TimeToLive / fps);
                 _waves[i].Color = Color.FromArgb(
                     _waves[i].Color.A - decreaseAmount, _waves[i].Color.R,
                     _waves[i].Color.G,
@@ -98,51 +95,43 @@ namespace Artemis.Modules.Effects.TypeWave
             return null;
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
             bool renderHeadsets)
         {
-            keyboard = null;
             mouse = null;
             headset = null;
 
             if (_waves.Count == 0)
                 return;
 
-            keyboard = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(Scale);
-            using (var g = Graphics.FromImage(keyboard))
+            // Don't want a for-each, collection is changed in different thread
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < _waves.Count; i++)
             {
-                g.Clear(Color.Transparent);
-                g.SmoothingMode = SmoothingMode.HighQuality;
+                if (_waves[i].Size == 0)
+                    continue;
+                var path = new GraphicsPath();
+                path.AddEllipse(_waves[i].Point.X - _waves[i].Size / 2, _waves[i].Point.Y - _waves[i].Size / 2,
+                    _waves[i].Size, _waves[i].Size);
 
-                // Don't want a for-each, collection is changed in different thread
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (var i = 0; i < _waves.Count; i++)
+                Color fillColor;
+                if (MainManager.DeviceManager.ActiveKeyboard is CorsairRGB)
+                    fillColor = Color.Black;
+                else
+                    fillColor = Color.Transparent;
+
+                var pthGrBrush = new PathGradientBrush(path)
                 {
-                    if (_waves[i].Size == 0)
-                        continue;
-                    var path = new GraphicsPath();
-                    path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
-                        _waves[i].Size, _waves[i].Size);
+                    SurroundColors = new[] { _waves[i].Color },
+                    CenterColor = fillColor
+                };
 
-                    Color fillColor;
-                    if (MainManager.DeviceManager.ActiveKeyboard is CorsairRGB)
-                        fillColor = Color.Black;
-                    else
-                        fillColor = Color.Transparent;
+                keyboard.FillPath(pthGrBrush, path);
+                pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
 
-                    var pthGrBrush = new PathGradientBrush(path)
-                    {
-                        SurroundColors = new[] {_waves[i].Color},
-                        CenterColor = fillColor
-                    };
-
-                    g.FillPath(pthGrBrush, path);
-                    pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
-
-                    g.FillPath(pthGrBrush, path);
-                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
-                        _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
-                }
+                keyboard.FillPath(pthGrBrush, path);
+                keyboard.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size / 2,
+                        _waves[i].Point.Y - _waves[i].Size / 2, _waves[i].Size, _waves[i].Size);
             }
         }
     }
