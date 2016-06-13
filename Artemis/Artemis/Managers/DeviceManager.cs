@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Services;
@@ -93,31 +94,57 @@ namespace Artemis.Managers
 
                 if (!wasNull)
                     ReleaseActiveKeyboard();
-
-                // Disable everything if there's no active keyboard found
-                if (!keyboardProvider.CanEnable())
+                var asynchEnable = false;
+                if (keyboardProvider.CanEnable())
                 {
-                    DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
-                    ActiveKeyboard = null;
-                    General.Default.LastKeyboard = null;
-                    General.Default.Save();
-                    _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
-                    ChangingKeyboard = false;
-                    return;
+                    FinishEnableKeyboard(keyboardProvider, oldKeyboard);
                 }
+                else
+                {
+                    for (var i = 1; i <= 10; i++)
+                    {
+                        var thread = new Thread(() =>
+                        {
+                            Thread.Sleep(500*i);
+                            asynchEnable = keyboardProvider.CanEnable();
+                        });
 
-                ActiveKeyboard = keyboardProvider;
-                ActiveKeyboard.Enable();
+                        _logger.Warn("Failed enabling keyboard: {0}, re-attempt {1} of 10", keyboardProvider.Name, i);
 
-                General.Default.LastKeyboard = ActiveKeyboard.Name;
-                General.Default.Save();
+                        thread.Start();
+                        if (asynchEnable)
+                            break;
+                    }
 
-                EnableUsableDevices();
-
-                ChangingKeyboard = false;
-                _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
-                _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
+                    if (!asynchEnable)
+                    {
+                        // Disable everything if there's no active keyboard found
+                        DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                        ActiveKeyboard = null;
+                        General.Default.LastKeyboard = null;
+                        General.Default.Save();
+                        _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
+                        ChangingKeyboard = false;
+                        return;
+                    }
+                    FinishEnableKeyboard(keyboardProvider, oldKeyboard);
+                }
             }
+        }
+
+        private void FinishEnableKeyboard(KeyboardProvider keyboardProvider, KeyboardProvider oldKeyboard)
+        {
+            ActiveKeyboard = keyboardProvider;
+            ActiveKeyboard.Enable();
+
+            General.Default.LastKeyboard = ActiveKeyboard.Name;
+            General.Default.Save();
+
+            EnableUsableDevices();
+
+            ChangingKeyboard = false;
+            _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
+            _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
         }
 
         private void EnableUsableDevices()
