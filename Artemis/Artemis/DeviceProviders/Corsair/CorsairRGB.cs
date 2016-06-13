@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -7,6 +8,7 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
+using MahApps.Metro.Controls.Dialogs;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
@@ -14,7 +16,6 @@ namespace Artemis.DeviceProviders.Corsair
 {
     public class CorsairRGB : KeyboardProvider
     {
-        public ILogger Logger { get; set; }
         private CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
@@ -26,6 +27,37 @@ namespace Artemis.DeviceProviders.Corsair
                              "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n" +
                              "In CUE, make sure \"Enable SDK\" is checked under Settings > Program.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
+        }
+
+        public ILogger Logger { get; set; }
+
+        public sealed override Task<bool> CanEnableAsync(ProgressDialogController dialog)
+        {
+            return Task.Run(() =>
+            {
+                // This will skip the check-loop if the SDK is initialized
+                if (CueSDK.IsInitialized)
+                    return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
+                for (var tries = 0; tries < 9; tries++)
+                {
+                    // Stop trying if cancelled by user
+                    if (dialog != null && dialog.IsCanceled)
+                    {
+                        dialog.SetIndeterminate();
+                        return false;
+                    }
+                    dialog?.SetProgress(0.1*(tries + 1));
+
+                    if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
+                    {
+                        dialog?.SetIndeterminate();
+                        return true;
+                    }
+                    Thread.Sleep(2000);
+                }
+                dialog?.SetIndeterminate();
+                return false;
+            });
         }
 
         public override bool CanEnable()

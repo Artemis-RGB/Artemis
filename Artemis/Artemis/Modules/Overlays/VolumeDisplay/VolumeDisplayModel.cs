@@ -94,6 +94,9 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         public override void RenderOverlay(ref Bitmap keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
             bool renderHeadsets)
         {
+            if (MainManager.DeviceManager.ActiveKeyboard == null)
+                return;
+
             keyboard = GenerateBitmap(keyboard ?? MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4));
         }
     }

@@ -46,18 +46,20 @@ namespace Artemis.DeviceProviders.Corsair
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
                 c.DrawRectangle(brush, null, rect);
-            var img = ImageUtilities.DrawinVisualToBitmap(visual, rect);
 
-            var ledIndex = 0;
-            // Color each LED according to one of the pixels
-            foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
+            using (var img = ImageUtilities.DrawinVisualToBitmap(visual, rect))
             {
-                corsairLed.Color = ledIndex == 0
-                    ? img.GetPixel(0, 0)
-                    : img.GetPixel((ledIndex + 1)*20 - 1, (ledIndex + 1)*20 - 1);
-                ledIndex++;
-            }
 
+                var ledIndex = 0;
+                // Color each LED according to one of the pixels
+                foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
+                {
+                    corsairLed.Color = ledIndex == 0
+                        ? img.GetPixel(0, 0)
+                        : img.GetPixel((ledIndex + 1)*20 - 1, (ledIndex + 1)*20 - 1);
+                    ledIndex++;
+                }
+            }
             // Flush is required for headset to work reliably on CUE2 for some reason
             CueSDK.HeadsetSDK.Update(true);
         }

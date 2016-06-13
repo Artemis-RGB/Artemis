@@ -32,7 +32,7 @@ namespace Artemis.Services
 {
     public class MetroDialogService : DialogService
     {
-        private MetroWindow GetActiveWindow()
+        public MetroWindow GetActiveWindow()
         {
             MetroWindow window = null;
 
@@ -127,6 +127,15 @@ namespace Artemis.Services
             path = lPath;
 
             return res.Value;
+        }
+
+        public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false,
+            MetroDialogSettings settings = null)
+        {
+            return GetActiveWindow() == null
+                ? null
+                : GetActiveWindow().Dispatcher.Invoke(() =>
+                    GetActiveWindow()?.ShowProgressAsync(title, message, isCancelable, settings));
         }
     }
 }
