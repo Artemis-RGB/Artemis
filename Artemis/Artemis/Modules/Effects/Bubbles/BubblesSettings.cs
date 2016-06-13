@@ -47,8 +47,8 @@ namespace Artemis.Modules.Effects.Bubbles
             IsRandomColors = true;
             BubbleColor = Color.FromArgb(255, 255, 0, 0);
             IsShiftColors = true;
-            ShiftColorSpeed = 12;
-            BubbleSize = 100;
+            ShiftColorSpeed = 4;
+            BubbleSize = 25;
             MoveSpeed = 16;
             BubbleCount = 14;
         }
