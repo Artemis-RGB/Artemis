@@ -12,10 +12,10 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="BubbleSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">25</Value>
     </Setting>
     <Setting Name="MoveSpeed" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">16</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="ShiftColorSpeed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">12</Value>

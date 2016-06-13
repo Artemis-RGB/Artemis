@@ -61,7 +61,7 @@ namespace Artemis.Modules.Effects.Bubbles {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
         public int BubbleSize {
             get {
                 return ((int)(this["BubbleSize"]));
@@ -73,7 +73,7 @@ namespace Artemis.Modules.Effects.Bubbles {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public int MoveSpeed {
             get {
                 return ((int)(this["MoveSpeed"]));
