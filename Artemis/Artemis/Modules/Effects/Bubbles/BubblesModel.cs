@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq.Dynamic;
+using System.Linq;
 using System.Windows;
 using Artemis.Managers;
 using Artemis.Models;
