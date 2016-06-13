@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Artemis.DeviceProviders
 {
@@ -29,6 +30,15 @@ namespace Artemis.DeviceProviders
         ///     Disables the device
         /// </summary>
         public abstract void Disable();
+
+        /// <summary>
+        /// Tries to enable the device and updates CanUse accordingly asynchronously
+        /// </summary>
+        /// <returns></returns>
+        public Task<bool> TryEnableAsync()
+        {
+            return Task.Run(() => TryEnable());
+        }
     }
 
     public enum DeviceType

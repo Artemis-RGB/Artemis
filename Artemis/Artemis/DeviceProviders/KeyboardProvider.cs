@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
+using MahApps.Metro.Controls.Dialogs;
 using Brush = System.Windows.Media.Brush;
 using Size = System.Windows.Size;
 
@@ -18,7 +20,6 @@ namespace Artemis.DeviceProviders
         public int Height { get; set; }
         public int Width { get; set; }
         public string CantEnableText { get; set; }
-
         public PreviewSettings PreviewSettings { get; set; }
 
         public abstract bool CanEnable();
@@ -39,6 +40,16 @@ namespace Artemis.DeviceProviders
 
         public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
 
+        public virtual Task<bool> CanEnableAsync(ProgressDialogController dialog)
+        {
+            return Task.Run(() => CanEnable());
+        }
+
+        public virtual Task EnableAsync(ProgressDialogController dialog)
+        {
+            return Task.Run(() => Enable());
+        }
+
         public override void UpdateDevice(Brush brush)
         {
             throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
@@ -46,7 +57,8 @@ namespace Artemis.DeviceProviders
 
         public override bool TryEnable()
         {
-            throw new NotImplementedException("KeyboardProvider doesn't implement TryEnable, use CanEnable instead.");
+            throw new NotImplementedException(
+                "KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
         }
     }
 

@@ -134,7 +134,7 @@ namespace Artemis.Managers
             if (loopManager != null && !loopManager.Running)
             {
                 _logger.Debug("Starting LoopManager for effect change");
-                loopManager.Start();
+                loopManager.StartAsync();
             }
 
             _logger.Debug("Changed active effect to: {0}", effectModel.Name);

@@ -46,7 +46,6 @@ namespace Artemis.Managers
             ProgramEnabled = false;
             Running = false;
 
-
             // TODO: Dependency inject utilities?
             KeyboardHook = new KeyboardHook();
 
@@ -94,7 +93,7 @@ namespace Artemis.Managers
         {
             _logger.Debug("Enabling program");
             ProgramEnabled = true;
-            LoopManager.Start();
+            LoopManager.StartAsync();
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 

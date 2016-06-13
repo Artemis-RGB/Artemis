@@ -167,7 +167,7 @@ namespace Artemis.ViewModels.Flyouts
             if (keyboard != null)
             {
                 MainManager.DeviceManager.EnableKeyboard(keyboard);
-                MainManager.LoopManager.Start();
+                MainManager.LoopManager.StartAsync();
             }
             else
                 MainManager.DeviceManager.ReleaseActiveKeyboard(true);
