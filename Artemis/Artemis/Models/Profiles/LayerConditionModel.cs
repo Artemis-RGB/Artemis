@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq.Dynamic;
+﻿using System;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
+using DynamicExpresso;
 
 namespace Artemis.Models.Profiles
 {
     public class LayerConditionModel
     {
+        private readonly Interpreter _interpreter;
+
+        public LayerConditionModel()
+        {
+            _interpreter = new Interpreter();
+        }
+
         public string Field { get; set; }
         public string Value { get; set; }
         public string Operator { get; set; }
@@ -22,15 +29,29 @@ namespace Artemis.Models.Profiles
                 return false;
 
             // Put the subject in a list, allowing Dynamic Linq to be used.
-            var subjectList = new List<T> {(T) subject};
-            bool res;
             if (Type == "String")
-                res = subjectList.Where($"{Field}.ToLower() {Operator} @0", Value.ToLower()).Any();
-            else if (Type == "Enum")
-                res = subjectList.Where($"{Field} {Operator} \"{Value}\"").Any();
-            else
-                res = subjectList.Where($"{Field} {Operator} {Value}").Any();
-            return res;
+            {
+                return _interpreter.Eval<bool>($"subject.{Field}.ToLower() {Operator} value",
+                    new Parameter("subject", typeof(T), subject),
+                    new Parameter("value", Value.ToLower()));
+            }
+
+            Parameter rightParam = null;
+            switch (Type)
+            {
+                case "Enum":
+                    var enumType = _interpreter.Eval<Type>($"subject.{Field}.GetType()", new Parameter("subject", typeof(T), subject));
+                    rightParam = new Parameter("value", Enum.Parse(enumType, Value));
+                    break;
+                case "Boolean":
+                    rightParam = new Parameter("value", bool.Parse(Value));
+                    break;
+                case "Int32":
+                    rightParam = new Parameter("value", int.Parse(Value));
+                    break;
+            }
+
+            return _interpreter.Eval<bool>($"subject.{Field} {Operator} value", new Parameter("subject", typeof(T), subject), rightParam);
         }
     }
 }
