@@ -92,5 +92,5 @@ The Witcher 3 sign display
 ### Special thanks to:
  - [Corsair](http://corsair.com) and [GloriousGe0rge](https://twitter.com/GloriousGe0rge) in particular for their continued support of Artemis
  - [DarthAffe](https://github.com/DarthAffe) for his great help and awesome CUE SDK wrapper, [CUE.NET](https://github.com/DarthAffe/CUE.NET)
- - All the people that helped by reporting bugs over the last few months
  - [JewsOfHazard](https://github.com/JewsOfHazard) and [Thoth2020](https://github.com/Thoth2020) for their work and ideas
+ - All the people that helped by reporting bugs over the last few months
