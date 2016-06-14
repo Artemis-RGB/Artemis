@@ -74,8 +74,8 @@ Besides adding display conditions to layers, it is also possible to base certain
 
 In this example, the layer is configured to become smaller when the player loses health. The layer's height is based on the percentage of health left, with the maximum health being 100, shrinking downwards as the health decreases.
 
-To keep things interesting, layers can also be configured to use animations. Here's a preview of the demo profile showing a few of the things possible (it's a link to Gfycat)
-[![Layer animations](http://i.imgur.com/z4X8K3Z.png)](https://gfycat.com/UnlinedAlertBoilweevil "Layer animations")
+To keep things interesting, layers can also be configured to use animations. Here's a preview of the demo profile showing a few of the things possible.
+![Animations preview](https://thumbs.gfycat.com/UnlinedAlertBoilweevil-size_restricted.gif)
 
 ### Videos
 Rocket League boost display
