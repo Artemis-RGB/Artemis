@@ -1,82 +1,95 @@
 # Artemis
-Artemis adds support for several games to a range of RGB keyboards.
-
-Besides game-support there are also a few effects for when you're not gaming. 
+Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.
 
 **Download**: https://github.com/SpoinkyNL/Artemis/releases
 
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
-Current Features:
+### Current Features
+ - Support for Corsair, Logitech and Razer keyboards.
+ - Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
+ - Non-gaming effects such as type waves and audio visualization.
+ - A layer-based profile system allowing an immense amount of customization.
+ - A fancy, modern looking UI with multiple themes.
 
- * Support for many Corsair keyboards, Logitech keyboards, and a Razer keyboard.
- * Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
- * A few non-gaming effects such as type waves and audio visualization.
- * A fancy, modern looking UI.
 
+##### Currently the following games are supported
+ - Counter-Strike Global Offensive (uses native gamestate intergration)
+ - Dota 2
+ - Rocket League
+ - The Division (beta)
+ - The Witcher 3
+ - Overwatch
 
-Currently the following games are supported:
+##### The following keyboards are supported
+ - All Corsair RGB keyboards
+ - Logitech G910
+ - Logitech G810 (untested)
+ - Logitech G410 (untested)
+ - Razer BlackWidow Chroma
 
- * Rocket League (uses memory reading for now, we've had contact with Psyonix for a better solution)
- * The Witcher 3 (uses a mod)
- * Counter-Strike Global Offensive (uses native gamestate intergration)
-
-Support is planned for:
- * Dota 2 (finished in devlopment branch)
- * Project CARS (using native memory sharing)
- * What you happen to suggest!
- * Tom Clancy's The Division
- 
-Support is being looked at for:
- * Smite
- * Battlefield 4
- * Burnout Paradise: Ultimate Box
-
-For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
-
-The following keyboards are supported:
- * Corsair K95 RGB
- * Corsair K70 RGB
- * Corsair K65 RGB (Untested)
- * Corsair Strafe RGB
- * Logitech G910
- * Logitech G810 (untested)
- * Logitech G410 (untested)
-
-Razer BlackWidow Chroma support will be included in the next release.
+##### Other peripherals
+ - All Corsair RGB mice
+ - All Corsair RGB headsets
 
 For any keyboards/games/effects we'd love PRs!
 
-### Video
-A quick demo of Rocket League support in the old codebase (a better video demonstrating all functionality will be put up before release)
+#### Support is planned for
+ - Project CARS
+ - What you happen to suggest!
+ 
+For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
+
+### Profile editor
+For it's games Artemis uses a custom made layer system. For each game you can make one or more profiles consisting of layers that interact with the game. Layers can contain a color, multiple colors, animations and even GIFs!
+
+All this is done in the profile editor. For each game and keyboard we provide a default profile, but you're free to duplicate and modify this, or create one entirely from scratch.
+
+![Profile editor screenshot](http://i.imgur.com/tzc9bpO.png)
+
+The screenshot above shows the profile editor as it would appear for CS:GO. The preview shows a rough indication of how the layers will look and allows dragging and resizing. A realtime preview is also shown on the keyboard.
+
+Layers can be reordered or organized into folders by dragging and dropping them. 
+There are multiple layer types
+
+ - Keyboard layer
+ - Keyboard GIF layer (Yes, allows you to display a GIF on your keyboard!)
+ - Mouse layer
+ - Headset layer
+ - Folder
+
+A keyboard layer's appearance is controlled by its brush. Brushes can be created using the color picker. For more examples, see the demo profile included in the 'Windows Profile' effect.
+
+![Color picker](http://i.imgur.com/sC6Zua6.png)
+
+The above screenshot shows a rainbow gradient made with the color picker.
+
+![Layer editor conditions](http://i.imgur.com/y7a1GMr.png)
+
+A layer's properties can be adjusted to react to ingame events and variables. This screenshot shows how conditions can be attached to a layer, in this case this layer is only enabled when the player has more than 14.000 ingame cash.
+
+Besides adding display conditions to layers, it is also possible to base certain properties on what is happening ingame. 
+
+![Layer editor dynamic properties](http://i.imgur.com/sJ5Gz0k.png)
+
+In this example, the layer is configured to become smaller when the player loses health. The layer's height is based on the percentage of health left, with the maximum health being 100, shrinking downwards as the health decreases.
+
+To keep things interesting, layers can also be configured to use animations. Here's a preview of the demo profile showing a few of the things possible (it's a link to Gfycat)
+[![Layer animations](http://i.imgur.com/z4X8K3Z.png)](https://gfycat.com/UnlinedAlertBoilweevil "Layer animations")
+
+### Videos
+Rocket League boost display
 
 [![RocketLeague](http://img.youtube.com/vi/L8rqFGaPeTg/0.jpg)](https://www.youtube.com/watch?v=L8rqFGaPeTg "Rocket League")
 
 
-A demo of The Witcher 3 support on the new codebase
+The Witcher 3 sign display
 
 [![Witcher3](http://img.youtube.com/vi/H03D_y2cFYs/0.jpg)](https://www.youtube.com/watch?v=H03D_y2cFYs "The Witcher 3")
 
 
-### Screenshots
-![Welcome Screen](http://i.imgur.com/hug66P4.png)
-![Flyout](http://i.imgur.com/6NTAuYR.png)
-![Debug](http://i.imgur.com/uGzRhxP.png)
-![Audio Visualization](http://i.imgur.com/Q0C50fe.png)
-![Type Waves](http://i.imgur.com/BhLWThq.png)
-![Witcher](http://i.imgur.com/IkQuJ6m.png)
-![Dota](http://i.imgur.com/kc6sHjE.png)
-![CS:GO](http://i.imgur.com/Eg1ASem.png)
-![Rocket League](http://i.imgur.com/L7qilNp.png)
-![Volume Overlay](http://i.imgur.com/bS9NhfB.png)
-
-
-### Thanks to:
-
- * [CUE.NET](https://github.com/DarthAffe/CUE.NET) - Corsair keyboard library
- * [Colore](https://github.com/CoraleStudios/Colore) - Razer keyboard library
- * [NAudio](http://naudio.codeplex.com/) - Used for audio visualization
- * [Open.WinKeyboardHook](Open.WinKeyboardHook) - Used for typing effects/volume overlay
- * [Caliburn.Micro](http://caliburnmicro.com/) - Awesome WPF framework, really, try it out
- * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) - Sweet Metro UI
- * [Extended.Wpf.Toolkit](http://wpftoolkit.codeplex.com/) - Color Picker
+### Special thanks to:
+ - [Corsair](http://corsair.com) and [GloriousGe0rge](https://twitter.com/GloriousGe0rge) in particular for their continued support of Artemis
+ - [DarthAffe](https://github.com/DarthAffe) for his great help and awesome CUE SDK wrapper, [CUE.NET](https://github.com/DarthAffe/CUE.NET)
+ - All the people that helped by reporting bugs over the last few months
+ - [JewsOfHazard](https://github.com/JewsOfHazard) and [Thoth2020](https://github.com/Thoth2020) for their work and ideas
