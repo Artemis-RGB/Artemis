@@ -89,7 +89,6 @@ namespace Artemis.DeviceProviders.Corsair
             // For STRAFE, stretch the image on row 2.
             if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
             {
-                //TODO DarthAffe 13.06.2016: This might leak memory since it's not disposed, but I don't want to change it without the ability to test if it still works
                 var strafeBitmap = new Bitmap(22, 8);
                 using (var g = Graphics.FromImage(strafeBitmap))
                 {
@@ -97,11 +96,14 @@ namespace Artemis.DeviceProviders.Corsair
                     g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
                 }
 
+                image.Dispose();
                 image = strafeBitmap;
             }
 
             _keyboardBrush.Image = image;
             _keyboard.Update();
+
+            image.Dispose();
         }
     }
 }
