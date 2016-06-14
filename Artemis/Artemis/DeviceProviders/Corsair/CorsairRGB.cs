@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -8,7 +6,6 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
-using MahApps.Metro.Controls.Dialogs;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
@@ -31,48 +28,9 @@ namespace Artemis.DeviceProviders.Corsair
 
         public ILogger Logger { get; set; }
 
-        public sealed override Task<bool> CanEnableAsync(ProgressDialogController dialog)
-        {
-            return Task.Run(() =>
-            {
-                // This will skip the check-loop if the SDK is initialized
-                if (CueSDK.IsInitialized)
-                    return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
-                for (var tries = 0; tries < 9; tries++)
-                {
-                    // Stop trying if cancelled by user
-                    if (dialog != null && dialog.IsCanceled)
-                    {
-                        dialog.SetIndeterminate();
-                        return false;
-                    }
-                    dialog?.SetProgress(0.1*(tries + 1));
-
-                    if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
-                    {
-                        dialog?.SetIndeterminate();
-                        return true;
-                    }
-                    Thread.Sleep(2000);
-                }
-                dialog?.SetIndeterminate();
-                return false;
-            });
-        }
-
         public override bool CanEnable()
         {
-            // This will skip the check-loop if the SDK is initialized
-            if (CueSDK.IsInitialized)
-                return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
-
-            for (var tries = 0; tries < 9; tries++)
-            {
-                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
-                    return true;
-                Thread.Sleep(2000);
-            }
-            return false;
+            return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
         }
 
         /// <summary>
