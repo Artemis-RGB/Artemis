@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MahApps.Metro.Controls.Dialogs;
@@ -40,12 +41,48 @@ namespace Artemis.DeviceProviders
 
         public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
 
-        public virtual Task<bool> CanEnableAsync(ProgressDialogController dialog)
+        /// <summary>
+        ///     Runs CanEnable asynchronously multiple times until successful, cancelled or max tries reached
+        /// </summary>
+        /// <param name="dialog"></param>
+        /// <returns></returns>
+        public Task<bool> CanEnableAsync(ProgressDialogController dialog)
         {
-            return Task.Run(() => CanEnable());
+            return Task.Run(() =>
+            {
+                for (var tries = 1; tries <= 10; tries++)
+                {
+                    // Dialog interaction
+                    if (dialog != null)
+                    {
+                        // Stop if cancelled by user
+                        if (dialog.IsCanceled)
+                        {
+                            dialog.SetIndeterminate();
+                            return false;
+                        }
+                        // Updated progress to indicate how much tries are left
+                        dialog.SetProgress(0.1*tries);
+                    }
+
+                    if (CanEnable())
+                    {
+                        dialog?.SetIndeterminate();
+                        return true;
+                    }
+                    Thread.Sleep(2000);
+                }
+                dialog?.SetIndeterminate();
+                return false;
+            });
         }
 
-        public virtual Task EnableAsync(ProgressDialogController dialog)
+        /// <summary>
+        ///     Runs CanEnable asynchronously
+        /// </summary>
+        /// <param name="dialog"></param>
+        /// <returns></returns>
+        public Task EnableAsync(ProgressDialogController dialog)
         {
             return Task.Run(() => Enable());
         }

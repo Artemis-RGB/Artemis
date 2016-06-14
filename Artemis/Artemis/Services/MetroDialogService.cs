@@ -102,26 +102,16 @@ namespace Artemis.Services
                 };
 
                 if (initialDir != null)
-                {
                     ofd.InitialDirectory = initialDir;
-                }
 
-                if (Application.Current.MainWindow != null)
-                {
-                    res = ofd.ShowDialog(Application.Current.MainWindow);
-                }
-                else
-                {
-                    res = ofd.ShowDialog();
-                }
+                res = Application.Current.MainWindow != null
+                    ? ofd.ShowDialog(Application.Current.MainWindow)
+                    : ofd.ShowDialog();
+
                 if (res == true)
-                {
                     lPath = ofd.FileName;
-                }
                 else
-                {
                     res = false;
-                }
             });
 
             path = lPath;
@@ -132,10 +122,9 @@ namespace Artemis.Services
         public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false,
             MetroDialogSettings settings = null)
         {
-            return GetActiveWindow() == null
-                ? null
-                : GetActiveWindow().Dispatcher.Invoke(() =>
-                    GetActiveWindow()?.ShowProgressAsync(title, message, isCancelable, settings));
+            var activeWindow = GetActiveWindow();
+            return activeWindow?.Dispatcher.Invoke(
+                () => activeWindow.ShowProgressAsync(title, message, isCancelable, settings));
         }
     }
 }

@@ -99,7 +99,6 @@ namespace Artemis.Managers
                     ReleaseActiveKeyboard();
             }
 
-            // TODO: LoopManager shouldn't be running at this point
             _logger.Debug("Enabling keyboard: {0}", keyboardProvider.Name);
 
             // Create a dialog to let the user know Artemis hasn't frozen

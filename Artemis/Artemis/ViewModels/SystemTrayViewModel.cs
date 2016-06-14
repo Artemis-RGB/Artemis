@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
@@ -41,7 +43,8 @@ namespace Artemis.ViewModels
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
 
-        public bool CanHideWindow => _shellViewModel.IsActive;
+        public bool CanHideWindow => _shellViewModel.IsActive && !MainManager.DeviceManager.ChangingKeyboard;
+        public bool CanToggleEnabled => !MainManager.DeviceManager.ChangingKeyboard;
 
         public bool Enabled
         {
@@ -114,9 +117,36 @@ namespace Artemis.ViewModels
                 return;
 
             _checkedForUpdate = true;
+
+            ShowKeyboardDialog();
             Updater.CheckForUpdate(DialogService);
         }
 
+        private async void ShowKeyboardDialog()
+        {
+            NotifyOfPropertyChange(() => CanHideWindow);
+            NotifyOfPropertyChange(() => CanToggleEnabled);
+
+            var dialog = await DialogService.ShowProgressDialog("Enabling keyboard",
+                "Artemis is still busy trying to enable your last used keyboard. " +
+                "Please what while the progress completes");
+            dialog.SetIndeterminate();
+
+            while (MainManager.DeviceManager.ChangingKeyboard)
+                await Task.Delay(200);
+
+            NotifyOfPropertyChange(() => CanHideWindow);
+            NotifyOfPropertyChange(() => CanToggleEnabled);
+
+            try
+            {
+                await dialog.CloseAsync();
+            }
+            catch (InvalidOperationException)
+            {
+                // Occurs when window is closed again, can't find a proper check for this
+            }
+        }
 
         public void HideWindow()
         {

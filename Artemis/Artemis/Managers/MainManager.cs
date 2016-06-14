@@ -78,12 +78,12 @@ namespace Artemis.Managers
         {
             _logger.Debug("Shutting down MainManager");
 
-            _processTimer.Stop();
-            _processTimer.Dispose();
-            LoopManager.Stop();
-            EffectManager.ActiveEffect.Dispose();
-            GameStateWebServer.Stop();
-            PipeServer.Stop();
+            _processTimer?.Stop();
+            _processTimer?.Dispose();
+            LoopManager?.Stop();
+            EffectManager?.ActiveEffect?.Dispose();
+            GameStateWebServer?.Stop();
+            PipeServer?.Stop();
         }
 
         /// <summary>
