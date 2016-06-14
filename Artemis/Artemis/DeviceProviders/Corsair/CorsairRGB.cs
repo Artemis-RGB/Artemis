@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Threading;
 using System.Windows;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -14,7 +13,6 @@ namespace Artemis.DeviceProviders.Corsair
 {
     public class CorsairRGB : KeyboardProvider
     {
-        public ILogger Logger { get; set; }
         private CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
@@ -28,19 +26,11 @@ namespace Artemis.DeviceProviders.Corsair
                              "If needed, you can select a different keyboard in Artemis under settings.";
         }
 
+        public ILogger Logger { get; set; }
+
         public override bool CanEnable()
         {
-            // This will skip the check-loop if the SDK is initialized
-            if (CueSDK.IsInitialized)
-                return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
-
-            for (var tries = 0; tries < 9; tries++)
-            {
-                if (CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard))
-                    return true;
-                Thread.Sleep(2000);
-            }
-            return false;
+            return CueSDK.IsSDKAvailable(CorsairDeviceType.Keyboard);
         }
 
         /// <summary>

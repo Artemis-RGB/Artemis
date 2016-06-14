@@ -46,7 +46,6 @@ namespace Artemis.Managers
             ProgramEnabled = false;
             Running = false;
 
-
             // TODO: Dependency inject utilities?
             KeyboardHook = new KeyboardHook();
 
@@ -79,12 +78,12 @@ namespace Artemis.Managers
         {
             _logger.Debug("Shutting down MainManager");
 
-            _processTimer.Stop();
-            _processTimer.Dispose();
-            LoopManager.Stop();
-            EffectManager.ActiveEffect.Dispose();
-            GameStateWebServer.Stop();
-            PipeServer.Stop();
+            _processTimer?.Stop();
+            _processTimer?.Dispose();
+            LoopManager?.Stop();
+            EffectManager?.ActiveEffect?.Dispose();
+            GameStateWebServer?.Stop();
+            PipeServer?.Stop();
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace Artemis.Managers
         {
             _logger.Debug("Enabling program");
             ProgramEnabled = true;
-            LoopManager.Start();
+            LoopManager.StartAsync();
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
         }
 

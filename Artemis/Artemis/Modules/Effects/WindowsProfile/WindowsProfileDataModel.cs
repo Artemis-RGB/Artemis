@@ -8,14 +8,17 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             Spotify = new Spotify();
             Cpu = new CpuDataModel();
+            Performance = new PerformanceDataModel();
         }
 
         public CpuDataModel Cpu { get; set; }
+        public PerformanceDataModel Performance { get; set; }
         public Spotify Spotify { get; set; }
     }
 
     public class CpuDataModel
     {
+        public int TotalUsage { get; set; }
         public int Core1Usage { get; set; }
         public int Core2Usage { get; set; }
         public int Core3Usage { get; set; }
@@ -24,6 +27,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Core6Usage { get; set; }
         public int Core7Usage { get; set; }
         public int Core8Usage { get; set; }
+    }
+
+    public class PerformanceDataModel
+    {
+        public int RAMUsage { get; set; }
     }
 
     public class Spotify

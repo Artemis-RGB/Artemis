@@ -1,4 +1,7 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
+using Artemis.Managers;
+using Artemis.Services;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
@@ -8,11 +11,16 @@ namespace Artemis.ViewModels
 {
     public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
+        private readonly DeviceManager _deviceManager;
+        private readonly MetroDialogService _dialogService;
         private readonly BaseViewModel[] _viewModels;
 
-        public ShellViewModel(IKernel kernel, IEventAggregator events, BaseViewModel[] viewModels)
+        public ShellViewModel(IKernel kernel, IEventAggregator events, BaseViewModel[] viewModels,
+            DeviceManager deviceManager, MetroDialogService dialogService)
         {
             _viewModels = viewModels;
+            _deviceManager = deviceManager;
+            _dialogService = dialogService;
 
             events.Subscribe(this);
 
@@ -34,7 +42,7 @@ namespace Artemis.ViewModels
 
             ActiveItem = _viewModels.FirstOrDefault();
         }
-
+        
         public void Settings()
         {
             Flyouts.First().IsOpen = !Flyouts.First().IsOpen;
