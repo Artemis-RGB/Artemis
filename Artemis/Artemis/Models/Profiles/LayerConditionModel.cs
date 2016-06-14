@@ -40,7 +40,7 @@ namespace Artemis.Models.Profiles
             switch (Type)
             {
                 case "Enum":
-                    var enumType = _interpreter.Eval<Type>($"subject.{Field}.GetType()", new Parameter("subject", typeof(T), subject));
+                    var enumType = GeneralHelpers.GetPropertyValue(subject, Field).GetType();
                     rightParam = new Parameter("value", Enum.Parse(enumType, Value));
                     break;
                 case "Boolean":
@@ -51,7 +51,8 @@ namespace Artemis.Models.Profiles
                     break;
             }
 
-            return _interpreter.Eval<bool>($"subject.{Field} {Operator} value", new Parameter("subject", typeof(T), subject), rightParam);
+            return _interpreter.Eval<bool>($"subject.{Field} {Operator} value",
+                new Parameter("subject", typeof(T), subject), rightParam);
         }
     }
 }

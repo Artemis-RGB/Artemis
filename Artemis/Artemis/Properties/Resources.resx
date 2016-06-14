@@ -118,9 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="artemisXml" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\witcher3\artemis.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="bow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -138,9 +135,6 @@
   </data>
   <data name="logo_disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logo-disabled.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="playerWitcherWs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\witcher3\playerwitcher.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
   </data>
   <data name="k65" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\keyboards\k65.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -183,5 +177,8 @@
   </data>
   <data name="demo_gif" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Keyboards\demo-gif.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Witcher3Artemis" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Witcher3\Witcher3Artemis.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

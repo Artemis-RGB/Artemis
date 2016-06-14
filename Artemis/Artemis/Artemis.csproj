@@ -651,8 +651,7 @@
     <Resource Include="Resources\Keyboards\blackwidow.png" />
     <None Include="Resources\Keyboards\none.png" />
     <None Include="Resources\Keyboards\demo-gif.gif" />
-    <Content Include="Resources\Witcher3\playerWitcher.txt" />
-    <Content Include="Resources\Witcher3\artemis.txt" />
+    <EmbeddedResource Include="Resources\Witcher3\Witcher3Artemis.zip" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
