@@ -83,9 +83,7 @@ namespace Artemis.Models.Profiles
                 // Remove the clip
                 c.Pop();
             }
-
-            //TODO DarthAffe 13.06.2016: This is just to make it work
-            //It would be better to somehow draw directly but I don't really understand dat visual stuff right now :p
+            
             using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
         }
@@ -206,9 +204,7 @@ namespace Artemis.Models.Profiles
                 // Remove the clip
                 c.Pop();
             }
-
-            //TODO DarthAffe 13.06.2016: This is just to make it work
-            //It would be better to somehow draw directly but I don't really understand dat visual stuff right now :p
+            
             using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
         }
