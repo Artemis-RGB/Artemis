@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Events;
@@ -20,13 +21,14 @@ namespace Artemis.ViewModels
         private bool _enabled;
         private string _toggleText;
 
-        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events, ShellViewModel shellViewModel,
+        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events, MetroDialogService dialogService, ShellViewModel shellViewModel,
             MainManager mainManager)
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
             _checkedForUpdate = false;
 
+            DialogService = dialogService;
             MainManager = mainManager;
 
             events.Subscribe(this);
@@ -36,7 +38,6 @@ namespace Artemis.ViewModels
                 ShowWindow();
         }
 
-        [Inject]
         public MetroDialogService DialogService { get; set; }
 
         public MainManager MainManager { get; set; }
@@ -124,16 +125,19 @@ namespace Artemis.ViewModels
 
         private async void ShowKeyboardDialog()
         {
+            while(!_shellViewModel.IsActive)
+                await Task.Delay(200);
+
             NotifyOfPropertyChange(() => CanHideWindow);
             NotifyOfPropertyChange(() => CanToggleEnabled);
 
             var dialog = await DialogService.ShowProgressDialog("Enabling keyboard",
                 "Artemis is still busy trying to enable your last used keyboard. " +
-                "Please what while the progress completes");
+                "Please wait while the progress completes");
             dialog.SetIndeterminate();
 
             while (MainManager.DeviceManager.ChangingKeyboard)
-                await Task.Delay(200);
+                await Task.Delay(10);
 
             NotifyOfPropertyChange(() => CanHideWindow);
             NotifyOfPropertyChange(() => CanToggleEnabled);
