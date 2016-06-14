@@ -32,7 +32,7 @@ namespace Artemis.Services
 {
     public class MetroDialogService : DialogService
     {
-        private MetroWindow GetActiveWindow()
+        public MetroWindow GetActiveWindow()
         {
             MetroWindow window = null;
 
@@ -102,31 +102,29 @@ namespace Artemis.Services
                 };
 
                 if (initialDir != null)
-                {
                     ofd.InitialDirectory = initialDir;
-                }
 
-                if (Application.Current.MainWindow != null)
-                {
-                    res = ofd.ShowDialog(Application.Current.MainWindow);
-                }
-                else
-                {
-                    res = ofd.ShowDialog();
-                }
+                res = Application.Current.MainWindow != null
+                    ? ofd.ShowDialog(Application.Current.MainWindow)
+                    : ofd.ShowDialog();
+
                 if (res == true)
-                {
                     lPath = ofd.FileName;
-                }
                 else
-                {
                     res = false;
-                }
             });
 
             path = lPath;
 
             return res.Value;
+        }
+
+        public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false,
+            MetroDialogSettings settings = null)
+        {
+            var activeWindow = GetActiveWindow();
+            return activeWindow?.Dispatcher.Invoke(
+                () => activeWindow.ShowProgressAsync(title, message, isCancelable, settings));
         }
     }
 }

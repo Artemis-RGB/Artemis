@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Services;
 using Artemis.Settings;
 using Caliburn.Micro;
+using MahApps.Metro.Controls.Dialogs;
 using Ninject;
 using Ninject.Extensions.Logging;
 
@@ -64,8 +67,14 @@ namespace Artemis.Managers
         ///     Enables the given keyboard
         /// </summary>
         /// <param name="keyboardProvider"></param>
-        public void EnableKeyboard(KeyboardProvider keyboardProvider)
+        public async void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
+            if (ChangingKeyboard)
+                return;
+
+            // Store the old keyboard so it can be used in the event we're raising later
+            var oldKeyboard = ActiveKeyboard;
+
             lock (this)
             {
                 ChangingKeyboard = true;
@@ -79,9 +88,6 @@ namespace Artemis.Managers
                     return;
                 }
 
-                // Store the old keyboard so it can be used in the event we're raising later
-                var oldKeyboard = ActiveKeyboard;
-
                 var wasNull = false;
                 if (ActiveKeyboard == null)
                 {
@@ -89,43 +95,62 @@ namespace Artemis.Managers
                     ActiveKeyboard = keyboardProvider;
                 }
 
-                _logger.Debug("Enabling keyboard: {0}", keyboardProvider.Name);
-
                 if (!wasNull)
                     ReleaseActiveKeyboard();
-
-                // Disable everything if there's no active keyboard found
-                if (!keyboardProvider.CanEnable())
-                {
-                    DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
-                    ActiveKeyboard = null;
-                    General.Default.LastKeyboard = null;
-                    General.Default.Save();
-                    _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
-                    ChangingKeyboard = false;
-                    return;
-                }
-
-                ActiveKeyboard = keyboardProvider;
-                ActiveKeyboard.Enable();
-
-                General.Default.LastKeyboard = ActiveKeyboard.Name;
-                General.Default.Save();
-
-                EnableUsableDevices();
-
-                ChangingKeyboard = false;
-                _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
-                _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
             }
+
+            _logger.Debug("Enabling keyboard: {0}", keyboardProvider.Name);
+
+            // Create a dialog to let the user know Artemis hasn't frozen
+            ProgressDialogController dialog = null;
+            if (DialogService.GetActiveWindow() != null)
+            {
+                dialog = await DialogService.ShowProgressDialog("Enabling keyboard",
+                    $"Checking if keyboard '{keyboardProvider.Name}' can be enabled...", true);
+
+                // May seem a bit cheesy, but it's tidier to have the animation finish
+                await Task.Delay(500);
+            }
+            dialog?.SetIndeterminate();
+
+            var canEnable = await keyboardProvider.CanEnableAsync(dialog);
+            if (!canEnable)
+            {
+                if (dialog != null)
+                    await dialog.CloseAsync();
+
+                DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
+                ActiveKeyboard = null;
+                General.Default.LastKeyboard = null;
+                General.Default.Save();
+                _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
+                ChangingKeyboard = false;
+                return;
+            }
+
+            dialog?.SetMessage($"Enabling keyboard: {keyboardProvider.Name}...");
+            ActiveKeyboard = keyboardProvider;
+            await ActiveKeyboard.EnableAsync(dialog);
+
+            General.Default.LastKeyboard = ActiveKeyboard.Name;
+            General.Default.Save();
+
+            EnableUsableDevices();
+            _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
+            _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
+
+            if (dialog != null)
+                await dialog.CloseAsync();
+
+            ChangingKeyboard = false;
         }
 
         private void EnableUsableDevices()
         {
             foreach (var mouseProvider in MiceProviders)
-                mouseProvider.TryEnable();
+                mouseProvider.TryEnableAsync();
             foreach (var headsetProvider in HeadsetProviders)
-                headsetProvider.TryEnable();
+                headsetProvider.TryEnableAsync();
         }
 
         /// <summary>

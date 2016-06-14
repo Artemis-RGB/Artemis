@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using Ninject.Extensions.Logging;
 using Brush = System.Windows.Media.Brush;
@@ -42,7 +43,12 @@ namespace Artemis.Managers
             _keyboardBitmap?.Dispose();
         }
 
-        public void Start()
+        public Task StartAsync()
+        {
+            return Task.Run(() => Start());
+        }
+
+        private void Start()
         {
             if (Running)
                 return;

@@ -81,7 +81,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         public override void RenderOverlay(Graphics keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
             bool renderHeadsets)
         {
-            if (VolumeDisplay != null && VolumeDisplay.Ttl >= 1)
+            if (MainManager.DeviceManager.ActiveKeyboard != null && VolumeDisplay != null && VolumeDisplay.Ttl >= 1)
                 VolumeDisplay.Draw(keyboard);
         }
     }
