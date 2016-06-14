@@ -24,6 +24,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
 
             </Grid.RowDefinitions>
@@ -119,9 +120,19 @@
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
                     Value="{Binding Path=EffectSettings.MoveSpeed, Mode=TwoWay}" Minimum="1" Maximum="15"
                     SmallChange="10" IsSnapToTickEnabled="True" />
+            
+            <!-- Smoothness -->
+            <TextBlock Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                       Height="16" Margin="0,9,0,10">
+                Smoothness
+            </TextBlock>
+            <Slider x:Name="Smoothness" Grid.Row="9" Grid.Column="1" VerticalAlignment="Center"
+                    HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
+                    Value="{Binding Path=EffectSettings.Smoothness, Mode=TwoWay}" Minimum="1" Maximum="100"
+                    SmallChange="10" IsSnapToTickEnabled="True" />
 
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="9" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="10" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

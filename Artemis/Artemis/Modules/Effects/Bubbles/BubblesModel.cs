@@ -28,7 +28,6 @@ namespace Artemis.Modules.Effects.Bubbles
             : base(mainManager, null)
         {
             Name = "Bubbles";
-            KeyboardScale = 25;
             Settings = settings;
             Initialized = false;
         }
@@ -39,18 +38,23 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Enable()
         {
+            KeyboardScale = Settings.Smoothness;
+
             Rect rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+
+            double scaleFactor = Settings.Smoothness / 25.0;
 
             for (int i = 0; i < Settings.BubbleCount; i++)
             {
                 Color color = Settings.IsRandomColors ? ColorHelpers.GetRandomRainbowColor() : ColorHelpers.ToDrawingColor(Settings.BubbleColor);
                 // -Settings.MoveSpeed because we want to spawn at least one move away from borders
-                double initialPositionX = ((rect.Width - (Settings.BubbleSize * 2) - Settings.MoveSpeed) * _random.NextDouble()) + Settings.BubbleSize;
-                double initialPositionY = ((rect.Height - (Settings.BubbleSize * 2) - Settings.MoveSpeed) * _random.NextDouble()) + Settings.BubbleSize;
-                double initialDirectionX = (Settings.MoveSpeed * _random.NextDouble()) * (_random.Next(1) == 0 ? -1 : 1);
-                double initialDirectionY = (Settings.MoveSpeed - Math.Abs(initialDirectionX)) * (_random.Next(1) == 0 ? -1 : 1);
+                double initialPositionX = ((rect.Width - (Settings.BubbleSize * scaleFactor * 2) - Settings.MoveSpeed * scaleFactor) * _random.NextDouble()) + Settings.BubbleSize * scaleFactor;
+                double initialPositionY = ((rect.Height - (Settings.BubbleSize * scaleFactor * 2) - Settings.MoveSpeed * scaleFactor) * _random.NextDouble()) + Settings.BubbleSize * scaleFactor;
+                double initialDirectionX = (Settings.MoveSpeed * scaleFactor * _random.NextDouble()) * (_random.Next(1) == 0 ? -1 : 1);
+                double initialDirectionY = (Settings.MoveSpeed * scaleFactor - Math.Abs(initialDirectionX)) * (_random.Next(1) == 0 ? -1 : 1);
 
-                _bubbles.Add(new Bubble(color, Settings.BubbleSize, new System.Windows.Point(initialPositionX, initialPositionY), new Vector(initialDirectionX, initialDirectionY)));
+                _bubbles.Add(new Bubble(color, (int)Math.Round(Settings.BubbleSize * scaleFactor),
+                    new System.Windows.Point(initialPositionX, initialPositionY), new Vector(initialDirectionX, initialDirectionY)));
             }
 
             Initialized = true;
