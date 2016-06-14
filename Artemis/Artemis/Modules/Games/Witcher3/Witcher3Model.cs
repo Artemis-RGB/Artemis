@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Profiles;
-using Artemis.Utilities.Keyboard;
 
 namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3Model : GameModel
     {
-        private readonly Regex _signRegex;
         private readonly Stopwatch _updateSw;
-        private KeyboardRectangle _signRect;
+        private readonly Regex _configRegex;
         private string _witcherSettings;
 
         public Witcher3Model(MainManager mainManager, Witcher3Settings settings)
@@ -29,7 +27,7 @@ namespace Artemis.Modules.Games.Witcher3
             Initialized = false;
 
             _updateSw = new Stopwatch();
-            _signRegex = new Regex("ActiveSign=(.*)", RegexOptions.Compiled);
+            _configRegex = new Regex("\\[Artemis\\](.+?)\\[", RegexOptions.Singleline);
         }
 
         public int Scale { get; set; }
@@ -45,13 +43,6 @@ namespace Artemis.Modules.Games.Witcher3
         public override void Enable()
         {
             Initialized = false;
-
-            _signRect = new KeyboardRectangle(MainManager.DeviceManager.ActiveKeyboard, 0, 0, new List<Color>(),
-                LinearGradientMode.Horizontal)
-            {
-                Rotate = true,
-                LoopSpeed = 0.5
-            };
 
             // Ensure the config file is found
             var witcherSettings = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
@@ -80,28 +71,69 @@ namespace Artemis.Modules.Games.Witcher3
             var configContent = reader.ReadToEnd();
             reader.Close();
 
-            var signRes = _signRegex.Match(configContent);
-            if (signRes.Groups.Count < 2)
-                return;
-            var sign = signRes.Groups[1].Value;
+            var signRes = _configRegex.Match(configContent);
+            var parts = signRes.Value.Split('\n').Skip(1).Select(v => v.Replace("\r", "")).ToList();
+            parts.RemoveAt(parts.Count - 1);
 
-            switch (sign)
+            // Update sign
+            var sign = parts.FirstOrDefault(p => p.Contains("ActiveSign="));
+            if (sign != null)
             {
-                case "ST_Aard\r":
-                    gameDataModel.WitcherSign = WitcherSign.Aard;
-                    break;
-                case "ST_Yrden\r":
-                    gameDataModel.WitcherSign = WitcherSign.Yrden;
-                    break;
-                case "ST_Igni\r":
-                    gameDataModel.WitcherSign = WitcherSign.Igni;
-                    break;
-                case "ST_Quen\r":
-                    gameDataModel.WitcherSign = WitcherSign.Quen;
-                    break;
-                case "ST_Axii\r":
-                    gameDataModel.WitcherSign = WitcherSign.Axii;
-                    break;
+                var singString = sign.Split('=')[1];
+                switch (singString)
+                {
+                    case "ST_Aard":
+                        gameDataModel.WitcherSign = WitcherSign.Aard;
+                        break;
+                    case "ST_Yrden":
+                        gameDataModel.WitcherSign = WitcherSign.Yrden;
+                        break;
+                    case "ST_Igni":
+                        gameDataModel.WitcherSign = WitcherSign.Igni;
+                        break;
+                    case "ST_Quen":
+                        gameDataModel.WitcherSign = WitcherSign.Quen;
+                        break;
+                    case "ST_Axii":
+                        gameDataModel.WitcherSign = WitcherSign.Axii;
+                        break;
+                }
+            }
+
+            // Update max health
+            var maxHealth = parts.FirstOrDefault(p => p.Contains("MaxHealth="));
+            if (maxHealth != null)
+            {
+                var healthInt = int.Parse(maxHealth.Split('=')[1].Split('.')[0]);
+                gameDataModel.MaxHealth = healthInt;
+            }
+            // Update health
+            var health = parts.FirstOrDefault(p => p.Contains("Health="));
+            if (health != null)
+            {
+                var healthInt = int.Parse(health.Split('=')[1].Split('.')[0]);
+                gameDataModel.Health = healthInt;
+            }
+            // Update stamina
+            var stamina = parts.FirstOrDefault(p => p.Contains("Stamina="));
+            if (stamina != null)
+            {
+                var staminaInt = int.Parse(stamina.Split('=')[1].Split('.')[0]);
+                gameDataModel.Stamina = staminaInt;
+            }
+            // Update stamina
+            var toxicity = parts.FirstOrDefault(p => p.Contains("Toxicity="));
+            if (toxicity != null)
+            {
+                var toxicityInt = int.Parse(toxicity.Split('=')[1].Split('.')[0]);
+                gameDataModel.Toxicity = toxicityInt;
+            }
+            // Update vitality
+            var vitality = parts.FirstOrDefault(p => p.Contains("Vitality="));
+            if (vitality != null)
+            {
+                var vitalityInt = int.Parse(vitality.Split('=')[1].Split('.')[0]);
+                gameDataModel.Vitality = vitalityInt;
             }
         }
 
