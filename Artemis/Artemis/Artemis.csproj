@@ -38,8 +38,8 @@
     <SupportUrl>https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-%28FAQ%29</SupportUrl>
     <ProductName>Artemis</ProductName>
     <PublisherName>Artemis</PublisherName>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.1.3.0</ApplicationVersion>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.1.3.2</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -452,6 +452,7 @@
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
     <Compile Include="Utilities\Layers\AnimationUpdater.cs" />
     <Compile Include="Utilities\Layers\Drawer.cs" />
+    <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
     <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
@@ -616,9 +617,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

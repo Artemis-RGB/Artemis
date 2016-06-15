@@ -28,6 +28,8 @@ namespace Artemis.Managers
             _loopTimer = new Timer(40);
             _loopTimer.Elapsed += Render;
             _loopTimer.Start();
+
+            _logger.Info("Intialized LoopManager");
         }
 
         /// <summary>

@@ -25,8 +25,6 @@ namespace Artemis.Managers
         public DeviceManager(IEventAggregator events, ILogger logger, List<DeviceProvider> deviceProviders)
         {
             _logger = logger;
-            _logger.Info("Intializing DeviceManager");
-
             _events = events;
 
             KeyboardProviders = deviceProviders.Where(d => d.Type == DeviceType.Keyboard)
@@ -34,7 +32,7 @@ namespace Artemis.Managers
             MiceProviders = deviceProviders.Where(d => d.Type == DeviceType.Mouse).ToList();
             HeadsetProviders = deviceProviders.Where(d => d.Type == DeviceType.Headset).ToList();
 
-            _logger.Info("Intialized DeviceManager");
+            _logger.Info("Intialized DeviceManager with {0} device providers", deviceProviders.Count);
         }
 
         public List<DeviceProvider> HeadsetProviders { get; set; }

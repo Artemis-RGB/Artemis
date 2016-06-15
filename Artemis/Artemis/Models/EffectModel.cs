@@ -5,6 +5,8 @@ using System.Linq;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
+using Newtonsoft.Json;
+using NLog;
 using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Models
@@ -16,6 +18,7 @@ namespace Artemis.Models
         public bool Initialized;
         public MainManager MainManager;
         public string Name;
+        private DateTime _lastTrace;
 
         protected EffectModel(MainManager mainManager, IDataModel dataModel)
         {
@@ -48,6 +51,18 @@ namespace Artemis.Models
 
             // Get all enabled layers who's conditions are met
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
+
+            // Trace debugging
+            if (DateTime.Now.AddSeconds(-2) > _lastTrace)
+            {
+                _lastTrace = DateTime.Now;
+                MainManager.Logger.Trace("Effect datamodel as JSON: \r\n{0}",
+                    JsonConvert.SerializeObject(DataModel, Formatting.Indented));
+                MainManager.Logger.Trace("Effect {0} has to render {1} layers", Name, renderLayers.Count);
+                foreach (var renderLayer in renderLayers)
+                    MainManager.Logger.Trace("    Layer name: {0}, layer type: {1}", renderLayer.Name,
+                        renderLayer.LayerType);
+            }
 
             // Render the keyboard layer-by-layer
             keyboard = Profile.GenerateBitmap(renderLayers, DataModel,

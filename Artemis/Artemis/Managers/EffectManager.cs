@@ -23,8 +23,6 @@ namespace Artemis.Managers
         public EffectManager(ILogger logger, IEventAggregator events, DeviceManager deviceManager)
         {
             _logger = logger;
-            _logger.Info("Intializing EffectManager");
-
             _events = events;
             _deviceManager = deviceManager;
 

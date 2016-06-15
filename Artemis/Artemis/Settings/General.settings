@@ -1,11 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Settings" GeneratedClassName="General">
   <Profiles />
   <Settings>
     <Setting Name="LastEffect" Type="System.String" Scope="User">
-      <Value Profile="(Default)">TypeWave</Value>
+      <Value Profile="(Default)">WindowsProfile</Value>
     </Setting>
     <Setting Name="LastKeyboard" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -30,6 +28,9 @@
     </Setting>
     <Setting Name="Theme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Light</Value>
+    </Setting>
+    <Setting Name="LogLevel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Info</Value>
     </Setting>
   </Settings>
 </SettingsFile>

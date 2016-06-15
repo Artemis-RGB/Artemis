@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using Artemis.Utilities;
 using MahApps.Metro;
+using NLog;
 
 namespace Artemis.Settings
 {
@@ -76,6 +77,16 @@ namespace Artemis.Settings
             }
         }
 
+        public string LogLevel
+        {
+            get { return General.Default.LogLevel; }
+            set
+            {
+                if (General.Default.LogLevel == value) return;
+                General.Default.LogLevel = value;
+            }
+        }
+
         private void ApplyGamestatePort()
         {
             // TODO: Restart Gamestate server with new port
@@ -103,6 +114,7 @@ namespace Artemis.Settings
             ApplyAutorun();
             ApplyTheme();
             ApplyGamestatePort();
+            Logging.SetupLogging(LogLevel);
         }
 
         private void ApplyTheme()
@@ -136,6 +148,7 @@ namespace Artemis.Settings
             CheckForUpdates = true;
             ShowOnStartup = true;
             Theme = "Light";
+            LogLevel = "Info";
 
             SaveSettings();
         }
