@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows;
 using Artemis.Managers;
 using Artemis.Models;
@@ -18,10 +16,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         private static readonly Random _random = new Random();
 
-        private const int SCALE = 25;
-
         private readonly List<Bubble> _bubbles = new List<Bubble>();
-        private Bitmap _bitmap;
 
         public BubblesSettings Settings { get; }
 
@@ -43,19 +38,23 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Enable()
         {
-            Rect rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(SCALE);
-            _bitmap = MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(SCALE);
+            KeyboardScale = Settings.Smoothness;
+
+            Rect rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+
+            double scaleFactor = Settings.Smoothness / 25.0;
 
             for (int i = 0; i < Settings.BubbleCount; i++)
             {
                 Color color = Settings.IsRandomColors ? ColorHelpers.GetRandomRainbowColor() : ColorHelpers.ToDrawingColor(Settings.BubbleColor);
                 // -Settings.MoveSpeed because we want to spawn at least one move away from borders
-                double initialPositionX = ((rect.Width - (Settings.BubbleSize * 2) - Settings.MoveSpeed) * _random.NextDouble()) + Settings.BubbleSize;
-                double initialPositionY = ((rect.Height - (Settings.BubbleSize * 2) - Settings.MoveSpeed) * _random.NextDouble()) + Settings.BubbleSize;
-                double initialDirectionX = (Settings.MoveSpeed * _random.NextDouble()) * (_random.Next(1) == 0 ? -1 : 1);
-                double initialDirectionY = (Settings.MoveSpeed - Math.Abs(initialDirectionX)) * (_random.Next(1) == 0 ? -1 : 1);
+                double initialPositionX = ((rect.Width - (Settings.BubbleSize * scaleFactor * 2) - Settings.MoveSpeed * scaleFactor) * _random.NextDouble()) + Settings.BubbleSize * scaleFactor;
+                double initialPositionY = ((rect.Height - (Settings.BubbleSize * scaleFactor * 2) - Settings.MoveSpeed * scaleFactor) * _random.NextDouble()) + Settings.BubbleSize * scaleFactor;
+                double initialDirectionX = (Settings.MoveSpeed * scaleFactor * _random.NextDouble()) * (_random.Next(1) == 0 ? -1 : 1);
+                double initialDirectionY = (Settings.MoveSpeed * scaleFactor - Math.Abs(initialDirectionX)) * (_random.Next(1) == 0 ? -1 : 1);
 
-                _bubbles.Add(new Bubble(color, Settings.BubbleSize, new System.Windows.Point(initialPositionX, initialPositionY), new Vector(initialDirectionX, initialDirectionY)));
+                _bubbles.Add(new Bubble(color, (int)Math.Round(Settings.BubbleSize * scaleFactor),
+                    new System.Windows.Point(initialPositionX, initialPositionY), new Vector(initialDirectionX, initialDirectionY)));
             }
 
             Initialized = true;
@@ -63,14 +62,13 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Dispose()
         {
-            _bitmap?.Dispose();
             _bubbles.Clear();
             Initialized = false;
         }
 
         public override void Update()
         {
-            Rect keyboardRectangle = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(SCALE);
+            Rect keyboardRectangle = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             foreach (Bubble bubble in _bubbles)
             {
                 if (Settings.IsShiftColors)
@@ -81,20 +79,13 @@ namespace Artemis.Modules.Effects.Bubbles
             }
         }
 
-        public override void Render(out Bitmap keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
+        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice, bool renderHeadsets)
         {
-            keyboard = _bitmap;
             mouse = null;
             headset = null;
-            
-            using (Graphics g = Graphics.FromImage(keyboard))
-            {
-                g.Clear(Color.Transparent);
-                g.SmoothingMode = SmoothingMode.None;
 
-                foreach (Bubble bubble in _bubbles)
-                    bubble.Draw(g);
-            }
+            foreach (Bubble bubble in _bubbles)
+                bubble.Draw(keyboard);
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)

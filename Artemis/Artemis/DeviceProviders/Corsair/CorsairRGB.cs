@@ -96,11 +96,14 @@ namespace Artemis.DeviceProviders.Corsair
                     g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
                 }
 
+                image.Dispose();
                 image = strafeBitmap;
             }
 
             _keyboardBrush.Image = image;
             _keyboard.Update();
+
+            image.Dispose();
         }
     }
 }

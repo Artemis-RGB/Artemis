@@ -17,6 +17,7 @@ namespace Artemis.Modules.Effects.Bubbles
         public int BubbleSize { get; set; }
         public int MoveSpeed { get; set; }
         public int BubbleCount { get; set; }
+        public int Smoothness { get; set; }
 
         public sealed override void Load()
         {
@@ -27,6 +28,7 @@ namespace Artemis.Modules.Effects.Bubbles
             BubbleSize = Bubbles.Default.BubbleSize;
             MoveSpeed = Bubbles.Default.MoveSpeed;
             BubbleCount = Bubbles.Default.BubbleCount;
+            Smoothness = Bubbles.Default.Smoothness;
         }
 
         public sealed override void Save()
@@ -38,6 +40,7 @@ namespace Artemis.Modules.Effects.Bubbles
             Bubbles.Default.BubbleSize = BubbleSize;
             Bubbles.Default.MoveSpeed = MoveSpeed;
             Bubbles.Default.BubbleCount = BubbleCount;
+            Bubbles.Default.Smoothness = Smoothness;
 
             Bubbles.Default.Save();
         }
@@ -47,10 +50,11 @@ namespace Artemis.Modules.Effects.Bubbles
             IsRandomColors = true;
             BubbleColor = Color.FromArgb(255, 255, 0, 0);
             IsShiftColors = true;
-            ShiftColorSpeed = 4;
+            ShiftColorSpeed = 12;
             BubbleSize = 25;
-            MoveSpeed = 16;
+            MoveSpeed = 4;
             BubbleCount = 14;
+            Smoothness = 25;
         }
     }
 }

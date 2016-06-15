@@ -45,7 +45,7 @@ namespace Artemis.Models.Profiles
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ProfileModel) obj);
+            return Equals((ProfileModel)obj);
         }
 
         public override int GetHashCode()
@@ -53,8 +53,8 @@ namespace Artemis.Models.Profiles
             unchecked
             {
                 var hashCode = Name?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
-                hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }
@@ -66,7 +66,7 @@ namespace Artemis.Models.Profiles
                 Layers[i].Order = i;
         }
 
-        public Bitmap GenerateBitmap<T>(Rect keyboardRect, IDataModel dataModel, bool preview,
+        public void DrawProfile<T>(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
             bool updateAnimations)
         {
             var visual = new DrawingVisual();
@@ -83,8 +83,9 @@ namespace Artemis.Models.Profiles
                 // Remove the clip
                 c.Pop();
             }
-
-            return ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
+            
+            using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
+                keyboard.DrawImage(bmp, new PointF(0, 0));
         }
 
         public Brush GenerateBrush<T>(IDataModel dataModel, LayerType type, bool preview, bool updateAnimations)
@@ -161,7 +162,7 @@ namespace Artemis.Models.Profiles
                 if (layer.LayerType != LayerType.Keyboard && layer.LayerType != LayerType.KeyboardGif)
                     continue;
 
-                var props = (KeyboardPropertiesModel) layer.Properties;
+                var props = (KeyboardPropertiesModel)layer.Properties;
                 var layerRect = new Rect(new Point(props.X, props.Y), new Size(props.Width, props.Height));
                 if (keyboardRectangle.Contains(layerRect))
                     continue;
@@ -173,15 +174,15 @@ namespace Artemis.Models.Profiles
         }
 
         /// <summary>
-        ///     Generates a bitmap showing all the provided layers of type Keyboard and KeyboardGif
+        ///     Draw all the provided layers of type Keyboard and KeyboardGif
         /// </summary>
+        /// <param name="keyboard">The graphics to draw on</param>
         /// <param name="renderLayers">The layers to render</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
         /// <param name="keyboardRect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
-        /// <returns>The generated bitmap</returns>
-        internal Bitmap GenerateBitmap(List<LayerModel> renderLayers, IDataModel dataModel, Rect keyboardRect,
+        internal void DrawProfile(Graphics keyboard, List<LayerModel> renderLayers, IDataModel dataModel, Rect keyboardRect,
             bool preview,
             bool updateAnimations)
         {
@@ -203,8 +204,9 @@ namespace Artemis.Models.Profiles
                 // Remove the clip
                 c.Pop();
             }
-
-            return ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect);
+            
+            using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
+                keyboard.DrawImage(bmp, new PointF(0, 0));
         }
 
         /// <summary>

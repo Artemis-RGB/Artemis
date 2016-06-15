@@ -106,5 +106,17 @@ namespace Artemis.Modules.Effects.Bubbles {
                 this["BubbleCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int Smoothness {
+            get {
+                return ((int)(this["Smoothness"]));
+            }
+            set {
+                this["Smoothness"] = value;
+            }
+        }
     }
 }
