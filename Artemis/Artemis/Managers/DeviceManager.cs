@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DeviceProviders;
 using Artemis.Events;
@@ -67,37 +66,20 @@ namespace Artemis.Managers
         /// <param name="keyboardProvider"></param>
         public async void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
-            if (ChangingKeyboard)
+            if (keyboardProvider == null)
+                throw new ArgumentNullException(nameof(keyboardProvider));
+
+            if (ChangingKeyboard || ActiveKeyboard?.Name == keyboardProvider.Name)
                 return;
+
+            _logger.Debug("Trying to enable keyboard: {0}", keyboardProvider.Name);
+            ChangingKeyboard = true;
 
             // Store the old keyboard so it can be used in the event we're raising later
             var oldKeyboard = ActiveKeyboard;
 
-            lock (this)
-            {
-                ChangingKeyboard = true;
-
-                if (keyboardProvider == null)
-                    throw new ArgumentNullException(nameof(keyboardProvider));
-
-                if (ActiveKeyboard?.Name == keyboardProvider.Name)
-                {
-                    ChangingKeyboard = false;
-                    return;
-                }
-
-                var wasNull = false;
-                if (ActiveKeyboard == null)
-                {
-                    wasNull = true;
-                    ActiveKeyboard = keyboardProvider;
-                }
-
-                if (!wasNull)
-                    ReleaseActiveKeyboard();
-            }
-
-            _logger.Debug("Enabling keyboard: {0}", keyboardProvider.Name);
+            // Release the current keyboard
+            ReleaseActiveKeyboard();
 
             // Create a dialog to let the user know Artemis hasn't frozen
             ProgressDialogController dialog = null;
@@ -127,14 +109,16 @@ namespace Artemis.Managers
             }
 
             dialog?.SetMessage($"Enabling keyboard: {keyboardProvider.Name}...");
+
+            // Setup the new keyboard
             ActiveKeyboard = keyboardProvider;
             await ActiveKeyboard.EnableAsync(dialog);
+            EnableUsableDevices();
 
             General.Default.LastKeyboard = ActiveKeyboard.Name;
             General.Default.Save();
 
-            EnableUsableDevices();
-            _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
+            await _events.PublishOnUIThreadAsync(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
             _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
 
             if (dialog != null)
