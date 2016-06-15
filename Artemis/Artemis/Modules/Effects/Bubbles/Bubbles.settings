@@ -23,5 +23,8 @@
     <Setting Name="BubbleCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">14</Value>
     </Setting>
+    <Setting Name="Smoothness" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

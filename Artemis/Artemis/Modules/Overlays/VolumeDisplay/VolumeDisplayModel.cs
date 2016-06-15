@@ -46,10 +46,10 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             if (VolumeDisplay.Ttl < 1)
                 return;
 
-            var decreaseAmount = 500/fps;
+            var decreaseAmount = 500 / fps;
             VolumeDisplay.Ttl = VolumeDisplay.Ttl - decreaseAmount;
             if (VolumeDisplay.Ttl < 128)
-                VolumeDisplay.Transparancy = (byte) (VolumeDisplay.Transparancy - 20);
+                VolumeDisplay.Transparancy = (byte)(VolumeDisplay.Transparancy - 20);
 
             try
             {
@@ -57,24 +57,11 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
                 var volumeFloat =
                     enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console)
                         .AudioEndpointVolume.MasterVolumeLevelScalar;
-                VolumeDisplay.Volume = (int) (volumeFloat*100);
+                VolumeDisplay.Volume = (int)(volumeFloat * 100);
             }
             catch (COMException)
             {
             }
-        }
-
-        public Bitmap GenerateBitmap(Bitmap bitmap)
-        {
-            if (VolumeDisplay == null)
-                return bitmap;
-            if (VolumeDisplay.Ttl < 1)
-                return bitmap;
-
-            using (var g = Graphics.FromImage(bitmap))
-                VolumeDisplay.Draw(g);
-
-            return bitmap;
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
@@ -91,13 +78,11 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplay.Transparancy = 255;
         }
 
-        public override void RenderOverlay(ref Bitmap keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+        public override void RenderOverlay(Graphics keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
             bool renderHeadsets)
         {
-            if (MainManager.DeviceManager.ActiveKeyboard == null)
-                return;
-
-            keyboard = GenerateBitmap(keyboard ?? MainManager.DeviceManager.ActiveKeyboard.KeyboardBitmap(4));
+            if (MainManager.DeviceManager.ActiveKeyboard != null && VolumeDisplay != null && VolumeDisplay.Ttl >= 1)
+                VolumeDisplay.Draw(keyboard);
         }
     }
 }
