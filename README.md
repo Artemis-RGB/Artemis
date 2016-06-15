@@ -38,10 +38,10 @@ For any keyboards/games/effects we'd love PRs!
  - Project CARS
  - What you happen to suggest!
  
-For online games we greatly perfer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
+For online games we greatly prefer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
 
 ### Profile editor
-For it's games Artemis uses a custom made layer system. For each game you can make one or more profiles consisting of layers that interact with the game. Layers can contain a color, multiple colors, animations and even GIFs!
+For its games Artemis uses a custom-made layer system. For each game you can make one or more profiles consisting of layers that interact with the game. Layers can contain a color, multiple colors, animations and even GIFs!
 
 All this is done in the profile editor. For each game and keyboard we provide a default profile, but you're free to duplicate and modify this, or create one entirely from scratch.
 
