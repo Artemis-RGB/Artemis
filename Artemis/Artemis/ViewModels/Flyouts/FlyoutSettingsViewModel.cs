@@ -7,9 +7,7 @@ using Artemis.Settings;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
-using NLog.Targets;
 using ILogger = Ninject.Extensions.Logging.ILogger;
-using LogManager = NLog.LogManager;
 
 namespace Artemis.ViewModels.Flyouts
 {
@@ -31,9 +29,11 @@ namespace Artemis.ViewModels.Flyouts
             Position = Position.Right;
             GeneralSettings = new GeneralSettings();
 
+            LogLevels = new BindableCollection<string>();
+            LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
+
             PropertyChanged += KeyboardUpdater;
             events.Subscribe(this);
-            ApplyLogging();
         }
 
         public MainManager MainManager { get; set; }
@@ -71,8 +71,15 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        public BindableCollection<string> Themes
-            => new BindableCollection<string> {"Light", "Dark", "Corsair Light", "Corsair Dark"};
+        public BindableCollection<string> Themes => new BindableCollection<string>
+        {
+            "Light",
+            "Dark",
+            "Corsair Light",
+            "Corsair Dark"
+        };
+
+        public BindableCollection<string> LogLevels { get; set; }
 
         public string SelectedTheme
         {
@@ -82,6 +89,17 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == GeneralSettings.Theme) return;
                 GeneralSettings.Theme = value;
                 NotifyOfPropertyChange(() => SelectedTheme);
+            }
+        }
+
+        public string SelectedLogLevel
+        {
+            get { return GeneralSettings.LogLevel; }
+            set
+            {
+                if (value == GeneralSettings.LogLevel) return;
+                GeneralSettings.LogLevel = value;
+                NotifyOfPropertyChange(() => SelectedLogLevel);
             }
         }
 
@@ -128,27 +146,6 @@ namespace Artemis.ViewModels.Flyouts
         public void Handle(ToggleEnabled message)
         {
             NotifyOfPropertyChange(() => Enabled);
-        }
-
-        // TODO https://github.com/ninject/Ninject.Extensions.Logging/issues/35
-        private void ApplyLogging()
-        {
-            return;
-            var c = LogManager.Configuration;
-            var file = c.FindTargetByName("file") as FileTarget;
-            if (file == null)
-                return;
-
-            var rule = c.LoggingRules.FirstOrDefault(r => r.Targets.Contains(file));
-            if (rule == null)
-                return;
-
-            if (EnableDebug)
-                rule.EnableLoggingForLevel(LogLevel.Debug);
-            rule.DisableLoggingForLevel(LogLevel.Debug);
-
-            LogManager.ReconfigExistingLoggers();
-            _logger.Info("Set debug logging to: {0}", EnableDebug);
         }
 
         /// <summary>

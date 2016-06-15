@@ -28,6 +28,8 @@ namespace Artemis.Managers
             var profilePreviewTimer = new Timer(500);
             profilePreviewTimer.Elapsed += SetupProfilePreview;
             profilePreviewTimer.Start();
+
+            _logger.Info("Intialized ProfileManager");
         }
 
         public ProfilePreviewModel ProfilePreviewModel { get; set; }

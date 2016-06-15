@@ -25,7 +25,7 @@ namespace Artemis.Settings {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TypeWave")]
+        [global::System.Configuration.DefaultSettingValueAttribute("WindowsProfile")]
         public string LastEffect {
             get {
                 return ((string)(this["LastEffect"]));
@@ -128,6 +128,18 @@ namespace Artemis.Settings {
             }
             set {
                 this["Theme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Info")]
+        public string LogLevel {
+            get {
+                return ((string)(this["LogLevel"]));
+            }
+            set {
+                this["LogLevel"] = value;
             }
         }
     }

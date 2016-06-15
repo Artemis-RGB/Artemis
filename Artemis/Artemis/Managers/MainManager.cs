@@ -23,21 +23,18 @@ namespace Artemis.Managers
         public delegate void PauseCallbackHandler();
 
         private readonly IEventAggregator _events;
-        private readonly ILogger _logger;
         private readonly Timer _processTimer;
 
         public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
             DeviceManager deviceManager, EffectManager effectManager, ProfileManager profileManager)
         {
-            _logger = logger;
+            _events = events;
+
+            Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
             EffectManager = effectManager;
             ProfileManager = profileManager;
-
-            _logger.Info("Intializing MainManager");
-
-            _events = events;
 
             _processTimer = new Timer(1000);
             _processTimer.Elapsed += ScanProcesses;
@@ -57,12 +54,13 @@ namespace Artemis.Managers
             PipeServer = new PipeServer();
             PipeServer.Start("artemis");
 
-            _logger.Info("Intialized MainManager");
+            Logger.Info("Intialized MainManager");
         }
 
         [Inject]
         public Lazy<ShellViewModel> ShellViewModel { get; set; }
 
+        public ILogger Logger { get; set; }
         public LoopManager LoopManager { get; }
         public DeviceManager DeviceManager { get; set; }
         public EffectManager EffectManager { get; set; }
@@ -76,7 +74,7 @@ namespace Artemis.Managers
 
         public void Dispose()
         {
-            _logger.Debug("Shutting down MainManager");
+            Logger.Debug("Shutting down MainManager");
 
             _processTimer?.Stop();
             _processTimer?.Dispose();
@@ -91,7 +89,7 @@ namespace Artemis.Managers
         /// </summary>
         public void EnableProgram()
         {
-            _logger.Debug("Enabling program");
+            Logger.Debug("Enabling program");
             ProgramEnabled = true;
             LoopManager.StartAsync();
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -102,7 +100,7 @@ namespace Artemis.Managers
         /// </summary>
         public void DisableProgram()
         {
-            _logger.Debug("Disabling program");
+            Logger.Debug("Disabling program");
             LoopManager.Stop();
             ProgramEnabled = false;
             _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
@@ -133,7 +131,7 @@ namespace Artemis.Managers
             {
                 if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
                 {
-                    _logger.Info("Disabling game: {0}", activeGame.Name);
+                    Logger.Info("Disabling game: {0}", activeGame.Name);
                     EffectManager.DisableGame(activeGame);
                 }
             }
@@ -146,7 +144,7 @@ namespace Artemis.Managers
             if (newGame == null || EffectManager.ActiveEffect == newGame)
                 return;
             // If it's not already enabled, do so.
-            _logger.Info("Detected and enabling game: {0}", newGame.Name);
+            Logger.Info("Detected and enabling game: {0}", newGame.Name);
             EffectManager.ChangeEffect(newGame, LoopManager);
         }
     }
