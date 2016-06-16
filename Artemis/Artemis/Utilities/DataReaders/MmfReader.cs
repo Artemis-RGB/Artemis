@@ -4,6 +4,7 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Utilities.DataReaders
 {
@@ -12,10 +13,11 @@ namespace Artemis.Utilities.DataReaders
     /// </summary>
     public class MmfReader
     {
-        private DateTime _lastFailure;
+        private readonly ILogger _logger;
 
-        public MmfReader(string mmfName)
+        public MmfReader(string mmfName, ILogger logger)
         {
+            _logger = logger;
             MmfName = mmfName;
         }
 
@@ -54,8 +56,9 @@ namespace Artemis.Utilities.DataReaders
                 }
                 return colors;
             }
-            catch (FormatException)
+            catch (FormatException e)
             {
+                _logger.Trace(e, "Failed to parse to color array");
                 return null;
             }
         }
@@ -67,10 +70,6 @@ namespace Artemis.Utilities.DataReaders
         /// <returns></returns>
         private string ReadMmf(string fileName)
         {
-            // Don't read the file within one second after failing
-            //if (DateTime.Now - _lastFailure > new TimeSpan(0, 0, 1))
-            //    return null;
-
             try
             {
                 using (var mmf = MemoryMappedFile.OpenExisting(fileName))
@@ -85,9 +84,9 @@ namespace Artemis.Utilities.DataReaders
                     }
                 }
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException e)
             {
-                _lastFailure = DateTime.Now;
+                _logger.Trace(e, "Failed to read mff");
                 return null;
                 //ignored
             }

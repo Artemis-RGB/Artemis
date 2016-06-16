@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Artemis.Events;
@@ -9,6 +10,7 @@ using Artemis.Models.Profiles;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 
 namespace Artemis.Modules.Games.Overwatch
@@ -27,7 +29,7 @@ namespace Artemis.Modules.Games.Overwatch
             Enabled = Settings.Enabled;
             Initialized = false;
 
-            MmfReader = new MmfReader("overwatchMmf");
+            MmfReader = new MmfReader("overwatchMmf", MainManager.Logger);
             LoadOverwatchCharacters();
         }
 
@@ -107,7 +109,6 @@ namespace Artemis.Modules.Games.Overwatch
                     }
                 }
             }
-            _events.PublishOnUIThread(new ChangeBitmap(bitmap));
 
             // Determine general game state
             gameDataModel.Status = colors[0, 0].Equals(Color.FromRgb(55, 30, 0))
@@ -131,6 +132,12 @@ namespace Artemis.Modules.Games.Overwatch
             gameDataModel.Ability2Ready = colors[2, 4].Equals(Color.FromRgb(4, 141, 144));
             // Ultimate is ready when Q is blinking
             gameDataModel.UltimateReady = !characterMatch.Color.Equals(colors[2, 2]);
+
+            if (DateTime.Now.AddSeconds(-2) <= LastTrace)
+                return;
+
+            MainManager.Logger.Trace("Razer interpetation as JSON: \r\n{0}",
+                JsonConvert.SerializeObject(colors, Formatting.Indented));
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
