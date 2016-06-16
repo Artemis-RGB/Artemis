@@ -7,12 +7,12 @@
          {
             "Description":"Boost",
             "BasePointer":{
-               "value":23244472
+               "value":23620512
             },
             "Offsets":[
-               88,
-               872,
-               980,
+               1664,
+               64,
+               1452,
                1828,
                540
             ]
