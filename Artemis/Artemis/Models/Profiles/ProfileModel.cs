@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Brush = System.Windows.Media.Brush;

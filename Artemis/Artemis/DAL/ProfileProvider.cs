@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
 using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Properties;
 using Artemis.Utilities;
 using NLog;

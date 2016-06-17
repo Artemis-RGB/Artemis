@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Properties;
 using Pen = System.Windows.Media.Pen;
 using Point = System.Windows.Point;

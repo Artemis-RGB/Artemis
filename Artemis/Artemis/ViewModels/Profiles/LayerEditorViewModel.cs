@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Properties;

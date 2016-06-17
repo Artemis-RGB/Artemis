@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Caliburn.Micro;
 

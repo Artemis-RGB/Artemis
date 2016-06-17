@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
-using static System.Decimal;
 
-namespace Artemis.Models.Profiles.Properties
+namespace Artemis.Models.Profiles.Layers
 {
     public class DynamicPropertiesModel
     {
@@ -51,7 +51,7 @@ namespace Artemis.Models.Profiles.Properties
                 return;
 
             var gameProperty = dataModel.GetPropValue<int>(GameProperty);
-            var percentage = ToDouble(gameProperty)/src;
+            var percentage = Decimal.ToDouble(gameProperty)/src;
 
             if (LayerProperty == "Width")
                 ApplyWidth(ref properties, percentage);

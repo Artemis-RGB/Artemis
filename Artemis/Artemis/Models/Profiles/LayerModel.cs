@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Events;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Artemis.Utilities.Layers;
 using Artemis.Utilities.ParentChild;
@@ -23,7 +25,9 @@ namespace Artemis.Models.Profiles
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
         public bool Expanded { get; set; }
+        public bool Event { get; set; }
         public LayerPropertiesModel Properties { get; set; }
+        public EventPropertiesModel EventProperties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
         [XmlIgnore]
@@ -97,12 +101,27 @@ namespace Artemis.Models.Profiles
 
         public void SetupProperties()
         {
-            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
-                !(Properties is KeyboardPropertiesModel))
+            // Set up the correct properties model
+            var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
+            if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
+            {
+                Properties = new MousePropertiesModel {Brush = brush};
+                // TODO: Check for event and default properties for it
+                return;
+            }
+            if (LayerType == LayerType.Headset && !(Properties is HeadsetPropertiesModel))
+            {
+                Properties = new HeadsetPropertiesModel {Brush = brush};
+                // TODO: Check for event and default properties for it
+                return;
+            }
+
+            // Here we know that it's not a mouse/headset layer so set up the keyboard model if need be
+            if (!(Properties is KeyboardPropertiesModel))
             {
                 Properties = new KeyboardPropertiesModel
                 {
-                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
+                    Brush = brush,
                     Animation = LayerAnimation.None,
                     Height = 1,
                     Width = 1,
@@ -111,16 +130,17 @@ namespace Artemis.Models.Profiles
                     Opacity = 1
                 };
             }
-            else if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
-                Properties = new MousePropertiesModel
+
+            // If the type is an event, set it up 
+            if (Event && EventProperties == null)
+            {
+                EventProperties = new KeyboardEventPropertiesModel
                 {
-                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
+                    ExpirationType = ExpirationType.Time,
+                    Length = new TimeSpan(0, 0, 1),
+                    TriggerDelay = new TimeSpan(0)
                 };
-            else if (LayerType == LayerType.Headset && !(Properties is HeadsetPropertiesModel))
-                Properties = new HeadsetPropertiesModel
-                {
-                    Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor())
-                };
+            }
         }
 
         public void FixOrder()
@@ -131,7 +151,7 @@ namespace Artemis.Models.Profiles
         }
 
         /// <summary>
-        ///     Returns whether the layer meets the requirements to be drawn
+        ///     Returns whether the layer meets the requirements to be drawn in the profile editor
         /// </summary>
         /// <returns></returns>
         public bool MustDraw()
@@ -147,6 +167,10 @@ namespace Artemis.Models.Profiles
             return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
         }
 
+        /// <summary>
+        ///     Returns every descendant of this layer
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
@@ -159,6 +183,10 @@ namespace Artemis.Models.Profiles
             return layers;
         }
 
+        /// <summary>
+        ///     Creates a new Keyboard layer with default settings
+        /// </summary>
+        /// <returns></returns>
         public static LayerModel CreateLayer()
         {
             return new LayerModel
