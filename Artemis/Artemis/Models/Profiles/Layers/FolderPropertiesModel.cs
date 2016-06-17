@@ -1,12 +1,12 @@
 ﻿using Artemis.Models.Interfaces;
 
-namespace Artemis.Models.Profiles.Properties
+namespace Artemis.Models.Profiles.Layers
 {
-    public class MousePropertiesModel : LayerPropertiesModel
+    public class FolderPropertiesModel : LayerPropertiesModel
     {
         public override AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false)
         {
-            return new AppliedProperties {Brush = Brush};
+            return new AppliedProperties();
         }
     }
 }

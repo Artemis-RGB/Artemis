@@ -8,7 +8,7 @@ using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Properties;
 using Artemis.Utilities;

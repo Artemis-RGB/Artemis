@@ -6,8 +6,8 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
+             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Layers"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>

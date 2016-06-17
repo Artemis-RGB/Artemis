@@ -1,5 +1,5 @@
 ﻿using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels.Profiles.Properties

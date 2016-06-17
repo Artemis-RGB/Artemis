@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 
-namespace Artemis.Models.Profiles.Properties
+namespace Artemis.Models.Profiles.Layers
 {
     [XmlInclude(typeof(SolidColorBrush))]
     [XmlInclude(typeof(LinearGradientBrush))]

@@ -6,7 +6,7 @@
              xmlns:utilities="clr-namespace:Artemis.Utilities"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
+             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Layers"
              mc:Ignorable="d"
              d:DesignHeight="40" d:DesignWidth="500">
 

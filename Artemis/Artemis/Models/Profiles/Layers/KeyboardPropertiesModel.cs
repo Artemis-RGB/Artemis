@@ -5,7 +5,7 @@ using System.Windows;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 
-namespace Artemis.Models.Profiles.Properties
+namespace Artemis.Models.Profiles.Layers
 {
     public class KeyboardPropertiesModel : LayerPropertiesModel
     {

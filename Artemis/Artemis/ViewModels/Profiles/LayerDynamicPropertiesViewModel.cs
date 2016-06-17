@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using Castle.Core.Internal;
@@ -161,22 +161,22 @@ namespace Artemis.ViewModels.Profiles
                 case "Width":
                     LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
                     {
-                        Models.Profiles.Properties.LayerPropertyOptions.LeftToRight,
-                        Models.Profiles.Properties.LayerPropertyOptions.RightToLeft
+                        Models.Profiles.Layers.LayerPropertyOptions.LeftToRight,
+                        Models.Profiles.Layers.LayerPropertyOptions.RightToLeft
                     };
                     break;
                 case "Height":
                     LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
                     {
-                        Models.Profiles.Properties.LayerPropertyOptions.Downwards,
-                        Models.Profiles.Properties.LayerPropertyOptions.Upwards
+                        Models.Profiles.Layers.LayerPropertyOptions.Downwards,
+                        Models.Profiles.Layers.LayerPropertyOptions.Upwards
                     };
                     break;
                 case "Opacity":
                     LayerPropertyOptions = new BindableCollection<LayerPropertyOptions>
                     {
-                        Models.Profiles.Properties.LayerPropertyOptions.Increase,
-                        Models.Profiles.Properties.LayerPropertyOptions.Decrease
+                        Models.Profiles.Layers.LayerPropertyOptions.Increase,
+                        Models.Profiles.Layers.LayerPropertyOptions.Decrease
                     };
                     break;
             }
