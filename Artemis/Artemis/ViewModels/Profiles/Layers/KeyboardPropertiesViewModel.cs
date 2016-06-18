@@ -5,7 +5,7 @@ using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
-namespace Artemis.ViewModels.Profiles.Properties
+namespace Artemis.ViewModels.Profiles.Layers
 {
     public class KeyboardPropertiesViewModel : LayerPropertiesViewModel
     {
