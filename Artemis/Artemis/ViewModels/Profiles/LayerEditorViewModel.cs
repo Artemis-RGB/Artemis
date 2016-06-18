@@ -7,7 +7,7 @@ using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Layers;
 using Artemis.Services;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles.Properties;
+using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
 using Ninject;
 

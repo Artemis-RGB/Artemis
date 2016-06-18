@@ -2,7 +2,7 @@
 using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 
-namespace Artemis.ViewModels.Profiles.Properties
+namespace Artemis.ViewModels.Profiles.Layers
 {
     public class FolderPropertiesViewModel : LayerPropertiesViewModel
     {

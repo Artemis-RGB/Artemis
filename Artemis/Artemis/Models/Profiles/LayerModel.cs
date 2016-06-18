@@ -42,9 +42,33 @@ namespace Artemis.Models.Profiles
         [XmlIgnore]
         public GifImage GifImage { get; set; }
 
+        /// <summary>
+        /// Checks whether this layers conditions are met. 
+        /// If they are met and this layer is an event, this also triggers that event.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
         public bool ConditionsMet<T>(IDataModel dataModel)
         {
-            return Enabled && Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
+            // Conditions are not even checked if the layer isn't enabled
+            if (!Enabled)
+                return false;
+
+            if (Event)
+            {
+                if (EventProperties.MustStop(this))
+                {
+                    EventProperties.MustTrigger = true;
+                    return false;
+                }
+            }
+
+            var conditionsMet = Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
+            if (conditionsMet && Event && EventProperties.MustTrigger)
+                EventProperties.TriggerEvent(this);
+
+            return conditionsMet;
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)

@@ -23,13 +23,8 @@
     </controls:MetroWindow.Resources>
 
     <Grid Margin="10,0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="65*" />
-            <ColumnDefinition Width="86*" />
-            <ColumnDefinition Width="65*" />
-            <ColumnDefinition Width="86*" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -39,31 +34,48 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Label Grid.Row="0" Grid.ColumnSpan="4" FontSize="20" Content="Basics" />
+        <Grid Grid.Row="0">
+            <!-- Header -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="65" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="65" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.ColumnSpan="4" FontSize="20" Content="Basics" />
 
-        <!-- Layer name -->
-        <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,12" FontSize="13.333" Text="Name:"
+            <!-- Layer name -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,12" FontSize="13.333" Text="Name:"
                    VerticalAlignment="Center" Height="18" />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Text="{Binding Path=ProposedLayer.Name}" />
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Width="200" Text="{Binding Path=ProposedLayer.Name}" />
 
-        <!-- Layer type -->
-        <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
+            <!-- Layer type -->
+            <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
                    VerticalAlignment="Center" Height="18" />
 
-        <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource LayerEnumValues}}"
-                  Margin="10" SelectedItem="{Binding Path=LayerType}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+            <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource LayerEnumValues}}"
+                  Margin="10" Width="120"  SelectedItem="{Binding Path=LayerType}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <!-- Event toggle -->
+            <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <ToggleButton Grid.Row="1" Grid.Column="5" x:Name="IsEvent" Margin="0,4,6,0" Width="25" Height="25" Style="{DynamicResource MetroCircleToggleButtonStyle}" VerticalAlignment="Center"/>
+        </Grid>
 
         <!-- Condition editor -->
-        <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" FontSize="20" Content="Display if.." />
-        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="1"
-                BorderBrush="{StaticResource GrayBrush7}" Margin="10,0" SnapsToDevicePixels="True">
+        <Label Grid.Row="2" Grid.Column="0" FontSize="20" Content="Display if.." />
+        <Border Grid.Row="3" Grid.Column="0" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}" Margin="10,0" SnapsToDevicePixels="True">
             <ListBox Height="138" x:Name="LayerConditionVms" ScrollViewer.VerticalScrollBarVisibility="Visible">
                 <ListBox.Template>
                     <ControlTemplate>
@@ -74,7 +86,7 @@
                 </ListBox.Template>
             </ListBox>
         </Border>
-        <Button Grid.Row="4" Grid.Column="3" x:Name="AddCondition" Content="Add condition" VerticalAlignment="Center"
+        <Button Grid.Row="4" x:Name="AddCondition" Content="Add condition" VerticalAlignment="Center"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Right" Height="30"
                 Margin="0,10,10,10" ScrollViewer.VerticalScrollBarVisibility="Auto" />
 
@@ -83,12 +95,15 @@
                Content="Advanced" Width="97" VerticalAlignment="Bottom" />
 
         <!-- Advanced settings -->
-        <ContentControl Grid.Row="5" Grid.ColumnSpan="4" Grid.Column="0" x:Name="LayerPropertiesViewModel" />
+        <ContentControl Grid.Row="5" Grid.Column="0" x:Name="LayerPropertiesViewModel" />
 
-        <Button Grid.Row="6" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
+        <!-- Event settings -->
+        <ContentControl Grid.Row="6" Grid.Column="0" x:Name="EventPropertiesViewModel" />
+        
+        <Button Grid.Row="7" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
                 Height="30" />
-        <Button Grid.Row="6" Grid.Column="1" x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
+        <Button Grid.Row="7" x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
                 Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
                 Height="30" />
     </Grid>

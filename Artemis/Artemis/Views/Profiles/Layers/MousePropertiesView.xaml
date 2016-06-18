@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.Views.Profiles.Properties.HeadsetPropertiesView"
+﻿<UserControl x:Class="Artemis.Views.Profiles.Layers.MousePropertiesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,7 +28,7 @@
         </StackPanel>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="10,2,10,10" FontSize="13.333"
                    Foreground="{DynamicResource HighlightBrush}"
-                   Text="Note: If your headset has multiple controllable LEDs you can create a gradient. Artemis will take the colors in the gradient and assign them to the LEDs"
+                   Text="Note: If your mouse has multiple controllable LEDs you can create a gradient. Artemis will take the colors in the gradient and assign them to the LEDs"
                    VerticalAlignment="Top" Height="Auto" TextWrapping="Wrap" />
     </Grid>
 </UserControl>

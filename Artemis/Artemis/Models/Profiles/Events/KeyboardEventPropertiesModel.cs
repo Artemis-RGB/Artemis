@@ -21,6 +21,9 @@ namespace Artemis.Models.Profiles.Events
 
         public override bool MustStop(LayerModel layer)
         {
+            if (!MustTrigger)
+                return false;
+
             var keyboardProperties = layer.Properties as KeyboardPropertiesModel;
             if (keyboardProperties == null)
                 throw new ArgumentException("Layer's properties cannot be null " +
