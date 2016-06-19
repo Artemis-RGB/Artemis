@@ -7,6 +7,7 @@ using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Layers;
 using Artemis.Services;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Events;
 using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
 using Ninject;
@@ -16,11 +17,11 @@ namespace Artemis.ViewModels.Profiles
     public sealed class LayerEditorViewModel : Screen
     {
         private readonly IDataModel _dataModel;
+        private EventPropertiesViewModel _eventPropertiesViewModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private LayerType _layerType;
         private LayerModel _proposedLayer;
-        private LayerPropertiesModel _proposedProperties;
 
         public LayerEditorViewModel(IDataModel dataModel, LayerModel layer)
         {
@@ -41,6 +42,7 @@ namespace Artemis.ViewModels.Profiles
 
             PreSelect();
         }
+
 
         public bool ModelChanged { get; set; }
 
@@ -97,15 +99,27 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
+        public EventPropertiesViewModel EventPropertiesViewModel
+        {
+            get { return _eventPropertiesViewModel; }
+            set
+            {
+                if (Equals(value, _eventPropertiesViewModel)) return;
+                _eventPropertiesViewModel = value;
+                NotifyOfPropertyChange(() => EventPropertiesViewModel);
+            }
+        }
+
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType == LayerType.Keyboard;
         public bool GifGridIsVisible => ProposedLayer.LayerType == LayerType.KeyboardGif;
 
         public void PreSelect()
         {
             LayerType = ProposedLayer.LayerType;
-
             if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
                 LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
+
+            ToggleIsEvent();
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
@@ -150,6 +164,13 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }
 
+        public void ToggleIsEvent()
+        {
+            EventPropertiesViewModel = ProposedLayer.IsEvent
+                ? new EventPropertiesViewModel(Layer.EventProperties)
+                : null;
+        }
+
         public void AddCondition()
         {
             var condition = new LayerConditionModel();
@@ -160,9 +181,13 @@ namespace Artemis.ViewModels.Profiles
         {
             Layer.Name = ProposedLayer.Name;
             Layer.LayerType = ProposedLayer.LayerType;
+            Layer.IsEvent = ProposedLayer.IsEvent;
 
             if (LayerPropertiesViewModel != null)
                 Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
+            if (EventPropertiesViewModel != null)
+                Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
+
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
             {
@@ -202,8 +227,8 @@ namespace Artemis.ViewModels.Profiles
                 return;
             }
 
-            var close =
-                await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
+            var close = await DialogService
+                .ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
             callback(close.Value);
         }
     }

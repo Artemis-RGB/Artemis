@@ -7,8 +7,9 @@
                       xmlns:utilities="clr-namespace:Artemis.Utilities"
                       xmlns:sys="clr-namespace:System;assembly=mscorlib"
                       mc:Ignorable="d"
-                      Title="Artemis | Edit Layer" Height="750" Width="630"
+                      Title="Artemis | Edit Layer" Height="820" Width="630"
                       xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
+                      xmlns:cal="http://www.caliburnproject.org"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../../Resources/bow.png"
                       ResizeMode="NoResize">
     <controls:MetroWindow.Resources>
@@ -52,15 +53,16 @@
 
             <!-- Layer name -->
             <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,12" FontSize="13.333" Text="Name:"
-                   VerticalAlignment="Center" Height="18" />
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Width="200" Text="{Binding Path=ProposedLayer.Name}" />
+                       VerticalAlignment="Center" Height="18" />
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="Name" Margin="10" Width="200"
+                     Text="{Binding Path=ProposedLayer.Name}" />
 
             <!-- Layer type -->
             <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
-                   VerticalAlignment="Center" Height="18" />
+                       VerticalAlignment="Center" Height="18" />
 
             <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource LayerEnumValues}}"
-                  Margin="10" Width="120"  SelectedItem="{Binding Path=LayerType}">
+                      Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
@@ -69,13 +71,18 @@
             </ComboBox>
 
             <!-- Event toggle -->
-            <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right" VerticalAlignment="Center" />
-            <ToggleButton Grid.Row="1" Grid.Column="5" x:Name="IsEvent" Margin="0,4,6,0" Width="25" Height="25" Style="{DynamicResource MetroCircleToggleButtonStyle}" VerticalAlignment="Center"/>
+            <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right"
+                   VerticalAlignment="Center" />
+            <ToggleButton Grid.Row="1" Grid.Column="5" Margin="0,4,6,0" Width="25" Height="25"
+                          IsChecked="{Binding Path=ProposedLayer.IsEvent}"
+                          Style="{DynamicResource MetroCircleToggleButtonStyle}" VerticalAlignment="Center" 
+                          cal:Message.Attach="[Event Click] = [Action ToggleIsEvent]" />
         </Grid>
 
         <!-- Condition editor -->
         <Label Grid.Row="2" Grid.Column="0" FontSize="20" Content="Display if.." />
-        <Border Grid.Row="3" Grid.Column="0" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}" Margin="10,0" SnapsToDevicePixels="True">
+        <Border Grid.Row="3" Grid.Column="0" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                Margin="10,0" SnapsToDevicePixels="True">
             <ListBox Height="138" x:Name="LayerConditionVms" ScrollViewer.VerticalScrollBarVisibility="Visible">
                 <ListBox.Template>
                     <ControlTemplate>
@@ -99,13 +106,17 @@
 
         <!-- Event settings -->
         <ContentControl Grid.Row="6" Grid.Column="0" x:Name="EventPropertiesViewModel" />
-        
-        <Button Grid.Row="7" Grid.Column="0" x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
-                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
-                Height="30" />
-        <Button Grid.Row="7" x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
-                Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left" Margin="10,0,0,20"
-                Height="30" />
+
+        <StackPanel Grid.Row="7" Grid.Column="0" Orientation="Horizontal">
+            <Button x:Name="Apply" Content="Apply" VerticalAlignment="Bottom"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left"
+                    Margin="10,0,0,20"
+                    Height="30" />
+            <Button x:Name="PreSelect" Content="Reset" VerticalAlignment="Bottom"
+                    Style="{DynamicResource SquareButtonStyle}" Width="95" HorizontalAlignment="Left"
+                    Margin="10,0,0,20"
+                    Height="30" />
+        </StackPanel>
     </Grid>
 
 </controls:MetroWindow>
