@@ -15,15 +15,14 @@ namespace Artemis.Models.Profiles.Events
                 return;
 
             MustTrigger = false;
+            MustDraw = true;
             keyboardProperties.AnimationProgress = 0.0;
-            layer.GifImage.CurrentFrame = 0;
+            if (layer.GifImage != null)
+                layer.GifImage.CurrentFrame = 0;
         }
 
         public override bool MustStop(LayerModel layer)
         {
-            if (!MustTrigger)
-                return false;
-
             var keyboardProperties = layer.Properties as KeyboardPropertiesModel;
             if (keyboardProperties == null)
                 throw new ArgumentException("Layer's properties cannot be null " +
@@ -34,14 +33,18 @@ namespace Artemis.Models.Profiles.Events
                 case ExpirationType.Time:
                     return DateTime.Now - AnimationStart > Length;
                 case ExpirationType.Animation:
-                    if (keyboardProperties.Animation == LayerAnimation.None)
-                        return true;
                     if (layer.LayerType == LayerType.KeyboardGif)
-                        return layer.GifImage.FrameCount >= layer.GifImage.CurrentFrame;
-                    if (keyboardProperties.Animation == LayerAnimation.Grow)
-                        return keyboardProperties.AnimationProgress > 10;
-                    if (keyboardProperties.Animation == LayerAnimation.Pulse)
-                        return keyboardProperties.AnimationProgress > 2;
+                        return layer.GifImage?.CurrentFrame >= layer.GifImage?.FrameCount - 1;
+
+                    switch (keyboardProperties.Animation)
+                    {
+                        case LayerAnimation.None:
+                            return true;
+                        case LayerAnimation.Grow:
+                            return keyboardProperties.AnimationProgress > 10;
+                        case LayerAnimation.Pulse:
+                            return keyboardProperties.AnimationProgress > 2;
+                    }
 
                     return keyboardProperties.AnimationProgress + keyboardProperties.AnimationSpeed*2 >=
                            keyboardProperties.Height*4;

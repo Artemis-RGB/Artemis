@@ -469,6 +469,7 @@
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="Utilities\ValueConverters.cs" />
+    <Compile Include="Utilities\ValueConverters\MilliSecondTimespanConverter.cs" />
     <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
     <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />

@@ -18,6 +18,10 @@ namespace Artemis.Models.Profiles
         public LayerModel()
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
+
+            var model = Properties as KeyboardPropertiesModel;
+            if (model != null)
+                GifImage = new GifImage(model.GifFile);
         }
 
         public string Name { get; set; }
@@ -25,7 +29,7 @@ namespace Artemis.Models.Profiles
         public LayerType LayerType { get; set; }
         public bool Enabled { get; set; }
         public bool Expanded { get; set; }
-        public bool Event { get; set; }
+        public bool IsEvent { get; set; }
         public LayerPropertiesModel Properties { get; set; }
         public EventPropertiesModel EventProperties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
@@ -55,19 +59,16 @@ namespace Artemis.Models.Profiles
             if (!Enabled)
                 return false;
 
-            if (Event)
-            {
-                if (EventProperties.MustStop(this))
-                {
-                    EventProperties.MustTrigger = true;
-                    return false;
-                }
-            }
-
             var conditionsMet = Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
-            if (conditionsMet && Event && EventProperties.MustTrigger)
+
+            if (IsEvent)
+                EventProperties.Update(this, conditionsMet);
+
+            if (conditionsMet && IsEvent && EventProperties.MustTrigger)
                 EventProperties.TriggerEvent(this);
 
+            if (IsEvent)
+                return conditionsMet && EventProperties.MustDraw;
             return conditionsMet;
         }
 
@@ -156,7 +157,7 @@ namespace Artemis.Models.Profiles
             }
 
             // If the type is an event, set it up 
-            if (Event && EventProperties == null)
+            if (IsEvent && EventProperties == null)
             {
                 EventProperties = new KeyboardEventPropertiesModel
                 {

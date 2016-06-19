@@ -29,13 +29,18 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
+        <!-- Event label -->
+        <Label Grid.Row="0" Grid.Column="0" FontSize="20" HorizontalAlignment="Left"
+               Content="Event" Width="97" VerticalAlignment="Bottom" />
+
         <!-- Expiration type -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="10" FontSize="13.333" Text="Expiration type:"
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="10" FontSize="13.333" Text="Expiration type:"
                    VerticalAlignment="Center" Height="18" />
-        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Source={StaticResource ExpirationEnumValues}}"
-                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}" Height="22">
+        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Source={StaticResource ExpirationEnumValues}}"
+                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.ExpirationType}" Height="22">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
@@ -44,15 +49,17 @@
         </ComboBox>
 
         <!-- Tigger delay -->
-        <TextBlock Grid.Row="0" Grid.Column="2" Margin="10" FontSize="13.333" Text="Event delay (ms):"
+        <TextBlock Grid.Row="1" Grid.Column="2" Margin="10" FontSize="13.333" Text="Event delay (ms):"
                    VerticalAlignment="Center" Height="18" />
-        <controls:NumericUpDown Grid.Row="0" Grid.Column="3" Minimum="0" Interval="100" StringFormat="C2"
-                                Margin="10,10,10,0" Height="22" />
+        <controls:NumericUpDown Grid.Row="1" Grid.Column="3" Minimum="0" Interval="100" StringFormat="#"
+                                Margin="10,10,10,0" Height="22"
+                                Value="{Binding Path=ProposedProperties.TriggerDelay, Converter={StaticResource MilliSecondTimespanConverter}}" />
 
-        <!-- Tigger delay -->
-        <TextBlock Grid.Row="1" Grid.Column="0" Margin="10" FontSize="13.333" Text="Event time (ms):"
+        <!-- Event length -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="10" FontSize="13.333" Text="Event time (ms):"
                    VerticalAlignment="Center" Height="18" />
-        <controls:NumericUpDown Grid.Row="1" Grid.Column="1" Minimum="0" Interval="100" StringFormat="C2"
-                                Margin="10,10,10,0" Height="22" />
+        <controls:NumericUpDown Grid.Row="2" Grid.Column="1" Minimum="0" Interval="100" StringFormat="#"
+                                Margin="10,10,10,0" Height="22"
+                                Value="{Binding Path=ProposedProperties.Length, Converter={StaticResource MilliSecondTimespanConverter}}" />
     </Grid>
 </UserControl>
