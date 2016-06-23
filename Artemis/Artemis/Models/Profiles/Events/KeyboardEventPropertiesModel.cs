@@ -31,6 +31,8 @@ namespace Artemis.Models.Profiles.Events
             switch (ExpirationType)
             {
                 case ExpirationType.Time:
+                    if (AnimationStart == DateTime.MinValue)
+                        return false;
                     return DateTime.Now - AnimationStart > Length;
                 case ExpirationType.Animation:
                     if (layer.LayerType == LayerType.KeyboardGif)
