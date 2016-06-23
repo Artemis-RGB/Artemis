@@ -9,6 +9,7 @@ namespace Artemis.Modules.Games.Overwatch
         public bool UltimateReady { get; set; }
         public bool Ability1Ready { get; set; }
         public bool Ability2Ready { get; set; }
+        public bool UltimateUsed { get; set; }
     }
 
     public enum OverwatchStatus
