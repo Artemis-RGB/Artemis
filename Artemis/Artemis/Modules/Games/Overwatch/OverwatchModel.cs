@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Managers;
 using Artemis.Models;
@@ -90,24 +90,25 @@ namespace Artemis.Modules.Games.Overwatch
             if (colors == null)
                 return;
 
+            MainManager.Logger.Trace("DataModel: \r\n{0}",
+                JsonConvert.SerializeObject(gameDataModel, Formatting.Indented));
+
             // Determine general game state
             ParseGameSate(gameDataModel, colors);
 
             // Parse the lighting
             var characterMatch = ParseCharacter(gameDataModel, colors);
 
-            // Ult can't possibly be ready within 5 seconds of changing, this avoids false positives.
+            // Ult can't possibly be ready within 2 seconds of changing, this avoids false positives.
             // Filtering on ultready and ultused removes false positives from the native ultimate effects
-            if (_characterChange.AddSeconds(5) >= DateTime.Now ||
-                _ultimateUsed.AddSeconds(10) >= DateTime.Now ||
-                _ultimateReady.AddSeconds(10) >= DateTime.Now)
+            if (_characterChange.AddSeconds(2) >= DateTime.Now ||
+                _ultimateUsed.AddSeconds(2) >= DateTime.Now ||
+                _ultimateReady.AddSeconds(2) >= DateTime.Now)
                 return;
 
             ParseUltimate(gameDataModel, characterMatch, colors);
             ParseAbility1(gameDataModel, colors);
             ParseAbility2(gameDataModel, colors);
-
-            
         }
 
         private void ParseGameSate(OverwatchDataModel gameDataModel, Color[,] colors)
@@ -130,8 +131,17 @@ namespace Artemis.Modules.Games.Overwatch
 
         private CharacterColor? ParseCharacter(OverwatchDataModel gameDataModel, Color[,] colors)
         {
-            // Look up character color in the table
-            var characterMatch = OverwatchCharacters.FirstOrDefault(c => c.Color == colors[0, 0]);
+            var characterMatch = new CharacterColor {Character = OverwatchCharacter.None};
+
+            // Scan an entire row of keys, minimizing the chance of misreading it due to animations
+            // Could read entire set of arrays but this is cheaper
+            for (var i = 0; i < 22; i++)
+            {
+                characterMatch = OverwatchCharacters.FirstOrDefault(c => c.Color == colors[1, i]);
+                if (characterMatch.Character != OverwatchCharacter.None)
+                    break;
+            }
+
             if (_ultimateReady.AddSeconds(2) >= DateTime.Now && characterMatch.Character == OverwatchCharacter.None)
                 return null;
 
@@ -171,7 +181,7 @@ namespace Artemis.Modules.Games.Overwatch
 
             // UltimateUsed is true for 10 seconds after ultimate went on cooldown
             if (_ultimateUsed != DateTime.MinValue)
-                gameDataModel.UltimateUsed = _ultimateUsed.AddSeconds(10) <= DateTime.Now;
+                gameDataModel.UltimateUsed = _ultimateUsed.AddSeconds(10) >= DateTime.Now;
         }
 
         private void ParseAbility1(OverwatchDataModel gameDataModel, Color[,] colors)
@@ -194,5 +204,7 @@ namespace Artemis.Modules.Games.Overwatch
     {
         public OverwatchCharacter Character { get; set; }
         public Color Color { get; set; }
+        public Point UltPoint { get; set; }
+        public Color UltColor { get; set; }
     }
 }
