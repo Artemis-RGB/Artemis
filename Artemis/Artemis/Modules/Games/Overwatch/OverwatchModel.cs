@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Media;
 using Artemis.Managers;
 using Artemis.Models;
@@ -15,7 +14,6 @@ namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
-        private readonly IEventAggregator _events;
         private DateTime _characterChange;
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
@@ -23,7 +21,6 @@ namespace Artemis.Modules.Games.Overwatch
         public OverwatchModel(IEventAggregator events, MainManager mainManager, OverwatchSettings settings)
             : base(mainManager, settings, new OverwatchDataModel())
         {
-            _events = events;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -166,7 +163,7 @@ namespace Artemis.Modules.Games.Overwatch
 
             // Ultimate is ready when Q is blinking
             var ultReady = !characterMatch.Value.Color.Equals(colors[2, 2]);
-            if (!gameDataModel.UltimateReady && ultReady)
+            if (!gameDataModel.UltimateReady && ultReady && _ultimateUsed.AddSeconds(15) <= DateTime.Now)
             {
                 _ultimateReady = DateTime.Now;
                 gameDataModel.UltimateReady = true;
@@ -175,8 +172,9 @@ namespace Artemis.Modules.Games.Overwatch
             // If ult no longer ready but it was ready before, it was used.
             if (gameDataModel.UltimateReady && !ultReady)
             {
-                _ultimateUsed = DateTime.Now;
                 gameDataModel.UltimateReady = false;
+                if (_ultimateUsed.AddSeconds(15) <= DateTime.Now)
+                    _ultimateUsed = DateTime.Now;
             }
 
             // UltimateUsed is true for 10 seconds after ultimate went on cooldown
@@ -204,7 +202,5 @@ namespace Artemis.Modules.Games.Overwatch
     {
         public OverwatchCharacter Character { get; set; }
         public Color Color { get; set; }
-        public Point UltPoint { get; set; }
-        public Color UltColor { get; set; }
     }
 }
