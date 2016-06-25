@@ -7,6 +7,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
+using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Caliburn.Micro;
 
@@ -16,6 +17,10 @@ namespace Artemis.Modules.Games.Overwatch
     {
         private readonly IEventAggregator _events;
         private DateTime _characterChange;
+        // Using sticky values on these since they can cause flickering
+        private StickyValue<OverwatchStatus> _stickyStatus;
+        private StickyValue<bool> _stickyUltimateReady;
+        private StickyValue<bool> _stickyUltimateUsed;
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
@@ -72,17 +77,37 @@ namespace Artemis.Modules.Games.Overwatch
             };
         }
 
-        public override void Dispose()
-        {
-            Initialized = false;
-        }
-
         public override void Enable()
         {
+            _stickyStatus = new StickyValue<OverwatchStatus>(300);
+            _stickyUltimateReady = new StickyValue<bool>(350);
+            _stickyUltimateUsed = new StickyValue<bool>(350);
             Initialized = true;
         }
 
+        public override void Dispose()
+        {
+            _stickyStatus.Dispose();
+            _stickyUltimateReady.Dispose();
+            _stickyUltimateUsed.Dispose();
+            Initialized = false;
+        }
+
         public override void Update()
+        {
+            UpdateOverwatch();
+            ApplyStickyValues();
+        }
+
+        private void ApplyStickyValues()
+        {
+            var gameDataModel = (OverwatchDataModel) DataModel;
+            gameDataModel.Status = _stickyStatus.Value;
+            gameDataModel.UltimateReady = _stickyUltimateReady.Value;
+            gameDataModel.UltimateUsed = _stickyUltimateUsed.Value;
+        }
+
+        public void UpdateOverwatch()
         {
             var gameDataModel = (OverwatchDataModel) DataModel;
             var colors = MmfReader.GetColorArray();
@@ -105,7 +130,7 @@ namespace Artemis.Modules.Games.Overwatch
             if (_characterChange.AddSeconds(2) >= DateTime.Now ||
                 _ultimateUsed.AddSeconds(2) >= DateTime.Now ||
                 _ultimateReady.AddSeconds(2) >= DateTime.Now ||
-                gameDataModel.Status == OverwatchStatus.InCharacterSelect)
+                _stickyStatus.Value == OverwatchStatus.InCharacterSelect)
                 return;
 
             ParseSpecialKeys(gameDataModel, characterMatch, colors);
@@ -116,18 +141,18 @@ namespace Artemis.Modules.Games.Overwatch
         {
             if (_ultimateUsed.AddSeconds(5) >= DateTime.Now)
                 return;
-            gameDataModel.Status = colors[0, 0].Equals(Color.FromRgb(55, 30, 0))
-                ? OverwatchStatus.InMainMenu
-                : OverwatchStatus.Unknown;
 
-            if (gameDataModel.Status != OverwatchStatus.InMainMenu)
+            if (colors[0, 0].Equals(Color.FromRgb(55, 30, 0)))
+                _stickyStatus.Value = OverwatchStatus.InMainMenu;
+
+            if (_stickyStatus.Value != OverwatchStatus.InMainMenu)
                 return;
 
             gameDataModel.Character = OverwatchCharacter.None;
             gameDataModel.Ability1Ready = false;
             gameDataModel.Ability2Ready = false;
-            gameDataModel.UltimateReady = false;
-            gameDataModel.UltimateUsed = false;
+            _stickyUltimateReady.Value = false;
+            _stickyUltimateUsed.Value = false;
         }
 
         private CharacterColor? ParseCharacter(OverwatchDataModel gameDataModel, Color[,] colors)
@@ -142,16 +167,18 @@ namespace Artemis.Modules.Games.Overwatch
                 return characterMatch;
 
             // If WASD isn't orange (any of them will do), player is in character select
-            var keyColor = Color.FromRgb(222, 153, 0);
-            if (colors[2, 3] != keyColor && colors[3, 2] != keyColor &&
-                colors[3, 3] != keyColor && colors[3, 4] != keyColor)
-                gameDataModel.Status = OverwatchStatus.InCharacterSelect;
-            else
-                gameDataModel.Status = OverwatchStatus.InGame;
+            _stickyStatus.Value = ControlsShown(colors) ? OverwatchStatus.InGame : OverwatchStatus.InCharacterSelect;
 
             // Update the datamodel
             gameDataModel.Character = characterMatch.Character;
             return characterMatch;
+        }
+
+        private bool ControlsShown(Color[,] colors)
+        {
+            var keyColor = Color.FromRgb(222, 153, 0);
+            return colors[2, 3] == keyColor || colors[3, 2] == keyColor ||
+                   colors[3, 3] == keyColor || colors[3, 4] == keyColor;
         }
 
         private void ParseSpecialKeys(OverwatchDataModel gameDataModel, CharacterColor? characterMatch, Color[,] colors)
@@ -168,24 +195,25 @@ namespace Artemis.Modules.Games.Overwatch
             {
                 // Player can change hero if H is blinking
                 gameDataModel.CanChangeHero = !colors[3, 7].Equals(backlidColor);
-                if (!gameDataModel.UltimateReady && ultReady)
+
+                if (!_stickyUltimateReady.Value && ultReady && ControlsShown(colors))
                 {
                     _ultimateReady = DateTime.Now;
-                    gameDataModel.UltimateReady = true;
+                    _stickyUltimateReady.Value = true;
                 }
             }
 
             // If ult no longer ready but it was ready before, it was used.
-            if (gameDataModel.UltimateReady && !ultReady)
+            if (_stickyUltimateReady.Value && !ultReady)
             {
-                gameDataModel.UltimateReady = false;
+                _stickyUltimateReady.Value = false;
                 if (_ultimateUsed.AddSeconds(15) <= DateTime.Now)
                     _ultimateUsed = DateTime.Now;
             }
 
             // UltimateUsed is true for 10 seconds after ultimate went on cooldown
             if (_ultimateUsed != DateTime.MinValue)
-                gameDataModel.UltimateUsed = _ultimateUsed.AddSeconds(10) >= DateTime.Now;
+                _stickyUltimateUsed.Value = _ultimateUsed.AddSeconds(10) >= DateTime.Now;
         }
 
         private void ParseAbilities(OverwatchDataModel gameDataModel, Color[,] colors)
