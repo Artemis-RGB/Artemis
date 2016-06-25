@@ -280,18 +280,10 @@ namespace Artemis.ViewModels.Profiles
             IWindowManager manager = new WindowManager();
             var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
             dynamic settings = new ExpandoObject();
-            var iconImage = new Image
-            {
-                Source = (DrawingImage) Application.Current.MainWindow.Resources["BowIcon"],
-                Stretch = Stretch.Uniform,
-                Margin = new Thickness(20)
-            };
-            iconImage.Arrange(new Rect(0, 0, 100, 100));
-            var bitmap = new RenderTargetBitmap(100, 100, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(iconImage);
+            var icon = ImageUtilities.GenerateWindowIcon();
 
             settings.Title = "Artemis | Edit " + layer.Name;
-            settings.Icon = bitmap;
+            settings.Icon = icon;
 
             manager.ShowDialog(editorVm, null, settings);
 

@@ -70,5 +70,24 @@ namespace Artemis.Utilities
             }
             return bitmap;
         }
+
+        /// <summary>
+        ///     Loads the BowIcon from resources and colors it according to the current theme
+        /// </summary>
+        /// <returns></returns>
+        public static RenderTargetBitmap GenerateWindowIcon()
+        {
+            var iconImage = new System.Windows.Controls.Image
+            {
+                Source = (DrawingImage) Application.Current.MainWindow.Resources["BowIcon"],
+                Stretch = Stretch.Uniform,
+                Margin = new Thickness(20)
+            };
+
+            iconImage.Arrange(new Rect(0, 0, 100, 100));
+            var bitmap = new RenderTargetBitmap(100, 100, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(iconImage);
+            return bitmap;
+        }
     }
 }
