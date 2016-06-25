@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
@@ -14,6 +15,7 @@ namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
+        private readonly IEventAggregator _events;
         private DateTime _characterChange;
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
@@ -21,6 +23,7 @@ namespace Artemis.Modules.Games.Overwatch
         public OverwatchModel(IEventAggregator events, MainManager mainManager, OverwatchSettings settings)
             : base(mainManager, settings, new OverwatchDataModel())
         {
+            _events = events;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -87,6 +90,7 @@ namespace Artemis.Modules.Games.Overwatch
             if (colors == null)
                 return;
 
+            _events.PublishOnUIThread(new RazerColorArrayChanged(colors));
             MainManager.Logger.Trace("DataModel: \r\n{0}",
                 JsonConvert.SerializeObject(gameDataModel, Formatting.Indented));
 

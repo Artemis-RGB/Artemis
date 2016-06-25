@@ -1,0 +1,29 @@
+﻿<controls:MetroWindow x:Class="Artemis.Views.DebugView"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      mc:Ignorable="d"
+                      Title="DebugView" Height="329.904" Width="446.624"
+                      GlowBrush="{DynamicResource AccentColorBrush}">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Razer output -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" Content="Razer display" />
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="75" Width="300" HorizontalAlignment="Left"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=RazerDisplay}" />
+        </Border>
+
+    </Grid>
+</controls:MetroWindow>

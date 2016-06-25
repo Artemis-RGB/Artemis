@@ -276,6 +276,7 @@
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
+    <Compile Include="Events\RazerColorArrayChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
     <Compile Include="Events\ActiveEffectChanged.cs" />
     <Compile Include="InjectionFactories\ILayerEditorVmFactory.cs" />
@@ -474,6 +475,7 @@
     <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
     <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
+    <Compile Include="ViewModels\DebugViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
     <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
@@ -500,6 +502,9 @@
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
+    <Compile Include="Views\DebugView.xaml.cs">
+      <DependentUpon>DebugView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EffectsView.xaml.cs">
       <DependentUpon>EffectsView.xaml</DependentUpon>
     </Compile>
@@ -698,6 +703,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Styles\ColorBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DebugView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
