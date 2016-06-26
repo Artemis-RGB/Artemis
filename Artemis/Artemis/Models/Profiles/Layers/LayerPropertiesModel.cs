@@ -17,12 +17,18 @@ namespace Artemis.Models.Profiles.Layers
     {
         private Brush _brush;
 
-        protected LayerPropertiesModel()
-        {
-            Conditions = new List<LayerConditionModel>();
-        }
+        public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public bool Contain { get; set; }
+        public double Opacity { get; set; }
+        public LayerAnimation Animation { get; set; }
+        public double AnimationSpeed { get; set; }
 
-        public List<LayerConditionModel> Conditions { get; set; }
+        [XmlIgnore]
+        public double AnimationProgress { get; set; }
 
         public Brush Brush
         {
@@ -47,17 +53,5 @@ namespace Artemis.Models.Profiles.Layers
                 _brush = cloned;
             }
         }
-
-        public abstract AppliedProperties GetAppliedProperties(IDataModel dataModel, bool ignoreDynamic = false);
-    }
-
-    public struct AppliedProperties
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Opacity { get; set; }
-        public Brush Brush { get; set; }
     }
 }
