@@ -19,7 +19,7 @@ namespace Artemis.Models.Profiles
         public string Operator { get; set; }
         public string Type { get; set; }
 
-        public bool ConditionMet<T>(IDataModel subject)
+        public bool ConditionMet(IDataModel subject)
         {
             if (string.IsNullOrEmpty(Field) || string.IsNullOrEmpty(Value) || string.IsNullOrEmpty(Type))
                 return false;
@@ -32,7 +32,7 @@ namespace Artemis.Models.Profiles
             if (Type == "String")
             {
                 return _interpreter.Eval<bool>($"subject.{Field}.ToLower() {Operator} value",
-                    new Parameter("subject", typeof(T), subject),
+                    new Parameter("subject", subject.GetType(), subject),
                     new Parameter("value", Value.ToLower()));
             }
 
@@ -52,7 +52,7 @@ namespace Artemis.Models.Profiles
             }
 
             return _interpreter.Eval<bool>($"subject.{Field} {Operator} value",
-                new Parameter("subject", typeof(T), subject), rightParam);
+                new Parameter("subject", subject.GetType(), subject), rightParam);
         }
     }
 }

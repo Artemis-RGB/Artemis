@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using Artemis.Layers.Interfaces;
+using Artemis.Layers.Types;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Events;
 using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
-using Artemis.Utilities.Layers;
 using Artemis.Utilities.ParentChild;
 
 namespace Artemis.Models.Profiles
@@ -24,9 +24,13 @@ namespace Artemis.Models.Profiles
                 GifImage = new GifImage(model.GifFile);
         }
 
+        public ILayerType LayerType { get; set; }
+        public ILayerCondition LayerCondition { get; set; }
+        public ILayerAnimation LayerAnimation { get; set; }
+
         public string Name { get; set; }
         public int Order { get; set; }
-        public LayerType LayerType { get; set; }
+
         public bool Enabled { get; set; }
         public bool Expanded { get; set; }
         public bool IsEvent { get; set; }
@@ -35,7 +39,10 @@ namespace Artemis.Models.Profiles
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
         [XmlIgnore]
-        public ImageSource LayerImage => Drawer.DrawThumbnail(this);
+        public LayerPropertiesModel AppliedProperties { get; set; }
+
+        [XmlIgnore]
+        public ImageSource LayerImage => LayerType.DrawThumbnail(this);
 
         [XmlIgnore]
         public LayerModel Parent { get; internal set; }
@@ -47,114 +54,37 @@ namespace Artemis.Models.Profiles
         public GifImage GifImage { get; set; }
 
         /// <summary>
-        /// Checks whether this layers conditions are met. 
-        /// If they are met and this layer is an event, this also triggers that event.
+        ///     Checks whether this layers conditions are met.
+        ///     If they are met and this layer is an event, this also triggers that event.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public bool ConditionsMet<T>(IDataModel dataModel)
+        public bool ConditionsMet(IDataModel dataModel)
         {
             // Conditions are not even checked if the layer isn't enabled
-            if (!Enabled)
-                return false;
+            return Enabled & LayerCondition.ConditionsMet(this, dataModel);
+        }
 
-            var conditionsMet = Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
+        public void Update(IDataModel dataModel, bool preview, bool updateAnimations)
+        {
+            if (!LayerType.MustDraw)
+                return;
 
-            if (IsEvent)
-                EventProperties.Update(this, conditionsMet);
-
-            if (conditionsMet && IsEvent && EventProperties.MustTrigger)
-                EventProperties.TriggerEvent(this);
-
-            if (IsEvent)
-                return conditionsMet && EventProperties.MustDraw;
-            return conditionsMet;
+            LayerType.Update(this, dataModel, preview);
+            LayerAnimation.Update(this, updateAnimations);
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
-            if (LayerType != LayerType.Keyboard && LayerType != LayerType.KeyboardGif)
+            if (!LayerType.MustDraw)
                 return;
 
-            // Preview simply shows the properties as they are. When not previewing they are applied
-            var appliedProperties = !preview
-                ? Properties.GetAppliedProperties(dataModel)
-                : Properties.GetAppliedProperties(dataModel, true);
-
-            // Update animations
-            AnimationUpdater.UpdateAnimation((KeyboardPropertiesModel) Properties, updateAnimations);
-
-            if (LayerType == LayerType.Keyboard)
-                Drawer.Draw(c, (KeyboardPropertiesModel) Properties, appliedProperties);
-            else if (LayerType == LayerType.KeyboardGif)
-                GifImage = Drawer.DrawGif(c, (KeyboardPropertiesModel) Properties, appliedProperties, GifImage);
-        }
-
-        public Brush GenerateBrush<T>(LayerType type, IDataModel dataModel, bool preview, bool updateAnimations)
-        {
-            if (!Enabled)
-                return null;
-            if (LayerType != LayerType.Folder && LayerType != type)
-                return null;
-
-            // Preview simply shows the properties as they are. When not previewing they are applied
-            AppliedProperties appliedProperties;
-            if (!preview)
-            {
-                if (!ConditionsMet<T>(dataModel))
-                    return null; // Return null when not previewing and the conditions arent met
-                appliedProperties = Properties.GetAppliedProperties(dataModel);
-            }
-            else
-                appliedProperties = Properties.GetAppliedProperties(dataModel, true);
-
-            // TODO: Mouse/headset animations
-
-            if (LayerType != LayerType.Folder)
-                return appliedProperties.Brush;
-
-            Brush res = null;
-            foreach (var layerModel in Children.OrderByDescending(l => l.Order))
-            {
-                var brush = layerModel.GenerateBrush<T>(type, dataModel, preview, updateAnimations);
-                if (brush != null)
-                    res = brush;
-            }
-            return res;
+            LayerType.Draw(this, c);
         }
 
         public void SetupProperties()
         {
-            // Set up the correct properties model
-            var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
-            if (LayerType == LayerType.Mouse && !(Properties is MousePropertiesModel))
-            {
-                Properties = new MousePropertiesModel {Brush = brush};
-                // TODO: Check for event and default properties for it
-                return;
-            }
-            if (LayerType == LayerType.Headset && !(Properties is HeadsetPropertiesModel))
-            {
-                Properties = new HeadsetPropertiesModel {Brush = brush};
-                // TODO: Check for event and default properties for it
-                return;
-            }
-
-            // Here we know that it's not a mouse/headset layer so set up the keyboard model if need be
-            if (!(Properties is KeyboardPropertiesModel))
-            {
-                Properties = new KeyboardPropertiesModel
-                {
-                    Brush = brush,
-                    Animation = LayerAnimation.None,
-                    Height = 1,
-                    Width = 1,
-                    X = 0,
-                    Y = 0,
-                    Opacity = 1
-                };
-            }
+            LayerType.SetupProperties(this);
 
             // If the type is an event, set it up 
             if (IsEvent && EventProperties == null)
@@ -189,7 +119,7 @@ namespace Artemis.Models.Profiles
                     return false;
                 parent = parent.Parent;
             }
-            return Enabled && (LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif);
+            return Enabled && LayerType.MustDraw;
         }
 
         /// <summary>
@@ -219,11 +149,10 @@ namespace Artemis.Models.Profiles
                 Name = "New layer",
                 Enabled = true,
                 Order = -1,
-                LayerType = LayerType.Keyboard,
+                LayerType = new KeyboardType(),
                 Properties = new KeyboardPropertiesModel
                 {
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),
-                    Animation = LayerAnimation.None,
                     Height = 1,
                     Width = 1,
                     X = 0,
@@ -277,25 +206,21 @@ namespace Artemis.Models.Profiles
         /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets,
+        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool includeMice, bool includeHeadsets,
             bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children.OrderByDescending(c => c.Order))
             {
-                if (!layerModel.Enabled ||
-                    !includeMice && layerModel.LayerType == LayerType.Mouse ||
-                    !includeHeadsets && layerModel.LayerType == LayerType.Headset)
+                if (!layerModel.Enabled || !includeMice && layerModel.LayerType is MouseType ||
+                    !includeHeadsets && layerModel.LayerType is HeadsetType)
                     continue;
 
-                if (!ignoreConditions)
-                {
-                    if (!layerModel.ConditionsMet<T>(dataModel))
-                        continue;
-                }
+                if (!ignoreConditions & !layerModel.ConditionsMet(dataModel))
+                    continue;
 
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetRenderLayers<T>(dataModel, includeMice, includeHeadsets, ignoreConditions));
+                layers.AddRange(layerModel.GetRenderLayers(dataModel, includeMice, includeHeadsets, ignoreConditions));
             }
 
             return layers;
@@ -316,14 +241,5 @@ namespace Artemis.Models.Profiles
         }
 
         #endregion
-    }
-
-    public enum LayerType
-    {
-        [Description("Folder")] Folder,
-        [Description("Keyboard")] Keyboard,
-        [Description("Keyboard - GIF")] KeyboardGif,
-        [Description("Mouse")] Mouse,
-        [Description("Headset")] Headset
     }
 }
