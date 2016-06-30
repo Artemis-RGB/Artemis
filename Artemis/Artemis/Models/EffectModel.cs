@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Artemis.Layers.Types;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
@@ -56,9 +57,9 @@ namespace Artemis.Models
             Profile.DrawProfile(keyboard, renderLayers, DataModel,
                 MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), false, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
-            mouse = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
+            mouse = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType is MouseType), DataModel);
             // Render the first enabled headset (will default to null if renderHeadsets was false)
-            headset = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset), DataModel);
+            headset = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType is HeadsetType), DataModel);
 
             // Trace debugging
             if (DateTime.Now.AddSeconds(-2) <= LastTrace)

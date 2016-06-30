@@ -7,9 +7,9 @@ namespace Artemis.Layers.Conditions
 {
     public class DataModelCondition : ILayerCondition
     {
-        public bool ConditionsMet<T>(IDataModel dataModel, LayerModel layer)
+        public bool ConditionsMet(LayerModel layer, IDataModel dataModel)
         {
-            return layer.Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
+            return layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
         }
     }
 }

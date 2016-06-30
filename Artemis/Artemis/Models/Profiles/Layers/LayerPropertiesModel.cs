@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using Artemis.Models.Interfaces;
 
 namespace Artemis.Models.Profiles.Layers
 {
@@ -9,23 +8,20 @@ namespace Artemis.Models.Profiles.Layers
     [XmlInclude(typeof(LinearGradientBrush))]
     [XmlInclude(typeof(RadialGradientBrush))]
     [XmlInclude(typeof(MatrixTransform))]
+    [XmlInclude(typeof(SimplePropertiesModel))]
     [XmlInclude(typeof(KeyboardPropertiesModel))]
-    [XmlInclude(typeof(MousePropertiesModel))]
-    [XmlInclude(typeof(HeadsetPropertiesModel))]
-    [XmlInclude(typeof(FolderPropertiesModel))]
-    public abstract class LayerPropertiesModel
+    public abstract class LayerPropertiesModel 
     {
         private Brush _brush;
 
-        public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
         public bool Contain { get; set; }
         public double Opacity { get; set; }
-        public LayerAnimation Animation { get; set; }
         public double AnimationSpeed { get; set; }
+        public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
 
         [XmlIgnore]
         public double AnimationProgress { get; set; }
@@ -53,5 +49,9 @@ namespace Artemis.Models.Profiles.Layers
                 _brush = cloned;
             }
         }
+    }
+
+    public class SimplePropertiesModel : LayerPropertiesModel
+    {
     }
 }

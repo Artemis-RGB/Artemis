@@ -465,8 +465,6 @@
     <Compile Include="Utilities\GifImage.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
-    <Compile Include="Utilities\Layers\AnimationUpdater.cs" />
-    <Compile Include="Utilities\Layers\Drawer.cs" />
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\LogitechDll\DllManager.cs" />
     <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />

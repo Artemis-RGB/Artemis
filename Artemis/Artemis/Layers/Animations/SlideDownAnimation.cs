@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Artemis.Layers.Interfaces;
+using Artemis.Models.Profiles;
 using Artemis.Models.Profiles.Layers;
 
 namespace Artemis.Layers.Animations
@@ -9,19 +10,19 @@ namespace Artemis.Layers.Animations
     {
         public string Name { get; } = "Slide down";
 
-        public void Update(LayerPropertiesModel properties, bool updateAnimations)
+        public void Update(LayerModel layerModel, bool updateAnimations)
         {
-            var progress = properties.AnimationProgress;
-            if (progress + properties.AnimationSpeed*2 >= properties.Height*4)
+            var progress = layerModel.Properties.AnimationProgress;
+            if (progress + layerModel.Properties.AnimationSpeed*2 >= layerModel.Properties.Height*4)
                 progress = 0;
-            progress = progress + properties.AnimationSpeed*2;
+            progress = progress + layerModel.Properties.AnimationSpeed*2;
 
             // If not previewing, store the animation progress in the actual model for the next frame
             if (updateAnimations)
-                properties.AnimationProgress = progress;
+                layerModel.Properties.AnimationProgress = progress;
         }
 
-        public void Draw(DrawingContext c, KeyboardPropertiesModel props, AppliedProperties applied)
+        public void Draw(LayerPropertiesModel props, LayerPropertiesModel applied, DrawingContext c)
         {
             if (applied.Brush == null)
                 return;

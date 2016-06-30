@@ -1,23 +1,86 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Layers.Interfaces;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles;
+using Artemis.Models.Profiles.Layers;
+using Artemis.Properties;
+using Artemis.Utilities;
 
 namespace Artemis.Layers.Types
 {
     internal class KeyboardGifType : ILayerType
     {
         public string Name { get; } = "Keyboard - GIF";
+        public bool MustDraw { get; } = true;
 
-        public bool MustDraw(IDataModel dataModel, LayerModel layer)
+        public ImageSource DrawThumbnail(LayerModel layer)
         {
-            throw new NotImplementedException();
+            var thumbnailRect = new Rect(0, 0, 18, 18);
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+
+            var image = new DrawingImage(visual.Drawing);
+            return image;
         }
 
-        public void Draw(DrawingContext c, LayerModel layer)
+        public void Draw(LayerModel layer, DrawingContext c)
         {
-            throw new NotImplementedException();
+            var props = (KeyboardPropertiesModel) layer.Properties;
+            if (string.IsNullOrEmpty(props.GifFile))
+                return;
+            if (!File.Exists(props.GifFile))
+                return;
+
+            // Only reconstruct GifImage if the underlying source has changed
+            if (layer.GifImage == null)
+                layer.GifImage = new GifImage(props.GifFile);
+            if (layer.GifImage.Source != props.GifFile)
+                layer.GifImage = new GifImage(props.GifFile);
+
+            var rect = new Rect(layer.AppliedProperties.X * 4,
+                    layer.AppliedProperties.Y * 4,
+                    layer.AppliedProperties.Width * 4,
+                    layer.AppliedProperties.Height * 4);
+
+            lock (layer.GifImage)
+            {
+                var draw = layer.GifImage.GetNextFrame();
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), rect);
+            }
+        }
+
+        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        {
+            layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
+            if (isPreview)
+                return;
+
+            // If not previewing, apply dynamic properties according to datamodel
+            var keyboardProps = (KeyboardPropertiesModel)layerModel.AppliedProperties;
+            foreach (var dynamicProperty in keyboardProps.DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
+        }
+
+        public void SetupProperties(LayerModel layerModel)
+        {
+            if (layerModel.Properties is KeyboardPropertiesModel)
+                return;
+
+            var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
+            layerModel.Properties = new KeyboardPropertiesModel
+            {
+                Brush = brush,
+                Height = 1,
+                Width = 1,
+                X = 0,
+                Y = 0,
+                Opacity = 1
+            };
         }
     }
 }

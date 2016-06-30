@@ -4,11 +4,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using Artemis.Layers.Types;
 using Artemis.Models.Interfaces;
 using Artemis.Models.Profiles.Layers;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
-using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -33,32 +33,6 @@ namespace Artemis.Models.Profiles
         [XmlIgnore]
         public DrawingVisual DrawingVisual { get; set; }
 
-        protected bool Equals(ProfileModel other)
-        {
-            return string.Equals(Name, other.Name) &&
-                   string.Equals(KeyboardSlug, other.KeyboardSlug) &&
-                   string.Equals(GameName, other.GameName);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((ProfileModel)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Name?.GetHashCode() ?? 0;
-                hashCode = (hashCode * 397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (GameName?.GetHashCode() ?? 0);
-                return hashCode;
-            }
-        }
-
         public void FixOrder()
         {
             Layers.Sort(l => l.Order);
@@ -66,7 +40,7 @@ namespace Artemis.Models.Profiles
                 Layers[i].Order = i;
         }
 
-        public void DrawProfile<T>(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
+        public void DrawProfile(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
             bool updateAnimations)
         {
             var visual = new DrawingVisual();
@@ -83,23 +57,9 @@ namespace Artemis.Models.Profiles
                 // Remove the clip
                 c.Pop();
             }
-            
-            using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
+
+            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
-        }
-
-        public Brush GenerateBrush<T>(IDataModel dataModel, LayerType type, bool preview, bool updateAnimations)
-        {
-            Brush result = null;
-            // Draw the layers
-            foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
-            {
-                var generated = layerModel.GenerateBrush<T>(type, dataModel, preview, updateAnimations);
-                if (generated != null)
-                    result = generated;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -127,25 +87,21 @@ namespace Artemis.Models.Profiles
         /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers<T>(IDataModel dataModel, bool includeMice, bool includeHeadsets,
+        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool includeMice, bool includeHeadsets,
             bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
             {
-                if (!layerModel.Enabled ||
-                    !includeMice && layerModel.LayerType == LayerType.Mouse ||
-                    !includeHeadsets && layerModel.LayerType == LayerType.Headset)
+                if (!layerModel.Enabled || !includeMice && layerModel.LayerType is MouseType ||
+                    !includeHeadsets && layerModel.LayerType is HeadsetType)
                     continue;
 
-                if (!ignoreConditions)
-                {
-                    if (!layerModel.ConditionsMet<T>(dataModel))
-                        continue;
-                }
-
+                if (!ignoreConditions & !layerModel.ConditionsMet(dataModel))
+                    continue;
+                
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetRenderLayers<T>(dataModel, includeMice, includeHeadsets, ignoreConditions));
+                layers.AddRange(layerModel.GetRenderLayers(dataModel, includeMice, includeHeadsets, ignoreConditions));
             }
 
             return layers;
@@ -159,10 +115,10 @@ namespace Artemis.Models.Profiles
         {
             foreach (var layer in GetLayers())
             {
-                if (layer.LayerType != LayerType.Keyboard && layer.LayerType != LayerType.KeyboardGif)
+                if (!layer.LayerType.MustDraw)
                     continue;
 
-                var props = (KeyboardPropertiesModel)layer.Properties;
+                var props = (KeyboardPropertiesModel) layer.Properties;
                 var layerRect = new Rect(new Point(props.X, props.Y), new Size(props.Width, props.Height));
                 if (keyboardRectangle.Contains(layerRect))
                     continue;
@@ -182,9 +138,8 @@ namespace Artemis.Models.Profiles
         /// <param name="keyboardRect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
-        internal void DrawProfile(Graphics keyboard, List<LayerModel> renderLayers, IDataModel dataModel, Rect keyboardRect,
-            bool preview,
-            bool updateAnimations)
+        internal void DrawProfile(Graphics keyboard, List<LayerModel> renderLayers, IDataModel dataModel,
+            Rect keyboardRect, bool preview, bool updateAnimations)
         {
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
@@ -194,30 +149,45 @@ namespace Artemis.Models.Profiles
                 c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                foreach (var layerModel in renderLayers
-                    .Where(l => l.LayerType == LayerType.Keyboard ||
-                                l.LayerType == LayerType.KeyboardGif))
-                {
+                foreach (var layerModel in renderLayers.Where(l => l.LayerType.MustDraw))
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                }
 
                 // Remove the clip
                 c.Pop();
             }
-            
-            using (Bitmap bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
+
+            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
         }
 
-        /// <summary>
-        ///     Generates a brush out of the given layer, for usage with mice and headsets
-        /// </summary>
-        /// <param name="layerModel">The layer to base the brush on</param>
-        /// <param name="dataModel">The game data model to base the layer's properties on</param>
-        /// <returns>The generated brush</returns>
-        public Brush GenerateBrush(LayerModel layerModel, IDataModel dataModel)
+        #region Compare
+
+        protected bool Equals(ProfileModel other)
         {
-            return layerModel?.Properties.GetAppliedProperties(dataModel).Brush;
+            return string.Equals(Name, other.Name) &&
+                   string.Equals(KeyboardSlug, other.KeyboardSlug) &&
+                   string.Equals(GameName, other.GameName);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ProfileModel) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Name?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
+                hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
+                return hashCode;
+            }
+        }
+
+        #endregion
     }
 }

@@ -7,9 +7,9 @@ namespace Artemis.Layers.Conditions
 {
     public class EventCondition : ILayerCondition
     {
-        public bool ConditionsMet<T>(IDataModel dataModel, LayerModel layer)
+        public bool ConditionsMet(LayerModel layer, IDataModel dataModel)
         {
-            var conditionsMet = layer.Properties.Conditions.All(cm => cm.ConditionMet<T>(dataModel));
+            var conditionsMet = layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
             layer.EventProperties.Update(layer, conditionsMet);
 
             if (conditionsMet && layer.EventProperties.MustTrigger)
