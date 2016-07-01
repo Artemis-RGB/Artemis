@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Events;
@@ -8,7 +7,6 @@ using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using Ninject;
 
 namespace Artemis.ViewModels
 {
@@ -21,7 +19,8 @@ namespace Artemis.ViewModels
         private bool _enabled;
         private string _toggleText;
 
-        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events, MetroDialogService dialogService, ShellViewModel shellViewModel,
+        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events,
+            MetroDialogService dialogService, ShellViewModel shellViewModel,
             MainManager mainManager)
         {
             _windowManager = windowManager;
@@ -125,7 +124,7 @@ namespace Artemis.ViewModels
 
         private async void ShowKeyboardDialog()
         {
-            while(!_shellViewModel.IsActive)
+            while (!_shellViewModel.IsActive)
                 await Task.Delay(200);
 
             NotifyOfPropertyChange(() => CanHideWindow);

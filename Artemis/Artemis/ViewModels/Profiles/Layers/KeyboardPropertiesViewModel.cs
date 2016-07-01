@@ -1,7 +1,8 @@
 ﻿using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Layers;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Utilities;
 using Caliburn.Micro;
 

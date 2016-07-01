@@ -4,7 +4,7 @@ using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.ProfilePreview
@@ -48,7 +48,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            Profile?.DrawProfile(keyboard, renderLayers, DataModel, MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), true, true);
+            Profile?.DrawProfile(keyboard, renderLayers, DataModel,
+                MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), true, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
             mouse = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
             // Render the first enabled headset (will default to null if renderHeadsets was false)

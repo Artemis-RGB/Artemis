@@ -32,7 +32,7 @@ namespace Artemis.DeviceProviders
         public abstract void Disable();
 
         /// <summary>
-        /// Tries to enable the device and updates CanUse accordingly asynchronously
+        ///     Tries to enable the device and updates CanUse accordingly asynchronously
         /// </summary>
         /// <returns></returns>
         public Task<bool> TryEnableAsync()

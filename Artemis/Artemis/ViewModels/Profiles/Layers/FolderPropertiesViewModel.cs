@@ -1,5 +1,5 @@
 ﻿using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles.Layers;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 
 namespace Artemis.ViewModels.Profiles.Layers

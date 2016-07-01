@@ -84,7 +84,7 @@
                         <Track.Thumb>
                             <Thumb Style="{StaticResource SliderThumbStyle}"
                                    Background="{TemplateBinding Background}"
-                                   BorderBrush="{TemplateBinding BorderBrush}"/>
+                                   BorderBrush="{TemplateBinding BorderBrush}" />
                         </Track.Thumb>
                     </Track>
                 </ControlTemplate>
@@ -491,7 +491,8 @@
                                                                                                SelectedGradient="{Binding}"
                                                                                                Margin="0,0,0,2">
                                                                             <nc:GradientStopSlider.Background>
-                                                                                <SolidColorBrush Color="{Binding Color}"/>
+                                                                                <SolidColorBrush
+                                                                                    Color="{Binding Color}" />
                                                                             </nc:GradientStopSlider.Background>
                                                                         </nc:GradientStopSlider>
                                                                         <ControlTemplate.Triggers>

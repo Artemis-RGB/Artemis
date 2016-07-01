@@ -6,7 +6,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Caliburn.Micro;

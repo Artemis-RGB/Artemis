@@ -5,7 +5,6 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using Artemis.Utilities;
 using MahApps.Metro;
-using NLog;
 
 namespace Artemis.Settings
 {

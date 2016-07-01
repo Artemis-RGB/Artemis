@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.ViewModels.Abstract;
@@ -42,7 +41,7 @@ namespace Artemis.ViewModels
 
             ActiveItem = _viewModels.FirstOrDefault();
         }
-        
+
         public void Settings()
         {
             Flyouts.First().IsOpen = !Flyouts.First().IsOpen;

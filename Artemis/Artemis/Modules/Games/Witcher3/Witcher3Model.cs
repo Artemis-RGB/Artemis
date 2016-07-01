@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 
 namespace Artemis.Modules.Games.Witcher3
 {
     public class Witcher3Model : GameModel
     {
-        private readonly Stopwatch _updateSw;
         private readonly Regex _configRegex;
+        private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
         public Witcher3Model(MainManager mainManager, Witcher3Settings settings)

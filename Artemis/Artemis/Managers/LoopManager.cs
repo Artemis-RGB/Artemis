@@ -21,7 +21,8 @@ namespace Artemis.Managers
         private readonly Timer _loopTimer;
         private Bitmap _keyboardBitmap;
 
-        public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
+        public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager,
+            DeviceManager deviceManager)
         {
             events.Subscribe(this);
             _logger = logger;
@@ -46,6 +47,18 @@ namespace Artemis.Managers
             _loopTimer.Stop();
             _loopTimer.Dispose();
             _keyboardBitmap?.Dispose();
+        }
+
+        public void Handle(ActiveEffectChanged message)
+        {
+            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
+                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
+        }
+
+        public void Handle(ActiveKeyboardChanged message)
+        {
+            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
+                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
         }
 
         public Task StartAsync()
@@ -137,7 +150,7 @@ namespace Artemis.Managers
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
-                using (Graphics keyboardGraphics = Graphics.FromImage(_keyboardBitmap))
+                using (var keyboardGraphics = Graphics.FromImage(_keyboardBitmap))
                 {
                     // Fill the bitmap's background with black to avoid trailing colors on some keyboards
                     keyboardGraphics.Clear(Color.Black);
@@ -164,18 +177,6 @@ namespace Artemis.Managers
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(_keyboardBitmap);
             }
-        }
-
-        public void Handle(ActiveKeyboardChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null &&_effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
         }
     }
 }

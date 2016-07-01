@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 

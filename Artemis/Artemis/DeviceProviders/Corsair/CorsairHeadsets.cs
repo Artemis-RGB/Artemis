@@ -49,7 +49,6 @@ namespace Artemis.DeviceProviders.Corsair
 
             using (var img = ImageUtilities.DrawinVisualToBitmap(visual, rect))
             {
-
                 var ledIndex = 0;
                 // Color each LED according to one of the pixels
                 foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)

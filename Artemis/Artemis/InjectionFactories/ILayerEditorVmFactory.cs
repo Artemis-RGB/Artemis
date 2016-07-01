@@ -1,5 +1,5 @@
 ﻿using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.InjectionFactories

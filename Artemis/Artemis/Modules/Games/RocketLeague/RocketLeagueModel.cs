@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;

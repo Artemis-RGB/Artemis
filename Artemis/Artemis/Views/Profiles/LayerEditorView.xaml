@@ -75,7 +75,7 @@
                    VerticalAlignment="Center" />
             <ToggleButton Grid.Row="1" Grid.Column="5" Margin="0,4,6,0" Width="25" Height="25"
                           IsChecked="{Binding Path=ProposedLayer.IsEvent}"
-                          Style="{DynamicResource MetroCircleToggleButtonStyle}" VerticalAlignment="Center" 
+                          Style="{DynamicResource MetroCircleToggleButtonStyle}" VerticalAlignment="Center"
                           cal:Message.Attach="[Event Click] = [Action ToggleIsEvent]" />
         </Grid>
 
