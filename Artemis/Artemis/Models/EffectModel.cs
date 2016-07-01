@@ -9,7 +9,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Newtonsoft.Json;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Models
 {
@@ -43,7 +42,7 @@ namespace Artemis.Models
         public abstract void Update();
 
         // Called after every update
-        public virtual void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public virtual void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -56,12 +55,29 @@ namespace Artemis.Models
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            Profile.DrawProfile(keyboard, renderLayers, DataModel,
-                MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), false, true);
-            // Render the first enabled mouse (will default to null if renderMice was false)
-            mouse = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType is MouseType), DataModel);
-            // Render the first enabled headset (will default to null if renderHeadsets was false)
-            headset = Profile.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType is HeadsetType), DataModel);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
+                g.Clear(Color.Black);
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.MustDraw()), DataModel, keyboardRect, false, true);
+            }
+
+            // Render the mouse layer-by-layer
+            mouse = new Bitmap(50, 50);
+            using (var g = Graphics.FromImage(mouse))
+            {
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, keyboardRect,
+                    false, true);
+            }
+
+            // Render the headset layer-by-layer
+            headset = new Bitmap(50, 50);
+            using (var g = Graphics.FromImage(headset))
+            {
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, keyboardRect,
+                    false, true);
+            }
 
             // Trace debugging
             if (DateTime.Now.AddSeconds(-2) <= LastTrace)

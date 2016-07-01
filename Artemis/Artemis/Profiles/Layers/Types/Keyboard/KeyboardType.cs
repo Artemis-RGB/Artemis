@@ -4,6 +4,7 @@ using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
@@ -77,6 +78,17 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
                 Y = 0,
                 Opacity = 1
             };
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
+            LayerModel proposedLayer)
+        {
+            var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
+            if (model == null)
+                return new KeyboardPropertiesViewModel(dataModel, proposedLayer.Properties) { IsGif = false };
+
+            model.IsGif = false;
+            return layerPropertiesViewModel;
         }
     }
 }

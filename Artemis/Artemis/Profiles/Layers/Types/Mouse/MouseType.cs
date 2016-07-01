@@ -6,6 +6,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.Mouse
 {
@@ -42,6 +43,14 @@ namespace Artemis.Profiles.Layers.Types.Mouse
 
             var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
             layerModel.Properties = new SimplePropertiesModel {Brush = brush, Opacity = 1};
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
+            LayerModel proposedLayer)
+        {
+            if (layerPropertiesViewModel is MousePropertiesViewModel)
+                return layerPropertiesViewModel;
+            return new MousePropertiesViewModel(dataModel, proposedLayer.Properties);
         }
     }
 }

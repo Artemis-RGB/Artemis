@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Interfaces
 {
@@ -38,9 +39,18 @@ namespace Artemis.Profiles.Layers.Interfaces
         void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false);
 
         /// <summary>
-        ///     Sets up the layer's properties to accommodate this layer time
+        ///     Sets up the layer's properties to accommodate this layerType
         /// </summary>
         /// <param name="layerModel"></param>
         void SetupProperties(LayerModel layerModel);
+
+        /// <summary>
+        ///     Sets up a viewmodel to accomodate this layerType
+        /// </summary>
+        /// <param name="layerPropertiesViewModel">The current viewmodel</param>
+        /// <param name="dataModel">The datamodel to use in the new viewmodel</param>
+        /// <param name="proposedLayer">The layer to use in the new viewmodel</param>
+        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
+            LayerModel proposedLayer);
     }
 }

@@ -5,6 +5,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.Folder
 {
@@ -36,6 +37,14 @@ namespace Artemis.Profiles.Layers.Types.Folder
 
         public void SetupProperties(LayerModel layerModel)
         {
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            IDataModel dataModel, LayerModel proposedLayer)
+        {
+            if (layerPropertiesViewModel is FolderPropertiesViewModel)
+                return layerPropertiesViewModel;
+            return new FolderPropertiesViewModel(dataModel, proposedLayer.Properties);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            Profile?.DrawProfile(keyboard, renderLayers, DataModel,
+            Profile?.DrawLayers(keyboard, renderLayers, DataModel,
                 MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), true, true);
             // Render the first enabled mouse (will default to null if renderMice was false)
             mouse = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);

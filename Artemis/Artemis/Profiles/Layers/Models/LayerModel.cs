@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
-using Artemis.Profiles.Events;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Keyboard;

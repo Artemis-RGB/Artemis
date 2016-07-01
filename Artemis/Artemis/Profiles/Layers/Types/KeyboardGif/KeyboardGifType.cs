@@ -8,6 +8,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
 {
@@ -80,6 +81,17 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
                 Y = 0,
                 Opacity = 1
             };
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
+            LayerModel proposedLayer)
+        {
+            var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
+            if (model == null)
+                return new KeyboardPropertiesViewModel(dataModel, proposedLayer.Properties) {IsGif = true};
+
+            model.IsGif = true;
+            return layerPropertiesViewModel;
         }
     }
 }

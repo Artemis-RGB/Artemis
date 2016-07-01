@@ -3,8 +3,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
+using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Events;
@@ -20,7 +22,7 @@ namespace Artemis.ViewModels.Profiles
         private EventPropertiesViewModel _eventPropertiesViewModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
-        private LayerType _layerType;
+        private ILayerType _layerType;
         private LayerModel _proposedLayer;
 
         public LayerEditorViewModel(IDataModel dataModel, LayerModel layer)
@@ -50,10 +52,10 @@ namespace Artemis.ViewModels.Profiles
         public MetroDialogService DialogService { get; set; }
 
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-
         public BindableCollection<string> LayerTypes => new BindableCollection<string>();
-
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
+        public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
+        public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
 
         public LayerModel Layer
         {
@@ -77,7 +79,7 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public LayerType LayerType
+        public ILayerType LayerType
         {
             get { return _layerType; }
             set
@@ -110,14 +112,11 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public bool KeyboardGridIsVisible => ProposedLayer.LayerType == LayerType.Keyboard;
-        public bool GifGridIsVisible => ProposedLayer.LayerType == LayerType.KeyboardGif;
-
         public void PreSelect()
         {
             LayerType = ProposedLayer.LayerType;
-            if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
+            //if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
+            //    LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
 
             ToggleIsEvent();
         }
@@ -137,29 +136,12 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.SetupProperties();
             }
 
+            // Let the layer type handle the viewmodel setup
+            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(LayerPropertiesViewModel, _dataModel,
+                ProposedLayer);
+
             if (oldBrush != null)
                 ProposedLayer.Properties.Brush = oldBrush;
-
-            // Update the KeyboardPropertiesViewModel if it's being used
-            var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;
-            if (model != null)
-                model.IsGif = LayerType == LayerType.KeyboardGif;
-
-            // Apply the proper PropertiesViewModel
-            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
-                !(LayerPropertiesViewModel is KeyboardPropertiesViewModel))
-            {
-                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_dataModel, ProposedLayer.Properties)
-                {
-                    IsGif = LayerType == LayerType.KeyboardGif
-                };
-            }
-            else if (LayerType == LayerType.Mouse && !(LayerPropertiesViewModel is MousePropertiesViewModel))
-                LayerPropertiesViewModel = new MousePropertiesViewModel(_dataModel, ProposedLayer.Properties);
-            else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
-                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_dataModel, ProposedLayer.Properties);
-            else if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
 
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
         }
@@ -194,8 +176,9 @@ namespace Artemis.ViewModels.Profiles
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
             }
 
-            if (Layer.LayerType != LayerType.KeyboardGif)
-                return; // Don't bother checking for a GIF path unless the type is GIF
+            // Don't bother checking for a GIF path unless the type is GIF
+            if (!(Layer.LayerType is KeyboardGifType))
+                return;
             if (!File.Exists(((KeyboardPropertiesModel) Layer.Properties).GifFile))
                 DialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }

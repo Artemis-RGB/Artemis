@@ -42,7 +42,7 @@ namespace Artemis.Profiles
                 Layers[i].Order = i;
         }
 
-        public void DrawProfile(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
+        public void DrawLayers(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
             bool updateAnimations)
         {
             var visual = new DrawingVisual();
@@ -132,34 +132,33 @@ namespace Artemis.Profiles
         }
 
         /// <summary>
-        ///     Draw all the provided layers of type Keyboard and KeyboardGif
+        ///     Draw all the given layers on the given rect
         /// </summary>
-        /// <param name="keyboard">The graphics to draw on</param>
+        /// <param name="g">The graphics to draw on</param>
         /// <param name="renderLayers">The layers to render</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
-        /// <param name="keyboardRect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
+        /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
-        internal void DrawProfile(Graphics keyboard, List<LayerModel> renderLayers, IDataModel dataModel,
-            Rect keyboardRect, bool preview, bool updateAnimations)
+        internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect, bool preview, bool updateAnimations)
         {
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
             {
                 // Setup the DrawingVisual's size
-                c.PushClip(new RectangleGeometry(keyboardRect));
-                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+                c.PushClip(new RectangleGeometry(rect));
+                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, rect);
 
                 // Draw the layers
-                foreach (var layerModel in renderLayers.Where(l => l.LayerType.MustDraw))
+                foreach (var layerModel in renderLayers)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
 
                 // Remove the clip
                 c.Pop();
             }
 
-            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
-                keyboard.DrawImage(bmp, new PointF(0, 0));
+            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, rect))
+                g.DrawImage(bmp, new PointF(0, 0));
         }
 
         #region Compare
