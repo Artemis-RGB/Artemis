@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Artemis.DeviceProviders
@@ -16,10 +17,10 @@ namespace Artemis.DeviceProviders
         public bool CanUse { get; set; }
 
         /// <summary>
-        ///     Updates a non-keyboard to take the colours of the provided brush
+        ///     Updates a non-keyboard to take the colours found in the provided bitmap
         /// </summary>
-        /// <param name="brush"></param>
-        public abstract void UpdateDevice(Brush brush);
+        /// <param name="bitmap"></param>
+        public abstract void UpdateDevice(Bitmap bitmap);
 
         /// <summary>
         ///     Tries to enable the device and updates CanUse accordingly

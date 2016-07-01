@@ -1,8 +1,7 @@
 ﻿using System;
-using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 
-namespace Artemis.Profiles.Events
+namespace Artemis.Profiles.Layers.Models
 {
     public class KeyboardEventPropertiesModel : EventPropertiesModel
     {

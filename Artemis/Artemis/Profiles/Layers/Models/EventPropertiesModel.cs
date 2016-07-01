@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
-using Artemis.Profiles.Layers.Models;
 
-namespace Artemis.Profiles.Events
+namespace Artemis.Profiles.Layers.Models
 {
     [XmlInclude(typeof(KeyboardEventPropertiesModel))]
     public abstract class EventPropertiesModel

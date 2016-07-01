@@ -6,7 +6,6 @@ using System.Timers;
 using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Managers
 {
@@ -145,34 +144,26 @@ namespace Artemis.Managers
                     renderEffect.Update();
 
                 // Get ActiveEffect's bitmap
-                Brush mouseBrush = null;
-                Brush headsetBrush = null;
+                Bitmap mouseBitmap = null;
+                Bitmap headsetBitmap = null;
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
-                using (var keyboardGraphics = Graphics.FromImage(_keyboardBitmap))
+                if (renderEffect.Initialized)
+                    renderEffect.Render(_keyboardBitmap, out mouseBitmap, out headsetBitmap, mice.Any(), headsets.Any());
+
+                // Draw enabled overlays on top of the renderEffect
+                foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
-                    // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                    keyboardGraphics.Clear(Color.Black);
-
-                    if (renderEffect.Initialized)
-                        renderEffect.Render(keyboardGraphics, out mouseBrush, out headsetBrush, mice.Any(),
-                            headsets.Any());
-
-                    // Draw enabled overlays on top of the renderEffect
-                    foreach (var overlayModel in _effectManager.EnabledOverlays)
-                    {
-                        overlayModel.Update();
-                        overlayModel.RenderOverlay(keyboardGraphics, ref mouseBrush, ref headsetBrush, mice.Any(),
-                            headsets.Any());
-                    }
-
-                    // Update mice and headsets
-                    foreach (var mouse in mice)
-                        mouse.UpdateDevice(mouseBrush);
-                    foreach (var headset in headsets)
-                        headset.UpdateDevice(headsetBrush);
+                    overlayModel.Update();
+                    overlayModel.RenderOverlay(_keyboardBitmap, ref mouseBitmap, ref headsetBitmap, mice.Any(), headsets.Any());
                 }
+
+                // Update mice and headsets
+                foreach (var mouse in mice)
+                    mouse.UpdateDevice(mouseBitmap);
+                foreach (var headset in headsets)
+                    headset.UpdateDevice(headsetBitmap);
 
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(_keyboardBitmap);

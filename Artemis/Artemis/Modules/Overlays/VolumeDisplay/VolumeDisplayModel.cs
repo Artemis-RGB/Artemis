@@ -6,7 +6,6 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using NAudio.CoreAudioApi;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
@@ -78,11 +77,16 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplay.Transparancy = 255;
         }
 
-        public override void RenderOverlay(Graphics keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+        public override void RenderOverlay(Bitmap keyboard, ref Bitmap mouse, ref Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
-            if (MainManager.DeviceManager.ActiveKeyboard != null && VolumeDisplay != null && VolumeDisplay.Ttl >= 1)
-                VolumeDisplay.Draw(keyboard);
+            if (MainManager.DeviceManager.ActiveKeyboard == null || VolumeDisplay == null || VolumeDisplay.Ttl < 1)
+                return;
+
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                VolumeDisplay.Draw(g);
+            }
         }
     }
 }

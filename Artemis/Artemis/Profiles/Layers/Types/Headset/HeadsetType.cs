@@ -6,6 +6,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.Headset
 {
@@ -42,6 +43,14 @@ namespace Artemis.Profiles.Layers.Types.Headset
 
             var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
             layerModel.Properties = new SimplePropertiesModel {Brush = brush, Opacity = 1};
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
+            LayerModel proposedLayer)
+        {
+            if (layerPropertiesViewModel is HeadsetPropertiesViewModel)
+                return layerPropertiesViewModel;
+            return new HeadsetPropertiesViewModel(dataModel, proposedLayer.Properties);
         }
     }
 }

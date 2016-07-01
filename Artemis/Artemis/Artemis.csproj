@@ -301,8 +301,8 @@
     <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\Interfaces\GameDataModel.cs" />
     <Compile Include="Models\OverlaySettings.cs" />
-    <Compile Include="Profiles\Events\EventPropertiesModel.cs" />
-    <Compile Include="Profiles\Events\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
