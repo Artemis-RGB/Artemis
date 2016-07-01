@@ -1,16 +1,9 @@
 using System.Collections.Generic;
 using System.Windows.Media;
-using System.Xml.Serialization;
-using Artemis.Profiles.Layers.Types.Keyboard;
+using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
 {
-    [XmlInclude(typeof(SolidColorBrush))]
-    [XmlInclude(typeof(LinearGradientBrush))]
-    [XmlInclude(typeof(RadialGradientBrush))]
-    [XmlInclude(typeof(MatrixTransform))]
-    [XmlInclude(typeof(SimplePropertiesModel))]
-    [XmlInclude(typeof(KeyboardPropertiesModel))]
     public abstract class LayerPropertiesModel
     {
         private Brush _brush;
@@ -24,7 +17,7 @@ namespace Artemis.Profiles.Layers.Models
         public double AnimationSpeed { get; set; }
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
 
-        [XmlIgnore]
+        [JsonIgnore]
         public double AnimationProgress { get; set; }
 
         public Brush Brush

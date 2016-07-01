@@ -586,7 +586,7 @@ namespace Artemis.ViewModels.Profiles
                     "To import a profile, please select a keyboard in the options menu first.");
                 return;
             }
-            var dialog = new OpenFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var dialog = new OpenFileDialog {Filter = "Artemis profile (*.json)|*.json"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
@@ -644,7 +644,7 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return;
 
-            var dialog = new SaveFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var dialog = new SaveFileDialog {Filter = "Artemis profile (*.json)|*.json"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
