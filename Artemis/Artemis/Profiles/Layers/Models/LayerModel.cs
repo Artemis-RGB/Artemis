@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Headset;
@@ -10,6 +9,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
 {
@@ -38,19 +38,19 @@ namespace Artemis.Profiles.Layers.Models
         public EventPropertiesModel EventProperties { get; set; }
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public LayerPropertiesModel AppliedProperties { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
 
-        [XmlIgnore]
+        [JsonIgnore]
         public LayerModel Parent { get; internal set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public ProfileModel Profile { get; internal set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public GifImage GifImage { get; set; }
 
         /// <summary>

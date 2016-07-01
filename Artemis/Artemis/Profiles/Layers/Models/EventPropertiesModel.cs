@@ -1,42 +1,21 @@
 ﻿using System;
-using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
 {
-    [XmlInclude(typeof(KeyboardEventPropertiesModel))]
     public abstract class EventPropertiesModel
     {
         public ExpirationType ExpirationType { get; set; }
-
-        // Pretend property for serialization
-        [XmlElement("Length")]
-        public long LengthTicks
-        {
-            get { return Length.Ticks; }
-            set { Length = new TimeSpan(value); }
-        }
-
-        // Pretend property for serialization
-        [XmlElement("TriggerDelay")]
-        public long TriggerDelayTicks
-        {
-            get { return TriggerDelay.Ticks; }
-            set { TriggerDelay = new TimeSpan(value); }
-        }
-
-        [XmlIgnore]
         public TimeSpan Length { get; set; }
-
-        [XmlIgnore]
         public TimeSpan TriggerDelay { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public bool MustTrigger { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public DateTime AnimationStart { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public bool MustDraw { get; set; }
 
         /// <summary>

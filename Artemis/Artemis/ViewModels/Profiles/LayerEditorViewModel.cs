@@ -12,6 +12,7 @@ using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Events;
 using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using Ninject;
 
 namespace Artemis.ViewModels.Profiles
@@ -201,10 +202,10 @@ namespace Artemis.ViewModels.Profiles
                 fakeLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
 
-            var fake = GeneralHelpers.Serialize(fakeLayer);
-            var real = GeneralHelpers.Serialize(Layer);
+            var real = JsonConvert.SerializeObject(Layer);
+            var fake = JsonConvert.SerializeObject(fakeLayer);
 
-            if (fake.Equals(real))
+            if (real.Equals(fake))
             {
                 callback(true);
                 return;

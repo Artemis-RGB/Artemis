@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using System.Xml.Serialization;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Headset;
@@ -11,6 +10,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -32,7 +32,7 @@ namespace Artemis.Profiles
         public string KeyboardSlug { get; set; }
         public string GameName { get; set; }
 
-        [XmlIgnore]
+        [JsonIgnore]
         public DrawingVisual DrawingVisual { get; set; }
 
         public void FixOrder()
@@ -140,7 +140,8 @@ namespace Artemis.Profiles
         /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
-        internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect, bool preview, bool updateAnimations)
+        internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
+            bool preview, bool updateAnimations)
         {
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())

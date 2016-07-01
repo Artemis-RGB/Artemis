@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml.Serialization;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using static System.String;
 
 namespace Artemis.Utilities
@@ -48,31 +49,20 @@ namespace Artemis.Utilities
         {
             // Don't serialize a null object, simply return the default for that object
             if (ReferenceEquals(source, null))
+            {
                 return default(T);
-
-            var serializer = new XmlSerializer(typeof(T));
-            Stream stream = new MemoryStream();
-            using (stream)
-            {
-                serializer.Serialize(stream, source);
-                stream.Seek(0, SeekOrigin.Begin);
-                return (T) serializer.Deserialize(stream);
             }
-        }
 
-        public static string Serialize<T>(T source)
-        {
-            // Don't serialize a null object, simply return the default for that object
-            if (ReferenceEquals(source, null))
-                return null;
-
-            var serializer = new XmlSerializer(typeof(T));
-            var stream = new StringWriter();
-            using (stream)
+            // initialize inner objects individually
+            // for example in default constructor some list property initialized with some values,
+            // but in 'source' these items are cleaned -
+            // without ObjectCreationHandling.Replace default constructor values will be added to result
+            var deserializeSettings = new JsonSerializerSettings
             {
-                serializer.Serialize(stream, source);
-                return stream.ToString();
-            }
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            };
+
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source), deserializeSettings);
         }
 
         public static object GetPropertyValue(object o, string path)
