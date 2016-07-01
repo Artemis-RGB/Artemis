@@ -89,14 +89,17 @@ namespace Artemis.Modules.Effects.Bubbles
             }
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
             headset = null;
 
-            foreach (var bubble in _bubbles)
-                bubble.Draw(keyboard);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                foreach (var bubble in _bubbles)
+                    bubble.Draw(g);
+            }
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)

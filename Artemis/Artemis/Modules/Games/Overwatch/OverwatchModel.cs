@@ -224,7 +224,7 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<OverwatchDataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 

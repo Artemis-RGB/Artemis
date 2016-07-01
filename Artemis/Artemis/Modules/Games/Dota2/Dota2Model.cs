@@ -66,7 +66,7 @@ namespace Artemis.Modules.Games.Dota2
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<Dota2DataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 }

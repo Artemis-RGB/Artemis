@@ -138,7 +138,7 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<Witcher3DataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 }

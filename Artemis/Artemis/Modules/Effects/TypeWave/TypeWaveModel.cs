@@ -95,7 +95,7 @@ namespace Artemis.Modules.Effects.TypeWave
             return null;
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -126,12 +126,15 @@ namespace Artemis.Modules.Effects.TypeWave
                     CenterColor = fillColor
                 };
 
-                keyboard.FillPath(pthGrBrush, path);
-                pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
+                using (var g = Graphics.FromImage(keyboard))
+                {
+                    g.FillPath(pthGrBrush, path);
+                    pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
 
-                keyboard.FillPath(pthGrBrush, path);
-                keyboard.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
-                    _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
+                    g.FillPath(pthGrBrush, path);
+                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
+                        _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
+                }
             }
         }
     }

@@ -5,23 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
-             xmlns:utilities="clr-namespace:Artemis.Utilities"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="300"
              Width="300">
-    <UserControl.Resources>
-        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="LayerEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

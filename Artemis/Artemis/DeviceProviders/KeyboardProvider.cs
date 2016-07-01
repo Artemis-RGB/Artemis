@@ -87,7 +87,7 @@ namespace Artemis.DeviceProviders
             return Task.Run(() => Enable());
         }
 
-        public override void UpdateDevice(Brush brush)
+        public override void UpdateDevice(Bitmap bitmap)
         {
             throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
         }
