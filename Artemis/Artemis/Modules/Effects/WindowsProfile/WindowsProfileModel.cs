@@ -162,7 +162,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<WindowsProfileDataModel>(DataModel, renderMice, renderHeadsets, false);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, false);
         }
 
         public static PerformanceCounter GetOverallPerformanceCounter()

@@ -13,7 +13,7 @@ namespace Artemis.Profiles.Layers.Animations
         {
             var progress = layerModel.Properties.AnimationProgress;
 
-            if (progress > 10)
+            if (MustExpire(layerModel))
                 progress = 0;
             progress = progress + layerModel.Properties.AnimationSpeed/2.5;
 
@@ -52,5 +52,7 @@ namespace Artemis.Profiles.Layers.Animations
             c.DrawRectangle(applied.Brush, null, rect);
             c.Pop();
         }
+
+        public bool MustExpire(LayerModel layer) => layer.Properties.AnimationProgress > 10;
     }
 }

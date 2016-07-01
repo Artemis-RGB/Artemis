@@ -8,21 +8,9 @@
                       xmlns:sys="clr-namespace:System;assembly=mscorlib"
                       mc:Ignorable="d"
                       Title="Artemis | Edit Layer" Height="820" Width="630"
-                      xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
                       xmlns:cal="http://www.caliburnproject.org"
                       GlowBrush="{DynamicResource AccentColorBrush}" Icon="../../Resources/bow.png"
                       ResizeMode="NoResize">
-    <controls:MetroWindow.Resources>
-        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="LayerEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </controls:MetroWindow.Resources>
-
     <Grid Margin="10,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -61,14 +49,8 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
                        VerticalAlignment="Center" Height="18" />
 
-            <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource LayerEnumValues}}"
-                      Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <!-- TODO: Bind to ILayerTypes -->
+            <ComboBox Grid.Row="1" Grid.Column="3" Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}"/>
 
             <!-- Event toggle -->
             <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right"

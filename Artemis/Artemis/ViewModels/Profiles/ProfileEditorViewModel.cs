@@ -14,6 +14,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
@@ -128,7 +129,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                target.LayerType == LayerType.Folder)
+                target.LayerType is FolderType)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -166,7 +167,7 @@ namespace Artemis.ViewModels.Profiles
             }
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                target.LayerType == LayerType.Folder)
+                target.LayerType is FolderType)
             {
                 // Insert into folder
                 source.Order = -1;
@@ -254,7 +255,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void EditLayerFromDoubleClick()
         {
-            if (ProfileViewModel.SelectedLayer?.LayerType == LayerType.Folder)
+            if (ProfileViewModel.SelectedLayer?.LayerType is FolderType)
                 return;
 
             EditLayer();
@@ -285,7 +286,7 @@ namespace Artemis.ViewModels.Profiles
             manager.ShowDialog(editorVm, null, settings);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
-            if (layer.LayerType != LayerType.Folder && layer.Children.Any())
+            if (!(layer.LayerType is FolderType) && layer.Children.Any())
             {
                 while (layer.Children.Any())
                 {

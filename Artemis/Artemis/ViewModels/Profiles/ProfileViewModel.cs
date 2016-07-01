@@ -110,8 +110,7 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                var drawLayers = SelectedProfile.GetRenderLayers<ProfilePreviewDataModel>(
-                    new ProfilePreviewDataModel(), false, false, true);
+                var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, false, true);
                 foreach (var layer in drawLayers)
                     layer.Draw(null, drawingContext, true, false);
 

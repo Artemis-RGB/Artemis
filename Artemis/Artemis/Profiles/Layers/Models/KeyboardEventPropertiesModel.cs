@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Profiles.Layers.Types.Keyboard;
+using Artemis.Profiles.Layers.Types.KeyboardGif;
 
 namespace Artemis.Profiles.Layers.Models
 {
@@ -33,23 +34,11 @@ namespace Artemis.Profiles.Layers.Models
                 case ExpirationType.Time:
                     if (AnimationStart == DateTime.MinValue)
                         return false;
-                    return DateTime.Now - AnimationStart > Length;
+                    return DateTime.Now - Length > AnimationStart;
                 case ExpirationType.Animation:
-                    if (layer.LayerType == LayerType.KeyboardGif)
+                    if (layer.LayerType is KeyboardGifType)
                         return layer.GifImage?.CurrentFrame >= layer.GifImage?.FrameCount - 1;
-
-                    switch (keyboardProperties.Animation)
-                    {
-                        case LayerAnimation.None:
-                            return true;
-                        case LayerAnimation.Grow:
-                            return keyboardProperties.AnimationProgress > 10;
-                        case LayerAnimation.Pulse:
-                            return keyboardProperties.AnimationProgress > 2;
-                    }
-
-                    return keyboardProperties.AnimationProgress + keyboardProperties.AnimationSpeed*2 >=
-                           keyboardProperties.Height*4;
+                    return layer.LayerAnimation.MustExpire(layer);
                 default:
                     return true;
             }

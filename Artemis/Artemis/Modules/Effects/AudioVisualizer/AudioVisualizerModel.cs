@@ -188,7 +188,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             return null;
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -200,8 +200,11 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             // Lock the _spectrumData array while busy with it
             _generating = true;
 
-            foreach (var soundRectangle in SoundRectangles)
-                soundRectangle.Draw(keyboard);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                foreach (var soundRectangle in SoundRectangles)
+                    soundRectangle.Draw(g);
+            }
 
             _generating = false;
         }
