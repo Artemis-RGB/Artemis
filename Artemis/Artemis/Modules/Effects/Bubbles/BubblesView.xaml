@@ -120,7 +120,7 @@
                     HorizontalAlignment="Right" Width="110" TickPlacement="None" TickFrequency="1"
                     Value="{Binding Path=EffectSettings.MoveSpeed, Mode=TwoWay}" Minimum="1" Maximum="15"
                     SmallChange="10" IsSnapToTickEnabled="True" />
-            
+
             <!-- Smoothness -->
             <TextBlock Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,9,0,10">

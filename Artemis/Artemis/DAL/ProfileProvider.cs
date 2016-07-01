@@ -7,8 +7,8 @@ using System.Reflection;
 using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
-using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Layers;
+using Artemis.Profiles;
+using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
 using NLog;
@@ -144,7 +144,6 @@ namespace Artemis.DAL
                 ((KeyboardPropertiesModel) gifLayer.Properties).GifFile = gifPath;
                 AddOrUpdate(demoProfile);
             }
-            
         }
 
         /// <summary>

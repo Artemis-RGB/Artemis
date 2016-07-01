@@ -7,7 +7,6 @@
              xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
-             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Layers"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="500">
     <UserControl.Resources>

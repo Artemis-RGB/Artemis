@@ -4,9 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Events"
              xmlns:utilities="clr-namespace:Artemis.Utilities"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:properties="clr-namespace:Artemis.Profiles.Events"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="500">
     <UserControl.Resources>

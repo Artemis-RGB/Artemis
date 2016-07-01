@@ -18,7 +18,7 @@ namespace Artemis.Modules.Games.Overwatch
         Unknown,
         InMainMenu,
         InGame,
-        InCharacterSelect,
+        InCharacterSelect
     }
 
     public enum OverwatchCharacter

@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Models.Profiles.Events;
+using Artemis.Profiles.Events;
 using Artemis.Utilities;
 using Caliburn.Micro;
 

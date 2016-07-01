@@ -14,7 +14,7 @@ namespace Artemis.Modules.Effects.Bubbles
             events.Subscribe(this);
 
             MainManager.EffectManager.EffectModels.Add(EffectModel);
-            EffectSettings = ((BubblesModel)EffectModel).Settings;
+            EffectSettings = ((BubblesModel) EffectModel).Settings;
         }
 
         public void Handle(ActiveEffectChanged message)

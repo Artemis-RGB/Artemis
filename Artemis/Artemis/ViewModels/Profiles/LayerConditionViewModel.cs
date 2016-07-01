@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
 

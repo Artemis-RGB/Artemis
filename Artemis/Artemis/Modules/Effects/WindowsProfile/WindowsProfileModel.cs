@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
 
@@ -16,7 +16,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
     {
         [DllImport("psapi.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation performanceInformation, [In] int size);
+        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation performanceInformation,
+            [In] int size);
 
         public static long GetPhysicalAvailableMemoryInMiB()
         {

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Artemis.InjectionModules;
+using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.ViewModels;
 using Caliburn.Micro;
@@ -22,7 +23,7 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             // Start logging before anything else
-            Logging.SetupLogging(Settings.General.Default.LogLevel);
+            Logging.SetupLogging(General.Default.LogLevel);
 
             CheckDuplicateInstances();
             Initialize();

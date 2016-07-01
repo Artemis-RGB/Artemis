@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Artemis.Layers.Types;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
+using Artemis.Profiles;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Headset;
+using Artemis.Profiles.Layers.Types.Mouse;
 using Newtonsoft.Json;
 using Brush = System.Windows.Media.Brush;
 

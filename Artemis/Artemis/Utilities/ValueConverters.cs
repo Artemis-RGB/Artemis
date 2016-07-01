@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.ParentChild;
 
 namespace Artemis.Utilities
