@@ -54,7 +54,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
             layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
-            if (isPreview)
+            if (isPreview || dataModel == null)
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
@@ -80,12 +80,12 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             };
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
-            LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            IDataModel dataModel, LayerModel proposedLayer)
         {
             var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model == null)
-                return new KeyboardPropertiesViewModel(dataModel, proposedLayer.Properties) { IsGif = false };
+                return new KeyboardPropertiesViewModel(dataModel, proposedLayer.Properties) {IsGif = false};
 
             model.IsGif = false;
             return layerPropertiesViewModel;

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MahApps.Metro.Controls.Dialogs;
-using Brush = System.Windows.Media.Brush;
 using Size = System.Windows.Size;
 
 namespace Artemis.DeviceProviders

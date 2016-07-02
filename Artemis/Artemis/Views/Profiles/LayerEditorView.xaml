@@ -50,7 +50,7 @@
                        VerticalAlignment="Center" Height="18" />
 
             <!-- TODO: Bind to ILayerTypes -->
-            <ComboBox Grid.Row="1" Grid.Column="3" Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}"/>
+            <ComboBox Grid.Row="1" Grid.Column="3" Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}" />
 
             <!-- Event toggle -->
             <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right"

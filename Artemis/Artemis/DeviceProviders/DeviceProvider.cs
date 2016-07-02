@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Threading.Tasks;
-using System.Windows.Media;
 
 namespace Artemis.DeviceProviders
 {

@@ -2,9 +2,6 @@
 using System.Drawing;
 using System.Linq;
 using System.Threading;
-using System.Windows;
-using System.Windows.Media;
-using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Devices.Generic.Enums;
 using Ninject.Extensions.Logging;
@@ -45,7 +42,7 @@ namespace Artemis.DeviceProviders.Corsair
                 throw new ArgumentException("Bitmap must be a perfect square");
 
             var leds = CueSDK.HeadsetSDK.Leds.Count();
-            var step = (double)bitmap.Width / leds;
+            var step = (double) bitmap.Width/leds;
             using (bitmap)
             {
                 var ledIndex = 0;
@@ -55,8 +52,8 @@ namespace Artemis.DeviceProviders.Corsair
                     if (ledIndex == 0)
                         corsairLed.Color = bitmap.GetPixel(0, 0);
                     else
-                        corsairLed.Color = bitmap.GetPixel((int)((ledIndex + 1) * step - 1),
-                            (int)((ledIndex + 1) * step - 1));
+                        corsairLed.Color = bitmap.GetPixel((int) ((ledIndex + 1)*step - 1),
+                            (int) ((ledIndex + 1)*step - 1));
                     ledIndex++;
                 }
             }

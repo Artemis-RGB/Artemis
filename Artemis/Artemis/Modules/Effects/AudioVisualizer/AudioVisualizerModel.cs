@@ -11,7 +11,6 @@ using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {

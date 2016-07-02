@@ -112,7 +112,10 @@ namespace Artemis.ViewModels.Profiles
                 // Draw the layers
                 var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, false, true);
                 foreach (var layer in drawLayers)
+                {
+                    layer.Update(null, true, false);
                     layer.Draw(null, drawingContext, true, false);
+                }
 
                 // Get the selection color
                 var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Media;
+using Artemis.Utilities.Converters;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -20,6 +21,7 @@ namespace Artemis.Profiles.Layers.Models
         [JsonIgnore]
         public double AnimationProgress { get; set; }
 
+        [JsonConverter(typeof(BrushJsonConverter))]
         public Brush Brush
         {
             get { return _brush; }

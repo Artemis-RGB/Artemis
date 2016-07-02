@@ -7,7 +7,6 @@ using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Mouse;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {

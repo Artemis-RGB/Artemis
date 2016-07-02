@@ -9,6 +9,7 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.ViewModels;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using Ninject;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
@@ -78,6 +79,7 @@ namespace Artemis
 
         protected override void Configure()
         {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
             _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();

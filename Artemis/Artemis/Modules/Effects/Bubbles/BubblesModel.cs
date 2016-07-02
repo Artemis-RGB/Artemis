@@ -6,7 +6,6 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Brush = System.Windows.Media.Brush;
 using Point = System.Windows.Point;
 
 namespace Artemis.Modules.Effects.Bubbles

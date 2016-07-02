@@ -5,20 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:utilities="clr-namespace:Artemis.Utilities"
              mc:Ignorable="d"
              d:DesignHeight="500" d:DesignWidth="500">
-    <UserControl.Resources>
-        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="AnimationEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="properties:LayerAnimation" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
     <Grid>
         <!-- Colors -->
         <Grid.ColumnDefinitions>
@@ -40,15 +28,9 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
                    VerticalAlignment="Center"
                    Height="18" />
-        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Source={StaticResource AnimationEnumValues}}"
-                  Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
-                  VerticalAlignment="Top" Height="22">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <!-- TODO -->
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
+                  VerticalAlignment="Top" Height="22"/>
 
         <!-- Animation Speed -->
         <TextBlock Grid.Row="0" Grid.Column="2" Margin="10" FontSize="13.333" Text="Animation speed:"

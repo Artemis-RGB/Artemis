@@ -83,8 +83,8 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             };
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
-            LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            IDataModel dataModel, LayerModel proposedLayer)
         {
             var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model == null)
