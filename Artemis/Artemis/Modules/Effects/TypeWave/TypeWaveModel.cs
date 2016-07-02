@@ -9,7 +9,6 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.TypeWave
 {

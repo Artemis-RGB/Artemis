@@ -42,7 +42,7 @@ namespace Artemis.DeviceProviders.Corsair
                 throw new ArgumentException("Bitmap must be a perfect square");
 
             var leds = CueSDK.MouseSDK.Leds.Count();
-            var step = (double)bitmap.Width/ leds;
+            var step = (double) bitmap.Width/leds;
             using (bitmap)
             {
                 var ledIndex = 0;

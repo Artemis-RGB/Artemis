@@ -54,8 +54,10 @@ namespace Artemis.Profiles
 
                 // Draw the layers
                 foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
+                {
+                    layerModel.Update(dataModel, preview, updateAnimations);
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-
+                }
                 // Remove the clip
                 c.Pop();
             }
@@ -152,7 +154,10 @@ namespace Artemis.Profiles
 
                 // Draw the layers
                 foreach (var layerModel in renderLayers)
+                {
+                    layerModel.Update(dataModel, preview, updateAnimations);
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
+                }
 
                 // Remove the clip
                 c.Pop();

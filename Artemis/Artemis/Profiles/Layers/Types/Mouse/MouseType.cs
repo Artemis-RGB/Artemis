@@ -45,8 +45,8 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             layerModel.Properties = new SimplePropertiesModel {Brush = brush, Opacity = 1};
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
-            LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            IDataModel dataModel, LayerModel proposedLayer)
         {
             if (layerPropertiesViewModel is MousePropertiesViewModel)
                 return layerPropertiesViewModel;

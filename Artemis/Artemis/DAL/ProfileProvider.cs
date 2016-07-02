@@ -159,7 +159,9 @@ namespace Artemis.DAL
             try
             {
                 var prof = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(path));
-                if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
+                if (prof == null)
+                    return null;
+                if (prof.GameName.Length < 1 || prof.KeyboardSlug.Length < 1 || prof.Name.Length < 1)
                     return null;
                 return prof;
             }

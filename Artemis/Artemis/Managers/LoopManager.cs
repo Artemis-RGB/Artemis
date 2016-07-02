@@ -156,7 +156,8 @@ namespace Artemis.Managers
                 foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
                     overlayModel.Update();
-                    overlayModel.RenderOverlay(_keyboardBitmap, ref mouseBitmap, ref headsetBitmap, mice.Any(), headsets.Any());
+                    overlayModel.RenderOverlay(_keyboardBitmap, ref mouseBitmap, ref headsetBitmap, mice.Any(),
+                        headsets.Any());
                 }
 
                 // Update mice and headsets

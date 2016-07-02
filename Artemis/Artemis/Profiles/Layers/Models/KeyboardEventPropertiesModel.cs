@@ -38,7 +38,7 @@ namespace Artemis.Profiles.Layers.Models
                 case ExpirationType.Animation:
                     if (layer.LayerType is KeyboardGifType)
                         return layer.GifImage?.CurrentFrame >= layer.GifImage?.FrameCount - 1;
-                    return layer.LayerAnimation.MustExpire(layer);
+                    return layer.LayerAnimation == null || layer.LayerAnimation.MustExpire(layer);
                 default:
                     return true;
             }

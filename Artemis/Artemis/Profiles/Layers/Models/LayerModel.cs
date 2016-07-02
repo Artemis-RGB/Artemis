@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Keyboard;
@@ -71,7 +72,7 @@ namespace Artemis.Profiles.Layers.Models
                 return;
 
             LayerType.Update(this, dataModel, preview);
-            LayerAnimation.Update(this, updateAnimations);
+            LayerAnimation?.Update(this, updateAnimations);
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
@@ -150,6 +151,7 @@ namespace Artemis.Profiles.Layers.Models
                 Enabled = true,
                 Order = -1,
                 LayerType = new KeyboardType(),
+                LayerCondition = new DataModelCondition(),
                 Properties = new KeyboardPropertiesModel
                 {
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),

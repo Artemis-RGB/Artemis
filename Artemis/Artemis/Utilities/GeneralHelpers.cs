@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Xml.Serialization;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using static System.String;
@@ -40,7 +39,7 @@ namespace Artemis.Utilities
         }
 
         /// <summary>
-        ///     Perform a deep Copy of the object.
+        ///     Perform a deep Copy of the object, using Json as a serialisation method.
         /// </summary>
         /// <typeparam name="T">The type of object being copied.</typeparam>
         /// <param name="source">The object instance to copy.</param>
@@ -49,20 +48,15 @@ namespace Artemis.Utilities
         {
             // Don't serialize a null object, simply return the default for that object
             if (ReferenceEquals(source, null))
-            {
                 return default(T);
-            }
 
-            // initialize inner objects individually
-            // for example in default constructor some list property initialized with some values,
-            // but in 'source' these items are cleaned -
-            // without ObjectCreationHandling.Replace default constructor values will be added to result
             var deserializeSettings = new JsonSerializerSettings
             {
-                ObjectCreationHandling = ObjectCreationHandling.Replace
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                TypeNameHandling = TypeNameHandling.Auto
             };
-
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source), deserializeSettings);
+            return (T) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
+                deserializeSettings);
         }
 
         public static object GetPropertyValue(object o, string path)
