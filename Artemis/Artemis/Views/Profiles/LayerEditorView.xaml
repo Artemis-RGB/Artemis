@@ -49,8 +49,13 @@
             <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,12" FontSize="13.333" Text="Type:"
                        VerticalAlignment="Center" Height="18" />
 
-            <!-- TODO: Bind to ILayerTypes -->
-            <ComboBox Grid.Row="1" Grid.Column="3" Margin="10" Width="120" SelectedItem="{Binding Path=LayerType}" />
+            <ComboBox Grid.Row="1" Grid.Column="3" Margin="10" Width="120" x:Name="LayerTypes" >
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
 
             <!-- Event toggle -->
             <Label Grid.Row="1" Grid.Column="4" Content="Is event: " Margin="0 3 0 0" HorizontalAlignment="Right"

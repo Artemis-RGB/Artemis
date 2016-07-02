@@ -1,7 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Modules.Games.Dota2" GeneratedClassName="Dota2">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Games.Dota2" GeneratedClassName="Dota2">
   <Profiles />
   <Settings>
     <Setting Name="Enabled" Type="System.Boolean" Scope="User">
@@ -12,36 +10,6 @@
     </Setting>
     <Setting Name="GameDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="CanCastAbility" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ShowHealth" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ShowDayCycle" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ShowMana" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ShowEvents" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="MainColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FFFF0000</Value>
-    </Setting>
-    <Setting Name="ManaColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF0000FF</Value>
-    </Setting>
-    <Setting Name="KeyboardLayout" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Default</Value>
-    </Setting>
-    <Setting Name="AbilityReadyColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF00FF00</Value>
-    </Setting>
-    <Setting Name="AbilityCooldownColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF6A5ACD</Value>
     </Setting>
   </Settings>
 </SettingsFile>

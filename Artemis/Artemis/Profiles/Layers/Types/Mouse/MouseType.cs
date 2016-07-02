@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -46,11 +47,11 @@ namespace Artemis.Profiles.Layers.Types.Mouse
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            IDataModel dataModel, LayerModel proposedLayer)
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
             if (layerPropertiesViewModel is MousePropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new MousePropertiesViewModel(dataModel, proposedLayer.Properties);
+            return new MousePropertiesViewModel(layerAnimations, dataModel, proposedLayer.Properties);
         }
     }
 }

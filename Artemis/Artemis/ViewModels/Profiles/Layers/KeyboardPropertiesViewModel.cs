@@ -1,6 +1,9 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Utilities;
@@ -13,22 +16,34 @@ namespace Artemis.ViewModels.Profiles.Layers
         private Brush _brush;
         private bool _isGif;
         private KeyboardPropertiesModel _proposedProperties;
+        private ILayerAnimation _selectedLayerAnimation;
 
-        public KeyboardPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+        public KeyboardPropertiesViewModel(IEnumerable<ILayerAnimation> layerAnimations, IDataModel dataModel,
+            LayerModel layerModel)
             : base(dataModel)
         {
-            var keyboardProperties = (KeyboardPropertiesModel) properties;
+            var keyboardProperties = (KeyboardPropertiesModel)layerModel.Properties;
             ProposedProperties = GeneralHelpers.Clone(keyboardProperties);
             Brush = ProposedProperties.Brush.CloneCurrentValue();
 
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(dataModel));
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
+                GeneralHelpers.GenerateTypeMap(dataModel));
+            LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
 
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", DataModelProps, keyboardProperties);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, keyboardProperties);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, keyboardProperties);
+
+            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerType.Name);
         }
 
+        public bool ShowGif => IsGif;
+        public bool ShowBrush => !IsGif;
+        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
+        public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
+        public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
+        public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
+        public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
         public KeyboardPropertiesModel ProposedProperties
         {
@@ -63,17 +78,16 @@ namespace Artemis.ViewModels.Profiles.Layers
             }
         }
 
-        public bool ShowGif => IsGif;
-
-        public bool ShowBrush => !IsGif;
-
-        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-
-        public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
-
-        public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
-
-        public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
+        public ILayerAnimation SelectedLayerAnimation
+        {
+            get { return _selectedLayerAnimation; }
+            set
+            {
+                if (Equals(value, _selectedLayerAnimation)) return;
+                _selectedLayerAnimation = value;
+                NotifyOfPropertyChange(() => SelectedLayerAnimation);
+            }
+        }
 
         public void BrowseGif()
         {

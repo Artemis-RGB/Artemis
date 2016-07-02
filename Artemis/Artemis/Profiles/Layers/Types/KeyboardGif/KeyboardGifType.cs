@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -84,11 +85,14 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            IDataModel dataModel, LayerModel proposedLayer)
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
             var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model == null)
-                return new KeyboardPropertiesViewModel(dataModel, proposedLayer.Properties) {IsGif = true};
+                return new KeyboardPropertiesViewModel(layerAnimations, dataModel, proposedLayer.Properties)
+                {
+                    IsGif = true
+                };
 
             model.IsGif = true;
             return layerPropertiesViewModel;
