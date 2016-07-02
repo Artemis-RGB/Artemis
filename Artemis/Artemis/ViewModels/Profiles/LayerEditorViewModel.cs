@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -20,15 +21,18 @@ namespace Artemis.ViewModels.Profiles
     public sealed class LayerEditorViewModel : Screen
     {
         private readonly IDataModel _dataModel;
+        private readonly List<ILayerAnimation> _layerAnimations;
         private EventPropertiesViewModel _eventPropertiesViewModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
-        private ILayerType _layerType;
         private LayerModel _proposedLayer;
+        private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer)
+        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes,
+            List<ILayerAnimation> layerAnimations)
         {
             _dataModel = dataModel;
+            _layerAnimations = layerAnimations;
 
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
@@ -36,10 +40,11 @@ namespace Artemis.ViewModels.Profiles
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(dataModel));
-            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(layer.Properties.Conditions
-                .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
+            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
+                GeneralHelpers.GenerateTypeMap(dataModel));
+            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(
+                layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
             PropertyChanged += PropertiesViewModelHandler;
 
@@ -52,8 +57,8 @@ namespace Artemis.ViewModels.Profiles
         [Inject]
         public MetroDialogService DialogService { get; set; }
 
+        public BindableCollection<ILayerType> LayerTypes { get; set; }
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-        public BindableCollection<string> LayerTypes => new BindableCollection<string>();
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
         public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
@@ -80,17 +85,6 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public ILayerType LayerType
-        {
-            get { return _layerType; }
-            set
-            {
-                if (value == _layerType) return;
-                _layerType = value;
-                NotifyOfPropertyChange(() => LayerType);
-            }
-        }
-
         public LayerPropertiesViewModel LayerPropertiesViewModel
         {
             get { return _layerPropertiesViewModel; }
@@ -113,33 +107,41 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
+        public ILayerType SelectedLayerType
+        {
+            get { return _selectedLayerType; }
+            set
+            {
+                if (Equals(value, _selectedLayerType)) return;
+                _selectedLayerType = value;
+                NotifyOfPropertyChange(() => SelectedLayerType);
+            }
+        }
+
         public void PreSelect()
         {
-            LayerType = ProposedLayer.LayerType;
-            //if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-            //    LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
-
+            SelectedLayerType = LayerTypes.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
             ToggleIsEvent();
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "LayerType")
+            if (e.PropertyName != "SelectedLayerType")
                 return;
 
             // Store the brush in case the user wants to reuse it
             var oldBrush = LayerPropertiesViewModel?.GetAppliedProperties().Brush;
 
             // Update the model
-            if (ProposedLayer.LayerType != LayerType)
+            if (ProposedLayer.LayerType.GetType() != SelectedLayerType.GetType())
             {
-                ProposedLayer.LayerType = LayerType;
+                ProposedLayer.LayerType = SelectedLayerType;
                 ProposedLayer.SetupProperties();
             }
 
             // Let the layer type handle the viewmodel setup
-            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(LayerPropertiesViewModel, _dataModel,
-                ProposedLayer);
+            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(LayerPropertiesViewModel, _layerAnimations,
+                _dataModel, ProposedLayer);
 
             if (oldBrush != null)
                 ProposedLayer.Properties.Brush = oldBrush;

@@ -1,7 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)"
-              GeneratedClassNamespace="Artemis.Modules.Games.CounterStrike" GeneratedClassName="CounterStrike">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Artemis.Modules.Games.CounterStrike" GeneratedClassName="CounterStrike">
   <Profiles />
   <Settings>
     <Setting Name="Enabled" Type="System.Boolean" Scope="User">
@@ -12,27 +10,6 @@
     </Setting>
     <Setting Name="GameDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="AmmoEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="AmmoMainColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FFFF2900</Value>
-    </Setting>
-    <Setting Name="AmmoSecondaryColor" Type="System.Windows.Media.Color" Scope="User">
-      <Value Profile="(Default)">#FF26F600</Value>
-    </Setting>
-    <Setting Name="TeamColorEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="FlashEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="SmokeEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="LowHpEnabled" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

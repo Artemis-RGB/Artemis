@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:artemis="clr-namespace:Artemis"
-             xmlns:valueConverts="clr-namespace:Artemis.Utilities.ValueConverters"
+             xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
              DispatcherUnhandledException="Application_DispatcherUnhandledException"
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
@@ -22,7 +22,7 @@
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
                 <ResourceDictionary Source="Styles/ColorBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <valueConverts:MilliSecondTimespanConverter x:Key="MilliSecondTimespanConverter" />
+            <converters:MilliSecondTimespanConverter x:Key="MilliSecondTimespanConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

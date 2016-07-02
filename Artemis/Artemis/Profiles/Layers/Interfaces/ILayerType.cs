@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.ViewModels.Profiles.Layers;
@@ -48,9 +49,9 @@ namespace Artemis.Profiles.Layers.Interfaces
         ///     Sets up a viewmodel to accomodate this layerType
         /// </summary>
         /// <param name="layerPropertiesViewModel">The current viewmodel</param>
+        /// <param name="layerAnimations"></param>
         /// <param name="dataModel">The datamodel to use in the new viewmodel</param>
         /// <param name="proposedLayer">The layer to use in the new viewmodel</param>
-        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IDataModel dataModel,
-            LayerModel proposedLayer);
+        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer);
     }
 }

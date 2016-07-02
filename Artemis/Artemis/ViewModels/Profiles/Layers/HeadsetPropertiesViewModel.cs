@@ -1,7 +1,10 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
+using Caliburn.Micro;
 
 namespace Artemis.ViewModels.Profiles.Layers
 {
@@ -9,12 +12,28 @@ namespace Artemis.ViewModels.Profiles.Layers
     {
         private Brush _brush;
         private LayerPropertiesModel _proposedProperties;
+        private ILayerAnimation _selectedLayerAnimation;
 
-        public HeadsetPropertiesViewModel(IDataModel dataModel, LayerPropertiesModel properties)
+        public HeadsetPropertiesViewModel(IEnumerable<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerPropertiesModel properties)
             : base(dataModel)
         {
             ProposedProperties = GeneralHelpers.Clone(properties);
             Brush = ProposedProperties.Brush.CloneCurrentValue();
+
+            LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
+        }
+
+        public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
+
+        public ILayerAnimation SelectedLayerAnimation
+        {
+            get { return _selectedLayerAnimation; }
+            set
+            {
+                if (Equals(value, _selectedLayerAnimation)) return;
+                _selectedLayerAnimation = value;
+                NotifyOfPropertyChange(() => SelectedLayerAnimation);
+            }
         }
 
         public Brush Brush

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -46,11 +47,11 @@ namespace Artemis.Profiles.Layers.Types.Headset
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            IDataModel dataModel, LayerModel proposedLayer)
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
             if (layerPropertiesViewModel is HeadsetPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new HeadsetPropertiesViewModel(dataModel, proposedLayer.Properties);
+            return new HeadsetPropertiesViewModel(layerAnimations, dataModel, proposedLayer.Properties);
         }
     }
 }

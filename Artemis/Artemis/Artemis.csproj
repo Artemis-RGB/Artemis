@@ -301,6 +301,8 @@
     <Compile Include="Models\GameSettings.cs" />
     <Compile Include="Models\Interfaces\GameDataModel.cs" />
     <Compile Include="Models\OverlaySettings.cs" />
+    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
+    <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
@@ -458,7 +460,8 @@
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
-    <Compile Include="Utilities\Converters\BrushJsonConverter.cs" />
+    <Compile Include="Utilities\Converters\JsonConverters.cs" />
+    <Compile Include="Utilities\Converters\ValueConverters.cs" />
     <Compile Include="Utilities\DataReaders\MmfReader.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
@@ -482,8 +485,6 @@
     <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
-    <Compile Include="Utilities\ValueConverters.cs" />
-    <Compile Include="Utilities\ValueConverters\MilliSecondTimespanConverter.cs" />
     <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
     <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
     <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
@@ -684,7 +685,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Modules\Effects\Bubbles\BubblesView.xaml">
@@ -834,7 +837,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Utilities\ValueConverters\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\CUE.NET.1.0.3\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.3\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

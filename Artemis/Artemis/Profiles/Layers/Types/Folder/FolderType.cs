@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
@@ -40,7 +41,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            IDataModel dataModel, LayerModel proposedLayer)
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
             if (layerPropertiesViewModel is FolderPropertiesViewModel)
                 return layerPropertiesViewModel;
