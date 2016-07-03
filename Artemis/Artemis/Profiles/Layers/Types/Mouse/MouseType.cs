@@ -29,12 +29,41 @@ namespace Artemis.Profiles.Layers.Types.Mouse
 
         public void Draw(LayerModel layer, DrawingContext c)
         {
-            throw new NotImplementedException();
+            // If an animation is present, let it handle the drawing
+            if (layer.LayerAnimation != null)
+            {
+                layer.LayerAnimation.Draw(layer.Properties, layer.AppliedProperties, c);
+                return;
+            }
+
+            // Otherwise draw the rectangle with its applied dimensions and brush
+            var rect = new Rect(layer.AppliedProperties.X * 4,
+                layer.AppliedProperties.Y * 4,
+                layer.AppliedProperties.Width * 4,
+                layer.AppliedProperties.Height * 4);
+
+            c.PushClip(new RectangleGeometry(rect));
+            c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
+            c.Pop();
         }
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            throw new NotImplementedException();
+            layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
+
+            // Mouse layers are always drawn 10*10 (which is 40*40 when scaled up)
+            layerModel.AppliedProperties.Width = 10;
+            layerModel.AppliedProperties.Height = 10;
+            layerModel.AppliedProperties.X = 0;
+            layerModel.AppliedProperties.Y = 0;
+
+            if (isPreview || dataModel == null)
+                return;
+
+            // If not previewing, apply dynamic properties according to datamodel
+            var props = (SimplePropertiesModel)layerModel.AppliedProperties;
+            foreach (var dynamicProperty in props.DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
         }
 
         public void SetupProperties(LayerModel layerModel)
@@ -42,8 +71,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             if (layerModel.Properties is SimplePropertiesModel)
                 return;
 
-            var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
-            layerModel.Properties = new SimplePropertiesModel {Brush = brush, Opacity = 1};
+            layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
@@ -51,7 +79,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
         {
             if (layerPropertiesViewModel is MousePropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new MousePropertiesViewModel(layerAnimations, dataModel, proposedLayer.Properties);
+            return new MousePropertiesViewModel(proposedLayer, dataModel, layerAnimations);
         }
     }
 }

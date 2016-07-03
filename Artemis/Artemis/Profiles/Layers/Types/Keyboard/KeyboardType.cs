@@ -69,16 +69,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             if (layerModel.Properties is KeyboardPropertiesModel)
                 return;
 
-            var brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor());
-            layerModel.Properties = new KeyboardPropertiesModel
-            {
-                Brush = brush,
-                Height = 1,
-                Width = 1,
-                X = 0,
-                Y = 0,
-                Opacity = 1
-            };
+            layerModel.Properties = new KeyboardPropertiesModel(layerModel.Properties);
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
@@ -86,7 +77,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         {
             var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model == null)
-                return new KeyboardPropertiesViewModel(layerAnimations, dataModel, proposedLayer)
+                return new KeyboardPropertiesViewModel(proposedLayer, dataModel, layerAnimations)
                 {
                     IsGif = false
                 };

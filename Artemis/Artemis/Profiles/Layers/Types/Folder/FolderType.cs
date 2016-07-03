@@ -28,16 +28,18 @@ namespace Artemis.Profiles.Layers.Types.Folder
 
         public void Draw(LayerModel layer, DrawingContext c)
         {
-            // Draw children?
         }
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            // Update children?
         }
 
         public void SetupProperties(LayerModel layerModel)
         {
+            if (layerModel.Properties is SimplePropertiesModel)
+                return;
+
+            layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
@@ -45,7 +47,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
         {
             if (layerPropertiesViewModel is FolderPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new FolderPropertiesViewModel(dataModel, proposedLayer.Properties);
+            return new FolderPropertiesViewModel(proposedLayer, dataModel);
         }
     }
 }

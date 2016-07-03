@@ -5,5 +5,8 @@ namespace Artemis.Profiles.Layers.Models
     /// </summary>
     public class SimplePropertiesModel : LayerPropertiesModel
     {
+        public SimplePropertiesModel(LayerPropertiesModel properties = null) : base(properties)
+        {
+        }
     }
 }
