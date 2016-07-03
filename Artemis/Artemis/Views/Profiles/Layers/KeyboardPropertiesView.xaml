@@ -29,7 +29,7 @@
                    VerticalAlignment="Center"
                    Height="18" />
         <!-- TODO -->
-        <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" SelectedItem="{Binding Path=ProposedProperties.Animation}"
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" SelectedItem="{Binding Path=LayerModel.AnimationType}"
                   VerticalAlignment="Top" Height="22"/>
 
         <!-- Animation Speed -->
@@ -37,13 +37,13 @@
                    VerticalAlignment="Center" Height="18" />
         <Slider x:Name="RotationSpeed" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center"
                 TickPlacement="None" TickFrequency="0.05"
-                Value="{Binding Path=ProposedProperties.AnimationSpeed, Mode=TwoWay}" Minimum="0.05" Maximum="3"
+                Value="{Binding Path=LayerModel.Properties.AnimationSpeed, Mode=TwoWay}" Minimum="0.05" Maximum="3"
                 SmallChange="0" IsSnapToTickEnabled="True" Margin="10,12,10,2" Height="24" />
 
         <!-- ClippingType -->
         <TextBlock Grid.Row="1" Grid.Column="0" Margin="10, 13, 10, 10" FontSize="13.333" Text="Clipping type:"
                    VerticalAlignment="Center" Height="23" />
-        <controls:ToggleSwitch IsChecked="{Binding Path=ProposedProperties.Contain, Mode=TwoWay}"
+        <controls:ToggleSwitch IsChecked="{Binding Path=LayerModel.Properties.Contain, Mode=TwoWay}"
                                Grid.Row="1"
                                Grid.Column="1" OnLabel="Contain" OffLabel="Cut-off" Margin="10,1,5,1"
                                VerticalAlignment="Center"
@@ -55,7 +55,7 @@
                        VerticalAlignment="Top" Height="18" Width="130" />
             <Border Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
                     BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
-                <ncore:ColorBox Brush="{Binding Path=Brush, Mode=TwoWay}" Height="24" Width="134" />
+                <ncore:ColorBox Brush="{Binding Path=LayerModel.Properties.Brush, Mode=TwoWay}" Height="24" Width="134" />
             </Border>
         </StackPanel>
 
@@ -75,7 +75,7 @@
                        VerticalAlignment="Top" Height="18" />
             <Grid Grid.Row="0" Grid.Column="1" ColumnSpan="3" Margin="5,2,10,0" VerticalAlignment="Top">
                 <TextBox Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                         Text="{Binding Path=ProposedProperties.GifFile, Mode=TwoWay}" />
+                         Text="{Binding Path=LayerModel.Properties.GifFile, Mode=TwoWay}" />
                 <Button x:Name="BrowseGif" Content="..." RenderTransformOrigin="-0.039,-0.944"
                         HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="25" />
             </Grid>

@@ -1,60 +1,40 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
-using Artemis.Utilities;
 using Caliburn.Micro;
+using static Artemis.Utilities.GeneralHelpers;
 
 namespace Artemis.ViewModels.Profiles.Layers
 {
     public class KeyboardPropertiesViewModel : LayerPropertiesViewModel
     {
-        private Brush _brush;
         private bool _isGif;
-        private KeyboardPropertiesModel _proposedProperties;
         private ILayerAnimation _selectedLayerAnimation;
 
-        public KeyboardPropertiesViewModel(IEnumerable<ILayerAnimation> layerAnimations, IDataModel dataModel,
-            LayerModel layerModel)
-            : base(dataModel)
+        public KeyboardPropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
+            IEnumerable<ILayerAnimation> layerAnimations) : base(layerModel, dataModel)
         {
-            var keyboardProperties = (KeyboardPropertiesModel)layerModel.Properties;
-            ProposedProperties = GeneralHelpers.Clone(keyboardProperties);
-            Brush = ProposedProperties.Brush.CloneCurrentValue();
-
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
-                GeneralHelpers.GenerateTypeMap(dataModel));
             LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
 
-            HeightProperties = new LayerDynamicPropertiesViewModel("Height", DataModelProps, keyboardProperties);
-            WidthProperties = new LayerDynamicPropertiesViewModel("Width", DataModelProps, keyboardProperties);
-            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", DataModelProps, keyboardProperties);
+            var dataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
+            HeightProperties = new LayerDynamicPropertiesViewModel("Height", dataModelProps, layerModel.Properties);
+            WidthProperties = new LayerDynamicPropertiesViewModel("Width", dataModelProps, layerModel.Properties);
+            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", dataModelProps, layerModel.Properties);
 
             SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerType.Name);
         }
 
         public bool ShowGif => IsGif;
         public bool ShowBrush => !IsGif;
-        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
+        public BindableCollection<PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
         public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
-
-        public KeyboardPropertiesModel ProposedProperties
-        {
-            get { return _proposedProperties; }
-            set
-            {
-                if (Equals(value, _proposedProperties)) return;
-                _proposedProperties = value;
-                NotifyOfPropertyChange(() => ProposedProperties);
-            }
-        }
 
         public bool IsGif
         {
@@ -64,17 +44,6 @@ namespace Artemis.ViewModels.Profiles.Layers
                 _isGif = value;
                 NotifyOfPropertyChange(() => ShowGif);
                 NotifyOfPropertyChange(() => ShowBrush);
-            }
-        }
-
-        public Brush Brush
-        {
-            get { return _brush; }
-            set
-            {
-                if (Equals(value, _brush)) return;
-                _brush = value;
-                NotifyOfPropertyChange(() => Brush);
             }
         }
 
@@ -96,19 +65,17 @@ namespace Artemis.ViewModels.Profiles.Layers
             if (result != DialogResult.OK)
                 return;
 
-            ProposedProperties.GifFile = dialog.FileName;
-            NotifyOfPropertyChange(() => ProposedProperties);
+            ((KeyboardPropertiesModel) LayerModel.Properties).GifFile = dialog.FileName;
+            NotifyOfPropertyChange(() => LayerModel);
         }
 
-        public override LayerPropertiesModel GetAppliedProperties()
+        public override void ApplyProperties()
         {
-            HeightProperties.Apply(ProposedProperties);
-            WidthProperties.Apply(ProposedProperties);
-            OpacityProperties.Apply(ProposedProperties);
+            HeightProperties.Apply(LayerModel);
+            WidthProperties.Apply(LayerModel);
+            OpacityProperties.Apply(LayerModel);
 
-            var properties = GeneralHelpers.Clone(ProposedProperties);
-            properties.Brush = Brush;
-            return properties;
+            LayerModel.LayerAnimation = SelectedLayerAnimation;
         }
     }
 }

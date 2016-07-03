@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using Artemis.Profiles.Layers.Models;
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
     public class KeyboardPropertiesModel : LayerPropertiesModel
     {
-        public KeyboardPropertiesModel()
+        public KeyboardPropertiesModel(LayerPropertiesModel properties = null) : base(properties)
         {
-            DynamicProperties = new List<DynamicPropertiesModel>();
         }
 
         public string GifFile { get; set; }
-        public List<DynamicPropertiesModel> DynamicProperties { get; set; }
 
         public Rect GetRect(int scale = 4)
         {

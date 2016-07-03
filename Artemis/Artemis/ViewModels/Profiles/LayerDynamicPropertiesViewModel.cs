@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using Castle.Core.Internal;
@@ -22,13 +21,13 @@ namespace Artemis.ViewModels.Profiles
 
         public LayerDynamicPropertiesViewModel(string property,
             BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps,
-            KeyboardPropertiesModel keyboardProperties)
+            LayerPropertiesModel layerPropertiesModel)
         {
             _property = property;
 
             // Look for the existing property model
             Proposed = new DynamicPropertiesModel();
-            var original = keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            var original = layerPropertiesModel.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
             if (original == null)
             {
                 Proposed.LayerProperty = property;
@@ -207,14 +206,14 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public void Apply(KeyboardPropertiesModel keyboardProperties)
+        public void Apply(LayerModel layerModel)
         {
-            var original = keyboardProperties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            var original = layerModel.Properties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
             if (original != null)
-                keyboardProperties.DynamicProperties.Remove(original);
+                layerModel.Properties.DynamicProperties.Remove(original);
 
             if (!Proposed.GameProperty.IsNullOrEmpty())
-                keyboardProperties.DynamicProperties.Add(Proposed);
+                layerModel.Properties.DynamicProperties.Add(Proposed);
         }
     }
 }

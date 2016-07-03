@@ -130,7 +130,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             // Store the brush in case the user wants to reuse it
-            var oldBrush = LayerPropertiesViewModel?.GetAppliedProperties().Brush;
+            var oldBrush = ProposedLayer.Properties.Brush;
 
             // Update the model
             if (ProposedLayer.LayerType.GetType() != SelectedLayerType.GetType())
@@ -164,20 +164,16 @@ namespace Artemis.ViewModels.Profiles
 
         public void Apply()
         {
-            Layer.Name = ProposedLayer.Name;
-            Layer.LayerType = ProposedLayer.LayerType;
-            Layer.IsEvent = ProposedLayer.IsEvent;
-
-            if (LayerPropertiesViewModel != null)
-                Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
+            LayerPropertiesViewModel?.ApplyProperties();
+            Layer = GeneralHelpers.Clone(ProposedLayer);
+            
+            // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
 
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-            {
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
-            }
 
             // Don't bother checking for a GIF path unless the type is GIF
             if (!(Layer.LayerType is KeyboardGifType))
@@ -196,18 +192,19 @@ namespace Artemis.ViewModels.Profiles
         public override async void CanClose(Action<bool> callback)
         {
             // Create a fake layer and apply the properties to it
-            var fakeLayer = GeneralHelpers.Clone(ProposedLayer);
-            if (LayerPropertiesViewModel != null)
-                fakeLayer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
-            fakeLayer.Properties.Conditions.Clear();
+            LayerPropertiesViewModel?.ApplyProperties();
+            // TODO: EventPropVM must have layer too
+            if (EventPropertiesViewModel != null)
+                ProposedLayer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
+            ProposedLayer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                fakeLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
 
-            var real = JsonConvert.SerializeObject(Layer);
-            var fake = JsonConvert.SerializeObject(fakeLayer);
+            var current = JsonConvert.SerializeObject(Layer, Formatting.Indented);
+            var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 
-            if (real.Equals(fake))
+            if (current.Equals(proposed))
             {
                 callback(true);
                 return;

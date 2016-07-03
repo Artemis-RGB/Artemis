@@ -198,6 +198,24 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
+        public void Replace(LayerModel layer)
+        {
+            layer.Order = Order;
+            layer.Parent = null;
+            layer.Profile = null;
+
+            if (Parent != null)
+            {
+                Parent.Children.Add(layer);
+                Parent.Children.Remove(this);
+            }
+            else if (Profile != null)
+            {
+                Profile.Layers.Add(layer);
+                Profile.Layers.Remove(this);
+            }
+        }
+
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -243,5 +261,5 @@ namespace Artemis.Profiles.Layers.Models
         }
 
         #endregion
-    }
+        }
 }

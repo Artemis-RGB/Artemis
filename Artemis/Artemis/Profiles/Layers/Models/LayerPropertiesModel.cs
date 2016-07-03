@@ -7,6 +7,24 @@ namespace Artemis.Profiles.Layers.Models
 {
     public abstract class LayerPropertiesModel
     {
+        public LayerPropertiesModel(LayerPropertiesModel source = null)
+        {
+            if (source == null)
+                return;
+
+            // Clone the source's properties onto the new properties model (useful when changing property type)
+            X = source.X;
+            Y = source.Y;
+            Width = source.Width;
+            Height = source.Height;
+            Contain = source.Contain;
+            Opacity = source.Opacity;
+            AnimationSpeed = source.AnimationSpeed;
+            Conditions = source.Conditions;
+            DynamicProperties = source.DynamicProperties;
+            Brush = source.Brush;
+        }
+
         private Brush _brush;
 
         public double X { get; set; }
@@ -17,6 +35,7 @@ namespace Artemis.Profiles.Layers.Models
         public double Opacity { get; set; }
         public double AnimationSpeed { get; set; }
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
+        public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
         [JsonIgnore]
         public double AnimationProgress { get; set; }

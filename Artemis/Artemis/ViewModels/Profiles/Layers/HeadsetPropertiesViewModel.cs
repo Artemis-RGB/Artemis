@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -10,20 +9,19 @@ namespace Artemis.ViewModels.Profiles.Layers
 {
     public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
     {
-        private Brush _brush;
-        private LayerPropertiesModel _proposedProperties;
         private ILayerAnimation _selectedLayerAnimation;
 
-        public HeadsetPropertiesViewModel(IEnumerable<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerPropertiesModel properties)
-            : base(dataModel)
+        public HeadsetPropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
+            IEnumerable<ILayerAnimation> layerAnimations) : base(layerModel, dataModel)
         {
-            ProposedProperties = GeneralHelpers.Clone(properties);
-            Brush = ProposedProperties.Brush.CloneCurrentValue();
-
             LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
+            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity",
+                new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel)),
+                layerModel.Properties);
         }
 
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
+        public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
 
         public ILayerAnimation SelectedLayerAnimation
         {
@@ -36,33 +34,10 @@ namespace Artemis.ViewModels.Profiles.Layers
             }
         }
 
-        public Brush Brush
+        public override void ApplyProperties()
         {
-            get { return _brush; }
-            set
-            {
-                if (Equals(value, _brush)) return;
-                _brush = value;
-                NotifyOfPropertyChange(() => Brush);
-            }
-        }
-
-        public LayerPropertiesModel ProposedProperties
-        {
-            get { return _proposedProperties; }
-            set
-            {
-                if (Equals(value, _proposedProperties)) return;
-                _proposedProperties = value;
-                NotifyOfPropertyChange(() => ProposedProperties);
-            }
-        }
-
-        public override LayerPropertiesModel GetAppliedProperties()
-        {
-            var properties = GeneralHelpers.Clone(ProposedProperties);
-            properties.Brush = Brush;
-            return properties;
+            OpacityProperties.Apply(LayerModel);
+            LayerModel.LayerAnimation = SelectedLayerAnimation;
         }
     }
 }

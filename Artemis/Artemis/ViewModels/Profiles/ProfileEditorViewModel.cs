@@ -285,6 +285,10 @@ namespace Artemis.ViewModels.Profiles
 
             manager.ShowDialog(editorVm, null, settings);
 
+            // The layer editor VM may have created a new instance of the layer, reapply it to the list
+            layer.Replace(editorVm.Layer);
+            layer = editorVm.Layer;
+
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())
             {
