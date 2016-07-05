@@ -92,6 +92,10 @@ namespace Artemis.Profiles.Layers.Models
             // Apply the inverse/decrease option
             if (LayerPropertyOptions == LayerPropertyOptions.Decrease)
                 properties.Opacity = 1.0 - properties.Opacity;
+
+            var brush = properties.Brush.Clone();
+            brush.Opacity = properties.Opacity;
+            properties.Brush = brush;
         }
 
         private void ApplyPercentageOfProperty(IDataModel dataModel, LayerPropertiesModel properties)

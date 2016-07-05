@@ -39,11 +39,14 @@ namespace Artemis.Profiles.Layers.Animations
             var progress = (6.0 - props.AnimationProgress)*10.0;
             if (progress < 0)
             {
-                applied.Brush.Opacity = 1 + 0.025*progress;
-                if (applied.Brush.Opacity < 0)
-                    applied.Brush.Opacity = 0;
-                if (applied.Brush.Opacity > 1)
-                    applied.Brush.Opacity = 1;
+                // Can't meddle with the original brush because it's frozen.
+                var brush = applied.Brush.Clone();
+                brush.Opacity = 1 + 0.025*progress;
+                if (brush.Opacity < 0)
+                    brush.Opacity = 0;
+                if (brush.Opacity > 1)
+                    brush.Opacity = 1;
+                applied.Brush = brush;
             }
             rect.Inflate(-rect.Width/100.0*progress, -rect.Height/100.0*progress);
             clip.Inflate(-clip.Width/100.0*progress, -clip.Height/100.0*progress);

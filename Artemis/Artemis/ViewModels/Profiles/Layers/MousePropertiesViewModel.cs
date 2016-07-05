@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -18,6 +19,9 @@ namespace Artemis.ViewModels.Profiles.Layers
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity",
                 new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel)),
                 layerModel.Properties);
+
+            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation.Name) ??
+                                     LayerAnimations.First(l => l.Name == "None");
         }
 
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
@@ -37,6 +41,7 @@ namespace Artemis.ViewModels.Profiles.Layers
         public override void ApplyProperties()
         {
             OpacityProperties.Apply(LayerModel);
+            LayerModel.Properties.Brush = Brush;
             LayerModel.LayerAnimation = SelectedLayerAnimation;
         }
     }

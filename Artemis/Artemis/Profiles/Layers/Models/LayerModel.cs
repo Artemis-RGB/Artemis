@@ -10,6 +10,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using NClone.MetadataProviders;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -40,18 +41,23 @@ namespace Artemis.Profiles.Layers.Models
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public LayerPropertiesModel AppliedProperties { get; set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public LayerModel Parent { get; internal set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public ProfileModel Profile { get; internal set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public GifImage GifImage { get; set; }
 
         /// <summary>
@@ -63,23 +69,17 @@ namespace Artemis.Profiles.Layers.Models
         public bool ConditionsMet(IDataModel dataModel)
         {
             // Conditions are not even checked if the layer isn't enabled
-            return Enabled & LayerCondition.ConditionsMet(this, dataModel);
+            return Enabled && LayerCondition.ConditionsMet(this, dataModel);
         }
 
         public void Update(IDataModel dataModel, bool preview, bool updateAnimations)
         {
-            if (!LayerType.MustDraw)
-                return;
-
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
-            if (!LayerType.MustDraw)
-                return;
-
             LayerType.Draw(this, c);
         }
 
@@ -236,7 +236,7 @@ namespace Artemis.Profiles.Layers.Models
                     !includeHeadsets && layerModel.LayerType is HeadsetType)
                     continue;
 
-                if (!ignoreConditions & !layerModel.ConditionsMet(dataModel))
+                if (!ignoreConditions && !layerModel.ConditionsMet(dataModel))
                     continue;
 
                 layers.Add(layerModel);

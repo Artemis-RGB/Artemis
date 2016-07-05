@@ -10,6 +10,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using NClone.MetadataProviders;
 using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
@@ -33,6 +34,7 @@ namespace Artemis.Profiles
         public string GameName { get; set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public DrawingVisual DrawingVisual { get; set; }
 
         public void FixOrder()
@@ -101,7 +103,7 @@ namespace Artemis.Profiles
                     !includeHeadsets && layerModel.LayerType is HeadsetType)
                     continue;
 
-                if (!ignoreConditions & !layerModel.ConditionsMet(dataModel))
+                if (!ignoreConditions && !layerModel.ConditionsMet(dataModel))
                     continue;
 
                 layers.Add(layerModel);

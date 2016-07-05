@@ -67,6 +67,7 @@ namespace Artemis.InjectionModules
             #region Layers
 
             // Animations
+            Bind<ILayerAnimation>().To<NoneAnimation>();
             Bind<ILayerAnimation>().To<GrowAnimation>();
             Bind<ILayerAnimation>().To<PulseAnimation>();
             Bind<ILayerAnimation>().To<SlideDownAnimation>();

@@ -117,7 +117,7 @@ namespace Artemis
         private void CheckDuplicateInstances()
         {
             bool aIsNewInstance;
-            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            Mutex = new Mutex(true, "ArtemisMutex2", out aIsNewInstance);
             if (aIsNewInstance)
                 return;
 

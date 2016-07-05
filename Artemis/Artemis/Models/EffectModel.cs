@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles;
@@ -64,18 +65,19 @@ namespace Artemis.Models
             }
 
             // Render the mouse layer-by-layer
-            mouse = new Bitmap(50, 50);
+            var smallRect = new Rect(0, 0, 40, 40);
+            mouse = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(mouse))
             {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, keyboardRect,
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
                     false, true);
             }
 
             // Render the headset layer-by-layer
-            headset = new Bitmap(50, 50);
+            headset = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(headset))
             {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, keyboardRect,
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
                     false, true);
             }
 
