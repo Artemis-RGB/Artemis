@@ -25,7 +25,8 @@ namespace Artemis.ViewModels.Profiles.Layers
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", dataModelProps, layerModel.Properties);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", dataModelProps, layerModel.Properties);
 
-            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerType.Name);
+            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation?.Name) ??
+                                     LayerAnimations.First(l => l.Name == "None");
         }
 
         public bool ShowGif => IsGif;
@@ -74,6 +75,7 @@ namespace Artemis.ViewModels.Profiles.Layers
             HeightProperties.Apply(LayerModel);
             WidthProperties.Apply(LayerModel);
             OpacityProperties.Apply(LayerModel);
+            LayerModel.Properties.Brush = Brush;
 
             LayerModel.LayerAnimation = SelectedLayerAnimation;
         }

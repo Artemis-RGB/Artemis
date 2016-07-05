@@ -8,6 +8,7 @@ using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using static System.String;
+using NClone;
 
 namespace Artemis.Utilities
 {
@@ -38,31 +39,11 @@ namespace Artemis.Utilities
             Environment.Exit(0);
         }
 
-        /// <summary>
-        ///     Perform a deep Copy of the object, using Json as a serialisation method.
-        /// </summary>
-        /// <typeparam name="T">The type of object being copied.</typeparam>
-        /// <param name="source">The object instance to copy.</param>
-        /// <returns>The copied object.</returns>
-        public static T Clone<T>(T source)
-        {
-            // Don't serialize a null object, simply return the default for that object
-            if (ReferenceEquals(source, null))
-                return default(T);
-
-            var deserializeSettings = new JsonSerializerSettings
-            {
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-            return (T) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
-                deserializeSettings);
-        }
-
         public static object GetPropertyValue(object o, string path)
         {
             var propertyNames = path.Split('.');
-            var value = o.GetType().GetProperty(propertyNames[0]).GetValue(o, null);
+            var prop = o.GetType().GetProperty(propertyNames[0]);
+            var value = prop.GetValue(o, null);
 
             if (propertyNames.Length == 1 || value == null)
                 return value;

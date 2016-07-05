@@ -1,4 +1,5 @@
 ﻿using System;
+using NClone.MetadataProviders;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -10,12 +11,15 @@ namespace Artemis.Profiles.Layers.Models
         public TimeSpan TriggerDelay { get; set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public bool MustTrigger { get; set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public DateTime AnimationStart { get; set; }
 
         [JsonIgnore]
+        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public bool MustDraw { get; set; }
 
         /// <summary>

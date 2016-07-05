@@ -13,6 +13,7 @@ using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Events;
 using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
+using NClone;
 using Newtonsoft.Json;
 using Ninject;
 
@@ -35,7 +36,7 @@ namespace Artemis.ViewModels.Profiles
             _layerAnimations = layerAnimations;
 
             Layer = layer;
-            ProposedLayer = GeneralHelpers.Clone(layer);
+            ProposedLayer = Clone.ObjectGraph(layer);
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
@@ -165,7 +166,7 @@ namespace Artemis.ViewModels.Profiles
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
-            Layer = GeneralHelpers.Clone(ProposedLayer);
+            Layer = Clone.ObjectGraph(ProposedLayer);
             
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)

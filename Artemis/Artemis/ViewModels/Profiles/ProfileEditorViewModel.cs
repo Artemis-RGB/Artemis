@@ -21,6 +21,7 @@ using Artemis.Utilities;
 using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
+using NClone;
 using Ninject;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
@@ -405,7 +406,7 @@ namespace Artemis.ViewModels.Profiles
         /// <param name="layer"></param>
         public void CloneLayer(LayerModel layer)
         {
-            var clone = GeneralHelpers.Clone(layer);
+            var clone = Clone.ObjectGraph(layer);
             layer.InsertAfter(clone);
 
             UpdateLayerList(clone);
@@ -546,7 +547,7 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return;
 
-            var newProfile = GeneralHelpers.Clone(SelectedProfile);
+            var newProfile = Clone.ObjectGraph(SelectedProfile);
             newProfile.Name =
                 await DialogService.ShowInputDialog("Duplicate profile", "Please enter a unique profile name");
             // Verify the name

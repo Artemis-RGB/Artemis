@@ -10,6 +10,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Layers;
+using NClone;
 
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
 {
@@ -57,7 +58,7 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
+            layerModel.AppliedProperties = Clone.ObjectGraph(layerModel.Properties);
             if (isPreview)
                 return;
 

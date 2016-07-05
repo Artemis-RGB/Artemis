@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Layers;
+using NClone;
 
 namespace Artemis.Profiles.Layers.Types.Headset
 {
@@ -30,7 +32,7 @@ namespace Artemis.Profiles.Layers.Types.Headset
         public void Draw(LayerModel layer, DrawingContext c)
         {
             // If an animation is present, let it handle the drawing
-            if (layer.LayerAnimation != null)
+            if (layer.LayerAnimation != null && !(layer.LayerAnimation is NoneAnimation))
             {
                 layer.LayerAnimation.Draw(layer.Properties, layer.AppliedProperties, c);
                 return;
@@ -49,13 +51,14 @@ namespace Artemis.Profiles.Layers.Types.Headset
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
-
             // Headset layers are always drawn 10*10 (which is 40*40 when scaled up)
-            layerModel.AppliedProperties.Width = 10;
-            layerModel.AppliedProperties.Height = 10;
-            layerModel.AppliedProperties.X = 0;
-            layerModel.AppliedProperties.Y = 0;
+            layerModel.Properties.Width = 10;
+            layerModel.Properties.Height = 10;
+            layerModel.Properties.X = 0;
+            layerModel.Properties.Y = 0;
+            layerModel.Properties.Contain = true;
+
+            layerModel.AppliedProperties = Clone.ObjectGraph(layerModel.Properties);
 
             if (isPreview || dataModel == null)
                 return;

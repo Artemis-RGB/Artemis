@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Artemis.Utilities.Converters
 {
     /// <summary>
-    ///     Stores a brush as XAML because Json.NET has trouble saving it as JSON
+    ///     Stores a brush by temporarily serializing it to XAML because Json.NET has trouble 
+    ///     saving it as JSON
     /// </summary>
     public class BrushJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var jo = new JObject {{"value", XamlWriter.Save(value)}};
+            // Turn the brush into an XML node
+            var doc = new XmlDocument();
+            doc.LoadXml(XamlWriter.Save(value));
+
+            // Serialize the XML node as JSON
+            var jo = JObject.Parse(JsonConvert.SerializeXmlNode(doc.DocumentElement));
             jo.WriteTo(writer);
         }
 
@@ -22,7 +29,10 @@ namespace Artemis.Utilities.Converters
         {
             // Load JObject from stream
             var jObject = JObject.Load(reader);
-            return XamlReader.Parse(jObject["value"].ToString());
+
+            // Seriaze the JSON node to XML
+            var xml = JsonConvert.DeserializeXmlNode(jObject.ToString());
+            return XamlReader.Parse(xml.InnerXml);
         }
 
         public override bool CanConvert(Type objectType)

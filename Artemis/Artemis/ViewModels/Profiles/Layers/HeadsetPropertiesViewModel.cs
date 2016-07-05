@@ -37,6 +37,7 @@ namespace Artemis.ViewModels.Profiles.Layers
         public override void ApplyProperties()
         {
             OpacityProperties.Apply(LayerModel);
+            LayerModel.Properties.Brush = Brush;
             LayerModel.LayerAnimation = SelectedLayerAnimation;
         }
     }

@@ -175,6 +175,10 @@
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NClone, Version=1.1.0.0, Culture=neutral, PublicKeyToken=81c60607627cc572, processorArchitecture=MSIL">
+      <HintPath>..\packages\NClone.1.1.1\lib\net45\NClone.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -303,6 +307,7 @@
     <Compile Include="Models\OverlaySettings.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
+    <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />

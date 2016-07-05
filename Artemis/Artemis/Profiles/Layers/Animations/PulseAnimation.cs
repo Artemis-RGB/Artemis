@@ -34,7 +34,11 @@ namespace Artemis.Profiles.Layers.Animations
                 : new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
 
             var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);
-            applied.Brush.Opacity = (Math.Sin(props.AnimationProgress*Math.PI) + 1)*(props.Opacity/2);
+
+            // Can't meddle with the original brush because it's frozen.
+            var brush = applied.Brush.Clone();
+            brush.Opacity = (Math.Sin(props.AnimationProgress*Math.PI) + 1)*(props.Opacity/2);
+            applied.Brush = brush;
 
             c.PushClip(new RectangleGeometry(clip));
             c.DrawRectangle(applied.Brush, null, rect);

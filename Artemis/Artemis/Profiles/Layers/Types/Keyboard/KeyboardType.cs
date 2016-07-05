@@ -2,10 +2,12 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Layers;
+using NClone;
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
@@ -35,26 +37,35 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         public void Draw(LayerModel layer, DrawingContext c)
         {
             // If an animation is present, let it handle the drawing
-            if (layer.LayerAnimation != null)
+            if (layer.LayerAnimation != null && !(layer.LayerAnimation is NoneAnimation))
             {
                 layer.LayerAnimation.Draw(layer.Properties, layer.AppliedProperties, c);
                 return;
             }
 
-            // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = new Rect(layer.AppliedProperties.X*4,
-                layer.AppliedProperties.Y*4,
-                layer.AppliedProperties.Width*4,
-                layer.AppliedProperties.Height*4);
+            // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
+            var rect = layer.Properties.Contain
+                ? new Rect(layer.AppliedProperties.X*4,
+                    layer.AppliedProperties.Y*4,
+                    layer.AppliedProperties.Width*4,
+                    layer.AppliedProperties.Height*4)
+                : new Rect(layer.Properties.X*4,
+                    layer.Properties.Y*4,
+                    layer.Properties.Width*4,
+                    layer.Properties.Height*4);
 
-            c.PushClip(new RectangleGeometry(rect));
+            var clip = new Rect(layer.AppliedProperties.X*4, layer.AppliedProperties.Y*4,
+                layer.AppliedProperties.Width*4, layer.AppliedProperties.Height*4);
+
+
+            c.PushClip(new RectangleGeometry(clip));
             c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
             c.Pop();
         }
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = GeneralHelpers.Clone(layerModel.Properties);
+            layerModel.AppliedProperties = Clone.ObjectGraph(layerModel.Properties);
             if (isPreview || dataModel == null)
                 return;
 
