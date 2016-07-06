@@ -33,7 +33,7 @@ namespace Artemis.Utilities
         {
             var colors = new List<byte>();
             for (var i = 0; i < 3; i++)
-                colors.Add((byte)_rand.Next(0, 256));
+                colors.Add((byte) _rand.Next(0, 256));
 
             var highest = colors.Max();
             var lowest = colors.Min();

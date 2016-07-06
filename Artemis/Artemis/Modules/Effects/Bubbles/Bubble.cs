@@ -6,11 +6,24 @@ namespace Artemis.Modules.Effects.Bubbles
 {
     public class Bubble
     {
+        #region Constructors
+
+        public Bubble(Color color, int radius, Point position, Vector direction)
+        {
+            Color = color;
+            Radius = radius;
+            Position = position;
+            Direction = direction;
+        }
+
+        #endregion
+
         #region Properties & Fields
 
         private Brush _brush;
 
         private Color _color;
+
         public Color Color
         {
             get { return _color; }
@@ -27,27 +40,15 @@ namespace Artemis.Modules.Effects.Bubbles
 
         #endregion
 
-        #region Constructors
-
-        public Bubble(Color color, int radius, Point position, Vector direction)
-        {
-            this.Color = color;
-            this.Radius = radius;
-            this.Position = position;
-            this.Direction = direction;
-        }
-
-        #endregion
-
         #region Methods
 
         public void CheckCollision(Rect border)
         {
             if (Position.X - Radius < border.X || Position.X + Radius > border.X + border.Width)
-                Direction = new Vector(Direction.X * -1, Direction.Y);
+                Direction = new Vector(Direction.X*-1, Direction.Y);
 
             if (Position.Y - Radius < border.Y || Position.Y + Radius > border.Y + border.Height)
-                Direction = new Vector(Direction.X, Direction.Y * -1);
+                Direction = new Vector(Direction.X, Direction.Y*-1);
         }
 
         public void Move()
@@ -57,7 +58,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public void Draw(Graphics g)
         {
-            g.FillEllipse(_brush, (float)Position.X - Radius, (float)Position.Y - Radius, Radius * 2, Radius * 2);
+            g.FillEllipse(_brush, (float) Position.X - Radius, (float) Position.Y - Radius, Radius*2, Radius*2);
         }
 
         #endregion

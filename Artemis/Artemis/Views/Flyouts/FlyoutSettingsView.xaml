@@ -4,30 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:cal="http://www.caliburnproject.org" 
-             xmlns:utilities="clr-namespace:Artemis.Utilities" 
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:profileEnumerations="clr-namespace:Artemis.Models.Profiles"
+             xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="300"
              Width="300">
-    <UserControl.Resources>
-        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
-        <ObjectDataProvider MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}"
-                            x:Key="LayerEnumValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="profileEnumerations:LayerType" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -103,17 +90,20 @@
         <ComboBox Grid.Row="8" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
+        <Button Grid.Row="9" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
+                VerticalAlignment="Center"
+                Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Buttons -->
-        <Button Grid.Row="9" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+        <Button Grid.Row="10" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
                 VerticalAlignment="Center" HorizontalAlignment="Left" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="9" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
+        <Button Grid.Row="10" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="120"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
-        <Grid Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

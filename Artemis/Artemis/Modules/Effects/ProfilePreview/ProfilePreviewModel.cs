@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
-using Brush = System.Windows.Media.Brush;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Headset;
+using Artemis.Profiles.Layers.Types.Mouse;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {
@@ -32,10 +34,10 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<ProfilePreviewDataModel>(DataModel, renderMice, renderHeadsets, true);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, true);
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -48,12 +50,30 @@ namespace Artemis.Modules.Effects.ProfilePreview
             var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
 
             // Render the keyboard layer-by-layer
-            Profile?.DrawProfile(keyboard, renderLayers, DataModel, MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale), true, true);
-            // Render the first enabled mouse (will default to null if renderMice was false)
-            mouse = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Mouse), DataModel);
-            // Render the first enabled headset (will default to null if renderHeadsets was false)
-            headset = Profile?.GenerateBrush(renderLayers.LastOrDefault(l => l.LayerType == LayerType.Headset),
-                DataModel);
+            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
+                g.Clear(Color.Black);
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.MustDraw()), DataModel, keyboardRect, true, true);
+            }
+
+            // Render the mouse layer-by-layer
+            var smallRect = new Rect(0, 0, 40, 40);
+            mouse = new Bitmap(40, 40);
+            using (var g = Graphics.FromImage(mouse))
+            {
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
+                    true, true);
+            }
+
+            // Render the headset layer-by-layer
+            headset = new Bitmap(40, 40);
+            using (var g = Graphics.FromImage(headset))
+            {
+                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
+                    true, true);
+            }
         }
     }
 

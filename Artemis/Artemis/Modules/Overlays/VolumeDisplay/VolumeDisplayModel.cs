@@ -4,9 +4,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using NAudio.CoreAudioApi;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
@@ -46,10 +45,10 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             if (VolumeDisplay.Ttl < 1)
                 return;
 
-            var decreaseAmount = 500 / fps;
+            var decreaseAmount = 500/fps;
             VolumeDisplay.Ttl = VolumeDisplay.Ttl - decreaseAmount;
             if (VolumeDisplay.Ttl < 128)
-                VolumeDisplay.Transparancy = (byte)(VolumeDisplay.Transparancy - 20);
+                VolumeDisplay.Transparancy = (byte) (VolumeDisplay.Transparancy - 20);
 
             try
             {
@@ -57,7 +56,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
                 var volumeFloat =
                     enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console)
                         .AudioEndpointVolume.MasterVolumeLevelScalar;
-                VolumeDisplay.Volume = (int)(volumeFloat * 100);
+                VolumeDisplay.Volume = (int) (volumeFloat*100);
             }
             catch (COMException)
             {
@@ -78,11 +77,16 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplay.Transparancy = 255;
         }
 
-        public override void RenderOverlay(Graphics keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+        public override void RenderOverlay(Bitmap keyboard, ref Bitmap mouse, ref Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
-            if (MainManager.DeviceManager.ActiveKeyboard != null && VolumeDisplay != null && VolumeDisplay.Ttl >= 1)
-                VolumeDisplay.Draw(keyboard);
+            if (MainManager.DeviceManager.ActiveKeyboard == null || VolumeDisplay == null || VolumeDisplay.Ttl < 1)
+                return;
+
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                VolumeDisplay.Draw(g);
+            }
         }
     }
 }

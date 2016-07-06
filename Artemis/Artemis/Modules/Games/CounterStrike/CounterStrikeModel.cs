@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 using Ninject.Extensions.Logging;
@@ -66,7 +66,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<CounterStrikeDataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 }

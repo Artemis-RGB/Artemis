@@ -8,9 +8,7 @@ namespace Artemis.Utilities
     {
         private readonly int _delay;
         private readonly FrameDimension _dimension;
-        private readonly int _frameCount;
         private readonly Image _gifImage;
-        private int _currentFrame = -1;
         private DateTime _lastRequest;
         private int _step = 1;
 
@@ -19,7 +17,7 @@ namespace Artemis.Utilities
             _lastRequest = DateTime.Now;
             _gifImage = Image.FromFile(path); //initialize
             _dimension = new FrameDimension(_gifImage.FrameDimensionsList[0]); //gets the GUID
-            _frameCount = _gifImage.GetFrameCount(_dimension); //total frames in the animation
+            FrameCount = _gifImage.GetFrameCount(_dimension); //total frames in the animation
 
             Source = path;
 
@@ -27,7 +25,20 @@ namespace Artemis.Utilities
             _delay = (item.Value[0] + item.Value[1]*256)*10; // Time is in 1/100th of a second
         }
 
-        public string Source { get; set; }
+        /// <summary>
+        ///     Gets the path the GifImage is based on
+        /// </summary>
+        public string Source { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the current frame, set to -1 to reset
+        /// </summary>
+        public int CurrentFrame { get; set; } = -1;
+
+        /// <summary>
+        ///     Gets the total amount of frames in the GIF
+        /// </summary>
+        public int FrameCount { get; }
 
         /// <summary>
         ///     Whether the gif should play backwards when it reaches the end
@@ -39,23 +50,23 @@ namespace Artemis.Utilities
             // Only pass the next frame if the proper amount of time has passed
             if ((DateTime.Now - _lastRequest).Milliseconds > _delay)
             {
-                _currentFrame += _step;
+                CurrentFrame += _step;
                 _lastRequest = DateTime.Now;
             }
 
             //if the animation reaches a boundary...
-            if (_currentFrame < _frameCount && _currentFrame >= 1)
-                return GetFrame(_currentFrame);
+            if (CurrentFrame < FrameCount && CurrentFrame >= 1)
+                return GetFrame(CurrentFrame);
 
             if (ReverseAtEnd)
             {
                 _step *= -1; //...reverse the count
-                _currentFrame += _step; //apply it
+                CurrentFrame += _step; //apply it
             }
             else
-                _currentFrame = 0; //...or start over
+                CurrentFrame = 0; //...or start over
 
-            return GetFrame(_currentFrame);
+            return GetFrame(CurrentFrame);
         }
 
         public Image GetFrame(int index)

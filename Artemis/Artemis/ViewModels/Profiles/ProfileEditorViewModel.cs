@@ -3,27 +3,26 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
+
 using Ninject;
-using Application = System.Windows.Application;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -131,7 +130,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                target.LayerType == LayerType.Folder)
+                target.LayerType is FolderType)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
                 dropInfo.Effects = DragDropEffects.Copy;
@@ -169,7 +168,7 @@ namespace Artemis.ViewModels.Profiles
             }
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
-                target.LayerType == LayerType.Folder)
+                target.LayerType is FolderType)
             {
                 // Insert into folder
                 source.Order = -1;
@@ -257,7 +256,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void EditLayerFromDoubleClick()
         {
-            if (ProfileViewModel.SelectedLayer?.LayerType == LayerType.Folder)
+            if (ProfileViewModel.SelectedLayer?.LayerType is FolderType)
                 return;
 
             EditLayer();
@@ -280,23 +279,19 @@ namespace Artemis.ViewModels.Profiles
             IWindowManager manager = new WindowManager();
             var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
             dynamic settings = new ExpandoObject();
-            var iconImage = new Image
-            {
-                Source = (DrawingImage) Application.Current.MainWindow.Resources["BowIcon"],
-                Stretch = Stretch.Uniform,
-                Margin = new Thickness(20)
-            };
-            iconImage.Arrange(new Rect(0, 0, 100, 100));
-            var bitmap = new RenderTargetBitmap(100, 100, 96, 96, PixelFormats.Pbgra32);
-            bitmap.Render(iconImage);
+            var icon = ImageUtilities.GenerateWindowIcon();
 
             settings.Title = "Artemis | Edit " + layer.Name;
-            settings.Icon = bitmap;
+            settings.Icon = icon;
 
             manager.ShowDialog(editorVm, null, settings);
 
+            // The layer editor VM may have created a new instance of the layer, reapply it to the list
+            layer.Replace(editorVm.Layer);
+            layer = editorVm.Layer;
+
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
-            if (layer.LayerType != LayerType.Folder && layer.Children.Any())
+            if (!(layer.LayerType is FolderType) && layer.Children.Any())
             {
                 while (layer.Children.Any())
                 {
@@ -596,7 +591,7 @@ namespace Artemis.ViewModels.Profiles
                     "To import a profile, please select a keyboard in the options menu first.");
                 return;
             }
-            var dialog = new OpenFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var dialog = new OpenFileDialog {Filter = "Artemis profile (*.json)|*.json"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
@@ -654,7 +649,7 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return;
 
-            var dialog = new SaveFileDialog {Filter = "Artemis profile (*.xml)|*.xml"};
+            var dialog = new SaveFileDialog {Filter = "Artemis profile (*.json)|*.json"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;

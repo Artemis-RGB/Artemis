@@ -4,13 +4,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
 using Artemis.DeviceProviders;
 using Artemis.Models;
-using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Profiles;
+using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Newtonsoft.Json;
 using NLog;
 
 namespace Artemis.DAL
@@ -65,14 +65,8 @@ namespace Artemis.DAL
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var serializer = new XmlSerializer(typeof(ProfileModel));
-
-            // Could use a StreamWriter but should serializing fail this method doesn't ruin the existing XML file
-            using (var xml = new StringWriter())
-            {
-                serializer.Serialize(xml, prof);
-                File.WriteAllText(path + $@"\{prof.Name}.xml", xml.ToString());
-            }
+            var json = JsonConvert.SerializeObject(prof, Formatting.Indented);
+            File.WriteAllText(path + $@"\{prof.Name}.json", json);
         }
 
         private static List<ProfileModel> ReadProfiles()
@@ -82,22 +76,18 @@ namespace Artemis.DAL
             var profiles = new List<ProfileModel>();
 
             // Create the directory structure
-            var profilePaths = Directory.GetFiles(ProfileFolder, "*.xml", SearchOption.AllDirectories);
+            var profilePaths = Directory.GetFiles(ProfileFolder, "*.json", SearchOption.AllDirectories);
 
             // Parse the JSON files into objects and add them if they are valid
-            var deserializer = new XmlSerializer(typeof(ProfileModel));
             foreach (var path in profilePaths)
             {
                 try
                 {
-                    using (var file = new StreamReader(path))
-                    {
-                        var prof = (ProfileModel) deserializer.Deserialize(file);
-                        if (prof.GameName?.Length > 1 && prof.KeyboardSlug?.Length > 1 && prof.Name?.Length > 1)
-                            profiles.Add(prof);
-                    }
+                    var prof = LoadProfileIfValid(path);
+                    if (prof != null)
+                        profiles.Add(prof);
                 }
-                catch (InvalidOperationException e)
+                catch (Exception e)
                 {
                     Logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
                 }
@@ -144,7 +134,6 @@ namespace Artemis.DAL
                 ((KeyboardPropertiesModel) gifLayer.Properties).GifFile = gifPath;
                 AddOrUpdate(demoProfile);
             }
-            
         }
 
         /// <summary>
@@ -166,18 +155,17 @@ namespace Artemis.DAL
         /// <returns>The loaded profile, or null if invalid</returns>
         public static ProfileModel LoadProfileIfValid(string path)
         {
+            // TODO: What exception on load failure?
             try
             {
-                var deserializer = new XmlSerializer(typeof(ProfileModel));
-                using (var file = new StreamReader(path))
-                {
-                    var prof = (ProfileModel) deserializer.Deserialize(file);
-                    if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
-                        return null;
-                    return prof;
-                }
+                var prof = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(path));
+                if (prof == null)
+                    return null;
+                if (prof.GameName.Length < 1 || prof.KeyboardSlug.Length < 1 || prof.Name.Length < 1)
+                    return null;
+                return prof;
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
                 return null;
             }
@@ -186,15 +174,12 @@ namespace Artemis.DAL
         /// <summary>
         ///     Exports the given profile to the provided path in XML
         /// </summary>
-        /// <param name="selectedProfile">The profile to export</param>
+        /// <param name="prof">The profile to export</param>
         /// <param name="path">The path to save the profile to</param>
-        public static void ExportProfile(ProfileModel selectedProfile, string path)
+        public static void ExportProfile(ProfileModel prof, string path)
         {
-            var serializer = new XmlSerializer(typeof(ProfileModel));
-            using (var file = new StreamWriter(path))
-            {
-                serializer.Serialize(file, selectedProfile);
-            }
+            var json = JsonConvert.SerializeObject(prof);
+            File.WriteAllText(path, json);
         }
 
         /// <summary>
@@ -208,7 +193,7 @@ namespace Artemis.DAL
                 return;
 
             // Remove the old file
-            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.xml";
+            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.json";
             if (File.Exists(path))
                 File.Delete(path);
 
@@ -220,7 +205,7 @@ namespace Artemis.DAL
         public static void DeleteProfile(ProfileModel profile)
         {
             // Remove the file
-            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.xml";
+            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.json";
             if (File.Exists(path))
                 File.Delete(path);
         }

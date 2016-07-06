@@ -5,13 +5,12 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
 using Artemis.Modules.Effects.AudioVisualizer.Utilities;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {
@@ -78,7 +77,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                         ColorHelpers.ToDrawingColor(Settings.BottomColor)
                     },
                     LinearGradientMode.Vertical)
-                { ContainedBrush = false, Height = 0 });
+                {ContainedBrush = false, Height = 0});
             }
             _sensitivity = Settings.Sensitivity;
             _fromBottom = Settings.FromBottom;
@@ -118,22 +117,22 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 if (SpectrumData.Count - 1 < i || SpectrumData[i] == 0)
                     height = 0;
                 else
-                    height = (int)Math.Round(SpectrumData[i] / 2.55);
+                    height = (int) Math.Round(SpectrumData[i]/2.55);
 
                 // Apply Sensitivity setting
-                height = height * _sensitivity;
+                height = height*_sensitivity;
                 var keyboardHeight =
-                    (int)Math.Round(MainManager.DeviceManager.ActiveKeyboard.Height / 100.00 * height * KeyboardScale);
+                    (int) Math.Round(MainManager.DeviceManager.ActiveKeyboard.Height/100.00*height*KeyboardScale);
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
                     SoundRectangles[i].Height = SoundRectangles[i].Height - Settings.FadeSpeed;
                 // Apply Bars setting
-                SoundRectangles[i].X = i * KeyboardScale;
+                SoundRectangles[i].X = i*KeyboardScale;
                 SoundRectangles[i].Width = KeyboardScale;
 
                 if (_fromBottom)
-                    SoundRectangles[i].Y = MainManager.DeviceManager.ActiveKeyboard.Height * KeyboardScale -
+                    SoundRectangles[i].Y = MainManager.DeviceManager.ActiveKeyboard.Height*KeyboardScale -
                                            SoundRectangles[i].Height;
             }
             _generating = false;
@@ -164,7 +163,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             for (x = 0; x < Lines; x++)
             {
                 float peak = 0;
-                var b1 = (int)Math.Pow(2, x * 10.0 / (Lines - 1));
+                var b1 = (int) Math.Pow(2, x*10.0/(Lines - 1));
                 if (b1 > 2047)
                     b1 = 2047;
                 if (b1 <= b0)
@@ -174,12 +173,12 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     if (peak < e.Result[1 + b0].X)
                         peak = e.Result[1 + b0].X;
                 }
-                var y = (int)(Math.Sqrt(peak) * 3 * 255 - 4);
+                var y = (int) (Math.Sqrt(peak)*3*255 - 4);
                 if (y > 255)
                     y = 255;
                 if (y < 0)
                     y = 0;
-                SpectrumData.Add((byte)y);
+                SpectrumData.Add((byte) y);
             }
         }
 
@@ -188,7 +187,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             return null;
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -200,8 +199,11 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             // Lock the _spectrumData array while busy with it
             _generating = true;
 
-            foreach (var soundRectangle in SoundRectangles)
-                soundRectangle.Draw(keyboard);
+            using (var g = Graphics.FromImage(keyboard))
+            {
+                foreach (var soundRectangle in SoundRectangles)
+                    soundRectangle.Draw(g);
+            }
 
             _generating = false;
         }
