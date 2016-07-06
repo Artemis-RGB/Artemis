@@ -4,7 +4,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using Castle.Core.Internal;
-using NClone;
+
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -35,7 +35,7 @@ namespace Artemis.ViewModels.Profiles
                 Proposed.LayerPropertyType = LayerPropertyType.PercentageOf;
             }
             else
-                Proposed = Clone.ObjectGraph(original);
+                Proposed = GeneralHelpers.Clone(original);
 
             PropertyChanged += OnPropertyChanged;
             SetupControls(dataModelProps);

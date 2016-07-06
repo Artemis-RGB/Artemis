@@ -10,7 +10,6 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
-using NClone.MetadataProviders;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -41,23 +40,18 @@ namespace Artemis.Profiles.Layers.Models
         public ChildItemCollection<LayerModel, LayerModel> Children { get; }
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public LayerPropertiesModel AppliedProperties { get; set; }
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public LayerModel Parent { get; internal set; }
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public ProfileModel Profile { get; internal set; }
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
         public GifImage GifImage { get; set; }
 
         /// <summary>
@@ -261,5 +255,5 @@ namespace Artemis.Profiles.Layers.Models
         }
 
         #endregion
-        }
+    }
 }
