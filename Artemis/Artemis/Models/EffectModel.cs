@@ -69,6 +69,8 @@ namespace Artemis.Models
             mouse = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(mouse))
             {
+                // Not all SDK's handle transparency
+                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
                     false, true);
             }
@@ -77,6 +79,8 @@ namespace Artemis.Models
             headset = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(headset))
             {
+                // Not all SDK's handle transparency
+                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
                     false, true);
             }

@@ -20,7 +20,7 @@ namespace Artemis.ViewModels.Profiles.Layers
                 new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel)),
                 layerModel.Properties);
 
-            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation.Name) ??
+            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation?.Name) ??
                                      LayerAnimations.First(l => l.Name == "None");
         }
 

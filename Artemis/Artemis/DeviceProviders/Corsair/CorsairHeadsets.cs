@@ -49,11 +49,11 @@ namespace Artemis.DeviceProviders.Corsair
                 // Color each LED according to one of the pixels
                 foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
                 {
-                    if (ledIndex == 0)
-                        corsairLed.Color = bitmap.GetPixel(0, 0);
-                    else
-                        corsairLed.Color = bitmap.GetPixel((int) ((ledIndex + 1)*step - 1),
-                            (int) ((ledIndex + 1)*step - 1));
+                    var col = ledIndex == 0
+                        ? bitmap.GetPixel(0, 0)
+                        : bitmap.GetPixel((int)((ledIndex + 1) * step - 1), (int)((ledIndex + 1) * step - 1));
+
+                    corsairLed.Color = col;
                     ledIndex++;
                 }
             }
