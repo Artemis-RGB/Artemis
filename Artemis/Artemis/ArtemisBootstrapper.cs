@@ -5,9 +5,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Artemis.InjectionModules;
+using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.ViewModels;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using Ninject;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.Forms.MessageBox;
@@ -22,7 +24,7 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             // Start logging before anything else
-            Logging.SetupLogging(Settings.General.Default.LogLevel);
+            Logging.SetupLogging(General.Default.LogLevel);
 
             CheckDuplicateInstances();
             Initialize();
@@ -77,6 +79,7 @@ namespace Artemis
 
         protected override void Configure()
         {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
             _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
@@ -114,7 +117,7 @@ namespace Artemis
         private void CheckDuplicateInstances()
         {
             bool aIsNewInstance;
-            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            Mutex = new Mutex(true, "ArtemisMutex2", out aIsNewInstance);
             if (aIsNewInstance)
                 return;
 

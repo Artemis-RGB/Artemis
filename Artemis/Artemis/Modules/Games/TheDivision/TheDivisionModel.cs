@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.LogitechDll;
 
@@ -131,7 +131,7 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<TheDivisionDataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 }

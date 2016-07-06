@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
-using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
+using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Keyboard;
+using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles.Properties;
+using Artemis.ViewModels.Profiles.Events;
+using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
+
+using Newtonsoft.Json;
 using Ninject;
 
 namespace Artemis.ViewModels.Profiles
@@ -16,15 +22,18 @@ namespace Artemis.ViewModels.Profiles
     public sealed class LayerEditorViewModel : Screen
     {
         private readonly IDataModel _dataModel;
+        private readonly List<ILayerAnimation> _layerAnimations;
+        private EventPropertiesViewModel _eventPropertiesViewModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
-        private LayerType _layerType;
         private LayerModel _proposedLayer;
-        private LayerPropertiesModel _proposedProperties;
+        private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer)
+        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes,
+            List<ILayerAnimation> layerAnimations)
         {
             _dataModel = dataModel;
+            _layerAnimations = layerAnimations;
 
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
@@ -32,26 +41,28 @@ namespace Artemis.ViewModels.Profiles
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            DataModelProps.AddRange(GeneralHelpers.GenerateTypeMap(dataModel));
-            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(layer.Properties.Conditions
-                .Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
+            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
+                GeneralHelpers.GenerateTypeMap(dataModel));
+            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(
+                layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
             PropertyChanged += PropertiesViewModelHandler;
 
             PreSelect();
         }
 
+
         public bool ModelChanged { get; set; }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
 
+        public BindableCollection<ILayerType> LayerTypes { get; set; }
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-
-        public BindableCollection<string> LayerTypes => new BindableCollection<string>();
-
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
+        public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
+        public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
 
         public LayerModel Layer
         {
@@ -75,17 +86,6 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public LayerType LayerType
-        {
-            get { return _layerType; }
-            set
-            {
-                if (value == _layerType) return;
-                _layerType = value;
-                NotifyOfPropertyChange(() => LayerType);
-            }
-        }
-
         public LayerPropertiesViewModel LayerPropertiesViewModel
         {
             get { return _layerPropertiesViewModel; }
@@ -97,57 +97,64 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public bool KeyboardGridIsVisible => ProposedLayer.LayerType == LayerType.Keyboard;
-        public bool GifGridIsVisible => ProposedLayer.LayerType == LayerType.KeyboardGif;
+        public EventPropertiesViewModel EventPropertiesViewModel
+        {
+            get { return _eventPropertiesViewModel; }
+            set
+            {
+                if (Equals(value, _eventPropertiesViewModel)) return;
+                _eventPropertiesViewModel = value;
+                NotifyOfPropertyChange(() => EventPropertiesViewModel);
+            }
+        }
+
+        public ILayerType SelectedLayerType
+        {
+            get { return _selectedLayerType; }
+            set
+            {
+                if (Equals(value, _selectedLayerType)) return;
+                _selectedLayerType = value;
+                NotifyOfPropertyChange(() => SelectedLayerType);
+            }
+        }
 
         public void PreSelect()
         {
-            LayerType = ProposedLayer.LayerType;
-
-            if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
+            SelectedLayerType = LayerTypes.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
+            ToggleIsEvent();
         }
 
         private void PropertiesViewModelHandler(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "LayerType")
+            if (e.PropertyName != "SelectedLayerType")
                 return;
 
             // Store the brush in case the user wants to reuse it
-            var oldBrush = LayerPropertiesViewModel?.GetAppliedProperties().Brush;
+            var oldBrush = ProposedLayer.Properties.Brush;
 
             // Update the model
-            if (ProposedLayer.LayerType != LayerType)
+            if (ProposedLayer.LayerType.GetType() != SelectedLayerType.GetType())
             {
-                ProposedLayer.LayerType = LayerType;
+                ProposedLayer.LayerType = SelectedLayerType;
                 ProposedLayer.SetupProperties();
             }
+
+            // Let the layer type handle the viewmodel setup
+            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(LayerPropertiesViewModel, _layerAnimations,
+                _dataModel, ProposedLayer);
 
             if (oldBrush != null)
                 ProposedLayer.Properties.Brush = oldBrush;
 
-            // Update the KeyboardPropertiesViewModel if it's being used
-            var model = LayerPropertiesViewModel as KeyboardPropertiesViewModel;
-            if (model != null)
-                model.IsGif = LayerType == LayerType.KeyboardGif;
-
-            // Apply the proper PropertiesViewModel
-            if ((LayerType == LayerType.Keyboard || LayerType == LayerType.KeyboardGif) &&
-                !(LayerPropertiesViewModel is KeyboardPropertiesViewModel))
-            {
-                LayerPropertiesViewModel = new KeyboardPropertiesViewModel(_dataModel, ProposedLayer.Properties)
-                {
-                    IsGif = LayerType == LayerType.KeyboardGif
-                };
-            }
-            else if (LayerType == LayerType.Mouse && !(LayerPropertiesViewModel is MousePropertiesViewModel))
-                LayerPropertiesViewModel = new MousePropertiesViewModel(_dataModel, ProposedLayer.Properties);
-            else if (LayerType == LayerType.Headset && !(LayerPropertiesViewModel is HeadsetPropertiesViewModel))
-                LayerPropertiesViewModel = new HeadsetPropertiesViewModel(_dataModel, ProposedLayer.Properties);
-            else if (LayerType == LayerType.Folder && !(LayerPropertiesViewModel is FolderPropertiesViewModel))
-                LayerPropertiesViewModel = new FolderPropertiesViewModel(_dataModel, ProposedLayer.Properties);
-
             NotifyOfPropertyChange(() => LayerPropertiesViewModel);
+        }
+
+        public void ToggleIsEvent()
+        {
+            EventPropertiesViewModel = ProposedLayer.IsEvent
+                ? new EventPropertiesViewModel(Layer.EventProperties)
+                : null;
         }
 
         public void AddCondition()
@@ -158,19 +165,20 @@ namespace Artemis.ViewModels.Profiles
 
         public void Apply()
         {
-            Layer.Name = ProposedLayer.Name;
-            Layer.LayerType = ProposedLayer.LayerType;
+            LayerPropertiesViewModel?.ApplyProperties();
+            Layer = GeneralHelpers.Clone(ProposedLayer);
+            
+            // TODO: EventPropVM must have layer too
+            if (EventPropertiesViewModel != null)
+                Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
 
-            if (LayerPropertiesViewModel != null)
-                Layer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-            {
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
-            }
 
-            if (Layer.LayerType != LayerType.KeyboardGif)
-                return; // Don't bother checking for a GIF path unless the type is GIF
+            // Don't bother checking for a GIF path unless the type is GIF
+            if (!(Layer.LayerType is KeyboardGifType))
+                return;
             if (!File.Exists(((KeyboardPropertiesModel) Layer.Properties).GifFile))
                 DialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }
@@ -185,25 +193,26 @@ namespace Artemis.ViewModels.Profiles
         public override async void CanClose(Action<bool> callback)
         {
             // Create a fake layer and apply the properties to it
-            var fakeLayer = GeneralHelpers.Clone(ProposedLayer);
-            if (LayerPropertiesViewModel != null)
-                fakeLayer.Properties = LayerPropertiesViewModel.GetAppliedProperties();
-            fakeLayer.Properties.Conditions.Clear();
+            LayerPropertiesViewModel?.ApplyProperties();
+            // TODO: EventPropVM must have layer too
+            if (EventPropertiesViewModel != null)
+                ProposedLayer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
+            ProposedLayer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                fakeLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
 
-            var fake = GeneralHelpers.Serialize(fakeLayer);
-            var real = GeneralHelpers.Serialize(Layer);
+            var current = JsonConvert.SerializeObject(Layer, Formatting.Indented);
+            var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 
-            if (fake.Equals(real))
+            if (current.Equals(proposed))
             {
                 callback(true);
                 return;
             }
 
-            var close =
-                await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
+            var close = await DialogService
+                .ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
             callback(close.Value);
         }
     }

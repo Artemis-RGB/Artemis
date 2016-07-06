@@ -7,9 +7,8 @@ using Artemis.DeviceProviders.Corsair;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
@@ -46,8 +45,8 @@ namespace Artemis.Modules.Effects.TypeWave
                 return;
 
             _waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX * KeyboardScale, keyMatch.PosY * KeyboardScale), 0, _randomColor)
-                : new Wave(new Point(keyMatch.PosX * KeyboardScale, keyMatch.PosY * KeyboardScale), 0,
+                ? new Wave(new Point(keyMatch.PosX*KeyboardScale, keyMatch.PosY*KeyboardScale), 0, _randomColor)
+                : new Wave(new Point(keyMatch.PosX*KeyboardScale, keyMatch.PosY*KeyboardScale), 0,
                     ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
 
@@ -71,12 +70,12 @@ namespace Artemis.Modules.Effects.TypeWave
                 // TODO: Get from settings
                 var fps = 25;
 
-                _waves[i].Size += Settings.SpreadSpeed * KeyboardScale;
+                _waves[i].Size += Settings.SpreadSpeed*KeyboardScale;
 
                 if (Settings.IsShiftColors)
                     _waves[i].Color = ColorHelpers.ShiftColor(_waves[i].Color, Settings.ShiftColorSpeed);
 
-                var decreaseAmount = 255 / (Settings.TimeToLive / fps);
+                var decreaseAmount = 255/(Settings.TimeToLive/fps);
                 _waves[i].Color = Color.FromArgb(
                     _waves[i].Color.A - decreaseAmount, _waves[i].Color.R,
                     _waves[i].Color.G,
@@ -95,7 +94,7 @@ namespace Artemis.Modules.Effects.TypeWave
             return null;
         }
 
-        public override void Render(Graphics keyboard, out Brush mouse, out Brush headset, bool renderMice,
+        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             mouse = null;
@@ -111,7 +110,7 @@ namespace Artemis.Modules.Effects.TypeWave
                 if (_waves[i].Size == 0)
                     continue;
                 var path = new GraphicsPath();
-                path.AddEllipse(_waves[i].Point.X - _waves[i].Size / 2, _waves[i].Point.Y - _waves[i].Size / 2,
+                path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
                     _waves[i].Size, _waves[i].Size);
 
                 Color fillColor;
@@ -122,16 +121,19 @@ namespace Artemis.Modules.Effects.TypeWave
 
                 var pthGrBrush = new PathGradientBrush(path)
                 {
-                    SurroundColors = new[] { _waves[i].Color },
+                    SurroundColors = new[] {_waves[i].Color},
                     CenterColor = fillColor
                 };
 
-                keyboard.FillPath(pthGrBrush, path);
-                pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
+                using (var g = Graphics.FromImage(keyboard))
+                {
+                    g.FillPath(pthGrBrush, path);
+                    pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);
 
-                keyboard.FillPath(pthGrBrush, path);
-                keyboard.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size / 2,
-                        _waves[i].Point.Y - _waves[i].Size / 2, _waves[i].Size, _waves[i].Size);
+                    g.FillPath(pthGrBrush, path);
+                    g.DrawEllipse(new Pen(pthGrBrush, 1), _waves[i].Point.X - _waves[i].Size/2,
+                        _waves[i].Point.Y - _waves[i].Size/2, _waves[i].Size, _waves[i].Size);
+                }
             }
         }
     }

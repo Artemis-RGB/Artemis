@@ -1,8 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Drawing;
+using System.Linq;
 using System.Threading;
-using System.Windows;
-using System.Windows.Media;
-using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Devices.Generic.Enums;
 using Ninject.Extensions.Logging;
@@ -35,27 +34,26 @@ namespace Artemis.DeviceProviders.Corsair
                 CueSDK.Reinitialize();
         }
 
-        public override void UpdateDevice(Brush brush)
+        public override void UpdateDevice(Bitmap bitmap)
         {
-            if (!CanUse || brush == null)
+            if (!CanUse || bitmap == null)
                 return;
+            if (bitmap.Width != bitmap.Height)
+                throw new ArgumentException("Bitmap must be a perfect square");
 
             var leds = CueSDK.MouseSDK.Leds.Count();
-            var rect = new Rect(new Size(leds*20, leds*20));
-
-            var visual = new DrawingVisual();
-            using (var c = visual.RenderOpen())
-                c.DrawRectangle(brush, null, rect);
-
-            using (var img = ImageUtilities.DrawinVisualToBitmap(visual, rect))
+            var step = (double) bitmap.Width/leds;
+            using (bitmap)
             {
                 var ledIndex = 0;
                 // Color each LED according to one of the pixels
                 foreach (var corsairLed in CueSDK.MouseSDK.Leds)
                 {
-                    corsairLed.Color = ledIndex == 0
-                        ? img.GetPixel(0, 0)
-                        : img.GetPixel((ledIndex + 1)*20 - 1, (ledIndex + 1)*20 - 1);
+                    if (ledIndex == 0)
+                        corsairLed.Color = bitmap.GetPixel(0, 0);
+                    else
+                        corsairLed.Color = bitmap.GetPixel((int) ((ledIndex + 1)*step - 1),
+                            (int) ((ledIndex + 1)*step - 1));
                     ledIndex++;
                 }
             }

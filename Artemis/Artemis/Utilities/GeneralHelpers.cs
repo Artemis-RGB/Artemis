@@ -5,8 +5,8 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Xml.Serialization;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using static System.String;
 
 namespace Artemis.Utilities
@@ -39,7 +39,7 @@ namespace Artemis.Utilities
         }
 
         /// <summary>
-        ///     Perform a deep Copy of the object.
+        ///     Perform a deep Copy of the object, using Json as a serialisation method.
         /// </summary>
         /// <typeparam name="T">The type of object being copied.</typeparam>
         /// <param name="source">The object instance to copy.</param>
@@ -50,35 +50,20 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var serializer = new XmlSerializer(typeof(T));
-            Stream stream = new MemoryStream();
-            using (stream)
+            var deserializeSettings = new JsonSerializerSettings
             {
-                serializer.Serialize(stream, source);
-                stream.Seek(0, SeekOrigin.Begin);
-                return (T) serializer.Deserialize(stream);
-            }
-        }
-
-        public static string Serialize<T>(T source)
-        {
-            // Don't serialize a null object, simply return the default for that object
-            if (ReferenceEquals(source, null))
-                return null;
-
-            var serializer = new XmlSerializer(typeof(T));
-            var stream = new StringWriter();
-            using (stream)
-            {
-                serializer.Serialize(stream, source);
-                return stream.ToString();
-            }
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+            return (T)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
+                deserializeSettings);
         }
 
         public static object GetPropertyValue(object o, string path)
         {
             var propertyNames = path.Split('.');
-            var value = o.GetType().GetProperty(propertyNames[0]).GetValue(o, null);
+            var prop = o.GetType().GetProperty(propertyNames[0]);
+            var value = prop.GetValue(o, null);
 
             if (propertyNames.Length == 1 || value == null)
                 return value;

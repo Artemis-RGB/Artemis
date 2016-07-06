@@ -1,9 +1,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
@@ -14,15 +16,18 @@ namespace Artemis.ViewModels.Flyouts
     public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>,
         IHandle<ActiveEffectChanged>
     {
+        private readonly DebugViewModel _debugViewModel;
         private readonly ILogger _logger;
         private string _activeEffectName;
         private bool _enableDebug;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager, IEventAggregator events, ILogger logger)
+        public FlyoutSettingsViewModel(MainManager mainManager, IEventAggregator events, ILogger logger,
+            DebugViewModel debugViewModel)
         {
             _logger = logger;
+            _debugViewModel = debugViewModel;
 
             MainManager = mainManager;
             Header = "Settings";
@@ -176,6 +181,18 @@ namespace Artemis.ViewModels.Flyouts
                 MainManager.DisableProgram();
             else
                 MainManager.EnableProgram();
+        }
+
+        public void ShowDebug()
+        {
+            IWindowManager manager = new WindowManager();
+            dynamic settings = new ExpandoObject();
+            var icon = ImageUtilities.GenerateWindowIcon();
+
+            settings.Title = "Artemis | Debugger";
+            settings.Icon = icon;
+
+            manager.ShowWindow(_debugViewModel, null, settings);
         }
 
         public void ResetSettings()

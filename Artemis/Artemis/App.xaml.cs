@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
+using Artemis.Utilities;
 using NLog;
 using WpfExceptionViewer;
 
@@ -14,8 +15,8 @@ namespace Artemis
     {
         public App()
         {
-            //if (!IsRunAsAdministrator())
-            //    GeneralHelpers.RunAsAdministrator();
+            if (!IsRunAsAdministrator())
+                GeneralHelpers.RunAsAdministrator();
 
             InitializeComponent();
         }

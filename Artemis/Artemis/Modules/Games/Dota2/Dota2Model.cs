@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 
@@ -66,7 +66,7 @@ namespace Artemis.Modules.Games.Dota2
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<Dota2DataModel>(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
         }
     }
 }

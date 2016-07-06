@@ -6,15 +6,16 @@
              xmlns:utilities="clr-namespace:Artemis.Utilities"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:properties="clr-namespace:Artemis.Models.Profiles.Properties"
+             xmlns:models="clr-namespace:Artemis.Profiles.Layers.Models"
+             xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
              mc:Ignorable="d"
              d:DesignHeight="40" d:DesignWidth="500">
 
     <UserControl.Resources>
-        <utilities:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
+        <converters:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="DynamicPropertyValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="properties:LayerPropertyType" />
+                <x:Type TypeName="models:LayerPropertyType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </UserControl.Resources>

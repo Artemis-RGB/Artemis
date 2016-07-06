@@ -7,9 +7,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
-using Artemis.Models.Profiles;
-using Artemis.Models.Profiles.Properties;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Profiles;
+using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -109,10 +110,12 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                var drawLayers = SelectedProfile.GetRenderLayers<ProfilePreviewDataModel>(
-                    new ProfilePreviewDataModel(), false, false, true);
+                var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, false, true);
                 foreach (var layer in drawLayers)
+                {
+                    layer.Update(null, true, false);
                     layer.Draw(null, drawingContext, true, false);
+                }
 
                 // Get the selection color
                 var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];

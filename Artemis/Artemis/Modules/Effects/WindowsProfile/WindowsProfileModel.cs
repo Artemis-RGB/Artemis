@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Profiles;
+using Artemis.Profiles.Layers.Models;
 using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
 
@@ -16,7 +16,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
     {
         [DllImport("psapi.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation performanceInformation, [In] int size);
+        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation performanceInformation,
+            [In] int size);
 
         public static long GetPhysicalAvailableMemoryInMiB()
         {
@@ -58,6 +59,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
         }
     }
 
+
+
     public class WindowsProfileModel : EffectModel
     {
         private readonly ILogger _logger;
@@ -95,6 +98,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             var dataModel = (WindowsProfileDataModel) DataModel;
             UpdateCpu(dataModel);
             UpdateSpotify(dataModel);
+            UpdateDay(dataModel);
         }
 
         #region CPU
@@ -161,7 +165,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
         {
-            return Profile.GetRenderLayers<WindowsProfileDataModel>(DataModel, renderMice, renderHeadsets, false);
+            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, false);
         }
 
         public static PerformanceCounter GetOverallPerformanceCounter()
@@ -188,6 +192,19 @@ namespace Artemis.Modules.Effects.WindowsProfile
             return performanceCounters;
         }
 
+        #endregion
+
+        #region Current Time
+        private void UpdateDay(WindowsProfileDataModel dataModel)
+        {
+
+            var now = DateTime.Now;
+            dataModel.CurrentTime.Hours24 = int.Parse(now.ToString("HH"));
+            dataModel.CurrentTime.Hours12 = int.Parse(now.ToString("hh"));
+            dataModel.CurrentTime.Minutes = int.Parse(now.ToString("mm"));
+            dataModel.CurrentTime.Seconds = int.Parse(now.ToString("ss"));
+
+        }
         #endregion
 
         #region Spotify

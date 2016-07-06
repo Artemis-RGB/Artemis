@@ -6,7 +6,6 @@ using System.Timers;
 using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Managers
 {
@@ -21,7 +20,8 @@ namespace Artemis.Managers
         private readonly Timer _loopTimer;
         private Bitmap _keyboardBitmap;
 
-        public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
+        public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager,
+            DeviceManager deviceManager)
         {
             events.Subscribe(this);
             _logger = logger;
@@ -46,6 +46,18 @@ namespace Artemis.Managers
             _loopTimer.Stop();
             _loopTimer.Dispose();
             _keyboardBitmap?.Dispose();
+        }
+
+        public void Handle(ActiveEffectChanged message)
+        {
+            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
+                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
+        }
+
+        public void Handle(ActiveKeyboardChanged message)
+        {
+            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
+                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
         }
 
         public Task StartAsync()
@@ -132,50 +144,31 @@ namespace Artemis.Managers
                     renderEffect.Update();
 
                 // Get ActiveEffect's bitmap
-                Brush mouseBrush = null;
-                Brush headsetBrush = null;
+                Bitmap mouseBitmap = null;
+                Bitmap headsetBitmap = null;
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
-                using (Graphics keyboardGraphics = Graphics.FromImage(_keyboardBitmap))
+                if (renderEffect.Initialized)
+                    renderEffect.Render(_keyboardBitmap, out mouseBitmap, out headsetBitmap, mice.Any(), headsets.Any());
+
+                // Draw enabled overlays on top of the renderEffect
+                foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
-                    // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                    keyboardGraphics.Clear(Color.Black);
-
-                    if (renderEffect.Initialized)
-                        renderEffect.Render(keyboardGraphics, out mouseBrush, out headsetBrush, mice.Any(),
-                            headsets.Any());
-
-                    // Draw enabled overlays on top of the renderEffect
-                    foreach (var overlayModel in _effectManager.EnabledOverlays)
-                    {
-                        overlayModel.Update();
-                        overlayModel.RenderOverlay(keyboardGraphics, ref mouseBrush, ref headsetBrush, mice.Any(),
-                            headsets.Any());
-                    }
-
-                    // Update mice and headsets
-                    foreach (var mouse in mice)
-                        mouse.UpdateDevice(mouseBrush);
-                    foreach (var headset in headsets)
-                        headset.UpdateDevice(headsetBrush);
+                    overlayModel.Update();
+                    overlayModel.RenderOverlay(_keyboardBitmap, ref mouseBitmap, ref headsetBitmap, mice.Any(),
+                        headsets.Any());
                 }
+
+                // Update mice and headsets
+                foreach (var mouse in mice)
+                    mouse.UpdateDevice(mouseBitmap);
+                foreach (var headset in headsets)
+                    headset.UpdateDevice(headsetBitmap);
 
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(_keyboardBitmap);
             }
-        }
-
-        public void Handle(ActiveKeyboardChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null &&_effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
         }
     }
 }

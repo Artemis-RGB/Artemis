@@ -9,13 +9,16 @@ namespace Artemis.Modules.Games.Overwatch
         public bool UltimateReady { get; set; }
         public bool Ability1Ready { get; set; }
         public bool Ability2Ready { get; set; }
+        public bool UltimateUsed { get; set; }
+        public bool CanChangeHero { get; set; }
     }
 
     public enum OverwatchStatus
     {
-        Unkown,
+        Unknown,
         InMainMenu,
-        InGame
+        InGame,
+        InCharacterSelect
     }
 
     public enum OverwatchCharacter

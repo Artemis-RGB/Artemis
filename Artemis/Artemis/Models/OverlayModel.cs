@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using Artemis.Managers;
-using Brush = System.Windows.Media.Brush;
 
 namespace Artemis.Models
 {
@@ -29,7 +28,7 @@ namespace Artemis.Models
             }
         }
 
-        public abstract void RenderOverlay(Graphics keyboard, ref Brush mouse, ref Brush headset, bool renderMice,
+        public abstract void RenderOverlay(Bitmap keyboard, ref Bitmap mouse, ref Bitmap headset, bool renderMice,
             bool renderHeadsets);
     }
 }

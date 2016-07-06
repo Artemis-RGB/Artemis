@@ -48,14 +48,14 @@ namespace Artemis.Utilities
             {
                 if (_waitTime < _stickyTime)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(10);
                     continue;
                 }
 
                 while (_waitTime > 0)
                 {
-                    Thread.Sleep(50);
-                    _waitTime -= 50;
+                    Thread.Sleep(10);
+                    _waitTime -= 10;
                 }
                 _value = _toStick;
             }

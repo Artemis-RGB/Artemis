@@ -13,6 +13,14 @@ using Artemis.Modules.Games.RocketLeague;
 using Artemis.Modules.Games.TheDivision;
 using Artemis.Modules.Games.Witcher3;
 using Artemis.Modules.Overlays.VolumeDisplay;
+using Artemis.Profiles.Layers.Animations;
+using Artemis.Profiles.Layers.Conditions;
+using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Layers.Types.Headset;
+using Artemis.Profiles.Layers.Types.Keyboard;
+using Artemis.Profiles.Layers.Types.KeyboardGif;
+using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.ViewModels.Abstract;
 using Ninject.Modules;
 
@@ -53,6 +61,28 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
             // Headsets
             Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
+
+            #endregion
+
+            #region Layers
+
+            // Animations
+            Bind<ILayerAnimation>().To<NoneAnimation>();
+            Bind<ILayerAnimation>().To<GrowAnimation>();
+            Bind<ILayerAnimation>().To<PulseAnimation>();
+            Bind<ILayerAnimation>().To<SlideDownAnimation>();
+            Bind<ILayerAnimation>().To<SlideLeftAnimation>();
+            Bind<ILayerAnimation>().To<SlideRightAnimation>();
+            Bind<ILayerAnimation>().To<SlideUpAnimation>();
+            // Conditions
+            Bind<ILayerCondition>().To<DataModelCondition>();
+            Bind<ILayerCondition>().To<EventCondition>();
+            // Types
+            Bind<ILayerType>().To<FolderType>();
+            Bind<ILayerType>().To<HeadsetType>();
+            Bind<ILayerType>().To<KeyboardType>();
+            Bind<ILayerType>().To<KeyboardGifType>();
+            Bind<ILayerType>().To<MouseType>();
 
             #endregion
         }

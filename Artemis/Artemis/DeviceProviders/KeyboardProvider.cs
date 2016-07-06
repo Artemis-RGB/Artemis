@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MahApps.Metro.Controls.Dialogs;
-using Brush = System.Windows.Media.Brush;
 using Size = System.Windows.Size;
 
 namespace Artemis.DeviceProviders
@@ -87,7 +86,7 @@ namespace Artemis.DeviceProviders
             return Task.Run(() => Enable());
         }
 
-        public override void UpdateDevice(Brush brush)
+        public override void UpdateDevice(Bitmap bitmap)
         {
             throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
         }
