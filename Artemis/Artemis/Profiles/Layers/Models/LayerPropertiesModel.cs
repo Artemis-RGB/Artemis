@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Media;
 using Artemis.Utilities.Converters;
-using NClone.MetadataProviders;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -39,11 +38,10 @@ namespace Artemis.Profiles.Layers.Models
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
         [JsonIgnore]
-        [CustomReplicationBehavior(ReplicationBehavior.Ignore)]
+        
         public double AnimationProgress { get; set; }
 
         [JsonConverter(typeof(BrushJsonConverter))]
-        [CustomReplicationBehavior(ReplicationBehavior.Copy)]
         public Brush Brush
         {
             get { return _brush; }

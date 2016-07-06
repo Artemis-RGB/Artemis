@@ -9,7 +9,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Layers;
-using NClone;
+
 
 namespace Artemis.Profiles.Layers.Types.Mouse
 {
@@ -58,8 +58,8 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            layerModel.AppliedProperties = Clone.ObjectGraph(layerModel.Properties);
-            
+            layerModel.AppliedProperties = new SimplePropertiesModel(layerModel.Properties);
+
             if (isPreview || dataModel == null)
                 return;
 

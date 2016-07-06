@@ -2,7 +2,7 @@
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using NClone;
+
 
 namespace Artemis.ViewModels.Profiles.Events
 {
@@ -20,7 +20,7 @@ namespace Artemis.ViewModels.Profiles.Events
                     TriggerDelay = new TimeSpan(0)
                 };
             else
-                ProposedProperties = Clone.ObjectGraph(eventPropertiesModel);
+                ProposedProperties = GeneralHelpers.Clone(eventPropertiesModel);
         }
 
         public EventPropertiesModel ProposedProperties
@@ -36,7 +36,7 @@ namespace Artemis.ViewModels.Profiles.Events
 
         public EventPropertiesModel GetAppliedProperties()
         {
-            return Clone.ObjectGraph(ProposedProperties);
+            return GeneralHelpers.Clone(ProposedProperties);
         }
     }
 }

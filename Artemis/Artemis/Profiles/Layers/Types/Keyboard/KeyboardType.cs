@@ -7,7 +7,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Layers;
-using NClone;
+
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
@@ -65,7 +65,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = Clone.ObjectGraph(layerModel.Properties);
+            layerModel.AppliedProperties = new KeyboardPropertiesModel(layerModel.Properties);
             if (isPreview || dataModel == null)
                 return;
 
