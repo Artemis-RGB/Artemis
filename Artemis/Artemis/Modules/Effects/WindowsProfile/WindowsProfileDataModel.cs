@@ -9,6 +9,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             Spotify = new Spotify();
             Cpu = new CpuDataModel();
             Performance = new PerformanceDataModel();
+            CurrentTime = new CurrentTime();
         }
 
         public CpuDataModel Cpu { get; set; }
@@ -17,7 +18,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public CurrentTime CurrentTime { get; set; }
     }
 
-    class CurrentTime
+    public class CurrentTime
     {
         public int Hours24 { get; set; }
         public int Hours12 { get; set; }
