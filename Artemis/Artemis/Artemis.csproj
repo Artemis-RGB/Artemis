@@ -503,14 +503,14 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\Layers\KeyboardPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerDynamicPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerEditorViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\Layers\LayerPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\Layers\HeadsetPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\Layers\FolderPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\Layers\MousePropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Abstract\LayerPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Headset\HeadsetPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Folder\FolderPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
@@ -550,13 +550,13 @@
     <Compile Include="Views\Profiles\Events\EventPropertiesView.xaml.cs">
       <DependentUpon>EventPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\Layers\FolderPropertiesView.xaml.cs">
+    <Compile Include="Profiles\Layers\Types\Folder\FolderPropertiesView.xaml.cs">
       <DependentUpon>FolderPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\Layers\HeadsetPropertiesView.xaml.cs">
+    <Compile Include="Profiles\Layers\Types\Headset\HeadsetPropertiesView.xaml.cs">
       <DependentUpon>HeadsetPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\Layers\KeyboardPropertiesView.xaml.cs">
+    <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesView.xaml.cs">
       <DependentUpon>KeyboardPropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Profiles\LayerConditionView.xaml.cs">
@@ -568,7 +568,7 @@
     <Compile Include="Views\Profiles\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\Layers\MousePropertiesView.xaml.cs">
+    <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesView.xaml.cs">
       <DependentUpon>MousePropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OverlaysView.xaml.cs">
@@ -767,15 +767,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\Layers\FolderPropertiesView.xaml">
+    <Page Include="Profiles\Layers\Types\Folder\FolderPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\Layers\HeadsetPropertiesView.xaml">
+    <Page Include="Profiles\Layers\Types\Headset\HeadsetPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\Layers\KeyboardPropertiesView.xaml">
+    <Page Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -791,7 +791,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Profiles\Layers\MousePropertiesView.xaml">
+    <Page Include="Profiles\Layers\Types\Mouse\MousePropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -2,13 +2,14 @@
 using System.Linq;
 using System.Windows.Forms;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Keyboard;
+using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
-using static Artemis.Utilities.GeneralHelpers;
 
-namespace Artemis.ViewModels.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Keyboard
 {
     public class KeyboardPropertiesViewModel : LayerPropertiesViewModel
     {
@@ -20,7 +21,7 @@ namespace Artemis.ViewModels.Profiles.Layers
         {
             LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
 
-            var dataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
+            var dataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel));
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", dataModelProps, layerModel.Properties);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", dataModelProps, layerModel.Properties);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", dataModelProps, layerModel.Properties);
@@ -31,7 +32,7 @@ namespace Artemis.ViewModels.Profiles.Layers
 
         public bool ShowGif => IsGif;
         public bool ShowBrush => !IsGif;
-        public BindableCollection<PropertyCollection> DataModelProps { get; set; }
+        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }
         public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }

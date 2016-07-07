@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
-namespace Artemis.ViewModels.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Headset
 {
-    public class MousePropertiesViewModel : LayerPropertiesViewModel
+    public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
     {
         private ILayerAnimation _selectedLayerAnimation;
 
-        public MousePropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
+        public HeadsetPropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
             IEnumerable<ILayerAnimation> layerAnimations) : base(layerModel, dataModel)
         {
             LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Artemis.Views.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Headset
 {
     /// <summary>
     ///     Interaction logic for HeadsetPropertiesView.xaml

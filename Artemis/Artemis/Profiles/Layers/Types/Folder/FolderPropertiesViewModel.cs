@@ -1,7 +1,8 @@
 ﻿using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
 
-namespace Artemis.ViewModels.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Folder
 {
     public class FolderPropertiesViewModel : LayerPropertiesViewModel
     {

@@ -267,7 +267,8 @@ namespace Artemis.ViewModels.Profiles
             if (ProfileViewModel.SelectedLayer == null)
                 return;
 
-            EditLayer(ProfileViewModel.SelectedLayer);
+            var selectedLayer = ProfileViewModel.SelectedLayer;
+            EditLayer(selectedLayer);
         }
 
         /// <summary>
@@ -276,8 +277,12 @@ namespace Artemis.ViewModels.Profiles
         /// <param name="layer">The layer to open the view for</param>
         public void EditLayer(LayerModel layer)
         {
+            if (layer == null)
+                return;
+
             IWindowManager manager = new WindowManager();
             var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
+
             dynamic settings = new ExpandoObject();
             var icon = ImageUtilities.GenerateWindowIcon();
 
@@ -286,9 +291,9 @@ namespace Artemis.ViewModels.Profiles
 
             manager.ShowDialog(editorVm, null, settings);
 
-            // The layer editor VM may have created a new instance of the layer, reapply it to the list
-            layer.Replace(editorVm.Layer);
-            layer = editorVm.Layer;
+            //// The layer editor VM may have created a new instance of the layer, reapply it to the list
+            //layer.Replace(editorVm.Layer);
+            //layer = editorVm.Layer;
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())

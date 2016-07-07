@@ -4,14 +4,15 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
 using Artemis.Utilities;
+using Artemis.Utilities.ParentChild;
 using Artemis.ViewModels.Profiles.Events;
-using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
 
 using Newtonsoft.Json;
@@ -29,11 +30,14 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _proposedLayer;
         private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes,
-            List<ILayerAnimation> layerAnimations)
+        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes, List<ILayerAnimation> layerAnimations)
         {
             _dataModel = dataModel;
             _layerAnimations = layerAnimations;
+
+            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
+                GeneralHelpers.GenerateTypeMap(dataModel));
 
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
@@ -41,14 +45,10 @@ namespace Artemis.ViewModels.Profiles
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
-                GeneralHelpers.GenerateTypeMap(dataModel));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(
                 layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
             PropertyChanged += PropertiesViewModelHandler;
-
             PreSelect();
         }
 
@@ -166,8 +166,21 @@ namespace Artemis.ViewModels.Profiles
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
-            Layer = GeneralHelpers.Clone(ProposedLayer);
-            
+            var appliedLayer = GeneralHelpers.Clone(ProposedLayer);
+
+            if (Layer.Parent != null)
+            {
+                Layer.Parent.Children.Add(appliedLayer);
+                Layer.Parent.Children.Remove(Layer);
+            }
+            else
+            {
+                Layer.Profile.Layers.Add(appliedLayer);
+                Layer.Profile.Layers.Remove(Layer);
+            }
+
+            Layer = appliedLayer;
+
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();

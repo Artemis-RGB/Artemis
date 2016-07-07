@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
-using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Interfaces
 {
