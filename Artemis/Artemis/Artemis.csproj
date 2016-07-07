@@ -275,6 +275,9 @@
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
+    <Compile Include="DeviceProviders\Logitech\G810.cs" />
+    <Compile Include="DeviceProviders\Logitech\LogitechDevices.cs" />
+    <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
     <Compile Include="Events\ToggleEnabled.cs" />
@@ -282,9 +285,9 @@
     <Compile Include="InjectionFactories\ILayerEditorVmFactory.cs" />
     <Compile Include="InjectionFactories\IProfileEditorVmFactory.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairRGB.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairKeyboards.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
-    <Compile Include="DeviceProviders\Logitech\Orion.cs" />
+    <Compile Include="DeviceProviders\Logitech\G910.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\KeyboardNames.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\LogitechGSDK.cs" />
@@ -594,6 +597,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\Keyboards\g810.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>

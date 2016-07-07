@@ -321,10 +321,10 @@ namespace Artemis.ViewModels.Profiles
         /// <summary>
         ///     Adds a new layer to the profile and selects it
         /// </summary>
-        public void AddLayer()
+        public LayerModel AddLayer()
         {
             if (SelectedProfile == null)
-                return;
+                return null;
 
             // Create a new layer
             var layer = LayerModel.CreateLayer();
@@ -338,6 +338,20 @@ namespace Artemis.ViewModels.Profiles
             }
 
             UpdateLayerList(layer);
+            return layer;
+        }
+
+        public LayerModel AddFolder()
+        {
+            var layer = AddLayer();
+            if (layer == null)
+                return null;
+
+            layer.Name = "New folder";
+            layer.LayerType = new FolderType();
+            layer.LayerType.SetupProperties(layer);
+
+            return layer;
         }
 
         /// <summary>

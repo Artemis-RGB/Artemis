@@ -34,8 +34,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            if (CueSDK.IsInitialized)
-                CueSDK.Reinitialize();
+            throw new NotImplementedException("Can only disable a keyboard");
         }
 
         public override void UpdateDevice(Bitmap bitmap)

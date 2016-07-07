@@ -114,7 +114,7 @@ namespace Artemis.Modules.Effects.TypeWave
                     _waves[i].Size, _waves[i].Size);
 
                 Color fillColor;
-                if (MainManager.DeviceManager.ActiveKeyboard is CorsairRGB)
+                if (MainManager.DeviceManager.ActiveKeyboard is CorsairKeyboards)
                     fillColor = Color.Black;
                 else
                     fillColor = Color.Transparent;

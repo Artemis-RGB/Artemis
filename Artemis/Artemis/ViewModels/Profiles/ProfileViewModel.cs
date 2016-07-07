@@ -276,7 +276,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
             }
 
-            if (SelectedLayer == null)
+            if (SelectedLayer == null || (SelectedLayer.LayerType != null && !SelectedLayer.LayerType.MustDraw))
                 return;
 
             // Setup the dragging state on mouse press

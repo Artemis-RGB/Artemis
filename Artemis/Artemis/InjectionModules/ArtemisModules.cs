@@ -54,8 +54,9 @@ namespace Artemis.InjectionModules
             #region Devices
 
             // Keyboards
-            Bind<DeviceProvider>().To<CorsairRGB>().InSingletonScope();
-            Bind<DeviceProvider>().To<Orion>().InSingletonScope();
+            Bind<DeviceProvider>().To<CorsairKeyboards>().InSingletonScope();
+            Bind<DeviceProvider>().To<G910>().InSingletonScope();
+            Bind<DeviceProvider>().To<G810>().InSingletonScope();
             Bind<DeviceProvider>().To<BlackWidow>().InSingletonScope();
             // Mice
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();

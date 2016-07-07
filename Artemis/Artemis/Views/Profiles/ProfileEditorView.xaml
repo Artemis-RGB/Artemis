@@ -205,6 +205,19 @@
                     </Rectangle>
                 </Button.Content>
             </Button>
+            <Button x:Name="AddFolder" VerticalAlignment="Top"
+                    Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                    Width="26" Height="26" ToolTip="Add folder" HorizontalAlignment="Left" Margin="10,0,0,0" >
+                <Button.Content>
+                    <Rectangle
+                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                        Width="12" Height="12">
+                        <Rectangle.OpacityMask>
+                            <VisualBrush Visual="{StaticResource appbar_folder}" Stretch="Fill" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                </Button.Content>
+            </Button>
             <Button x:Name="EditLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Edit layer"
                     IsEnabled="{Binding Path=LayerSelected}">

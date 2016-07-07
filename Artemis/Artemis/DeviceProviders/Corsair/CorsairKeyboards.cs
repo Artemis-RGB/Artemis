@@ -11,12 +11,12 @@ using Point = System.Drawing.Point;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    public class CorsairRGB : KeyboardProvider
+    public class CorsairKeyboards : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
-        public CorsairRGB(ILogger logger)
+        public CorsairKeyboards(ILogger logger)
         {
             Logger = logger;
             Name = "Corsair RGB Keyboards";

@@ -34,8 +34,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            if (CueSDK.IsInitialized)
-                CueSDK.Reinitialize();
+            throw new NotImplementedException("Can only disable a keyboard");
         }
 
         public override void UpdateDevice(Bitmap bitmap)
@@ -55,7 +54,7 @@ namespace Artemis.DeviceProviders.Corsair
                 {
                     var col = ledIndex == 0
                         ? bitmap.GetPixel(0, 0)
-                        : bitmap.GetPixel((int)((ledIndex + 1) * step - 1), (int)((ledIndex + 1) * step - 1));
+                        : bitmap.GetPixel((int) ((ledIndex + 1)*step - 1), (int) ((ledIndex + 1)*step - 1));
 
                     corsairLed.Color = col;
                     ledIndex++;
