@@ -24,6 +24,23 @@ namespace Artemis.Modules.Games.RocketLeague
             Scale = 4;
             Enabled = Settings.Enabled;
             Initialized = false;
+
+            // Generate a new offset when the game is updated
+            //var offset = new GamePointersCollection
+            //{
+            //    Game = "RocketLeague",
+            //    GameVersion = "1.20",
+            //    GameAddresses = new List<GamePointer>
+            //    {
+            //        new GamePointer
+            //        {
+            //            Description = "Boost",
+            //            BasePointer = new IntPtr(0x01694D00),
+            //            Offsets = new[] {0x720, 0x40, 0x3c0, 0x520, 0x54}
+            //        }
+            //    }
+            //};
+            //var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
         }
 
         public int Scale { get; set; }
@@ -57,15 +74,13 @@ namespace Artemis.Modules.Games.RocketLeague
 
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
             var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
-            var boostFloat = _memory.ReadFloat(boostAddress)*100/3;
+            var boostInt = _memory.ReadInt32(boostAddress);
+            if (boostInt > 100)
+                boostInt = 100;
+            if (boostInt < 0)
+                boostInt = 0;
 
-            ((RocketLeagueDataModel) DataModel).Boost = (int) Math.Ceiling(boostFloat);
-
-            // Take care of any reading errors resulting in an OutOfMemory on draw
-            if (((RocketLeagueDataModel) DataModel).Boost < 0)
-                ((RocketLeagueDataModel) DataModel).Boost = 0;
-            if (((RocketLeagueDataModel) DataModel).Boost > 100)
-                ((RocketLeagueDataModel) DataModel).Boost = 100;
+            ((RocketLeagueDataModel) DataModel).Boost = boostInt;
 
             if (DateTime.Now.AddSeconds(-2) <= LastTrace)
                 return;
@@ -74,7 +89,7 @@ namespace Artemis.Modules.Games.RocketLeague
                 JsonConvert.SerializeObject(_pointer.GameAddresses, Formatting.Indented));
             MainManager.Logger.Trace("RL specific offsets: {0}", offsets);
             MainManager.Logger.Trace("Boost address: {0}", boostAddress);
-            MainManager.Logger.Trace("Boost float: {0}", boostFloat);
+            MainManager.Logger.Trace("Boost int: {0}", boostInt);
         }
 
         public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
