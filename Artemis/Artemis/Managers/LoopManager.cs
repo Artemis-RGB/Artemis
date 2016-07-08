@@ -133,6 +133,12 @@ namespace Artemis.Managers
                 return;
             }
 
+            using (var g = Graphics.FromImage(_keyboardBitmap))
+            {
+                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
+                g.Clear(Color.Black);
+            }
+
             lock (_deviceManager.ActiveKeyboard)
             {
                 // Skip frame if effect is still initializing
@@ -143,20 +149,30 @@ namespace Artemis.Managers
                 if (renderEffect.Initialized)
                     renderEffect.Update();
 
-                // Get ActiveEffect's bitmap
-                Bitmap mouseBitmap = null;
-                Bitmap headsetBitmap = null;
+                // Prepare bitmaps for mice and headsets. Set them up with a black background to
+                // avoid transparency issues
+                var mouseBitmap = new Bitmap(40, 40);
+                using (var g = Graphics.FromImage(mouseBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
+                var headsetBitmap = new Bitmap(40, 40);
+                using (var g = Graphics.FromImage(headsetBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
+
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
 
                 if (renderEffect.Initialized)
-                    renderEffect.Render(_keyboardBitmap, out mouseBitmap, out headsetBitmap, mice.Any(), headsets.Any());
+                    renderEffect.Render(_keyboardBitmap, mouseBitmap, headsetBitmap, mice.Any(), headsets.Any());
 
                 // Draw enabled overlays on top of the renderEffect
                 foreach (var overlayModel in _effectManager.EnabledOverlays)
                 {
                     overlayModel.Update();
-                    overlayModel.RenderOverlay(_keyboardBitmap, ref mouseBitmap, ref headsetBitmap, mice.Any(),
+                    overlayModel.RenderOverlay(_keyboardBitmap, mouseBitmap, headsetBitmap, mice.Any(),
                         headsets.Any());
                 }
 
@@ -165,6 +181,8 @@ namespace Artemis.Managers
                     mouse.UpdateDevice(mouseBitmap);
                 foreach (var headset in headsets)
                     headset.UpdateDevice(headsetBitmap);
+                mouseBitmap.Dispose();
+                headsetBitmap.Dispose();
 
                 // Update the keyboard
                 _deviceManager.ActiveKeyboard?.DrawBitmap(_keyboardBitmap);

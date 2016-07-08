@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Artemis.DeviceProviders.Corsair;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Managers;
 using Artemis.Models;
@@ -94,12 +93,8 @@ namespace Artemis.Modules.Effects.TypeWave
             return null;
         }
 
-        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
         {
-            mouse = null;
-            headset = null;
-
             if (_waves.Count == 0)
                 return;
 
@@ -113,16 +108,10 @@ namespace Artemis.Modules.Effects.TypeWave
                 path.AddEllipse(_waves[i].Point.X - _waves[i].Size/2, _waves[i].Point.Y - _waves[i].Size/2,
                     _waves[i].Size, _waves[i].Size);
 
-                Color fillColor;
-                if (MainManager.DeviceManager.ActiveKeyboard is CorsairKeyboards)
-                    fillColor = Color.Black;
-                else
-                    fillColor = Color.Transparent;
-
                 var pthGrBrush = new PathGradientBrush(path)
                 {
                     SurroundColors = new[] {_waves[i].Color},
-                    CenterColor = fillColor
+                    CenterColor = Color.Transparent
                 };
 
                 using (var g = Graphics.FromImage(keyboard))

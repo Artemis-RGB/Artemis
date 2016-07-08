@@ -77,7 +77,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplay.Transparancy = 255;
         }
 
-        public override void RenderOverlay(Bitmap keyboard, ref Bitmap mouse, ref Bitmap headset, bool renderMice,
+        public override void RenderOverlay(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice,
             bool renderHeadsets)
         {
             if (MainManager.DeviceManager.ActiveKeyboard == null || VolumeDisplay == null || VolumeDisplay.Ttl < 1)

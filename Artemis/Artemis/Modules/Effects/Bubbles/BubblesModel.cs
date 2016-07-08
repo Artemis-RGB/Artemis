@@ -88,12 +88,8 @@ namespace Artemis.Modules.Effects.Bubbles
             }
         }
 
-        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
         {
-            mouse = null;
-            headset = null;
-
             using (var g = Graphics.FromImage(keyboard))
             {
                 foreach (var bubble in _bubbles)

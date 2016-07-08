@@ -43,12 +43,8 @@ namespace Artemis.Models
         public abstract void Update();
 
         // Called after every update
-        public virtual void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public virtual void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
         {
-            mouse = null;
-            headset = null;
-
             if (Profile == null || DataModel == null || MainManager.DeviceManager.ActiveKeyboard == null)
                 return;
 
@@ -59,28 +55,20 @@ namespace Artemis.Models
             var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             using (var g = Graphics.FromImage(keyboard))
             {
-                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.MustDraw()), DataModel, keyboardRect, false, true);
             }
 
             // Render the mouse layer-by-layer
             var smallRect = new Rect(0, 0, 40, 40);
-            mouse = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(mouse))
             {
-                // Not all SDK's handle transparency
-                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
                     false, true);
             }
 
             // Render the headset layer-by-layer
-            headset = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(headset))
             {
-                // Not all SDK's handle transparency
-                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
                     false, true);
             }

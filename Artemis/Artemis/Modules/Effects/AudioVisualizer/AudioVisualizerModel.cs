@@ -187,12 +187,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             return null;
         }
 
-        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
         {
-            mouse = null;
-            headset = null;
-
             if (SpectrumData == null || SoundRectangles == null)
                 return;
 

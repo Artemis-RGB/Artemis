@@ -37,12 +37,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
             return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, true);
         }
 
-        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
         {
-            mouse = null;
-            headset = null;
-
             if (Profile == null || DataModel == null)
                 return;
 
@@ -53,14 +49,11 @@ namespace Artemis.Modules.Effects.ProfilePreview
             var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             using (var g = Graphics.FromImage(keyboard))
             {
-                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                g.Clear(Color.Black);
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.MustDraw()), DataModel, keyboardRect, true, true);
             }
 
             // Render the mouse layer-by-layer
             var smallRect = new Rect(0, 0, 40, 40);
-            mouse = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(mouse))
             {
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
@@ -68,7 +61,6 @@ namespace Artemis.Modules.Effects.ProfilePreview
             }
 
             // Render the headset layer-by-layer
-            headset = new Bitmap(40, 40);
             using (var g = Graphics.FromImage(headset))
             {
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
