@@ -97,8 +97,11 @@ namespace Artemis.Profiles
                 if (!layerModel.Enabled || keyboardOnly && layerModel.LayerType.DrawType != DrawType.Keyboard)
                     continue;
 
-                if (!ignoreConditions && !layerModel.ConditionsMet(dataModel))
-                    continue;
+                if (!ignoreConditions)
+                {
+                    if (!layerModel.ConditionsMet(dataModel))
+                        continue;
+                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));

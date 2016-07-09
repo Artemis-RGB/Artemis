@@ -167,6 +167,7 @@ namespace Artemis.ViewModels.Profiles
             LayerPropertiesViewModel?.ApplyProperties();
             var appliedLayer = GeneralHelpers.Clone(ProposedLayer);
 
+            // Fix relations
             if (Layer.Parent != null)
             {
                 Layer.Parent.Children.Add(appliedLayer);
@@ -177,6 +178,9 @@ namespace Artemis.ViewModels.Profiles
                 Layer.Profile.Layers.Add(appliedLayer);
                 Layer.Profile.Layers.Remove(Layer);
             }
+            appliedLayer.Children.Clear();
+            foreach (var layerModel in Layer.Children)
+                appliedLayer.Children.Add(layerModel);
 
             Layer = appliedLayer;
 

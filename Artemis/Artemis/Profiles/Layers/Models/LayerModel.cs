@@ -192,49 +192,31 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
-        //public void Replace(LayerModel layer)
-        //{
-        //    layer.Order = Order;
-        //    layer.Parent = null;
-        //    layer.Profile = null;
-
-        //    if (Parent != null)
-        //    {
-        //        Parent.Children.Add(layer);
-        //        Parent.Children.Remove(this);
-        //    }
-        //    else if (Profile != null)
-        //    {
-        //        Profile.Layers.Add(layer);
-        //        Profile.Layers.Remove(this);
-        //    }
-        //}
-
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
         /// </summary>
         /// <typeparam name="T">The game data model to base the conditions on</typeparam>
         /// <param name="dataModel">Instance of said game data model</param>
-        /// <param name="includeMice">Whether or not to include mice in the list</param>
-        /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
+        /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool includeMice, bool includeHeadsets,
-            bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
-            foreach (var layerModel in Children.OrderByDescending(c => c.Order))
+            foreach (var layerModel in Children.OrderByDescending(l => l.Order))
             {
-                if (!layerModel.Enabled || !includeMice && layerModel.LayerType is MouseType ||
-                    !includeHeadsets && layerModel.LayerType is HeadsetType)
+                if (!layerModel.Enabled || keyboardOnly && layerModel.LayerType.DrawType != DrawType.Keyboard)
                     continue;
 
-                if (!ignoreConditions && !layerModel.ConditionsMet(dataModel))
-                    continue;
+                if (!ignoreConditions)
+                {
+                    if (!layerModel.ConditionsMet(dataModel))
+                        continue;
+                }
 
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetRenderLayers(dataModel, includeMice, includeHeadsets, ignoreConditions));
+                layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
             }
 
             return layers;
