@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.DeviceProviders;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
+using Timer = System.Timers.Timer;
 
 namespace Artemis.Managers
 {
@@ -60,6 +62,10 @@ namespace Artemis.Managers
 
             if (_deviceManager.ActiveKeyboard == null)
                 _deviceManager.EnableLastKeyboard();
+
+            while (_deviceManager.ChangingKeyboard)
+                Thread.Sleep(200);
+            
             // If still null, no last keyboard, so stop.
             if (_deviceManager.ActiveKeyboard == null)
             {
