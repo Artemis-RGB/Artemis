@@ -134,6 +134,8 @@ namespace Artemis.Managers
                 mouseProvider.TryEnableAsync();
             foreach (var headsetProvider in HeadsetProviders)
                 headsetProvider.TryEnableAsync();
+            foreach (var genericProvider in GenericProviders)
+                genericProvider.TryEnableAsync();
         }
 
         /// <summary>
