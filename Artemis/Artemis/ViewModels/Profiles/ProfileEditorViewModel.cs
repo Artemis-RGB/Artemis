@@ -21,7 +21,6 @@ using Artemis.Utilities;
 using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
-
 using Ninject;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;

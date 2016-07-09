@@ -11,7 +11,6 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
 
-
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
 {
     internal class KeyboardGifType : ILayerType

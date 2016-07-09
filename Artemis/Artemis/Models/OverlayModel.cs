@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Artemis.Managers;
+﻿using Artemis.Managers;
 
 namespace Artemis.Models
 {

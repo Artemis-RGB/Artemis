@@ -21,7 +21,8 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         {
             LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
 
-            var dataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel));
+            var dataModelProps =
+                new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel));
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", dataModelProps, layerModel.Properties);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", dataModelProps, layerModel.Properties);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", dataModelProps, layerModel.Properties);

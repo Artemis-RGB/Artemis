@@ -68,12 +68,12 @@ namespace Artemis.Utilities.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? 0.0 : ((TimeSpan)value).TotalMilliseconds;
+            return value == null ? 0.0 : ((TimeSpan) value).TotalMilliseconds;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? new TimeSpan() : TimeSpan.FromMilliseconds((double)value);
+            return value == null ? new TimeSpan() : TimeSpan.FromMilliseconds((double) value);
         }
     }
 }

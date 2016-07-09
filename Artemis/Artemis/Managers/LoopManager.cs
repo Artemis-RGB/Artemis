@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.DeviceProviders;
-using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
 
@@ -160,11 +159,6 @@ namespace Artemis.Managers
 
     public class RenderFrame : IDisposable
     {
-        public Bitmap KeyboardBitmap { get; set; }
-        public Bitmap MouseBitmap { get; set; }
-        public Bitmap HeadsetBitmap { get; set; }
-        public Bitmap GenericBitmap { get; set; }
-
         public RenderFrame(KeyboardProvider keyboard)
         {
             KeyboardBitmap = keyboard.KeyboardBitmap(4);
@@ -181,6 +175,11 @@ namespace Artemis.Managers
             using (var g = Graphics.FromImage(GenericBitmap))
                 g.Clear(Color.Black);
         }
+
+        public Bitmap KeyboardBitmap { get; set; }
+        public Bitmap MouseBitmap { get; set; }
+        public Bitmap HeadsetBitmap { get; set; }
+        public Bitmap GenericBitmap { get; set; }
 
         public void Dispose()
         {

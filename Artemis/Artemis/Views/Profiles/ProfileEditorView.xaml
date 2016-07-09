@@ -207,7 +207,7 @@
             </Button>
             <Button x:Name="AddFolder" VerticalAlignment="Top"
                     Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                    Width="26" Height="26" ToolTip="Add folder" HorizontalAlignment="Left" Margin="10,0,0,0" >
+                    Width="26" Height="26" ToolTip="Add folder" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <Button.Content>
                     <Rectangle
                         Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"

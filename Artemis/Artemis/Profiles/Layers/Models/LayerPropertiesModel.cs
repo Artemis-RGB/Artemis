@@ -7,6 +7,8 @@ namespace Artemis.Profiles.Layers.Models
 {
     public abstract class LayerPropertiesModel
     {
+        private Brush _brush;
+
         public LayerPropertiesModel(LayerPropertiesModel source = null)
         {
             if (source == null)
@@ -25,8 +27,6 @@ namespace Artemis.Profiles.Layers.Models
             Brush = source.Brush;
         }
 
-        private Brush _brush;
-
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
@@ -38,7 +38,6 @@ namespace Artemis.Profiles.Layers.Models
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
         [JsonIgnore]
-        
         public double AnimationProgress { get; set; }
 
         [JsonConverter(typeof(BrushJsonConverter))]

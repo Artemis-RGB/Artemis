@@ -7,8 +7,6 @@ using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Headset;
-using Artemis.Profiles.Layers.Types.Mouse;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {

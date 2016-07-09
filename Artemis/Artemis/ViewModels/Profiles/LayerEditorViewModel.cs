@@ -11,10 +11,8 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
 using Artemis.Utilities;
-using Artemis.Utilities.ParentChild;
 using Artemis.ViewModels.Profiles.Events;
 using Caliburn.Micro;
-
 using Newtonsoft.Json;
 using Ninject;
 
@@ -30,7 +28,8 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _proposedLayer;
         private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes, List<ILayerAnimation> layerAnimations)
+        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes,
+            List<ILayerAnimation> layerAnimations)
         {
             _dataModel = dataModel;
             _layerAnimations = layerAnimations;

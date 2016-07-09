@@ -65,7 +65,7 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
             // Other
             Bind<DeviceProvider>().To<LogitechGeneric>().InSingletonScope();
-            
+
             #endregion
 
             #region Layers

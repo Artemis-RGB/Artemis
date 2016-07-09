@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -39,10 +38,10 @@ namespace Artemis.Profiles.Layers.Types.Headset
             }
 
             // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = new Rect(layer.AppliedProperties.X * 4,
-                layer.AppliedProperties.Y * 4,
-                layer.AppliedProperties.Width * 4,
-                layer.AppliedProperties.Height * 4);
+            var rect = new Rect(layer.AppliedProperties.X*4,
+                layer.AppliedProperties.Y*4,
+                layer.AppliedProperties.Width*4,
+                layer.AppliedProperties.Height*4);
 
             c.PushClip(new RectangleGeometry(rect));
             c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
@@ -64,7 +63,7 @@ namespace Artemis.Profiles.Layers.Types.Headset
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
-            var props = (SimplePropertiesModel)layerModel.AppliedProperties;
+            var props = (SimplePropertiesModel) layerModel.AppliedProperties;
             foreach (var dynamicProperty in props.DynamicProperties)
                 dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
         }

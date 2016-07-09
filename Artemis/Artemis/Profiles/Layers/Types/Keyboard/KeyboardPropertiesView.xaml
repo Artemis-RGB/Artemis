@@ -28,10 +28,11 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
                    VerticalAlignment="Center"
                    Height="18" />
-        <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" x:Name="LayerAnimations" VerticalAlignment="Top" Height="22">
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="10,10,10,0" x:Name="LayerAnimations" VerticalAlignment="Top"
+                  Height="22">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Path=Name, Mode=OneWay}"/>
+                    <TextBlock Text="{Binding Path=Name, Mode=OneWay}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
