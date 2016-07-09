@@ -22,7 +22,9 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
+            {
                 c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.mouse), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;

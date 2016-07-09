@@ -27,6 +27,6 @@ namespace Artemis.Models
             }
         }
 
-        public abstract void RenderOverlay(RenderFrame frame, bool renderMice, bool renderHeadsets);
+        public abstract void RenderOverlay(RenderFrame frame, bool keyboardOnly);
     }
 }

@@ -5,6 +5,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Logitech
 {
+    // TODO: Handle shutdown, maybe implement Disable() afterall?
     public class LogitechGeneric : DeviceProvider
     {
         /// <summary>
@@ -40,7 +41,6 @@ namespace Artemis.DeviceProviders.Logitech
 
             LogitechGSDK.LogiLedInit();
             LogitechGSDK.LogiLedGetSdkVersion(ref majorNum, ref minorNum, ref buildNum);
-            LogitechGSDK.LogiLedShutdown();
 
             // Turn it into one long number...
             var version = int.Parse($"{majorNum}{minorNum}{buildNum}");

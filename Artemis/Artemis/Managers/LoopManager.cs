@@ -145,7 +145,7 @@ namespace Artemis.Managers
                     foreach (var overlayModel in _effectManager.EnabledOverlays)
                     {
                         overlayModel.Update();
-                        overlayModel.RenderOverlay(frame, mice.Any(), headsets.Any());
+                        overlayModel.RenderOverlay(frame, !mice.Any() && !headsets.Any() && !generics.Any());
                     }
 
                     // Update the keyboard

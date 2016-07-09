@@ -76,7 +76,7 @@ namespace Artemis.Models
                     devRec, false, true);
             }
             // Render generic devices layer-by-layer
-            using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+            using (var g = Graphics.FromImage(frame.GenericBitmap))
             {
                 Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic), DataModel,
                     devRec, false, true);
