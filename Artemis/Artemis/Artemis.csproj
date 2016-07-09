@@ -276,7 +276,7 @@
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
-    <Compile Include="DeviceProviders\Logitech\LogitechDevices.cs" />
+    <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
     <Compile Include="Events\ActiveKeyboardChanged.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
@@ -309,6 +309,11 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml.cs">
+      <DependentUpon>GenericPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\Generic\GenericPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Generic\GenericType.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
@@ -597,6 +602,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\generic.png" />
     <None Include="Resources\Keyboards\g810.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -710,6 +716,10 @@
     <Page Include="Modules\Games\TheDivision\TheDivisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>

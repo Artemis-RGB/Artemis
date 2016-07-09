@@ -63,7 +63,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             }
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
             return null;
         }
@@ -77,13 +77,12 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             VolumeDisplay.Transparancy = 255;
         }
 
-        public override void RenderOverlay(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void RenderOverlay(RenderFrame frame, bool renderMice, bool renderHeadsets)
         {
             if (MainManager.DeviceManager.ActiveKeyboard == null || VolumeDisplay == null || VolumeDisplay.Ttl < 1)
                 return;
 
-            using (var g = Graphics.FromImage(keyboard))
+            using (var g = Graphics.FromImage(frame.KeyboardBitmap))
             {
                 VolumeDisplay.Draw(g);
             }

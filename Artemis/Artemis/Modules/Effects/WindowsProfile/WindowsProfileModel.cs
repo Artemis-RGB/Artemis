@@ -163,9 +163,9 @@ namespace Artemis.Modules.Effects.WindowsProfile
             dataModel.Performance.RAMUsage = (int) percentOccupied;
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, false);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly, false);
         }
 
         public static PerformanceCounter GetOverallPerformanceCounter()

@@ -17,6 +17,7 @@ using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Layers.Types.Generic;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
@@ -62,7 +63,9 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
             // Headsets
             Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
-
+            // Other
+            Bind<DeviceProvider>().To<LogitechGeneric>().InSingletonScope();
+            
             #endregion
 
             #region Layers
@@ -84,6 +87,7 @@ namespace Artemis.InjectionModules
             Bind<ILayerType>().To<KeyboardType>();
             Bind<ILayerType>().To<KeyboardGifType>();
             Bind<ILayerType>().To<MouseType>();
+            Bind<ILayerType>().To<GenericType>();
 
             #endregion
         }

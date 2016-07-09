@@ -88,12 +88,12 @@ namespace Artemis.Modules.Effects.TypeWave
             }
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
             return null;
         }
 
-        public override void Render(Bitmap keyboard, Bitmap mouse, Bitmap headset, bool renderMice, bool renderHeadsets)
+        public override void Render(RenderFrame frame, bool keyboardOnly)
         {
             if (_waves.Count == 0)
                 return;
@@ -114,7 +114,7 @@ namespace Artemis.Modules.Effects.TypeWave
                     CenterColor = Color.Transparent
                 };
 
-                using (var g = Graphics.FromImage(keyboard))
+                using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
                     g.FillPath(pthGrBrush, path);
                     pthGrBrush.FocusScales = new PointF(0.3f, 0.8f);

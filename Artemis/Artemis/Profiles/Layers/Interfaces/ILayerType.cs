@@ -14,9 +14,15 @@ namespace Artemis.Profiles.Layers.Interfaces
         string Name { get; }
 
         /// <summary>
-        ///     Gets whether this type must be drawn on the keyboard/the editor or not
+        ///     Gets whether this type must be drawn in the editor or not. Setting this to true
+        ///     enables moving and resizing the layer
         /// </summary>
-        bool MustDraw { get; }
+        bool ShowInEdtor { get; }
+
+        /// <summary>
+        ///     Gets for what kind of device this layer should be drawn.
+        /// </summary>
+        DrawType DrawType { get; }
 
         /// <summary>
         ///     The the thumbnail for this layer type
@@ -52,6 +58,16 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// <param name="layerAnimations"></param>
         /// <param name="dataModel">The datamodel to use in the new viewmodel</param>
         /// <param name="proposedLayer">The layer to use in the new viewmodel</param>
-        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel, List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer);
+        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer);
+    }
+
+    public enum DrawType
+    {
+        None,
+        Keyboard,
+        Mouse,
+        Headset,
+        Generic
     }
 }

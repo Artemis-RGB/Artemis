@@ -5,17 +5,16 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Logitech
 {
-    public class LogitechDevices : DeviceProvider
+    public class LogitechGeneric : DeviceProvider
     {
         /// <summary>
         ///     A generic Logitech DeviceProvider. Because the Logitech SDK currently doesn't allow specific
-        ///     device targeting (only very broad per-key-RGB and full RGB etc..) all non-keyboards share this provider
+        ///     device targeting (only very broad per-key-RGB and full RGB etc..)
         /// </summary>
-        /// TODO: Generic device type. For now, this provider just pretends to be a headset
-        public LogitechDevices(ILogger logger)
+        public LogitechGeneric(ILogger logger)
         {
             Logger = logger;
-            Type = DeviceType.Headset;
+            Type = DeviceType.Generic;
         }
 
         public ILogger Logger { get; set; }
@@ -24,8 +23,6 @@ namespace Artemis.DeviceProviders.Logitech
         {
             if (!CanUse || bitmap == null)
                 return;
-            if (bitmap.Width != bitmap.Height)
-                throw new ArgumentException("Bitmap must be a perfect square");
 
             using (bitmap)
             {

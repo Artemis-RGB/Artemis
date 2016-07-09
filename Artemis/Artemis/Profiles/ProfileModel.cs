@@ -4,10 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Keyboard;
-using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
@@ -33,7 +32,6 @@ namespace Artemis.Profiles
         public string GameName { get; set; }
 
         [JsonIgnore]
-        
         public DrawingVisual DrawingVisual { get; set; }
 
         public void FixOrder()
@@ -88,25 +86,22 @@ namespace Artemis.Profiles
         /// </summary>
         /// <typeparam name="T">The game data model to base the conditions on</typeparam>
         /// <param name="dataModel">Instance of said game data model</param>
-        /// <param name="includeMice">Whether or not to include mice in the list</param>
-        /// <param name="includeHeadsets">Whether or not to include headsets in the list</param>
+        /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool includeMice, bool includeHeadsets,
-            bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
             {
-                if (!layerModel.Enabled || !includeMice && layerModel.LayerType is MouseType ||
-                    !includeHeadsets && layerModel.LayerType is HeadsetType)
+                if (!layerModel.Enabled || keyboardOnly && layerModel.LayerType.DrawType != DrawType.Keyboard)
                     continue;
 
                 if (!ignoreConditions && !layerModel.ConditionsMet(dataModel))
                     continue;
 
                 layers.Add(layerModel);
-                layers.AddRange(layerModel.GetRenderLayers(dataModel, includeMice, includeHeadsets, ignoreConditions));
+                layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
             }
 
             return layers;
@@ -120,7 +115,7 @@ namespace Artemis.Profiles
         {
             foreach (var layer in GetLayers())
             {
-                if (!layer.LayerType.MustDraw)
+                if (!layer.LayerType.ShowInEdtor)
                     continue;
 
                 var props = (KeyboardPropertiesModel) layer.Properties;

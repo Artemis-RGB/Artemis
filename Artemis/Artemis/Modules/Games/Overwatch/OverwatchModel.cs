@@ -222,9 +222,9 @@ namespace Artemis.Modules.Games.Overwatch
             gameDataModel.Ability2Ready = colors[2, 4].Equals(Color.FromRgb(4, 141, 144));
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 

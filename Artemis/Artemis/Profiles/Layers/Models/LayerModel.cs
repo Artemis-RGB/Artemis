@@ -114,7 +114,7 @@ namespace Artemis.Profiles.Layers.Models
                     return false;
                 parent = parent.Parent;
             }
-            return Enabled && LayerType.MustDraw;
+            return Enabled && LayerType.ShowInEdtor;
         }
 
         /// <summary>

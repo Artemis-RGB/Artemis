@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using Artemis.DeviceProviders;
 using Artemis.Events;
 using Caliburn.Micro;
 using Ninject.Extensions.Logging;
@@ -12,13 +13,12 @@ namespace Artemis.Managers
     /// <summary>
     ///     Manages the main programn loop
     /// </summary>
-    public class LoopManager : IDisposable, IHandle<ActiveKeyboardChanged>, IHandle<ActiveEffectChanged>
+    public class LoopManager : IDisposable
     {
         private readonly DeviceManager _deviceManager;
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
-        private Bitmap _keyboardBitmap;
 
         public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager,
             DeviceManager deviceManager)
@@ -45,19 +45,6 @@ namespace Artemis.Managers
         {
             _loopTimer.Stop();
             _loopTimer.Dispose();
-            _keyboardBitmap?.Dispose();
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
-        }
-
-        public void Handle(ActiveKeyboardChanged message)
-        {
-            if (_deviceManager.ActiveKeyboard != null && _effectManager.ActiveEffect != null)
-                _keyboardBitmap = _deviceManager.ActiveKeyboard.KeyboardBitmap(_effectManager.ActiveEffect.KeyboardScale);
         }
 
         public Task StartAsync()
@@ -104,13 +91,11 @@ namespace Artemis.Managers
             Running = false;
 
             _deviceManager.ReleaseActiveKeyboard();
-            _keyboardBitmap?.Dispose();
-            _keyboardBitmap = null;
         }
 
         private void Render(object sender, ElapsedEventArgs e)
         {
-            if (!Running)
+            if (!Running || _deviceManager.ChangingKeyboard)
                 return;
 
             // Stop if no active effect
@@ -122,21 +107,12 @@ namespace Artemis.Managers
             }
             var renderEffect = _effectManager.ActiveEffect;
 
-            if (_deviceManager.ChangingKeyboard || _keyboardBitmap == null)
-                return;
-
             // Stop if no active keyboard
             if (_deviceManager.ActiveKeyboard == null)
             {
                 _logger.Debug("No active keyboard, stopping");
                 Stop();
                 return;
-            }
-
-            using (var g = Graphics.FromImage(_keyboardBitmap))
-            {
-                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                g.Clear(Color.Black);
             }
 
             lock (_deviceManager.ActiveKeyboard)
@@ -149,44 +125,69 @@ namespace Artemis.Managers
                 if (renderEffect.Initialized)
                     renderEffect.Update();
 
-                // Prepare bitmaps for mice and headsets. Set them up with a black background to
-                // avoid transparency issues
-                var mouseBitmap = new Bitmap(40, 40);
-                using (var g = Graphics.FromImage(mouseBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-                var headsetBitmap = new Bitmap(40, 40);
-                using (var g = Graphics.FromImage(headsetBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-
+                // Get the devices that must be rendered to
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
+                var generics = _deviceManager.GenericProviders.Where(m => m.CanUse).ToList();
 
-                if (renderEffect.Initialized)
-                    renderEffect.Render(_keyboardBitmap, mouseBitmap, headsetBitmap, mice.Any(), headsets.Any());
-
-                // Draw enabled overlays on top of the renderEffect
-                foreach (var overlayModel in _effectManager.EnabledOverlays)
+                // Setup the frame for this tick
+                using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard))
                 {
-                    overlayModel.Update();
-                    overlayModel.RenderOverlay(_keyboardBitmap, mouseBitmap, headsetBitmap, mice.Any(),
-                        headsets.Any());
+                    if (renderEffect.Initialized)
+                        renderEffect.Render(frame, !mice.Any() && !headsets.Any() && !generics.Any());
+
+                    // Draw enabled overlays on top of the renderEffect
+                    foreach (var overlayModel in _effectManager.EnabledOverlays)
+                    {
+                        overlayModel.Update();
+                        overlayModel.RenderOverlay(frame, mice.Any(), headsets.Any());
+                    }
+
+                    // Update the keyboard
+                    _deviceManager.ActiveKeyboard?.DrawBitmap(frame.KeyboardBitmap);
+
+                    // Update the other devices
+                    foreach (var mouse in mice)
+                        mouse.UpdateDevice(frame.MouseBitmap);
+                    foreach (var headset in headsets)
+                        headset.UpdateDevice(frame.HeadsetBitmap);
+                    foreach (var generic in generics)
+                        generic.UpdateDevice(frame.GenericBitmap);
                 }
-
-                // Update mice and headsets
-                foreach (var mouse in mice)
-                    mouse.UpdateDevice(mouseBitmap);
-                foreach (var headset in headsets)
-                    headset.UpdateDevice(headsetBitmap);
-                mouseBitmap.Dispose();
-                headsetBitmap.Dispose();
-
-                // Update the keyboard
-                _deviceManager.ActiveKeyboard?.DrawBitmap(_keyboardBitmap);
             }
+        }
+    }
+
+    public class RenderFrame : IDisposable
+    {
+        public Bitmap KeyboardBitmap { get; set; }
+        public Bitmap MouseBitmap { get; set; }
+        public Bitmap HeadsetBitmap { get; set; }
+        public Bitmap GenericBitmap { get; set; }
+
+        public RenderFrame(KeyboardProvider keyboard)
+        {
+            KeyboardBitmap = keyboard.KeyboardBitmap(4);
+            MouseBitmap = new Bitmap(40, 40);
+            HeadsetBitmap = new Bitmap(40, 40);
+            GenericBitmap = new Bitmap(40, 40);
+
+            using (var g = Graphics.FromImage(KeyboardBitmap))
+                g.Clear(Color.Black);
+            using (var g = Graphics.FromImage(MouseBitmap))
+                g.Clear(Color.Black);
+            using (var g = Graphics.FromImage(HeadsetBitmap))
+                g.Clear(Color.Black);
+            using (var g = Graphics.FromImage(GenericBitmap))
+                g.Clear(Color.Black);
+        }
+
+        public void Dispose()
+        {
+            KeyboardBitmap.Dispose();
+            MouseBitmap.Dispose();
+            HeadsetBitmap.Dispose();
+            GenericBitmap.Dispose();
         }
     }
 }

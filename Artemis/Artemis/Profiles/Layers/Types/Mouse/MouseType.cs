@@ -16,7 +16,8 @@ namespace Artemis.Profiles.Layers.Types.Mouse
     public class MouseType : ILayerType
     {
         public string Name { get; } = "Mouse";
-        public bool MustDraw { get; } = false;
+        public bool ShowInEdtor { get; } = false;
+        public DrawType DrawType { get; } = DrawType.Mouse;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

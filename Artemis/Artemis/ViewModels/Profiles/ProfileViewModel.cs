@@ -110,11 +110,12 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
                 // Draw the layers
-                var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, false, true);
+                var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
                 foreach (var layer in drawLayers)
                 {
                     layer.Update(null, true, false);
-                    layer.Draw(null, drawingContext, true, false);
+                    if (layer.LayerType.ShowInEdtor)
+                        layer.Draw(null, drawingContext, true, false);
                 }
 
                 // Get the selection color
@@ -276,7 +277,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
             }
 
-            if (SelectedLayer == null || (SelectedLayer.LayerType != null && !SelectedLayer.LayerType.MustDraw))
+            if (SelectedLayer == null || (SelectedLayer.LayerType != null && !SelectedLayer.LayerType.ShowInEdtor))
                 return;
 
             // Setup the dragging state on mouse press

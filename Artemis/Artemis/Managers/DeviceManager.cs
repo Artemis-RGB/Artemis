@@ -30,13 +30,14 @@ namespace Artemis.Managers
                 .Cast<KeyboardProvider>().ToList();
             MiceProviders = deviceProviders.Where(d => d.Type == DeviceType.Mouse).ToList();
             HeadsetProviders = deviceProviders.Where(d => d.Type == DeviceType.Headset).ToList();
+            GenericProviders = deviceProviders.Where(d => d.Type == DeviceType.Generic).ToList();
 
             _logger.Info("Intialized DeviceManager with {0} device providers", deviceProviders.Count);
         }
 
-        public List<DeviceProvider> HeadsetProviders { get; set; }
-
         public List<DeviceProvider> MiceProviders { get; set; }
+        public List<DeviceProvider> HeadsetProviders { get; set; }
+        public List<DeviceProvider> GenericProviders { get; set; }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }

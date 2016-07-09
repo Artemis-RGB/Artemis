@@ -92,9 +92,9 @@ namespace Artemis.Modules.Games.RocketLeague
             MainManager.Logger.Trace("Boost int: {0}", boostInt);
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }
