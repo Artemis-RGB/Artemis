@@ -426,7 +426,9 @@ namespace Artemis.ViewModels.Profiles
         {
             var clone = GeneralHelpers.Clone(layer);
             layer.InsertAfter(clone);
-
+            foreach (var layerModel in layer.Children)
+                clone.Children.Add(GeneralHelpers.Clone(layerModel));
+            
             UpdateLayerList(clone);
         }
 
