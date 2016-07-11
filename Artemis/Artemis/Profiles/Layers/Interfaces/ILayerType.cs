@@ -3,6 +3,7 @@ using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
+using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Interfaces
 {
@@ -11,17 +12,20 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// <summary>
         ///     Layer type name
         /// </summary>
+        [JsonIgnore]
         string Name { get; }
 
         /// <summary>
         ///     Gets whether this type must be drawn in the editor or not. Setting this to true
         ///     enables moving and resizing the layer
         /// </summary>
+        [JsonIgnore]
         bool ShowInEdtor { get; }
 
         /// <summary>
         ///     Gets for what kind of device this layer should be drawn.
         /// </summary>
+        [JsonIgnore]
         DrawType DrawType { get; }
 
         /// <summary>

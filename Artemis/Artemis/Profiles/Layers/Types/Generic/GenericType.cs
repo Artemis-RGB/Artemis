@@ -13,7 +13,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
 {
     public class GenericType : ILayerType
     {
-        public string Name { get; } = "Generic device";
+        public string Name { get; } = "Generic (Logitech)";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Generic;
 
