@@ -29,14 +29,14 @@ namespace Artemis.Modules.Games.RocketLeague
             //var offset = new GamePointersCollection
             //{
             //    Game = "RocketLeague",
-            //    GameVersion = "1.20",
+            //    GameVersion = "1.21",
             //    GameAddresses = new List<GamePointer>
             //    {
             //        new GamePointer
             //        {
             //            Description = "Boost",
-            //            BasePointer = new IntPtr(0x01694D00),
-            //            Offsets = new[] {0x720, 0x40, 0x3c0, 0x520, 0x54}
+            //            BasePointer = new IntPtr(0x016AD528),
+            //            Offsets = new[] {0x304, 0x8, 0x50, 0x720, 0x224}
             //        }
             //    }
             //};
@@ -74,7 +74,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
             var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
-            var boostInt = _memory.ReadInt32(boostAddress);
+            var boostInt = (int) (_memory.ReadFloat(boostAddress)*100);
             if (boostInt > 100)
                 boostInt = 100;
             if (boostInt < 0)

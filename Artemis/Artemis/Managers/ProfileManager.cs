@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
 using Artemis.ViewModels.Abstract;
@@ -63,7 +64,7 @@ namespace Artemis.Managers
             }
             else
             {
-                if (_effectManager.ActiveEffect != ProfilePreviewModel)
+                if (_effectManager.ActiveEffect != ProfilePreviewModel && !(_effectManager.ActiveEffect is GameModel))
                 {
                     _logger.Debug("Activate profile preview");
                     _effectManager.ChangeEffect(ProfilePreviewModel);

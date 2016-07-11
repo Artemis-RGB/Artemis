@@ -122,9 +122,6 @@ namespace Artemis.Managers
             if (EffectManager.ActiveEffect != null)
                 EffectManager.DisableInactiveGame();
 
-            if (EffectManager.ActiveEffect is ProfilePreviewModel)
-                return;
-
             // If the currently active effect is a no longer running game, get rid of it.
             var activeGame = EffectManager.ActiveEffect as GameModel;
             if (activeGame != null)

@@ -115,8 +115,6 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
 
             _events.PublishOnUIThread(new RazerColorArrayChanged(colors));
-            //MainManager.Logger.Trace("DataModel: \r\n{0}",
-            //    JsonConvert.SerializeObject(gameDataModel, Formatting.Indented));
 
             // Determine general game state
             ParseGameSate(gameDataModel, colors);
