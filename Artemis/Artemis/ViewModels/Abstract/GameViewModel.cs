@@ -108,13 +108,13 @@ namespace Artemis.ViewModels.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
-            ProfileEditor.ProfileViewModel.Activate();
+            ProfileEditor.Activate();
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-            ProfileEditor.ProfileViewModel.Deactivate();
+            ProfileEditor.Deactivate();
         }
     }
 

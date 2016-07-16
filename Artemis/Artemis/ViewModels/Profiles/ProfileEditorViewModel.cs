@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -26,6 +28,7 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Screen = Caliburn.Micro.Screen;
+using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -38,6 +41,8 @@ namespace Artemis.ViewModels.Profiles
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
         private ProfileModel _selectedProfile;
+        private Timer _saveTimer;
+        private bool _saving;
 
         public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, EffectModel gameModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile,
@@ -55,9 +60,26 @@ namespace Artemis.ViewModels.Profiles
 
             events.Subscribe(this);
 
-            ProfileViewModel.PropertyChanged += PropertyChangeHandler;
-            PropertyChanged += PropertyChangeHandler;
+
+            PropertyChanged += EditorStateHandler;
+            ProfileViewModel.PropertyChanged += LayerSelectedHandler;
+
+            _saveTimer = new Timer(5000);
+            _saveTimer.Elapsed += ProfileSaveHandler;
+
             LoadProfiles();
+        }
+
+        public void Activate()
+        {
+            ProfileViewModel.Activate();
+            _saveTimer.Start();
+        }
+
+        public void Deactivate()
+        {
+            ProfileViewModel.Deactivate();
+            _saveTimer.Stop();
         }
 
         [Inject]
@@ -199,41 +221,7 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
         }
-
-        /// <summary>
-        ///     Handles refreshing the layer preview
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PropertyChangeHandler(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "KeyboardPreview")
-                return;
-
-            if (e.PropertyName == "SelectedLayer")
-            {
-                NotifyOfPropertyChange(() => LayerSelected);
-                return;
-            }
-
-            if (SelectedProfile != null)
-                ProfileProvider.AddOrUpdate(SelectedProfile);
-
-            if (e.PropertyName != "SelectedProfile")
-                return;
-
-            // Update editor enabled state
-            NotifyOfPropertyChange(() => EditorEnabled);
-            // Update ProfileViewModel
-            ProfileViewModel.SelectedProfile = SelectedProfile;
-            // Update interface
-            Layers.Clear();
-            if (SelectedProfile != null)
-                Layers.AddRange(SelectedProfile.Layers);
-
-            NotifyOfPropertyChange(() => ProfileSelected);
-        }
-
+        
         /// <summary>
         ///     Loads all profiles for the current game and keyboard
         /// </summary>
@@ -428,7 +416,7 @@ namespace Artemis.ViewModels.Profiles
             layer.InsertAfter(clone);
             foreach (var layerModel in layer.Children)
                 clone.Children.Add(GeneralHelpers.Clone(layerModel));
-            
+
             UpdateLayerList(clone);
         }
 
@@ -675,6 +663,49 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             ProfileProvider.ExportProfile(SelectedProfile, dialog.FileName);
+        }
+
+        private void EditorStateHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedProfile")
+                return;
+
+            // Update editor enabled state
+            NotifyOfPropertyChange(() => EditorEnabled);
+            // Update ProfileViewModel
+            ProfileViewModel.SelectedProfile = SelectedProfile;
+            // Update interface
+            Layers.Clear();
+
+            if (SelectedProfile != null)
+                Layers.AddRange(SelectedProfile.Layers);
+
+            NotifyOfPropertyChange(() => ProfileSelected);
+        }
+
+        private void LayerSelectedHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedLayer")
+                return;
+
+            NotifyOfPropertyChange(() => LayerSelected);
+        }
+
+        private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
+        {
+            if (_saving || SelectedProfile == null)
+                return;
+
+            _saving = true;
+            try
+            {
+                ProfileProvider.AddOrUpdate(SelectedProfile);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            _saving = false;
         }
     }
 }

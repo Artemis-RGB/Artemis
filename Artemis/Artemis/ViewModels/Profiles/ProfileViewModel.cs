@@ -233,8 +233,7 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardPreviewCursor = Cursors.Arrow;
                 return;
             }
-
-
+            
             // Turn the mouse pointer into a hand if hovering over an active layer
             if (hoverLayer == SelectedLayer)
             {
