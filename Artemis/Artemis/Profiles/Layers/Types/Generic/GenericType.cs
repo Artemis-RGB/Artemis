@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -76,6 +77,12 @@ namespace Artemis.Profiles.Layers.Types.Generic
                 return;
 
             layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
+
+            // Remove height and width dynamic properties since they are not applicable
+            layerModel.Properties.DynamicProperties.Remove(
+                layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Height"));
+            layerModel.Properties.DynamicProperties.Remove(
+                layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Width"));
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
