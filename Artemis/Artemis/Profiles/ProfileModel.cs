@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Artemis.DeviceProviders;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
@@ -30,6 +31,8 @@ namespace Artemis.Profiles
         public bool IsDefault { get; set; }
         public string KeyboardSlug { get; set; }
         public string GameName { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         [JsonIgnore]
         public DrawingVisual DrawingVisual { get; set; }
@@ -111,28 +114,6 @@ namespace Artemis.Profiles
         }
 
         /// <summary>
-        ///     Looks at all the layers wthin the profile and makes sure they are within boundaries of the given rectangle
-        /// </summary>
-        /// <param name="keyboardRectangle"></param>
-        public void FixBoundaries(Rect keyboardRectangle)
-        {
-            foreach (var layer in GetLayers())
-            {
-                if (!layer.LayerType.ShowInEdtor)
-                    continue;
-
-                var props = (KeyboardPropertiesModel) layer.Properties;
-                var layerRect = new Rect(new Point(props.X, props.Y), new Size(props.Width, props.Height));
-                if (keyboardRectangle.Contains(layerRect))
-                    continue;
-
-                props.X = 0;
-                props.Y = 0;
-                layer.Properties = props;
-            }
-        }
-
-        /// <summary>
         ///     Draw all the given layers on the given rect
         /// </summary>
         /// <param name="g">The graphics to draw on</param>
@@ -164,6 +145,47 @@ namespace Artemis.Profiles
 
             using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, rect))
                 g.DrawImage(bmp, new PointF(0, 0));
+        }
+
+        /// <summary>
+        ///     Looks at all the layers wthin the profile and makes sure they are within boundaries of the given rectangle
+        /// </summary>
+        /// <param name="keyboardRectangle"></param>
+        public void FixBoundaries(Rect keyboardRectangle)
+        {
+            foreach (var layer in GetLayers())
+            {
+                if (!layer.LayerType.ShowInEdtor)
+                    continue;
+
+                var props = layer.Properties;
+                var layerRect = new Rect(new Point(props.X, props.Y), new Size(props.Width, props.Height));
+                if (keyboardRectangle.Contains(layerRect))
+                    continue;
+
+                props.X = 0;
+                props.Y = 0;
+                layer.Properties = props;
+            }
+        }
+
+        /// <summary>
+        ///     Resizes layers that are shown in the editor and match exactly the full keyboard widht and height
+        /// </summary>
+        /// <param name="source">The keyboard the profile was made for</param>
+        /// <param name="target">The new keyboard to adjust the layers for</param>
+        public void ResizeLayers(KeyboardProvider target)
+        {
+            foreach (var layer in GetLayers())
+            {
+                if (!layer.LayerType.ShowInEdtor || 
+                    !(Math.Abs(layer.Properties.Width - Width) < 0.01) ||
+                    !(Math.Abs(layer.Properties.Height - Height) < 0.01))
+                    continue;
+
+                layer.Properties.Width = target.Width;
+                layer.Properties.Height = target.Height;
+            }
         }
 
         #region Compare

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Keyboard;
@@ -144,6 +145,7 @@ namespace Artemis.Profiles.Layers.Models
                 Order = -1,
                 LayerType = new KeyboardType(),
                 LayerCondition = new DataModelCondition(),
+                LayerAnimation = new NoneAnimation(),
                 Properties = new KeyboardPropertiesModel
                 {
                     Brush = new SolidColorBrush(ColorHelpers.GetRandomRainbowMediaColor()),

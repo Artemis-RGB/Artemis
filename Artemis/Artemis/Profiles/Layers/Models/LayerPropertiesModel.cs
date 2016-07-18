@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Utilities.Converters;
 using Newtonsoft.Json;
@@ -63,6 +64,11 @@ namespace Artemis.Profiles.Layers.Models
                 cloned.Freeze();
                 _brush = cloned;
             }
+        }
+
+        public Rect GetRect(int scale = 4)
+        {
+            return new Rect(X * scale, Y * scale, Width * scale, Height * scale);
         }
     }
 }

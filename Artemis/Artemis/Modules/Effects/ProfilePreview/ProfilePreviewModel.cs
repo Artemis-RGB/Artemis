@@ -41,34 +41,40 @@ namespace Artemis.Modules.Effects.ProfilePreview
             if (Profile == null || DataModel == null || MainManager.DeviceManager.ActiveKeyboard == null)
                 return;
 
-            // Get all enabled layers who's conditions are met
-            var renderLayers = GetRenderLayers(keyboardOnly);
+            lock (DataModel)
+            {
+                // Get all enabled layers who's conditions are met
+                var renderLayers = GetRenderLayers(keyboardOnly);
 
-            // Render the keyboard layer-by-layer
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
-            using (var g = Graphics.FromImage(frame.KeyboardBitmap))
-            {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard), DataModel,
-                    keyboardRect, true, true);
-            }
-            // Render mice layer-by-layer
-            var devRec = new Rect(0, 0, 40, 40);
-            using (var g = Graphics.FromImage(frame.MouseBitmap))
-            {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), DataModel,
-                    devRec, true, true);
-            }
-            // Render headsets layer-by-layer
-            using (var g = Graphics.FromImage(frame.HeadsetBitmap))
-            {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Headset), DataModel,
-                    devRec, true, true);
-            }
-            // Render generic devices layer-by-layer
-            using (var g = Graphics.FromImage(frame.GenericBitmap))
-            {
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic), DataModel,
-                    devRec, true, true);
+                // Render the keyboard layer-by-layer
+                var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+                using (var g = Graphics.FromImage(frame.KeyboardBitmap))
+                {
+                    Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
+                        DataModel,
+                        keyboardRect, true, true);
+                }
+                // Render mice layer-by-layer
+                var devRec = new Rect(0, 0, 40, 40);
+                using (var g = Graphics.FromImage(frame.MouseBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), DataModel,
+                        devRec, true, true);
+                }
+                // Render headsets layer-by-layer
+                using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Headset),
+                        DataModel,
+                        devRec, true, true);
+                }
+                // Render generic devices layer-by-layer
+                using (var g = Graphics.FromImage(frame.GenericBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic),
+                        DataModel,
+                        devRec, true, true);
+                }
             }
         }
     }

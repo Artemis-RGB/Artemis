@@ -37,12 +37,12 @@ namespace Artemis.ViewModels.Profiles
         private readonly EffectModel _gameModel;
         private readonly ILayerEditorVmFactory _layerEditorVmFactory;
         private readonly MainManager _mainManager;
+        private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
-        private ProfileModel _selectedProfile;
-        private Timer _saveTimer;
         private bool _saving;
+        private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, EffectModel gameModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile,
@@ -68,18 +68,6 @@ namespace Artemis.ViewModels.Profiles
             _saveTimer.Elapsed += ProfileSaveHandler;
 
             LoadProfiles();
-        }
-
-        public void Activate()
-        {
-            ProfileViewModel.Activate();
-            _saveTimer.Start();
-        }
-
-        public void Deactivate()
-        {
-            ProfileViewModel.Deactivate();
-            _saveTimer.Stop();
         }
 
         [Inject]
@@ -221,7 +209,19 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
         }
-        
+
+        public void Activate()
+        {
+            ProfileViewModel.Activate();
+            _saveTimer.Start();
+        }
+
+        public void Deactivate()
+        {
+            ProfileViewModel.Deactivate();
+            _saveTimer.Stop();
+        }
+
         /// <summary>
         ///     Loads all profiles for the current game and keyboard
         /// </summary>
@@ -495,6 +495,8 @@ namespace Artemis.ViewModels.Profiles
             {
                 Name = name,
                 KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug,
+                Width = _mainManager.DeviceManager.ActiveKeyboard.Width,
+                Height = _mainManager.DeviceManager.ActiveKeyboard.Height,
                 GameName = _gameModel.Name
             };
 
@@ -621,7 +623,8 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the keyboard
-            if (profile.KeyboardSlug != _mainManager.DeviceManager.ActiveKeyboard.Slug)
+            var deviceManager = _mainManager.DeviceManager;
+            if (profile.KeyboardSlug != deviceManager.ActiveKeyboard.Slug)
             {
                 var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
                     $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardSlug}. " +
@@ -630,9 +633,16 @@ namespace Artemis.ViewModels.Profiles
                 if (!adjustKeyboard.Value)
                     return;
 
-                profile.KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug;
+                // Resize layers that are on the full keyboard width
+                profile.ResizeLayers(deviceManager.ActiveKeyboard);
+                // Put layers back into the canvas if they fell outside it
+                profile.FixBoundaries(deviceManager.ActiveKeyboard.KeyboardRectangle(1));
+
+                // Setup profile metadata to match the new keyboard
+                profile.KeyboardSlug = deviceManager.ActiveKeyboard.Slug;
+                profile.Width = deviceManager.ActiveKeyboard.Width;
+                profile.Height = deviceManager.ActiveKeyboard.Height;
                 profile.IsDefault = false;
-                profile.FixBoundaries(_mainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(1));
             }
 
             // Verify the name

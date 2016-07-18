@@ -128,7 +128,7 @@ namespace Artemis.ViewModels.Profiles
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
                 {
-                    var layerRect = ((KeyboardPropertiesModel) SelectedLayer.Properties).GetRect();
+                    var layerRect = SelectedLayer.Properties.GetRect();
                     // Deflate the rect so that the border is drawn on the inside
                     layerRect.Inflate(-0.2, -0.2);
 
@@ -201,9 +201,7 @@ namespace Artemis.ViewModels.Profiles
 
             var hoverLayer = SelectedProfile.GetLayers()
                 .Where(l => l.MustDraw())
-                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
-                    .GetRect(1)
-                    .Contains(x, y));
+                .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
             SelectedLayer = hoverLayer;
         }
@@ -223,8 +221,7 @@ namespace Artemis.ViewModels.Profiles
             var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
             var hoverLayer = SelectedProfile.GetLayers()
                 .Where(l => l.MustDraw())
-                .FirstOrDefault(l => ((KeyboardPropertiesModel) l.Properties)
-                    .GetRect(1).Contains(x, y));
+                .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
 
@@ -233,11 +230,11 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardPreviewCursor = Cursors.Arrow;
                 return;
             }
-            
+
             // Turn the mouse pointer into a hand if hovering over an active layer
             if (hoverLayer == SelectedLayer)
             {
-                var rect = ((KeyboardPropertiesModel) hoverLayer.Properties).GetRect(1);
+                var rect = hoverLayer.Properties.GetRect(1);
                 KeyboardPreviewCursor =
                     Math.Sqrt(Math.Pow(x - rect.BottomRight.X, 2) + Math.Pow(y - rect.BottomRight.Y, 2)) < 0.6
                         ? Cursors.SizeNWSE
@@ -282,10 +279,9 @@ namespace Artemis.ViewModels.Profiles
             // Setup the dragging state on mouse press
             if (_draggingLayerOffset == null && hoverLayer != null && e.LeftButton == MouseButtonState.Pressed)
             {
-                var layerRect = ((KeyboardPropertiesModel) hoverLayer.Properties).GetRect(1);
-                var selectedProps = (KeyboardPropertiesModel) SelectedLayer.Properties;
+                var layerRect = hoverLayer.Properties.GetRect(1);
 
-                _draggingLayerOffset = new Point(x - selectedProps.X, y - selectedProps.Y);
+                _draggingLayerOffset = new Point(x - SelectedLayer.Properties.X, y - SelectedLayer.Properties.Y);
                 _draggingLayer = hoverLayer;
                 // Detect dragging if cursor is in the bottom right
                 _resizing = Math.Sqrt(Math.Pow(x - layerRect.BottomRight.X, 2) +
@@ -295,8 +291,7 @@ namespace Artemis.ViewModels.Profiles
             if (_draggingLayerOffset == null || _draggingLayer == null || (_draggingLayer != SelectedLayer))
                 return;
 
-            var draggingProps = (KeyboardPropertiesModel) _draggingLayer?.Properties;
-
+            var draggingProps = _draggingLayer.Properties;
             // If no setup or reset was done, handle the actual dragging action
             if (_resizing)
             {
