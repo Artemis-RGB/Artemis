@@ -55,7 +55,7 @@ namespace Artemis.Utilities
                 ObjectCreationHandling = ObjectCreationHandling.Replace,
                 TypeNameHandling = TypeNameHandling.Auto
             };
-            return (T)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
+            return (T) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
                 deserializeSettings);
         }
 

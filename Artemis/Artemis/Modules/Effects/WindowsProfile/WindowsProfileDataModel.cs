@@ -24,7 +24,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Hours12 { get; set; }
         public int Minutes { get; set; }
         public int Seconds { get; set; }
-
     }
 
     public class CpuDataModel

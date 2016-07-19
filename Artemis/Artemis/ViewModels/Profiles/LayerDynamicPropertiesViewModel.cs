@@ -5,7 +5,6 @@ using Artemis.Utilities;
 using Caliburn.Micro;
 using Castle.Core.Internal;
 
-
 namespace Artemis.ViewModels.Profiles
 {
     public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase

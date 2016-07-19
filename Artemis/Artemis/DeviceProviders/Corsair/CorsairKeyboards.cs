@@ -11,12 +11,12 @@ using Point = System.Drawing.Point;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    public class CorsairRGB : KeyboardProvider
+    public class CorsairKeyboards : KeyboardProvider
     {
         private CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
-        public CorsairRGB(ILogger logger)
+        public CorsairKeyboards(ILogger logger)
         {
             Logger = logger;
             Name = "Corsair RGB Keyboards";
@@ -68,6 +68,7 @@ namespace Artemis.DeviceProviders.Corsair
             }
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             Slug = "corsair-" + _keyboard.DeviceInfo.Model.Replace(' ', '-').ToLower();
+
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 

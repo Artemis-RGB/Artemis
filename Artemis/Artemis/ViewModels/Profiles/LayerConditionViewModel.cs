@@ -213,7 +213,7 @@ namespace Artemis.ViewModels.Profiles
             SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == LayerConditionModel.Field);
             SelectedOperator = Operators.FirstOrDefault(o => o.Value == LayerConditionModel.Operator);
             LayerConditionModel.Type = SelectedDataModelProp.Type;
-            if (LayerConditionModel.Type == "Enum")
+            if (LayerConditionModel.Type == "Enum" || LayerConditionModel.Type == "Boolean")
                 SelectedEnum = LayerConditionModel.Value;
             else
                 UserValue = LayerConditionModel.Value;

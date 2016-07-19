@@ -182,24 +182,20 @@ namespace Artemis.Modules.Effects.AudioVisualizer
             }
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
             return null;
         }
 
-        public override void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        public override void Render(RenderFrame frame, bool keyboardOnly)
         {
-            mouse = null;
-            headset = null;
-
             if (SpectrumData == null || SoundRectangles == null)
                 return;
 
             // Lock the _spectrumData array while busy with it
             _generating = true;
 
-            using (var g = Graphics.FromImage(keyboard))
+            using (var g = Graphics.FromImage(frame.KeyboardBitmap))
             {
                 foreach (var soundRectangle in SoundRectangles)
                     soundRectangle.Draw(g);

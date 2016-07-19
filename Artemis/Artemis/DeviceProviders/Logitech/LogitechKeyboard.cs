@@ -2,36 +2,21 @@
 using System.Threading;
 using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
-using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.LogitechDll;
 using Microsoft.Win32;
 
 namespace Artemis.DeviceProviders.Logitech
 {
-    internal class Orion : KeyboardProvider
+    public abstract class LogitechKeyboard : KeyboardProvider
     {
-        public Orion()
-        {
-            Name = "Logitech G910 RGB";
-            Slug = "logitech-g910";
-            CantEnableText = "Couldn't connect to your Logitech G910.\n" +
-                             "Please check your cables and updating the Logitech Gaming Software\n" +
-                             "A minimum version of 8.81.15 is required.\n\n" +
-                             "If needed, you can select a different keyboard in Artemis under settings.";
-            Height = 6;
-            Width = 21;
-            PreviewSettings = new PreviewSettings(540, 154, new Thickness(25, -80, 0, 0), Resources.g910);
-        }
-
         public override bool CanEnable()
         {
             //Check to see if VC++ 2012 x64 is installed.
-
             if (Registry.LocalMachine.OpenSubKey(
                 @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
-                CantEnableText = "Couldn't connect to your Logitech G910.\n" +
+                CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
                                  "The Visual C 2012 Redistributable could not be found, which is required.\n" +
                                  "Please download it by going to the following URL:\n\n" +
                                  "https://www.microsoft.com/download/confirmation.aspx?id=30679";
@@ -77,9 +62,9 @@ namespace Artemis.DeviceProviders.Logitech
             Thread.Sleep(200);
 
             LogitechGSDK.LogiLedSaveCurrentLighting();
-            LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
 
             // Disable keys we can't color
+            LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
             LogitechGSDK.LogiLedSetLighting(0, 0, 0);
         }
 
@@ -92,6 +77,7 @@ namespace Artemis.DeviceProviders.Logitech
 
         public override void DrawBitmap(Bitmap bitmap)
         {
+            LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
             LogitechGSDK.LogiLedSetLightingFromBitmap(OrionUtilities.BitmapToByteArray(bitmap));
         }
     }

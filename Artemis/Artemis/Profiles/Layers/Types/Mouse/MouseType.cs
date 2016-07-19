@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles.Layers;
-
 
 namespace Artemis.Profiles.Layers.Types.Mouse
 {
     public class MouseType : ILayerType
     {
         public string Name { get; } = "Mouse";
-        public bool MustDraw { get; } = false;
+        public bool ShowInEdtor { get; } = false;
+        public DrawType DrawType { get; } = DrawType.Mouse;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
+            {
                 c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.mouse), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -39,10 +41,10 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             }
 
             // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = new Rect(layer.AppliedProperties.X * 4,
-                layer.AppliedProperties.Y * 4,
-                layer.AppliedProperties.Width * 4,
-                layer.AppliedProperties.Height * 4);
+            var rect = new Rect(layer.AppliedProperties.X*4,
+                layer.AppliedProperties.Y*4,
+                layer.AppliedProperties.Width*4,
+                layer.AppliedProperties.Height*4);
 
             c.PushClip(new RectangleGeometry(rect));
             c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
@@ -64,7 +66,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
-            var props = (SimplePropertiesModel)layerModel.AppliedProperties;
+            var props = (SimplePropertiesModel) layerModel.AppliedProperties;
             foreach (var dynamicProperty in props.DynamicProperties)
                 dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
         }
@@ -75,6 +77,12 @@ namespace Artemis.Profiles.Layers.Types.Mouse
                 return;
 
             layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
+
+            // Remove height and width dynamic properties since they are not applicable
+            layerModel.Properties.DynamicProperties.Remove(
+                layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Height"));
+            layerModel.Properties.DynamicProperties.Remove(
+                layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Width"));
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,

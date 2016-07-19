@@ -25,13 +25,16 @@ namespace Artemis.DeviceProviders.Corsair
                 CueSDK.Initialize();
 
             Logger.Debug("Attempted to enable Corsair mice. CanUse: {0}", CanUse);
+
+            if (CanUse)
+                CueSDK.MouseSDK.UpdateMode = UpdateMode.Manual;
+
             return CanUse;
         }
 
         public override void Disable()
         {
-            if (CueSDK.IsInitialized)
-                CueSDK.Reinitialize();
+            throw new NotImplementedException("Can only disable a keyboard");
         }
 
         public override void UpdateDevice(Bitmap bitmap)

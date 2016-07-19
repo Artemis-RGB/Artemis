@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -21,12 +23,12 @@ using Artemis.Utilities;
 using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
-
 using Ninject;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Screen = Caliburn.Micro.Screen;
+using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -35,9 +37,11 @@ namespace Artemis.ViewModels.Profiles
         private readonly EffectModel _gameModel;
         private readonly ILayerEditorVmFactory _layerEditorVmFactory;
         private readonly MainManager _mainManager;
+        private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private BindableCollection<LayerModel> _layers;
         private BindableCollection<ProfileModel> _profiles;
+        private bool _saving;
         private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, EffectModel gameModel,
@@ -56,8 +60,13 @@ namespace Artemis.ViewModels.Profiles
 
             events.Subscribe(this);
 
-            ProfileViewModel.PropertyChanged += PropertyChangeHandler;
-            PropertyChanged += PropertyChangeHandler;
+
+            PropertyChanged += EditorStateHandler;
+            ProfileViewModel.PropertyChanged += LayerSelectedHandler;
+
+            _saveTimer = new Timer(5000);
+            _saveTimer.Elapsed += ProfileSaveHandler;
+
             LoadProfiles();
         }
 
@@ -201,38 +210,16 @@ namespace Artemis.ViewModels.Profiles
             LoadProfiles();
         }
 
-        /// <summary>
-        ///     Handles refreshing the layer preview
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void PropertyChangeHandler(object sender, PropertyChangedEventArgs e)
+        public void Activate()
         {
-            if (e.PropertyName == "KeyboardPreview")
-                return;
+            ProfileViewModel.Activate();
+            _saveTimer.Start();
+        }
 
-            if (e.PropertyName == "SelectedLayer")
-            {
-                NotifyOfPropertyChange(() => LayerSelected);
-                return;
-            }
-
-            if (SelectedProfile != null)
-                ProfileProvider.AddOrUpdate(SelectedProfile);
-
-            if (e.PropertyName != "SelectedProfile")
-                return;
-
-            // Update editor enabled state
-            NotifyOfPropertyChange(() => EditorEnabled);
-            // Update ProfileViewModel
-            ProfileViewModel.SelectedProfile = SelectedProfile;
-            // Update interface
-            Layers.Clear();
-            if (SelectedProfile != null)
-                Layers.AddRange(SelectedProfile.Layers);
-
-            NotifyOfPropertyChange(() => ProfileSelected);
+        public void Deactivate()
+        {
+            ProfileViewModel.Deactivate();
+            _saveTimer.Stop();
         }
 
         /// <summary>
@@ -267,7 +254,8 @@ namespace Artemis.ViewModels.Profiles
             if (ProfileViewModel.SelectedLayer == null)
                 return;
 
-            EditLayer(ProfileViewModel.SelectedLayer);
+            var selectedLayer = ProfileViewModel.SelectedLayer;
+            EditLayer(selectedLayer);
         }
 
         /// <summary>
@@ -276,8 +264,12 @@ namespace Artemis.ViewModels.Profiles
         /// <param name="layer">The layer to open the view for</param>
         public void EditLayer(LayerModel layer)
         {
+            if (layer == null)
+                return;
+
             IWindowManager manager = new WindowManager();
             var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
+
             dynamic settings = new ExpandoObject();
             var icon = ImageUtilities.GenerateWindowIcon();
 
@@ -286,9 +278,9 @@ namespace Artemis.ViewModels.Profiles
 
             manager.ShowDialog(editorVm, null, settings);
 
-            // The layer editor VM may have created a new instance of the layer, reapply it to the list
-            layer.Replace(editorVm.Layer);
-            layer = editorVm.Layer;
+            //// The layer editor VM may have created a new instance of the layer, reapply it to the list
+            //layer.Replace(editorVm.Layer);
+            //layer = editorVm.Layer;
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())
@@ -316,10 +308,10 @@ namespace Artemis.ViewModels.Profiles
         /// <summary>
         ///     Adds a new layer to the profile and selects it
         /// </summary>
-        public void AddLayer()
+        public LayerModel AddLayer()
         {
             if (SelectedProfile == null)
-                return;
+                return null;
 
             // Create a new layer
             var layer = LayerModel.CreateLayer();
@@ -333,6 +325,20 @@ namespace Artemis.ViewModels.Profiles
             }
 
             UpdateLayerList(layer);
+            return layer;
+        }
+
+        public LayerModel AddFolder()
+        {
+            var layer = AddLayer();
+            if (layer == null)
+                return null;
+
+            layer.Name = "New folder";
+            layer.LayerType = new FolderType();
+            layer.LayerType.SetupProperties(layer);
+
+            return layer;
         }
 
         /// <summary>
@@ -408,6 +414,8 @@ namespace Artemis.ViewModels.Profiles
         {
             var clone = GeneralHelpers.Clone(layer);
             layer.InsertAfter(clone);
+            foreach (var layerModel in layer.Children)
+                clone.Children.Add(GeneralHelpers.Clone(layerModel));
 
             UpdateLayerList(clone);
         }
@@ -487,6 +495,8 @@ namespace Artemis.ViewModels.Profiles
             {
                 Name = name,
                 KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug,
+                Width = _mainManager.DeviceManager.ActiveKeyboard.Width,
+                Height = _mainManager.DeviceManager.ActiveKeyboard.Height,
                 GameName = _gameModel.Name
             };
 
@@ -613,7 +623,8 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the keyboard
-            if (profile.KeyboardSlug != _mainManager.DeviceManager.ActiveKeyboard.Slug)
+            var deviceManager = _mainManager.DeviceManager;
+            if (profile.KeyboardSlug != deviceManager.ActiveKeyboard.Slug)
             {
                 var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
                     $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardSlug}. " +
@@ -622,9 +633,16 @@ namespace Artemis.ViewModels.Profiles
                 if (!adjustKeyboard.Value)
                     return;
 
-                profile.KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug;
+                // Resize layers that are on the full keyboard width
+                profile.ResizeLayers(deviceManager.ActiveKeyboard);
+                // Put layers back into the canvas if they fell outside it
+                profile.FixBoundaries(deviceManager.ActiveKeyboard.KeyboardRectangle(1));
+
+                // Setup profile metadata to match the new keyboard
+                profile.KeyboardSlug = deviceManager.ActiveKeyboard.Slug;
+                profile.Width = deviceManager.ActiveKeyboard.Width;
+                profile.Height = deviceManager.ActiveKeyboard.Height;
                 profile.IsDefault = false;
-                profile.FixBoundaries(_mainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(1));
             }
 
             // Verify the name
@@ -655,6 +673,49 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             ProfileProvider.ExportProfile(SelectedProfile, dialog.FileName);
+        }
+
+        private void EditorStateHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedProfile")
+                return;
+
+            // Update editor enabled state
+            NotifyOfPropertyChange(() => EditorEnabled);
+            // Update ProfileViewModel
+            ProfileViewModel.SelectedProfile = SelectedProfile;
+            // Update interface
+            Layers.Clear();
+
+            if (SelectedProfile != null)
+                Layers.AddRange(SelectedProfile.Layers);
+
+            NotifyOfPropertyChange(() => ProfileSelected);
+        }
+
+        private void LayerSelectedHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedLayer")
+                return;
+
+            NotifyOfPropertyChange(() => LayerSelected);
+        }
+
+        private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
+        {
+            if (_saving || SelectedProfile == null)
+                return;
+
+            _saving = true;
+            try
+            {
+                ProfileProvider.AddOrUpdate(SelectedProfile);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            _saving = false;
         }
     }
 }

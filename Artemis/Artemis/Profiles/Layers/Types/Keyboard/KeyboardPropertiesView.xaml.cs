@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Artemis.Views.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Keyboard
 {
     /// <summary>
     ///     Interaction logic for KeyboardPropertiesView.xaml

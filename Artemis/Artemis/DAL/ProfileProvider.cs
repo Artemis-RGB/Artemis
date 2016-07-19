@@ -58,15 +58,32 @@ namespace Artemis.DAL
         {
             if (prof == null)
                 throw new ArgumentNullException(nameof(prof));
-            if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
-                throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
-            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            lock (prof)
+            {
+                if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
+                    throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
-            var json = JsonConvert.SerializeObject(prof, Formatting.Indented);
-            File.WriteAllText(path + $@"\{prof.Name}.json", json);
+                var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string json;
+
+                // Should saving fail for whatever reason, catch the exception and log it
+                // But DON'T touch the profile file.
+                try
+                {
+                    json = JsonConvert.SerializeObject(prof, Formatting.Indented);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e, "Couldn't save profile '{0}.json'", prof.Name);
+                    return;
+                }
+
+                File.WriteAllText(path + $@"\{prof.Name}.json", json);
+            }
         }
 
         private static List<ProfileModel> ReadProfiles()

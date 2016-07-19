@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
-namespace Artemis.ViewModels.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Headset
 {
     public class HeadsetPropertiesViewModel : LayerPropertiesViewModel
     {
@@ -18,6 +21,9 @@ namespace Artemis.ViewModels.Profiles.Layers
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity",
                 new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel)),
                 layerModel.Properties);
+
+            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation?.Name) ??
+                                     LayerAnimations.First(l => l.Name == "None");
         }
 
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }

@@ -1,15 +1,14 @@
-﻿using System.Drawing;
+﻿using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Caliburn.Micro;
-using Brush = System.Windows.Media.Brush;
 
-namespace Artemis.ViewModels.Profiles.Layers
+namespace Artemis.Profiles.Layers.Abstract
 {
     public abstract class LayerPropertiesViewModel : PropertyChangedBase
     {
-        private LayerModel _layerModel;
         private Brush _brush;
+        private LayerModel _layerModel;
 
         protected LayerPropertiesViewModel(LayerModel layerModel, IDataModel dataModel)
         {

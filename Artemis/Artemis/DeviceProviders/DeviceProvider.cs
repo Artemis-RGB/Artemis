@@ -45,6 +45,7 @@ namespace Artemis.DeviceProviders
     {
         Keyboard,
         Mouse,
-        Headset
+        Headset,
+        Generic
     }
 }

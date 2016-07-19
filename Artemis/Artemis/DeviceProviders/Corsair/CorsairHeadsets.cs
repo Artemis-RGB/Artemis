@@ -25,13 +25,16 @@ namespace Artemis.DeviceProviders.Corsair
                 CueSDK.Initialize();
 
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
+
+            if (CanUse)
+                CueSDK.HeadsetSDK.UpdateMode = UpdateMode.Manual;
+
             return CanUse;
         }
 
         public override void Disable()
         {
-            if (CueSDK.IsInitialized)
-                CueSDK.Reinitialize();
+            throw new NotImplementedException("Can only disable a keyboard");
         }
 
         public override void UpdateDevice(Bitmap bitmap)
@@ -51,7 +54,7 @@ namespace Artemis.DeviceProviders.Corsair
                 {
                     var col = ledIndex == 0
                         ? bitmap.GetPixel(0, 0)
-                        : bitmap.GetPixel((int)((ledIndex + 1) * step - 1), (int)((ledIndex + 1) * step - 1));
+                        : bitmap.GetPixel((int) ((ledIndex + 1)*step - 1), (int) ((ledIndex + 1)*step - 1));
 
                     corsairLed.Color = col;
                     ledIndex++;

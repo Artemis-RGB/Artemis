@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using Artemis.Managers;
+﻿using Artemis.Managers;
 
 namespace Artemis.Models
 {
@@ -28,7 +27,6 @@ namespace Artemis.Models
             }
         }
 
-        public abstract void RenderOverlay(Bitmap keyboard, ref Bitmap mouse, ref Bitmap headset, bool renderMice,
-            bool renderHeadsets);
+        public abstract void RenderOverlay(RenderFrame frame, bool keyboardOnly);
     }
 }
