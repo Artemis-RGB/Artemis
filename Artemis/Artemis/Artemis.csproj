@@ -38,8 +38,8 @@
     <SupportUrl>https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-%28FAQ%29</SupportUrl>
     <ProductName>Artemis</ProductName>
     <PublisherName>Artemis</PublisherName>
-    <ApplicationRevision>3</ApplicationRevision>
-    <ApplicationVersion>1.1.3.3</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.2.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
