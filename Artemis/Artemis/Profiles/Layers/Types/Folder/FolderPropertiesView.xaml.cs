@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Artemis.Views.Profiles.Layers
+namespace Artemis.Profiles.Layers.Types.Folder
 {
     /// <summary>
     ///     Interaction logic for FolderPropertiesView.xaml

@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Artemis.Profiles.Layers.Models;
+﻿using Artemis.Profiles.Layers.Models;
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
@@ -10,10 +9,5 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         }
 
         public string GifFile { get; set; }
-
-        public Rect GetRect(int scale = 4)
-        {
-            return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
-        }
     }
 }

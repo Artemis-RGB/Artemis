@@ -60,7 +60,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
     }
 
 
-
     public class WindowsProfileModel : EffectModel
     {
         private readonly ILogger _logger;
@@ -100,6 +99,19 @@ namespace Artemis.Modules.Effects.WindowsProfile
             UpdateSpotify(dataModel);
             UpdateDay(dataModel);
         }
+
+        #region Current Time
+
+        private void UpdateDay(WindowsProfileDataModel dataModel)
+        {
+            var now = DateTime.Now;
+            dataModel.CurrentTime.Hours24 = int.Parse(now.ToString("HH"));
+            dataModel.CurrentTime.Hours12 = int.Parse(now.ToString("hh"));
+            dataModel.CurrentTime.Minutes = int.Parse(now.ToString("mm"));
+            dataModel.CurrentTime.Seconds = int.Parse(now.ToString("ss"));
+        }
+
+        #endregion
 
         #region CPU
 
@@ -163,9 +175,9 @@ namespace Artemis.Modules.Effects.WindowsProfile
             dataModel.Performance.RAMUsage = (int) percentOccupied;
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets, false);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly, false);
         }
 
         public static PerformanceCounter GetOverallPerformanceCounter()
@@ -192,19 +204,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
             return performanceCounters;
         }
 
-        #endregion
-
-        #region Current Time
-        private void UpdateDay(WindowsProfileDataModel dataModel)
-        {
-
-            var now = DateTime.Now;
-            dataModel.CurrentTime.Hours24 = int.Parse(now.ToString("HH"));
-            dataModel.CurrentTime.Hours12 = int.Parse(now.ToString("hh"));
-            dataModel.CurrentTime.Minutes = int.Parse(now.ToString("mm"));
-            dataModel.CurrentTime.Seconds = int.Parse(now.ToString("ss"));
-
-        }
         #endregion
 
         #region Spotify

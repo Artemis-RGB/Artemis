@@ -10,20 +10,22 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 
-namespace Artemis.Profiles.Layers.Types.Headset
+namespace Artemis.Profiles.Layers.Types.Generic
 {
-    public class HeadsetType : ILayerType
+    public class GenericType : ILayerType
     {
-        public string Name { get; } = "Headset";
+        public string Name { get; } = "Generic (Logitech)";
         public bool ShowInEdtor { get; } = false;
-        public DrawType DrawType { get; } = DrawType.Headset;
+        public DrawType DrawType { get; } = DrawType.Generic;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
+            {
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.generic), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -51,7 +53,7 @@ namespace Artemis.Profiles.Layers.Types.Headset
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            // Headset layers are always drawn 10*10 (which is 40*40 when scaled up)
+            // Generic layers are always drawn 10*10 (which is 40*40 when scaled up)
             layerModel.Properties.Width = 10;
             layerModel.Properties.Height = 10;
             layerModel.Properties.X = 0;
@@ -86,9 +88,9 @@ namespace Artemis.Profiles.Layers.Types.Headset
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
             List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
-            if (layerPropertiesViewModel is HeadsetPropertiesViewModel)
+            if (layerPropertiesViewModel is GenericPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new HeadsetPropertiesViewModel(proposedLayer, dataModel, layerAnimations);
+            return new GenericPropertiesViewModel(proposedLayer, dataModel, layerAnimations);
         }
     }
 }

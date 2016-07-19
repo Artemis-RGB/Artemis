@@ -2,18 +2,20 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles.Layers;
 
 namespace Artemis.Profiles.Layers.Types.Folder
 {
     public class FolderType : ILayerType
     {
         public string Name { get; } = "Folder";
-        public bool MustDraw { get; } = false;
+        public bool ShowInEdtor { get; } = false;
+        // FolderType pretents to be a keyboard so it's children get drawn
+        public DrawType DrawType { get; } = DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

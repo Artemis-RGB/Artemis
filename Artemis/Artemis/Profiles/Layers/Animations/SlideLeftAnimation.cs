@@ -33,7 +33,7 @@ namespace Artemis.Profiles.Layers.Animations
                 : new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
 
             var s1 = new Rect(new Point(rect.X - props.AnimationProgress, rect.Y),
-                new Size(rect.Width + 0.05, rect.Height));
+                new Size(rect.Width + .5, rect.Height));
             var s2 = new Rect(new Point(s1.X + rect.Width, rect.Y), new Size(rect.Width, rect.Height));
 
             var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);

@@ -6,9 +6,8 @@ using System.Windows;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Headset;
-using Artemis.Profiles.Layers.Types.Mouse;
 using Newtonsoft.Json;
 
 namespace Artemis.Models
@@ -43,59 +42,61 @@ namespace Artemis.Models
         public abstract void Update();
 
         // Called after every update
-        public virtual void Render(Bitmap keyboard, out Bitmap mouse, out Bitmap headset, bool renderMice,
-            bool renderHeadsets)
+        /// <summary>
+        ///     Renders the currently active profile
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="keyboardOnly"></param>
+        public virtual void Render(RenderFrame frame, bool keyboardOnly)
         {
-            mouse = null;
-            headset = null;
-
             if (Profile == null || DataModel == null || MainManager.DeviceManager.ActiveKeyboard == null)
                 return;
 
-            // Get all enabled layers who's conditions are met
-            var renderLayers = GetRenderLayers(renderMice, renderHeadsets);
-
-            // Render the keyboard layer-by-layer
-            var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
-            using (var g = Graphics.FromImage(keyboard))
+            lock (DataModel)
             {
-                // Fill the bitmap's background with black to avoid trailing colors on some keyboards
-                g.Clear(Color.Black);
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.MustDraw()), DataModel, keyboardRect, false, true);
-            }
+                // Get all enabled layers who's conditions are met
+                var renderLayers = GetRenderLayers(keyboardOnly);
 
-            // Render the mouse layer-by-layer
-            var smallRect = new Rect(0, 0, 40, 40);
-            mouse = new Bitmap(40, 40);
-            using (var g = Graphics.FromImage(mouse))
-            {
-                // Not all SDK's handle transparency
-                g.Clear(Color.Black);
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is MouseType), DataModel, smallRect,
-                    false, true);
-            }
+                // Render the keyboard layer-by-layer
+                var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+                using (var g = Graphics.FromImage(frame.KeyboardBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
+                        DataModel, keyboardRect, false, true);
+                }
+                // Render mice layer-by-layer
+                var devRec = new Rect(0, 0, 40, 40);
+                using (var g = Graphics.FromImage(frame.MouseBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), DataModel,
+                        devRec, false, true);
+                }
+                // Render headsets layer-by-layer
+                using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Headset),
+                        DataModel, devRec, false, true);
+                }
+                // Render generic devices layer-by-layer
+                using (var g = Graphics.FromImage(frame.GenericBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic),
+                        DataModel, devRec, false, true);
+                }
 
-            // Render the headset layer-by-layer
-            headset = new Bitmap(40, 40);
-            using (var g = Graphics.FromImage(headset))
-            {
-                // Not all SDK's handle transparency
-                g.Clear(Color.Black);
-                Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType is HeadsetType), DataModel, smallRect,
-                    false, true);
+                // Trace debugging
+                if (DateTime.Now.AddSeconds(-2) <= LastTrace)
+                    return;
+                LastTrace = DateTime.Now;
+                MainManager.Logger.Trace("Effect datamodel as JSON: \r\n{0}",
+                    JsonConvert.SerializeObject(DataModel, Formatting.Indented));
+                MainManager.Logger.Trace("Effect {0} has to render {1} layers", Name, renderLayers.Count);
+                foreach (var renderLayer in renderLayers)
+                    MainManager.Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name,
+                        renderLayer.LayerType);
             }
-
-            // Trace debugging
-            if (DateTime.Now.AddSeconds(-2) <= LastTrace)
-                return;
-            LastTrace = DateTime.Now;
-            MainManager.Logger.Trace("Effect datamodel as JSON: \r\n{0}",
-                JsonConvert.SerializeObject(DataModel, Formatting.Indented));
-            MainManager.Logger.Trace("Effect {0} has to render {1} layers", Name, renderLayers.Count);
-            foreach (var renderLayer in renderLayers)
-                MainManager.Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name, renderLayer.LayerType);
         }
 
-        public abstract List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets);
+        public abstract List<LayerModel> GetRenderLayers(bool keyboardOnly);
     }
 }

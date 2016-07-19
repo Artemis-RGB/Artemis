@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace Artemis.Utilities.Converters
 {
     /// <summary>
-    ///     Stores a brush by temporarily serializing it to XAML because Json.NET has trouble 
+    ///     Stores a brush by temporarily serializing it to XAML because Json.NET has trouble
     ///     saving it as JSON
     /// </summary>
     public class BrushJsonConverter : JsonConverter

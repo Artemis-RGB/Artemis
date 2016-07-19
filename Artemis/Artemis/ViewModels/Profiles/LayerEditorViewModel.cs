@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
@@ -11,9 +12,7 @@ using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Events;
-using Artemis.ViewModels.Profiles.Layers;
 using Caliburn.Micro;
-
 using Newtonsoft.Json;
 using Ninject;
 
@@ -35,20 +34,20 @@ namespace Artemis.ViewModels.Profiles
             _dataModel = dataModel;
             _layerAnimations = layerAnimations;
 
+            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
+                GeneralHelpers.GenerateTypeMap(dataModel));
+
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
-                GeneralHelpers.GenerateTypeMap(dataModel));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(
                 layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
 
             PropertyChanged += PropertiesViewModelHandler;
-
             PreSelect();
         }
 
@@ -166,8 +165,25 @@ namespace Artemis.ViewModels.Profiles
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
-            Layer = GeneralHelpers.Clone(ProposedLayer);
-            
+            var appliedLayer = GeneralHelpers.Clone(ProposedLayer);
+
+            // Fix relations
+            if (Layer.Parent != null)
+            {
+                Layer.Parent.Children.Add(appliedLayer);
+                Layer.Parent.Children.Remove(Layer);
+            }
+            else
+            {
+                Layer.Profile.Layers.Add(appliedLayer);
+                Layer.Profile.Layers.Remove(Layer);
+            }
+            appliedLayer.Children.Clear();
+            foreach (var layerModel in Layer.Children)
+                appliedLayer.Children.Add(layerModel);
+
+            Layer = appliedLayer;
+
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
@@ -201,8 +217,20 @@ namespace Artemis.ViewModels.Profiles
             foreach (var conditionViewModel in LayerConditionVms)
                 ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
+            // Ignore children on the comparison
+            var currentNoChildren = GeneralHelpers.Clone(Layer);
+            currentNoChildren.Children.Clear();
+            // If not a keyboard, ignore size and position
+            if (ProposedLayer.LayerType.DrawType != DrawType.Keyboard)
+            {
+                ProposedLayer.Properties.Width = currentNoChildren.Properties.Width;
+                ProposedLayer.Properties.Height = currentNoChildren.Properties.Height;
+                ProposedLayer.Properties.X = currentNoChildren.Properties.X;
+                ProposedLayer.Properties.Y = currentNoChildren.Properties.Y;
+                ProposedLayer.Properties.Contain = currentNoChildren.Properties.Contain;
+            }
 
-            var current = JsonConvert.SerializeObject(Layer, Formatting.Indented);
+            var current = JsonConvert.SerializeObject(currentNoChildren, Formatting.Indented);
             var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 
             if (current.Equals(proposed))

@@ -115,8 +115,6 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
 
             _events.PublishOnUIThread(new RazerColorArrayChanged(colors));
-            //MainManager.Logger.Trace("DataModel: \r\n{0}",
-            //    JsonConvert.SerializeObject(gameDataModel, Formatting.Indented));
 
             // Determine general game state
             ParseGameSate(gameDataModel, colors);
@@ -222,9 +220,9 @@ namespace Artemis.Modules.Games.Overwatch
             gameDataModel.Ability2Ready = colors[2, 4].Equals(Color.FromRgb(4, 141, 144));
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 

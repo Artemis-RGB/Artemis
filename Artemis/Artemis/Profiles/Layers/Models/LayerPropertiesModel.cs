@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Utilities.Converters;
 using Newtonsoft.Json;
@@ -7,6 +8,8 @@ namespace Artemis.Profiles.Layers.Models
 {
     public abstract class LayerPropertiesModel
     {
+        private Brush _brush;
+
         public LayerPropertiesModel(LayerPropertiesModel source = null)
         {
             if (source == null)
@@ -25,8 +28,6 @@ namespace Artemis.Profiles.Layers.Models
             Brush = source.Brush;
         }
 
-        private Brush _brush;
-
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
@@ -38,7 +39,6 @@ namespace Artemis.Profiles.Layers.Models
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
         [JsonIgnore]
-        
         public double AnimationProgress { get; set; }
 
         [JsonConverter(typeof(BrushJsonConverter))]
@@ -64,6 +64,11 @@ namespace Artemis.Profiles.Layers.Models
                 cloned.Freeze();
                 _brush = cloned;
             }
+        }
+
+        public Rect GetRect(int scale = 4)
+        {
+            return new Rect(X * scale, Y * scale, Width * scale, Height * scale);
         }
     }
 }

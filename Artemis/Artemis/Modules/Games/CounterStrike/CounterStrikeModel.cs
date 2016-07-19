@@ -64,9 +64,9 @@ namespace Artemis.Modules.Games.CounterStrike
             }
         }
 
-        public override List<LayerModel> GetRenderLayers(bool renderMice, bool renderHeadsets)
+        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, renderMice, renderHeadsets);
+            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

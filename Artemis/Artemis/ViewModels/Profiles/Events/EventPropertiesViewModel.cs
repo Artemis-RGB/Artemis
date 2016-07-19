@@ -3,7 +3,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
-
 namespace Artemis.ViewModels.Profiles.Events
 {
     public class EventPropertiesViewModel : PropertyChangedBase

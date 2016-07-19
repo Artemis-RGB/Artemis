@@ -2,19 +2,18 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities;
-using Artemis.ViewModels.Profiles.Layers;
-
 
 namespace Artemis.Profiles.Layers.Types.Keyboard
 {
     public class KeyboardType : ILayerType
     {
         public string Name { get; } = "Keyboard";
-        public bool MustDraw { get; } = true;
+        public bool ShowInEdtor { get; } = true;
+        public DrawType DrawType { get; } = DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
