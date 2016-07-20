@@ -217,20 +217,17 @@ namespace Artemis.ViewModels.Profiles
             foreach (var conditionViewModel in LayerConditionVms)
                 ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
-            // Ignore children on the comparison
-            var currentNoChildren = GeneralHelpers.Clone(Layer);
-            currentNoChildren.Children.Clear();
             // If not a keyboard, ignore size and position
             if (ProposedLayer.LayerType.DrawType != DrawType.Keyboard)
             {
-                ProposedLayer.Properties.Width = currentNoChildren.Properties.Width;
-                ProposedLayer.Properties.Height = currentNoChildren.Properties.Height;
-                ProposedLayer.Properties.X = currentNoChildren.Properties.X;
-                ProposedLayer.Properties.Y = currentNoChildren.Properties.Y;
-                ProposedLayer.Properties.Contain = currentNoChildren.Properties.Contain;
+                ProposedLayer.Properties.Width = Layer.Properties.Width;
+                ProposedLayer.Properties.Height = Layer.Properties.Height;
+                ProposedLayer.Properties.X = Layer.Properties.X;
+                ProposedLayer.Properties.Y = Layer.Properties.Y;
+                ProposedLayer.Properties.Contain = Layer.Properties.Contain;
             }
 
-            var current = JsonConvert.SerializeObject(currentNoChildren, Formatting.Indented);
+            var current = JsonConvert.SerializeObject(Layer, Formatting.Indented);
             var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 
             if (current.Equals(proposed))
