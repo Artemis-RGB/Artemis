@@ -15,12 +15,12 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 120;
+        public static int CurrentVersion = 1211;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
-            Logger.Info("Checking for updates - Current version: 1.2.0");
+            Logger.Info("Checking for updates - Current version: 1.2.1.1 beta");
             if (!General.Default.CheckForUpdates)
                 return null;
 

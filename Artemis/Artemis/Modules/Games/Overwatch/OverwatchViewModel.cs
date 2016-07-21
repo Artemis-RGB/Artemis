@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
-using Artemis.Properties;
+using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
 using Microsoft.Win32;
@@ -72,14 +71,7 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
             }
 
-            try
-            {
-                File.WriteAllBytes(path + @"\RzChromaSDK64.dll", Resources.RzChromaSDK64);
-            }
-            catch (Exception e)
-            {
-                Logger?.Error(e, "Couldn't place Overwatch DLL, Overwatch support won't work.");
-            }
+            DllManager.PlaceRazerDll(path);
         }
     }
 }
