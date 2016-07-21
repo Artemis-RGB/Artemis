@@ -5,7 +5,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Artemis.Utilities.LogitechDll;
+using Artemis.Utilities.DataReaders;
 
 namespace Artemis.Modules.Games.TheDivision
 {
@@ -34,11 +34,13 @@ namespace Artemis.Modules.Games.TheDivision
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(2000);
-                DllManager.RestoreDll();
+                DllManager.RestoreLogitechDll();
             });
 
             _stickyAmmo.Dispose();
             _stickyHp.Dispose();
+
+            MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
         }
 
         public override void Enable()
@@ -48,7 +50,7 @@ namespace Artemis.Modules.Games.TheDivision
             _stickyAmmo = new StickyValue<bool>(200);
             _stickyHp = new StickyValue<bool>(200);
 
-            DllManager.PlaceDll();
+            DllManager.PlaceLogitechDll();
 
             MainManager.PipeServer.PipeMessage += PipeServerOnPipeMessage;
             Initialized = true;

@@ -38,8 +38,8 @@
     <SupportUrl>https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-%28FAQ%29</SupportUrl>
     <ProductName>Artemis</ProductName>
     <PublisherName>Artemis</PublisherName>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.2.0.0</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.2.0.1</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -471,7 +471,7 @@
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\Converters\JsonConverters.cs" />
     <Compile Include="Utilities\Converters\ValueConverters.cs" />
-    <Compile Include="Utilities\DataReaders\MmfReader.cs" />
+    <Compile Include="Utilities\DataReaders\DllManager.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
@@ -480,9 +480,7 @@
     <Compile Include="Utilities\ImageUtilities.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
     <Compile Include="Utilities\Logging.cs" />
-    <Compile Include="Utilities\LogitechDll\DllManager.cs" />
-    <Compile Include="Utilities\LogitechDll\NamedPipeServer.cs" />
-    <Compile Include="Utilities\LogitechDll\PipeServer.cs" />
+    <Compile Include="Utilities\DataReaders\PipeServer.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />

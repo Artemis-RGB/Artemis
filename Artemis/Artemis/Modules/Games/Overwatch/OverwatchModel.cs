@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
@@ -8,7 +9,6 @@ using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Artemis.Utilities.DataReaders;
 using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Overwatch
@@ -17,6 +17,7 @@ namespace Artemis.Modules.Games.Overwatch
     {
         private readonly IEventAggregator _events;
         private DateTime _characterChange;
+        private string _lastMessage;
         // Using sticky values on these since they can cause flickering
         private StickyValue<OverwatchStatus> _stickyStatus;
         private StickyValue<bool> _stickyUltimateReady;
@@ -34,7 +35,6 @@ namespace Artemis.Modules.Games.Overwatch
             Enabled = Settings.Enabled;
             Initialized = false;
 
-            MmfReader = new MmfReader("overwatchMmf", MainManager.Logger);
             LoadOverwatchCharacters();
         }
 
@@ -44,8 +44,6 @@ namespace Artemis.Modules.Games.Overwatch
         }
 
         public List<CharacterColor> OverwatchCharacters { get; set; }
-
-        public MmfReader MmfReader { get; set; }
 
         public int Scale { get; set; }
 
@@ -82,15 +80,27 @@ namespace Artemis.Modules.Games.Overwatch
             _stickyStatus = new StickyValue<OverwatchStatus>(300);
             _stickyUltimateReady = new StickyValue<bool>(350);
             _stickyUltimateUsed = new StickyValue<bool>(350);
+            MainManager.PipeServer.PipeMessage += PipeServerOnPipeMessage;
+
             Initialized = true;
         }
 
         public override void Dispose()
         {
+            Initialized = false;
+
             _stickyStatus.Dispose();
             _stickyUltimateReady.Dispose();
             _stickyUltimateUsed.Dispose();
-            Initialized = false;
+
+            MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+        }
+
+        private void PipeServerOnPipeMessage(string message)
+        {
+
+                _lastMessage = message;
+
         }
 
         public override void Update()
@@ -110,7 +120,12 @@ namespace Artemis.Modules.Games.Overwatch
         public void UpdateOverwatch()
         {
             var gameDataModel = (OverwatchDataModel) DataModel;
-            var colors = MmfReader.GetColorArray();
+
+            if (_lastMessage == null)
+                return;
+
+            var colors = ParseColorArray(_lastMessage);
+
             if (colors == null)
                 return;
 
@@ -133,6 +148,41 @@ namespace Artemis.Modules.Games.Overwatch
 
             ParseSpecialKeys(gameDataModel, characterMatch, colors);
             ParseAbilities(gameDataModel, colors);
+        }
+
+        public Color[,] ParseColorArray(string arrayString)
+        {
+            if (string.IsNullOrEmpty(arrayString))
+                return null;
+            var intermediateArray = arrayString.Split('|');
+            if (intermediateArray[0] == "1" || intermediateArray.Length < 2)
+                return null;
+            var array = intermediateArray[1].Substring(1).Split(' ');
+            if (!array.Any())
+                return null;
+
+            try
+            {
+                var colors = new Color[6, 22];
+                foreach (var intermediate in array)
+                {
+                    if (intermediate.Length > 16)
+                        continue;
+
+                    // Can't parse to a byte directly since it may contain values >254
+                    var parts = intermediate.Split(',').Select(int.Parse).ToArray();
+                    if (parts[0] >= 5 && parts[1] >= 21)
+                        continue;
+
+                    colors[parts[0], parts[1]] = Color.FromRgb((byte) parts[2], (byte) parts[3], (byte) parts[4]);
+                }
+                return colors;
+            }
+            catch (FormatException e)
+            {
+                MainManager.Logger.Trace(e, "Failed to parse to color array");
+                return null;
+            }
         }
 
         private void ParseGameSate(OverwatchDataModel gameDataModel, Color[,] colors)
