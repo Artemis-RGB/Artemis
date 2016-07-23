@@ -81,15 +81,6 @@ namespace Artemis.Modules.Games.RocketLeague
                 boostInt = 0;
 
             ((RocketLeagueDataModel) DataModel).Boost = boostInt;
-
-            if (DateTime.Now.AddSeconds(-2) <= LastTrace)
-                return;
-
-            MainManager.Logger.Trace("Offsets as JSON: \r\n{0}",
-                JsonConvert.SerializeObject(_pointer.GameAddresses, Formatting.Indented));
-            MainManager.Logger.Trace("RL specific offsets: {0}", offsets);
-            MainManager.Logger.Trace("Boost address: {0}", boostAddress);
-            MainManager.Logger.Trace("Boost int: {0}", boostInt);
         }
 
         public override List<LayerModel> GetRenderLayers(bool keyboardOnly)

@@ -26,7 +26,7 @@ namespace Artemis.Utilities
             // Start the new process
             try
             {
-                Process.Start(processInfo);
+                System.Diagnostics.Process.Start(processInfo);
             }
             catch (Exception)
             {

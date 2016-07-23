@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Artemis</RootNamespace>
     <AssemblyName>Artemis</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -39,11 +39,12 @@
     <ProductName>Artemis</ProductName>
     <PublisherName>Artemis</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.2.0.1</ApplicationVersion>
+    <ApplicationVersion>1.2.1.1</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -199,6 +200,10 @@
       <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Downloads\Chome Downloads\Process.NET-master\Process.NET-master\src\Process.NET\bin\Release\Process.NET.dll</HintPath>
+    </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SpotifyAPI-NET.2.9.0\lib\SpotifyAPI.dll</HintPath>
       <Private>True</Private>
@@ -306,6 +311,16 @@
     <Compile Include="Models\OverlaySettings.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
+    <Compile Include="Modules\Games\WorldofWarcraft\WoW.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>WoW.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\WorldofWarcraft\WoWDataModel.cs" />
+    <Compile Include="Modules\Games\WorldofWarcraft\WoWModel.cs" />
+    <Compile Include="Modules\Games\WorldofWarcraft\WoWSettings.cs" />
+    <Compile Include="Modules\Games\WorldofWarcraft\WoWViewModel.cs" />
+    <Compile Include="Modules\Games\WorldofWarcraft\WoWAddresses.cs" />
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
@@ -482,11 +497,11 @@
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\DataReaders\PipeServer.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
+    <Compile Include="Utilities\Keyboard\Key.cs" />
+    <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
-    <Compile Include="Utilities\Keyboard\Key.cs" />
-    <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\ParentChild\ChildItemCollection.cs" />
     <Compile Include="Utilities\ParentChild\IChildItem.cs" />
     <Compile Include="Utilities\ShellLink.cs" />
@@ -600,6 +615,10 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Modules\Games\WorldofWarcraft\WoW.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>WoW.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\generic.png" />
     <None Include="Resources\Keyboards\g810.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
