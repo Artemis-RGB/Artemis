@@ -39,7 +39,7 @@ namespace Artemis.Utilities
                     "Note: You can disable update notifications in the settings menu");
 
             if (viewUpdate.Value)
-                Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
+                System.Diagnostics.Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
 
             return null;
         }

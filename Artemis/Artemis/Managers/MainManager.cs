@@ -116,7 +116,7 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var runningProcesses = Process.GetProcesses();
+            var runningProcesses = System.Diagnostics.Process.GetProcesses();
 
             // If the currently active effect is a disabled game, get rid of it.
             if (EffectManager.ActiveEffect != null)

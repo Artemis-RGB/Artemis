@@ -16,7 +16,7 @@ namespace Artemis.Views
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start("https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)");
+            System.Diagnostics.Process.Start("https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)");
         }
     }
 }
