@@ -279,6 +279,7 @@
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
+    <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
