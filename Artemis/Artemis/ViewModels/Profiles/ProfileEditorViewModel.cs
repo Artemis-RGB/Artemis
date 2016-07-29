@@ -414,8 +414,6 @@ namespace Artemis.ViewModels.Profiles
         {
             var clone = GeneralHelpers.Clone(layer);
             layer.InsertAfter(clone);
-            foreach (var layerModel in layer.Children)
-                clone.Children.Add(GeneralHelpers.Clone(layerModel));
 
             UpdateLayerList(clone);
         }
@@ -642,8 +640,9 @@ namespace Artemis.ViewModels.Profiles
                 profile.KeyboardSlug = deviceManager.ActiveKeyboard.Slug;
                 profile.Width = deviceManager.ActiveKeyboard.Width;
                 profile.Height = deviceManager.ActiveKeyboard.Height;
-                profile.IsDefault = false;
             }
+
+            profile.IsDefault = false;
 
             // Verify the name
             while (ProfileProvider.GetAll().Contains(profile))

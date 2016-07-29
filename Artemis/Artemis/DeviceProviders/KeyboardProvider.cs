@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using MahApps.Metro.Controls.Dialogs;
 using Size = System.Windows.Size;
 
@@ -96,6 +97,27 @@ namespace Artemis.DeviceProviders
             throw new NotImplementedException(
                 "KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
         }
+
+        /// <summary>
+        ///     Returns the real life X and Y coordinates of the given key
+        /// </summary>
+        /// <param name="keyCode"></param>
+        /// <returns></returns>
+        public abstract KeyMatch? GetKeyPosition(Keys keyCode);
+    }
+
+    public struct KeyMatch
+    {
+        public KeyMatch(Keys keyCode, int x, int y)
+        {
+            KeyCode = keyCode;
+            X = x;
+            Y = y;
+        }
+
+        public Keys KeyCode { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
     }
 
     public struct PreviewSettings

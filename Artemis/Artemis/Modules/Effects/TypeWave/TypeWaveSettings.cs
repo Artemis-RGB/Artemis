@@ -19,24 +19,24 @@ namespace Artemis.Modules.Effects.TypeWave
 
         public sealed override void Load()
         {
-            IsRandomColors = Settings.TypeWave.Default.IsRandomColors;
-            WaveColor = Settings.TypeWave.Default.WaveColor;
-            IsShiftColors = Settings.TypeWave.Default.IsShiftColors;
-            ShiftColorSpeed = Settings.TypeWave.Default.ShiftColorSpeed;
-            TimeToLive = Settings.TypeWave.Default.TimeToLive;
-            SpreadSpeed = Settings.TypeWave.Default.SpreadSpeed;
+            IsRandomColors = TypeWave.Default.IsRandomColors;
+            WaveColor = TypeWave.Default.WaveColor;
+            IsShiftColors = TypeWave.Default.IsShiftColors;
+            ShiftColorSpeed = TypeWave.Default.ShiftColorSpeed;
+            TimeToLive = TypeWave.Default.TimeToLive;
+            SpreadSpeed = TypeWave.Default.SpreadSpeed;
         }
 
         public sealed override void Save()
         {
-            Settings.TypeWave.Default.IsRandomColors = IsRandomColors;
-            Settings.TypeWave.Default.WaveColor = WaveColor;
-            Settings.TypeWave.Default.IsShiftColors = IsShiftColors;
-            Settings.TypeWave.Default.ShiftColorSpeed = ShiftColorSpeed;
-            Settings.TypeWave.Default.TimeToLive = TimeToLive;
-            Settings.TypeWave.Default.SpreadSpeed = SpreadSpeed;
+            TypeWave.Default.IsRandomColors = IsRandomColors;
+            TypeWave.Default.WaveColor = WaveColor;
+            TypeWave.Default.IsShiftColors = IsShiftColors;
+            TypeWave.Default.ShiftColorSpeed = ShiftColorSpeed;
+            TypeWave.Default.TimeToLive = TimeToLive;
+            TypeWave.Default.SpreadSpeed = SpreadSpeed;
 
-            Settings.TypeWave.Default.Save();
+            TypeWave.Default.Save();
         }
 
         public sealed override void ToDefault()

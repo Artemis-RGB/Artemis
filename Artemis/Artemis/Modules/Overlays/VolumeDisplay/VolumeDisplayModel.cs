@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Utilities.Keyboard;
 using NAudio.CoreAudioApi;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
@@ -26,13 +27,13 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override void Dispose()
         {
-            MainManager.KeyboardHook.KeyDownCallback -= KeyPressTask;
+            KeyboardHook.KeyDownCallback -= KeyPressTask;
         }
 
         public override void Enable()
         {
             // Listener won't start unless the effect is active
-            MainManager.KeyboardHook.KeyDownCallback += KeyPressTask;
+            KeyboardHook.KeyDownCallback += KeyPressTask;
         }
 
         public override void Update()

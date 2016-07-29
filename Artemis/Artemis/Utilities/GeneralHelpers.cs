@@ -26,7 +26,7 @@ namespace Artemis.Utilities
             // Start the new process
             try
             {
-                Process.Start(processInfo);
+                System.Diagnostics.Process.Start(processInfo);
             }
             catch (Exception)
             {
@@ -50,13 +50,7 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            var deserializeSettings = new JsonSerializerSettings
-            {
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-            return (T) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType(),
-                deserializeSettings);
+            return (T)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType());
         }
 
         public static object GetPropertyValue(object o, string path)

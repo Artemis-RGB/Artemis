@@ -15,12 +15,12 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        public static int CurrentVersion = 120;
+        public static int CurrentVersion = 1220;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<Action> CheckForUpdate(MetroDialogService dialogService)
         {
-            Logger.Info("Checking for updates - Current version: 1.2.0");
+            Logger.Info("Checking for updates - Current version: 1.2.2.0");
             if (!General.Default.CheckForUpdates)
                 return null;
 
@@ -39,7 +39,7 @@ namespace Artemis.Utilities
                     "Note: You can disable update notifications in the settings menu");
 
             if (viewUpdate.Value)
-                Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
+                System.Diagnostics.Process.Start(new ProcessStartInfo(newRelease["html_url"].Value<string>()));
 
             return null;
         }

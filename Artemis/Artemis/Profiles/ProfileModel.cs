@@ -63,8 +63,8 @@ namespace Artemis.Profiles
                 // Remove the clip
                 c.Pop();
             }
-
-            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, keyboardRect))
+            
+            using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
         }
 
@@ -143,7 +143,7 @@ namespace Artemis.Profiles
                 c.Pop();
             }
 
-            using (var bmp = ImageUtilities.DrawinVisualToBitmap(visual, rect))
+            using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, rect))
                 g.DrawImage(bmp, new PointF(0, 0));
         }
 
@@ -172,7 +172,6 @@ namespace Artemis.Profiles
         /// <summary>
         ///     Resizes layers that are shown in the editor and match exactly the full keyboard widht and height
         /// </summary>
-        /// <param name="source">The keyboard the profile was made for</param>
         /// <param name="target">The new keyboard to adjust the layers for</param>
         public void ResizeLayers(KeyboardProvider target)
         {

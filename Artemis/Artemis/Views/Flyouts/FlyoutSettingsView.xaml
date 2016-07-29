@@ -113,7 +113,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2" x:Name="ActiveEffectName" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Artemis 1.2.0" VerticalAlignment="Center"
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Artemis 1.2.2.0" VerticalAlignment="Center"
                        HorizontalAlignment="Left" />
             <Button Grid.Row="1" Grid.Column="1" Focusable="False"
                     Style="{StaticResource AccentedSquareButtonStyle}"

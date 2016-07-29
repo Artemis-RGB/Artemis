@@ -132,7 +132,7 @@ namespace Artemis.ViewModels
 
             var dialog = await DialogService.ShowProgressDialog("Enabling keyboard",
                 "Artemis is still busy trying to enable your last used keyboard. " +
-                "Please wait while the progress completes");
+                "Please wait while the process completes");
             dialog.SetIndeterminate();
 
             while (MainManager.DeviceManager.ChangingKeyboard)
