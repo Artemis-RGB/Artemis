@@ -17,7 +17,7 @@ namespace Artemis.Utilities.Memory
         ///     Initializes a new instance of the Memory
         /// </summary>
         /// <param name="process">Remote process</param>
-        public Memory(Process process)
+        public Memory(System.Diagnostics.Process process)
         {
             if (process == null)
                 throw new ArgumentNullException("process");
@@ -35,7 +35,7 @@ namespace Artemis.Utilities.Memory
         /// <summary>
         ///     Gets the process to which this memory is attached to
         /// </summary>
-        public Process Process { get; private set; }
+        public System.Diagnostics.Process Process { get; private set; }
 
         #endregion
 

@@ -168,9 +168,16 @@ namespace Artemis.Managers
         public RenderFrame(KeyboardProvider keyboard)
         {
             KeyboardBitmap = keyboard.KeyboardBitmap(4);
+            KeyboardBitmap.SetResolution(96, 96);
+
             MouseBitmap = new Bitmap(40, 40);
+            MouseBitmap.SetResolution(96, 96);
+
             HeadsetBitmap = new Bitmap(40, 40);
+            HeadsetBitmap.SetResolution(96, 96);
+
             GenericBitmap = new Bitmap(40, 40);
+            GenericBitmap.SetResolution(96, 96);
 
             using (var g = Graphics.FromImage(KeyboardBitmap))
                 g.Clear(Color.Black);

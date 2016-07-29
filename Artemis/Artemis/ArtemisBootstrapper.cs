@@ -5,8 +5,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Artemis.InjectionModules;
+using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Types.KeyPress;
 using Artemis.Settings;
 using Artemis.Utilities;
+using Artemis.Utilities.Converters;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -79,10 +82,16 @@ namespace Artemis
 
         protected override void Configure()
         {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.Auto};
             _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
+
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                ContractResolver = _kernel.Get<NinjectContractResolver>()
+            };
+            JsonConvert.DefaultSettings = () => settings;
         }
 
         protected override void OnExit(object sender, EventArgs e)

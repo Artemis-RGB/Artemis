@@ -12,7 +12,7 @@ namespace Artemis.ViewModels
 
         public void NavigateTo(string url)
         {
-            Process.Start(new ProcessStartInfo(url));
+            System.Diagnostics.Process.Start(new ProcessStartInfo(url));
         }
     }
 }

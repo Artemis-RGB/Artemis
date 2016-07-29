@@ -5,9 +5,9 @@ using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
 using Artemis.Utilities.Keyboard;
-using Artemis.Utilities.LogitechDll;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;
@@ -43,9 +43,6 @@ namespace Artemis.Managers
             ProgramEnabled = false;
             Running = false;
 
-            // TODO: Dependency inject utilities?
-            KeyboardHook = new KeyboardHook();
-
             // Create and start the web server
             GameStateWebServer = new GameStateWebServer();
             GameStateWebServer.Start();
@@ -67,7 +64,6 @@ namespace Artemis.Managers
         public ProfileManager ProfileManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
-        public KeyboardHook KeyboardHook { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
         public bool Running { get; private set; }
@@ -116,7 +112,7 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var runningProcesses = Process.GetProcesses();
+            var runningProcesses = System.Diagnostics.Process.GetProcesses();
 
             // If the currently active effect is a disabled game, get rid of it.
             if (EffectManager.ActiveEffect != null)

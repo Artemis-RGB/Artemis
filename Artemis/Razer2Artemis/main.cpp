@@ -1,35 +1,29 @@
 #include "main.h"
 #include <stdio.h>
-#include <tchar.h>
 #include <Windows.h>
 #include <filesystem>
 
 TCHAR szName[] = TEXT("overwatchMmf");
-TCHAR szMsg[] = TEXT("Message from first process.");
 
 #define WIN32_LEAN_AND_MEAN 
 #define BUF_SIZE 4096
 
 static bool g_hasInitialised = false;
-const char* game = "";
+//const char* game = "";
 
-
-HANDLE hMapFile;
+HANDLE pipe;
 
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		// Get the process that loaded the DLL
-		TCHAR overwatchFind[] = _T("Overwatch");
-		TCHAR szPath[MAX_PATH];
-		GetModuleFileName(nullptr, szPath, MAX_PATH);
-
-		if (_tcscmp(szPath, overwatchFind) != 0)
-			game = "overwatch";
-
-		// Setup mmf
-		hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, BUF_SIZE, szName);
+		// // Get the process that loaded the DLL
+		// TCHAR overwatchFind[] = _T("Overwatch");
+		// TCHAR szPath[MAX_PATH];
+		// GetModuleFileName(nullptr, szPath, MAX_PATH);
+		// 
+		// if (_tcscmp(szPath, overwatchFind) != 0)
+		// 	game = "overwatch";		
 	}
 
 	return true;
@@ -45,24 +39,16 @@ std::string string_format(const std::string& format, Args ... args)
 }
 
 
-void WriteMmf(std::string msg)
+void WritePipe(std::string msg)
 {
-	if (hMapFile == nullptr)
+	pipe = CreateFile(TEXT("\\\\.\\pipe\\artemis"), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);
+	if (pipe == nullptr || pipe == INVALID_HANDLE_VALUE)
 	{
 		return;
 	}
 
-	LPCTSTR pBuf;
-	pBuf = static_cast<LPTSTR>(MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, BUF_SIZE));
-
-	if (pBuf == nullptr)
-	{
-		CloseHandle(hMapFile);
-		return;
-	}
-
-	CopyMemory((PVOID)pBuf, msg.c_str(), msg.size());
-	UnmapViewOfFile(pBuf);
+	DWORD cbWritten;
+	WriteFile(pipe, msg.c_str(), msg.size(), &cbWritten, nullptr);
 }
 
 RZRESULT Init()
@@ -117,7 +103,7 @@ RZRESULT CreateKeyboardEffect(ChromaSDK::Keyboard::EFFECT_TYPE Effect, PRZPARAM 
 		}
 	}
 
-	WriteMmf(res);
+	WritePipe(res);
 	return 0;
 }
 

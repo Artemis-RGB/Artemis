@@ -54,12 +54,12 @@ namespace Artemis.Utilities
             }
         }
 
-        public static Bitmap DrawinVisualToBitmap(DrawingVisual visual, Rect rect)
+        public static Bitmap DrawingVisualToBitmap(DrawingVisual visual, Rect rect)
         {
             var bmp = new RenderTargetBitmap((int) rect.Width, (int) rect.Height, 96, 96, PixelFormats.Pbgra32);
             bmp.Render(visual);
 
-            var encoder = new PngBitmapEncoder();
+            var encoder = new BmpBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
 
             Bitmap bitmap;
@@ -68,6 +68,7 @@ namespace Artemis.Utilities
                 encoder.Save(stream);
                 bitmap = new Bitmap(stream);
             }
+
             return bitmap;
         }
 

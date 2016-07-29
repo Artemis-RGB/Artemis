@@ -3,7 +3,7 @@ using System.Threading;
 using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Utilities;
-using Artemis.Utilities.LogitechDll;
+using Artemis.Utilities.DataReaders;
 using Microsoft.Win32;
 
 namespace Artemis.DeviceProviders.Logitech
@@ -24,7 +24,7 @@ namespace Artemis.DeviceProviders.Logitech
                 return false;
             }
 
-            if (DllManager.RestoreDll())
+            if (DllManager.RestoreLogitechDll())
                 RestoreDll();
             int majorNum = 0, minorNum = 0, buildNum = 0;
 
