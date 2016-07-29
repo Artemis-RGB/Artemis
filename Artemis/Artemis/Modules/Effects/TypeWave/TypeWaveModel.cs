@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
-using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
+using Artemis.Utilities.Keyboard;
 
 namespace Artemis.Modules.Effects.TypeWave
 {
@@ -30,7 +29,7 @@ namespace Artemis.Modules.Effects.TypeWave
         public override void Dispose()
         {
             Initialized = false;
-            MainManager.KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
+            KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
         }
 
         private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
@@ -39,23 +38,19 @@ namespace Artemis.Modules.Effects.TypeWave
             if (_waves.Count >= 25)
                 return;
 
-            var keyMatch = KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == e.KeyCode);
+            var keyMatch = MainManager.DeviceManager.ActiveKeyboard.GetKeyPosition(e.KeyCode);
             if (keyMatch == null)
                 return;
 
             _waves.Add(Settings.IsRandomColors
-                ? new Wave(new Point(keyMatch.PosX*KeyboardScale, keyMatch.PosY*KeyboardScale), 0, _randomColor)
-                : new Wave(new Point(keyMatch.PosX*KeyboardScale, keyMatch.PosY*KeyboardScale), 0,
+                ? new Wave(new Point(keyMatch.Value.X*KeyboardScale, keyMatch.Value.Y*KeyboardScale), 0, _randomColor)
+                : new Wave(new Point(keyMatch.Value.X*KeyboardScale, keyMatch.Value.Y*KeyboardScale), 0,
                     ColorHelpers.ToDrawingColor(Settings.WaveColor)));
         }
 
         public override void Enable()
         {
-            Initialized = false;
-
-            // Listener won't start unless the effect is active
-            MainManager.KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
-
+            KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
             Initialized = true;
         }
 

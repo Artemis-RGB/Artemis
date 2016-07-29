@@ -1,9 +1,13 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
+using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.DeviceProviders.Razer.Utilities;
 using Artemis.Properties;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
+using Corale.Colore.Razer.Keyboard;
 using Constants = Corale.Colore.Razer.Keyboard.Constants;
 
 namespace Artemis.DeviceProviders.Razer
@@ -48,6 +52,12 @@ namespace Artemis.DeviceProviders.Razer
         {
             var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
             Chroma.Instance.Keyboard.SetCustom(razerArray);
+        }
+
+        public override KeyMatch? GetKeyPosition(Keys keyCode)
+        {
+            // TODO: Needs it's own keymap or a way to get it from the Chroma SDK
+            return KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == keyCode);
         }
     }
 }

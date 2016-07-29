@@ -21,6 +21,7 @@ using Artemis.Profiles.Layers.Types.Generic;
 using Artemis.Profiles.Layers.Types.Headset;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
+using Artemis.Profiles.Layers.Types.KeyPress;
 using Artemis.Profiles.Layers.Types.Mouse;
 using Artemis.ViewModels.Abstract;
 using Ninject.Modules;
@@ -78,9 +79,11 @@ namespace Artemis.InjectionModules
             Bind<ILayerAnimation>().To<SlideLeftAnimation>();
             Bind<ILayerAnimation>().To<SlideRightAnimation>();
             Bind<ILayerAnimation>().To<SlideUpAnimation>();
+
             // Conditions
             Bind<ILayerCondition>().To<DataModelCondition>();
             Bind<ILayerCondition>().To<EventCondition>();
+
             // Types
             Bind<ILayerType>().To<FolderType>();
             Bind<ILayerType>().To<HeadsetType>();
@@ -88,6 +91,10 @@ namespace Artemis.InjectionModules
             Bind<ILayerType>().To<KeyboardGifType>();
             Bind<ILayerType>().To<MouseType>();
             Bind<ILayerType>().To<GenericType>();
+            Bind<ILayerType>().To<KeyPressType>();
+
+            // Bind some Layer Types to self as well in order to allow JSON.NET injection
+            Bind<KeyPressType>().ToSelf();
 
             #endregion
         }

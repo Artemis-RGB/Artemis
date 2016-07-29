@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
+using System.Windows.Forms;
+using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
 
 namespace Artemis.DeviceProviders.Logitech
@@ -16,6 +19,11 @@ namespace Artemis.DeviceProviders.Logitech
             Height = 6;
             Width = 21;
             PreviewSettings = new PreviewSettings(675, 185, new Thickness(0, 35, 0, 0), Resources.g810);
+        }
+
+        public override KeyMatch? GetKeyPosition(Keys keyCode)
+        {
+            return KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == keyCode);
         }
     }
 }

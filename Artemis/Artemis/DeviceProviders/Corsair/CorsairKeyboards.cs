@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
+using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
@@ -51,6 +53,7 @@ namespace Artemis.DeviceProviders.Corsair
                     break;
                 case "K70 RGB":
                 case "K70 RGB RAPIDFIRE":
+                case "K70 LUX RGB":
                     Height = 7;
                     Width = 21;
                     PreviewSettings = new PreviewSettings(676, 210, new Thickness(0, -25, 0, 0), Resources.k70);
@@ -105,6 +108,20 @@ namespace Artemis.DeviceProviders.Corsair
             _keyboard.Update();
 
             image.Dispose();
+        }
+
+        public override KeyMatch? GetKeyPosition(Keys keyCode)
+        {
+            var widthMultiplier = Width/_keyboard.KeyboardRectangle.Width;
+            var heightMultiplier = Height/_keyboard.KeyboardRectangle.Height;
+
+            // TODO: Not all key codes translate to CUE keys
+            var cueKey = _keyboard.Keys.FirstOrDefault(k => k.KeyId.ToString() == keyCode.ToString());
+            if (cueKey != null)
+                return new KeyMatch(keyCode, (int) (cueKey.KeyRectangle.X*widthMultiplier),
+                    (int) (cueKey.KeyRectangle.Y*heightMultiplier));
+
+            return null;
         }
     }
 }
