@@ -330,6 +330,11 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Generic\GenericPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Generic\GenericType.cs" />
+    <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesView.xaml.cs">
+      <DependentUpon>KeyPressPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressType.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
@@ -737,6 +742,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

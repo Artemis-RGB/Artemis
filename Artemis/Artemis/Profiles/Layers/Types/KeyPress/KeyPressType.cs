@@ -9,7 +9,6 @@ using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Generic;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
@@ -20,7 +19,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
     {
         private readonly MainManager _mainManager;
         private List<LayerModel> _keyPressLayers = new List<LayerModel>();
-        private LayerPropertiesModel _properties;
+        private KeyPressPropertiesModel _properties;
 
         public KeyPressType(MainManager mainManager)
         {
@@ -64,7 +63,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            _properties = layerModel.Properties;
+            _properties = (KeyPressPropertiesModel) layerModel.Properties;
 
             lock (_keyPressLayers)
             {
@@ -78,18 +77,18 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
         public void SetupProperties(LayerModel layerModel)
         {
-            if (layerModel.Properties is SimplePropertiesModel)
+            if (layerModel.Properties is KeyPressPropertiesModel)
                 return;
 
-            layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
+            layerModel.Properties = new KeyPressPropertiesModel(layerModel.Properties);
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
             List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
         {
-            if (layerPropertiesViewModel is GenericPropertiesViewModel)
+            if (layerPropertiesViewModel is KeyPressPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new GenericPropertiesViewModel(proposedLayer, dataModel, layerAnimations);
+            return new KeyPressPropertiesViewModel(proposedLayer, dataModel);
         }
 
         private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
@@ -104,14 +103,17 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             lock (_keyPressLayers)
             {
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.Brush = _properties.Brush.CloneCurrentValue();
-                layer.Properties.X = keyMatch.Value.X - 3;
-                layer.Properties.Y = keyMatch.Value.Y - 3;
-                layer.Properties.Width = 6;
-                layer.Properties.Height = 6;
-
-                layer.Properties.AnimationSpeed = 1;
+                layer.Properties.X = keyMatch.Value.X - _properties.Scale/2;
+                layer.Properties.Y = keyMatch.Value.Y - _properties.Scale/2;
+                layer.Properties.Width = _properties.Scale;
+                layer.Properties.Height = _properties.Scale;
+                layer.Properties.AnimationSpeed = _properties.AnimationSpeed;
                 layer.LayerAnimation = new GrowAnimation();
+
+                // Setup the brush according to settings
+                layer.Properties.Brush = _properties.RandomColor
+                    ? ColorHelpers.RandomizeBrush(_properties.Brush)
+                    : _properties.Brush.CloneCurrentValue();
 
                 _keyPressLayers.Add(layer);
             }
