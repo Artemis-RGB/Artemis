@@ -5,8 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Artemis.InjectionModules;
-using Artemis.Profiles.Layers.Interfaces;
-using Artemis.Profiles.Layers.Types.KeyPress;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Converters;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
+using Color = System.Drawing.Color;
 
 namespace Artemis.Utilities
 {
@@ -95,6 +97,36 @@ namespace Artemis.Utilities
         public static System.Windows.Media.Color ToMediaColor(Color dColor)
         {
             return System.Windows.Media.Color.FromArgb(dColor.A, dColor.R, dColor.G, dColor.B);
+        }
+
+        public static Brush RandomizeBrush(Brush brush)
+        {
+            if (brush is SolidColorBrush)
+            {
+                return new SolidColorBrush(GetRandomRainbowMediaColor());
+            }
+
+            if (brush is LinearGradientBrush)
+            {
+                var randomBrush = (LinearGradientBrush) brush.CloneCurrentValue();
+                var rand = GetRandomRainbowMediaColor();
+                foreach (var stop in randomBrush.GradientStops)
+                    stop.Color = System.Windows.Media.Color.FromArgb(stop.Color.A, rand.R, rand.G, rand.B);
+
+                return randomBrush;
+            }
+
+            if (brush is RadialGradientBrush)
+            {
+                var randomBrush = (RadialGradientBrush)brush.CloneCurrentValue();
+                var rand = GetRandomRainbowMediaColor();
+                foreach (var stop in randomBrush.GradientStops)
+                    stop.Color = System.Windows.Media.Color.FromArgb(stop.Color.A, rand.R, rand.G, rand.B);
+
+                return randomBrush;
+            }
+
+            return brush;
         }
     }
 }
