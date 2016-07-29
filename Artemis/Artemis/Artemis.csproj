@@ -329,6 +329,7 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Generic\GenericPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Generic\GenericType.cs" />
+    <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressType.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
@@ -485,6 +486,7 @@
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\Converters\JsonConverters.cs" />
+    <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
     <Compile Include="Utilities\Converters\ValueConverters.cs" />
     <Compile Include="Utilities\DataReaders\DllManager.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
@@ -497,7 +499,6 @@
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\DataReaders\PipeServer.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
-    <Compile Include="Utilities\Keyboard\Key.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
@@ -869,9 +870,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utilities\ValueConverters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\CUE.NET.1.0.3\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.0.3\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

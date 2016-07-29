@@ -43,9 +43,6 @@ namespace Artemis.Managers
             ProgramEnabled = false;
             Running = false;
 
-            // TODO: Dependency inject utilities?
-            KeyboardHook = new KeyboardHook();
-
             // Create and start the web server
             GameStateWebServer = new GameStateWebServer();
             GameStateWebServer.Start();
@@ -67,7 +64,6 @@ namespace Artemis.Managers
         public ProfileManager ProfileManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
-        public KeyboardHook KeyboardHook { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
         public bool Running { get; private set; }

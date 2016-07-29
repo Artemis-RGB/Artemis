@@ -4,21 +4,21 @@ using VirtualInput;
 
 namespace Artemis.Utilities.Keyboard
 {
-    public class KeyboardHook
+    public static class KeyboardHook
     {
         public delegate void KeyDownCallbackHandler(KeyEventArgs e);
 
-        public KeyboardHook()
+        static KeyboardHook()
         {
-            VirtualKeyboard.KeyDown += VirtualKeyboardOnKeyDown;
             VirtualKeyboard.StartInterceptor();
+            VirtualKeyboard.KeyDown += VirtualKeyboardOnKeyDown;
         }
 
-        private void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        private static void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
             Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
 
-        public event KeyDownCallbackHandler KeyDownCallback;
+        public static event KeyDownCallbackHandler KeyDownCallback;
     }
 }

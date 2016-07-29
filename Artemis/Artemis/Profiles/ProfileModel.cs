@@ -172,7 +172,6 @@ namespace Artemis.Profiles
         /// <summary>
         ///     Resizes layers that are shown in the editor and match exactly the full keyboard widht and height
         /// </summary>
-        /// <param name="source">The keyboard the profile was made for</param>
         /// <param name="target">The new keyboard to adjust the layers for</param>
         public void ResizeLayers(KeyboardProvider target)
         {
