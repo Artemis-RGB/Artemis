@@ -1,13 +1,17 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.DeviceProviders.Corsair.Utilities;
 using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
+using CUE.NET.Devices.Keyboard.Enums;
+using CUE.NET.Devices.Keyboard.Keys;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
@@ -49,6 +53,7 @@ namespace Artemis.DeviceProviders.Corsair
                 case "K95 RGB":
                     Height = 7;
                     Width = 25;
+                    Slug = "corsair-k95-rgb";
                     PreviewSettings = new PreviewSettings(676, 190, new Thickness(0, -15, 0, 0), Resources.k95);
                     break;
                 case "K70 RGB":
@@ -56,22 +61,24 @@ namespace Artemis.DeviceProviders.Corsair
                 case "K70 LUX RGB":
                     Height = 7;
                     Width = 21;
+                    Slug = "corsair-k70-rgb";
                     PreviewSettings = new PreviewSettings(676, 210, new Thickness(0, -25, 0, 0), Resources.k70);
                     break;
                 case "K65 RGB":
                     Height = 7;
                     Width = 18;
+                    Slug = "corsair-k65-rgb";
                     PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
                     break;
                 case "STRAFE RGB":
                     Height = 7;
                     Width = 22;
+                    Slug = "corsair-strafe-rgb";
                     PreviewSettings = new PreviewSettings(665, 215, new Thickness(0, -5, 0, 0), Resources.strafe);
                     break;
             }
-            Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
-            Slug = "corsair-" + _keyboard.DeviceInfo.Model.Replace(' ', '-').ToLower();
 
+            Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 
@@ -114,9 +121,18 @@ namespace Artemis.DeviceProviders.Corsair
         {
             var widthMultiplier = Width/_keyboard.KeyboardRectangle.Width;
             var heightMultiplier = Height/_keyboard.KeyboardRectangle.Height;
-
-            // TODO: Not all key codes translate to CUE keys
-            var cueKey = _keyboard.Keys.FirstOrDefault(k => k.KeyId.ToString() == keyCode.ToString());
+            
+            CorsairKey cueKey = null;
+            try
+            {
+                cueKey = _keyboard.Keys.FirstOrDefault(k => k.KeyId.ToString() == keyCode.ToString()) ??
+                         _keyboard.Keys.FirstOrDefault(k => k.KeyId == KeyMap.FormsKeys[keyCode]);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            
             if (cueKey != null)
                 return new KeyMatch(keyCode, (int) (cueKey.KeyRectangle.X*widthMultiplier),
                     (int) (cueKey.KeyRectangle.Y*heightMultiplier));
