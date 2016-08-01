@@ -65,6 +65,9 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
             _properties = (KeyPressPropertiesModel) layerModel.Properties;
 
+            if (isPreview)
+                return;
+
             lock (_keyPressLayers)
             {
                 // Remove expired key presses
