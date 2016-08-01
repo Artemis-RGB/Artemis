@@ -4,7 +4,6 @@ using Artemis.DeviceProviders.Logitech;
 using Artemis.DeviceProviders.Razer;
 using Artemis.Modules.Effects.AudioVisualizer;
 using Artemis.Modules.Effects.Bubbles;
-using Artemis.Modules.Effects.TypeWave;
 using Artemis.Modules.Effects.WindowsProfile;
 using Artemis.Modules.Games.CounterStrike;
 using Artemis.Modules.Games.Dota2;
@@ -16,6 +15,7 @@ using Artemis.Modules.Overlays.VolumeDisplay;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Types.Audio;
 using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Profiles.Layers.Types.Generic;
 using Artemis.Profiles.Layers.Types.Headset;
@@ -36,7 +36,6 @@ namespace Artemis.InjectionModules
 
             // Effects
             Bind<EffectViewModel>().To<AudioVisualizerViewModel>().InSingletonScope();
-            Bind<EffectViewModel>().To<TypeWaveViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<BubblesViewModel>().InSingletonScope();
             Bind<EffectViewModel>().To<WindowsProfileViewModel>().InSingletonScope();
 
@@ -92,9 +91,11 @@ namespace Artemis.InjectionModules
             Bind<ILayerType>().To<MouseType>();
             Bind<ILayerType>().To<GenericType>();
             Bind<ILayerType>().To<KeyPressType>();
+            Bind<ILayerType>().To<AudioType>();
 
             // Bind some Layer Types to self as well in order to allow JSON.NET injection
             Bind<KeyPressType>().ToSelf();
+            Bind<AudioType>().ToSelf();
 
             #endregion
         }

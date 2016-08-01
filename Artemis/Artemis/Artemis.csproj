@@ -325,6 +325,12 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
+      <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioType.cs" />
     <Compile Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml.cs">
       <DependentUpon>GenericPropertiesView.xaml</DependentUpon>
     </Compile>
@@ -372,12 +378,6 @@
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileDataModel.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
-    <Compile Include="Modules\Effects\TypeWave\TypeWave.Designer.cs">
-      <DependentUpon>TypeWave.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="Modules\Effects\TypeWave\TypeWaveModel.cs" />
     <Compile Include="Models\GameModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrike.Designer.cs">
       <DependentUpon>CounterStrike.settings</DependentUpon>
@@ -445,7 +445,6 @@
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
-    <Compile Include="Modules\Effects\TypeWave\TypeWaveSettings.cs" />
     <Compile Include="InjectionModules\ArtemisModules.cs" />
     <Compile Include="InjectionModules\BaseModules.cs" />
     <Compile Include="InjectionModules\ManagerModules.cs" />
@@ -521,7 +520,6 @@
     <Compile Include="ViewModels\DebugViewModel.cs" />
     <Compile Include="ViewModels\EffectsViewModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
-    <Compile Include="Modules\Effects\TypeWave\TypeWaveViewModel.cs" />
     <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
     <Compile Include="ViewModels\GamesViewModel.cs" />
@@ -556,9 +554,6 @@
     </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
       <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\TypeWave\TypeWaveView.xaml.cs">
-      <DependentUpon>TypeWaveView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamesView.xaml.cs">
       <DependentUpon>GamesView.xaml</DependentUpon>
@@ -640,10 +635,6 @@
     <None Include="Modules\Effects\Bubbles\Bubbles.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Bubbles.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Effects\TypeWave\TypeWave.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>TypeWave.Designer.cs</LastGenOutput>
     </None>
     <None Include="Modules\Effects\WindowsProfile\WindowsProfile.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -741,6 +732,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -774,10 +769,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Effects\TypeWave\TypeWaveView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
