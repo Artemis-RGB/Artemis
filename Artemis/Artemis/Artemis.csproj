@@ -312,6 +312,18 @@
     <Compile Include="Models\OverlaySettings.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournament.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>UnrealTournament.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentDataModel.cs" />
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentModel.cs" />
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentSettings.cs" />
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentView.xaml.cs">
+      <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
     <Compile Include="Modules\Games\WorldofWarcraft\WoW.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -617,6 +629,10 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Modules\Games\UnrealTournament\UnrealTournament.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>UnrealTournament.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Modules\Games\WorldofWarcraft\WoW.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>WoW.Designer.cs</LastGenOutput>
@@ -735,6 +751,10 @@
     <Page Include="Modules\Games\TheDivision\TheDivisionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\UnrealTournament\UnrealTournamentView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Profiles\Layers\Types\Generic\GenericPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>

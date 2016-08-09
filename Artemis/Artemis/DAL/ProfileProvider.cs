@@ -172,7 +172,6 @@ namespace Artemis.DAL
         /// <returns>The loaded profile, or null if invalid</returns>
         public static ProfileModel LoadProfileIfValid(string path)
         {
-            // TODO: What exception on load failure?
             try
             {
                 var prof = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(path));
@@ -182,7 +181,7 @@ namespace Artemis.DAL
                     return null;
                 return prof;
             }
-            catch (Exception)
+            catch (JsonSerializationException)
             {
                 return null;
             }
