@@ -28,7 +28,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows your boost amount on the keyboard." />
+                                    Text="By default shows team, HP armor and ammo on the keyboard and shows team colors on mouse and headset." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

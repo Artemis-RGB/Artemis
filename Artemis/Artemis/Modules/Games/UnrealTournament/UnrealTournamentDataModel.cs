@@ -19,16 +19,100 @@ namespace Artemis.Modules.Games.UnrealTournament
 
     public class Player
     {
-        public string Name { get; set; }
-        public string Team { get; set; }
         public int Health { get; set; }
         public int Armor { get; set; }
-        public string Powerup { get; set; }
+        public PlayerState State { get; set; }
+        public Inventory Inventory { get; set; }
+        public Weapon Weapon { get; set; }
+        public MatchPlayer MatchStatus { get; set; }
+    }
+
+    public class PlayerState
+    {
+        public string PlayerName { get; set; }
+        public string UniqueId { get; set; }
+        public int Score { get; set; }
+        public int TeamNum { get; set; }
+        public int RankCheck { get; set; }
+        public int DuelRank { get; set; }
+        public int No_of_Duel_Played { get; set; }
+        public int CTFRank { get; set; }
+        public int No_CTF_MatchesPlayed { get; set; }
+        public int TDMRank { get; set; }
+        public int No_TDM_MatchesPlayed { get; set; }
+        public int DMRank { get; set; }
+        public int No_DM_Matches_Played { get; set; }
+        public int ShowdownRank { get; set; }
+        public int No_Showdowns { get; set; }
+    }
+
+    public class Inventory
+    {
+        public bool HasJumpBoots { get; set; }
+        public bool HasInvisibility { get; set; }
+        public bool HasBerserk { get; set; }
+        public bool HasUDamage { get; set; }
+        public bool HasThighPads { get; set; }
+        public bool HasShieldBelt { get; set; }
+        public bool HasChestArmor { get; set; }
+        public bool HasHelmet { get; set; }
+    }
+
+    public class Weapon
+    {
+        public string Name { get; set; }
+        public int Ammo { get; set; }
+        public int MaxAmmo { get; set; }
+        public bool IsFiring { get; set; }
+        public int FireMode { get; set; }
+        public ZoomState ZoomState { get; set; }
+    }
+
+    public enum ZoomState
+    {
+        Unzoomed = 0,
+        Zoomed = 3,
+        ZoomingIn = 2,
+        ZoomingOut = 1,
     }
 
     public class Environment
     {
-        public string Mode { get; set; }
-        public string MapName { get; set; }
+        public string GameMode { get; set; }
+        public bool MatchStarted { get; set; }
+        public int GoalScore { get; set; }
+        public string ServerName { get; set; }
+        public bool bWeaponStay { get; set; }
+        public bool bTeamGame { get; set; }
+        public bool bAllowTeamSwitches { get; set; }
+        public bool bStopGameClock { get; set; }
+        public bool bCasterControl { get; set; }
+        public bool bForcedBalance { get; set; }
+        public bool bPlayPlayerIntro { get; set; }
+        public int TimeLimit { get; set; }
+        public int SpawnProtectionTime { get; set; }
+        public int RemainingTime { get; set; }
+        public int ElapsedTime { get; set; }
+        public int RespawnWaitTime { get; set; }
+        public int ForceRespawnTime { get; set; }
+    }
+
+    public class MatchPlayer
+    {
+        public string PlayerName { get; set; }
+        public string UniqueId { get; set; }
+        public int Score { get; set; }
+        public int TeamNum { get; set; }
+        public int RankCheck { get; set; }
+        public int DuelRank { get; set; }
+        public int No_of_Duel_Played { get; set; }
+        public int CTFRank { get; set; }
+        public int No_CTF_MatchesPlayed { get; set; }
+        public int TDMRank { get; set; }
+        public int No_TDM_MatchesPlayed { get; set; }
+        public int DMRank { get; set; }
+        public int No_DM_Matches_Played { get; set; }
+        public int ShowdownRank { get; set; }
+        public int No_Showdowns { get; set; }
     }
 }

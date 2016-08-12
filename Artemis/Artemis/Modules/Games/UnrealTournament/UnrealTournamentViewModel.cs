@@ -1,11 +1,7 @@
 ﻿using Artemis.InjectionFactories;
 using Artemis.Managers;
-using Artemis.Settings;
-using Artemis.Utilities;
-using Artemis.Utilities.Memory;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
-using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
@@ -16,7 +12,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         public UnrealTournamentViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
             : base(main, new UnrealTournamentModel(main, new UnrealTournamentSettings()), events, pFactory)
         {
-            DisplayName = "Rocket League";
+            DisplayName = "Unreal Tournament";
 
             MainManager.EffectManager.EffectModels.Add(GameModel);
         }
@@ -33,7 +29,5 @@ namespace Artemis.Modules.Games.UnrealTournament
         }
 
         public UnrealTournamentModel UnrealTournamentModel { get; set; }
-
-        
     }
 }

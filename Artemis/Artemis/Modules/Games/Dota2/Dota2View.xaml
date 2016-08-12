@@ -24,7 +24,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows verious game states and events on the keyboard." />
+                                    Text="By default shows mana, HP, character state on the keyboard and colors headset and mouse according to HP" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

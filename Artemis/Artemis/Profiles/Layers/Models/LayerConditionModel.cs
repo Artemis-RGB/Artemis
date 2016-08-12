@@ -31,7 +31,7 @@ namespace Artemis.Profiles.Layers.Models
             // Put the subject in a list, allowing Dynamic Linq to be used.
             if (Type == "String")
             {
-                return _interpreter.Eval<bool>($"subject.{Field}.ToLower() {Operator} value",
+                return _interpreter.Eval<bool>($"subject.{Field}.ToLower(){Operator}(value)",
                     new Parameter("subject", subject.GetType(), subject),
                     new Parameter("value", Value.ToLower()));
             }
