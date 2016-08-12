@@ -50,7 +50,7 @@ namespace Artemis.Modules.Games.Witcher3
 
             // Load the ZIP from resources
             var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Artemis.Resources.Witcher3.Witcher3Artemis.zip");
+                .GetManifestResourceStream("Artemis.Modules.Games.Witcher3.Resources.witcher3-mod.zip");
             if (stream == null)
                 throw new FileNotFoundException("Couldn't load the Witcher 3 mod files from resources.");
             var archive = new ZipArchive(stream);
