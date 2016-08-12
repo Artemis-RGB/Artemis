@@ -422,6 +422,8 @@ namespace Artemis.ViewModels.Profiles
         {
             // Update the UI
             Layers.Clear();
+            ProfileViewModel.SelectedLayer = null;
+
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
 
@@ -431,7 +433,7 @@ namespace Artemis.ViewModels.Profiles
             // A small delay to allow the profile list to rebuild
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(20);
+                Thread.Sleep(100);
                 ProfileViewModel.SelectedLayer = selectModel;
             });
         }

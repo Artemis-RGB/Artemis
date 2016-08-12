@@ -123,7 +123,7 @@ namespace Artemis.Profiles.Layers.Models
         public IEnumerable<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
-            foreach (var layerModel in Children)
+            foreach (var layerModel in Children.OrderBy(c => c.Order))
             {
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetLayers());
