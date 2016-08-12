@@ -25,8 +25,8 @@ namespace Artemis.Managers
         private readonly IEventAggregator _events;
         private readonly Timer _processTimer;
 
-        public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
-            DeviceManager deviceManager, EffectManager effectManager, ProfileManager profileManager)
+        public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
+            EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer)
         {
             _events = events;
 
@@ -35,6 +35,7 @@ namespace Artemis.Managers
             DeviceManager = deviceManager;
             EffectManager = effectManager;
             ProfileManager = profileManager;
+            PipeServer = pipeServer;
 
             _processTimer = new Timer(1000);
             _processTimer.Elapsed += ScanProcesses;
@@ -48,7 +49,6 @@ namespace Artemis.Managers
             GameStateWebServer.Start();
 
             // Start the named pipe
-            PipeServer = new PipeServer();
             PipeServer.Start("artemis");
 
             Logger.Info("Intialized MainManager");

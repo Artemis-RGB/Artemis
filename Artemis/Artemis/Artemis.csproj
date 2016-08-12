@@ -629,10 +629,12 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="Modules\Games\UnrealTournament\Resources\ut-plugin.zip" />
     <None Include="Modules\Games\UnrealTournament\UnrealTournament.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>UnrealTournament.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Modules\Games\Witcher3\Resources\witcher3-mod.zip" />
     <None Include="Modules\Games\WorldofWarcraft\WoW.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>WoW.Designer.cs</LastGenOutput>
@@ -716,7 +718,6 @@
     <Resource Include="Resources\Keyboards\blackwidow.png" />
     <None Include="Resources\Keyboards\none.png" />
     <None Include="Resources\Keyboards\demo-gif.gif" />
-    <EmbeddedResource Include="Resources\Witcher3\Witcher3Artemis.zip" />
     <None Include="Settings\Offsets.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
