@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
-using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
-using Artemis.Utilities.Keyboard;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;

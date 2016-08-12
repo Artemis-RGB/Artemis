@@ -20,14 +20,14 @@ namespace Artemis.Profiles.Layers.Types.Audio
 {
     internal class AudioType : ILayerType
     {
+        private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly MMDevice _device;
         private readonly MainManager _mainManager;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(2048);
         private readonly WasapiLoopbackCapture _waveIn;
-        private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private int _lines;
-        private AudioPropertiesModel _properties;
         private AudioPropertiesModel _previousSettings;
+        private AudioPropertiesModel _properties;
 
         public AudioType(MainManager mainManager)
         {
@@ -107,6 +107,26 @@ namespace Artemis.Profiles.Layers.Types.Audio
             }
         }
 
+        public void SetupProperties(LayerModel layerModel)
+        {
+            if (layerModel.Properties is AudioPropertiesModel)
+                return;
+
+            layerModel.Properties = new AudioPropertiesModel(layerModel.Properties)
+            {
+                FadeSpeed = 0.2,
+                Sensitivity = 2
+            };
+        }
+
+        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        {
+            if (layerPropertiesViewModel is AudioPropertiesViewModel)
+                return layerPropertiesViewModel;
+            return new AudioPropertiesViewModel(proposedLayer, dataModel);
+        }
+
         private void CompareSettings(LayerModel layerModel)
         {
             var settings = (AudioPropertiesModel) layerModel.Properties;
@@ -131,26 +151,6 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 _audioLayers.Add(layer);
                 layer.Update(null, false, true);
             }
-        }
-
-        public void SetupProperties(LayerModel layerModel)
-        {
-            if (layerModel.Properties is AudioPropertiesModel)
-                return;
-
-            layerModel.Properties = new AudioPropertiesModel(layerModel.Properties)
-            {
-                FadeSpeed = 0.2,
-                Sensitivity = 2
-            };
-        }
-
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
-        {
-            if (layerPropertiesViewModel is AudioPropertiesViewModel)
-                return layerPropertiesViewModel;
-            return new AudioPropertiesViewModel(proposedLayer, dataModel);
         }
 
         private void FftCalculated(object sender, FftEventArgs e)

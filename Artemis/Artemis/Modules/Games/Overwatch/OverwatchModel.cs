@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
@@ -98,9 +97,7 @@ namespace Artemis.Modules.Games.Overwatch
 
         private void PipeServerOnPipeMessage(string message)
         {
-
-                _lastMessage = message;
-
+            _lastMessage = message;
         }
 
         public override void Update()

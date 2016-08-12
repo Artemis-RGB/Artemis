@@ -50,7 +50,7 @@ namespace Artemis.Utilities
             if (ReferenceEquals(source, null))
                 return default(T);
 
-            return (T)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType());
+            return (T) JsonConvert.DeserializeObject(JsonConvert.SerializeObject(source), source.GetType());
         }
 
         public static object GetPropertyValue(object o, string path)

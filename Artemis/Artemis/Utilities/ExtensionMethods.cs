@@ -34,10 +34,10 @@ namespace Artemis.Utilities
             {
                 var completeFileName = Path.Combine(destinationDirectoryName, file.FullName);
                 Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
-                
+
                 if (file.Name == "")
                     continue;
-                
+
                 file.ExtractToFile(completeFileName, true);
             }
         }

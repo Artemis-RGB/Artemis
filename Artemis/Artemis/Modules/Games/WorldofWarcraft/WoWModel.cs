@@ -2,7 +2,6 @@
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 
 namespace Artemis.Modules.Games.WorldofWarcraft
@@ -51,7 +50,5 @@ namespace Artemis.Modules.Games.WorldofWarcraft
         {
             return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
-
-        
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Modules.Games.CounterStrike;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
@@ -52,7 +51,6 @@ namespace Artemis.Modules.Games.UnrealTournament
             {
                 //ignored
             }
-            
         }
 
         public override void Update()

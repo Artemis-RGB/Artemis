@@ -23,7 +23,7 @@
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
-                        <AccessText TextWrapping="Wrap" 
+                        <AccessText TextWrapping="Wrap"
                                     Text="By default shows team, HP, ammo and money on the keyboard and shows team colors on mouse and headset" />
                     </Label.Content>
                 </Label>

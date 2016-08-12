@@ -3,7 +3,6 @@ using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.Utilities.DataReaders
@@ -16,12 +15,13 @@ namespace Artemis.Utilities.DataReaders
         private readonly ILogger _logger;
         private string _pipeName;
         private NamedPipeServerStream _pipeServer;
-        public event DelegateMessage PipeMessage;
 
         public PipeServer(ILogger logger)
         {
             _logger = logger;
         }
+
+        public event DelegateMessage PipeMessage;
 
         public void Start(string pipeName)
         {

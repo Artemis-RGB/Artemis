@@ -10,7 +10,6 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
-using CUE.NET.Devices.Keyboard.Enums;
 using CUE.NET.Devices.Keyboard.Keys;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
@@ -121,7 +120,7 @@ namespace Artemis.DeviceProviders.Corsair
         {
             var widthMultiplier = Width/_keyboard.KeyboardRectangle.Width;
             var heightMultiplier = Height/_keyboard.KeyboardRectangle.Height;
-            
+
             CorsairKey cueKey = null;
             try
             {
@@ -132,7 +131,7 @@ namespace Artemis.DeviceProviders.Corsair
             {
                 // ignored
             }
-            
+
             if (cueKey != null)
                 return new KeyMatch(keyCode, (int) (cueKey.KeyRectangle.X*widthMultiplier),
                     (int) (cueKey.KeyRectangle.Y*heightMultiplier));

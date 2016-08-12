@@ -118,7 +118,7 @@ namespace Artemis.Utilities
 
             if (brush is RadialGradientBrush)
             {
-                var randomBrush = (RadialGradientBrush)brush.CloneCurrentValue();
+                var randomBrush = (RadialGradientBrush) brush.CloneCurrentValue();
                 var rand = GetRandomRainbowMediaColor();
                 foreach (var stop in randomBrush.GradientStops)
                     stop.Color = System.Windows.Media.Color.FromArgb(stop.Color.A, rand.R, rand.G, rand.B);
