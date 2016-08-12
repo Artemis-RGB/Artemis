@@ -55,7 +55,7 @@ namespace Artemis.Utilities.DataReaders
                 var buffer = new byte[4096];
 
                 // Read the incoming message
-                pipeServer.Read(buffer, 0, 255);
+                pipeServer.Read(buffer, 0, 4096);
 
                 // Convert byte buffer to string
                 var stringData = Encoding.ASCII.GetString(buffer, 0, buffer.Length);

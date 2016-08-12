@@ -74,7 +74,7 @@ namespace Artemis.Profiles
         public List<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
-            foreach (var layerModel in Layers)
+            foreach (var layerModel in Layers.OrderBy(l => l.Order))
             {
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetLayers());
