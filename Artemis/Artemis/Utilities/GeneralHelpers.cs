@@ -57,6 +57,8 @@ namespace Artemis.Utilities
         {
             var propertyNames = path.Split('.');
             var prop = o.GetType().GetProperty(propertyNames[0]);
+            if (prop == null)
+                return null;
             var value = prop.GetValue(o, null);
 
             if (propertyNames.Length == 1 || value == null)

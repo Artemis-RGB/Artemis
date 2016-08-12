@@ -24,7 +24,7 @@ namespace Artemis.Profiles.Layers.Animations
 
         public void Draw(LayerPropertiesModel props, LayerPropertiesModel applied, DrawingContext c)
         {
-            if (applied.Brush == null)
+            if (applied?.Brush == null)
                 return;
 
             const int scale = 4;

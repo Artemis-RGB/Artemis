@@ -23,7 +23,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Allows you to create layers based on ingame cooldown and your hero." />
+                                    Text="By default colors the keyboard according to the chosen hero and shows ability cooldowns." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
