@@ -68,7 +68,7 @@ namespace Artemis.Profiles.Layers.Models
 
         public Rect GetRect(int scale = 4)
         {
-            return new Rect(X * scale, Y * scale, Width * scale, Height * scale);
+            return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }
     }
 }

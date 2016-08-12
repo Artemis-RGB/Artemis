@@ -65,7 +65,7 @@ namespace Artemis.Managers
 
             while (_deviceManager.ChangingKeyboard)
                 Thread.Sleep(200);
-            
+
             // If still null, no last keyboard, so stop.
             if (_deviceManager.ActiveKeyboard == null)
             {

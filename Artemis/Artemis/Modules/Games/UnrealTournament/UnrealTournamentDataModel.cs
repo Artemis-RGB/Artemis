@@ -1,4 +1,5 @@
 ﻿using Artemis.Models.Interfaces;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
@@ -24,7 +25,6 @@ namespace Artemis.Modules.Games.UnrealTournament
         public PlayerState State { get; set; }
         public Inventory Inventory { get; set; }
         public Weapon Weapon { get; set; }
-        public MatchPlayer MatchStatus { get; set; }
     }
 
     public class PlayerState
@@ -32,12 +32,16 @@ namespace Artemis.Modules.Games.UnrealTournament
         public string PlayerName { get; set; }
         public string UniqueId { get; set; }
         public int Score { get; set; }
+        [JsonProperty("Team Num")]
         public int TeamNum { get; set; }
         public int RankCheck { get; set; }
+        [JsonProperty("Duel Rank")]
         public int DuelRank { get; set; }
         public int No_of_Duel_Played { get; set; }
+        [JsonProperty("CTF Rank")]
         public int CTFRank { get; set; }
         public int No_CTF_MatchesPlayed { get; set; }
+        [JsonProperty("TDM Rank")]
         public int TDMRank { get; set; }
         public int No_TDM_MatchesPlayed { get; set; }
         public int DMRank { get; set; }
@@ -73,7 +77,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         Unzoomed = 0,
         Zoomed = 3,
         ZoomingIn = 2,
-        ZoomingOut = 1,
+        ZoomingOut = 1
     }
 
     public class Environment
@@ -97,22 +101,4 @@ namespace Artemis.Modules.Games.UnrealTournament
         public int ForceRespawnTime { get; set; }
     }
 
-    public class MatchPlayer
-    {
-        public string PlayerName { get; set; }
-        public string UniqueId { get; set; }
-        public int Score { get; set; }
-        public int TeamNum { get; set; }
-        public int RankCheck { get; set; }
-        public int DuelRank { get; set; }
-        public int No_of_Duel_Played { get; set; }
-        public int CTFRank { get; set; }
-        public int No_CTF_MatchesPlayed { get; set; }
-        public int TDMRank { get; set; }
-        public int No_TDM_MatchesPlayed { get; set; }
-        public int DMRank { get; set; }
-        public int No_DM_Matches_Played { get; set; }
-        public int ShowdownRank { get; set; }
-        public int No_Showdowns { get; set; }
-    }
 }

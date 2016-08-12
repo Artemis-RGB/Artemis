@@ -10,7 +10,6 @@ using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
