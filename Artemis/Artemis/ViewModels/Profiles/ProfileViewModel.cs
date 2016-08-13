@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using System.Windows;
@@ -10,9 +11,11 @@ using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Castle.Components.DictionaryAdapter;
 using MahApps.Metro;
 
 namespace Artemis.ViewModels.Profiles
@@ -29,6 +32,7 @@ namespace Artemis.ViewModels.Profiles
         private Cursor _keyboardPreviewCursor;
         private bool _resizing;
         private LayerModel _selectedLayer;
+        private bool _showAll;
 
         public ProfileViewModel(IEventAggregator events, DeviceManager deviceManager)
         {
@@ -36,6 +40,8 @@ namespace Artemis.ViewModels.Profiles
             _deviceManager = deviceManager;
 
             PreviewTimer = new Timer(40);
+            ShowAll = false;
+
             PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
         }
 
@@ -75,6 +81,17 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
+        public bool ShowAll
+        {
+            get { return _showAll; }
+            set
+            {
+                if (value == _showAll) return;
+                _showAll = value;
+                NotifyOfPropertyChange(() => ShowAll);
+            }
+        }
+
         public ImageSource KeyboardImage => ImageUtilities
             .BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image ?? Resources.none);
 
@@ -92,13 +109,14 @@ namespace Artemis.ViewModels.Profiles
             _blurProgress = _blurProgress + 0.025;
             BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
 
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
             {
                 var preview = new DrawingImage();
                 preview.Freeze();
                 KeyboardPreview = preview;
                 return;
             }
+
 
             var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
             var visual = new DrawingVisual();
@@ -108,8 +126,10 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.PushClip(new RectangleGeometry(keyboardRect));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
+                // Get the layers that must be drawn
+                var drawLayers = GetRenderLayers();
+
                 // Draw the layers
-                var drawLayers = SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
                 foreach (var layer in drawLayers)
                 {
                     layer.Update(null, true, false);
@@ -120,7 +140,12 @@ namespace Artemis.ViewModels.Profiles
                 // Get the selection color
                 var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
                 if (accentColor == null)
+                {
+                    var preview = new DrawingImage();
+                    preview.Freeze();
+                    KeyboardPreview = preview;
                     return;
+                }
 
                 var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
 
@@ -198,8 +223,7 @@ namespace Artemis.ViewModels.Profiles
             var x = pos.X/((double) keyboard.PreviewSettings.Width/keyboard.Width);
             var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
 
-            var hoverLayer = SelectedProfile.GetLayers()
-                .Where(l => l.MustDraw())
+            var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
             SelectedLayer = hoverLayer;
@@ -218,8 +242,7 @@ namespace Artemis.ViewModels.Profiles
             var keyboard = _deviceManager.ActiveKeyboard;
             var x = pos.X/((double) keyboard.PreviewSettings.Width/keyboard.Width);
             var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
-            var hoverLayer = SelectedProfile.GetLayers()
-                .Where(l => l.MustDraw())
+            var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
@@ -306,6 +329,39 @@ namespace Artemis.ViewModels.Profiles
                 draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
                 draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
             }
+        }
+
+        public List<LayerModel> GetRenderLayers()
+        {
+            // Get the layers that must be drawn
+            List<LayerModel> drawLayers;
+            if (ShowAll)
+                return SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
+
+            if (SelectedLayer == null)
+                return new EditableList<LayerModel>();
+
+            if (SelectedLayer.LayerType is FolderType)
+                drawLayers = SelectedLayer.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
+            else
+                drawLayers = new List<LayerModel> {SelectedLayer};
+
+            return drawLayers;
+        }
+
+
+        private List<LayerModel> GetLayers()
+        {
+            // Get the layers that must be drawn
+            List<LayerModel> drawLayers;
+            if (ShowAll)
+                drawLayers = SelectedProfile.GetLayers();
+            else if (SelectedLayer.LayerType is FolderType)
+                drawLayers = SelectedLayer.GetLayers().ToList();
+            else
+                drawLayers = new List<LayerModel> { SelectedLayer };
+
+            return drawLayers;
         }
 
         #endregion
