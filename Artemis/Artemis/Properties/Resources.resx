@@ -190,4 +190,7 @@
   <data name="witcher3_mod" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Modules\Games\Witcher3\Resources\witcher3-mod.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="redeemer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Modules\Games\UnrealTournament\Resources\redeemer.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

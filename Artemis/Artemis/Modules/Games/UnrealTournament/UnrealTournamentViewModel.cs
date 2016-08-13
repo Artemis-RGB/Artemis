@@ -4,8 +4,10 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
+using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 using Caliburn.Micro;
@@ -22,6 +24,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             DisplayName = "Unreal Tournament";
             MainManager.EffectManager.EffectModels.Add(GameModel);
             FindGame();
+            InstallGif();
         }
 
         public UnrealTournamentModel UnrealTournamentModel { get; set; }
@@ -111,6 +114,13 @@ namespace Artemis.Modules.Games.UnrealTournament
             }
 
             MainManager.Logger.Info("Installed Unreal Tournament plugin in '{0}'", path);
+        }
+
+        private void InstallGif()
+        {
+            var gif = Resources.redeemer;
+            ProfileProvider.InsertGif(ProfileProvider.GetAll()
+                .Where(p => p.GameName == "UnrealTournament" && p.Name == "Default"), "Redeemer GIF", gif, "redeemer");
         }
     }
 }

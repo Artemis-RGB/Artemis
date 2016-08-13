@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
     public class UnrealTournamentModel : GameModel
     {
-        private Memory _memory;
-        private GamePointersCollection _pointer;
-
         public UnrealTournamentModel(MainManager mainManager, UnrealTournamentSettings settings)
             : base(mainManager, settings, new UnrealTournamentDataModel())
         {

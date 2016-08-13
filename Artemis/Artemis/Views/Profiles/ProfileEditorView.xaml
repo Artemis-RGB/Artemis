@@ -151,10 +151,12 @@
         <!-- Layer list -->
         <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
             <Label FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
-            <Label HorizontalAlignment="Right" Content="Show all" Margin="88,0,0,0" VerticalAlignment="Center" />
-            <ToggleButton x:Name="ShowAll" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=ProfileViewModel.ShowAll, Mode=TwoWay}"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}" HorizontalAlignment="Right" />
+            <Label HorizontalAlignment="Right" ToolTip="Show all layers instead of just the one you have selected"
+                   Content="Show all" Margin="88,0,0,0" VerticalAlignment="Center" />
+            <ToggleButton x:Name="ShowAll" ToolTip="Show all layers instead of just the one you have selected"
+                          Margin="0 3 0 0" Width="25" Height="25"
+                          IsChecked="{Binding Path=ProfileViewModel.ShowAll, Mode=TwoWay}"
+                          Style="{DynamicResource MetroCircleToggleButtonStyle}" HorizontalAlignment="Right" />
         </StackPanel>
 
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"

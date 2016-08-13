@@ -22,16 +22,13 @@ namespace Artemis.Profiles.Layers.Types.Audio
     {
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly MMDevice _device;
-        private readonly MainManager _mainManager;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(2048);
         private readonly WasapiLoopbackCapture _waveIn;
         private int _lines;
         private AudioPropertiesModel _previousSettings;
-        private AudioPropertiesModel _properties;
 
         public AudioType(MainManager mainManager)
         {
-            _mainManager = mainManager;
             _device =
                 new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).FirstOrDefault();
 
