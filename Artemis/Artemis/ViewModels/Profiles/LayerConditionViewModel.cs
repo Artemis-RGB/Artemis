@@ -31,6 +31,15 @@ namespace Artemis.ViewModels.Profiles
             new NamedOperator("Not equal to", "!=")
         };
 
+        private readonly NamedOperator[] _stringOperators =
+        {
+            new NamedOperator("Equal to", "=="),
+            new NamedOperator("Not equal to", "!="),
+            new NamedOperator("Contains", ".Contains"),
+            new NamedOperator("Starts with", ".StartsWith"),
+            new NamedOperator("Ends with", ".EndsWith")
+        };
+
         private bool _enumValueIsVisible;
         private bool _preselecting;
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
@@ -155,6 +164,10 @@ namespace Artemis.ViewModels.Profiles
                     Enums.Add("True");
                     Enums.Add("False");
                     EnumValueIsVisible = true;
+                    break;
+                case "String":
+                    Operators.AddRange(_stringOperators);
+                    UserValueIsVisible = true;
                     break;
                 default:
                     Operators.AddRange(_operators);

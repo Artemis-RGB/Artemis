@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
-using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
-using Artemis.Utilities.Keyboard;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;
@@ -25,8 +22,8 @@ namespace Artemis.Managers
         private readonly IEventAggregator _events;
         private readonly Timer _processTimer;
 
-        public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager,
-            DeviceManager deviceManager, EffectManager effectManager, ProfileManager profileManager)
+        public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
+            EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer)
         {
             _events = events;
 
@@ -35,6 +32,7 @@ namespace Artemis.Managers
             DeviceManager = deviceManager;
             EffectManager = effectManager;
             ProfileManager = profileManager;
+            PipeServer = pipeServer;
 
             _processTimer = new Timer(1000);
             _processTimer.Elapsed += ScanProcesses;
@@ -48,7 +46,6 @@ namespace Artemis.Managers
             GameStateWebServer.Start();
 
             // Start the named pipe
-            PipeServer = new PipeServer();
             PipeServer.Start("artemis");
 
             Logger.Info("Intialized MainManager");

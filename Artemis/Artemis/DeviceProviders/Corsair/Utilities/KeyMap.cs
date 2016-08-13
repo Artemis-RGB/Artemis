@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using CUE.NET.Devices.Keyboard.Enums;
-using CUE.NET.Devices.Keyboard.Keys;
 
 namespace Artemis.DeviceProviders.Corsair.Utilities
 {

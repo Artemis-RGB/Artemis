@@ -95,6 +95,7 @@ namespace Artemis
         protected override void OnExit(object sender, EventArgs e)
         {
             _kernel.Dispose();
+//            Enviroment.Exit(0);
             base.OnExit(sender, e);
         }
 

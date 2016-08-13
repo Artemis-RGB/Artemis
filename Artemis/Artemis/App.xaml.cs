@@ -13,6 +13,12 @@ namespace Artemis
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            Environment.Exit(0);
+        }
+
         public App()
         {
             if (!IsRunAsAdministrator())
@@ -31,11 +37,6 @@ namespace Artemis
             return wp.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-        }
-
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             if (DoHandle)
@@ -48,12 +49,6 @@ namespace Artemis
                 GetArtemisExceptionViewer(e.Exception).ShowDialog();
                 e.Handled = false;
             }
-        }
-
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ex = e.ExceptionObject as Exception;
-            GetArtemisExceptionViewer(ex).ShowDialog();
         }
 
         private static ExceptionViewer GetArtemisExceptionViewer(Exception e)

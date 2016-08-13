@@ -17,13 +17,13 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition />
-
             </Grid.RowDefinitions>
+
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Allows you to create layers based on ingame cooldown and your hero." />
+                                    Text="By default colors the keyboard according to the chosen hero and shows ability cooldowns." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -35,6 +35,7 @@
                 </StackPanel>
             </StackPanel>
 
+            <!-- Game directory -->
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">

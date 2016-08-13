@@ -1,0 +1,21 @@
+{
+  "Version" : 1,
+  "FileVersion": 3,
+  "FriendlyName": "Artemis Plugin",
+  "VersionName": "1.0",
+  "CreatedBy": "Robert Beekman",
+  "CreatedByURL": "https://github.com/SpoinkyNL/Artemis",
+  "EngineVersion": "4.4.0",
+  "Description": "Communicates with Artemis to let the main program know what's happening ingame",
+  "Category": "UnrealTournament.Mod",
+  "EnabledByDefault": true,
+  "CanContainContent": false,
+
+  "Modules": [
+    {
+      "Name": "Artemis",
+      "Type": "Runtime",
+      "WhitelistPlatforms": [ "Win32", "Win64" ]
+    }
+  ]
+}

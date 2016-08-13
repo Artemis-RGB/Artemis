@@ -33,12 +33,11 @@ namespace Artemis.Utilities
             foreach (var file in archive.Entries)
             {
                 var completeFileName = Path.Combine(destinationDirectoryName, file.FullName);
+                Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
+
                 if (file.Name == "")
-                {
-                    // Assuming Empty for Directory
-                    Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
                     continue;
-                }
+
                 file.ExtractToFile(completeFileName, true);
             }
         }

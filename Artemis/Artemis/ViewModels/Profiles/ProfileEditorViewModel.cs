@@ -422,6 +422,8 @@ namespace Artemis.ViewModels.Profiles
         {
             // Update the UI
             Layers.Clear();
+            ProfileViewModel.SelectedLayer = null;
+
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
 
@@ -431,7 +433,7 @@ namespace Artemis.ViewModels.Profiles
             // A small delay to allow the profile list to rebuild
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(20);
+                Thread.Sleep(100);
                 ProfileViewModel.SelectedLayer = selectModel;
             });
         }
@@ -516,38 +518,30 @@ namespace Artemis.ViewModels.Profiles
         {
             if (SelectedProfile == null)
                 return;
-
-            var oldName = SelectedProfile.Name;
-            SelectedProfile.Name = await DialogService
-                .ShowInputDialog("Rename profile", "Please enter a unique new profile name");
+            
+            var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
-            if (string.IsNullOrEmpty(SelectedProfile.Name) || SelectedProfile.Name.Length < 2)
-            {
-                SelectedProfile.Name = oldName;
+            if (string.IsNullOrEmpty(name) || name.Length < 2)
                 return;
-            }
 
             // Verify the name
-            while (ProfileProvider.GetAll().Contains(SelectedProfile))
+            while (ProfileProvider.GetAll().Any(p => p.Name == name && p.GameName == SelectedProfile.GameName &&
+                                                     p.KeyboardSlug == SelectedProfile.KeyboardSlug))
             {
-                SelectedProfile.Name = await DialogService.
-                    ShowInputDialog("Name already in use", "Please enter a unique new profile name");
+                name = await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(SelectedProfile.Name) || SelectedProfile.Name.Length < 2)
-                {
-                    SelectedProfile.Name = oldName;
+                if (string.IsNullOrEmpty(name) || name.Length < 2)
                     return;
-                }
             }
 
-            var newName = SelectedProfile.Name;
-            SelectedProfile.Name = oldName;
-            ProfileProvider.RenameProfile(SelectedProfile, newName);
-
+            var profile = SelectedProfile;
+            SelectedProfile = null;
+            ProfileProvider.RenameProfile(profile, name);
+            
+            LastProfile = name;
             LoadProfiles();
-            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newName);
         }
 
         public async void DuplicateProfile()

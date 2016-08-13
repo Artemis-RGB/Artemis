@@ -289,6 +289,16 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap redeemer {
+            get {
+                object obj = ResourceManager.GetObject("redeemer", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] RzChromaSDK64 {
@@ -311,9 +321,19 @@ namespace Artemis.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Witcher3Artemis {
+        internal static byte[] ut_plugin {
             get {
-                object obj = ResourceManager.GetObject("Witcher3Artemis", resourceCulture);
+                object obj = ResourceManager.GetObject("ut_plugin", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] witcher3_mod {
+            get {
+                object obj = ResourceManager.GetObject("witcher3_mod", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -7,7 +7,6 @@ using Artemis.DeviceProviders.Razer.Utilities;
 using Artemis.Properties;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
-using Corale.Colore.Razer.Keyboard;
 using Constants = Corale.Colore.Razer.Keyboard.Constants;
 
 namespace Artemis.DeviceProviders.Razer
@@ -29,9 +28,9 @@ namespace Artemis.DeviceProviders.Razer
 
         public override bool CanEnable()
         {
-            if (!Chroma.IsSdkAvailable())
+            if (!Chroma.SdkAvailable)
                 return false;
-            
+
             // Some people have Synapse installed, but not a Chroma keyboard, deal with this
             var blackWidowFound = Chroma.Instance.Query(Devices.Blackwidow).Connected;
             var blackWidowTeFound = Chroma.Instance.Query(Devices.BlackwidowTe).Connected;

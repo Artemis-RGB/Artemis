@@ -63,7 +63,7 @@ namespace Artemis.Profiles
                 // Remove the clip
                 c.Pop();
             }
-            
+
             using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, keyboardRect))
                 keyboard.DrawImage(bmp, new PointF(0, 0));
         }
@@ -74,7 +74,7 @@ namespace Artemis.Profiles
         public List<LayerModel> GetLayers()
         {
             var layers = new List<LayerModel>();
-            foreach (var layerModel in Layers)
+            foreach (var layerModel in Layers.OrderBy(l => l.Order))
             {
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetLayers());
@@ -177,7 +177,7 @@ namespace Artemis.Profiles
         {
             foreach (var layer in GetLayers())
             {
-                if (!layer.LayerType.ShowInEdtor || 
+                if (!layer.LayerType.ShowInEdtor ||
                     !(Math.Abs(layer.Properties.Width - Width) < 0.01) ||
                     !(Math.Abs(layer.Properties.Height - Height) < 0.01))
                     continue;
