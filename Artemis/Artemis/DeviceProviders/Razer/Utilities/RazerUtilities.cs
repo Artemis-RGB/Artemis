@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Artemis.Utilities;
 using Corale.Colore.Razer.Keyboard.Effects;
+using Color = Corale.Colore.Core.Color;
 
 namespace Artemis.DeviceProviders.Razer.Utilities
 {
@@ -13,8 +14,13 @@ namespace Artemis.DeviceProviders.Razer.Utilities
                 b = ImageUtilities.ResizeImage(b, width, height);
 
             for (var y = 0; y < b.Height; y++)
+            {
                 for (var x = 0; x < b.Width; x++)
-                    keyboardGrid[y, x] = b.GetPixel(x, y);
+                {
+                    var pixel = b.GetPixel(x, y);
+                    keyboardGrid[y, x] = new Color(pixel.R, pixel.G, pixel.B);
+                }
+            }
 
             return keyboardGrid;
         }

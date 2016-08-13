@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -19,9 +20,10 @@ namespace Artemis.DAL
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly string ProfileFolder = Environment
-            .GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
+        private static readonly string ProfileFolder =
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
 
+        private static readonly List<ProfileModel> Profiles = new List<ProfileModel>();
         private static bool _installedDefaults;
 
         /// <summary>
@@ -30,7 +32,15 @@ namespace Artemis.DAL
         /// <returns>All profiles</returns>
         public static List<ProfileModel> GetAll()
         {
-            return ReadProfiles();
+            lock (Profiles)
+            {
+                if (!Profiles.Any())
+                    ReadProfiles();
+
+                // Return a new list, this'll make sure removing/updating the retrieved list doesn't 
+                // affect the datastore
+                return Profiles.ToList();
+            }
         }
 
         /// <summary>
@@ -59,8 +69,15 @@ namespace Artemis.DAL
             if (prof == null)
                 throw new ArgumentNullException(nameof(prof));
 
+            lock (Profiles)
+            {
+                if (!Profiles.Contains(prof))
+                    Profiles.Add(prof);
+            }
+
             lock (prof)
             {
+                // Store the file
                 if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
                     throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
@@ -86,31 +103,43 @@ namespace Artemis.DAL
             }
         }
 
-        private static List<ProfileModel> ReadProfiles()
+        private static void ReadProfiles()
         {
             CheckProfiles();
-            InstallDefaults();
-            var profiles = new List<ProfileModel>();
-
-            // Create the directory structure
-            var profilePaths = Directory.GetFiles(ProfileFolder, "*.json", SearchOption.AllDirectories);
-
-            // Parse the JSON files into objects and add them if they are valid
-            foreach (var path in profilePaths)
+            lock (Profiles)
             {
-                try
+                Profiles.Clear();
+
+                // Create the directory structure
+                var profilePaths = Directory.GetFiles(ProfileFolder, "*.json", SearchOption.AllDirectories);
+
+                // Parse the JSON files into objects and add them if they are valid
+                foreach (var path in profilePaths)
                 {
-                    var prof = LoadProfileIfValid(path);
-                    if (prof != null)
-                        profiles.Add(prof);
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
+                    try
+                    {
+                        var prof = LoadProfileIfValid(path);
+                        if (prof == null)
+                            continue;
+
+                        // Only add unique profiles
+                        if (Profiles.Any(p => p.GameName == prof.GameName && p.Name == prof.Name &&
+                                              p.KeyboardSlug == prof.KeyboardSlug))
+                        {
+                            Logger.Error("Didn't load duplicate profile: {0}", path);
+                        }
+                        else
+                        {
+                            Profiles.Add(prof);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
+                    }
                 }
             }
-
-            return profiles;
+            InstallDefaults();
         }
 
         /// <summary>
@@ -133,23 +162,27 @@ namespace Artemis.DAL
             var archive = new ZipArchive(stream);
             archive.ExtractToDirectory(ProfileFolder, true);
 
-            // Extract the demo GIF file
-            var gifPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\demo-gif.gif";
-            Resources.demo_gif.Save(gifPath);
+            var demoProfiles = Profiles.Where(d => d.Name == "Demo (duplicate to keep changes)");
+            InsertGif(demoProfiles, "GIF", Resources.demo_gif, "demo-gif");
+        }
 
-            // Set the GIF path on each demo profile
-            var demoProfiles = GetAll().Where(d => d.Name == "Demo (Duplicate to keep changes)");
-            foreach (var demoProfile in demoProfiles)
+        public static void InsertGif(IEnumerable<ProfileModel> profileModels, string layerName, Bitmap gifFile,
+            string fileName)
+        {
+            // Extract the GIF file
+            var gifDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\gifs";
+            Directory.CreateDirectory(gifDir);
+            var gifPath = gifDir + $"\\{fileName}.gif";
+            gifFile.Save(gifPath);
+
+            foreach (var profile in profileModels)
             {
-                var gifLayer = demoProfile
-                    .Layers.FirstOrDefault(l => l.Name == "Demo - GIFs")?
-                    .Children.FirstOrDefault(c => c.Name == "GIF");
-
+                var gifLayer = profile.GetLayers().FirstOrDefault(l => l.Name == layerName);
                 if (gifLayer == null)
                     continue;
 
                 ((KeyboardPropertiesModel) gifLayer.Properties).GifFile = gifPath;
-                AddOrUpdate(demoProfile);
+                AddOrUpdate(profile);
             }
         }
 
@@ -208,20 +241,29 @@ namespace Artemis.DAL
             if (string.IsNullOrEmpty(name))
                 return;
 
-            // Remove the old file
-            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.json";
-            if (File.Exists(path))
-                File.Delete(path);
+            // Remove the old profile
+            DeleteProfile(profile);
 
             // Update the profile, creating a new file
             profile.Name = name;
             AddOrUpdate(profile);
         }
 
-        public static void DeleteProfile(ProfileModel profile)
+        public static void DeleteProfile(ProfileModel prof)
         {
+            // Remove from datastore
+            lock (Profiles)
+            {
+                // Get the profile from the datastore instead of just the provided value, to be certain it is removed
+                var dsProfile = Profiles.FirstOrDefault(p => p.GameName == prof.GameName &&
+                                                             p.Name == prof.Name &&
+                                                             p.KeyboardSlug == prof.KeyboardSlug);
+                if (dsProfile != null)
+                    Profiles.Remove(dsProfile);
+            }
+
             // Remove the file
-            var path = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Name}.json";
+            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}\{prof.Name}.json";
             if (File.Exists(path))
                 File.Delete(path);
         }

@@ -76,8 +76,8 @@ namespace Artemis.Modules.Games.UnrealTournament
     {
         Unzoomed = 0,
         Zoomed = 3,
-        ZoomingIn = 2,
-        ZoomingOut = 1
+        ZoomingIn = 1,
+        ZoomingOut = 2
     }
 
     public class Environment

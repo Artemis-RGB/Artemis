@@ -28,7 +28,7 @@ namespace Artemis.DeviceProviders.Razer
 
         public override bool CanEnable()
         {
-            if (!Chroma.IsSdkAvailable())
+            if (!Chroma.SdkAvailable)
                 return false;
 
             // Some people have Synapse installed, but not a Chroma keyboard, deal with this
