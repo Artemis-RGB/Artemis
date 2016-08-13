@@ -77,6 +77,11 @@ namespace Artemis.DeviceProviders.Corsair
                     break;
             }
 
+//            Height = 7;
+//            Width = 18;
+//            Slug = "corsair-k65-rgb";
+//            PreviewSettings = new PreviewSettings(610, 240, new Thickness(0, -30, 0, 0), Resources.k65);
+
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
