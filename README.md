@@ -20,6 +20,7 @@ Artemis adds highly configurable support for several games to a range of RGB key
  - The Division (beta)
  - The Witcher 3
  - Overwatch
+ - Unreal Tournament
 
 ##### The following keyboards are supported
  - All Corsair RGB keyboards
