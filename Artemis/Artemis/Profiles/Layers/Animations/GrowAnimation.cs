@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -7,10 +8,16 @@ namespace Artemis.Profiles.Layers.Animations
 {
     public class GrowAnimation : ILayerAnimation
     {
+        private DateTime _lastUpdate;
         public string Name { get; } = "Grow";
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
+            // Reset animation progress if layer wasn't drawn for 100ms
+            if (new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - _lastUpdate)
+                layerModel.Properties.AnimationProgress = 0;
+            _lastUpdate = DateTime.Now;
+
             var progress = layerModel.Properties.AnimationProgress;
 
             if (MustExpire(layerModel))
@@ -24,7 +31,7 @@ namespace Artemis.Profiles.Layers.Animations
 
         public void Draw(LayerPropertiesModel props, LayerPropertiesModel applied, DrawingContext c)
         {
-            if (applied.Brush == null)
+            if (applied?.Brush == null)
                 return;
 
             const int scale = 4;

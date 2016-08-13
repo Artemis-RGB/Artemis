@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Navigation;
 
 namespace Artemis.Views
@@ -16,7 +15,8 @@ namespace Artemis.Views
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)");
+            System.Diagnostics.Process.Start(
+                "https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)");
         }
     }
 }

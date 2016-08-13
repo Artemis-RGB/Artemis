@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Artemis.Modules.Games.Overwatch;
 using Artemis.Properties;
 using Microsoft.Win32;
 using NLog;
@@ -10,6 +9,23 @@ namespace Artemis.Utilities.DataReaders
     internal static class DllManager
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        #region Razer
+
+        public static void PlaceRazerDll(string path)
+        {
+            try
+            {
+                File.WriteAllBytes(path + @"\RzChromaSDK64.dll", Resources.RzChromaSDK64);
+                Logger.Debug("Successfully placed Razer DLL in {0}", path);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Couldn't place Razer DLL in {0}", path);
+            }
+        }
+
+        #endregion
 
         #region Logitech
 
@@ -92,23 +108,6 @@ namespace Artemis.Utilities.DataReaders
                 .LocalMachine.OpenSubKey(
                     @"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
             key?.SetValue(null, LogitechPath + @"\LogitechLed.dll");
-        }
-
-        #endregion
-
-        #region Razer
-
-        public static void PlaceRazerDll(string path)
-        {
-            try
-            {
-                File.WriteAllBytes(path + @"\RzChromaSDK64.dll", Resources.RzChromaSDK64);
-                Logger.Debug("Successfully placed Razer DLL in {0}", path);
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e, "Couldn't place Razer DLL in {0}", path);
-            }
         }
 
         #endregion

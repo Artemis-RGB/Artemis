@@ -23,7 +23,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Colors the keyboard according to the sign Gerald is using." />
+                                    Text="By default colors the keyboard according to the sign Gerald is using." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

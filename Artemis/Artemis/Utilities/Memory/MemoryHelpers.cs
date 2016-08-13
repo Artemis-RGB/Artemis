@@ -38,7 +38,8 @@ namespace Artemis.Utilities.Memory
             return address;
         }
 
-        public static T ReadMultilevelPointer<T>(this IMemory memory, IntPtr address, params int[] offsets) where T : struct
+        public static T ReadMultilevelPointer<T>(this IMemory memory, IntPtr address, params int[] offsets)
+            where T : struct
         {
             for (var i = 0; i < offsets.Length - 1; i++)
             {

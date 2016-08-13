@@ -7,6 +7,8 @@ using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels.Profiles;
+using Castle.Components.DictionaryAdapter;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {
@@ -16,6 +18,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
         {
             Name = "Profile Preview";
         }
+
+        public ProfileViewModel ProfileViewModel { get; set; }
 
         public override void Dispose()
         {
@@ -33,7 +37,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
 
         public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly, true);
+            return ProfileViewModel != null ? ProfileViewModel.GetRenderLayers() : new EditableList<LayerModel>();
         }
 
         public override void Render(RenderFrame frame, bool keyboardOnly)

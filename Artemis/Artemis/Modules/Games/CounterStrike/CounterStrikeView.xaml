@@ -24,7 +24,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="Shows verious game states and events on the keyboard." />
+                                    Text="By default shows team, HP, ammo and money on the keyboard and shows team colors on mouse and headset" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

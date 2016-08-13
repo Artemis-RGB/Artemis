@@ -178,13 +178,19 @@
   <data name="demo_gif" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Keyboards\demo-gif.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Witcher3Artemis" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Witcher3\Witcher3Artemis.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="g810" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Keyboards\g810.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="generic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\generic.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ut_plugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Modules\Games\UnrealTournament\Resources\ut-plugin.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="witcher3_mod" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Modules\Games\Witcher3\Resources\witcher3-mod.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="redeemer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Modules\Games\UnrealTournament\Resources\redeemer.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

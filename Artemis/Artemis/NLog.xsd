@@ -232,7 +232,6 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="Layout"></xs:complexType>
   <xs:complexType name="Filter" abstract="true"></xs:complexType>
   <xs:complexType name="TimeSource" abstract="true"></xs:complexType>
   <xs:simpleType name="SimpleLayoutAttribute">
@@ -1020,8 +1019,8 @@
           <xs:element name="archiveFileName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="archiveEvery" minOccurs="0" maxOccurs="1" type="NLog.Targets.FileArchivePeriod" />
           <xs:element name="archiveAboveSize" minOccurs="0" maxOccurs="1" type="xs:long" />
-          <xs:element name="maxArchiveFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="enableArchiveFileCompression" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="maxArchiveFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="cleanupFileName" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="fileName" minOccurs="0" maxOccurs="1" type="Layout" />
@@ -1093,14 +1092,14 @@
             <xs:documentation>Size in bytes above which log files will be automatically archived. Warning: combining this with  isn't supported. We cannot create multiple archive files, if they should have the same name. Choose: </xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="maxArchiveFiles" type="xs:integer">
-          <xs:annotation>
-            <xs:documentation>Maximum number of archive files that should be kept.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
         <xs:attribute name="enableArchiveFileCompression" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to compress archive files into the zip archive format.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="maxArchiveFiles" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>Maximum number of archive files that should be kept.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="forceManaged" type="xs:boolean">
@@ -2238,6 +2237,18 @@
       <xs:enumeration value="HttpGet" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="CompoundLayout">
+    <xs:complexContent>
+      <xs:extension base="Layout">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="layout" minOccurs="0" maxOccurs="unbounded" type="Layout" />
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Layout">
+    <xs:choice minOccurs="0" maxOccurs="unbounded" />
+  </xs:complexType>
   <xs:complexType name="CsvLayout">
     <xs:complexContent>
       <xs:extension base="Layout">
@@ -2334,8 +2345,14 @@
       <xs:extension base="Layout">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded" type="NLog.Layouts.JsonAttribute" />
+          <xs:element name="renderEmptyObject" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="suppressSpaces" minOccurs="0" maxOccurs="1" type="xs:boolean" />
         </xs:choice>
+        <xs:attribute name="renderEmptyObject" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Option to render the empty object value {}</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="suppressSpaces" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Option to suppress the extra spaces in the output json</xs:documentation>

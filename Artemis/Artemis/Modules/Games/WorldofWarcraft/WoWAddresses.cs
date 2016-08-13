@@ -142,12 +142,6 @@ namespace Artemis.Modules.Games.WorldofWarcraft
             objectTYPE = 0x10
         }
 
-        public class ObjectManagerClass
-        {
-            public static uint clientConnection;
-            public static uint sCurMgr;
-        }
-
         public enum Party
         {
             NumOfPlayers = 200,
@@ -251,6 +245,12 @@ namespace Artemis.Modules.Games.WorldofWarcraft
         public enum VMT
         {
             CGUnit_C__GetFacing = 0x35
+        }
+
+        public class ObjectManagerClass
+        {
+            public static uint clientConnection;
+            public static uint sCurMgr;
         }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO.Pipes;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
-using System.Threading.Tasks;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Utilities.DataReaders
 {
@@ -13,80 +12,35 @@ namespace Artemis.Utilities.DataReaders
 
     public class PipeServer
     {
+        private readonly ILogger _logger;
         private string _pipeName;
+        private NamedPipeServerStream _pipeServer;
 
-        public bool Running { get; set; }
+        public PipeServer(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public event DelegateMessage PipeMessage;
 
         public void Start(string pipeName)
         {
-            Running = true;
             _pipeName = pipeName;
-            var task = new Task(PipeLoop);
-            task.Start();
+
+            var security = new PipeSecurity();
+            var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl, AccessControlType.Allow));
+            _pipeServer = new NamedPipeServerStream(_pipeName, PipeDirection.In, 254,
+                PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 4096, 4096, security);
+            _pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, _pipeServer);
+            _logger.Info("Opened named pipe '{0}'", _pipeName);
         }
 
         public void Stop()
         {
-            Running = false;
-        }
-
-        private void PipeLoop()
-        {
-            try
-            {
-                var security = new PipeSecurity();
-                var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl,
-                    AccessControlType.Allow));
-
-                while (Running)
-                {
-                    var namedPipeServerStream = new NamedPipeServerStream(_pipeName, PipeDirection.In, 254,
-                        PipeTransmissionMode.Byte, PipeOptions.None, 4096, 4096, security);
-
-                    namedPipeServerStream.WaitForConnection();
-                    var buffer = new byte[4096];
-                    namedPipeServerStream.Read(buffer, 0, 4096);
-                    namedPipeServerStream.Close();
-
-                    var task = new Task(() => HandleMessage(buffer));
-                    task.Start();
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-        }
-
-        private void HandleMessage(byte[] buffer)
-        {
-            var request = Encoding.ASCII.GetString(buffer);
-            PipeMessage?.Invoke(request);
-        }
-
-        public void Listen(string pipeName)
-        {
-            try
-            {
-                var security = new PipeSecurity();
-                var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl, AccessControlType.Allow));
-
-                // Set to class level var so we can re-use in the async callback method
-                _pipeName = pipeName;
-                // Create the new async pipe 
-                var pipeServer = new NamedPipeServerStream(pipeName, PipeDirection.In, 254, PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous, 254, 254, security);
-
-                // Wait for a connection
-                pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, pipeServer);
-            }
-            catch (Exception oEx)
-            {
-                Debug.WriteLine(oEx.Message);
-            }
+            _pipeServer.Close();
+            _pipeServer.Dispose();
+            _logger.Info("Closed named pipe '{0}'", _pipeName);
         }
 
         private void WaitForConnectionCallBack(IAsyncResult iar)
@@ -98,34 +52,39 @@ namespace Artemis.Utilities.DataReaders
                 // End waiting for the connection
                 pipeServer.EndWaitForConnection(iar);
 
-                var buffer = new byte[255];
+                var buffer = new byte[4096];
 
                 // Read the incoming message
-                pipeServer.Read(buffer, 0, 255);
+                pipeServer.Read(buffer, 0, 4096);
 
                 // Convert byte buffer to string
-                var stringData = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                var stringData = Encoding.ASCII.GetString(buffer, 0, buffer.Length);
 
                 // Pass message back to calling form
                 PipeMessage?.Invoke(stringData);
 
                 // Kill original sever and create new wait server
                 pipeServer.Close();
-
-                var security = new PipeSecurity();
-                var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl, AccessControlType.Allow));
-
-                pipeServer = new NamedPipeServerStream(_pipeName, PipeDirection.In, 254, PipeTransmissionMode.Byte,
-                    PipeOptions.Asynchronous, 254, 254, security);
+                pipeServer = GetPipeServer(_pipeName);
 
                 // Recursively wait for the connection again and again....
+                _pipeServer = pipeServer;
                 pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, pipeServer);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.Error(e, "Exception in named pipe '{0}'", _pipeName);
                 // ignored
             }
+        }
+
+        private static NamedPipeServerStream GetPipeServer(string name)
+        {
+            var security = new PipeSecurity();
+            var sid = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            security.AddAccessRule(new PipeAccessRule(sid, PipeAccessRights.FullControl, AccessControlType.Allow));
+            return new NamedPipeServerStream(name, PipeDirection.In, 254, PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous, 4096, 4096, security);
         }
     }
 }
