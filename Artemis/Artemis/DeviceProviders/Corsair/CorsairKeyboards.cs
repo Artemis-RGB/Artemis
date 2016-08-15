@@ -64,6 +64,7 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(676, 210, new Thickness(0, -25, 0, 0), Resources.k70);
                     break;
                 case "K65 RGB":
+                case "CGK65 RGB":
                     Height = 7;
                     Width = 18;
                     Slug = "corsair-k65-rgb";
