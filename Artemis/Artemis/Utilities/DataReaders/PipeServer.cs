@@ -15,10 +15,12 @@ namespace Artemis.Utilities.DataReaders
         private readonly ILogger _logger;
         private string _pipeName;
         private NamedPipeServerStream _pipeServer;
+        private bool _closed;
 
         public PipeServer(ILogger logger)
         {
             _logger = logger;
+            _closed = true;
         }
 
         public event DelegateMessage PipeMessage;
@@ -34,10 +36,12 @@ namespace Artemis.Utilities.DataReaders
                 PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 4096, 4096, security);
             _pipeServer.BeginWaitForConnection(WaitForConnectionCallBack, _pipeServer);
             _logger.Info("Opened named pipe '{0}'", _pipeName);
+            _closed = false;
         }
 
         public void Stop()
         {
+            _closed = true;
             _pipeServer.Close();
             _pipeServer.Dispose();
             _logger.Info("Closed named pipe '{0}'", _pipeName);
@@ -73,8 +77,8 @@ namespace Artemis.Utilities.DataReaders
             }
             catch (Exception e)
             {
-                _logger.Error(e, "Exception in named pipe '{0}'", _pipeName);
-                // ignored
+                if (!_closed)
+                    _logger.Error(e, "Exception in named pipe '{0}'", _pipeName);                
             }
         }
 
