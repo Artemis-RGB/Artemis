@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
-using Artemis.Utilities;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels
@@ -15,9 +15,9 @@ namespace Artemis.ViewModels
         private readonly ShellViewModel _shellViewModel;
         private readonly IWindowManager _windowManager;
         private string _activeIcon;
-        private bool _checkedForUpdate;
         private bool _enabled;
         private string _toggleText;
+        private bool _checked;
 
         public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events,
             MetroDialogService dialogService, ShellViewModel shellViewModel,
@@ -25,7 +25,6 @@ namespace Artemis.ViewModels
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
-            _checkedForUpdate = false;
 
             DialogService = dialogService;
             MainManager = mainManager;
@@ -81,6 +80,8 @@ namespace Artemis.ViewModels
             }
         }
 
+        public Mutex Mutex { get; set; }
+
         public void Handle(ToggleEnabled message)
         {
             Enabled = message.Enabled;
@@ -113,13 +114,24 @@ namespace Artemis.ViewModels
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
 
-            if (_checkedForUpdate)
+            ShowKeyboardDialog();
+            CheckDuplicateInstances();
+        }
+
+        private void CheckDuplicateInstances()
+        {
+            if (_checked)
+                return;
+            _checked = true;
+
+            bool aIsNewInstance;
+            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            if (aIsNewInstance)
                 return;
 
-            _checkedForUpdate = true;
-
-            ShowKeyboardDialog();
-            Updater.CheckForUpdate(DialogService);
+            DialogService.ShowMessageBox("Multiple instances found",
+                "It looks like there are multiple running instances of Artemis. " +
+                "This can cause issues. If so, please make sure Artemis isn't already running");
         }
 
         private async void ShowKeyboardDialog()

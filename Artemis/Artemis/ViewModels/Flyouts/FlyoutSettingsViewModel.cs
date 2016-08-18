@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Settings;
@@ -83,6 +84,8 @@ namespace Artemis.ViewModels.Flyouts
             "Corsair Light",
             "Corsair Dark"
         };
+
+        public string VersionText => "Artemis " + Assembly.GetExecutingAssembly().GetName().Version;
 
         public BindableCollection<string> LogLevels { get; set; }
 

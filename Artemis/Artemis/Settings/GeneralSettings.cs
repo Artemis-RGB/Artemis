@@ -46,13 +46,13 @@ namespace Artemis.Settings
             }
         }
 
-        public bool CheckForUpdates
+        public bool AutoUpdate
         {
-            get { return General.Default.CheckForUpdates; }
+            get { return General.Default.AutoUpdate; }
             set
             {
-                if (General.Default.CheckForUpdates == value) return;
-                General.Default.CheckForUpdates = value;
+                if (General.Default.AutoUpdate == value) return;
+                General.Default.AutoUpdate = value;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Artemis.Settings
             // TODO: Restart Gamestate server with new port
         }
 
-        private void ApplyAutorun()
+        public void ApplyAutorun()
         {
             var startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             if (Autorun)
@@ -144,7 +144,7 @@ namespace Artemis.Settings
             GamestatePort = 51364;
             EnablePointersUpdate = true;
             Autorun = true;
-            CheckForUpdates = true;
+            AutoUpdate = true;
             ShowOnStartup = true;
             Theme = "Light";
             LogLevel = "Info";
