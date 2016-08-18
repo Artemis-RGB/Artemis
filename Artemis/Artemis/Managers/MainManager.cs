@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
+using Artemis.Settings;
+using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
+using Squirrel;
 
 namespace Artemis.Managers
 {
@@ -48,7 +54,12 @@ namespace Artemis.Managers
             // Start the named pipe
             PipeServer.Start("artemis");
 
+            // Start the update task
+            var updateTask = new Task(Updater.UpdateApp);
+            updateTask.Start();
+
             Logger.Info("Intialized MainManager");
+            Logger.Info($"Artemis version {Assembly.GetExecutingAssembly().GetName().Version} is ready!");
         }
 
         [Inject]
@@ -109,7 +120,7 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var runningProcesses = System.Diagnostics.Process.GetProcesses();
+            var runningProcesses = Process.GetProcesses();
 
             // If the currently active effect is a disabled game, get rid of it.
             if (EffectManager.ActiveEffect != null)

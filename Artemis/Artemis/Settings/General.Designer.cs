@@ -110,12 +110,12 @@ namespace Artemis.Settings {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool CheckForUpdates {
+        public bool AutoUpdate {
             get {
-                return ((bool)(this["CheckForUpdates"]));
+                return ((bool)(this["AutoUpdate"]));
             }
             set {
-                this["CheckForUpdates"] = value;
+                this["AutoUpdate"] = value;
             }
         }
         

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Input;
 using Artemis.InjectionModules;
 using Artemis.Settings;
 using Artemis.Utilities;
@@ -12,9 +12,7 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.Forms.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Ninject.Extensions.Logging;
 
 namespace Artemis
 {
@@ -27,12 +25,9 @@ namespace Artemis
             // Start logging before anything else
             Logging.SetupLogging(General.Default.LogLevel);
 
-            CheckDuplicateInstances();
             Initialize();
             BindSpecialValues();
         }
-
-        public Mutex Mutex { get; set; }
 
         private void BindSpecialValues()
         {
@@ -95,7 +90,6 @@ namespace Artemis
         protected override void OnExit(object sender, EventArgs e)
         {
             _kernel.Dispose();
-//            Enviroment.Exit(0);
             base.OnExit(sender, e);
         }
 
@@ -120,18 +114,6 @@ namespace Artemis
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             DisplayRootViewFor<SystemTrayViewModel>();
-        }
-
-        private void CheckDuplicateInstances()
-        {
-            bool aIsNewInstance;
-            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
-            if (aIsNewInstance)
-                return;
-
-            MessageBox.Show("An instance of Artemis is already running (check your system tray).",
-                "Artemis  (╯°□°）╯︵ ┻━┻", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            Application.Current.Shutdown();
         }
     }
 }
