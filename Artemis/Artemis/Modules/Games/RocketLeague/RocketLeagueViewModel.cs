@@ -4,7 +4,6 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
@@ -13,12 +12,9 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new RocketLeagueModel(main, new RocketLeagueSettings()), events, pFactory)
+        public RocketLeagueViewModel(MainManager main, IProfileEditorVmFactory pFactory, RocketLeagueModel model) : base(main, model, pFactory)
         {
             DisplayName = "Rocket League";
-
-            MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
         }
 

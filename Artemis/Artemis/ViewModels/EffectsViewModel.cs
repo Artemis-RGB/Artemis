@@ -1,4 +1,5 @@
-﻿using Artemis.ViewModels.Abstract;
+﻿using System.Linq;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
@@ -16,7 +17,7 @@ namespace Artemis.ViewModels
         {
             base.OnActivate();
 
-            foreach (var effectViewModel in _effectViewModels)
+            foreach (var effectViewModel in _effectViewModels.OrderBy(e => e.DisplayName))
                 ActivateItem(effectViewModel);
         }
     }

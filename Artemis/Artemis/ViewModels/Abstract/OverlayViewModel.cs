@@ -11,9 +11,11 @@ namespace Artemis.ViewModels.Abstract
         protected readonly MainManager MainManager;
         private OverlaySettings _overlaySettings;
 
-        protected OverlayViewModel(MainManager mainManager)
+        protected OverlayViewModel(MainManager mainManager, OverlayModel overlayModel)
         {
             MainManager = mainManager;
+            OverlayModel = overlayModel;
+            OverlaySettings = overlayModel.Settings;
         }
 
         [Inject]

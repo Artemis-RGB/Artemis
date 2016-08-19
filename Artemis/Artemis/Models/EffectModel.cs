@@ -18,14 +18,18 @@ namespace Artemis.Models
 
         protected DateTime LastTrace;
 
-        protected EffectModel(MainManager mainManager, IDataModel dataModel)
+        protected EffectModel(MainManager mainManager, EffectSettings settings, IDataModel dataModel)
         {
             MainManager = mainManager;
+            Settings = settings;
             DataModel = dataModel;
+
+            MainManager.EffectManager.EffectModels.Add(this);
         }
 
         public bool Initialized { get; set; }
         public MainManager MainManager { get; set; }
+        public EffectSettings Settings { get; set; }
         public string Name { get; set; }
         public int KeyboardScale { get; set; } = 4;
 

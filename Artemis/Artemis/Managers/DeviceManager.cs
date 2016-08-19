@@ -18,13 +18,12 @@ namespace Artemis.Managers
     /// </summary>
     public class DeviceManager
     {
-        private readonly IEventAggregator _events;
         private readonly ILogger _logger;
+        public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChangedEvent;
 
-        public DeviceManager(IEventAggregator events, ILogger logger, List<DeviceProvider> deviceProviders)
+        public DeviceManager(ILogger logger, List<DeviceProvider> deviceProviders)
         {
             _logger = logger;
-            _events = events;
 
             KeyboardProviders = deviceProviders.Where(d => d.Type == DeviceType.Keyboard)
                 .Cast<KeyboardProvider>().ToList();
@@ -119,7 +118,7 @@ namespace Artemis.Managers
             General.Default.LastKeyboard = ActiveKeyboard.Name;
             General.Default.Save();
 
-            await _events.PublishOnUIThreadAsync(new ActiveKeyboardChanged(oldKeyboard, ActiveKeyboard));
+            RaiseKeyboardChangedEvent(new KeyboardChangedEventArgs(oldKeyboard, ActiveKeyboard));
             _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
 
             if (dialog != null)
@@ -162,9 +161,17 @@ namespace Artemis.Managers
                     General.Default.Save();
                 }
 
-                _events.PublishOnUIThread(new ActiveKeyboardChanged(oldKeyboard, null));
+                RaiseKeyboardChangedEvent(new KeyboardChangedEventArgs(oldKeyboard, null));
                 _logger.Debug("Released keyboard: {0}", releaseName);
             }
+        }
+
+        protected virtual void RaiseKeyboardChangedEvent(KeyboardChangedEventArgs e)
+        {
+            // I do this in all to avoid a possible race condition
+            // https://msdn.microsoft.com/en-us/library/w369ty8x.aspx
+            var handler = OnKeyboardChangedEvent;
+            handler?.Invoke(this, e);
         }
     }
 }

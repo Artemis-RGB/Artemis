@@ -92,6 +92,9 @@ namespace Artemis.Utilities
             var retVal = GetPropValue(obj, name);
             if (retVal == null)
                 return default(T);
+            
+            if (typeof(T) == typeof(float) && retVal.GetType() != typeof(float))
+                retVal = float.Parse(retVal.ToString());
 
             // throws InvalidCastException if types are incompatible
             return (T) retVal;

@@ -5,17 +5,15 @@ using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     public sealed class CounterStrikeViewModel : GameViewModel
     {
-        public CounterStrikeViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new CounterStrikeModel(main, new CounterStrikeSettings()), events, pFactory)
+        public CounterStrikeViewModel(MainManager main, IProfileEditorVmFactory pFactory, CounterStrikeModel model)
+            : base(main, model, pFactory)
         {
             DisplayName = "CS:GO";
-            MainManager.EffectManager.EffectModels.Add(GameModel);
 
             FindGameDir();
             PlaceConfigFile();

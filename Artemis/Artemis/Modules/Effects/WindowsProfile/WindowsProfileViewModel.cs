@@ -1,31 +1,25 @@
 ﻿using System.ComponentModel;
-using Artemis.Events;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
-using Caliburn.Micro;
-using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     // TODO: This effect is a hybrid between a regular effect and a game, may want to clean this up
-    public sealed class WindowsProfileViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
+    public sealed class WindowsProfileViewModel : EffectViewModel
     {
-        public WindowsProfileViewModel(ILogger logger, MainManager main, IEventAggregator events,
-            IProfileEditorVmFactory pFactory, ProfilePreviewModel profilePreviewModel)
-            : base(main, new WindowsProfileModel(logger, main, new WindowsProfileSettings()))
+        public WindowsProfileViewModel(MainManager main, IProfileEditorVmFactory pFactory,
+            ProfilePreviewModel profilePreviewModel, WindowsProfileModel model) : base(main, model)
         {
             DisplayName = "Windows Profile";
             PFactory = pFactory;
             ProfilePreviewModel = profilePreviewModel;
             EffectSettings = ((WindowsProfileModel) EffectModel).Settings;
-            ProfileEditor = PFactory.CreateProfileEditorVm(events, main, (WindowsProfileModel) EffectModel,
+            ProfileEditor = PFactory.CreateProfileEditorVm(main, (WindowsProfileModel) EffectModel,
                 ((WindowsProfileSettings) EffectSettings).LastProfile);
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
-
-            events.Subscribe(this);
             ProfileEditor.PropertyChanged += ProfileUpdater;
             MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
@@ -34,11 +28,6 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public IProfileEditorVmFactory PFactory { get; set; }
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            NotifyOfPropertyChange(() => EffectEnabled);
-        }
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {

@@ -12,18 +12,14 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        public VolumeDisplayModel(MainManager mainManager, VolumeDisplaySettings settings) : base(mainManager)
+        public VolumeDisplayModel(MainManager mainManager) : base(mainManager, new VolumeDisplaySettings())
         {
-            Settings = settings;
             Name = "VolumeDisplay";
-            Enabled = Settings.Enabled;
 
-            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, settings);
+            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, (VolumeDisplaySettings) Settings);
         }
 
         public VolumeBar VolumeDisplay { get; set; }
-
-        public VolumeDisplaySettings Settings { get; set; }
 
         public override void Dispose()
         {

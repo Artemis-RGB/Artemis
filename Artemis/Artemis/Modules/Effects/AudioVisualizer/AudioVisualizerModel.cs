@@ -23,18 +23,18 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private int _sensitivity;
         private IWaveIn _waveIn;
 
-        public AudioVisualizerModel(MainManager mainManager, AudioVisualizerSettings settings) : base(mainManager, null)
+        public AudioVisualizerModel(MainManager mainManager) : base(mainManager, new AudioVisualizerSettings(), null)
         {
-            Settings = settings;
             Name = "Audiovisualizer";
             DeviceIds = new List<string>();
             SpectrumData = new List<byte>();
             Initialized = false;
+            Settings = (AudioVisualizerSettings) base.Settings;
         }
 
         public int Lines { get; set; }
 
-        public AudioVisualizerSettings Settings { get; set; }
+        public new AudioVisualizerSettings Settings { get; set; }
         public List<byte> SpectrumData { get; set; }
         public List<KeyboardRectangle> SoundRectangles { get; set; }
 
@@ -126,7 +126,8 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                 if (keyboardHeight > SoundRectangles[i].Height)
                     SoundRectangles[i].Height = keyboardHeight;
                 else
-                    SoundRectangles[i].Height = SoundRectangles[i].Height - Settings.FadeSpeed;
+                    SoundRectangles[i].Height = SoundRectangles[i].Height -
+                                                Settings.FadeSpeed;
                 // Apply Bars setting
                 SoundRectangles[i].X = i*KeyboardScale;
                 SoundRectangles[i].Width = KeyboardScale;

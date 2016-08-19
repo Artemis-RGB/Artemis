@@ -14,8 +14,8 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyAmmo;
         private StickyValue<bool> _stickyHp;
 
-        public TheDivisionModel(MainManager mainManager, TheDivisionSettings settings)
-            : base(mainManager, settings, new TheDivisionDataModel())
+        public TheDivisionModel(MainManager mainManager)
+            : base(mainManager, new TheDivisionSettings(), new TheDivisionDataModel())
         {
             Name = "TheDivision";
             ProcessName = "TheDivision";

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.Modules.Games.CounterStrike.CounterStrikeView"
+﻿<UserControl x:Class="Artemis.Modules.Games.EurotruckSimulator2.EurotruckSimulator2View"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -24,7 +24,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="By default shows team, HP, ammo and money on the keyboard and shows team colors on mouse and headset" />
+                                    Text="By default shows indicator lights, speed and engine RPM on the keyboard" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -40,7 +40,7 @@
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">
 
-                <Label FontSize="20" HorizontalAlignment="Left" Content="Counter-Strike Global Offensive directory" />
+                <Label FontSize="20" HorizontalAlignment="Left" Content="Eurotruck Simulator 2 directory" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                              Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"

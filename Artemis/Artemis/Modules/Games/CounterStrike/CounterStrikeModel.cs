@@ -11,8 +11,7 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager, CounterStrikeSettings settings)
-            : base(mainManager, settings, new CounterStrikeDataModel())
+        public CounterStrikeModel(MainManager mainManager): base(mainManager, new CounterStrikeSettings(), new CounterStrikeDataModel())
         {
             Name = "CounterStrike";
             ProcessName = "csgo";

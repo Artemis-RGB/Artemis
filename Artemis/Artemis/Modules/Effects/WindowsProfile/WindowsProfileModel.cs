@@ -69,15 +69,12 @@ namespace Artemis.Modules.Effects.WindowsProfile
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
 
-        public WindowsProfileModel(ILogger logger, MainManager mainManager, WindowsProfileSettings settings)
-            : base(mainManager, new WindowsProfileDataModel())
+        public WindowsProfileModel(ILogger logger, MainManager mainManager)
+            : base(mainManager, new WindowsProfileSettings(), new WindowsProfileDataModel())
         {
             _logger = logger;
             Name = "WindowsProfile";
-            Settings = settings;
         }
-
-        public WindowsProfileSettings Settings { get; set; }
 
         public override void Dispose()
         {
