@@ -53,6 +53,9 @@ namespace Artemis.Profiles.Layers.Models
         [JsonIgnore]
         public GifImage GifImage { get; set; }
 
+        [JsonIgnore]
+        public DateTime LastRender { get; set; }
+
         /// <summary>
         ///     Checks whether this layers conditions are met.
         ///     If they are met and this layer is an event, this also triggers that event.
@@ -69,6 +72,9 @@ namespace Artemis.Profiles.Layers.Models
         {
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
+
+            if (!preview)
+                LastRender = DateTime.Now;
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
