@@ -4,18 +4,16 @@ using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 using Microsoft.Win32;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public sealed class OverwatchViewModel : GameViewModel
     {
-        public OverwatchViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new OverwatchModel(events, main, new OverwatchSettings()), events, pFactory)
+        public OverwatchViewModel(MainManager main, IProfileEditorVmFactory pFactory, OverwatchModel model)
+            : base(main, model, pFactory)
         {
             DisplayName = "Overwatch";
-            MainManager.EffectManager.EffectModels.Add(GameModel);
 
             FindOverwatch();
         }

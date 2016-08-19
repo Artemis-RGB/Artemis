@@ -14,7 +14,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
 {
     public class ProfilePreviewModel : EffectModel
     {
-        public ProfilePreviewModel(MainManager mainManager) : base(mainManager, new ProfilePreviewDataModel())
+        public ProfilePreviewModel(MainManager mainManager) : base(mainManager, null, new ProfilePreviewDataModel())
         {
             Name = "Profile Preview";
         }

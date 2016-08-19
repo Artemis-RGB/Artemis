@@ -77,6 +77,8 @@ namespace Artemis.Utilities
                 var friendlyName = Empty;
                 if (propertyInfo.PropertyType.Name == "Int32")
                     friendlyName = "(Number)";
+                else if (propertyInfo.PropertyType.Name == "Single")
+                    friendlyName = "(Decimal)";
                 else if (propertyInfo.PropertyType.Name == "String")
                     friendlyName = "(Text)";
                 else if (propertyInfo.PropertyType.Name == "Boolean")

@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
-using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
-        private readonly IEventAggregator _events;
         private DateTime _characterChange;
         private string _lastMessage;
         // Using sticky values on these since they can cause flickering
@@ -24,10 +21,8 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
-        public OverwatchModel(IEventAggregator events, MainManager mainManager, OverwatchSettings settings)
-            : base(mainManager, settings, new OverwatchDataModel())
+        public OverwatchModel(MainManager mainManager): base(mainManager, new OverwatchSettings(), new OverwatchDataModel())
         {
-            _events = events;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -126,7 +121,8 @@ namespace Artemis.Modules.Games.Overwatch
             if (colors == null)
                 return;
 
-            _events.PublishOnUIThread(new RazerColorArrayChanged(colors));
+            // TODO: Get the debug viewmodel and update the color array
+            //_events.PublishOnUIThread(new RazerColorArrayChanged(colors));
 
             // Determine general game state
             ParseGameSate(gameDataModel, colors);

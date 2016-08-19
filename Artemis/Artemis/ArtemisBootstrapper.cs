@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,7 +11,6 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using Ninject.Extensions.Logging;
 
 namespace Artemis
 {
@@ -75,7 +73,9 @@ namespace Artemis
 
         protected override void Configure()
         {
-            _kernel = new StandardKernel(new BaseModules(), new ArtemisModules(), new ManagerModules());
+            _kernel = new StandardKernel(new BaseModules(), new ManagerModules(), new DeviceModules(),
+                new EffectModules(), new ProfileModules());
+
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
 

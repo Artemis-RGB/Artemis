@@ -10,7 +10,6 @@ using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,8 +17,8 @@ namespace Artemis.Modules.Games.UnrealTournament
 {
     public sealed class UnrealTournamentViewModel : GameViewModel
     {
-        public UnrealTournamentViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new UnrealTournamentModel(main, new UnrealTournamentSettings()), events, pFactory)
+        public UnrealTournamentViewModel(MainManager main, IProfileEditorVmFactory pFactory, UnrealTournamentModel model)
+            : base(main, model, pFactory)
         {
             DisplayName = "Unreal Tournament";
             MainManager.EffectManager.EffectModels.Add(GameModel);

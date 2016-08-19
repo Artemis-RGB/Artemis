@@ -10,18 +10,17 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels
 {
-    public class SystemTrayViewModel : Screen, IHandle<ToggleEnabled>
+    public class SystemTrayViewModel : Screen
     {
         private readonly ShellViewModel _shellViewModel;
         private readonly IWindowManager _windowManager;
         private string _activeIcon;
+        private bool _checked;
         private bool _enabled;
         private string _toggleText;
-        private bool _checked;
 
-        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events,
-            MetroDialogService dialogService, ShellViewModel shellViewModel,
-            MainManager mainManager)
+        public SystemTrayViewModel(IWindowManager windowManager, MetroDialogService dialogService,
+            ShellViewModel shellViewModel, MainManager mainManager)
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
@@ -29,9 +28,10 @@ namespace Artemis.ViewModels
             DialogService = dialogService;
             MainManager = mainManager;
 
-            events.Subscribe(this);
             MainManager.EnableProgram();
+            MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
 
+            Enabled = !General.Default.Suspended;
             if (General.Default.ShowOnStartup)
                 ShowWindow();
         }
@@ -41,7 +41,6 @@ namespace Artemis.ViewModels
         public MainManager MainManager { get; set; }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
-
         public bool CanHideWindow => _shellViewModel.IsActive && !MainManager.DeviceManager.ChangingKeyboard;
         public bool CanToggleEnabled => !MainManager.DeviceManager.ChangingKeyboard;
 
@@ -82,9 +81,9 @@ namespace Artemis.ViewModels
 
         public Mutex Mutex { get; set; }
 
-        public void Handle(ToggleEnabled message)
+        private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs e)
         {
-            Enabled = message.Enabled;
+            Enabled = e.Enabled;
         }
 
         public void ToggleEnabled()

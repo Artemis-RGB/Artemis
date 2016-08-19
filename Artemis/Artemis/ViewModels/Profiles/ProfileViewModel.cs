@@ -20,7 +20,7 @@ using MahApps.Metro;
 
 namespace Artemis.ViewModels.Profiles
 {
-    public class ProfileViewModel : PropertyChangedBase, IHandle<ActiveKeyboardChanged>
+    public class ProfileViewModel : PropertyChangedBase
     {
         private readonly DeviceManager _deviceManager;
         private double _blurProgress;
@@ -34,15 +34,15 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _selectedLayer;
         private bool _showAll;
 
-        public ProfileViewModel(IEventAggregator events, DeviceManager deviceManager)
+        public ProfileViewModel(DeviceManager deviceManager)
         {
-            events.Subscribe(this);
             _deviceManager = deviceManager;
 
             PreviewTimer = new Timer(40);
             ShowAll = false;
 
             PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
+            deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
 
         public ProfileModel SelectedProfile { get; set; }
@@ -97,7 +97,7 @@ namespace Artemis.ViewModels.Profiles
 
         public bool Activated { get; set; }
 
-        public void Handle(ActiveKeyboardChanged message)
+        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => KeyboardImage);
         }
@@ -359,7 +359,7 @@ namespace Artemis.ViewModels.Profiles
             else if (SelectedLayer.LayerType is FolderType)
                 drawLayers = SelectedLayer.GetLayers().ToList();
             else
-                drawLayers = new List<LayerModel> { SelectedLayer };
+                drawLayers = new List<LayerModel> {SelectedLayer};
 
             return drawLayers;
         }

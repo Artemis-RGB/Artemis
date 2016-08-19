@@ -156,6 +156,7 @@ namespace Artemis.ViewModels.Profiles
             switch (SelectedDataModelProp.Type)
             {
                 case "Int32":
+                case "Single":
                     Operators.AddRange(_int32Operators);
                     UserValueIsVisible = true;
                     break;

@@ -1,4 +1,6 @@
-﻿using Artemis.Managers;
+﻿using System;
+using Artemis.Events;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Services;
 using Caliburn.Micro;
@@ -17,6 +19,14 @@ namespace Artemis.ViewModels.Abstract
         {
             MainManager = mainManager;
             EffectModel = effectModel;
+            EffectSettings = effectModel.Settings;
+
+            MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
+        }
+
+        private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(() => EffectEnabled);
         }
 
         [Inject]

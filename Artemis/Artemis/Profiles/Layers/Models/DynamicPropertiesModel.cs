@@ -19,7 +19,7 @@ namespace Artemis.Profiles.Layers.Models
         /// <summary>
         ///     Percentage source, the number that defines 100%
         /// </summary>
-        public double PercentageSource { get; set; }
+        public float PercentageSource { get; set; }
 
         /// <summary>
         ///     Percentage source property, the property that defines 100%
@@ -44,13 +44,13 @@ namespace Artemis.Profiles.Layers.Models
                 ApplyPercentageOfProperty(dataModel, properties);
         }
 
-        private void ApplyPercentageOf(IDataModel dataModel, LayerPropertiesModel properties, double src)
+        private void ApplyPercentageOf(IDataModel dataModel, LayerPropertiesModel properties, float src)
         {
             if (GameProperty == null)
                 return;
 
-            var gameProperty = dataModel.GetPropValue<int>(GameProperty);
-            var percentage = decimal.ToDouble(gameProperty)/src;
+            var gameProperty = dataModel.GetPropValue<float>(GameProperty);
+            var percentage = gameProperty/src;
 
             if (LayerProperty == "Width")
                 ApplyWidth(properties, percentage);
@@ -60,9 +60,9 @@ namespace Artemis.Profiles.Layers.Models
                 ApplyOpacity(properties, percentage);
         }
 
-        private void ApplyWidth(LayerPropertiesModel properties, double percentage)
+        private void ApplyWidth(LayerPropertiesModel properties, float percentage)
         {
-            var newWidth = percentage*properties.Width;
+            var newWidth = percentage*(float) properties.Width;
             var difference = properties.Width - newWidth;
             properties.Width = newWidth;
 
@@ -71,9 +71,9 @@ namespace Artemis.Profiles.Layers.Models
                 properties.X = properties.X + difference;
         }
 
-        private void ApplyHeight(LayerPropertiesModel properties, double percentage)
+        private void ApplyHeight(LayerPropertiesModel properties, float percentage)
         {
-            var newHeight = percentage*properties.Height;
+            var newHeight = percentage*(float) properties.Height;
             var difference = properties.Height - newHeight;
             properties.Height = newHeight;
 
@@ -81,9 +81,9 @@ namespace Artemis.Profiles.Layers.Models
                 properties.Y = properties.Y + difference;
         }
 
-        private void ApplyOpacity(LayerPropertiesModel properties, double percentage)
+        private void ApplyOpacity(LayerPropertiesModel properties, float percentage)
         {
-            properties.Opacity = percentage*properties.Opacity;
+            properties.Opacity = percentage*(float) properties.Opacity;
             if (properties.Opacity < 0.0)
                 properties.Opacity = 0.0;
             if (properties.Opacity > 1.0)
@@ -100,7 +100,7 @@ namespace Artemis.Profiles.Layers.Models
 
         private void ApplyPercentageOfProperty(IDataModel dataModel, LayerPropertiesModel properties)
         {
-            var value = dataModel.GetPropValue<int>(PercentageProperty);
+            var value = dataModel.GetPropValue<float>(PercentageProperty);
             ApplyPercentageOf(dataModel, properties, value);
         }
     }

@@ -1,4 +1,5 @@
-﻿using Artemis.Managers;
+﻿using System.Linq;
+using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 
@@ -22,7 +23,7 @@ namespace Artemis.ViewModels
         {
             base.OnActivate();
 
-            foreach (var gameViewModel in _gameViewModels)
+            foreach (var gameViewModel in _gameViewModels.OrderBy(g => g.DisplayName))
                 ActivateItem(gameViewModel);
         }
     }

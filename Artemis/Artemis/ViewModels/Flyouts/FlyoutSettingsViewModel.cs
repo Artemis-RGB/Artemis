@@ -14,8 +14,7 @@ using ILogger = Ninject.Extensions.Logging.ILogger;
 
 namespace Artemis.ViewModels.Flyouts
 {
-    public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel, IHandle<ToggleEnabled>,
-        IHandle<ActiveEffectChanged>
+    public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel
     {
         private readonly DebugViewModel _debugViewModel;
         private readonly ILogger _logger;
@@ -24,8 +23,7 @@ namespace Artemis.ViewModels.Flyouts
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager, IEventAggregator events, ILogger logger,
-            DebugViewModel debugViewModel)
+        public FlyoutSettingsViewModel(MainManager mainManager, ILogger logger, DebugViewModel debugViewModel)
         {
             _logger = logger;
             _debugViewModel = debugViewModel;
@@ -39,7 +37,8 @@ namespace Artemis.ViewModels.Flyouts
             LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
 
             PropertyChanged += KeyboardUpdater;
-            events.Subscribe(this);
+            mainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
+            mainManager.EffectManager.OnEffectChangedEvent += EffectManagerOnOnEffectChangedEvent;
         }
 
         public MainManager MainManager { get; set; }
@@ -70,8 +69,9 @@ namespace Artemis.ViewModels.Flyouts
         {
             get
             {
-                var collection =
-                    new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
+                var collection = new BindableCollection<string>
+                    (MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
+
                 collection.Insert(0, "None");
                 return collection;
             }
@@ -145,15 +145,15 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        public void Handle(ActiveEffectChanged message)
-        {
-            var effectDisplay = string.IsNullOrEmpty(message.ActiveEffect) ? message.ActiveEffect : "none";
-            ActiveEffectName = $"Active effect: {effectDisplay}";
-        }
-
-        public void Handle(ToggleEnabled message)
+        private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs enabledChangedEventArgs)
         {
             NotifyOfPropertyChange(() => Enabled);
+        }
+
+        private void EffectManagerOnOnEffectChangedEvent(object sender, EffectChangedEventArgs e)
+        {
+            var effectDisplay = string.IsNullOrEmpty(e.Effect?.Name) ? "none" : e.Effect.Name;
+            ActiveEffectName = $"Active effect: {effectDisplay}";
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void NavigateTo(string url)
         {
-            System.Diagnostics.Process.Start(new ProcessStartInfo(url));
+            Process.Start(new ProcessStartInfo(url));
         }
 
         protected override void HandleOpen()
