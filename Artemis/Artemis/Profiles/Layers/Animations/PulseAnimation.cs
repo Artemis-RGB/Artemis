@@ -8,15 +8,13 @@ namespace Artemis.Profiles.Layers.Animations
 {
     public class PulseAnimation : ILayerAnimation
     {
-        private DateTime _lastUpdate;
         public string Name { get; } = "Pulse";
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
             // Reset animation progress if layer wasn't drawn for 100ms
-            if (new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - _lastUpdate)
+            if (new TimeSpan(0, 0, 0, 0, 100) > DateTime.Now - layerModel.LastRender)
                 layerModel.Properties.AnimationProgress = 0;
-            _lastUpdate = DateTime.Now;
 
             var progress = layerModel.Properties.AnimationProgress;
 
