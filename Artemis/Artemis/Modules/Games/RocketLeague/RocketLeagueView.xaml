@@ -28,7 +28,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="By default fills up the keyboard according to the amount of boost. Also colors mouse and headset according to boost." />
+                                    Text="By default fills up the keyboard and colors all devices according to the amount boost." />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using Artemis.Settings;
@@ -17,11 +18,21 @@ namespace Artemis.Utilities
             if (!General.Default.AutoUpdate)
                 return;
 
-            using (var mgr = new UpdateManager("http://artemis-rgb.com/auto-update"))
+            // TODO: Remove prerelease before releasing
+            //            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null,true))
+            //            {
+            //                // Replace / remove the autorun shortcut
+            //                SquirrelAwareApp.HandleEvents(onAppUpdate: v => AppUpdate(mgr.Result),
+            //                    onAppUninstall: v => AppUninstall(mgr.Result));
+            //
+            //                await mgr.Result.UpdateApp();
+            //            }
+
+            using (var mgr = new UpdateManager("C:\\Users\\Robert\\Desktop\\Artemis builds\\squirrel_test"))
             {
                 // Replace / remove the autorun shortcut
                 SquirrelAwareApp.HandleEvents(onAppUpdate: v => AppUpdate(mgr), onAppUninstall: v => AppUninstall(mgr));
-                
+
                 await mgr.UpdateApp();
             }
         }
@@ -29,22 +40,22 @@ namespace Artemis.Utilities
         private static void AppUpdate(IUpdateManager mgr)
         {
             var settings = new GeneralSettings();
-
             settings.ApplyAutorun();
             mgr.CreateShortcutForThisExe();
         }
 
         private static void AppUninstall(IUpdateManager mgr)
         {
-            var settings = new GeneralSettings {Autorun = false};
+            // Use GeneralSettings to get rid of the autorun shortcut
+            var fakeSettings = new GeneralSettings { Autorun = false };
+            fakeSettings.ApplyAutorun();
 
-            settings.ApplyAutorun();
             mgr.RemoveShortcutForThisExe();
         }
 
         public static void GetPointers()
         {
-            if (!General.Default.EnablePointersUpdate)
+            if (!DAL.SettingsProvider.Load<GeneralSettings>("GeneralSettings").EnablePointersUpdate)
                 return;
 
             try

@@ -1,89 +1,67 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
+using Artemis.DAL;
 using Artemis.Utilities;
 using MahApps.Metro;
+using Newtonsoft.Json;
 
 namespace Artemis.Settings
 {
-    public class GeneralSettings
+    public class GeneralSettings : IArtemisSettings
     {
-        public GeneralSettings()
+        [DefaultValue("WindowsProfile")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LastEffect { get; set; }
+
+        [DefaultValue(null)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LastKeyboard { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool EnablePointersUpdate { get; set; }
+
+        [DefaultValue(51364)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int GamestatePort { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool Autorun { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool Suspended { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowOnStartup { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool AutoUpdate { get; set; }
+
+        [DefaultValue("Light")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string Theme { get; set; }
+
+        [DefaultValue("Info")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LogLevel { get; set; }
+
+        public string Name { get; } = "GeneralSettings";
+
+        public void Save()
         {
-            ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+            SettingsProvider.Save(this);
+            ApplyAutorun();
             ApplyTheme();
-        }
-
-        public int GamestatePort
-        {
-            get { return General.Default.GamestatePort; }
-            set
-            {
-                if (General.Default.GamestatePort == value) return;
-                General.Default.GamestatePort = value;
-            }
-        }
-
-        public bool EnablePointersUpdate
-        {
-            get { return General.Default.EnablePointersUpdate; }
-            set
-            {
-                if (General.Default.EnablePointersUpdate == value) return;
-                General.Default.EnablePointersUpdate = value;
-            }
-        }
-
-        public bool Autorun
-        {
-            get { return General.Default.Autorun; }
-            set
-            {
-                if (General.Default.Autorun == value) return;
-                General.Default.Autorun = value;
-            }
-        }
-
-        public bool AutoUpdate
-        {
-            get { return General.Default.AutoUpdate; }
-            set
-            {
-                if (General.Default.AutoUpdate == value) return;
-                General.Default.AutoUpdate = value;
-            }
-        }
-
-        public bool ShowOnStartup
-        {
-            get { return General.Default.ShowOnStartup; }
-            set
-            {
-                if (General.Default.ShowOnStartup == value) return;
-                General.Default.ShowOnStartup = value;
-            }
-        }
-
-        public string Theme
-        {
-            get { return General.Default.Theme; }
-            set
-            {
-                if (General.Default.Theme == value) return;
-                General.Default.Theme = value;
-            }
-        }
-
-        public string LogLevel
-        {
-            get { return General.Default.LogLevel; }
-            set
-            {
-                if (General.Default.LogLevel == value) return;
-                General.Default.LogLevel = value;
-            }
+            ApplyGamestatePort();
+            Logging.SetupLogging(LogLevel);
         }
 
         private void ApplyGamestatePort()
@@ -104,16 +82,6 @@ namespace Artemis.Settings
             }
             else if (File.Exists(startupFolder + @"\Artemis.lnk"))
                 File.Delete(startupFolder + @"\Artemis.lnk");
-        }
-
-        public void SaveSettings()
-        {
-            General.Default.Save();
-
-            ApplyAutorun();
-            ApplyTheme();
-            ApplyGamestatePort();
-            Logging.SetupLogging(LogLevel);
         }
 
         private void ApplyTheme()
@@ -137,19 +105,6 @@ namespace Artemis.Settings
                         ThemeManager.GetAppTheme("BaseDark"));
                     break;
             }
-        }
-
-        public void ResetSettings()
-        {
-            GamestatePort = 51364;
-            EnablePointersUpdate = true;
-            Autorun = true;
-            AutoUpdate = true;
-            ShowOnStartup = true;
-            Theme = "Light";
-            LogLevel = "Info";
-
-            SaveSettings();
         }
     }
 }

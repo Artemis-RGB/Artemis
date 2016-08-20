@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Settings;
@@ -31,7 +32,7 @@ namespace Artemis.ViewModels.Flyouts
             MainManager = mainManager;
             Header = "Settings";
             Position = Position.Right;
-            GeneralSettings = new GeneralSettings();
+            GeneralSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
 
             LogLevels = new BindableCollection<string>();
             LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
@@ -200,13 +201,14 @@ namespace Artemis.ViewModels.Flyouts
 
         public void ResetSettings()
         {
-            GeneralSettings.ResetSettings();
+            GeneralSettings = SettingsProvider.GetDefault<GeneralSettings>();
+            GeneralSettings.Save();
             NotifyOfPropertyChange(() => GeneralSettings);
         }
 
         public void SaveSettings()
         {
-            GeneralSettings.SaveSettings();
+            GeneralSettings.Save();
         }
 
         public void NavigateTo(string url)
@@ -216,9 +218,9 @@ namespace Artemis.ViewModels.Flyouts
 
         protected override void HandleOpen()
         {
-            SelectedKeyboardProvider = string.IsNullOrEmpty(General.Default.LastKeyboard)
+            SelectedKeyboardProvider = string.IsNullOrEmpty(GeneralSettings.LastKeyboard)
                 ? "None"
-                : General.Default.LastKeyboard;
+                : GeneralSettings.LastKeyboard;
         }
     }
 }

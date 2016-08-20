@@ -9,7 +9,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Artemis")]
 [assembly: AssemblyDescription("Adds third-party support for RGB keyboards to games")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Artemis developers")]
+[assembly: AssemblyCompany("SpoinkyNL")]
 [assembly: AssemblyProduct("Artemis")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
@@ -52,6 +52,6 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.3.0.0")]
-[assembly: AssemblyFileVersion("1.3.0.0")]
+[assembly: AssemblyVersion("1.3.0.1")]
+[assembly: AssemblyFileVersion("1.3.0.1")]
 [assembly: AssemblyMetadata("SquirrelAwareVersion", "1")]
