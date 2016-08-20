@@ -36,7 +36,7 @@ namespace Artemis.Utilities.GameState
             if (Running)
                 return;
 
-            Port = General.Default.GamestatePort;
+            Port = DAL.SettingsProvider.Load<GeneralSettings>("GeneralSettings").GamestatePort;
 
             _listener = new HttpListener();
             _listener.Prefixes.Add($"http://localhost:{Port}/");

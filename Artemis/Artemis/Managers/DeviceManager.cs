@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Services;
 using Artemis.Settings;
-using Caliburn.Micro;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
 using Ninject.Extensions.Logging;
@@ -18,12 +18,13 @@ namespace Artemis.Managers
     /// </summary>
     public class DeviceManager
     {
+        private readonly GeneralSettings _generalSettings;
         private readonly ILogger _logger;
-        public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChangedEvent;
 
         public DeviceManager(ILogger logger, List<DeviceProvider> deviceProviders)
         {
             _logger = logger;
+            _generalSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
 
             KeyboardProviders = deviceProviders.Where(d => d.Type == DeviceType.Keyboard)
                 .Cast<KeyboardProvider>().ToList();
@@ -46,17 +47,18 @@ namespace Artemis.Managers
         public KeyboardProvider ActiveKeyboard { get; set; }
 
         public bool ChangingKeyboard { get; private set; }
+        public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChangedEvent;
 
         /// <summary>
         ///     Enables the last keyboard according to the settings file
         /// </summary>
         public void EnableLastKeyboard()
         {
-            _logger.Debug("Getting last keyboard: {0}", General.Default.LastKeyboard);
-            if (string.IsNullOrEmpty(General.Default.LastKeyboard))
+            _logger.Debug("Getting last keyboard: {0}", _generalSettings.LastKeyboard);
+            if (string.IsNullOrEmpty(_generalSettings.LastKeyboard))
                 return;
 
-            var keyboard = KeyboardProviders.FirstOrDefault(k => k.Name == General.Default.LastKeyboard);
+            var keyboard = KeyboardProviders.FirstOrDefault(k => k.Name == _generalSettings.LastKeyboard);
             EnableKeyboard(keyboard);
         }
 
@@ -69,7 +71,7 @@ namespace Artemis.Managers
             if (keyboardProvider == null)
                 throw new ArgumentNullException(nameof(keyboardProvider));
 
-            if (ChangingKeyboard || ActiveKeyboard?.Name == keyboardProvider.Name)
+            if (ChangingKeyboard || (ActiveKeyboard?.Name == keyboardProvider.Name))
                 return;
 
             _logger.Debug("Trying to enable keyboard: {0}", keyboardProvider.Name);
@@ -101,8 +103,8 @@ namespace Artemis.Managers
 
                 DialogService.ShowErrorMessageBox(keyboardProvider.CantEnableText);
                 ActiveKeyboard = null;
-                General.Default.LastKeyboard = null;
-                General.Default.Save();
+                _generalSettings.LastKeyboard = null;
+                _generalSettings.Save();
                 _logger.Warn("Failed enabling keyboard: {0}", keyboardProvider.Name);
                 ChangingKeyboard = false;
                 return;
@@ -115,8 +117,8 @@ namespace Artemis.Managers
             await ActiveKeyboard.EnableAsync(dialog);
             EnableUsableDevices();
 
-            General.Default.LastKeyboard = ActiveKeyboard.Name;
-            General.Default.Save();
+            _generalSettings.LastKeyboard = ActiveKeyboard.Name;
+            _generalSettings.Save();
 
             RaiseKeyboardChangedEvent(new KeyboardChangedEventArgs(oldKeyboard, ActiveKeyboard));
             _logger.Debug("Enabled keyboard: {0}", keyboardProvider.Name);
@@ -157,8 +159,8 @@ namespace Artemis.Managers
 
                 if (save)
                 {
-                    General.Default.LastKeyboard = null;
-                    General.Default.Save();
+                    _generalSettings.LastKeyboard = null;
+                    _generalSettings.Save();
                 }
 
                 RaiseKeyboardChangedEvent(new KeyboardChangedEventArgs(oldKeyboard, null));

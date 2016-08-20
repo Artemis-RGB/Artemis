@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using Artemis.DAL;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
@@ -44,7 +45,7 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (string.IsNullOrEmpty(General.Default.LastKeyboard) || _deviceManager.ChangingKeyboard ||
+            if (string.IsNullOrEmpty(SettingsProvider.Load<GeneralSettings>("GeneralSettings").LastKeyboard) || _deviceManager.ChangingKeyboard ||
                 ProfilePreviewModel == null)
                 return;
 

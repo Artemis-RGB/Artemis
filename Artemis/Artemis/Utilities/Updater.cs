@@ -7,6 +7,7 @@ using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 using Squirrel;
+using SettingsProvider = Artemis.DAL.SettingsProvider;
 
 namespace Artemis.Utilities
 {
@@ -15,7 +16,7 @@ namespace Artemis.Utilities
         public static async void UpdateApp()
         {
             // Only update if the user allows it
-            if (!General.Default.AutoUpdate)
+            if (!SettingsProvider.Load<GeneralSettings>("GeneralSettings").AutoUpdate)
                 return;
 
             // TODO: Remove prerelease before releasing

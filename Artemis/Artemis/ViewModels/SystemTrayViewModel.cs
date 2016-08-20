@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
@@ -31,8 +32,9 @@ namespace Artemis.ViewModels
             MainManager.EnableProgram();
             MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
 
-            Enabled = !General.Default.Suspended;
-            if (General.Default.ShowOnStartup)
+            var generalSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
+            Enabled = !generalSettings.Suspended;
+            if (generalSettings.ShowOnStartup)
                 ShowWindow();
         }
 

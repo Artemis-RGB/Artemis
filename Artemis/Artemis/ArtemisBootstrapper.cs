@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Artemis.DAL;
 using Artemis.InjectionModules;
 using Artemis.Settings;
 using Artemis.Utilities;
@@ -21,7 +22,7 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             // Start logging before anything else
-            Logging.SetupLogging(General.Default.LogLevel);
+            Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>("GeneralSettings").LogLevel);
 
             Initialize();
             BindSpecialValues();

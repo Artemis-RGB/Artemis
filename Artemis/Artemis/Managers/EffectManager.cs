@@ -19,11 +19,13 @@ namespace Artemis.Managers
         private EffectModel _activeEffect;
         private LoopManager _waitLoopManager;
         private EffectModel _waitEffect;
+        private readonly GeneralSettings _generalSettings;
 
         public EffectManager(ILogger logger, DeviceManager deviceManager)
         {
             EffectModels = new List<EffectModel>();
 
+            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>("GeneralSettings");
             _logger = logger;
             _deviceManager = deviceManager;
 
@@ -71,10 +73,10 @@ namespace Artemis.Managers
         /// <returns>Whether enabling was successful or not.</returns>
         public EffectModel GetLastEffect()
         {
-            _logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
-            return General.Default.LastEffect == null
+            _logger.Debug("Getting last effect: {0}", _generalSettings.LastEffect);
+            return _generalSettings.LastEffect == null
                 ? null
-                : EffectModels.FirstOrDefault(e => e.Name == General.Default.LastEffect);
+                : EffectModels.FirstOrDefault(e => e.Name == _generalSettings.LastEffect);
         }
 
         /// <summary>
@@ -149,8 +151,8 @@ namespace Artemis.Managers
                 return;
 
             // Non-game effects are stored as the new LastEffect.
-            General.Default.LastEffect = ActiveEffect?.Name;
-            General.Default.Save();
+            _generalSettings.LastEffect = ActiveEffect?.Name;
+            _generalSettings.Save();
         }
 
         private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
@@ -180,10 +182,9 @@ namespace Artemis.Managers
                 ActiveEffect.Dispose();
                 ActiveEffect = null;
 
-                General.Default.LastEffect = null;
-                General.Default.Save();
+                _generalSettings.LastEffect = null;
+                _generalSettings.Save();
             }
-
 
             _logger.Debug("Cleared active effect");
         }

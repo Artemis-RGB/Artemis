@@ -201,7 +201,8 @@ namespace Artemis.ViewModels.Flyouts
 
         public void ResetSettings()
         {
-            GeneralSettings = SettingsProvider.GetDefault<GeneralSettings>();
+            IArtemisSettings generalSettings = GeneralSettings;
+            SettingsProvider.SetToDefault(ref generalSettings);
             GeneralSettings.Save();
             NotifyOfPropertyChange(() => GeneralSettings);
         }
