@@ -33,7 +33,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
         private void SetVersionText()
         {
-            if (!General.Default.EnablePointersUpdate)
+            if (!DAL.SettingsProvider.Load<GeneralSettings>("GeneralSettings").EnablePointersUpdate)
             {
                 VersionText = "Note: You disabled pointer updates, this could result in the " +
                               "Rocket League effect not working after a game update.";

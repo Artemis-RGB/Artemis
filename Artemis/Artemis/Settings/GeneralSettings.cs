@@ -13,6 +13,12 @@ namespace Artemis.Settings
 {
     public class GeneralSettings : IArtemisSettings
     {
+        public GeneralSettings()
+        {
+            ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+            ApplyTheme();
+        }
+
         [DefaultValue("WindowsProfile")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LastEffect { get; set; }
