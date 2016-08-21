@@ -1,5 +1,6 @@
 ﻿using Artemis.Managers;
 using Artemis.Models.Interfaces;
+using Artemis.Settings;
 
 namespace Artemis.Models
 {

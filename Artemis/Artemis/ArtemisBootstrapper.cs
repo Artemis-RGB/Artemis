@@ -22,7 +22,7 @@ namespace Artemis
         public ArtemisBootstrapper()
         {
             // Start logging before anything else
-            Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>("GeneralSettings").LogLevel);
+            Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>().LogLevel);
 
             Initialize();
             BindSpecialValues();

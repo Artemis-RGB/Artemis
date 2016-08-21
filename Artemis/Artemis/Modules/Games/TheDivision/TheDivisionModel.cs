@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -15,7 +16,7 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyHp;
 
         public TheDivisionModel(MainManager mainManager)
-            : base(mainManager, new TheDivisionSettings(), new TheDivisionDataModel())
+            : base(mainManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
         {
             Name = "TheDivision";
             ProcessName = "TheDivision";
@@ -81,7 +82,7 @@ namespace Artemis.Modules.Games.TheDivision
             var bPer = parts[4];
 
             // F1 to F4 indicate the player and his party. Blinks red on damage taken
-            if (keyCode >= 59 && keyCode <= 62)
+            if ((keyCode >= 59) && (keyCode <= 62))
             {
                 var playerId = keyCode - 58;
 
@@ -105,15 +106,15 @@ namespace Artemis.Modules.Games.TheDivision
             // R blinks white when low on ammo
             else if (keyCode == 19)
             {
-                _stickyAmmo.Value = rPer == 100 && gPer > 1 && bPer > 1;
+                _stickyAmmo.Value = (rPer == 100) && (gPer > 1) && (bPer > 1);
                 gameDataModel.LowAmmo = _stickyAmmo.Value;
             }
             // G turns white when holding a grenade, turns off when out of grenades
             else if (keyCode == 34)
             {
-                if (rPer == 100 && gPer < 10 && bPer < 10)
+                if ((rPer == 100) && (gPer < 10) && (bPer < 10))
                     gameDataModel.GrenadeState = GrenadeState.HasGrenade;
-                else if (rPer == 100 && gPer > 10 && bPer > 10)
+                else if ((rPer == 100) && (gPer > 10) && (bPer > 10))
                     gameDataModel.GrenadeState = GrenadeState.GrenadeEquipped;
                 else
                     gameDataModel.GrenadeState = GrenadeState.HasNoGrenade;
@@ -121,7 +122,7 @@ namespace Artemis.Modules.Games.TheDivision
             // V blinks on low HP
             else if (keyCode == 47)
             {
-                _stickyHp.Value = rPer == 100 && gPer > 1 && bPer > 1;
+                _stickyHp.Value = (rPer == 100) && (gPer > 1) && (bPer > 1);
                 gameDataModel.LowHp = _stickyHp.Value;
             }
         }

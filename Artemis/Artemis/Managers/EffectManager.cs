@@ -25,7 +25,7 @@ namespace Artemis.Managers
         {
             EffectModels = new List<EffectModel>();
 
-            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>("GeneralSettings");
+            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
             _logger = logger;
             _deviceManager = deviceManager;
 

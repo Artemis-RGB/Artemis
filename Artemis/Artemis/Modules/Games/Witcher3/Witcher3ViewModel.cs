@@ -60,8 +60,6 @@ namespace Artemis.Modules.Games.Witcher3
                     Directory.GetFiles(dialog.SelectedPath + @"\mods", "playerWitcher.ws", SearchOption.AllDirectories)
                         .FirstOrDefault();
                 if (file != null)
-                {
-                    // Don't trip over our own mod
                     if (!file.Contains("modArtemis"))
                     {
                         var viewHelp = await
@@ -82,7 +80,6 @@ namespace Artemis.Modules.Games.Witcher3
                             new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
                         return;
                     }
-                }
             }
 
             archive.ExtractToDirectory(dialog.SelectedPath, true);

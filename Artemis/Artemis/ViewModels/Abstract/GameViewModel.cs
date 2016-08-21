@@ -4,6 +4,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Services;
+using Artemis.Settings;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
@@ -80,7 +81,7 @@ namespace Artemis.ViewModels.Abstract
             if (!resetConfirm.Value)
                 return;
 
-            GameSettings.ToDefault();
+            GameSettings.Reset(true);
             NotifyOfPropertyChange(() => GameSettings);
 
             SaveSettings();

@@ -32,7 +32,7 @@ namespace Artemis.ViewModels
             MainManager.EnableProgram();
             MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
 
-            var generalSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
+            var generalSettings = SettingsProvider.Load<GeneralSettings>();
             Enabled = !generalSettings.Suspended;
             if (generalSettings.ShowOnStartup)
                 ShowWindow();
@@ -116,6 +116,7 @@ namespace Artemis.ViewModels
             NotifyOfPropertyChange(() => CanHideWindow);
 
             ShowKeyboardDialog();
+            SettingsProvider.Load<GeneralSettings>().ApplyTheme();
             CheckDuplicateInstances();
         }
 
@@ -132,7 +133,8 @@ namespace Artemis.ViewModels
 
             DialogService.ShowMessageBox("Multiple instances found",
                 "It looks like there are multiple running instances of Artemis. " +
-                "This can cause issues. If so, please make sure Artemis isn't already running");
+                "This can cause issues, especially with CS:GO and Dota2. " +
+                "If so, please make sure Artemis isn't already running");
         }
 
         private async void ShowKeyboardDialog()

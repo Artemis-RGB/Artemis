@@ -360,17 +360,10 @@
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
-    <Compile Include="Models\EffectSettings.cs" />
-    <Compile Include="Models\GameSettings.cs" />
-    <Compile Include="Models\Interfaces\GameDataModel.cs" />
-    <Compile Include="Models\OverlaySettings.cs" />
+    <Compile Include="Models\Interfaces\IDataModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
-    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>EurotruckSimulator2.settings</DependentUpon>
-    </Compile>
+    <Compile Include="Modules\Effects\WindowsProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2DataModel.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Model.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Settings.cs" />
@@ -378,11 +371,6 @@
       <DependentUpon>EurotruckSimulator2View.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2ViewModel.cs" />
-    <Compile Include="Modules\Games\UnrealTournament\UnrealTournament.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>UnrealTournament.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentDataModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentSettings.cs" />
@@ -390,11 +378,6 @@
       <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoW.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>WoW.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\WorldofWarcraft\WoWDataModel.cs" />
     <Compile Include="Modules\Games\WorldofWarcraft\WoWModel.cs" />
     <Compile Include="Modules\Games\WorldofWarcraft\WoWSettings.cs" />
@@ -423,31 +406,16 @@
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
-      <DependentUpon>AudioVisualization.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubble.cs" />
-    <Compile Include="Modules\Effects\Bubbles\Bubbles.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Bubbles.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Effects\Bubbles\BubblesSettings.cs" />
     <Compile Include="Modules\Effects\Bubbles\BubblesModel.cs" />
     <Compile Include="Modules\Effects\Bubbles\BubblesView.xaml.cs">
       <DependentUpon>BubblesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\Bubbles\BubblesViewModel.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfile.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>WindowsProfile.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileSettings.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml.cs">
       <DependentUpon>WindowsProfileView.xaml</DependentUpon>
@@ -457,37 +425,17 @@
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
     <Compile Include="Models\GameModel.cs" />
-    <Compile Include="Modules\Games\CounterStrike\CounterStrike.Designer.cs">
-      <DependentUpon>CounterStrike.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeDataModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
-    <Compile Include="Modules\Games\Dota2\Dota2.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Dota2.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\Dota2\Dota2DataModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchView.xaml.cs">
       <DependentUpon>OverwatchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
-      <DependentUpon>RocketLeague.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueDataModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
-    <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TheDivision.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionDataModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionSettings.cs" />
@@ -496,21 +444,11 @@
     </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchDataModel.cs" />
-    <Compile Include="Modules\Games\Overwatch\Overwatch.Designer.cs">
-      <DependentUpon>Overwatch.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\Overwatch\OverwatchModel.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchSettings.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
-    <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Witcher3.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
     <Compile Include="Models\OverlayModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
@@ -520,7 +458,6 @@
       <DependentUpon>VolumeDisplay.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="InjectionModules\BaseModules.cs" />
@@ -553,13 +490,12 @@
     </Compile>
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\MetroDialogService.cs" />
+    <Compile Include="Settings\EffectSettings.cs" />
+    <Compile Include="Settings\GameSettings.cs" />
     <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="Settings\IArtemisSettings.cs" />
-    <Compile Include="Settings\Offsets.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Offsets.settings</DependentUpon>
-    </Compile>
+    <Compile Include="Settings\OffsetSettings.cs" />
+    <Compile Include="Settings\OverlaySettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
@@ -691,19 +627,7 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Modules\Games\UnrealTournament\Resources\ut-plugin.zip" />
-    <None Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>EurotruckSimulator2.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\UnrealTournament\UnrealTournament.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>UnrealTournament.Designer.cs</LastGenOutput>
-    </None>
     <EmbeddedResource Include="Modules\Games\Witcher3\Resources\witcher3-mod.zip" />
-    <None Include="Modules\Games\WorldofWarcraft\WoW.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>WoW.Designer.cs</LastGenOutput>
-    </None>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -714,42 +638,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>AudioVisualization.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Effects\Bubbles\Bubbles.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Bubbles.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Effects\WindowsProfile\WindowsProfile.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>WindowsProfile.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\CounterStrike\CounterStrike.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Dota2\Dota2.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Dota2.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\RocketLeague\RocketLeague.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>RocketLeague.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\TheDivision\TheDivision.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>TheDivision.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Overwatch\Overwatch.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Overwatch.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Witcher3\Witcher3.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Witcher3.Designer.cs</LastGenOutput>
-    </None>
     <None Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
@@ -785,10 +673,6 @@
     <Resource Include="Resources\Keyboards\blackwidow.png" />
     <None Include="Resources\Keyboards\none.png" />
     <None Include="Resources\Keyboards\demo-gif.gif" />
-    <None Include="Settings\Offsets.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

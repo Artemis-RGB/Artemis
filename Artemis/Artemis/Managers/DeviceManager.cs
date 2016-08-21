@@ -24,7 +24,7 @@ namespace Artemis.Managers
         public DeviceManager(ILogger logger, List<DeviceProvider> deviceProviders)
         {
             _logger = logger;
-            _generalSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
 
             KeyboardProviders = deviceProviders.Where(d => d.Type == DeviceType.Keyboard)
                 .Cast<KeyboardProvider>().ToList();

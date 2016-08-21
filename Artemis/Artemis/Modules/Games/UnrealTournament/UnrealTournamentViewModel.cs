@@ -32,7 +32,8 @@ namespace Artemis.Modules.Games.UnrealTournament
         {
             var gameSettings = (UnrealTournamentSettings) GameSettings;
             // If already propertly set up, don't do anything
-            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
+            if ((gameSettings.GameDirectory != null) &&
+                File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
                 return;
 
             // Attempt to read the file
@@ -119,7 +120,8 @@ namespace Artemis.Modules.Games.UnrealTournament
         {
             var gif = Resources.redeemer;
             ProfileProvider.InsertGif(ProfileProvider.GetAll()
-                .Where(p => p.GameName == "UnrealTournament" && p.Name == "Default"), "Redeemer GIF", gif, "redeemer");
+                    .Where(p => (p.GameName == "UnrealTournament") && (p.Name == "Default")), "Redeemer GIF", gif,
+                "redeemer");
         }
     }
 }

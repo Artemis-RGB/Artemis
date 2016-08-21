@@ -20,15 +20,14 @@ namespace Artemis.DAL
         /// <summary>
         ///     Loads settings with the given name from the filesystem
         /// </summary>
-        /// <param name="name"></param>
         /// <returns></returns>
-        public static T Load<T>(string name) where T : new()
+        public static T Load<T>() where T : new()
         {
             if (!AreSettings(typeof(T)))
                 throw new ArgumentException("Type doesn't implement IArtemisSettings");
 
             // Attempt to load from memory first
-            var inMemory = Settings.FirstOrDefault(s => s.Name == name);
+            var inMemory = Settings.FirstOrDefault(s => s.GetType() == typeof(T));
             if (inMemory != null)
                 return (T) inMemory;
 
@@ -37,20 +36,24 @@ namespace Artemis.DAL
             try
             {
                 var loadSettings = (IArtemisSettings) JsonConvert
-                    .DeserializeObject<T>(File.ReadAllText(SettingsFolder + $@"\{name}.json"));
+                    .DeserializeObject<T>(File.ReadAllText(SettingsFolder + $@"\{typeof(T)}.json"));
+
                 if (loadSettings == null)
-                    SetToDefault(ref loadSettings);
+                {
+                    loadSettings = (IArtemisSettings) new T();
+                    loadSettings.Reset(true);
+                }
 
                 Settings.Add(loadSettings);
                 return (T) loadSettings;
             }
             catch (Exception e)
             {
-                Logger.Error(e, "Couldn't load settings '{0}.json'", name);
+                Logger.Error(e, "Couldn't load settings '{0}.json'", typeof(T));
 
                 // Not sure about this, I've seen prettier code
                 var loadSettings = (IArtemisSettings) new T();
-                SetToDefault(ref loadSettings);
+                loadSettings.Reset(true);
                 Settings.Add(loadSettings);
                 return (T) loadSettings;
             }
@@ -73,29 +76,27 @@ namespace Artemis.DAL
             }
             catch (Exception e)
             {
-                Logger.Error(e, "Couldn't save settings '{0}.json'", artemisSettings.Name);
+                Logger.Error(e, "Couldn't save settings '{0}.json'", artemisSettings.GetType());
                 return;
             }
 
-            File.WriteAllText(SettingsFolder + $@"\{artemisSettings.Name}.json", json);
+            File.WriteAllText(SettingsFolder + $@"\{artemisSettings.GetType()}.json", json);
         }
 
         /// <summary>
-        ///     Restores the settings object to its default values
+        ///     Ensures the settings folder exists
         /// </summary>
-        /// <param name="settings"></param>
-        public static void SetToDefault(ref IArtemisSettings settings)
-        {
-            // Loading the object from an empty JSON object makes Json.NET use all the default values
-            settings = (IArtemisSettings) JsonConvert.DeserializeObject("{}", settings.GetType());
-        }
-
         private static void CheckSettings()
         {
             if (!Directory.Exists(SettingsFolder))
                 Directory.CreateDirectory(SettingsFolder);
         }
 
+        /// <summary>
+        ///     Checks to see if the given type is a setting
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         private static bool AreSettings(Type t)
         {
             return typeof(IArtemisSettings).IsAssignableFrom(t);

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Utilities;
+using Caliburn.Micro;
 using MahApps.Metro;
 using Newtonsoft.Json;
 
@@ -16,7 +17,6 @@ namespace Artemis.Settings
         public GeneralSettings()
         {
             ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
-            ApplyTheme();
         }
 
         [DefaultValue("WindowsProfile")]
@@ -59,8 +59,6 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LogLevel { get; set; }
 
-        public string Name { get; } = "GeneralSettings";
-
         public void Save()
         {
             SettingsProvider.Save(this);
@@ -68,6 +66,17 @@ namespace Artemis.Settings
             ApplyTheme();
             ApplyGamestatePort();
             Logging.SetupLogging(LogLevel);
+        }
+
+        public void Reset(bool save = false)
+        {
+            JsonConvert.PopulateObject("{}", this, new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Reuse
+            });
+
+            if (save)
+                SettingsProvider.Save(this);
         }
 
         private void ApplyGamestatePort()
@@ -90,27 +99,30 @@ namespace Artemis.Settings
                 File.Delete(startupFolder + @"\Artemis.lnk");
         }
 
-        private void ApplyTheme()
+        public void ApplyTheme()
         {
-            switch (Theme)
+            Execute.OnUIThread(delegate
             {
-                case "Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
-                        ThemeManager.GetAppTheme("BaseLight"));
-                    break;
-                case "Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
-                        ThemeManager.GetAppTheme("BaseDark"));
-                    break;
-                case "Corsair Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
-                        ThemeManager.GetAppTheme("BaseLight"));
-                    break;
-                case "Corsair Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
-                        ThemeManager.GetAppTheme("BaseDark"));
-                    break;
-            }
+                switch (Theme)
+                {
+                    case "Light":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                            ThemeManager.GetAppTheme("BaseLight"));
+                        break;
+                    case "Dark":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                            ThemeManager.GetAppTheme("BaseDark"));
+                        break;
+                    case "Corsair Light":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                            ThemeManager.GetAppTheme("BaseLight"));
+                        break;
+                    case "Corsair Dark":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                            ThemeManager.GetAppTheme("BaseDark"));
+                        break;
+                }
+            });
         }
     }
 }

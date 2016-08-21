@@ -23,18 +23,16 @@ namespace Artemis.Modules.Effects.AudioVisualizer
         private int _sensitivity;
         private IWaveIn _waveIn;
 
-        public AudioVisualizerModel(MainManager mainManager) : base(mainManager, new AudioVisualizerSettings(), null)
+        public AudioVisualizerModel(MainManager mainManager) : base(mainManager, null, null)
         {
             Name = "Audiovisualizer";
             DeviceIds = new List<string>();
             SpectrumData = new List<byte>();
             Initialized = false;
-            Settings = (AudioVisualizerSettings) base.Settings;
         }
 
         public int Lines { get; set; }
-
-        public new AudioVisualizerSettings Settings { get; set; }
+        
         public List<byte> SpectrumData { get; set; }
         public List<KeyboardRectangle> SoundRectangles { get; set; }
 
@@ -72,15 +70,15 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     MainManager.DeviceManager.ActiveKeyboard,
                     0, 0, new List<Color>
                     {
-                        ColorHelpers.ToDrawingColor(Settings.TopColor),
-                        ColorHelpers.ToDrawingColor(Settings.MiddleColor),
-                        ColorHelpers.ToDrawingColor(Settings.BottomColor)
+                        Color.Red,
+                        Color.Yellow,
+                        Color.Lime
                     },
                     LinearGradientMode.Vertical)
                 {ContainedBrush = false, Height = 0});
             }
-            _sensitivity = Settings.Sensitivity;
-            _fromBottom = Settings.FromBottom;
+            _sensitivity = 2;
+            _fromBottom = true;
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
 
@@ -127,7 +125,7 @@ namespace Artemis.Modules.Effects.AudioVisualizer
                     SoundRectangles[i].Height = keyboardHeight;
                 else
                     SoundRectangles[i].Height = SoundRectangles[i].Height -
-                                                Settings.FadeSpeed;
+                                                5; // was FadeSpeed setting
                 // Apply Bars setting
                 SoundRectangles[i].X = i*KeyboardScale;
                 SoundRectangles[i].Width = KeyboardScale;

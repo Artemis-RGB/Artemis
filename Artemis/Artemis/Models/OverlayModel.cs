@@ -1,4 +1,5 @@
 ﻿using Artemis.Managers;
+using Artemis.Settings;
 
 namespace Artemis.Models
 {

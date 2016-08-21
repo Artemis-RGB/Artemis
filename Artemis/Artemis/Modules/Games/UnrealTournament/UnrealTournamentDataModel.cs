@@ -32,17 +32,25 @@ namespace Artemis.Modules.Games.UnrealTournament
         public string PlayerName { get; set; }
         public string UniqueId { get; set; }
         public int Score { get; set; }
+
         [JsonProperty("Team Num")]
         public int TeamNum { get; set; }
+
         public int RankCheck { get; set; }
+
         [JsonProperty("Duel Rank")]
         public int DuelRank { get; set; }
+
         public int No_of_Duel_Played { get; set; }
+
         [JsonProperty("CTF Rank")]
         public int CTFRank { get; set; }
+
         public int No_CTF_MatchesPlayed { get; set; }
+
         [JsonProperty("TDM Rank")]
         public int TDMRank { get; set; }
+
         public int No_TDM_MatchesPlayed { get; set; }
         public int DMRank { get; set; }
         public int No_DM_Matches_Played { get; set; }
@@ -100,5 +108,4 @@ namespace Artemis.Modules.Games.UnrealTournament
         public int RespawnWaitTime { get; set; }
         public int ForceRespawnTime { get; set; }
     }
-
 }

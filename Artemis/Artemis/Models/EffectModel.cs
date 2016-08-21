@@ -8,6 +8,7 @@ using Artemis.Models.Interfaces;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Settings;
 using Newtonsoft.Json;
 
 namespace Artemis.Models
