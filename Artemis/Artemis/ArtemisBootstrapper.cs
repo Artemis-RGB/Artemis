@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,6 +13,7 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
+using LogManager = NLog.LogManager;
 
 namespace Artemis
 {

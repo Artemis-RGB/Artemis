@@ -49,10 +49,7 @@ namespace Artemis.DeviceProviders.Logitech
                 "Artemis couldn't enable your Logitech keyboard, because the required files are not in place.\n\n" +
                 "This happens when you run The Division and shut down Artemis before shutting down The Division\n" +
                 "It can be fixed automatically by clicking OK, but to avoid this message in the future please\n" +
-                "shut down The Division before shutting down Artemis.\n\n" +
-                "Click OK to fix the issue and restart Artemis");
-
-            GeneralHelpers.RunAsAdministrator();
+                "shut down The Division before shutting down Artemis.");
         }
 
         public override void Enable()
