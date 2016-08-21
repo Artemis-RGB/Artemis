@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using static System.String;
@@ -13,31 +11,6 @@ namespace Artemis.Utilities
 {
     public static class GeneralHelpers
     {
-        public static void RunAsAdministrator()
-        {
-            var processInfo = new ProcessStartInfo(Assembly.GetExecutingAssembly().CodeBase)
-            {
-                UseShellExecute = true,
-                Verb = "runas"
-            };
-
-            // The following properties run the new process as administrator
-
-            // Start the new process
-            try
-            {
-                System.Diagnostics.Process.Start(processInfo);
-            }
-            catch (Exception)
-            {
-                // The user did not allow the application to run as administrator
-                MessageBox.Show("Sorry, this application must be run as Administrator.");
-            }
-
-            // Shut down the current process
-            Environment.Exit(0);
-        }
-
         /// <summary>
         ///     Perform a deep Copy of the object, using Json as a serialisation method.
         /// </summary>
@@ -61,7 +34,7 @@ namespace Artemis.Utilities
                 return null;
             var value = prop.GetValue(o, null);
 
-            if (propertyNames.Length == 1 || value == null)
+            if ((propertyNames.Length == 1) || (value == null))
                 return value;
             return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
         }

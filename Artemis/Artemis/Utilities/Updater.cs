@@ -6,46 +6,45 @@ using Artemis.DAL;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
+using NLog;
 using Squirrel;
 
 namespace Artemis.Utilities
 {
     public static class Updater
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         public static async void UpdateApp()
         {
             // Only update if the user allows it
             if (!SettingsProvider.Load<GeneralSettings>().AutoUpdate)
                 return;
 
+            _logger.Info("Checking for updates...");
             // TODO: Remove prerelease before releasing
-            //            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null,true))
-            //            {
-            //                // Replace / remove the autorun shortcut
-            //                SquirrelAwareApp.HandleEvents(onAppUpdate: v => AppUpdate(mgr.Result),
-            //                    onAppUninstall: v => AppUninstall(mgr.Result));
-            //
-            //                await mgr.Result.UpdateApp();
-            //            }
+            //using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
+            //{
+            //    await mgr.Result.UpdateApp();
+            //}
 
             using (var mgr = new UpdateManager("C:\\Users\\Robert\\Desktop\\Artemis builds\\squirrel_test"))
             {
-                // Replace / remove the autorun shortcut
-                SquirrelAwareApp.HandleEvents(onAppUpdate: v => AppUpdate(mgr), onAppUninstall: v => AppUninstall(mgr));
-
                 await mgr.UpdateApp();
             }
         }
 
-        private static void AppUpdate(IUpdateManager mgr)
+        public static void AppUpdate(IUpdateManager mgr)
         {
+            _logger.Info("Running AppUpdate");
             var settings = new GeneralSettings();
             settings.ApplyAutorun();
             mgr.CreateShortcutForThisExe();
         }
 
-        private static void AppUninstall(IUpdateManager mgr)
+        public static void AppUninstall(IUpdateManager mgr)
         {
+            _logger.Info("Running AppUninstall");
             // Use GeneralSettings to get rid of the autorun shortcut
             var fakeSettings = new GeneralSettings {Autorun = false};
             fakeSettings.ApplyAutorun();
