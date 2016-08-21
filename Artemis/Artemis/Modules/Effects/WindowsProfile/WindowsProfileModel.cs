@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -12,54 +12,6 @@ using SpotifyAPI.Local;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
-    internal static class PerformanceInfo
-    {
-        [DllImport("psapi.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetPerformanceInfo([Out] out PerformanceInformation performanceInformation,
-            [In] int size);
-
-        public static long GetPhysicalAvailableMemoryInMiB()
-        {
-            var pi = new PerformanceInformation();
-            if (GetPerformanceInfo(out pi, Marshal.SizeOf(pi)))
-            {
-                return Convert.ToInt64(pi.PhysicalAvailable.ToInt64()*pi.PageSize.ToInt64()/1048576);
-            }
-            return -1;
-        }
-
-        public static long GetTotalMemoryInMiB()
-        {
-            var pi = new PerformanceInformation();
-            if (GetPerformanceInfo(out pi, Marshal.SizeOf(pi)))
-            {
-                return Convert.ToInt64(pi.PhysicalTotal.ToInt64()*pi.PageSize.ToInt64()/1048576);
-            }
-            return -1;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct PerformanceInformation
-        {
-            public int Size;
-            public IntPtr CommitTotal;
-            public IntPtr CommitLimit;
-            public IntPtr CommitPeak;
-            public IntPtr PhysicalTotal;
-            public IntPtr PhysicalAvailable;
-            public IntPtr SystemCache;
-            public IntPtr KernelTotal;
-            public IntPtr KernelPaged;
-            public IntPtr KernelNonPaged;
-            public IntPtr PageSize;
-            public int HandlesCount;
-            public int ProcessCount;
-            public int ThreadCount;
-        }
-    }
-
-
     public class WindowsProfileModel : EffectModel
     {
         private readonly ILogger _logger;
@@ -70,7 +22,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         private bool _spotifySetupBusy;
 
         public WindowsProfileModel(ILogger logger, MainManager mainManager)
-            : base(mainManager, new WindowsProfileSettings(), new WindowsProfileDataModel())
+            : base(mainManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
         {
             _logger = logger;
             Name = "WindowsProfile";
@@ -133,7 +85,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         private void UpdateCpu(WindowsProfileDataModel dataModel)
         {
-            if (_cores == null || _overallCpu == null)
+            if ((_cores == null) || (_overallCpu == null))
                 return;
 
             // CPU is only updated every 15 frames, the performance counter gives 0 if updated too often

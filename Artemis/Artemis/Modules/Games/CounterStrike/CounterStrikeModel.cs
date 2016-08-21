@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -11,7 +12,8 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public class CounterStrikeModel : GameModel
     {
-        public CounterStrikeModel(MainManager mainManager): base(mainManager, new CounterStrikeSettings(), new CounterStrikeDataModel())
+        public CounterStrikeModel(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<CounterStrikeSettings>(), new CounterStrikeDataModel())
         {
             Name = "CounterStrike";
             ProcessName = "csgo";

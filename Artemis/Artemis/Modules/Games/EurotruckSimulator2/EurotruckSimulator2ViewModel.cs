@@ -9,7 +9,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 {
     public sealed class EurotruckSimulator2ViewModel : GameViewModel
     {
-        public EurotruckSimulator2ViewModel(MainManager main, IProfileEditorVmFactory pFactory, EurotruckSimulator2Model model): base(main, model, pFactory)
+        public EurotruckSimulator2ViewModel(MainManager main, IProfileEditorVmFactory pFactory,
+            EurotruckSimulator2Model model) : base(main, model, pFactory)
         {
             DisplayName = "ETS 2";
 

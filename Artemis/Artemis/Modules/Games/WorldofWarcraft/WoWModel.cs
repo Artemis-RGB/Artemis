@@ -10,7 +10,7 @@
 //    {
 //        private Memory _memory;
 //
-//        public WoWModel(MainManager mainManager): base(mainManager, new WoWSettings(), new WoWDataModel())
+//        public WoWModel(MainManager mainManager): base(mainManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
 //        {
 //            Name = "WoW";
 //            ProcessName = "Wow-64";
@@ -51,3 +51,4 @@
 //        }
 //    }
 //}
+

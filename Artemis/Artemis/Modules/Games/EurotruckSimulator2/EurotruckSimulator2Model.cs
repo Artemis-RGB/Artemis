@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -10,7 +11,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
     public class EurotruckSimulator2Model : GameModel
     {
         public EurotruckSimulator2Model(MainManager mainManager)
-            : base(mainManager, new EurotruckSimulator2Settings(), new EurotruckSimulator2DataModel())
+            : base(mainManager, SettingsProvider.Load<EurotruckSimulator2Settings>(), new EurotruckSimulator2DataModel()
+            )
         {
             Name = "EurotruckSimulator2";
             ProcessName = "eurotrucks2";

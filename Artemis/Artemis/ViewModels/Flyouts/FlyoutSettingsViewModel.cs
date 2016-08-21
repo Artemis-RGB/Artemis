@@ -32,7 +32,7 @@ namespace Artemis.ViewModels.Flyouts
             MainManager = mainManager;
             Header = "Settings";
             Position = Position.Right;
-            GeneralSettings = SettingsProvider.Load<GeneralSettings>("GeneralSettings");
+            GeneralSettings = SettingsProvider.Load<GeneralSettings>();
 
             LogLevels = new BindableCollection<string>();
             LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
@@ -201,9 +201,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void ResetSettings()
         {
-            IArtemisSettings generalSettings = GeneralSettings;
-            SettingsProvider.SetToDefault(ref generalSettings);
-            GeneralSettings.Save();
+            GeneralSettings.Reset(true);
             NotifyOfPropertyChange(() => GeneralSettings);
         }
 

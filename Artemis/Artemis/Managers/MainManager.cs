@@ -40,7 +40,7 @@ namespace Artemis.Managers
             Running = false;
 
             // Create and start the web server
-            GameStateWebServer = new GameStateWebServer();
+            GameStateWebServer = new GameStateWebServer(logger);
             GameStateWebServer.Start();
 
             // Start the named pipe

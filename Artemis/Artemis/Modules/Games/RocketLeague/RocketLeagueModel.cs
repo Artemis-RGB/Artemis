@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
-using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -16,7 +16,7 @@ namespace Artemis.Modules.Games.RocketLeague
         private GamePointersCollection _pointer;
 
         public RocketLeagueModel(MainManager mainManager)
-            : base(mainManager, new RocketLeagueSettings(), new RocketLeagueDataModel())
+            : base(mainManager, SettingsProvider.Load<RocketLeagueSettings>(), new RocketLeagueDataModel())
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";
@@ -25,20 +25,20 @@ namespace Artemis.Modules.Games.RocketLeague
             Initialized = false;
 
             // Generate a new offset when the game is updated
-            //var offset = new GamePointersCollection
-            //{
-            //    Game = "RocketLeague",
-            //    GameVersion = "1.21",
-            //    GameAddresses = new List<GamePointer>
-            //    {
-            //        new GamePointer
-            //        {
-            //            Description = "Boost",
-            //            BasePointer = new IntPtr(0x016AD528),
-            //            Offsets = new[] {0x304, 0x8, 0x50, 0x720, 0x224}
-            //        }
-            //    }
-            //};
+//            var offset = new GamePointersCollection
+//            {
+//                Game = "RocketLeague",
+//                GameVersion = "1.21",
+//                GameAddresses = new List<GamePointer>
+//                {
+//                    new GamePointer
+//                    {
+//                        Description = "Boost",
+//                        BasePointer = new IntPtr(0x016AD528),
+//                        Offsets = new[] {0x304, 0x8, 0x50, 0x720, 0x224}
+//                    }
+//                }
+//            };
             //var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
         }
 
@@ -55,7 +55,7 @@ namespace Artemis.Modules.Games.RocketLeague
             Initialized = false;
 
             Updater.GetPointers();
-            _pointer = JsonConvert.DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague);
+            _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
 
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             if (tempProcess == null)
@@ -68,7 +68,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Update()
         {
-            if (Profile == null || DataModel == null || _memory == null)
+            if ((Profile == null) || (DataModel == null) || (_memory == null))
                 return;
 
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();

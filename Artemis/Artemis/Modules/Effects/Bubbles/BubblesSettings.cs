@@ -1,60 +1,54 @@
-﻿using System.Windows.Media;
-using Artemis.Models;
+﻿using System.ComponentModel;
+using System.Windows.Media;
+using Artemis.DAL;
+using Artemis.Settings;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Effects.Bubbles
 {
     public class BubblesSettings : EffectSettings
     {
-        public BubblesSettings()
-        {
-            Load();
-        }
-
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsRandomColors { get; set; }
+
         public Color BubbleColor { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool IsShiftColors { get; set; }
+
+        [DefaultValue(12)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int ShiftColorSpeed { get; set; }
+
+        [DefaultValue(25)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int BubbleSize { get; set; }
+
+        [DefaultValue(4)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int MoveSpeed { get; set; }
+
+        [DefaultValue(14)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int BubbleCount { get; set; }
+
+        [DefaultValue(25)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int Smoothness { get; set; }
 
-        public sealed override void Load()
+        public new void Reset(bool save = false)
         {
-            IsRandomColors = Bubbles.Default.IsRandomColors;
-            BubbleColor = Bubbles.Default.BubbleColor;
-            IsShiftColors = Bubbles.Default.IsShiftColors;
-            ShiftColorSpeed = Bubbles.Default.ShiftColorSpeed;
-            BubbleSize = Bubbles.Default.BubbleSize;
-            MoveSpeed = Bubbles.Default.MoveSpeed;
-            BubbleCount = Bubbles.Default.BubbleCount;
-            Smoothness = Bubbles.Default.Smoothness;
-        }
+            JsonConvert.PopulateObject("{}", this, new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Reuse
+            });
 
-        public sealed override void Save()
-        {
-            Bubbles.Default.IsRandomColors = IsRandomColors;
-            Bubbles.Default.BubbleColor = BubbleColor;
-            Bubbles.Default.IsShiftColors = IsShiftColors;
-            Bubbles.Default.ShiftColorSpeed = ShiftColorSpeed;
-            Bubbles.Default.BubbleSize = BubbleSize;
-            Bubbles.Default.MoveSpeed = MoveSpeed;
-            Bubbles.Default.BubbleCount = BubbleCount;
-            Bubbles.Default.Smoothness = Smoothness;
+            BubbleColor = Colors.Red;
 
-            Bubbles.Default.Save();
-        }
-
-        public sealed override void ToDefault()
-        {
-            IsRandomColors = true;
-            BubbleColor = Color.FromArgb(255, 255, 0, 0);
-            IsShiftColors = true;
-            ShiftColorSpeed = 12;
-            BubbleSize = 25;
-            MoveSpeed = 4;
-            BubbleCount = 14;
-            Smoothness = 25;
+            if (save)
+                SettingsProvider.Save(this);
         }
     }
 }

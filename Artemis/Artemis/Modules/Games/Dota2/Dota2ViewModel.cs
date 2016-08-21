@@ -10,7 +10,8 @@ namespace Artemis.Modules.Games.Dota2
 {
     public sealed class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainManager main, IProfileEditorVmFactory pFactory, Dota2Model model) : base(main, model, pFactory)
+        public Dota2ViewModel(MainManager main, IProfileEditorVmFactory pFactory, Dota2Model model)
+            : base(main, model, pFactory)
         {
             DisplayName = "Dota 2";
 
@@ -22,7 +23,7 @@ namespace Artemis.Modules.Games.Dota2
         {
             var gameSettings = (Dota2Settings) GameSettings;
             // If already propertly set up, don't do anything
-            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
+            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
                 File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
                 return;
 

@@ -22,7 +22,7 @@ namespace Artemis.Modules.Games.Overwatch
         {
             var gameSettings = (OverwatchSettings) GameSettings;
             // If already propertly set up, don't do anything
-            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
+            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
                 File.Exists(gameSettings.GameDirectory + "RzChromaSDK64.dll"))
                 return;
 

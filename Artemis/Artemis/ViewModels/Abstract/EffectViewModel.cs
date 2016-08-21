@@ -1,8 +1,10 @@
 ﻿using System;
+using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Services;
+using Artemis.Settings;
 using Caliburn.Micro;
 using Ninject;
 
@@ -90,7 +92,7 @@ namespace Artemis.ViewModels.Abstract
             if (!resetConfirm.Value)
                 return;
 
-            EffectSettings.ToDefault();
+            EffectSettings.Reset(true);
             NotifyOfPropertyChange(() => EffectSettings);
 
             SaveSettings();
