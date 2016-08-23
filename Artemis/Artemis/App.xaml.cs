@@ -13,14 +13,6 @@ namespace Artemis
     {
         public App()
         {
-            //using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis"))
-            //using (var mgr = new UpdateManager("C:\\Users\\Robert\\Desktop\\Artemis builds\\squirrel_test"))
-            //{
-            //    SquirrelAwareApp.HandleEvents(
-            //      onInitialInstall: v => mgr.CreateShortcutForThisExe(),
-            //      onAppUpdate: v => Updater.AppUpdate(mgr),
-            //      onAppUninstall: v => Updater.AppUninstall(mgr));
-            //}
             InitializeComponent();
         }
 

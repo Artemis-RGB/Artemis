@@ -1,14 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using MahApps.Metro;
 using Newtonsoft.Json;
+using Squirrel;
 
 namespace Artemis.Settings
 {
@@ -17,6 +15,7 @@ namespace Artemis.Settings
         public GeneralSettings()
         {
             ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+            ApplyAutorun();
         }
 
         [DefaultValue("WindowsProfile")]
@@ -59,6 +58,8 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LogLevel { get; set; }
 
+        public Version LastRanVersion { get; set; }
+
         public void Save()
         {
             SettingsProvider.Save(this);
@@ -86,17 +87,13 @@ namespace Artemis.Settings
 
         public void ApplyAutorun()
         {
-            var startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-            if (Autorun)
+            using (var mgr = new UpdateManager(""))
             {
-                var link = (IShellLink) new ShellLink();
-                link.SetPath(Assembly.GetExecutingAssembly().Location);
-                var file = (IPersistFile) link;
-
-                file.Save(startupFolder + @"\Artemis.lnk", false);
+                if (Autorun)
+                    mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false);
+                else
+                    mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
             }
-            else if (File.Exists(startupFolder + @"\Artemis.lnk"))
-                File.Delete(startupFolder + @"\Artemis.lnk");
         }
 
         public void ApplyTheme()

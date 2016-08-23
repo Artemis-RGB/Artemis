@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Threading.Tasks;
 using Artemis.DAL;
+using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NLog;
 using Squirrel;
 
@@ -13,45 +17,108 @@ namespace Artemis.Utilities
 {
     public static class Updater
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        ///     Uses Squirrel to update the application through GitHub
+        /// </summary>
         public static async void UpdateApp()
         {
             // Only update if the user allows it
-            if (!SettingsProvider.Load<GeneralSettings>().AutoUpdate)
+            if (SettingsProvider.Load<GeneralSettings>().AutoUpdate)
                 return;
 
-            _logger.Info("Checking for updates...");
-            // TODO: Remove prerelease before releasing
-            //using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
-            //{
-            //    await mgr.Result.UpdateApp();
-            //}
-
-            using (var mgr = new UpdateManager("C:\\Users\\Robert\\Desktop\\Artemis builds\\squirrel_test"))
+            Logger.Info("Checking for updates...");
+            // Pre-release
+            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
+            // Release
+            // using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis"))
             {
-                await mgr.UpdateApp();
+                try
+                {
+                    await mgr.Result.UpdateApp();
+                    mgr.Result.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e, "Update check failed");
+                }
             }
         }
 
-        public static void AppUpdate(IUpdateManager mgr)
+        /// <summary>
+        ///     Checks to see if the program has updated and shows a dialog if so.
+        /// </summary>
+        /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
+        /// <returns></returns>
+        public static async Task CheckChangelog(MetroDialogService dialogService)
         {
-            _logger.Info("Running AppUpdate");
-            var settings = new GeneralSettings();
-            settings.ApplyAutorun();
-            mgr.CreateShortcutForThisExe();
+            var settings = SettingsProvider.Load<GeneralSettings>();
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            if ((settings.LastRanVersion != null) && (currentVersion > settings.LastRanVersion))
+            {
+                Logger.Info("Updated from {0} to {1}, showing changelog.", settings.LastRanVersion, currentVersion);
+
+                // Ask the user whether he/she wants to see what's new
+                var showChanges = await dialogService.
+                    ShowQuestionMessageBox("New version installed",
+                        $"Artemis has recently updated from version {settings.LastRanVersion} to {currentVersion}. \n" +
+                        "Would you like to see what's new?");
+
+                // If user wants to see changelog, show it to them
+                if ((showChanges != null) && showChanges.Value)
+                    await ShowChanges(dialogService, currentVersion);
+            }
+
+            settings.LastRanVersion = currentVersion;
+            settings.Save();
         }
 
-        public static void AppUninstall(IUpdateManager mgr)
+        /// <summary>
+        ///     Fetches all releases from GitHub, looks up the current release and shows the changelog
+        /// </summary>
+        /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
+        /// <param name="version">The version to fetch the changelog for</param>
+        /// <returns></returns>
+        private static async Task ShowChanges(MetroDialogService dialogService, Version version)
         {
-            _logger.Info("Running AppUninstall");
-            // Use GeneralSettings to get rid of the autorun shortcut
-            var fakeSettings = new GeneralSettings {Autorun = false};
-            fakeSettings.ApplyAutorun();
+            var progressDialog = await dialogService.ShowProgressDialog("Changelog", "Fetching release data from GitHub..");
+            progressDialog.SetIndeterminate();
 
-            mgr.RemoveShortcutForThisExe();
+            var jsonClient = new WebClient();
+
+            // GitHub trips if we don't add a user agent
+            jsonClient.Headers.Add("user-agent",
+                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+
+            // Random number to get around cache issues
+            var rand = new Random(DateTime.Now.Millisecond);
+            var json = await jsonClient.DownloadStringTaskAsync(
+                "https://api.github.com/repos/SpoinkyNL/Artemis/releases?random=" + rand.Next());
+
+            // Get a list of releases
+            var releases = JsonConvert.DeserializeObject<JArray>(json);
+            var release = releases.FirstOrDefault(r => r["tag_name"].Value<string>() == version.ToString());
+            try
+            {
+                await progressDialog.CloseAsync();
+            }
+            catch (InvalidOperationException)
+            {
+                // Occurs when main window is closed before finished
+            }
+
+            if (release != null)
+                dialogService.ShowMessageBox(release["name"].Value<string>(), release["body"].Value<string>());
+            else
+                dialogService.ShowMessageBox("Couldn't fetch release",
+                    "Sorry, Artemis was unable to fetch the release data off of GitHub.\n" +
+                    "If you'd like, you can always find out the latest changes on the GitHub page accessible from the options menu");
         }
 
+        /// <summary>
+        ///     Queries GitHub for the latest pointers file
+        /// </summary>
         public static void GetPointers()
         {
             if (!SettingsProvider.Load<GeneralSettings>().EnablePointersUpdate)
