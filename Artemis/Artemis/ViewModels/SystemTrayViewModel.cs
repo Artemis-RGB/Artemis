@@ -7,6 +7,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Caliburn.Micro;
 
 namespace Artemis.ViewModels
@@ -114,10 +115,13 @@ namespace Artemis.ViewModels
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
-
-            ShowKeyboardDialog();
+            
             SettingsProvider.Load<GeneralSettings>().ApplyTheme();
+
+            // Show certain dialogs if needed
+            CheckKeyboardState();
             CheckDuplicateInstances();
+            Updater.CheckChangelog(DialogService);
         }
 
         private void CheckDuplicateInstances()
@@ -137,7 +141,7 @@ namespace Artemis.ViewModels
                 "If so, please make sure Artemis isn't already running");
         }
 
-        private async void ShowKeyboardDialog()
+        private async void CheckKeyboardState()
         {
             while (!_shellViewModel.IsActive)
                 await Task.Delay(200);

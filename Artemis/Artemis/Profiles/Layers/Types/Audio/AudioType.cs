@@ -52,7 +52,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
+            {
                 c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -63,14 +65,31 @@ namespace Artemis.Profiles.Layers.Types.Audio
             lock (SpectrumData)
             {
                 foreach (var audioLayer in _audioLayers)
+                {
+                    // This is cheating but it ensures that the brush is drawn across the entire main-layer
+                    var oldWidth = audioLayer.Properties.Width;
+                    var oldHeight = audioLayer.Properties.Height;
+                    var oldX = audioLayer.Properties.X;
+                    var oldY = audioLayer.Properties.Y;
+
+                    audioLayer.Properties.Width = layer.Properties.Width;
+                    audioLayer.Properties.Height = layer.Properties.Height;
+                    audioLayer.Properties.X = layer.Properties.X;
+                    audioLayer.Properties.Y = layer.Properties.Y;
                     audioLayer.LayerType.Draw(audioLayer, c);
+
+                    audioLayer.Properties.Width = oldWidth;
+                    audioLayer.Properties.Height = oldHeight;
+                    audioLayer.Properties.X = oldX;
+                    audioLayer.Properties.Y = oldY;
+                }
             }
         }
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
             _lines = (int) layerModel.Properties.Width;
-            if (_device == null || isPreview)
+            if ((_device == null) || isPreview)
                 return;
 
             lock (SpectrumData)
@@ -90,6 +109,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
                     else
                         height = 0;
 
+                    // Apply Sensitivity setting
+                    height = height*settings.Sensitivity;
+
                     var newHeight = settings.Height/100.0*height;
                     if (newHeight >= audioLayer.Properties.Height)
                         audioLayer.Properties.Height = newHeight;
@@ -97,6 +119,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
                         audioLayer.Properties.Height = audioLayer.Properties.Height - settings.FadeSpeed;
                     if (audioLayer.Properties.Height < 0)
                         audioLayer.Properties.Height = 0;
+
+                    audioLayer.Properties.Brush = layerModel.Properties.Brush;
+                    audioLayer.Properties.Contain = false;
 
                     audioLayer.Update(null, false, true);
                     index++;
@@ -167,10 +192,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
                     if (b1 <= b0)
                         b1 = b0 + 1;
                     for (; b0 < b1; b0++)
-                    {
                         if (peak < e.Result[1 + b0].X)
                             peak = e.Result[1 + b0].X;
-                    }
                     var y = (int) (Math.Sqrt(peak)*3*255 - 4);
                     if (y > 255)
                         y = 255;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,7 +12,6 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using LogManager = NLog.LogManager;
 
 namespace Artemis
 {
@@ -39,14 +37,14 @@ namespace Artemis
                 var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
-                if (img != null && e != null)
+                if ((img != null) && (e != null))
                 {
                     var position = e.GetPosition(img);
                     return (int) (img.Source.Width*(position.X/img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
-                if (e != null && input != null)
+                if ((e != null) && (input != null))
                     return e.GetPosition(input).X;
 
                 // Return 0 if no processing could be done
@@ -59,14 +57,14 @@ namespace Artemis
                 var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
-                if (img != null && e != null)
+                if ((img != null) && (e != null))
                 {
                     var position = e.GetPosition(img);
                     return (int) (img.Source.Width*(position.Y/img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
-                if (e != null && input != null)
+                if ((e != null) && (input != null))
                     return e.GetPosition(input).Y;
 
                 // Return 0 if no processing could be done
