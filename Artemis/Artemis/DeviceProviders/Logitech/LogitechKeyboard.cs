@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
-using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Microsoft.Win32;
 
@@ -12,7 +11,7 @@ namespace Artemis.DeviceProviders.Logitech
     {
         public override bool CanEnable()
         {
-            //Check to see if VC++ 2012 x64 is installed.
+            // Check to see if VC++ 2012 x64 is installed.
             if (Registry.LocalMachine.OpenSubKey(
                 @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
