@@ -41,6 +41,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             _waveIn.StartRecording();
         }
 
+        [JsonIgnore]
         public List<byte> SpectrumData { get; set; } = new List<byte>();
 
         public string Name { get; } = "Keyboard - Audio visualization";

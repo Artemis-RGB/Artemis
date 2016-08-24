@@ -15,6 +15,7 @@ using Artemis.ViewModels.Profiles.Events;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
+using NuGet;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -40,6 +41,7 @@ namespace Artemis.ViewModels.Profiles
 
             Layer = layer;
             ProposedLayer = GeneralHelpers.Clone(layer);
+            ProposedLayer.Children.Clear();
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
@@ -165,24 +167,7 @@ namespace Artemis.ViewModels.Profiles
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
-            var appliedLayer = GeneralHelpers.Clone(ProposedLayer);
-
-            // Fix relations
-            if (Layer.Parent != null)
-            {
-                Layer.Parent.Children.Add(appliedLayer);
-                Layer.Parent.Children.Remove(Layer);
-            }
-            else
-            {
-                Layer.Profile.Layers.Add(appliedLayer);
-                Layer.Profile.Layers.Remove(Layer);
-            }
-            appliedLayer.Children.Clear();
-            foreach (var layerModel in Layer.Children)
-                appliedLayer.Children.Add(layerModel);
-
-            Layer = appliedLayer;
+            JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
 
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
@@ -227,7 +212,11 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.Properties.Contain = Layer.Properties.Contain;
             }
 
-            var current = JsonConvert.SerializeObject(Layer, Formatting.Indented);
+            // Ignore the children, can't just temporarily add them to the proposed layer because
+            // that would upset the child layers' relations (sounds like an episode of Dr. Phil amirite?)
+            var currentObj = GeneralHelpers.Clone(Layer);
+            currentObj.Children.Clear();
+            var current = JsonConvert.SerializeObject(currentObj, Formatting.Indented);
             var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 
             if (current.Equals(proposed))
