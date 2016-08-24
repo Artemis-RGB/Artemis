@@ -4,9 +4,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:properties="clr-namespace:Artemis.Profiles.Layers.Types.Audio"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="500">
+    <UserControl.Resources>
+        <converters:EnumDescriptionConverter x:Key="HEnumDescriptionConverter" />
+        <ObjectDataProvider MethodName="GetValues"
+                            ObjectType="{x:Type system:Enum}"
+                            x:Key="DirectionEnumValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="properties:Direction" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -49,12 +61,18 @@
             </Border>
         </StackPanel>
 
-        <!-- Random color -->
+        <!-- Bar direction -->
         <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,13,10,10" FontSize="13.333" Text="Bar direction:"
                    VerticalAlignment="Top" Height="18" />
-        <controls:ToggleSwitch Grid.Row="1" Grid.Column="3" OnLabel="Yes" OffLabel="No"
-                               IsChecked="{Binding Path=LayerModel.Properties.RandomColor, Mode=TwoWay}"
-                               VerticalAlignment="Top" Margin="10,5,10,2" />
+        <ComboBox Grid.Row="1" Grid.Column="3" ItemsSource="{Binding Source={StaticResource DirectionEnumValues}}"
+                  Margin="10,10,10,0" SelectedItem="{Binding Path=LayerModel.Properties.Direction}"
+                  VerticalAlignment="Top" Height="22">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
     </Grid>
 </UserControl>
