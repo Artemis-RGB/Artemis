@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Utilities;
@@ -89,10 +90,18 @@ namespace Artemis.Settings
         {
             using (var mgr = new UpdateManager(""))
             {
-                if (Autorun)
-                    mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false);
-                else
-                    mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
+                try
+                {
+                    if (Autorun)
+                        mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false);
+                    else
+                        mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    // ignored, this'll only occur if Artemis isn't installed (ran from VS)
+                }
+                
             }
         }
 
