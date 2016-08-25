@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -16,8 +17,8 @@ namespace Artemis.Modules.Games.Witcher3
         private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager, Witcher3Settings settings)
-            : base(mainManager, settings, new Witcher3DataModel())
+        public Witcher3Model(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";

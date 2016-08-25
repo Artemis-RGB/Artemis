@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
@@ -10,30 +12,30 @@ using Caliburn.Micro;
 
 namespace Artemis.ViewModels
 {
-    public class SystemTrayViewModel : Screen, IHandle<ToggleEnabled>
+    public class SystemTrayViewModel : Screen
     {
         private readonly ShellViewModel _shellViewModel;
         private readonly IWindowManager _windowManager;
         private string _activeIcon;
-        private bool _checkedForUpdate;
+        private bool _checked;
         private bool _enabled;
         private string _toggleText;
 
-        public SystemTrayViewModel(IWindowManager windowManager, IEventAggregator events,
-            MetroDialogService dialogService, ShellViewModel shellViewModel,
-            MainManager mainManager)
+        public SystemTrayViewModel(IWindowManager windowManager, MetroDialogService dialogService,
+            ShellViewModel shellViewModel, MainManager mainManager)
         {
             _windowManager = windowManager;
             _shellViewModel = shellViewModel;
-            _checkedForUpdate = false;
 
             DialogService = dialogService;
             MainManager = mainManager;
 
-            events.Subscribe(this);
             MainManager.EnableProgram();
+            MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
 
-            if (General.Default.ShowOnStartup)
+            var generalSettings = SettingsProvider.Load<GeneralSettings>();
+            Enabled = !generalSettings.Suspended;
+            if (generalSettings.ShowOnStartup)
                 ShowWindow();
         }
 
@@ -42,7 +44,6 @@ namespace Artemis.ViewModels
         public MainManager MainManager { get; set; }
 
         public bool CanShowWindow => !_shellViewModel.IsActive;
-
         public bool CanHideWindow => _shellViewModel.IsActive && !MainManager.DeviceManager.ChangingKeyboard;
         public bool CanToggleEnabled => !MainManager.DeviceManager.ChangingKeyboard;
 
@@ -81,9 +82,11 @@ namespace Artemis.ViewModels
             }
         }
 
-        public void Handle(ToggleEnabled message)
+        public Mutex Mutex { get; set; }
+
+        private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs e)
         {
-            Enabled = message.Enabled;
+            Enabled = e.Enabled;
         }
 
         public void ToggleEnabled()
@@ -112,17 +115,33 @@ namespace Artemis.ViewModels
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
+            
+            SettingsProvider.Load<GeneralSettings>().ApplyTheme();
 
-            if (_checkedForUpdate)
-                return;
-
-            _checkedForUpdate = true;
-
-            ShowKeyboardDialog();
-            Updater.CheckForUpdate(DialogService);
+            // Show certain dialogs if needed
+            CheckKeyboardState();
+            CheckDuplicateInstances();
+            Updater.CheckChangelog(DialogService);
         }
 
-        private async void ShowKeyboardDialog()
+        private void CheckDuplicateInstances()
+        {
+            if (_checked)
+                return;
+            _checked = true;
+
+            bool aIsNewInstance;
+            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            if (aIsNewInstance)
+                return;
+
+            DialogService.ShowMessageBox("Multiple instances found",
+                "It looks like there are multiple running instances of Artemis. " +
+                "This can cause issues, especially with CS:GO and Dota2. " +
+                "If so, please make sure Artemis isn't already running");
+        }
+
+        private async void CheckKeyboardState()
         {
             while (!_shellViewModel.IsActive)
                 await Task.Delay(200);

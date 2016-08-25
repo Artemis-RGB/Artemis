@@ -1,6 +1,7 @@
 ﻿using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Services;
+using Artemis.Settings;
 using Caliburn.Micro;
 using Ninject;
 
@@ -11,9 +12,11 @@ namespace Artemis.ViewModels.Abstract
         protected readonly MainManager MainManager;
         private OverlaySettings _overlaySettings;
 
-        protected OverlayViewModel(MainManager mainManager)
+        protected OverlayViewModel(MainManager mainManager, OverlayModel overlayModel)
         {
             MainManager = mainManager;
+            OverlayModel = overlayModel;
+            OverlaySettings = overlayModel.Settings;
         }
 
         [Inject]
@@ -51,7 +54,7 @@ namespace Artemis.ViewModels.Abstract
             if (!resetConfirm.Value)
                 return;
 
-            OverlaySettings.ToDefault();
+            OverlaySettings.Reset(true);
             NotifyOfPropertyChange(() => OverlaySettings);
 
             OverlayModel.Enabled = OverlaySettings.Enabled;

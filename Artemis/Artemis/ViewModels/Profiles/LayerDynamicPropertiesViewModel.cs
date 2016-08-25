@@ -144,11 +144,11 @@ namespace Artemis.ViewModels.Profiles
             {
                 new GeneralHelpers.PropertyCollection {Display = "None"}
             };
-            Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
+            Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32" || p.Type == "Single"));
 
             // Populate sources combobox
             Sources = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32"));
+            Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32" || p.Type == "Single"));
 
             // Preselect according to the model
             SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);

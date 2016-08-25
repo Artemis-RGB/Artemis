@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -7,21 +8,19 @@ using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.Dota2
 {
-    internal class Dota2Model : GameModel
+    public class Dota2Model : GameModel
     {
-        public Dota2Model(MainManager mainManager, Dota2Settings settings)
-            : base(mainManager, settings, new Dota2DataModel())
+        public Dota2Model(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
         {
             Name = "Dota2";
             ProcessName = "dota2";
-            Settings = settings;
             Enabled = Settings.Enabled;
             Initialized = false;
             Scale = 4;
         }
 
         public int Scale { get; set; }
-        public new Dota2Settings Settings { get; set; }
 
         public override void Dispose()
         {

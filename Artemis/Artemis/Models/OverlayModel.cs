@@ -1,4 +1,5 @@
 ﻿using Artemis.Managers;
+using Artemis.Settings;
 
 namespace Artemis.Models
 {
@@ -7,8 +8,10 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainManager mainManager) : base(mainManager, null)
+        protected OverlayModel(MainManager mainManager, OverlaySettings settings) : base(mainManager, settings, null)
         {
+            Settings = settings;
+            Enabled = settings.Enabled;
         }
 
         public bool Enabled
@@ -27,6 +30,7 @@ namespace Artemis.Models
             }
         }
 
+        public new OverlaySettings Settings { get; set; }
         public abstract void RenderOverlay(RenderFrame frame, bool keyboardOnly);
     }
 }

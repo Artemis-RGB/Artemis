@@ -4,6 +4,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Services;
+using Artemis.Settings;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
@@ -15,20 +16,16 @@ namespace Artemis.ViewModels.Abstract
     {
         private GameSettings _gameSettings;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel, IEventAggregator events,
-            IProfileEditorVmFactory pFactory)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel, IProfileEditorVmFactory pFactory)
         {
             MainManager = mainManager;
             GameModel = gameModel;
-            Events = events;
             PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorVm(Events, mainManager, gameModel,
-                GameSettings.LastProfile);
+            ProfileEditor = PFactory.CreateProfileEditorVm(mainManager, gameModel, GameSettings.LastProfile);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
-            Events.Subscribe(this);
         }
 
         [Inject]
@@ -40,7 +37,6 @@ namespace Artemis.ViewModels.Abstract
         [Inject]
         public MetroDialogService DialogService { get; set; }
 
-        public IEventAggregator Events { get; set; }
         public IProfileEditorVmFactory PFactory { get; set; }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
@@ -85,7 +81,7 @@ namespace Artemis.ViewModels.Abstract
             if (!resetConfirm.Value)
                 return;
 
-            GameSettings.ToDefault();
+            GameSettings.Reset(true);
             NotifyOfPropertyChange(() => GameSettings);
 
             SaveSettings();

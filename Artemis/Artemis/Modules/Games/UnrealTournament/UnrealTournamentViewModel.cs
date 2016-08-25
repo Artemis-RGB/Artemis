@@ -10,7 +10,6 @@ using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,8 +17,8 @@ namespace Artemis.Modules.Games.UnrealTournament
 {
     public sealed class UnrealTournamentViewModel : GameViewModel
     {
-        public UnrealTournamentViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new UnrealTournamentModel(main, new UnrealTournamentSettings()), events, pFactory)
+        public UnrealTournamentViewModel(MainManager main, IProfileEditorVmFactory pFactory, UnrealTournamentModel model)
+            : base(main, model, pFactory)
         {
             DisplayName = "Unreal Tournament";
             MainManager.EffectManager.EffectModels.Add(GameModel);
@@ -33,7 +32,8 @@ namespace Artemis.Modules.Games.UnrealTournament
         {
             var gameSettings = (UnrealTournamentSettings) GameSettings;
             // If already propertly set up, don't do anything
-            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
+            if ((gameSettings.GameDirectory != null) &&
+                File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
                 return;
 
             // Attempt to read the file
@@ -120,7 +120,8 @@ namespace Artemis.Modules.Games.UnrealTournament
         {
             var gif = Resources.redeemer;
             ProfileProvider.InsertGif(ProfileProvider.GetAll()
-                .Where(p => p.GameName == "UnrealTournament" && p.Name == "Default"), "Redeemer GIF", gif, "redeemer");
+                    .Where(p => (p.GameName == "UnrealTournament") && (p.Name == "Default")), "Redeemer GIF", gif,
+                "redeemer");
         }
     }
 }

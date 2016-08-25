@@ -25,8 +25,13 @@ namespace Artemis.Profiles
             DrawingVisual = new DrawingVisual();
         }
 
-        public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
+        /// <summary>
+        ///     Indicates whether the profile is actively being rendered
+        /// </summary>
+        [JsonIgnore]
+        public bool IsActive { get; set; }
 
+        public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
         public string Name { get; set; }
         public bool IsDefault { get; set; }
         public string KeyboardSlug { get; set; }
@@ -42,30 +47,6 @@ namespace Artemis.Profiles
             Layers.Sort(l => l.Order);
             for (var i = 0; i < Layers.Count; i++)
                 Layers[i].Order = i;
-        }
-
-        public void DrawLayers(Graphics keyboard, Rect keyboardRect, IDataModel dataModel, bool preview,
-            bool updateAnimations)
-        {
-            var visual = new DrawingVisual();
-            using (var c = visual.RenderOpen())
-            {
-                // Setup the DrawingVisual's size
-                c.PushClip(new RectangleGeometry(keyboardRect));
-                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
-
-                // Draw the layers
-                foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
-                {
-                    layerModel.Update(dataModel, preview, updateAnimations);
-                    layerModel.Draw(dataModel, c, preview, updateAnimations);
-                }
-                // Remove the clip
-                c.Pop();
-            }
-
-            using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, keyboardRect))
-                keyboard.DrawImage(bmp, new PointF(0, 0));
         }
 
         /// <summary>
@@ -97,14 +78,12 @@ namespace Artemis.Profiles
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
             {
-                if (!layerModel.Enabled || keyboardOnly && layerModel.LayerType.DrawType != DrawType.Keyboard)
+                if (!layerModel.Enabled || (keyboardOnly && (layerModel.LayerType.DrawType != DrawType.Keyboard)))
                     continue;
 
                 if (!ignoreConditions)
-                {
                     if (!layerModel.ConditionsMet(dataModel))
                         continue;
-                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -144,7 +123,9 @@ namespace Artemis.Profiles
             }
 
             using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, rect))
+            {
                 g.DrawImage(bmp, new PointF(0, 0));
+            }
         }
 
         /// <summary>

@@ -21,10 +21,8 @@ namespace Artemis.Managers
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
 
-        public LoopManager(IEventAggregator events, ILogger logger, EffectManager effectManager,
-            DeviceManager deviceManager)
+        public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
         {
-            events.Subscribe(this);
             _logger = logger;
             _effectManager = effectManager;
             _deviceManager = deviceManager;

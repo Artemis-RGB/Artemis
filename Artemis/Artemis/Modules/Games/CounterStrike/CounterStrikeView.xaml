@@ -40,7 +40,7 @@
                         Grid.Column="0"
                         Grid.ColumnSpan="2" Margin="0,0,1,0">
 
-                <Label FontSize="20" HorizontalAlignment="Left" Content="CS:GO Directory" />
+                <Label FontSize="20" HorizontalAlignment="Left" Content="Counter-Strike Global Offensive directory" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                              Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
