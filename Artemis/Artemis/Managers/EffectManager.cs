@@ -5,7 +5,6 @@ using Artemis.Events;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
-using Caliburn.Micro;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
@@ -16,17 +15,19 @@ namespace Artemis.Managers
     public class EffectManager
     {
         private readonly DeviceManager _deviceManager;
-        private readonly IEventAggregator _events;
         private readonly ILogger _logger;
         private EffectModel _activeEffect;
+        private LoopManager _waitLoopManager;
+        private EffectModel _waitEffect;
+        private readonly GeneralSettings _generalSettings;
 
-        public EffectManager(ILogger logger, IEventAggregator events, DeviceManager deviceManager)
+        public EffectManager(ILogger logger, DeviceManager deviceManager)
         {
-            _logger = logger;
-            _events = events;
-            _deviceManager = deviceManager;
-
             EffectModels = new List<EffectModel>();
+
+            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
+            _logger = logger;
+            _deviceManager = deviceManager;
 
             _logger.Info("Intialized EffectManager");
         }
@@ -44,7 +45,7 @@ namespace Artemis.Managers
             private set
             {
                 _activeEffect = value;
-                _events.PublishOnUIThread(new ActiveEffectChanged(value?.Name));
+                RaiseEffectChangedEvent(new EffectChangedEventArgs(value));
             }
         }
 
@@ -64,16 +65,18 @@ namespace Artemis.Managers
             get { return EffectModels.OfType<GameModel>().Where(g => g.Enabled); }
         }
 
+        public event EventHandler<EffectChangedEventArgs> OnEffectChangedEvent;
+
         /// <summary>
         ///     Loads the last active effect from settings and enables it.
         /// </summary>
         /// <returns>Whether enabling was successful or not.</returns>
         public EffectModel GetLastEffect()
         {
-            _logger.Debug("Getting last effect: {0}", General.Default.LastEffect);
-            return General.Default.LastEffect == null
+            _logger.Debug("Getting last effect: {0}", _generalSettings.LastEffect);
+            return _generalSettings.LastEffect == null
                 ? null
-                : EffectModels.FirstOrDefault(e => e.Name == General.Default.LastEffect);
+                : EffectModels.FirstOrDefault(e => e.Name == _generalSettings.LastEffect);
         }
 
         /// <summary>
@@ -83,17 +86,24 @@ namespace Artemis.Managers
         /// <param name="loopManager">Optionally pass the LoopManager to automatically start it, if it's not running.</param>
         public void ChangeEffect(EffectModel effectModel, LoopManager loopManager = null)
         {
+            if (_waitEffect != null)
+            {
+                _logger.Debug("Stopping effect because a change is already queued");
+                return;
+            }
+
             if (effectModel == null)
                 throw new ArgumentNullException(nameof(effectModel));
             if (effectModel is OverlayModel)
                 throw new ArgumentException("Can't set an Overlay effect as the active effect");
 
             if (_deviceManager.ActiveKeyboard == null)
-                _deviceManager.EnableLastKeyboard();
-            // If still null, no last keyboard, so stop.
-            if (_deviceManager.ActiveKeyboard == null)
             {
-                _logger.Debug("Cancelling effect change, no LastKeyboard");
+                _logger.Debug("Stopping effect change until keyboard is enabled");
+                _waitEffect = effectModel;
+                _waitLoopManager = loopManager;
+                _deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
+                _deviceManager.EnableLastKeyboard();
                 return;
             }
 
@@ -141,8 +151,21 @@ namespace Artemis.Managers
                 return;
 
             // Non-game effects are stored as the new LastEffect.
-            General.Default.LastEffect = ActiveEffect?.Name;
-            General.Default.Save();
+            _generalSettings.LastEffect = ActiveEffect?.Name;
+            _generalSettings.Save();
+        }
+
+        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
+        {
+            _deviceManager.OnKeyboardChangedEvent -= DeviceManagerOnOnKeyboardChangedEvent;
+            _logger.Debug("Resuming effect change");
+
+            var effect = _waitEffect;
+            _waitEffect = null;
+            var loopManager = _waitLoopManager;
+            _waitLoopManager = null;
+
+            ChangeEffect(effect, loopManager);
         }
 
 
@@ -159,10 +182,9 @@ namespace Artemis.Managers
                 ActiveEffect.Dispose();
                 ActiveEffect = null;
 
-                General.Default.LastEffect = null;
-                General.Default.Save();
+                _generalSettings.LastEffect = null;
+                _generalSettings.Save();
             }
-
 
             _logger.Debug("Cleared active effect");
         }
@@ -191,6 +213,12 @@ namespace Artemis.Managers
                 return;
 
             DisableGame(ActiveEffect);
+        }
+
+        protected virtual void RaiseEffectChangedEvent(EffectChangedEventArgs e)
+        {
+            var handler = OnEffectChangedEvent;
+            handler?.Invoke(this, e);
         }
     }
 }

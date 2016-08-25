@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Security.Principal;
 using System.Windows;
 using System.Windows.Threading;
-using Artemis.Utilities;
 using NLog;
 using WpfExceptionViewer;
 
@@ -13,28 +11,17 @@ namespace Artemis
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnExit(ExitEventArgs e)
-        {
-            base.OnExit(e);
-            Environment.Exit(0);
-        }
-
         public App()
         {
-            if (!IsRunAsAdministrator())
-                GeneralHelpers.RunAsAdministrator();
-
             InitializeComponent();
         }
 
         public bool DoHandle { get; set; }
 
-        private static bool IsRunAsAdministrator()
+        protected override void OnExit(ExitEventArgs e)
         {
-            var wi = WindowsIdentity.GetCurrent();
-            var wp = new WindowsPrincipal(wi);
-
-            return wp.IsInRole(WindowsBuiltInRole.Administrator);
+            base.OnExit(e);
+            Environment.Exit(0);
         }
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

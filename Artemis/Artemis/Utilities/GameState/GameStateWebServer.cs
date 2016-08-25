@@ -2,9 +2,10 @@
 using System.IO;
 using System.Net;
 using System.Threading;
-using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.Settings;
 using Newtonsoft.Json;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Utilities.GameState
 {
@@ -17,12 +18,15 @@ namespace Artemis.Utilities.GameState
         public delegate void GameDataReceivedEventHandler(
             object sender, GameDataReceivedEventArgs gameDataReceivedEventArgs);
 
+        private readonly ILogger _logger;
+
         private readonly AutoResetEvent _waitForConnection = new AutoResetEvent(false);
 
         private HttpListener _listener;
 
-        public GameStateWebServer()
+        public GameStateWebServer(ILogger logger)
         {
+            _logger = logger;
             Start();
         }
 
@@ -36,7 +40,7 @@ namespace Artemis.Utilities.GameState
             if (Running)
                 return;
 
-            Port = General.Default.GamestatePort;
+            Port = SettingsProvider.Load<GeneralSettings>().GamestatePort;
 
             _listener = new HttpListener();
             _listener.Prefixes.Add($"http://localhost:{Port}/");
@@ -45,10 +49,9 @@ namespace Artemis.Utilities.GameState
             {
                 _listener.Start();
             }
-            catch (HttpListenerException)
+            catch (HttpListenerException e)
             {
-                MessageBox.Show("Couldn't start the webserver. CS:GO/Dota2 effects won't work :c \n\n" +
-                                "Try changing the port in Settings and restart Artemis.");
+                _logger.Error(e, "Couldn't start the webserver on port {0}.", Port);
                 Running = false;
                 return;
             }

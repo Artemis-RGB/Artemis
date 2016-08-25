@@ -10,18 +10,11 @@ namespace Artemis.ViewModels
 {
     public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
-        private readonly DeviceManager _deviceManager;
-        private readonly MetroDialogService _dialogService;
         private readonly BaseViewModel[] _viewModels;
 
-        public ShellViewModel(IKernel kernel, IEventAggregator events, BaseViewModel[] viewModels,
-            DeviceManager deviceManager, MetroDialogService dialogService)
+        public ShellViewModel(IKernel kernel, BaseViewModel[] viewModels)
         {
             _viewModels = viewModels;
-            _deviceManager = deviceManager;
-            _dialogService = dialogService;
-
-            events.Subscribe(this);
 
             // Setup UI
             DisplayName = "Artemis";

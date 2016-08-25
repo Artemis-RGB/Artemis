@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -9,8 +10,8 @@ namespace Artemis.Modules.Games.UnrealTournament
 {
     public class UnrealTournamentModel : GameModel
     {
-        public UnrealTournamentModel(MainManager mainManager, UnrealTournamentSettings settings)
-            : base(mainManager, settings, new UnrealTournamentDataModel())
+        public UnrealTournamentModel(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<UnrealTournamentSettings>(), new UnrealTournamentDataModel())
         {
             Name = "UnrealTournament";
             ProcessName = "UE4-Win64-Shipping";

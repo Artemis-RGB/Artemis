@@ -9,17 +9,15 @@ using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Witcher3
 {
     public sealed class Witcher3ViewModel : GameViewModel
     {
-        public Witcher3ViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new Witcher3Model(main, new Witcher3Settings()), events, pFactory)
+        public Witcher3ViewModel(MainManager main, IProfileEditorVmFactory pFactory, Witcher3Model model)
+            : base(main, model, pFactory)
         {
             DisplayName = "The Witcher 3";
-            MainManager.EffectManager.EffectModels.Add(GameModel);
         }
 
         public async void AutoInstall()
@@ -62,8 +60,6 @@ namespace Artemis.Modules.Games.Witcher3
                     Directory.GetFiles(dialog.SelectedPath + @"\mods", "playerWitcher.ws", SearchOption.AllDirectories)
                         .FirstOrDefault();
                 if (file != null)
-                {
-                    // Don't trip over our own mod
                     if (!file.Contains("modArtemis"))
                     {
                         var viewHelp = await
@@ -80,11 +76,10 @@ namespace Artemis.Modules.Games.Witcher3
 
                         archive.ExtractToDirectory(folder + @"witcher3-mod", true);
 
-                        System.Diagnostics.Process.Start(
+                        Process.Start(
                             new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
                         return;
                     }
-                }
             }
 
             archive.ExtractToDirectory(dialog.SelectedPath, true);

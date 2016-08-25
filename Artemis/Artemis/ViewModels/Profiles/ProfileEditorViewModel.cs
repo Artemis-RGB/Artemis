@@ -32,7 +32,7 @@ using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels.Profiles
 {
-    public sealed class ProfileEditorViewModel : Screen, IHandle<ActiveKeyboardChanged>, IDropTarget
+    public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly EffectModel _gameModel;
         private readonly ILayerEditorVmFactory _layerEditorVmFactory;
@@ -44,9 +44,8 @@ namespace Artemis.ViewModels.Profiles
         private bool _saving;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(IEventAggregator events, MainManager mainManager, EffectModel gameModel,
-            ProfileViewModel profileViewModel, MetroDialogService dialogService, string lastProfile,
-            ILayerEditorVmFactory layerEditorVmFactory)
+        public ProfileEditorViewModel(MainManager mainManager, EffectModel gameModel, ProfileViewModel profileViewModel,
+            MetroDialogService dialogService, string lastProfile, ILayerEditorVmFactory layerEditorVmFactory)
         {
             _mainManager = mainManager;
             _gameModel = gameModel;
@@ -58,11 +57,9 @@ namespace Artemis.ViewModels.Profiles
             DialogService = dialogService;
             LastProfile = lastProfile;
 
-            events.Subscribe(this);
-
-
             PropertyChanged += EditorStateHandler;
             ProfileViewModel.PropertyChanged += LayerSelectedHandler;
+            mainManager.DeviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
 
             _saveTimer = new Timer(5000);
             _saveTimer.Elapsed += ProfileSaveHandler;
@@ -199,12 +196,10 @@ namespace Artemis.ViewModels.Profiles
             UpdateLayerList(source);
         }
 
-
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
         /// </summary>
-        /// <param name="message"></param>
-        public void Handle(ActiveKeyboardChanged message)
+        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
@@ -518,7 +513,7 @@ namespace Artemis.ViewModels.Profiles
         {
             if (SelectedProfile == null)
                 return;
-            
+
             var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
@@ -529,7 +524,8 @@ namespace Artemis.ViewModels.Profiles
             while (ProfileProvider.GetAll().Any(p => p.Name == name && p.GameName == SelectedProfile.GameName &&
                                                      p.KeyboardSlug == SelectedProfile.KeyboardSlug))
             {
-                name = await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
+                name =
+                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
                 if (string.IsNullOrEmpty(name) || name.Length < 2)
@@ -539,7 +535,7 @@ namespace Artemis.ViewModels.Profiles
             var profile = SelectedProfile;
             SelectedProfile = null;
             ProfileProvider.RenameProfile(profile, name);
-            
+
             LastProfile = name;
             LoadProfiles();
         }

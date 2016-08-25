@@ -1,11 +1,9 @@
-﻿using Artemis.InjectionFactories;
+﻿using Artemis.DAL;
+using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Settings;
 using Artemis.Utilities;
-using Artemis.Utilities.Memory;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
-using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -13,12 +11,10 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager main, IEventAggregator events, IProfileEditorVmFactory pFactory)
-            : base(main, new RocketLeagueModel(main, new RocketLeagueSettings()), events, pFactory)
+        public RocketLeagueViewModel(MainManager main, IProfileEditorVmFactory pFactory, RocketLeagueModel model)
+            : base(main, model, pFactory)
         {
             DisplayName = "Rocket League";
-
-            MainManager.EffectManager.EffectModels.Add(GameModel);
             SetVersionText();
         }
 
@@ -37,7 +33,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
         private void SetVersionText()
         {
-            if (!General.Default.EnablePointersUpdate)
+            if (!SettingsProvider.Load<GeneralSettings>().EnablePointersUpdate)
             {
                 VersionText = "Note: You disabled pointer updates, this could result in the " +
                               "Rocket League effect not working after a game update.";
@@ -45,9 +41,7 @@ namespace Artemis.Modules.Games.RocketLeague
             }
 
             Updater.GetPointers();
-            var version = JsonConvert
-                .DeserializeObject<GamePointersCollection>(Offsets.Default.RocketLeague)
-                .GameVersion;
+            var version = SettingsProvider.Load<OffsetSettings>().RocketLeague.GameVersion;
             VersionText = $"Note: Requires patch {version}. When a new patch is released Artemis downloads " +
                           "new pointers for the latest version (unless disabled in settings).";
         }

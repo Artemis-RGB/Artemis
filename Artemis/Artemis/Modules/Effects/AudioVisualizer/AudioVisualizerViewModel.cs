@@ -1,25 +1,13 @@
-﻿using Artemis.Events;
-using Artemis.Managers;
+﻿using Artemis.Managers;
 using Artemis.ViewModels.Abstract;
-using Caliburn.Micro;
 
 namespace Artemis.Modules.Effects.AudioVisualizer
 {
-    public sealed class AudioVisualizerViewModel : EffectViewModel, IHandle<ActiveEffectChanged>
+    public sealed class AudioVisualizerViewModel : EffectViewModel
     {
-        public AudioVisualizerViewModel(MainManager main, IEventAggregator events)
-            : base(main, new AudioVisualizerModel(main, new AudioVisualizerSettings()))
+        public AudioVisualizerViewModel(MainManager main, AudioVisualizerModel model) : base(main, model)
         {
             DisplayName = "Audio Visualization";
-            events.Subscribe(this);
-
-            MainManager.EffectManager.EffectModels.Add(EffectModel);
-            EffectSettings = ((AudioVisualizerModel) EffectModel).Settings;
-        }
-
-        public void Handle(ActiveEffectChanged message)
-        {
-            NotifyOfPropertyChange(() => EffectEnabled);
         }
     }
 }

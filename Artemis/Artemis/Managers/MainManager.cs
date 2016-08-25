@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Events;
 using Artemis.Models;
+using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
 using Artemis.ViewModels;
-using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
 
@@ -17,16 +20,11 @@ namespace Artemis.Managers
     /// </summary>
     public class MainManager : IDisposable
     {
-        public delegate void PauseCallbackHandler();
-
-        private readonly IEventAggregator _events;
         private readonly Timer _processTimer;
 
-        public MainManager(IEventAggregator events, ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
+        public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
             EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer)
         {
-            _events = events;
-
             Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
@@ -42,13 +40,18 @@ namespace Artemis.Managers
             Running = false;
 
             // Create and start the web server
-            GameStateWebServer = new GameStateWebServer();
+            GameStateWebServer = new GameStateWebServer(logger);
             GameStateWebServer.Start();
 
             // Start the named pipe
             PipeServer.Start("artemis");
 
+            // Start the update task
+            var updateTask = new Task(Updater.UpdateApp);
+            updateTask.Start();
+
             Logger.Info("Intialized MainManager");
+            Logger.Info($"Artemis version {Assembly.GetExecutingAssembly().GetName().Version} is ready!");
         }
 
         [Inject]
@@ -77,6 +80,8 @@ namespace Artemis.Managers
             PipeServer?.Stop();
         }
 
+        public event EventHandler<EnabledChangedEventArgs> OnEnabledChangedEvent;
+
         /// <summary>
         ///     Loads the last active effect and starts the program
         /// </summary>
@@ -85,7 +90,7 @@ namespace Artemis.Managers
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
             LoopManager.StartAsync();
-            _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
+            RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 
         /// <summary>
@@ -96,7 +101,7 @@ namespace Artemis.Managers
             Logger.Debug("Disabling program");
             LoopManager.Stop();
             ProgramEnabled = false;
-            _events.PublishOnUIThread(new ToggleEnabled(ProgramEnabled));
+            RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 
         /// <summary>
@@ -109,7 +114,7 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var runningProcesses = System.Diagnostics.Process.GetProcesses();
+            var runningProcesses = Process.GetProcesses();
 
             // If the currently active effect is a disabled game, get rid of it.
             if (EffectManager.ActiveEffect != null)
@@ -136,6 +141,12 @@ namespace Artemis.Managers
             // If it's not already enabled, do so.
             Logger.Info("Detected and enabling game: {0}", newGame.Name);
             EffectManager.ChangeEffect(newGame, LoopManager);
+        }
+
+        protected virtual void RaiseEnabledChangedEvent(EnabledChangedEventArgs e)
+        {
+            var handler = OnEnabledChangedEvent;
+            handler?.Invoke(this, e);
         }
     }
 }

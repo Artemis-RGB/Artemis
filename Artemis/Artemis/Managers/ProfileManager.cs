@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using Artemis.DAL;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Settings;
@@ -15,6 +16,7 @@ namespace Artemis.Managers
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly LoopManager _loopManager;
+        private GeneralSettings _generalSettings;
 
         public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
             LoopManager loopManager)
@@ -23,6 +25,7 @@ namespace Artemis.Managers
             _effectManager = effectManager;
             _deviceManager = deviceManager;
             _loopManager = loopManager;
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
 
             GameViewModels = new List<GameViewModel>();
 
@@ -44,7 +47,7 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (string.IsNullOrEmpty(General.Default.LastKeyboard) || _deviceManager.ChangingKeyboard ||
+            if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard ||
                 ProfilePreviewModel == null)
                 return;
 

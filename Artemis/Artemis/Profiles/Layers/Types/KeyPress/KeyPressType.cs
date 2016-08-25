@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -19,7 +20,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
     {
         private readonly MainManager _mainManager;
         private List<LayerModel> _keyPressLayers = new List<LayerModel>();
-        private KeyPressPropertiesModel _properties;
+        private LayerModel _layerModel;
 
         public KeyPressType(MainManager mainManager)
         {
@@ -39,7 +40,9 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
+            {
                 c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+            }
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -63,7 +66,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            _properties = (KeyPressPropertiesModel) layerModel.Properties;
+            _layerModel = layerModel;
 
             if (isPreview)
                 return;
@@ -96,8 +99,18 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
         private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
         {
-            if (_properties == null)
+            if (_layerModel == null)
                 return;
+
+            // Reset animation progress if layer wasn't drawn for 100ms
+            if (new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - _layerModel.LastRender)
+                return;
+
+            lock (_keyPressLayers)
+            {
+                if (_keyPressLayers.Count >= 25)
+                    return;
+            }
 
             var keyMatch = _mainManager.DeviceManager.ActiveKeyboard.GetKeyPosition(e.KeyCode);
             if (keyMatch == null)
@@ -105,18 +118,19 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
             lock (_keyPressLayers)
             {
+                var properties = (KeyPressPropertiesModel) _layerModel.Properties;
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.X = keyMatch.Value.X - _properties.Scale/2;
-                layer.Properties.Y = keyMatch.Value.Y - _properties.Scale/2;
-                layer.Properties.Width = _properties.Scale;
-                layer.Properties.Height = _properties.Scale;
-                layer.Properties.AnimationSpeed = _properties.AnimationSpeed;
+                layer.Properties.X = keyMatch.Value.X - properties.Scale/2;
+                layer.Properties.Y = keyMatch.Value.Y - properties.Scale/2;
+                layer.Properties.Width = properties.Scale;
+                layer.Properties.Height = properties.Scale;
+                layer.Properties.AnimationSpeed = properties.AnimationSpeed;
                 layer.LayerAnimation = new GrowAnimation();
 
                 // Setup the brush according to settings
-                layer.Properties.Brush = _properties.RandomColor
-                    ? ColorHelpers.RandomizeBrush(_properties.Brush)
-                    : _properties.Brush.CloneCurrentValue();
+                layer.Properties.Brush = properties.RandomColor
+                    ? ColorHelpers.RandomizeBrush(properties.Brush)
+                    : properties.Brush.CloneCurrentValue();
 
                 _keyPressLayers.Add(layer);
             }

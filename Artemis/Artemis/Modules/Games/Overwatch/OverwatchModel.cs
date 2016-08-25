@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using Artemis.Events;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Settings;
 using Artemis.Utilities;
-using Caliburn.Micro;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
-        private readonly IEventAggregator _events;
         private DateTime _characterChange;
         private string _lastMessage;
         // Using sticky values on these since they can cause flickering
@@ -24,10 +23,9 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
-        public OverwatchModel(IEventAggregator events, MainManager mainManager, OverwatchSettings settings)
-            : base(mainManager, settings, new OverwatchDataModel())
+        public OverwatchModel(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
         {
-            _events = events;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -126,7 +124,8 @@ namespace Artemis.Modules.Games.Overwatch
             if (colors == null)
                 return;
 
-            _events.PublishOnUIThread(new RazerColorArrayChanged(colors));
+            // TODO: Get the debug viewmodel and update the color array
+            //_events.PublishOnUIThread(new RazerColorArrayChanged(colors));
 
             // Determine general game state
             ParseGameSate(gameDataModel, colors);
@@ -137,10 +136,10 @@ namespace Artemis.Modules.Games.Overwatch
             // Ult can't possibly be ready within 2 seconds of changing, this avoids false positives.
             // Filtering on ultReady and ultUsed removes false positives from the native ultimate effects
             // The control keys don't show during character select, so don't continue on those either.
-            if (_characterChange.AddSeconds(2) >= DateTime.Now ||
-                _ultimateUsed.AddSeconds(2) >= DateTime.Now ||
-                _ultimateReady.AddSeconds(2) >= DateTime.Now ||
-                _stickyStatus.Value == OverwatchStatus.InCharacterSelect)
+            if ((_characterChange.AddSeconds(2) >= DateTime.Now) ||
+                (_ultimateUsed.AddSeconds(2) >= DateTime.Now) ||
+                (_ultimateReady.AddSeconds(2) >= DateTime.Now) ||
+                (_stickyStatus.Value == OverwatchStatus.InCharacterSelect))
                 return;
 
             ParseSpecialKeys(gameDataModel, characterMatch, colors);
@@ -152,7 +151,7 @@ namespace Artemis.Modules.Games.Overwatch
             if (string.IsNullOrEmpty(arrayString))
                 return null;
             var intermediateArray = arrayString.Split('|');
-            if (intermediateArray[0] == "1" || intermediateArray.Length < 2)
+            if ((intermediateArray[0] == "1") || (intermediateArray.Length < 2))
                 return null;
             var array = intermediateArray[1].Substring(1).Split(' ');
             if (!array.Any())
@@ -168,7 +167,7 @@ namespace Artemis.Modules.Games.Overwatch
 
                     // Can't parse to a byte directly since it may contain values >254
                     var parts = intermediate.Split(',').Select(int.Parse).ToArray();
-                    if (parts[0] >= 5 && parts[1] >= 21)
+                    if ((parts[0] >= 5) && (parts[1] >= 21))
                         continue;
 
                     colors[parts[0], parts[1]] = Color.FromRgb((byte) parts[2], (byte) parts[3], (byte) parts[4]);
@@ -222,13 +221,13 @@ namespace Artemis.Modules.Games.Overwatch
         private bool ControlsShown(Color[,] colors)
         {
             var keyColor = Color.FromRgb(222, 153, 0);
-            return colors[2, 3] == keyColor || colors[3, 2] == keyColor ||
-                   colors[3, 3] == keyColor || colors[3, 4] == keyColor;
+            return (colors[2, 3] == keyColor) || (colors[3, 2] == keyColor) ||
+                   (colors[3, 3] == keyColor) || (colors[3, 4] == keyColor);
         }
 
         private void ParseSpecialKeys(OverwatchDataModel gameDataModel, CharacterColor? characterMatch, Color[,] colors)
         {
-            if (characterMatch == null || characterMatch.Value.Character == OverwatchCharacter.None)
+            if ((characterMatch == null) || (characterMatch.Value.Character == OverwatchCharacter.None))
                 return;
 
             // Ultimate is ready when Q is blinking

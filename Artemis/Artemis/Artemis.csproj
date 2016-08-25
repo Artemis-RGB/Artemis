@@ -40,7 +40,7 @@
     <ProductName>Artemis</ProductName>
     <PublisherName>Artemis</PublisherName>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.2.3.0</ApplicationVersion>
+    <ApplicationVersion>1.3.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -73,7 +73,7 @@
     <ManifestKeyFile>Artemis_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -120,6 +120,12 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
@@ -149,9 +155,25 @@
       <HintPath>..\packages\CUE.NET.1.0.3\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="DeltaCompressionDotNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.MsDelta, Version=1.0.0.0, Culture=neutral, PublicKeyToken=46b2138a390abf55, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.MsDelta.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.PatchApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3e8888ee913ed789, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.PatchApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DynamicExpresso.Core, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DynamicExpresso.Core.1.3.1.0\lib\net40\DynamicExpresso.Core.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Ets2SdkClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Ets2SdkClient.dll</HintPath>
     </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=0.1.4.3, Culture=neutral, PublicKeyToken=d19974ea350ccea1, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
@@ -159,6 +181,10 @@
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -172,6 +198,22 @@
     <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
@@ -182,6 +224,10 @@
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Conventions, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Conventions.3.2.0.0\lib\net45-full\Ninject.Extensions.Conventions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject.Extensions.Factory, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
@@ -200,15 +246,24 @@
       <HintPath>..\packages\NLog.4.3.7\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Downloads\Chome Downloads\Process.NET-master\Process.NET-master\src\Process.NET\bin\Release\Process.NET.dll</HintPath>
+    <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SpotifyAPI-NET.2.11.0\lib\SpotifyAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Squirrel, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\Squirrel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -241,28 +296,28 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.DataGrid, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit, Version=2.7.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.7\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.9\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -277,6 +332,7 @@
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
+    <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
@@ -284,12 +340,16 @@
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
-    <Compile Include="Events\ActiveKeyboardChanged.cs" />
+    <Compile Include="Events\EffectChangedEventArgs.cs" />
+    <Compile Include="Events\EnabledChangedEventArgs.cs" />
+    <Compile Include="Events\KeyboardChangedEventArgs.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
-    <Compile Include="Events\ToggleEnabled.cs" />
-    <Compile Include="Events\ActiveEffectChanged.cs" />
+    <Compile Include="Events\RazerColorsChangedEventArgs.cs" />
     <Compile Include="InjectionFactories\ILayerEditorVmFactory.cs" />
     <Compile Include="InjectionFactories\IProfileEditorVmFactory.cs" />
+    <Compile Include="InjectionModules\DeviceModules.cs" />
+    <Compile Include="InjectionModules\EffectModules.cs" />
+    <Compile Include="InjectionModules\ProfileModules.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairKeyboards.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
@@ -306,17 +366,17 @@
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
-    <Compile Include="Models\EffectSettings.cs" />
-    <Compile Include="Models\GameSettings.cs" />
-    <Compile Include="Models\Interfaces\GameDataModel.cs" />
-    <Compile Include="Models\OverlaySettings.cs" />
+    <Compile Include="Models\Interfaces\IDataModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
-    <Compile Include="Modules\Games\UnrealTournament\UnrealTournament.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>UnrealTournament.settings</DependentUpon>
+    <Compile Include="Modules\Effects\WindowsProfile\PerformanceInfo.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2DataModel.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Model.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Settings.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2View.xaml.cs">
+      <DependentUpon>EurotruckSimulator2View.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2ViewModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentDataModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentSettings.cs" />
@@ -324,11 +384,6 @@
       <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoW.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>WoW.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\WorldofWarcraft\WoWDataModel.cs" />
     <Compile Include="Modules\Games\WorldofWarcraft\WoWModel.cs" />
     <Compile Include="Modules\Games\WorldofWarcraft\WoWSettings.cs" />
@@ -357,31 +412,16 @@
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.Designer.cs">
-      <DependentUpon>AudioVisualization.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubble.cs" />
-    <Compile Include="Modules\Effects\Bubbles\Bubbles.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Bubbles.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Effects\Bubbles\BubblesSettings.cs" />
     <Compile Include="Modules\Effects\Bubbles\BubblesModel.cs" />
     <Compile Include="Modules\Effects\Bubbles\BubblesView.xaml.cs">
       <DependentUpon>BubblesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Effects\Bubbles\BubblesViewModel.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfile.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>WindowsProfile.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileSettings.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml.cs">
       <DependentUpon>WindowsProfileView.xaml</DependentUpon>
@@ -391,37 +431,17 @@
     <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileModel.cs" />
     <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
     <Compile Include="Models\GameModel.cs" />
-    <Compile Include="Modules\Games\CounterStrike\CounterStrike.Designer.cs">
-      <DependentUpon>CounterStrike.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeDataModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
-    <Compile Include="Modules\Games\Dota2\Dota2.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Dota2.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\Dota2\Dota2DataModel.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Model.cs" />
     <Compile Include="Modules\Games\Dota2\Dota2Settings.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchView.xaml.cs">
       <DependentUpon>OverwatchView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Games\RocketLeague\RocketLeague.Designer.cs">
-      <DependentUpon>RocketLeague.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueDataModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueModel.cs" />
-    <Compile Include="Modules\Games\TheDivision\TheDivision.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>TheDivision.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionDataModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionModel.cs" />
     <Compile Include="Modules\Games\TheDivision\TheDivisionSettings.cs" />
@@ -430,21 +450,11 @@
     </Compile>
     <Compile Include="Modules\Games\TheDivision\TheDivisionViewModel.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchDataModel.cs" />
-    <Compile Include="Modules\Games\Overwatch\Overwatch.Designer.cs">
-      <DependentUpon>Overwatch.settings</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
     <Compile Include="Modules\Games\Overwatch\OverwatchModel.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchSettings.cs" />
     <Compile Include="Modules\Games\Overwatch\OverwatchViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
-    <Compile Include="Modules\Games\Witcher3\Witcher3.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Witcher3.settings</DependentUpon>
-    </Compile>
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
     <Compile Include="Models\OverlayModel.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
@@ -454,10 +464,8 @@
       <DependentUpon>VolumeDisplay.settings</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerSettings.cs" />
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
-    <Compile Include="InjectionModules\ArtemisModules.cs" />
     <Compile Include="InjectionModules\BaseModules.cs" />
     <Compile Include="InjectionModules\ManagerModules.cs" />
     <Compile Include="Profiles\Layers\Animations\GrowAnimation.cs" />
@@ -488,17 +496,12 @@
     </Compile>
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\MetroDialogService.cs" />
-    <Compile Include="Settings\General.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>General.settings</DependentUpon>
-    </Compile>
+    <Compile Include="Settings\EffectSettings.cs" />
+    <Compile Include="Settings\GameSettings.cs" />
     <Compile Include="Settings\GeneralSettings.cs" />
-    <Compile Include="Settings\Offsets.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Offsets.settings</DependentUpon>
-    </Compile>
+    <Compile Include="Settings\IArtemisSettings.cs" />
+    <Compile Include="Settings\OffsetSettings.cs" />
+    <Compile Include="Settings\OverlaySettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
@@ -522,7 +525,6 @@
     <Compile Include="Utilities\Memory\Win32.cs" />
     <Compile Include="Utilities\ParentChild\ChildItemCollection.cs" />
     <Compile Include="Utilities\ParentChild\IChildItem.cs" />
-    <Compile Include="Utilities\ShellLink.cs" />
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
@@ -630,14 +632,9 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Modules\Games\UnrealTournament\Resources\ut-plugin.zip" />
-    <None Include="Modules\Games\UnrealTournament\UnrealTournament.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>UnrealTournament.Designer.cs</LastGenOutput>
-    </None>
     <EmbeddedResource Include="Modules\Games\Witcher3\Resources\witcher3-mod.zip" />
-    <None Include="Modules\Games\WorldofWarcraft\WoW.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>WoW.Designer.cs</LastGenOutput>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
     </None>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
@@ -649,42 +646,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Modules\Effects\AudioVisualizer\AudioVisualization.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>AudioVisualization.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Effects\Bubbles\Bubbles.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Bubbles.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Effects\WindowsProfile\WindowsProfile.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>WindowsProfile.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\CounterStrike\CounterStrike.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>CounterStrike.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Dota2\Dota2.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Dota2.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\RocketLeague\RocketLeague.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>RocketLeague.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\TheDivision\TheDivision.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>TheDivision.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Overwatch\Overwatch.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Overwatch.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Modules\Games\Witcher3\Witcher3.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Witcher3.Designer.cs</LastGenOutput>
-    </None>
     <None Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
@@ -694,6 +655,8 @@
     </None>
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\bow.png" />
+    <Content Include="lib\ColorBox.dll" />
+    <Content Include="lib\Ets2SdkClient.dll" />
     <Content Include="logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -718,14 +681,6 @@
     <Resource Include="Resources\Keyboards\blackwidow.png" />
     <None Include="Resources\Keyboards\none.png" />
     <None Include="Resources\Keyboards\demo-gif.gif" />
-    <None Include="Settings\Offsets.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Offsets.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Settings\General.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>General.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -738,6 +693,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2View.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -1,89 +1,84 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
+using Artemis.DAL;
 using Artemis.Utilities;
+using Caliburn.Micro;
 using MahApps.Metro;
+using Newtonsoft.Json;
+using Squirrel;
 
 namespace Artemis.Settings
 {
-    public class GeneralSettings
+    public class GeneralSettings : IArtemisSettings
     {
         public GeneralSettings()
         {
             ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
+            ApplyAutorun();
+        }
+
+        [DefaultValue("WindowsProfile")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LastEffect { get; set; }
+
+        [DefaultValue(null)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LastKeyboard { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool EnablePointersUpdate { get; set; }
+
+        [DefaultValue(51364)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int GamestatePort { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool Autorun { get; set; }
+
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool Suspended { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowOnStartup { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool AutoUpdate { get; set; }
+
+        [DefaultValue("Light")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string Theme { get; set; }
+
+        [DefaultValue("Info")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string LogLevel { get; set; }
+
+        public Version LastRanVersion { get; set; }
+
+        public void Save()
+        {
+            SettingsProvider.Save(this);
+            ApplyAutorun();
             ApplyTheme();
+            ApplyGamestatePort();
+            Logging.SetupLogging(LogLevel);
         }
 
-        public int GamestatePort
+        public void Reset(bool save = false)
         {
-            get { return General.Default.GamestatePort; }
-            set
+            JsonConvert.PopulateObject("{}", this, new JsonSerializerSettings
             {
-                if (General.Default.GamestatePort == value) return;
-                General.Default.GamestatePort = value;
-            }
-        }
+                ObjectCreationHandling = ObjectCreationHandling.Reuse
+            });
 
-        public bool EnablePointersUpdate
-        {
-            get { return General.Default.EnablePointersUpdate; }
-            set
-            {
-                if (General.Default.EnablePointersUpdate == value) return;
-                General.Default.EnablePointersUpdate = value;
-            }
-        }
-
-        public bool Autorun
-        {
-            get { return General.Default.Autorun; }
-            set
-            {
-                if (General.Default.Autorun == value) return;
-                General.Default.Autorun = value;
-            }
-        }
-
-        public bool CheckForUpdates
-        {
-            get { return General.Default.CheckForUpdates; }
-            set
-            {
-                if (General.Default.CheckForUpdates == value) return;
-                General.Default.CheckForUpdates = value;
-            }
-        }
-
-        public bool ShowOnStartup
-        {
-            get { return General.Default.ShowOnStartup; }
-            set
-            {
-                if (General.Default.ShowOnStartup == value) return;
-                General.Default.ShowOnStartup = value;
-            }
-        }
-
-        public string Theme
-        {
-            get { return General.Default.Theme; }
-            set
-            {
-                if (General.Default.Theme == value) return;
-                General.Default.Theme = value;
-            }
-        }
-
-        public string LogLevel
-        {
-            get { return General.Default.LogLevel; }
-            set
-            {
-                if (General.Default.LogLevel == value) return;
-                General.Default.LogLevel = value;
-            }
+            if (save)
+                SettingsProvider.Save(this);
         }
 
         private void ApplyGamestatePort()
@@ -91,65 +86,49 @@ namespace Artemis.Settings
             // TODO: Restart Gamestate server with new port
         }
 
-        private void ApplyAutorun()
+        public void ApplyAutorun()
         {
-            var startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-            if (Autorun)
+            using (var mgr = new UpdateManager(""))
             {
-                var link = (IShellLink) new ShellLink();
-                link.SetPath(Assembly.GetExecutingAssembly().Location);
-                var file = (IPersistFile) link;
-
-                file.Save(startupFolder + @"\Artemis.lnk", false);
-            }
-            else if (File.Exists(startupFolder + @"\Artemis.lnk"))
-                File.Delete(startupFolder + @"\Artemis.lnk");
-        }
-
-        public void SaveSettings()
-        {
-            General.Default.Save();
-
-            ApplyAutorun();
-            ApplyTheme();
-            ApplyGamestatePort();
-            Logging.SetupLogging(LogLevel);
-        }
-
-        private void ApplyTheme()
-        {
-            switch (Theme)
-            {
-                case "Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
-                        ThemeManager.GetAppTheme("BaseLight"));
-                    break;
-                case "Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
-                        ThemeManager.GetAppTheme("BaseDark"));
-                    break;
-                case "Corsair Light":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
-                        ThemeManager.GetAppTheme("BaseLight"));
-                    break;
-                case "Corsair Dark":
-                    ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
-                        ThemeManager.GetAppTheme("BaseDark"));
-                    break;
+                try
+                {
+                    if (Autorun)
+                        mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false);
+                    else
+                        mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    // ignored, this'll only occur if Artemis isn't installed (ran from VS)
+                }
+                
             }
         }
 
-        public void ResetSettings()
+        public void ApplyTheme()
         {
-            GamestatePort = 51364;
-            EnablePointersUpdate = true;
-            Autorun = true;
-            CheckForUpdates = true;
-            ShowOnStartup = true;
-            Theme = "Light";
-            LogLevel = "Info";
-
-            SaveSettings();
+            Execute.OnUIThread(delegate
+            {
+                switch (Theme)
+                {
+                    case "Light":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                            ThemeManager.GetAppTheme("BaseLight"));
+                        break;
+                    case "Dark":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("Teal"),
+                            ThemeManager.GetAppTheme("BaseDark"));
+                        break;
+                    case "Corsair Light":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                            ThemeManager.GetAppTheme("BaseLight"));
+                        break;
+                    case "Corsair Dark":
+                        ThemeManager.ChangeAppStyle(Application.Current, ThemeManager.GetAccent("CorsairYellow"),
+                            ThemeManager.GetAppTheme("BaseDark"));
+                        break;
+                }
+            });
         }
     }
 }

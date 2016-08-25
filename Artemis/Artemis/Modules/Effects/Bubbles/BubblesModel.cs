@@ -14,12 +14,11 @@ namespace Artemis.Modules.Effects.Bubbles
     {
         #region Constructors
 
-        public BubblesModel(MainManager mainManager, BubblesSettings settings)
-            : base(mainManager, null)
+        public BubblesModel(MainManager mainManager) : base(mainManager, new BubblesSettings(), null)
         {
             Name = "Bubbles";
-            Settings = settings;
             Initialized = false;
+            Settings = (BubblesSettings) base.Settings;
         }
 
         #endregion
@@ -30,7 +29,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         private readonly List<Bubble> _bubbles = new List<Bubble>();
 
-        public BubblesSettings Settings { get; }
+        public new BubblesSettings Settings { get; }
 
         #endregion
 
