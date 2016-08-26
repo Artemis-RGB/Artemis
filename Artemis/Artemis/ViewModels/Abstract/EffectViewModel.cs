@@ -24,9 +24,15 @@ namespace Artemis.ViewModels.Abstract
             EffectSettings = effectModel.Settings;
 
             MainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
+            MainManager.EffectManager.OnEffectChangedEvent += EffectManagerOnOnEffectChangedEvent;
         }
 
         private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(() => EffectEnabled);
+        }
+
+        private void EffectManagerOnOnEffectChangedEvent(object sender, EffectChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => EffectEnabled);
         }

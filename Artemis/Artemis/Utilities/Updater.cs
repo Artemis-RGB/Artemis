@@ -24,19 +24,22 @@ namespace Artemis.Utilities
         /// </summary>
         public static async void UpdateApp()
         {
-            // Only update if the user allows it
-            if (SettingsProvider.Load<GeneralSettings>().AutoUpdate)
-                return;
+            var settings = SettingsProvider.Load<GeneralSettings>();
+            Logger.Info("Update check enabled: {0}", settings.AutoUpdate);
 
-            Logger.Info("Checking for updates...");
+            // Only update if the user allows it
+            if (!SettingsProvider.Load<GeneralSettings>().AutoUpdate)
+                return;
+            
             // Pre-release
-            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
+            // using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
             // Release
-            // using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis"))
+            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis"))
             {
                 try
                 {
                     await mgr.Result.UpdateApp();
+                    Logger.Info("Update check complete");
                     mgr.Result.Dispose();
                 }
                 catch (Exception e)
