@@ -97,9 +97,13 @@ namespace Artemis.Settings
                     else
                         mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
                 }
+                catch (FileNotFoundException)
+                {
+                    // Ignored, only happens when running from VS
+                }
                 catch (DirectoryNotFoundException)
                 {
-                    // ignored, this'll only occur if Artemis isn't installed (ran from VS)
+                    // Ignored, only happens when running from VS
                 }
                 
             }
