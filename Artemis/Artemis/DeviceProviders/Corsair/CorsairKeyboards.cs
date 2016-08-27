@@ -65,6 +65,8 @@ namespace Artemis.DeviceProviders.Corsair
                     break;
                 case "K65 RGB":
                 case "CGK65 RGB":
+                case "K65 LUX RGB":
+                case "K65 RGB RAPIDFIRE":
                     Height = 7;
                     Width = 18;
                     Slug = "corsair-k65-rgb";

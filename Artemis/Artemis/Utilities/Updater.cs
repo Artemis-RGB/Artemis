@@ -40,11 +40,13 @@ namespace Artemis.Utilities
                 {
                     await mgr.Result.UpdateApp();
                     Logger.Info("Update check complete");
-                    mgr.Result.Dispose();
+                    mgr.Result.Dispose(); // This seems odd but if it's not disposed and exception is thrown
                 }
                 catch (Exception e)
                 {
+                    // These exceptions should only really occur when running from VS
                     Logger.Error(e, "Update check failed");
+                    mgr.Result.Dispose();
                 }
             }
         }
