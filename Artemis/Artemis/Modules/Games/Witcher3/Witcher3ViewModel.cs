@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
+using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 
@@ -47,10 +48,7 @@ namespace Artemis.Modules.Games.Witcher3
             }
 
             // Load the ZIP from resources
-            var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Artemis.Modules.Games.Witcher3.Resources.witcher3-mod.zip");
-            if (stream == null)
-                throw new FileNotFoundException("Couldn't load the Witcher 3 mod files from resources.");
+            var stream = new MemoryStream(Resources.witcher3_mod);
             var archive = new ZipArchive(stream);
 
             // Look for any conflicting mods
