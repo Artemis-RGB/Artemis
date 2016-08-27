@@ -171,10 +171,6 @@
       <HintPath>..\packages\DynamicExpresso.Core.1.3.1.0\lib\net40\DynamicExpresso.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ets2SdkClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Ets2SdkClient.dll</HintPath>
-    </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=0.1.4.3, Culture=neutral, PublicKeyToken=d19974ea350ccea1, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
       <Private>True</Private>
@@ -370,6 +366,11 @@
     <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\PerformanceInfo.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\Data\IEts2TelemetryData.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\Data\Reader\Ets2TelemetryStructure.cs" />
+    <Compile Include="Modules\Games\EurotruckSimulator2\Data\Reader\SharedProcessMemory.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2DataModel.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Model.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2Settings.cs" />
@@ -838,6 +839,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Modules\Games\UnrealTournament\Resources\redeemer.gif" />
+    <None Include="Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll" />
+    <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -96,11 +96,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             }
 
             // Load the ZIP from resources
-            var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Artemis.Modules.Games.UnrealTournament.Resources.ut-plugin.zip");
-            if (stream == null)
-                throw new FileNotFoundException("Couldn't load the UT plugin files from resources.");
-
+            var stream = new MemoryStream(Resources.ut_plugin);
             var archive = new ZipArchive(stream);
             try
             {
