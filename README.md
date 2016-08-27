@@ -16,29 +16,26 @@ Artemis adds highly configurable support for several games to a range of RGB key
 ##### Currently the following games are supported
  - Counter-Strike Global Offensive (uses native gamestate intergration)
  - Dota 2
+ - Euro Truck Simulator 2
+ - Overwatch
  - Rocket League
  - The Division (beta)
  - The Witcher 3
- - Overwatch
  - Unreal Tournament
+
 
 ##### The following keyboards are supported
  - All Corsair RGB keyboards
  - Logitech G910
- - Logitech G810 (untested)
+ - Logitech G810
  - Logitech G410 (untested)
  - Razer BlackWidow Chroma
 
 ##### Other peripherals
  - All Corsair RGB mice
  - All Corsair RGB headsets
+ - Logitech mice and headsets as generic devices
 
-For any keyboards/games/effects we'd love PRs!
-
-#### Support is planned for
- - Project CARS
- - What you happen to suggest!
- 
 For online games we greatly prefer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
 
 ### Profile editor
