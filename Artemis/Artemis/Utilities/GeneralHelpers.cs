@@ -76,7 +76,7 @@ namespace Artemis.Utilities
                 if (friendlyName != Empty)
                     list.Add(parent);
 
-                if (propertyInfo.PropertyType.Name != "String")
+                if (propertyInfo.PropertyType.Name != "String" && propertyInfo.PropertyType.Name != "DateTime")
                     list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(),
                         path + $"{propertyInfo.Name}."));
             }

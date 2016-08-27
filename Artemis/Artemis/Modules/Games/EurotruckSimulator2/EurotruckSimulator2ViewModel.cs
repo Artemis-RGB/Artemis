@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Artemis.InjectionFactories;
 using Artemis.Managers;
+using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
 
@@ -15,23 +17,24 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             DisplayName = "ETS 2";
 
             FindGameDir();
-            PlacePlugin();
         }
 
         public void FindGameDir()
         {
             var gameSettings = (EurotruckSimulator2Settings) GameSettings;
-            // If already propertly set up, don't do anything
-            //if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
-            //    File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
-            //    return;
-
-            // Demo is also supported but resides in a different directory
-            var dir = GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x86\eurotrucks2.exe") ??
+            // Demo is also supported but resides in a different directory, the full game can also be 64-bits
+            var dir = GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x64\eurotrucks2.exe") ??
+                      GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x86\eurotrucks2.exe") ??
                       GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2 Demo\bin\win_x86\eurotrucks2.exe");
 
-            gameSettings.GameDirectory = dir ?? string.Empty;
+            if (string.IsNullOrEmpty(dir))
+                return;
+
+            gameSettings.GameDirectory = dir;
             gameSettings.Save();
+
+            if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))   
+                PlacePlugin();
         }
 
         public void BrowseDirectory()
@@ -57,21 +60,40 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
                 return;
 
             var path = ((EurotruckSimulator2Settings) GameSettings).GameDirectory;
-            //if (Directory.Exists(path + "/csgo/cfg"))
-            //{
-            //    var cfgFile = Resources.csgoGamestateConfiguration.Replace("{{port}}",
-            //        MainManager.GameStateWebServer.Port.ToString());
-            //    File.WriteAllText(path + "/csgo/cfg/gamestate_integration_artemis.cfg", cfgFile);
 
-            //    return;
-            //}
+            // Ensure the selected directory exists
+            if (!Directory.Exists(path))
+            {
+                DialogService.ShowErrorMessageBox($"Directory '{path}' not found.");
+                return;
+            }
+            // Ensure it's the ETS2 directory by looking for the executable
+            if (!File.Exists(path + "/eurotrucks2.exe"))
+            {
+                DialogService.ShowErrorMessageBox("Please select a valid Eurotruck Simulator 2 directory\n\n" +
+                                                  @"By default ETS2 is in \SteamApps\common\Euro Truck Simulator 2\bin\win_x64");
+                return;
+            }
 
-            //DialogService.ShowErrorMessageBox("Please select a valid CS:GO directory\n\n" +
-            //                                  @"By default CS:GO is in \SteamApps\common\Counter-Strike Global Offensive");
+            // Create the plugins folder if it's not already there
+            Directory.CreateDirectory(path + "/plugins");
 
-            //((EurotruckSimulator2Settings) GameSettings).GameDirectory = string.Empty;
-            //NotifyOfPropertyChange(() => GameSettings);
-            //GameSettings.Save();
+            // Place either the 64-bits or 32-bits DLL
+            try
+            {
+                if (path.Contains("win_x64"))
+                    File.WriteAllBytes(path + "/plugins/ets2-telemetry-server.dll", Resources.ets2_telemetry_server_x64);
+                else
+                    File.WriteAllBytes(path + "/plugins/ets2-telemetry-server.dll", Resources.ets2_telemetry_server_x86);
+
+                MainManager.Logger.Debug("Installed ETS2 plugin in {0}", path);
+            }
+            catch (Exception e)
+            {
+                MainManager.Logger.Error(e, "Failed to install ETS2 plugin in {0}", path);
+                throw;
+            }
+            
         }
     }
 }
