@@ -48,14 +48,13 @@ namespace Artemis.ViewModels.Profiles
         private string _userValue;
         private bool _userValueIsVisible;
 
-        public LayerConditionViewModel(LayerEditorViewModel conditionModel, LayerConditionModel layerConditionModel,
-            BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps)
+        public LayerConditionViewModel(LayerEditorViewModel conditionModel, LayerConditionModel layerConditionModel)
         {
             _conditionModel = conditionModel;
             _preselecting = false;
 
             LayerConditionModel = layerConditionModel;
-            DataModelProps = dataModelProps;
+            DataModelProps = conditionModel.DataModelProps;
             Operators = new BindableCollection<NamedOperator>();
             Enums = new BindableCollection<string>();
 

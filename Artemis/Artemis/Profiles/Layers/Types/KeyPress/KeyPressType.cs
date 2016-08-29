@@ -13,6 +13,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyPress
 {
@@ -89,12 +90,12 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             layerModel.Properties = new KeyPressPropertiesModel(layerModel.Properties);
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             if (layerPropertiesViewModel is KeyPressPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new KeyPressPropertiesViewModel(proposedLayer, dataModel);
+            return new KeyPressPropertiesViewModel(layerEditorViewModel);
         }
 
         private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)

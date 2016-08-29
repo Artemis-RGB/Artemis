@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
-using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
 namespace Artemis.Profiles.Layers.Abstract
@@ -10,13 +10,19 @@ namespace Artemis.Profiles.Layers.Abstract
         private Brush _brush;
         private LayerModel _layerModel;
 
-        protected LayerPropertiesViewModel(LayerModel layerModel, IDataModel dataModel)
+        protected LayerPropertiesViewModel(LayerEditorViewModel layerEditorViewModel)
         {
-            LayerModel = layerModel;
-            DataModel = dataModel;
+            LayerEditorViewModel = layerEditorViewModel;
+            LayerModel = layerEditorViewModel.ProposedLayer;
+
             Brush = LayerModel.Properties.Brush.Clone();
         }
 
+        public LayerEditorViewModel LayerEditorViewModel { get; set; }
+
+        /// <summary>
+        ///     The proposed brush
+        /// </summary>
         public Brush Brush
         {
             get { return _brush; }
@@ -28,6 +34,9 @@ namespace Artemis.Profiles.Layers.Abstract
             }
         }
 
+        /// <summary>
+        ///     The proposed layer
+        /// </summary>
         public LayerModel LayerModel
         {
             get { return _layerModel; }
@@ -38,8 +47,6 @@ namespace Artemis.Profiles.Layers.Abstract
                 NotifyOfPropertyChange(() => LayerModel);
             }
         }
-
-        public IDataModel DataModel { get; set; }
 
         public abstract void ApplyProperties();
     }

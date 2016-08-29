@@ -10,57 +10,53 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
-using Artemis.Utilities;
 using Artemis.ViewModels.Profiles.Events;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using NuGet;
+using static Artemis.Utilities.GeneralHelpers;
 
 namespace Artemis.ViewModels.Profiles
 {
     public sealed class LayerEditorViewModel : Screen
     {
-        private readonly IDataModel _dataModel;
-        private readonly List<ILayerAnimation> _layerAnimations;
         private EventPropertiesViewModel _eventPropertiesViewModel;
         private LayerModel _layer;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private LayerModel _proposedLayer;
         private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(IDataModel dataModel, LayerModel layer, IEnumerable<ILayerType> layerTypes,
-            List<ILayerAnimation> layerAnimations)
+        public LayerEditorViewModel(LayerModel layer, IDataModel dataModel, IEnumerable<ILayerType> types,
+            List<ILayerAnimation> animations)
         {
-            _dataModel = dataModel;
-            _layerAnimations = layerAnimations;
-
-            LayerTypes = new BindableCollection<ILayerType>(layerTypes);
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(
-                GeneralHelpers.GenerateTypeMap(dataModel));
-
             Layer = layer;
-            ProposedLayer = GeneralHelpers.Clone(layer);
-            ProposedLayer.Children.Clear();
+            ProposedLayer = Clone(layer);
+            DataModel = DataModel;
+            Types = new BindableCollection<ILayerType>(types);
+            Animations = animations;
+
+            DataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(
-                layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c, DataModelProps)));
+            // Setup existing conditions           
+            var conditions = layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
+            LayerConditionVms = new BindableCollection<LayerConditionViewModel>(conditions);
 
             PropertyChanged += PropertiesViewModelHandler;
+
+            // Setup existiing properties
             PreSelect();
         }
 
-
-        public bool ModelChanged { get; set; }
+        public object DataModel { get; set; }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
 
-        public BindableCollection<ILayerType> LayerTypes { get; set; }
-        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
+        public BindableCollection<ILayerType> Types { get; set; }
+        public BindableCollection<PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
         public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
@@ -75,6 +71,8 @@ namespace Artemis.ViewModels.Profiles
                 NotifyOfPropertyChange(() => Layer);
             }
         }
+
+        public List<ILayerAnimation> Animations { get; set; }
 
         public LayerModel ProposedLayer
         {
@@ -122,7 +120,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void PreSelect()
         {
-            SelectedLayerType = LayerTypes.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
+            SelectedLayerType = Types.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
             ToggleIsEvent();
         }
 
@@ -142,8 +140,7 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Let the layer type handle the viewmodel setup
-            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(LayerPropertiesViewModel, _layerAnimations,
-                _dataModel, ProposedLayer);
+            LayerPropertiesViewModel = ProposedLayer.LayerType.SetupViewModel(this, LayerPropertiesViewModel);
 
             if (oldBrush != null)
                 ProposedLayer.Properties.Brush = oldBrush;
@@ -161,22 +158,23 @@ namespace Artemis.ViewModels.Profiles
         public void AddCondition()
         {
             var condition = new LayerConditionModel();
-            LayerConditionVms.Add(new LayerConditionViewModel(this, condition, DataModelProps));
+            LayerConditionVms.Add(new LayerConditionViewModel(this, condition));
         }
 
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
+
+            Layer.Properties.DynamicProperties.Clear();
+            Layer.Properties.Conditions.Clear();
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
+            foreach (var conditionViewModel in LayerConditionVms)
+                Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
-
-            Layer.Properties.Conditions.Clear();
-            foreach (var conditionViewModel in LayerConditionVms)
-                Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
-
+ 
             // Don't bother checking for a GIF path unless the type is GIF
             if (!(Layer.LayerType is KeyboardGifType))
                 return;
@@ -214,7 +212,7 @@ namespace Artemis.ViewModels.Profiles
 
             // Ignore the children, can't just temporarily add them to the proposed layer because
             // that would upset the child layers' relations (sounds like an episode of Dr. Phil amirite?)
-            var currentObj = GeneralHelpers.Clone(Layer);
+            var currentObj = Clone(Layer);
             currentObj.Children.Clear();
             var current = JsonConvert.SerializeObject(currentObj, Formatting.Indented);
             var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);

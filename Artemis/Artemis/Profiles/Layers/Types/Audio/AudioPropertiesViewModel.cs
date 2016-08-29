@@ -1,12 +1,11 @@
-﻿using Artemis.Models.Interfaces;
-using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Models;
+﻿using Artemis.Profiles.Layers.Abstract;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
     public class AudioPropertiesViewModel : LayerPropertiesViewModel
     {
-        public AudioPropertiesViewModel(LayerModel layerModel, IDataModel dataModel) : base(layerModel, dataModel)
+        public AudioPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
         }
 

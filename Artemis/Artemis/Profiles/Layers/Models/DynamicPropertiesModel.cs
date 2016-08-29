@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Artemis.Models.Interfaces;
 using Artemis.Utilities;
 
@@ -62,8 +63,11 @@ namespace Artemis.Profiles.Layers.Models
 
         private void ApplyWidth(LayerPropertiesModel properties, float percentage)
         {
-            var newWidth = percentage*(float) properties.Width;
+            var newWidth = Math.Round(percentage*(float) properties.Width, 2);
             var difference = properties.Width - newWidth;
+            if (newWidth < 0)
+                newWidth = 0;
+
             properties.Width = newWidth;
 
             // Apply the right to left option
@@ -73,8 +77,11 @@ namespace Artemis.Profiles.Layers.Models
 
         private void ApplyHeight(LayerPropertiesModel properties, float percentage)
         {
-            var newHeight = percentage*(float) properties.Height;
+            var newHeight = Math.Round(percentage*(float) properties.Height, 2);
             var difference = properties.Height - newHeight;
+            if (newHeight < 0)
+                newHeight = 0;
+
             properties.Height = newHeight;
 
             if (LayerPropertyOptions == LayerPropertyOptions.Downwards)

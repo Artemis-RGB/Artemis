@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
-using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
-using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
@@ -16,19 +13,17 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         private bool _isGif;
         private ILayerAnimation _selectedLayerAnimation;
 
-        public KeyboardPropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
-            IEnumerable<ILayerAnimation> layerAnimations) : base(layerModel, dataModel)
+        public KeyboardPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
-            LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
+            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.Animations);
 
-            var dataModelProps =
-                new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel));
-            HeightProperties = new LayerDynamicPropertiesViewModel("Height", dataModelProps, layerModel.Properties);
-            WidthProperties = new LayerDynamicPropertiesViewModel("Width", dataModelProps, layerModel.Properties);
-            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", dataModelProps, layerModel.Properties);
+            HeightProperties = new LayerDynamicPropertiesViewModel("Height", editorVm);
+            WidthProperties = new LayerDynamicPropertiesViewModel("Width", editorVm);
+            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", editorVm);
 
-            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation?.Name) ??
-                                     LayerAnimations.First(l => l.Name == "None");
+            SelectedLayerAnimation =
+                LayerAnimations.FirstOrDefault(l => l.Name == editorVm.ProposedLayer.LayerAnimation?.Name) ??
+                LayerAnimations.First(l => l.Name == "None");
         }
 
         public bool ShowGif => IsGif;

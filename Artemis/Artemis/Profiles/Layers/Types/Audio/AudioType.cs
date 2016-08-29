@@ -12,6 +12,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using Newtonsoft.Json;
@@ -119,12 +120,12 @@ namespace Artemis.Profiles.Layers.Types.Audio
             };
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             if (layerPropertiesViewModel is AudioPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new AudioPropertiesViewModel(proposedLayer, dataModel);
+            return new AudioPropertiesViewModel(layerEditorViewModel);
         }
 
         private void ApplyVertical(AudioPropertiesModel settings)

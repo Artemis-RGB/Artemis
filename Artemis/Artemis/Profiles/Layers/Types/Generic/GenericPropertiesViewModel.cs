@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Artemis.Models.Interfaces;
+﻿using System.Linq;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
-using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
@@ -14,16 +10,14 @@ namespace Artemis.Profiles.Layers.Types.Generic
     {
         private ILayerAnimation _selectedLayerAnimation;
 
-        public GenericPropertiesViewModel(LayerModel layerModel, IDataModel dataModel,
-            IEnumerable<ILayerAnimation> layerAnimations) : base(layerModel, dataModel)
+        public GenericPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
-            LayerAnimations = new BindableCollection<ILayerAnimation>(layerAnimations);
-            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity",
-                new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel)),
-                layerModel.Properties);
+            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.Animations);
+            OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", editorVm);
 
-            SelectedLayerAnimation = LayerAnimations.FirstOrDefault(l => l.Name == layerModel.LayerAnimation?.Name) ??
-                                     LayerAnimations.First(l => l.Name == "None");
+            SelectedLayerAnimation =
+                LayerAnimations.FirstOrDefault(l => l.Name == editorVm.ProposedLayer.LayerAnimation?.Name) ??
+                LayerAnimations.First(l => l.Name == "None");
         }
 
         public BindableCollection<ILayerAnimation> LayerAnimations { get; set; }

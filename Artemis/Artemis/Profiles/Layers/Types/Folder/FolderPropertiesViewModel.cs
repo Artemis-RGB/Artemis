@@ -1,12 +1,11 @@
-﻿using Artemis.Models.Interfaces;
-using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Models;
+﻿using Artemis.Profiles.Layers.Abstract;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Folder
 {
     public class FolderPropertiesViewModel : LayerPropertiesViewModel
     {
-        public FolderPropertiesViewModel(LayerModel layerModel, IDataModel dataModel) : base(layerModel, dataModel)
+        public FolderPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
         }
 
