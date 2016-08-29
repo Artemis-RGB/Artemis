@@ -9,6 +9,7 @@ namespace Artemis.ViewModels.Profiles
 {
     public sealed class LayerDynamicPropertiesViewModel : PropertyChangedBase
     {
+        private readonly LayerEditorViewModel _layerEditorViewModel;
         private readonly string _property;
         private BindableCollection<LayerPropertyOptions> _layerPropertyOptions;
         private LayerPropertyType _layerPropertyType;
@@ -19,15 +20,19 @@ namespace Artemis.ViewModels.Profiles
         private bool _sourcesIsVisible;
         private bool _userSourceIsVisible;
 
-        public LayerDynamicPropertiesViewModel(string property,
-            BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps,
-            LayerPropertiesModel layerPropertiesModel)
+        public LayerDynamicPropertiesViewModel(string property, LayerEditorViewModel layerEditorViewModel)
         {
             _property = property;
+            _layerEditorViewModel = layerEditorViewModel;
 
             // Look for the existing property model
             Proposed = new DynamicPropertiesModel();
-            var original = layerPropertiesModel.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
+            var original = layerEditorViewModel
+                .ProposedLayer
+                .Properties
+                .DynamicProperties
+                .FirstOrDefault(lp => lp.LayerProperty == _property);
+
             if (original == null)
             {
                 Proposed.LayerProperty = property;
@@ -37,7 +42,7 @@ namespace Artemis.ViewModels.Profiles
                 Proposed = GeneralHelpers.Clone(original);
 
             PropertyChanged += OnPropertyChanged;
-            SetupControls(dataModelProps);
+            SetupControls();
         }
 
         public LayerPropertyType LayerPropertyType
@@ -129,14 +134,15 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public bool ControlsEnabled => SelectedTarget.Display != "None" && SelectedTarget.Path != null;
+        public bool ControlsEnabled => (SelectedTarget.Display != "None") && (SelectedTarget.Path != null);
 
         public BindableCollection<GeneralHelpers.PropertyCollection> Targets { get; set; }
 
         public BindableCollection<GeneralHelpers.PropertyCollection> Sources { get; set; }
 
-        private void SetupControls(BindableCollection<GeneralHelpers.PropertyCollection> dataModelProps)
+        private void SetupControls()
         {
+            var dataModelProps = _layerEditorViewModel.DataModelProps;
             Name = _property + ":";
 
             // Populate target combobox
@@ -144,11 +150,11 @@ namespace Artemis.ViewModels.Profiles
             {
                 new GeneralHelpers.PropertyCollection {Display = "None"}
             };
-            Targets.AddRange(dataModelProps.Where(p => p.Type == "Int32" || p.Type == "Single"));
+            Targets.AddRange(dataModelProps.Where(p => (p.Type == "Int32") || (p.Type == "Single")));
 
             // Populate sources combobox
             Sources = new BindableCollection<GeneralHelpers.PropertyCollection>();
-            Sources.AddRange(dataModelProps.Where(p => p.Type == "Int32" || p.Type == "Single"));
+            Sources.AddRange(dataModelProps.Where(p => (p.Type == "Int32") || (p.Type == "Single")));
 
             // Preselect according to the model
             SelectedTarget = dataModelProps.FirstOrDefault(p => p.Path == Proposed.GameProperty);
@@ -208,12 +214,13 @@ namespace Artemis.ViewModels.Profiles
 
         public void Apply(LayerModel layerModel)
         {
-            var original = layerModel.Properties.DynamicProperties.FirstOrDefault(lp => lp.LayerProperty == _property);
-            if (original != null)
-                layerModel.Properties.DynamicProperties.Remove(original);
+            var proposedProperties = _layerEditorViewModel.ProposedLayer.Properties;
+            proposedProperties.DynamicProperties = proposedProperties
+                .DynamicProperties
+                .Where(p => p.LayerProperty != _property).ToList();
 
             if (!Proposed.GameProperty.IsNullOrEmpty())
-                layerModel.Properties.DynamicProperties.Add(Proposed);
+                proposedProperties.DynamicProperties.Add(Proposed);
         }
     }
 }

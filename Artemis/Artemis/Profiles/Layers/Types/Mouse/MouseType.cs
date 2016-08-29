@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Mouse
 {
@@ -85,12 +86,12 @@ namespace Artemis.Profiles.Layers.Types.Mouse
                 layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Width"));
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             if (layerPropertiesViewModel is MousePropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new MousePropertiesViewModel(proposedLayer, dataModel, layerAnimations);
+            return new MousePropertiesViewModel(layerEditorViewModel);
         }
     }
 }

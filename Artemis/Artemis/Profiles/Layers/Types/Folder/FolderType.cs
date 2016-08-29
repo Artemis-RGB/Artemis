@@ -7,6 +7,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Folder
 {
@@ -44,12 +45,12 @@ namespace Artemis.Profiles.Layers.Types.Folder
             layerModel.Properties = new SimplePropertiesModel(layerModel.Properties);
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             if (layerPropertiesViewModel is FolderPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new FolderPropertiesViewModel(proposedLayer, dataModel);
+            return new FolderPropertiesViewModel(layerEditorViewModel);
         }
     }
 }

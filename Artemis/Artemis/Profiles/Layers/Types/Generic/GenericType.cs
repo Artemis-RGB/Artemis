@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Generic
 {
@@ -85,12 +86,12 @@ namespace Artemis.Profiles.Layers.Types.Generic
                 layerModel.Properties.DynamicProperties.FirstOrDefault(d => d.LayerProperty == "Width"));
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             if (layerPropertiesViewModel is GenericPropertiesViewModel)
                 return layerPropertiesViewModel;
-            return new GenericPropertiesViewModel(proposedLayer, dataModel, layerAnimations);
+            return new GenericPropertiesViewModel(layerEditorViewModel);
         }
     }
 }

@@ -10,6 +10,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
 {
@@ -76,12 +77,12 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             layerModel.Properties = new KeyboardPropertiesModel(layerModel.Properties);
         }
 
-        public LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer)
+        public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel)
         {
             var model = layerPropertiesViewModel as KeyboardPropertiesViewModel;
             if (model == null)
-                return new KeyboardPropertiesViewModel(proposedLayer, dataModel, layerAnimations)
+                return new KeyboardPropertiesViewModel(layerEditorViewModel)
                 {
                     IsGif = true
                 };

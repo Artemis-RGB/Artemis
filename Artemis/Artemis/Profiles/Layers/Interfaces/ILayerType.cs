@@ -3,6 +3,7 @@ using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels.Profiles;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Interfaces
@@ -58,12 +59,9 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// <summary>
         ///     Sets up a viewmodel to accomodate this layerType
         /// </summary>
+        /// <param name="layerEditorViewModel">The layer editor VM this type resides in</param>
         /// <param name="layerPropertiesViewModel">The current viewmodel</param>
-        /// <param name="layerAnimations"></param>
-        /// <param name="dataModel">The datamodel to use in the new viewmodel</param>
-        /// <param name="proposedLayer">The layer to use in the new viewmodel</param>
-        LayerPropertiesViewModel SetupViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
-            List<ILayerAnimation> layerAnimations, IDataModel dataModel, LayerModel proposedLayer);
+        LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel, LayerPropertiesViewModel layerPropertiesViewModel);
     }
 
     public enum DrawType
