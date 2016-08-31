@@ -352,16 +352,22 @@ namespace Artemis.ViewModels.Profiles
 
         private List<LayerModel> GetLayers()
         {
-            // Get the layers that must be drawn
-            List<LayerModel> drawLayers;
-            if (ShowAll)
-                drawLayers = SelectedProfile.GetLayers();
-            else if (SelectedLayer.LayerType is FolderType)
-                drawLayers = SelectedLayer.GetLayers().ToList();
-            else
-                drawLayers = new List<LayerModel> {SelectedLayer};
+            if (SelectedLayer == null)
+                return new List<LayerModel>();
 
-            return drawLayers;
+            lock (SelectedLayer)
+            {
+                // Get the layers that must be drawn
+                List<LayerModel> drawLayers;
+                if (ShowAll)
+                    drawLayers = SelectedProfile.GetLayers();
+                else if (SelectedLayer.LayerType is FolderType)
+                    drawLayers = SelectedLayer.GetLayers().ToList();
+                else
+                    drawLayers = new List<LayerModel> {SelectedLayer};
+
+                return drawLayers;
+            }
         }
 
         #endregion

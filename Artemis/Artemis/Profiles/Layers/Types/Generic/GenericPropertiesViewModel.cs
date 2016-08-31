@@ -12,7 +12,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
 
         public GenericPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
-            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.Animations);
+            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.LayerAnimations);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", editorVm);
 
             SelectedLayerAnimation =
