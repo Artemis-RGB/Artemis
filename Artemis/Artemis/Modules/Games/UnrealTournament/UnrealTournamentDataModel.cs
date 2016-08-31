@@ -1,4 +1,5 @@
-﻿using Artemis.Models.Interfaces;
+﻿using System.ComponentModel;
+using Artemis.Models.Interfaces;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
@@ -25,6 +26,19 @@ namespace Artemis.Modules.Games.UnrealTournament
         public PlayerState State { get; set; }
         public Inventory Inventory { get; set; }
         public Weapon Weapon { get; set; }
+        [DefaultValue("None")]
+        public KillState KillState { get; set; }
+    }
+
+    public enum KillState
+    {
+        None,
+        Kill,
+        DoubleKill,
+        MultiKill,
+        MegaKill,
+        UltraKill,
+        MonsterKill
     }
 
     public class PlayerState
