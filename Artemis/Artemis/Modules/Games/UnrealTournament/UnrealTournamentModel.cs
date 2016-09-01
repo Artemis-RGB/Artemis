@@ -23,7 +23,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             Enabled = Settings.Enabled;
             Initialized = false;
 
-            _killTimer = new Timer(4000);
+            _killTimer = new Timer(3500);
             _killTimer.Elapsed += KillTimerOnElapsed;
         }
 
@@ -70,43 +70,20 @@ namespace Artemis.Modules.Games.UnrealTournament
             // Reset the timer
             _killTimer.Stop();
             _killTimer.Start();
-            if (utDataModel.Player != null)
+            if (utDataModel.Player?.State != null)
             {
-                switch (utDataModel.Player.KillState)
+                // Can't go past MonsterKill in the current version of UT
+                if (utDataModel.Player.KillState != KillState.MonsterKill)
                 {
-                    case KillState.None:
-                        utDataModel.Player.KillState = KillState.Kill;
-                        break;
-                    case KillState.Kill:
-                        utDataModel.Player.KillState = KillState.DoubleKill;
-                        break;
-                    case KillState.DoubleKill:
-                        utDataModel.Player.KillState = KillState.MultiKill;
-                        break;
-                    case KillState.MultiKill:
-                        utDataModel.Player.KillState = KillState.MegaKill;
-                        break;
-                    case KillState.MegaKill:
-                        utDataModel.Player.KillState = KillState.UltraKill;
-                        break;
-                    case KillState.UltraKill:
-                        utDataModel.Player.KillState = KillState.MonsterKill;
-                        break;
-                    case KillState.MonsterKill:
-                        utDataModel.Player.KillState = KillState.MonsterKill;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    var recentKills = utDataModel.Player.State.Score - _lastScore;
+                    utDataModel.Player.KillState = (KillState) ((int) utDataModel.Player.KillState + recentKills);
                 }
-
-                if (utDataModel.Player.State != null)
-                    _lastScore = utDataModel.Player.State.Score;
+                _lastScore = utDataModel.Player.State.Score;
             }
             else
             {
                 _lastScore = 0;
             }
-
         }
 
         private void KillTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
