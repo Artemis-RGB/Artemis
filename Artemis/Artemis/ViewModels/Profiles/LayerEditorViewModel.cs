@@ -27,13 +27,13 @@ namespace Artemis.ViewModels.Profiles
         private ILayerType _selectedLayerType;
 
         public LayerEditorViewModel(LayerModel layer, IDataModel dataModel, IEnumerable<ILayerType> types,
-            List<ILayerAnimation> animations)
+            List<ILayerAnimation> layerAnimations)
         {
             Layer = layer;
             ProposedLayer = Clone(layer);
             DataModel = DataModel;
-            Types = new BindableCollection<ILayerType>(types);
-            Animations = animations;
+            LayerTypes = new BindableCollection<ILayerType>(types);
+            LayerAnimations = layerAnimations;
 
             DataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
 
@@ -55,7 +55,7 @@ namespace Artemis.ViewModels.Profiles
         [Inject]
         public MetroDialogService DialogService { get; set; }
 
-        public BindableCollection<ILayerType> Types { get; set; }
+        public BindableCollection<ILayerType> LayerTypes { get; set; }
         public BindableCollection<PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
@@ -72,7 +72,7 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public List<ILayerAnimation> Animations { get; set; }
+        public List<ILayerAnimation> LayerAnimations { get; set; }
 
         public LayerModel ProposedLayer
         {
@@ -120,7 +120,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void PreSelect()
         {
-            SelectedLayerType = Types.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
+            SelectedLayerType = LayerTypes.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
             ToggleIsEvent();
         }
 
@@ -166,8 +166,8 @@ namespace Artemis.ViewModels.Profiles
             LayerPropertiesViewModel?.ApplyProperties();
 
             Layer.Properties.DynamicProperties.Clear();
-            Layer.Properties.Conditions.Clear();
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
+            Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
                 Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
