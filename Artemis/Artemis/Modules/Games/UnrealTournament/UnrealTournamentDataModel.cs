@@ -1,4 +1,5 @@
-﻿using Artemis.Models.Interfaces;
+﻿using System.ComponentModel;
+using Artemis.Models.Interfaces;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
@@ -25,6 +26,19 @@ namespace Artemis.Modules.Games.UnrealTournament
         public PlayerState State { get; set; }
         public Inventory Inventory { get; set; }
         public Weapon Weapon { get; set; }
+
+        [DefaultValue("None")]
+        public KillState KillState { get; set; }
+    }
+
+    public enum KillState
+    {
+        None = 0,
+        Kill = 1,
+        DoubleKill = 2,
+        MultiKill = 3,
+        UltraKill = 4,
+        MonsterKill = 5
     }
 
     public class PlayerState
@@ -101,11 +115,11 @@ namespace Artemis.Modules.Games.UnrealTournament
         public bool bCasterControl { get; set; }
         public bool bForcedBalance { get; set; }
         public bool bPlayPlayerIntro { get; set; }
-        public int TimeLimit { get; set; }
-        public int SpawnProtectionTime { get; set; }
-        public int RemainingTime { get; set; }
-        public int ElapsedTime { get; set; }
-        public int RespawnWaitTime { get; set; }
-        public int ForceRespawnTime { get; set; }
+        public float TimeLimit { get; set; }
+        public float SpawnProtectionTime { get; set; }
+        public float RemainingTime { get; set; }
+        public float ElapsedTime { get; set; }
+        public float RespawnWaitTime { get; set; }
+        public float ForceRespawnTime { get; set; }
     }
 }

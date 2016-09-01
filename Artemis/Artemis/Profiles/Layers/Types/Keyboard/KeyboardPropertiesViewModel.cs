@@ -15,7 +15,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
 
         public KeyboardPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
         {
-            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.Animations);
+            LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.LayerAnimations);
 
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", editorVm);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", editorVm);
