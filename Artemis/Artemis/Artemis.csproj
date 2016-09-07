@@ -152,8 +152,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="CUE.NET, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CUE.NET.1.0.3\lib\net45\CUE.NET.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\CUE.NET\bin\CUE.NET.dll</HintPath>
     </Reference>
     <Reference Include="DeltaCompressionDotNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
       <HintPath>..\packages\DeltaCompressionDotNet.1.0.0\lib\net45\DeltaCompressionDotNet.dll</HintPath>
@@ -246,6 +246,10 @@
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Process.NET.1.0.1\lib\Process.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
@@ -331,6 +335,7 @@
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMousemats.cs" />
     <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
@@ -363,7 +368,6 @@
     <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
     <Compile Include="Models\Interfaces\IDataModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualization.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
     <Compile Include="Modules\Effects\WindowsProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
@@ -385,11 +389,23 @@
       <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoWDataModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoWModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoWSettings.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoWViewModel.cs" />
-    <Compile Include="Modules\Games\WorldofWarcraft\WoWAddresses.cs" />
+    <Compile Include="Modules\Games\WoW\Data\Int128.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWEnums.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWOffsets.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWStructs.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWNameCache.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWObjectManager.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWObject.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWPlayer.cs" />
+    <Compile Include="Modules\Games\WoW\Data\WoWUnit.cs" />
+    <Compile Include="Modules\Games\WoW\WoWView.xaml.cs">
+      <DependentUpon>WoWView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\WoW\WoWDataModel.cs" />
+    <Compile Include="Modules\Games\WoW\WoWModel.cs" />
+    <Compile Include="Modules\Games\WoW\WoWSettings.cs" />
+    <Compile Include="Modules\Games\WoW\WoWViewModel.cs" />
+    <Compile Include="Modules\Games\WoW\WoWAddresses.cs" />
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
@@ -410,10 +426,14 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\KeyPress\KeyPressType.cs" />
+    <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesView.xaml.cs">
+      <DependentUpon>MousematPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\Mousemat\MousematType.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerModel.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
     <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
     <Compile Include="Modules\Effects\Bubbles\Bubble.cs" />
@@ -632,6 +652,8 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\keypress.png" />
+    <None Include="Resources\mousemat.png" />
     <EmbeddedResource Include="Modules\Games\UnrealTournament\Resources\ut-plugin.zip" />
     <EmbeddedResource Include="Modules\Games\Witcher3\Resources\witcher3-mod.zip" />
     <None Include="app.manifest">
@@ -713,6 +735,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Modules\Games\WoW\WoWView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -722,6 +748,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Profiles\Layers\Types\KeyPress\KeyPressPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profiles\Layers\Types\Mousemat\MousematPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -841,6 +871,7 @@
     <None Include="Modules\Games\UnrealTournament\Resources\redeemer.gif" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
+    <None Include="Resources\audio.png" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -132,18 +132,20 @@ namespace Artemis.Managers
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
                 var generics = _deviceManager.GenericProviders.Where(m => m.CanUse).ToList();
+                var mousemats = _deviceManager.MousematProviders.Where(m => m.CanUse).ToList();
+                var keyboardOnly = !mice.Any() && !headsets.Any() && !generics.Any() && !mousemats.Any();
 
                 // Setup the frame for this tick
                 using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard))
                 {
                     if (renderEffect.Initialized)
-                        renderEffect.Render(frame, !mice.Any() && !headsets.Any() && !generics.Any());
+                        renderEffect.Render(frame, keyboardOnly);
 
                     // Draw enabled overlays on top of the renderEffect
                     foreach (var overlayModel in _effectManager.EnabledOverlays)
                     {
                         overlayModel.Update();
-                        overlayModel.RenderOverlay(frame, !mice.Any() && !headsets.Any() && !generics.Any());
+                        overlayModel.RenderOverlay(frame, keyboardOnly);
                     }
 
                     // Update the keyboard
@@ -156,6 +158,8 @@ namespace Artemis.Managers
                         headset.UpdateDevice(frame.HeadsetBitmap);
                     foreach (var generic in generics)
                         generic.UpdateDevice(frame.GenericBitmap);
+                    foreach (var mousemat in mousemats)
+                        mousemat.UpdateDevice(frame.MousematBitmap);
                 }
             }
         }
@@ -177,6 +181,9 @@ namespace Artemis.Managers
             GenericBitmap = new Bitmap(40, 40);
             GenericBitmap.SetResolution(96, 96);
 
+            MousematBitmap = new Bitmap(40, 40);
+            MousematBitmap.SetResolution(96, 96);
+
             using (var g = Graphics.FromImage(KeyboardBitmap))
                 g.Clear(Color.Black);
             using (var g = Graphics.FromImage(MouseBitmap))
@@ -185,12 +192,15 @@ namespace Artemis.Managers
                 g.Clear(Color.Black);
             using (var g = Graphics.FromImage(GenericBitmap))
                 g.Clear(Color.Black);
+            using (var g = Graphics.FromImage(MousematBitmap))
+                g.Clear(Color.Black);
         }
 
         public Bitmap KeyboardBitmap { get; set; }
         public Bitmap MouseBitmap { get; set; }
         public Bitmap HeadsetBitmap { get; set; }
         public Bitmap GenericBitmap { get; set; }
+        public Bitmap MousematBitmap { get; set; }
 
         public void Dispose()
         {

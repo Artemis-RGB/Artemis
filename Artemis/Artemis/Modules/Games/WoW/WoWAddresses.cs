@@ -1,4 +1,4 @@
-namespace Artemis.Modules.Games.WorldofWarcraft
+namespace Artemis.Modules.Games.WoW
 {
     public static class WoWAddresses
     {

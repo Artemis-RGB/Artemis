@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
@@ -76,9 +77,14 @@ namespace Artemis.Utilities
                 if (friendlyName != Empty)
                     list.Add(parent);
 
-                if (propertyInfo.PropertyType.Name != "String" && propertyInfo.PropertyType.Name != "DateTime")
+                // Don't go into Strings, DateTimes or anything with JsonIgnore on it
+                if (propertyInfo.PropertyType.Name != "String" &&
+                    propertyInfo.PropertyType.Name != "DateTime" &&
+                    propertyInfo.CustomAttributes.All(a => a.AttributeType != typeof(JsonIgnoreAttribute)))
+                {
                     list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(),
                         path + $"{propertyInfo.Name}."));
+                }
             }
             return list;
         }
