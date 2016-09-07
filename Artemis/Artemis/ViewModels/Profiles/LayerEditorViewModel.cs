@@ -31,6 +31,7 @@ namespace Artemis.ViewModels.Profiles
         {
             Layer = layer;
             ProposedLayer = Clone(layer);
+            ProposedLayer.Children.Clear();
             DataModel = DataModel;
             LayerTypes = new BindableCollection<ILayerType>(types);
             LayerAnimations = layerAnimations;
@@ -201,7 +202,7 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
             // If not a keyboard, ignore size and position
-            if (ProposedLayer.LayerType.DrawType != DrawType.Keyboard)
+            if (ProposedLayer.LayerType.DrawType != DrawType.Keyboard || !ProposedLayer.LayerType.ShowInEdtor)
             {
                 ProposedLayer.Properties.Width = Layer.Properties.Width;
                 ProposedLayer.Properties.Height = Layer.Properties.Height;
@@ -209,9 +210,9 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.Properties.Y = Layer.Properties.Y;
                 ProposedLayer.Properties.Contain = Layer.Properties.Contain;
             }
-
+            
             // Ignore the children, can't just temporarily add them to the proposed layer because
-            // that would upset the child layers' relations (sounds like an episode of Dr. Phil amirite?)
+            // that would upset the child layers' relations (sounds like Dr. Phil amirite?)
             var currentObj = Clone(Layer);
             currentObj.Children.Clear();
             var current = JsonConvert.SerializeObject(currentObj, Formatting.Indented);

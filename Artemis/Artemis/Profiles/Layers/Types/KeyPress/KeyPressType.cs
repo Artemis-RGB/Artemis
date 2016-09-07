@@ -42,7 +42,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
             {
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.keypress), thumbnailRect);
             }
 
             var image = new DrawingImage(visual.Drawing);
@@ -87,7 +87,20 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             if (layerModel.Properties is KeyPressPropertiesModel)
                 return;
 
-            layerModel.Properties = new KeyPressPropertiesModel(layerModel.Properties);
+            // Setup brush as a radial
+            layerModel.Properties = new KeyPressPropertiesModel(layerModel.Properties)
+            {
+                Brush = new RadialGradientBrush(new GradientStopCollection
+                {
+                    new GradientStop(Colors.Red, 0.85),
+                    new GradientStop(Color.FromArgb(0, 255, 0, 0), 0.95),
+                    new GradientStop(Colors.Red, 0.55),
+                    new GradientStop(Color.FromArgb(0, 255, 0, 0), 0.45)
+                })
+            };
+            // Setup defaults
+            ((KeyPressPropertiesModel) layerModel.Properties).AnimationSpeed = 2.5;
+            ((KeyPressPropertiesModel) layerModel.Properties).Scale = 8;
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,

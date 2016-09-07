@@ -212,7 +212,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void NavigateTo(string url)
         {
-            Process.Start(new ProcessStartInfo(url));
+            System.Diagnostics.Process.Start(new ProcessStartInfo(url));
         }
 
         protected override void HandleOpen()
