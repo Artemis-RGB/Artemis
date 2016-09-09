@@ -22,6 +22,9 @@ namespace Artemis.InjectionModules
             // Headsets
             Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
 
+            // Mousemats
+            Bind<DeviceProvider>().To<CorsairMousemats>().InSingletonScope();
+
             // Other
             Bind<DeviceProvider>().To<LogitechGeneric>().InSingletonScope();
         }
