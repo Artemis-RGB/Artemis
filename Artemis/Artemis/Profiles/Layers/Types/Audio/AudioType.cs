@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using Artemis.Profiles.Layers.Abstract;
@@ -28,10 +27,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private int _lines;
         private AudioPropertiesModel _previousSettings;
 
-        public AudioType(MainManager mainManager)
+        public AudioType()
         {
-            _device =
-                new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).FirstOrDefault();
+            _device = new MMDeviceEnumerator()
+                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).FirstOrDefault();
 
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
@@ -55,7 +54,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
             {
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.gif), thumbnailRect);
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.audio), thumbnailRect);
             }
 
             var image = new DrawingImage(visual.Drawing);

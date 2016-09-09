@@ -74,8 +74,7 @@ namespace Artemis.Modules.Games.Witcher3
 
                         archive.ExtractToDirectory(folder + @"witcher3-mod", true);
 
-                        Process.Start(
-                            new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
+                        System.Diagnostics.Process.Start(new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
                         return;
                     }
             }

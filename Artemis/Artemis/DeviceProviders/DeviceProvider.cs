@@ -46,6 +46,7 @@ namespace Artemis.DeviceProviders
         Keyboard,
         Mouse,
         Headset,
-        Generic
+        Generic,
+        Mousemat
     }
 }
