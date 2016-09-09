@@ -6,6 +6,7 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Games.WoW.Data;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Process.NET;
 
@@ -22,7 +23,12 @@ namespace Artemis.Modules.Games.WoW
             Name = "WoW";
             ProcessName = "Wow-64";
             Scale = 4;
-            Enabled = Settings.Enabled;
+
+            // Currently WoW is locked behind a hidden trigger (obviously not that hidden if you're reading this)
+            // It is using memory reading and lets first try to contact Blizzard
+            var settings = SettingsProvider.Load<GeneralSettings>();
+            Enabled = settings.GamestatePort == 62575 && Settings.Enabled;
+
             Initialized = false;
 
             // TODO: Retrieve from GitHub
