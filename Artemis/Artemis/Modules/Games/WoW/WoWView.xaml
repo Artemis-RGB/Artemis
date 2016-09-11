@@ -28,7 +28,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
-                                    Text="For Azeroth" />
+                                    Text="Fight The Burning Legion in style with reactive lighting" />
                     </Label.Content>
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

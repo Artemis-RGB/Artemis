@@ -28,7 +28,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair mousemat. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.MousematSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }
@@ -68,15 +68,15 @@ namespace Artemis.DeviceProviders.Corsair
                     {
                         // Start at index 1 because the corner belongs to the left side
                         var zoneIndex = ledIndex - 4;
-                        col = bitmap.GetPixel((int) (zoneIndex*xStep), 39);
+                        col = bitmap.GetPixel((int) (zoneIndex*xStep), bitmap.Height - 1);
                     }
                     // Right side
                     else
                     {
                         var zoneIndex = ledIndex - 10;
                         col = zoneIndex == 4
-                            ? bitmap.GetPixel(39, 40 - (int) (zoneIndex*yStep))
-                            : bitmap.GetPixel(39, 39 - (int) (zoneIndex*yStep));
+                            ? bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - (int) (zoneIndex*yStep))
+                            : bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - 1 - (int) (zoneIndex*yStep));
                     }
 
                     corsairLed.Color = col;
