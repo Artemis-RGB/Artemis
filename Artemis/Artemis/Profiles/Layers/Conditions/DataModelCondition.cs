@@ -9,7 +9,10 @@ namespace Artemis.Profiles.Layers.Conditions
     {
         public bool ConditionsMet(LayerModel layer, IDataModel dataModel)
         {
-            return layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+            lock (layer.Properties.Conditions)
+            {
+                return layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+            }
         }
     }
 }

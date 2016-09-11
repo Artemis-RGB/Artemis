@@ -8,9 +8,9 @@ using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
+using CUE.NET.Devices.Generic;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
-using CUE.NET.Devices.Keyboard.Keys;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
@@ -121,23 +121,23 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            var widthMultiplier = Width/_keyboard.KeyboardRectangle.Width;
-            var heightMultiplier = Height/_keyboard.KeyboardRectangle.Height;
+            var widthMultiplier = Width/_keyboard.Brush.RenderedRectangle.Width;
+            var heightMultiplier = Height/_keyboard.Brush.RenderedRectangle.Height;
 
-            CorsairKey cueKey = null;
+            CorsairLed cueLed = null;
             try
             {
-                cueKey = _keyboard.Keys.FirstOrDefault(k => k.KeyId.ToString() == keyCode.ToString()) ??
-                         _keyboard.Keys.FirstOrDefault(k => k.KeyId == KeyMap.FormsKeys[keyCode]);
+                cueLed = _keyboard.Leds.FirstOrDefault(k => k.Id.ToString() == keyCode.ToString()) ??
+                         _keyboard.Leds.FirstOrDefault(k => k.Id == KeyMap.FormsKeys[keyCode]);
             }
             catch (Exception)
             {
                 // ignored
             }
 
-            if (cueKey != null)
-                return new KeyMatch(keyCode, (int) (cueKey.KeyRectangle.X*widthMultiplier),
-                    (int) (cueKey.KeyRectangle.Y*heightMultiplier));
+            if (cueLed != null)
+                return new KeyMatch(keyCode, (int) (cueLed.LedRectangle.X*widthMultiplier),
+                    (int) (cueLed.LedRectangle.Y*heightMultiplier));
 
             return null;
         }

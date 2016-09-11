@@ -21,7 +21,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <!-- Left -->
-        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="210" MaxDropDownHeight="125"
+        <ComboBox x:Name="DataModelProps" Grid.Column="0" Width="210" MaxDropDownHeight="400"
                   HorizontalAlignment="Center" VerticalAlignment="Top">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
