@@ -19,21 +19,39 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="20" HorizontalAlignment="Left">
+            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
                     <Label.Content>
                         <AccessText TextWrapping="Wrap"
                                     Text="By default colors the keyboard according to the chosen hero and shows ability cooldowns." />
                     </Label.Content>
                 </Label>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom"
+                           TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
+                           TextAlignment="Justify" Margin="5,0,0,10">
+                    Note: If you're having trouble getting the profile to work, check out
+                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
+                               NavigateUri="https://github.com/SpoinkyNL/Artemis/wiki/Overwatch">
+                        the wiki
+                    </Hyperlink>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
                     <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
                     <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
                                   IsChecked="{Binding Path=GameSettings.Enabled, Mode=TwoWay}"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
                 </StackPanel>
-            </StackPanel>
+            </Grid>
 
             <!-- Game directory -->
             <StackPanel Grid.Row="1"
@@ -52,7 +70,8 @@
             </StackPanel>
 
             <!-- Profile editor -->
-            <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
+            <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor"
+                            Margin="0,0,-30,0" />
 
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
@@ -63,5 +82,6 @@
                         Style="{DynamicResource SquareButtonStyle}" />
             </StackPanel>
         </Grid>
+
     </ScrollViewer>
 </UserControl>

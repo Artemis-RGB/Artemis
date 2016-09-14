@@ -44,8 +44,9 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Enable()
         {
             if (!CueSDK.IsInitialized)
-                CueSDK.Initialize();
+                CueSDK.Initialize(true);
 
+            CueSDK.UpdateMode = UpdateMode.Manual;
             _keyboard = CueSDK.KeyboardSDK;
             switch (_keyboard.DeviceInfo.Model)
             {
@@ -114,7 +115,7 @@ namespace Artemis.DeviceProviders.Corsair
             }
 
             _keyboardBrush.Image = image;
-            _keyboard.Update();
+            _keyboard.Update(true);
 
             image.Dispose();
         }

@@ -23,7 +23,7 @@ namespace Artemis.DeviceProviders.Corsair
         {
             CanUse = CanInitializeSdk();
             if (CanUse && !CueSDK.IsInitialized)
-                CueSDK.Initialize();
+                CueSDK.Initialize(true);
 
             Logger.Debug("Attempted to enable Corsair mousemat. CanUse: {0}", CanUse);
 
