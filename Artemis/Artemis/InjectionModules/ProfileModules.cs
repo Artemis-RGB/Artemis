@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Profiles.Layers.Types.KeyPress;
 using Artemis.Profiles.Layers.Types.Mouse;
+using Artemis.Profiles.Layers.Types.Mousemat;
 using Ninject.Modules;
 
 namespace Artemis.InjectionModules
@@ -36,6 +37,7 @@ namespace Artemis.InjectionModules
             Bind<ILayerType>().To<KeyboardType>();
             Bind<ILayerType>().To<KeyboardGifType>();
             Bind<ILayerType>().To<MouseType>();
+            Bind<ILayerType>().To<MousematType>();
             Bind<ILayerType>().To<GenericType>();
             Bind<ILayerType>().To<KeyPressType>();
             Bind<ILayerType>().To<AudioType>();

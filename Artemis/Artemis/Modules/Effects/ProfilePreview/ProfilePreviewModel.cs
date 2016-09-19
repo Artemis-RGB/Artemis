@@ -79,6 +79,13 @@ namespace Artemis.Modules.Effects.ProfilePreview
                         DataModel,
                         devRec, true, true);
                 }
+                // Render mousemats layer-by-layer
+                using (var g = Graphics.FromImage(frame.MousematBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mousemat),
+                        DataModel,
+                        devRec, true, true);
+                }
             }
         }
     }

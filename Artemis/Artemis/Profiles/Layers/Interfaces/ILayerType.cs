@@ -70,6 +70,7 @@ namespace Artemis.Profiles.Layers.Interfaces
         Keyboard,
         Mouse,
         Headset,
-        Generic
+        Generic,
+        Mousemat
     }
 }

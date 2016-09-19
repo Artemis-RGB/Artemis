@@ -12,8 +12,9 @@ namespace Artemis.Profiles.Layers.Animations
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
+            // TODO: Generic implementation
             // Reset animation progress if layer wasn't drawn for 100ms
-            if (new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - layerModel.LastRender)
+            if ((new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - layerModel.LastRender) && updateAnimations)
                 layerModel.Properties.AnimationProgress = 0;
 
             var progress = layerModel.Properties.AnimationProgress;

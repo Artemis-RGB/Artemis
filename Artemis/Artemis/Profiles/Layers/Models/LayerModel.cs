@@ -72,9 +72,8 @@ namespace Artemis.Profiles.Layers.Models
         {
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
-
-            if (!preview)
-                LastRender = DateTime.Now;
+            
+            LastRender = DateTime.Now;
         }
 
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)

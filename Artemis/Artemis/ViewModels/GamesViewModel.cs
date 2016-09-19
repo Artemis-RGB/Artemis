@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Modules.Games.WoW;
+using Artemis.Settings;
 using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
@@ -23,8 +26,14 @@ namespace Artemis.ViewModels
         {
             base.OnActivate();
 
+            var settings = SettingsProvider.Load<GeneralSettings>();
             foreach (var gameViewModel in _gameViewModels.OrderBy(g => g.DisplayName))
+            {
+                if (settings.GamestatePort != 62575 && gameViewModel is WoWViewModel)
+                    continue;
+                
                 ActivateItem(gameViewModel);
+            }
         }
     }
 }

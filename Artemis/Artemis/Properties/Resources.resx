@@ -199,4 +199,13 @@
   <data name="ets2_telemetry_server_x86" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="mousemat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mousemat.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="keypress" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\keypress.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\audio.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

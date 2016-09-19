@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Artemis.Modules.Games.Overwatch
 {
@@ -10,6 +11,11 @@ namespace Artemis.Modules.Games.Overwatch
         public OverwatchView()
         {
             InitializeComponent();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.Uri.ToString());
         }
     }
 }

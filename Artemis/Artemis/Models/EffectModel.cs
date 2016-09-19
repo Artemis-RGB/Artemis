@@ -88,6 +88,12 @@ namespace Artemis.Models
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic),
                         DataModel, devRec, false, true);
                 }
+                // Render mousemats layer-by-layer
+                using (var g = Graphics.FromImage(frame.MousematBitmap))
+                {
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mousemat),
+                        DataModel, devRec, false, true);
+                }
 
                 // Trace debugging
                 if (DateTime.Now.AddSeconds(-2) <= LastTrace)

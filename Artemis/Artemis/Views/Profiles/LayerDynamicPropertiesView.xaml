@@ -31,11 +31,11 @@
         <TextBlock x:Name="Name" Grid.Column="0" Margin="10" FontSize="13.333" VerticalAlignment="Center" Height="18" />
 
         <!-- Target property -->
-        <ComboBox x:Name="Targets" Grid.Column="1" Margin="10,0" MaxDropDownHeight="125" VerticalAlignment="Center"
+        <ComboBox x:Name="Targets" Grid.Column="1" Margin="10,0" MaxDropDownHeight="300" VerticalAlignment="Center"
                   Height="22">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid MinWidth="435">
+                    <Grid MinWidth="482">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -62,7 +62,7 @@
 
         <!-- PercentageOfProperty -->
         <StackPanel Grid.Column="3" x:Name="SourcesIsVisible" VerticalAlignment="Center">
-            <ComboBox x:Name="Sources" Margin="10,0" MaxDropDownHeight="125" Height="22"
+            <ComboBox x:Name="Sources" Margin="10,0" MaxDropDownHeight="300" Height="22"
                       IsEnabled="{Binding Path=ControlsEnabled}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
