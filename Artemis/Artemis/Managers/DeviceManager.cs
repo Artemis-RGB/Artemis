@@ -31,6 +31,7 @@ namespace Artemis.Managers
             MiceProviders = deviceProviders.Where(d => d.Type == DeviceType.Mouse).ToList();
             HeadsetProviders = deviceProviders.Where(d => d.Type == DeviceType.Headset).ToList();
             GenericProviders = deviceProviders.Where(d => d.Type == DeviceType.Generic).ToList();
+            MousematProviders = deviceProviders.Where(d => d.Type == DeviceType.Mousemat).ToList();
 
             _logger.Info("Intialized DeviceManager with {0} device providers", deviceProviders.Count);
         }
@@ -38,6 +39,7 @@ namespace Artemis.Managers
         public List<DeviceProvider> MiceProviders { get; set; }
         public List<DeviceProvider> HeadsetProviders { get; set; }
         public List<DeviceProvider> GenericProviders { get; set; }
+        public List<DeviceProvider> MousematProviders { get; set; }
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
@@ -47,6 +49,8 @@ namespace Artemis.Managers
         public KeyboardProvider ActiveKeyboard { get; set; }
 
         public bool ChangingKeyboard { get; private set; }
+        
+
         public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChangedEvent;
 
         /// <summary>
@@ -137,6 +141,8 @@ namespace Artemis.Managers
                 headsetProvider.TryEnableAsync();
             foreach (var genericProvider in GenericProviders)
                 genericProvider.TryEnableAsync();
+            foreach (var mousematProviders in MousematProviders)
+                mousematProviders.TryEnableAsync();
         }
 
         /// <summary>

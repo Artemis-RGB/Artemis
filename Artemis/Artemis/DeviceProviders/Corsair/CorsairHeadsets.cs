@@ -22,12 +22,12 @@ namespace Artemis.DeviceProviders.Corsair
         {
             CanUse = CanInitializeSdk();
             if (CanUse && !CueSDK.IsInitialized)
-                CueSDK.Initialize();
+                CueSDK.Initialize(true);
 
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.HeadsetSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }
