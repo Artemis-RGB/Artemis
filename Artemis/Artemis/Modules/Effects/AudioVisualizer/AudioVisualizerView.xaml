@@ -22,7 +22,7 @@
                 <Run Text="In case you're wondering where these effects went, they are now part of the layer system." />
                 <LineBreak />
                 <Run Text="To use them, navigate to the Windows Profile effect and select one of these profiles:" />
-                <LineBreak /><Run Text="• Default - Key waves" /><LineBreak />
+                <LineBreak /><Run Text="• Default - Type waves" /><LineBreak />
                 <Run Text="• Default - Audio visualization" /><LineBreak /><Run /><LineBreak />
                 <Run Text="You can also add these effects to your own profile, even in games! " /><LineBreak />
                 <Run
