@@ -23,7 +23,7 @@ namespace Artemis.DeviceProviders.Logitech
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            return KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == keyCode);
+            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
         }
     }
 }

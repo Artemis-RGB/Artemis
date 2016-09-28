@@ -56,7 +56,7 @@ namespace Artemis.DeviceProviders.Razer
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
             // TODO: Needs it's own keymap or a way to get it from the Chroma SDK
-            return KeyMap.UsEnglishOrionKeys.FirstOrDefault(k => k.KeyCode == keyCode);
+            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Artemis.DeviceProviders.Logitech
                 @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
                 CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
-                                 "The Visual C 2012 Redistributable could not be found, which is required.\n" +
+                                 "The Visual C++ 2012 Redistributable could not be found, which is required.\n" +
                                  "Please download it by going to the following URL:\n\n" +
                                  "https://www.microsoft.com/download/confirmation.aspx?id=30679";
 
