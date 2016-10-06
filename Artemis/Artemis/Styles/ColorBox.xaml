@@ -646,7 +646,7 @@
                                                         <!-- Directions -->
                                                         <UniformGrid Rows="1">
                                                             <Button ToolTip="Horizontal"
-                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    Command="{x:Static nc:ColorBox.DirectionHorizontal}"
                                                                     VerticalAlignment="Top" Width="32">
                                                                 <Button.Content>
                                                                     <Rectangle
@@ -666,7 +666,7 @@
                                                             </Button>
 
                                                             <Button ToolTip="Vertical"
-                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    Command="{x:Static nc:ColorBox.DirectionVertical}"
                                                                     VerticalAlignment="Top" Width="32">
                                                                 <Button.Content>
                                                                     <Rectangle
@@ -682,7 +682,7 @@
                                                             </Button>
 
                                                             <Button ToolTip="Top left to bottom right"
-                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    Command="{x:Static nc:ColorBox.DirectionTopLeftBottomRight}"
                                                                     VerticalAlignment="Top" Width="32">
                                                                 <Button.Content>
                                                                     <Rectangle
@@ -702,7 +702,7 @@
                                                             </Button>
 
                                                             <Button ToolTip="Top right to bottom left"
-                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    Command="{x:Static nc:ColorBox.DirectionTopRightBottomLeft}"
                                                                     VerticalAlignment="Top" Width="32">
                                                                 <Button.Content>
                                                                     <Rectangle
