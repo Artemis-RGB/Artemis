@@ -627,14 +627,102 @@
                                                     </DockPanel.Style>
 
                                                     <UniformGrid Rows="5" DockPanel.Dock="Left" Margin="0,0,5,0">
+                                                        <TextBlock Text="Preset" VerticalAlignment="Center" />
+                                                        <TextBlock Text="Direction" VerticalAlignment="Center" />
                                                         <TextBlock Text="Start Point" VerticalAlignment="Center" />
                                                         <TextBlock Text="End Point" VerticalAlignment="Center" />
-                                                        <TextBlock Text="Mapping Mode" VerticalAlignment="Center" />
-                                                        <TextBlock Text="Spread Method" VerticalAlignment="Center" />
                                                         <TextBlock Text="Opacity" VerticalAlignment="Center" />
                                                     </UniformGrid>
 
                                                     <UniformGrid Rows="5" DockPanel.Dock="Right">
+                                                        <!-- Presets -->
+                                                        <UniformGrid Rows="1">
+                                                            <nc:DoubleUpDown
+                                                                Value="{Binding StartX, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                            <nc:DoubleUpDown
+                                                                Value="{Binding StartY, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                        </UniformGrid>
+
+                                                        <!-- Directions -->
+                                                        <UniformGrid Rows="1">
+                                                            <Button ToolTip="Horizontal"
+                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    VerticalAlignment="Top" Width="32">
+                                                                <Button.Content>
+                                                                    <Rectangle
+                                                                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                                        Width="4" Height="14">
+                                                                        <Rectangle.OpacityMask>
+                                                                            <VisualBrush
+                                                                                Visual="{StaticResource appbar_minus}"
+                                                                                Stretch="Fill" />
+                                                                        </Rectangle.OpacityMask>
+                                                                        <Rectangle.RenderTransform>
+                                                                            <RotateTransform CenterX="2" CenterY="7"
+                                                                                             Angle="-90" />
+                                                                        </Rectangle.RenderTransform>
+                                                                    </Rectangle>
+                                                                </Button.Content>
+                                                            </Button>
+
+                                                            <Button ToolTip="Vertical"
+                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    VerticalAlignment="Top" Width="32">
+                                                                <Button.Content>
+                                                                    <Rectangle
+                                                                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                                        Width="4" Height="14">
+                                                                        <Rectangle.OpacityMask>
+                                                                            <VisualBrush
+                                                                                Visual="{StaticResource appbar_minus}"
+                                                                                Stretch="Fill" />
+                                                                        </Rectangle.OpacityMask>
+                                                                    </Rectangle>
+                                                                </Button.Content>
+                                                            </Button>
+
+                                                            <Button ToolTip="Top left to bottom right"
+                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    VerticalAlignment="Top" Width="32">
+                                                                <Button.Content>
+                                                                    <Rectangle
+                                                                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                                        Width="4" Height="14">
+                                                                        <Rectangle.OpacityMask>
+                                                                            <VisualBrush
+                                                                                Visual="{StaticResource appbar_minus}"
+                                                                                Stretch="Fill" />
+                                                                        </Rectangle.OpacityMask>
+                                                                        <Rectangle.RenderTransform>
+                                                                            <RotateTransform CenterX="2" CenterY="7"
+                                                                                             Angle="-45" />
+                                                                        </Rectangle.RenderTransform>
+                                                                    </Rectangle>
+                                                                </Button.Content>
+                                                            </Button>
+
+                                                            <Button ToolTip="Top right to bottom left"
+                                                                    Command="{x:Static nc:ColorBox.ReverseGradientStop}"
+                                                                    VerticalAlignment="Top" Width="32">
+                                                                <Button.Content>
+                                                                    <Rectangle
+                                                                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                                                                        Width="4" Height="14">
+                                                                        <Rectangle.OpacityMask>
+                                                                            <VisualBrush
+                                                                                Visual="{StaticResource appbar_minus}"
+                                                                                Stretch="Fill" />
+                                                                        </Rectangle.OpacityMask>
+                                                                        <Rectangle.RenderTransform>
+                                                                            <RotateTransform CenterX="2" CenterY="7"
+                                                                                             Angle="45" />
+                                                                        </Rectangle.RenderTransform>
+                                                                    </Rectangle>
+
+                                                                </Button.Content>
+                                                            </Button>
+                                                        </UniformGrid>
+
                                                         <UniformGrid Rows="1">
                                                             <nc:DoubleUpDown
                                                                 Value="{Binding StartX, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -648,14 +736,6 @@
                                                             <nc:DoubleUpDown
                                                                 Value="{Binding EndY, RelativeSource={RelativeSource TemplatedParent}}" />
                                                         </UniformGrid>
-
-                                                        <ComboBox Margin="2"
-                                                                  ItemsSource="{Binding MappingModeTypes, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                  SelectedItem="{Binding MappingMode, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                                                        <ComboBox Margin="2"
-                                                                  ItemsSource="{Binding SpreadMethodTypes, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                  SelectedItem="{Binding SpreadMethod, RelativeSource={RelativeSource TemplatedParent}}" />
 
                                                         <Slider Style="{StaticResource OpacitySliderStyle}" />
                                                     </UniformGrid>
@@ -676,17 +756,15 @@
                                                         </Style>
                                                     </DockPanel.Style>
 
-                                                    <UniformGrid Rows="7" DockPanel.Dock="Left" Margin="0,0,5,0">
+                                                    <UniformGrid Rows="5" DockPanel.Dock="Left" Margin="0,0,5,0">
                                                         <TextBlock Text="Gradient Origin" VerticalAlignment="Center" />
                                                         <TextBlock Text="Center" VerticalAlignment="Center" />
                                                         <TextBlock Text="Radius X" VerticalAlignment="Center" />
                                                         <TextBlock Text="Radius Y" VerticalAlignment="Center" />
-                                                        <TextBlock Text="Mapping Mode" VerticalAlignment="Center" />
-                                                        <TextBlock Text="Spread Method" VerticalAlignment="Center" />
                                                         <TextBlock Text="Opacity" VerticalAlignment="Center" />
                                                     </UniformGrid>
 
-                                                    <UniformGrid Rows="7" DockPanel.Dock="Right">
+                                                    <UniformGrid Rows="5" DockPanel.Dock="Right">
                                                         <UniformGrid Rows="1">
                                                             <nc:DoubleUpDown
                                                                 Value="{Binding GradientOriginX, RelativeSource={RelativeSource TemplatedParent}}" />
@@ -706,14 +784,6 @@
 
                                                         <nc:DoubleUpDown
                                                             Value="{Binding RadiusY, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                                                        <ComboBox Margin="2"
-                                                                  ItemsSource="{Binding MappingModeTypes, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                  SelectedItem="{Binding MappingMode, RelativeSource={RelativeSource TemplatedParent}}" />
-
-                                                        <ComboBox Margin="2"
-                                                                  ItemsSource="{Binding SpreadMethodTypes, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                  SelectedItem="{Binding SpreadMethod, RelativeSource={RelativeSource TemplatedParent}}" />
 
                                                         <Slider Style="{StaticResource OpacitySliderStyle}" />
                                                     </UniformGrid>
