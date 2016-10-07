@@ -30,6 +30,7 @@ namespace ColorBox
         public static RoutedCommand DirectionVertical = new RoutedCommand();
         public static RoutedCommand DirectionTopLeftBottomRight = new RoutedCommand();
         public static RoutedCommand DirectionTopRightBottomLeft = new RoutedCommand();
+        public static RoutedCommand SelectPreset = new RoutedCommand();
         internal bool BrushSetInternally;
         internal bool BrushTypeSetInternally;
 
@@ -59,6 +60,29 @@ namespace ColorBox
             CommandBindings.Add(new CommandBinding(DirectionVertical, DirectionVertical_Executed));
             CommandBindings.Add(new CommandBinding(DirectionTopLeftBottomRight, DirectionTopLeftBottomRight_Executed));
             CommandBindings.Add(new CommandBinding(DirectionTopRightBottomLeft, DirectionTopRightBottomLeft_Executed));
+            CommandBindings.Add(new CommandBinding(SelectPreset, SelectPreset_Executed));
+        }
+
+        private void SelectPreset_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var presetBrush = (LinearGradientBrush) e.Parameter;
+            if (presetBrush == null)
+                return;
+
+            UpdateBrush = false;
+            BrushSetInternally = true;
+
+            Gradients.Clear();
+            foreach (var presetBrushGradientStop in presetBrush.GradientStops)
+                Gradients.Add(presetBrushGradientStop.CloneCurrentValue());
+            StartX = presetBrush.StartPoint.X;
+            StartY = presetBrush.StartPoint.Y;
+            EndX = presetBrush.EndPoint.X;
+            EndY = presetBrush.EndPoint.Y;
+
+            UpdateBrush = true;
+            BrushSetInternally = false;
+            SetBrush();
         }
 
         private void CurrentColorTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -96,9 +120,9 @@ namespace ColorBox
             UpdateBrush = false;
             BrushSetInternally = true;
 
-            StartX = 1.0;
+            StartX = 0.5;
             StartY = 0.0;
-            EndX = 1.0;
+            EndX = 0.5;
             EndY = 1.0;
 
             UpdateBrush = true;
@@ -112,9 +136,9 @@ namespace ColorBox
             BrushSetInternally = true;
 
             StartX = 0.0;
-            StartY = 0.0;
+            StartY = 0.5;
             EndX = 1.0;
-            EndY = 0.0;
+            EndY = 0.5;
 
             UpdateBrush = true;
             BrushSetInternally = false;
@@ -875,6 +899,51 @@ namespace ColorBox
             get { return (int) GetValue(BProperty); }
             set { SetValue(BProperty, value); }
         }
+
+        public static LinearGradientBrush RainbowPreset => new LinearGradientBrush(
+            new GradientStopCollection(new[]
+            {
+                new GradientStop(Colors.Red, 0),
+                new GradientStop(Colors.Yellow, 0.2),
+                new GradientStop(Colors.LawnGreen, 0.4),
+                new GradientStop(Colors.Blue, 0.6),
+                new GradientStop(Colors.Purple, 0.8),
+                new GradientStop(Colors.Red, 1)
+            }), new Point(0, 0.5), new Point(1, 0.5));
+
+        public static LinearGradientBrush PolicePreset => new LinearGradientBrush(
+            new GradientStopCollection(new[]
+            {
+                new GradientStop(Colors.Red, 0),
+                new GradientStop(Colors.Blue, 0.5),
+                new GradientStop(Colors.Red, 1)
+            }), new Point(0, 0.5), new Point(1, 0.5));
+
+        public static LinearGradientBrush ArtemisPreset => new LinearGradientBrush(
+            new GradientStopCollection(new[]
+            {
+                new GradientStop(Color.FromArgb(255, 7, 144, 142), 0.1),
+                new GradientStop(Color.FromArgb(255, 105, 255, 29), 0.3),
+                new GradientStop(Color.FromArgb(255, 255, 203, 16), 0.5),
+                new GradientStop(Color.FromArgb(255, 156, 0, 255), 0.7),
+                new GradientStop(Color.FromArgb(255, 7, 144, 142), 0.9)
+            }), new Point(0, 0), new Point(1, 1));
+
+        public static LinearGradientBrush HelloKittyPreset => new LinearGradientBrush(
+            new GradientStopCollection(new[]
+            {
+                new GradientStop(Color.FromArgb(255, 255, 93, 255), 0),
+                new GradientStop(Color.FromArgb(255, 255, 220, 255), 0.5),
+                new GradientStop(Color.FromArgb(255, 255, 93, 255), 1)
+            }), new Point(0.5, 0), new Point(0.5, 1));
+
+        public static LinearGradientBrush GreenToRedPreset => new LinearGradientBrush(
+            new GradientStopCollection(new[]
+            {
+                new GradientStop(Colors.LawnGreen, 0),
+                new GradientStop(Colors.Orange, 0.5),
+                new GradientStop(Colors.Red, 1)
+            }), new Point(0.5, 0), new Point(0.5, 1));
 
         private static readonly DependencyProperty BProperty =
             DependencyProperty.Register("B", typeof(int), typeof(ColorBox),
