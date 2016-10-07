@@ -627,7 +627,7 @@
                                                     </DockPanel.Style>
 
                                                     <UniformGrid Rows="5" DockPanel.Dock="Left" Margin="0,0,5,0">
-                                                        <TextBlock Text="Preset" VerticalAlignment="Center" />
+                                                        <TextBlock Text="Presets" VerticalAlignment="Center" />
                                                         <TextBlock Text="Direction" VerticalAlignment="Center" />
                                                         <TextBlock Text="Start Point" VerticalAlignment="Center" />
                                                         <TextBlock Text="End Point" VerticalAlignment="Center" />
@@ -637,10 +637,31 @@
                                                     <UniformGrid Rows="5" DockPanel.Dock="Right">
                                                         <!-- Presets -->
                                                         <UniformGrid Rows="1">
-                                                            <nc:DoubleUpDown
-                                                                Value="{Binding StartX, RelativeSource={RelativeSource TemplatedParent}}" />
-                                                            <nc:DoubleUpDown
-                                                                Value="{Binding StartY, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                            <Button ToolTip="Rainbow"
+                                                                    Command="{x:Static nc:ColorBox.SelectPreset}"
+                                                                    CommandParameter="{x:Static nc:ColorBox.RainbowPreset}"
+                                                                    VerticalAlignment="Top" Width="25"
+                                                                    Background="{x:Static nc:ColorBox.RainbowPreset}" />
+                                                            <Button ToolTip="Police"
+                                                                    Command="{x:Static nc:ColorBox.SelectPreset}"
+                                                                    CommandParameter="{x:Static nc:ColorBox.PolicePreset}"
+                                                                    VerticalAlignment="Top" Width="25"
+                                                                    Background="{x:Static nc:ColorBox.PolicePreset}" />
+                                                            <Button ToolTip="Artemis"
+                                                                    Command="{x:Static nc:ColorBox.SelectPreset}"
+                                                                    CommandParameter="{x:Static nc:ColorBox.ArtemisPreset}"
+                                                                    VerticalAlignment="Top" Width="25"
+                                                                    Background="{x:Static nc:ColorBox.ArtemisPreset}" />
+                                                            <Button ToolTip="Hello Kitty"
+                                                                    Command="{x:Static nc:ColorBox.SelectPreset}"
+                                                                    CommandParameter="{x:Static nc:ColorBox.HelloKittyPreset}"
+                                                                    VerticalAlignment="Top" Width="25"
+                                                                    Background="{x:Static nc:ColorBox.HelloKittyPreset}" />
+                                                            <Button ToolTip="Green to red"
+                                                                    Command="{x:Static nc:ColorBox.SelectPreset}"
+                                                                    CommandParameter="{x:Static nc:ColorBox.GreenToRedPreset}"
+                                                                    VerticalAlignment="Top" Width="25"
+                                                                    Background="{x:Static nc:ColorBox.GreenToRedPreset}" />
                                                         </UniformGrid>
 
                                                         <!-- Directions -->
