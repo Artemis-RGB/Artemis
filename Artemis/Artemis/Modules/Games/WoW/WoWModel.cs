@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Process.NET;
+using Process.NET.Memory;
 
 namespace Artemis.Modules.Games.WoW
 {
@@ -68,8 +69,7 @@ namespace Artemis.Modules.Games.WoW
             if (tempProcess == null)
                 return;
 
-            _process = new ProcessSharp(tempProcess);
-            _process.Memory = new ExternalProcessMemory(_process.Handle);
+            _process = new ProcessSharp(tempProcess, MemoryType.Remote);
 
             Initialized = true;
         }

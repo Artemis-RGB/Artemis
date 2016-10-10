@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
              mc:Ignorable="d"
              d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -42,21 +43,19 @@
                        Margin="0,8">
                 Main volume display color
             </TextBlock>
-            <xctk:ColorPicker x:Name="MainColor"
-                              SelectedColor="{Binding Path=OverlaySettings.MainColor, Mode=TwoWay}"
-                              Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
+            <ncore:ColorBox Brush="{Binding MainColor, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Width="110"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,-1,5" Height="22"
+                            ShowNone="False" ShowLinear="False" ShowRadial="False" />
+            
             <!-- Secondary color -->
             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Height="16"
                        Margin="0,8">
                 Secondary volume display color
             </TextBlock>
-            <xctk:ColorPicker x:Name="SecondaryColor"
-                              SelectedColor="{Binding Path=OverlaySettings.SecondaryColor, Mode=TwoWay}"
-                              Grid.Row="2" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
+            <ncore:ColorBox Brush="{Binding SecondaryColor, Mode=TwoWay}" Grid.Row="2" Grid.Column="1" Width="110"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,-1,5" Height="22"
+                            ShowNone="False" ShowLinear="False" ShowRadial="False" />
+            
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Margin="0,8"
                        TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                        MaxWidth="520" TextAlignment="Justify">
