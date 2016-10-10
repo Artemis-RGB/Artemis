@@ -20,7 +20,7 @@ namespace Artemis.DeviceProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 7;
             Width = 22;
-            PreviewSettings = new PreviewSettings(540, 154, new Thickness(25, -80, 0, 0), Resources.g910);
+            PreviewSettings = new PreviewSettings(570, 175, new Thickness(-10, -105, 0, 0), Resources.g910);
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
