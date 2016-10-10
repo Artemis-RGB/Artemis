@@ -58,10 +58,7 @@ namespace Artemis.DeviceProviders.Logitech
             Thread.Sleep(200);
 
             LogitechGSDK.LogiLedSaveCurrentLighting();
-
-            // Disable keys we can't color
             LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
-            LogitechGSDK.LogiLedSetLighting(0, 0, 0);
         }
 
         public override void Disable()

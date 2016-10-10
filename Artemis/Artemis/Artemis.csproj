@@ -650,8 +650,11 @@
     </None>
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\bow.png" />
-    <Content Include="lib\ColorBox.dll" />
+    <Content Include="lib\CUE.NET.dll" />
     <Content Include="lib\Ets2SdkClient.dll" />
+    <Content Include="LogitechLedEnginesWrapper.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logo.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -837,9 +840,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LogitechLedEnginesWrapper.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Modules\Games\UnrealTournament\Resources\redeemer.gif" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
