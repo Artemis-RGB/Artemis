@@ -106,6 +106,16 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
         ARROW_RIGHT = 0x14D,
         NUM_ZERO = 0x52,
         NUM_PERIOD = 0x53,
-        TEST = 0x1
+        G_1 = 0xFFF1,
+        G_2 = 0xFFF2,
+        G_3 = 0xFFF3,
+        G_4 = 0xFFF4,
+        G_5 = 0xFFF5,
+        G_6 = 0xFFF6,
+        G_7 = 0xFFF7,
+        G_8 = 0xFFF8,
+        G_9 = 0xFFF9,
+        G_LOGO = 0xFFFF1,
+        G_BADGE = 0xFFFF2
     }
 }
