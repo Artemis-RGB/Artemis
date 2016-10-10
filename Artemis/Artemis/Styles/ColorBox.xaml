@@ -207,7 +207,7 @@
                                         <!-- Available brush types -->
                                         <ListBox x:Name="listAvailableBrushType" HorizontalContentAlignment="Center"
                                                  SelectedItem="{Binding BrushType, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                                 ItemsSource="{Binding AvailableBrushTypes, RelativeSource={RelativeSource TemplatedParent}}">
+                                                 ItemsSource="{Binding AvailableBrushTypes, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Center">
                                             <ListBox.ItemsPanel>
                                                 <ItemsPanelTemplate>
                                                     <UniformGrid Rows="1" Columns="4" />
@@ -219,7 +219,7 @@
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="ListBoxItem">
                                                                 <Border x:Name="Border" Background="Transparent"
-                                                                        Padding="0,3">
+                                                                        Padding="0,3" Margin="3,0">
                                                                     <Path x:Name="Icon" Height="12" Width="20"
                                                                           Stretch="Fill" Fill="#FF403C3C"
                                                                           StrokeThickness="1"

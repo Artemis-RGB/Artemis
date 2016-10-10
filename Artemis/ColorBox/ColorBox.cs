@@ -655,10 +655,14 @@ namespace ColorBox
         {
             get
             {
-                var temp = BrushTypes.None | BrushTypes.Solid | BrushTypes.Linear | BrushTypes.Radial;
-                foreach (Enum value in Enum.GetValues(temp.GetType()))
-                    if (temp.HasFlag(value))
-                        yield return value;
+                if (ShowNone)
+                    yield return BrushTypes.None;
+                if (ShowSolid)
+                    yield return BrushTypes.Solid;
+                if (ShowLinear)
+                    yield return BrushTypes.Linear;
+                if (ShowRadial)
+                    yield return BrushTypes.Radial;
             }
         }
 
@@ -668,9 +672,44 @@ namespace ColorBox
             set { SetValue(BrushProperty, value); }
         }
 
-        public static readonly DependencyProperty BrushProperty =
-            DependencyProperty.Register("Brush", typeof(Brush), typeof(ColorBox)
-                , new FrameworkPropertyMetadata(null, BrushChanged));
+        public bool ShowNone
+        {
+            get { return (bool) GetValue(ShowNoneProperty); }
+            set { SetValue(ShowNoneProperty, value); }
+        }
+
+        public bool ShowSolid
+        {
+            get { return (bool) GetValue(ShowSolidProperty); }
+            set { SetValue(ShowSolidProperty, value); }
+        }
+
+        public bool ShowLinear
+        {
+            get { return (bool) GetValue(ShowLinearProperty); }
+            set { SetValue(ShowLinearProperty, value); }
+        }
+
+        public bool ShowRadial
+        {
+            get { return (bool) GetValue(ShowRadialProperty); }
+            set { SetValue(ShowRadialProperty, value); }
+        }
+
+        public static readonly DependencyProperty ShowNoneProperty = DependencyProperty.Register("ShowNone",
+            typeof(bool), typeof(ColorBox), new FrameworkPropertyMetadata(true));
+
+        public static readonly DependencyProperty ShowSolidProperty = DependencyProperty.Register("ShowSolid",
+            typeof(bool), typeof(ColorBox), new FrameworkPropertyMetadata(true));
+
+        public static readonly DependencyProperty ShowLinearProperty = DependencyProperty.Register("ShowLinear",
+            typeof(bool), typeof(ColorBox), new FrameworkPropertyMetadata(true));
+
+        public static readonly DependencyProperty ShowRadialProperty = DependencyProperty.Register("ShowRadial",
+            typeof(bool), typeof(ColorBox), new FrameworkPropertyMetadata(true));
+
+        public static readonly DependencyProperty BrushProperty = DependencyProperty.Register("Brush", typeof(Brush),
+            typeof(ColorBox), new FrameworkPropertyMetadata(null, BrushChanged));
 
         private static void BrushChanged(DependencyObject property, DependencyPropertyChangedEventArgs args)
         {

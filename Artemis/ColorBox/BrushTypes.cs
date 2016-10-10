@@ -9,9 +9,12 @@
 
 ***********************************************************************************/
 
+using System;
+
 namespace ColorBox
 {
-    internal enum BrushTypes
+    [Flags]
+    public enum BrushTypes
     {
         None,
         Solid,
