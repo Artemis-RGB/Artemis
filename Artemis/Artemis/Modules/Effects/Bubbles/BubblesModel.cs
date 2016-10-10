@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -14,7 +15,7 @@ namespace Artemis.Modules.Effects.Bubbles
     {
         #region Constructors
 
-        public BubblesModel(MainManager mainManager) : base(mainManager, new BubblesSettings(), null)
+        public BubblesModel(MainManager mainManager) : base(mainManager, SettingsProvider.Load<BubblesSettings>(), null)
         {
             Name = "Bubbles";
             Initialized = false;
