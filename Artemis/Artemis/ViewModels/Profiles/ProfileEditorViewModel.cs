@@ -546,8 +546,13 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             var newProfile = GeneralHelpers.Clone(SelectedProfile);
-            newProfile.Name =
-                await DialogService.ShowInputDialog("Duplicate profile", "Please enter a unique profile name");
+            newProfile.Name = await DialogService
+                .ShowInputDialog("Duplicate profile", "Please enter a unique profile name");
+
+            // Null when the user cancelled
+            if (string.IsNullOrEmpty(newProfile.Name))
+                return;
+
             // Verify the name
             while (ProfileProvider.GetAll().Contains(newProfile))
             {
@@ -555,7 +560,7 @@ namespace Artemis.ViewModels.Profiles
                     await DialogService.ShowInputDialog("Name already in use", "Please enter a unique profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(SelectedProfile.Name))
+                if (string.IsNullOrEmpty(newProfile.Name))
                     return;
             }
 
