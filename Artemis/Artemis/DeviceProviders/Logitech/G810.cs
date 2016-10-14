@@ -11,7 +11,7 @@ namespace Artemis.DeviceProviders.Logitech
         public G810()
         {
             Name = "Logitech G810 RGB";
-            Slug = "logitech-g910"; // Shares slugs with the G910 because the layout is identical
+            Slug = "logitech-g810";
             CantEnableText = "Couldn't connect to your Logitech G810.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
                              "A minimum version of 8.81.15 is required.\n\n" +

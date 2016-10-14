@@ -27,9 +27,10 @@ namespace Artemis.Utilities
             debuggerTarget.Layout = @"${logger:shortName=True} - ${uppercase:${level}}: ${message}";
             fileTarget.FileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/${shortdate}.txt";
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=tostring}";
-            fileTarget.ArchiveEvery = FileArchivePeriod.Day;
+            fileTarget.EnableFileDelete = true;
             fileTarget.MaxArchiveFiles = 7;
-
+            fileTarget.ArchiveEvery = FileArchivePeriod.Minute;
+            
             // Step 4. Define rules
             var rule1 = new LoggingRule("*", logLevel, debuggerTarget);
             config.LoggingRules.Add(rule1);
