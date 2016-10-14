@@ -1,13 +1,17 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
+using Artemis.Settings;
 
 namespace Artemis.DeviceProviders.Logitech
 {
     internal class G810 : LogitechKeyboard
     {
+        private GeneralSettings _generalSettings;
+
         public G810()
         {
             Name = "Logitech G810 RGB";
@@ -19,11 +23,14 @@ namespace Artemis.DeviceProviders.Logitech
             Height = 6;
             Width = 21;
             PreviewSettings = new PreviewSettings(675, 185, new Thickness(0, 35, 0, 0), Resources.g810);
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            return _generalSettings.Layout == "Qwerty"
+                ? KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode)
+                : KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
         }
     }
 }

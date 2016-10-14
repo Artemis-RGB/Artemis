@@ -33,7 +33,7 @@ namespace Artemis.DeviceProviders.Logitech
 
             // Turn it into one long number...
             var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
-            CantEnableText = "Couldn't connect to your Logitech G910.\n" +
+            CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
                              $"A minimum version of 8.81.15 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
                              "If the detected version differs from the version LGS is reporting, reinstall LGS or see the FAQ.\n\n" +
