@@ -18,5 +18,39 @@
          ]
        }
      ]
+   },
+   {
+     "Game": "WorldOfWarcraft",
+     "GameVersion": "7.0.3.22810",
+     "GameAddresses": [
+       {
+         "Description": "ObjectManager",
+         "BasePointer": {
+           "value": 22511728
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "LocalPlayer",
+         "BasePointer": {
+           "value": 23715600
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "NameCache",
+         "BasePointer": {
+           "value": 22142184
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "TargetGuid",
+         "BasePointer": {
+           "value": 24758592
+         },
+         "Offsets": null
+       }
+     ]
    }
 ]
