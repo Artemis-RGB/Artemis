@@ -147,6 +147,8 @@ namespace Artemis.Utilities
                 // Assign each pointer to the settings file
                 if (pointers.FirstOrDefault(p => p.Game == "RocketLeague") != null)
                     offsetSettings.RocketLeague = pointers.FirstOrDefault(p => p.Game == "RocketLeague");
+                if (pointers.FirstOrDefault(p => p.Game == "WorldOfWarcraft") != null)
+                    offsetSettings.WorldOfWarcraft = pointers.FirstOrDefault(p => p.Game == "WorldOfWarcraft");
 
                 offsetSettings.Save();
             }

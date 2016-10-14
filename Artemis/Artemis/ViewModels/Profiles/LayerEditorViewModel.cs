@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
+using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
@@ -175,7 +176,9 @@ namespace Artemis.ViewModels.Profiles
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 Layer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
- 
+
+            Layer.SetupCondition();
+
             // Don't bother checking for a GIF path unless the type is GIF
             if (!(Layer.LayerType is KeyboardGifType))
                 return;
@@ -215,6 +218,11 @@ namespace Artemis.ViewModels.Profiles
             // that would upset the child layers' relations (sounds like Dr. Phil amirite?)
             var currentObj = Clone(Layer);
             currentObj.Children.Clear();
+
+            // Apply the IsEvent boolean
+            currentObj.SetupCondition();
+            ProposedLayer.SetupCondition();
+
             var current = JsonConvert.SerializeObject(currentObj, Formatting.Indented);
             var proposed = JsonConvert.SerializeObject(ProposedLayer, Formatting.Indented);
 

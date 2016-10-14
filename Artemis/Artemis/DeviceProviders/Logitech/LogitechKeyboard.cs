@@ -16,7 +16,7 @@ namespace Artemis.DeviceProviders.Logitech
                 @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
                 CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
-                                 "The Visual C 2012 Redistributable could not be found, which is required.\n" +
+                                 "The Visual C++ 2012 Redistributable could not be found, which is required.\n" +
                                  "Please download it by going to the following URL:\n\n" +
                                  "https://www.microsoft.com/download/confirmation.aspx?id=30679";
 
@@ -33,7 +33,7 @@ namespace Artemis.DeviceProviders.Logitech
 
             // Turn it into one long number...
             var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
-            CantEnableText = "Couldn't connect to your Logitech G910.\n" +
+            CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
                              $"A minimum version of 8.81.15 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
                              "If the detected version differs from the version LGS is reporting, reinstall LGS or see the FAQ.\n\n" +
@@ -58,10 +58,7 @@ namespace Artemis.DeviceProviders.Logitech
             Thread.Sleep(200);
 
             LogitechGSDK.LogiLedSaveCurrentLighting();
-
-            // Disable keys we can't color
             LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
-            LogitechGSDK.LogiLedSetLighting(0, 0, 0);
         }
 
         public override void Disable()

@@ -6,6 +6,7 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:ncore="http://schemas.ncore.com/wpf/xaml/colorbox"
              mc:Ignorable="d"
              d:DesignHeight="476.986" d:DesignWidth="538.772">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -56,11 +57,9 @@
                        Height="16" Margin="0,8">
                 Bubble color
             </TextBlock>
-            <xctk:ColorPicker x:Name="MiddleColor"
-                              SelectedColor="{Binding Path=EffectSettings.BubbleColor, Mode=TwoWay}"
-                              Grid.Row="1" Grid.Column="1" Width="110" HorizontalAlignment="Right"
-                              VerticalAlignment="Center" Margin="0,5,-1,5" Height="22" />
-
+            <ncore:ColorBox Brush="{Binding BubbleColor, Mode=TwoWay}" Grid.Row="1" Grid.Column="1" Width="110"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,-1,5" Height="22"
+                            ShowNone="False" ShowLinear="False" ShowRadial="False"/>
             <!-- Random colors -->
             <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                        Height="16" Margin="0,8">

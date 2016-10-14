@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-
-// ReSharper disable InconsistentNaming
+using System.Text;
 
 namespace Artemis.DeviceProviders.Logitech.Utilities
 {
@@ -25,6 +24,25 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool LogiLedInit();
+
+        //Config option functions
+        [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool LogiLedGetConfigOptionNumber([MarshalAs(UnmanagedType.LPWStr)] string configPath,
+            ref double defaultNumber);
+
+        [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool LogiLedGetConfigOptionBool([MarshalAs(UnmanagedType.LPWStr)] string configPath,
+            ref bool defaultRed);
+
+        [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool LogiLedGetConfigOptionColor([MarshalAs(UnmanagedType.LPWStr)] string configPath,
+            ref int defaultRed, ref int defaultGreen, ref int defaultBlue);
+
+        [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool LogiLedGetConfigOptionKeyInput([MarshalAs(UnmanagedType.LPWStr)] string configPath,
+            StringBuilder buffer, int bufsize);
+
+        /////////////////////
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool LogiLedSetTargetDevice(int targetDevice);
@@ -53,6 +71,9 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
         public static extern bool LogiLedStopEffects();
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool LogiLedExcludeKeysFromBitmap(KeyboardNames[] keyList, int listCount);
+
+        [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool LogiLedSetLightingFromBitmap(byte[] bitmap);
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
@@ -68,7 +89,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
             int greenPercentage, int bluePercentage);
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool LogiLedSetLightingForKeyWithKeyName(int keyCode, int redPercentage,
+        public static extern bool LogiLedSetLightingForKeyWithKeyName(KeyboardNames keyCode, int redPercentage,
             int greenPercentage, int bluePercentage);
 
         [DllImport("LogitechLedEnginesWrapper ", CallingConvention = CallingConvention.Cdecl)]

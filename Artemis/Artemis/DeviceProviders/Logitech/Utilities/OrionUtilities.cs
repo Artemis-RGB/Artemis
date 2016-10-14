@@ -180,6 +180,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
                     remapped[firstTByte + j] = pixels[firstSByte + j];
             }
 
+            b.Dispose();
             return remapped;
         }
 

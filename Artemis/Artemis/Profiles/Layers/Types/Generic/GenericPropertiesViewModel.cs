@@ -1,13 +1,16 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
+using ColorBox;
 
 namespace Artemis.Profiles.Layers.Types.Generic
 {
     public class GenericPropertiesViewModel : LayerPropertiesViewModel
     {
+        private IEnumerable<BrushTypes> _availableBrushTypes;
         private ILayerAnimation _selectedLayerAnimation;
 
         public GenericPropertiesViewModel(LayerEditorViewModel editorVm) : base(editorVm)
