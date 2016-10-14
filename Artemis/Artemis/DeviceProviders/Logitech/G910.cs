@@ -3,13 +3,17 @@ using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
+using Artemis.Settings;
 
 namespace Artemis.DeviceProviders.Logitech
 {
     internal class G910 : LogitechKeyboard
     {
+        private readonly GeneralSettings _generalSettings;
+
         public G910()
         {
             Name = "Logitech G910 RGB";
@@ -21,11 +25,17 @@ namespace Artemis.DeviceProviders.Logitech
             Height = 7;
             Width = 22;
             PreviewSettings = new PreviewSettings(570, 175, new Thickness(-10, -105, 0, 0), Resources.g910);
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            var value = _generalSettings.Layout == "Qwerty"
+                ? KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode)
+                : KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+
+            // Adjust the distance by 1 on both x and y for the G910
+            return new KeyMatch(value.KeyCode, value.X + 1, value.Y + 1);
         }
 
         /// <summary>

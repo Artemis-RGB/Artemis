@@ -27,6 +27,10 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LastKeyboard { get; set; }
 
+        [DefaultValue("Qwerty")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public string Layout { get; set; }
+
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool EnablePointersUpdate { get; set; }

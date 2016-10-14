@@ -86,6 +86,12 @@ namespace Artemis.ViewModels.Flyouts
             "Corsair Dark"
         };
 
+        public BindableCollection<string> Layouts => new BindableCollection<string>
+        {
+            "Qwerty",
+            "Azerty"
+        };
+
         public string VersionText => "Artemis " + Assembly.GetExecutingAssembly().GetName().Version;
 
         public BindableCollection<string> LogLevels { get; set; }
@@ -98,6 +104,17 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == GeneralSettings.Theme) return;
                 GeneralSettings.Theme = value;
                 NotifyOfPropertyChange(() => SelectedTheme);
+            }
+        }
+
+        public string SelectedLayout
+        {
+            get { return GeneralSettings.Layout; }
+            set
+            {
+                if (value == GeneralSettings.Layout) return;
+                GeneralSettings.Layout = value;
+                NotifyOfPropertyChange(() => SelectedLayout);
             }
         }
 
