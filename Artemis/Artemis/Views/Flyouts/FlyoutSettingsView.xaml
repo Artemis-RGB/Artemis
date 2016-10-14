@@ -7,7 +7,7 @@
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="300"
-             Width="300">
+             Width="270">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -31,23 +31,27 @@
         <!-- Master switch -->
         <Label Grid.Row="0" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Enable Artemis:" />
-        <controls:ToggleSwitch Grid.Row="0" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=Enabled, Mode=TwoWay}" />
+        <controls:ToggleSwitchButton Grid.Row="0" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=Enabled, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
 
         <!-- Startup with Windows -->
         <Label Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
-               Content="Startup with Windows:" />
-        <controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               IsChecked="{Binding Path=GeneralSettings.Autorun, Mode=TwoWay}"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+               Content="Auto startup:" />
+        <controls:ToggleSwitchButton Grid.Row="1" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=GeneralSettings.Autorun, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
+
 
         <!-- Show on startup -->
         <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Show on startup:" />
-        <controls:ToggleSwitch Grid.Row="2" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               IsChecked="{Binding Path=GeneralSettings.ShowOnStartup, Mode=TwoWay}"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125" />
+        <controls:ToggleSwitchButton Grid.Row="2" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=GeneralSettings.ShowOnStartup, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
 
         <!-- Theme selection -->
         <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -63,26 +67,28 @@
                   HorizontalAlignment="Right"
                   Width="140" />
 
-        <!-- Gamestate port -->
+        <!-- Layout selection -->
         <Label Grid.Row="5" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
-               Content="Gamestate server port:" />
-        <controls:NumericUpDown Grid.Row="5" Grid.Column="1" Margin="10" VerticalAlignment="Center"
-                                HorizontalAlignment="Right" Width="120"
+               Content="Layout:" />
+        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="Layouts" Margin="10" VerticalAlignment="Center"
+                  HorizontalAlignment="Right"
+                  Width="140" />
+
+        <!-- Gamestate port -->
+        <Label Grid.Row="6" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Gamestate port:" />
+        <controls:NumericUpDown Grid.Row="6" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+                                HorizontalAlignment="Right" Width="140"
                                 Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}" />
 
         <!-- Updates check -->
-        <Label Grid.Row="6" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
-               Content="Auto-update:" />
-        <controls:ToggleSwitch Grid.Row="6" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=GeneralSettings.AutoUpdate, Mode=TwoWay}" />
-
-        <!-- Update pointers -->
         <Label Grid.Row="7" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
-               Content="Download pointers:" />
-        <controls:ToggleSwitch Grid.Row="7" Grid.Column="1" Margin="5" OnLabel="Yes" OffLabel="No"
-                               VerticalAlignment="Center" HorizontalAlignment="Right" Width="125"
-                               IsChecked="{Binding Path=GeneralSettings.EnablePointersUpdate, Mode=TwoWay}" />
+               Content="Auto-update:" />
+        <controls:ToggleSwitchButton Grid.Row="7" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=GeneralSettings.AutoUpdate, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
+
 
         <!-- Logging -->
         <Label Grid.Row="8" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -91,15 +97,15 @@
                   HorizontalAlignment="Right"
                   Width="140" />
         <Button Grid.Row="9" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
-                VerticalAlignment="Center"
+                VerticalAlignment="Center" Width="90" HorizontalAlignment="Right"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Buttons -->
         <Button Grid.Row="10" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
-                VerticalAlignment="Center" HorizontalAlignment="Left" Width="120"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Width="90"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="10" Grid.Column="1" Margin="10" x:Name="SaveSettings" Content="Save changes"
-                VerticalAlignment="Center" HorizontalAlignment="Right" Width="120"
+        <Button Grid.Row="10" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
+                VerticalAlignment="Center" HorizontalAlignment="Right" Width="90"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->

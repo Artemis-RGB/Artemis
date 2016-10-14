@@ -9,13 +9,16 @@ namespace Artemis.Profiles.Layers.Conditions
     {
         public bool ConditionsMet(LayerModel layer, IDataModel dataModel)
         {
-            var conditionsMet = layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
-            layer.EventProperties.Update(layer, conditionsMet);
+            lock (layer.Properties.Conditions)
+            {
+                var conditionsMet = layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+                layer.EventProperties.Update(layer, conditionsMet);
 
-            if (conditionsMet && layer.EventProperties.MustTrigger)
-                layer.EventProperties.TriggerEvent(layer);
+                if (conditionsMet && layer.EventProperties.CanTrigger)
+                    layer.EventProperties.TriggerEvent(layer);
 
-            return conditionsMet && layer.EventProperties.MustDraw;
+                return layer.EventProperties.MustDraw;
+            }
         }
     }
 }

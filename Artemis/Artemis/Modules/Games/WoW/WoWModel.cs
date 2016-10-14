@@ -8,7 +8,9 @@ using Artemis.Modules.Games.WoW.Data;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
+using Newtonsoft.Json;
 using Process.NET;
+using Process.NET.Memory;
 
 namespace Artemis.Modules.Games.WoW
 {
@@ -31,25 +33,36 @@ namespace Artemis.Modules.Games.WoW
 
             Initialized = false;
 
-            // TODO: Retrieve from GitHub
-            _pointer = new GamePointersCollection
-            {
-                Game = "WorldOfWarcraft",
-                GameVersion = "7.0.3.22522",
-                GameAddresses = new List<GamePointer>
-                {
-                    new GamePointer
-                    {
-                        Description = "ObjectManager",
-                        BasePointer = new IntPtr(0x1575E10)
-                    },
-                    new GamePointer
-                    {
-                        Description = "LocalPlayer",
-                        BasePointer = new IntPtr(0x169BCB0)
-                    }
-                }
-            };
+             _pointer = SettingsProvider.Load<OffsetSettings>().WorldOfWarcraft;
+            //_pointer = new GamePointersCollection
+            //{
+            //    Game = "WorldOfWarcraft",
+            //    GameVersion = "7.0.3.22810",
+            //    GameAddresses = new List<GamePointer>
+            //    {
+            //        new GamePointer
+            //        {
+            //            Description = "ObjectManager",
+            //            BasePointer = new IntPtr(0x1578070)
+            //        },
+            //        new GamePointer
+            //        {
+            //            Description = "LocalPlayer",
+            //            BasePointer = new IntPtr(0x169DF10)
+            //        },
+            //        new GamePointer
+            //        {
+            //            Description = "NameCache",
+            //            BasePointer = new IntPtr(0x151DCE8)
+            //        },
+            //        new GamePointer
+            //        {
+            //            Description = "TargetGuid",
+            //            BasePointer = new IntPtr(0x179C940)
+            //        }
+            //    }
+            //};
+            //var res = JsonConvert.SerializeObject(_pointer, Formatting.Indented);
         }
 
         public int Scale { get; set; }
@@ -68,8 +81,7 @@ namespace Artemis.Modules.Games.WoW
             if (tempProcess == null)
                 return;
 
-            _process = new ProcessSharp(tempProcess);
-            _process.Memory = new ExternalProcessMemory(_process.Handle);
+            _process = new ProcessSharp(tempProcess, MemoryType.Remote);
 
             Initialized = true;
         }
@@ -83,10 +95,11 @@ namespace Artemis.Modules.Games.WoW
 
             var objectManager = new WoWObjectManager(_process,
                 _pointer.GameAddresses.First(a => a.Description == "ObjectManager").BasePointer);
-            var nameCache = new WoWNameCache(_process, new IntPtr(0x151BA88));
+            var nameCache = new WoWNameCache(_process,
+                _pointer.GameAddresses.First(a => a.Description == "NameCache").BasePointer);
             var player = new WoWPlayer(_process,
-                _pointer.GameAddresses.First(a => a.Description == "LocalPlayer").BasePointer, new IntPtr(0x179A6E0),
-                true);
+                _pointer.GameAddresses.First(a => a.Description == "LocalPlayer").BasePointer,
+                _pointer.GameAddresses.First(a => a.Description == "TargetGuid").BasePointer, true);
 
             dataModel.Player = player;
             if (dataModel.Player != null && dataModel.Player.Guid != Guid.Empty)

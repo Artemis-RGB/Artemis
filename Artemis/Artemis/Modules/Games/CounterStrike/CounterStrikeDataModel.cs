@@ -1,4 +1,5 @@
 ﻿using Artemis.Models.Interfaces;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -47,6 +48,10 @@ namespace Artemis.Modules.Games.CounterStrike
 
     public class State
     {
+        [JsonIgnore]
+        public bool made_kill { get; set; }
+        [JsonIgnore]
+        public bool made_headshot { get; set; }
         public int health { get; set; }
         public int armor { get; set; }
         public bool helmet { get; set; }
@@ -58,15 +63,8 @@ namespace Artemis.Modules.Games.CounterStrike
         public int round_killhs { get; set; }
     }
 
-    public class Weapon0
-    {
-        public string name { get; set; }
-        public string paintkit { get; set; }
-        public string type { get; set; }
-        public string state { get; set; }
-    }
 
-    public class Weapon1
+    public class Weapon
     {
         public string name { get; set; }
         public string paintkit { get; set; }
@@ -77,19 +75,12 @@ namespace Artemis.Modules.Games.CounterStrike
         public string state { get; set; }
     }
 
-    public class Weapon2
-    {
-        public string name { get; set; }
-        public string paintkit { get; set; }
-        public string type { get; set; }
-        public string state { get; set; }
-    }
-
     public class Weapons
     {
-        public Weapon0 weapon_0 { get; set; }
-        public Weapon1 weapon_1 { get; set; }
-        public Weapon2 weapon_2 { get; set; }
+        public Weapon active_weapon { get; set; }
+        public Weapon weapon_0 { get; set; }
+        public Weapon weapon_1 { get; set; }
+        public Weapon weapon_2 { get; set; }
     }
 
     public class MatchStats

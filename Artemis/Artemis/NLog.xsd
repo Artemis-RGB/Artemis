@@ -368,6 +368,7 @@
           <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="layout" minOccurs="0" maxOccurs="1" type="Layout" />
+          <xs:element name="lineEnding" minOccurs="0" maxOccurs="1" type="LineEndingMode" />
           <xs:element name="maxMessageSize" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="newLine" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="onConnectionOverflow" minOccurs="0" maxOccurs="1" type="NLog.Targets.NetworkTargetConnectionsOverflowAction" />
@@ -399,6 +400,11 @@
         <xs:attribute name="layout" type="SimpleLayoutAttribute">
           <xs:annotation>
             <xs:documentation>Instance of  that is used to format log messages.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="lineEnding" type="LineEndingMode">
+          <xs:annotation>
+            <xs:documentation>End of line value if a newline is appended at the end of log message .</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="maxMessageSize" type="xs:integer">
@@ -1021,8 +1027,11 @@
           <xs:element name="archiveAboveSize" minOccurs="0" maxOccurs="1" type="xs:long" />
           <xs:element name="enableArchiveFileCompression" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="maxArchiveFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
-          <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="fileNameKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
+          <xs:element name="archiveFileKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
           <xs:element name="cleanupFileName" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="writeFooterOnArchivingOnly" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="fileName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="archiveDateFormat" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="archiveOldFileOnStartup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
@@ -1032,15 +1041,15 @@
           <xs:element name="deleteOldFileOnStartup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="replaceFileContentsOnEachWrite" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="concurrentWrites" minOccurs="0" maxOccurs="1" type="xs:boolean" />
-          <xs:element name="concurrentWriteAttemptDelay" minOccurs="0" maxOccurs="1" type="xs:integer" />
+          <xs:element name="keepFileOpen" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="maxLogFilenames" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="networkWrites" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="openFileCacheSize" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="openFileCacheTimeout" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="bufferSize" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="autoFlush" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="concurrentWriteAttemptDelay" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="concurrentWriteAttempts" minOccurs="0" maxOccurs="1" type="xs:integer" />
-          <xs:element name="keepFileOpen" minOccurs="0" maxOccurs="1" type="xs:boolean" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
           <xs:annotation>
@@ -1102,14 +1111,29 @@
             <xs:documentation>Maximum number of archive files that should be kept.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="forceManaged" type="xs:boolean">
+        <xs:attribute name="fileNameKind" type="NLog.Targets.FilePathKind">
           <xs:annotation>
-            <xs:documentation>Gets or set a value indicating whether a managed file stream is forced, instead of used the native implementation.</xs:documentation>
+            <xs:documentation>Is the  an absolute or relative path?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="archiveFileKind" type="NLog.Targets.FilePathKind">
+          <xs:annotation>
+            <xs:documentation>Is the  an absolute or relative path?</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="cleanupFileName" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Cleanup invalid values in a filename, e.g. slashes in a filename. If set to true, this can impact the performance of massive writes. If set to false, nothing gets written when the filename is wrong.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="forceManaged" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Gets or set a value indicating whether a managed file stream is forced, instead of used the native implementation.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="writeFooterOnArchivingOnly" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Indicates whether the footer should be written only when the file is archived.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="fileName" type="SimpleLayoutAttribute">
@@ -1157,9 +1181,9 @@
             <xs:documentation>Indicates whether concurrent writes to the log file by multiple processes on the same host.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="concurrentWriteAttemptDelay" type="xs:integer">
+        <xs:attribute name="keepFileOpen" type="xs:boolean">
           <xs:annotation>
-            <xs:documentation>Delay in milliseconds to wait before attempting to write to the file again.</xs:documentation>
+            <xs:documentation>Indicates whether to keep log file open instead of opening and closing it on each logging event.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="maxLogFilenames" type="xs:integer">
@@ -1192,14 +1216,14 @@
             <xs:documentation>Indicates whether to automatically flush the file buffers after each log message.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="concurrentWriteAttemptDelay" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>Delay in milliseconds to wait before attempting to write to the file again.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="concurrentWriteAttempts" type="xs:integer">
           <xs:annotation>
             <xs:documentation>Number of times the write is appended on the file before NLog discards the log message.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="keepFileOpen" type="xs:boolean">
-          <xs:annotation>
-            <xs:documentation>Indicates whether to keep log file open instead of opening and closing it on each logging event.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>
@@ -1221,6 +1245,13 @@
       <xs:enumeration value="Day" />
       <xs:enumeration value="Hour" />
       <xs:enumeration value="Minute" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NLog.Targets.FilePathKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Unknown" />
+      <xs:enumeration value="Relative" />
+      <xs:enumeration value="Absolute" />
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="NLog.Targets.Win32FileAttributes">
@@ -1703,6 +1734,7 @@
           <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="layout" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="lineEnding" minOccurs="0" maxOccurs="1" type="LineEndingMode" />
           <xs:element name="maxMessageSize" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="newLine" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="onConnectionOverflow" minOccurs="0" maxOccurs="1" type="NLog.Targets.NetworkTargetConnectionsOverflowAction" />
@@ -1726,6 +1758,11 @@
         <xs:attribute name="encoding" type="xs:string">
           <xs:annotation>
             <xs:documentation>Encoding to be used.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="lineEnding" type="LineEndingMode">
+          <xs:annotation>
+            <xs:documentation>End of line value if a newline is appended at the end of log message .</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="maxMessageSize" type="xs:integer">
@@ -1783,6 +1820,7 @@
           <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="layout" minOccurs="0" maxOccurs="1" type="Layout" />
+          <xs:element name="lineEnding" minOccurs="0" maxOccurs="1" type="LineEndingMode" />
           <xs:element name="maxMessageSize" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="newLine" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="onConnectionOverflow" minOccurs="0" maxOccurs="1" type="NLog.Targets.NetworkTargetConnectionsOverflowAction" />
@@ -1814,6 +1852,11 @@
         <xs:attribute name="layout" type="SimpleLayoutAttribute">
           <xs:annotation>
             <xs:documentation>Instance of  that is used to format log messages.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="lineEnding" type="LineEndingMode">
+          <xs:annotation>
+            <xs:documentation>End of line value if a newline is appended at the end of log message .</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="maxMessageSize" type="xs:integer">

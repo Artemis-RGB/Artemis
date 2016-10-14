@@ -242,5 +242,13 @@ namespace Artemis.Profiles.Layers.Models
         }
 
         #endregion
+
+        public void SetupCondition()
+        {
+            if (IsEvent && !(LayerCondition is EventCondition))
+                LayerCondition = new EventCondition();
+            else if (!IsEvent && !(LayerCondition is DataModelCondition))
+                LayerCondition = new DataModelCondition();
+        }
     }
 }

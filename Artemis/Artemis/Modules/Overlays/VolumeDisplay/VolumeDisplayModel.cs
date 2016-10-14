@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
@@ -12,13 +13,15 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        public VolumeDisplayModel(MainManager mainManager) : base(mainManager, new VolumeDisplaySettings())
+        public VolumeDisplayModel(MainManager mainManager)
+            : base(mainManager, SettingsProvider.Load<VolumeDisplaySettings>())
         {
             Name = "VolumeDisplay";
-
-            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, (VolumeDisplaySettings) Settings);
+            Settings = (VolumeDisplaySettings) base.Settings;
+            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, Settings);
         }
 
+        public new VolumeDisplaySettings Settings { get; set; }
         public VolumeBar VolumeDisplay { get; set; }
 
         public override void Dispose()
@@ -67,7 +70,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         private void KeyPressTask(KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.VolumeUp && e.KeyCode != Keys.VolumeDown)
+            if ((e.KeyCode != Keys.VolumeUp) && (e.KeyCode != Keys.VolumeDown))
                 return;
 
             VolumeDisplay.Ttl = 1000;
@@ -76,7 +79,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override void RenderOverlay(RenderFrame frame, bool keyboardOnly)
         {
-            if (MainManager.DeviceManager.ActiveKeyboard == null || VolumeDisplay == null || VolumeDisplay.Ttl < 1)
+            if ((MainManager.DeviceManager.ActiveKeyboard == null) || (VolumeDisplay == null) || (VolumeDisplay.Ttl < 1))
                 return;
 
             using (var g = Graphics.FromImage(frame.KeyboardBitmap))

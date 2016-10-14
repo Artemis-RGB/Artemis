@@ -7,6 +7,7 @@ namespace Artemis.Settings
     public class OffsetSettings : IArtemisSettings
     {
         public GamePointersCollection RocketLeague { get; set; }
+        public GamePointersCollection WorldOfWarcraft { get; set; }
 
         public void Save()
         {
