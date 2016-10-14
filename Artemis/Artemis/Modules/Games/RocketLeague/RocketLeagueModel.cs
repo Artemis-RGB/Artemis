@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.DAL;
 using Artemis.Managers;
@@ -7,6 +8,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -25,20 +27,20 @@ namespace Artemis.Modules.Games.RocketLeague
             Initialized = false;
 
             // Generate a new offset when the game is updated
-//            var offset = new GamePointersCollection
-//            {
-//                Game = "RocketLeague",
-//                GameVersion = "1.21",
-//                GameAddresses = new List<GamePointer>
-//                {
-//                    new GamePointer
-//                    {
-//                        Description = "Boost",
-//                        BasePointer = new IntPtr(0x016AD528),
-//                        Offsets = new[] {0x304, 0x8, 0x50, 0x720, 0x224}
-//                    }
-//                }
-//            };
+            //var offset = new GamePointersCollection
+            //{
+            //    Game = "RocketLeague",
+            //    GameVersion = "1.24",
+            //    GameAddresses = new List<GamePointer>
+            //    {
+            //        new GamePointer
+            //        {
+            //            Description = "Boost",
+            //            BasePointer = new IntPtr(0x016BBFB4),
+            //            Offsets = new[] { 0xc4, 0x210, 0x320, 0x734, 0x224}
+            //        }
+            //    }
+            //};
             //var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
         }
 

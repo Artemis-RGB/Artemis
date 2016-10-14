@@ -106,6 +106,8 @@ namespace Artemis.DAL
         private static void ReadProfiles()
         {
             CheckProfiles();
+            InstallDefaults();
+
             lock (Profiles)
             {
                 Profiles.Clear();
@@ -139,7 +141,6 @@ namespace Artemis.DAL
                     }
                 }
             }
-            InstallDefaults();
         }
 
         /// <summary>
