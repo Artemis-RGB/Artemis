@@ -22,7 +22,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
     {
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly MMDevice _device;
-        private readonly SampleAggregator _sampleAggregator = new SampleAggregator(2048);
+        private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
         private readonly WasapiLoopbackCapture _waveIn;
         private int _lines;
         private AudioPropertiesModel _previousSettings;
@@ -100,9 +100,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
                     return;
 
                 var settings = (AudioPropertiesModel) layerModel.Properties;
-                if (settings.Direction == Direction.TopToBottom || settings.Direction == Direction.BottomToTop)
+                if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
                     ApplyVertical(settings);
-                else if (settings.Direction == Direction.LeftToRight || settings.Direction == Direction.RightToLeft)
+                else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
                     ApplyHorizontal(settings);
             }
         }
@@ -153,7 +153,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 if (settings.Direction == Direction.BottomToTop)
                     audioLayer.Properties.Y = settings.Y + (settings.Height - audioLayer.Properties.Height);
 
-                audioLayer.Update(null, false, true);
+                FakeUpdate(settings, audioLayer);
                 index++;
             }
         }
@@ -187,9 +187,33 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 if (settings.Direction == Direction.RightToLeft)
                     audioLayer.Properties.X = settings.X + (settings.Width - audioLayer.Properties.Width);
 
-                audioLayer.Update(null, false, true);
+                FakeUpdate(settings, audioLayer);
                 index++;
             }
+        }
+
+        /// <summary>
+        ///     Updates the layer manually faking the width and height for a properly working animation
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="audioLayer"></param>
+        private static void FakeUpdate(LayerPropertiesModel settings, LayerModel audioLayer)
+        {
+            // Call the regular update
+            audioLayer.LayerType?.Update(audioLayer, null);
+
+            // Store the original height and width
+            var oldHeight = audioLayer.Properties.Height;
+            var oldWidth = audioLayer.Properties.Width;
+
+            // Fake the height and width and update the animation
+            audioLayer.Properties.Width = settings.Width;
+            audioLayer.Properties.Height = settings.Height;
+            audioLayer.LayerAnimation?.Update(audioLayer, true);
+
+            // Restore the height and width
+            audioLayer.Properties.Height = oldHeight;
+            audioLayer.Properties.Width = oldWidth;
         }
 
         /// <summary>
@@ -198,16 +222,19 @@ namespace Artemis.Profiles.Layers.Types.Audio
         /// <param name="layerModel"></param>
         private void UpdateLayers(LayerModel layerModel)
         {
+            // TODO: Animation
             var settings = (AudioPropertiesModel) layerModel.Properties;
-            if (JsonConvert.SerializeObject(settings).Equals(JsonConvert.SerializeObject(_previousSettings)))
+            if ((settings.Direction == _previousSettings?.Direction) &&
+                (settings.Sensitivity == _previousSettings.Sensitivity) &&
+                (Math.Abs(settings.FadeSpeed - _previousSettings.FadeSpeed) < 0.001))
                 return;
 
             _previousSettings = GeneralHelpers.Clone((AudioPropertiesModel) layerModel.Properties);
 
             _audioLayers.Clear();
-            if (settings.Direction == Direction.TopToBottom || settings.Direction == Direction.BottomToTop)
+            if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
                 SetupVertical(settings);
-            else if (settings.Direction == Direction.LeftToRight || settings.Direction == Direction.RightToLeft)
+            else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
                 SetupHorizontal(settings);
         }
 
@@ -221,6 +248,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 layer.Properties.Y = settings.Y;
                 layer.Properties.Width = 1;
                 layer.Properties.Height = 0;
+                // TODO: Setup animation
                 layer.LayerAnimation = new NoneAnimation();
                 layer.Properties.Brush = settings.Brush;
                 layer.Properties.Contain = false;
@@ -240,6 +268,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 layer.Properties.Y = settings.Y + i;
                 layer.Properties.Width = 0;
                 layer.Properties.Height = 1;
+                // TODO: Setup animation
                 layer.LayerAnimation = new NoneAnimation();
                 layer.Properties.Brush = settings.Brush;
                 layer.Properties.Contain = false;
@@ -265,8 +294,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 {
                     float peak = 0;
                     var b1 = (int) Math.Pow(2, x*10.0/(_lines - 1));
-                    if (b1 > 2047)
-                        b1 = 2047;
+                    if (b1 > 1023)
+                        b1 = 1023;
                     if (b1 <= b0)
                         b1 = b0 + 1;
                     for (; b0 < b1; b0++)
