@@ -303,6 +303,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ArtemisBootstrapper.cs" />
+    <Compile Include="Controls\Log\LoggingControl.xaml.cs">
+      <DependentUpon>LoggingControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Log\MemoryEventTarget.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
@@ -313,6 +317,9 @@
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
+    <Compile Include="Dialogs\MarkdownDialog.xaml.cs">
+      <DependentUpon>MarkdownDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Events\EffectChangedEventArgs.cs" />
     <Compile Include="Events\EnabledChangedEventArgs.cs" />
     <Compile Include="Events\KeyboardChangedEventArgs.cs" />
@@ -511,6 +518,8 @@
     <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\DataReaders\PipeServer.cs" />
+    <Compile Include="Utilities\Markdown\Markdown.cs" />
+    <Compile Include="Utilities\Markdown\TextToFlowDocumentConverter.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
     <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
@@ -686,6 +695,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\Log\LoggingControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\MarkdownDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\Effects\Bubbles\BubblesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -743,6 +760,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Resource>
     <Page Include="Styles\ColorBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\MarkdownStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
