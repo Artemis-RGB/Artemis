@@ -60,8 +60,8 @@ namespace Artemis.Utilities
         {
             var settings = SettingsProvider.Load<GeneralSettings>();
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if ((settings.LastRanVersion != null) && (currentVersion > settings.LastRanVersion))
-            {
+//            if ((settings.LastRanVersion != null) && (currentVersion > settings.LastRanVersion))
+//            {
                 Logger.Info("Updated from {0} to {1}, showing changelog.", settings.LastRanVersion, currentVersion);
 
                 // Ask the user whether he/she wants to see what's new
@@ -73,7 +73,7 @@ namespace Artemis.Utilities
                 // If user wants to see changelog, show it to them
                 if ((showChanges != null) && showChanges.Value)
                     await ShowChanges(dialogService, currentVersion);
-            }
+//            }
 
             settings.LastRanVersion = currentVersion;
             settings.Save();
@@ -114,7 +114,7 @@ namespace Artemis.Utilities
             }
 
             if (release != null)
-                dialogService.ShowMessageBox(release["name"].Value<string>(), release["body"].Value<string>());
+                dialogService.ShowMarkdownDialog(release["name"].Value<string>(), release["body"].Value<string>());
             else
                 dialogService.ShowMessageBox("Couldn't fetch release",
                     "Sorry, Artemis was unable to fetch the release data off of GitHub.\n" +
