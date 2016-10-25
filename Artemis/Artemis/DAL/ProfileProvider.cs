@@ -128,7 +128,7 @@ namespace Artemis.DAL
                         if (Profiles.Any(p => p.GameName == prof.GameName && p.Name == prof.Name &&
                                               p.KeyboardSlug == prof.KeyboardSlug))
                         {
-                            Logger.Error("Didn't load duplicate profile: {0}", path);
+                            Logger.Info("Didn't load duplicate profile: {0}", path);
                         }
                         else
                         {
