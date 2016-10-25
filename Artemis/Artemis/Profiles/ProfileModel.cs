@@ -8,6 +8,7 @@ using Artemis.DeviceProviders;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
@@ -22,9 +23,10 @@ namespace Artemis.Profiles
         public ProfileModel()
         {
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
+            LuaWrapper = new LuaWrapper(this);
             DrawingVisual = new DrawingVisual();
         }
-
+        
         /// <summary>
         ///     Indicates whether the profile is actively being rendered
         /// </summary>
@@ -38,9 +40,13 @@ namespace Artemis.Profiles
         public string GameName { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public string LuaScript { get; set; }
 
         [JsonIgnore]
         public DrawingVisual DrawingVisual { get; set; }
+
+        [JsonIgnore]
+        public LuaWrapper LuaWrapper { get; set; }
 
         public void FixOrder()
         {

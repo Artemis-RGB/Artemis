@@ -10,6 +10,7 @@ using Artemis.Utilities;
 using Artemis.Utilities.Converters;
 using Artemis.ViewModels;
 using Caliburn.Micro;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Ninject;
 
@@ -80,12 +81,15 @@ namespace Artemis
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
 
+            // Configure JSON.NET
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 ContractResolver = _kernel.Get<NinjectContractResolver>()
             };
             JsonConvert.DefaultSettings = () => settings;
+            // Configure MoonSharp
+            UserData.RegisterAssembly();
         }
 
         protected override void OnExit(object sender, EventArgs e)

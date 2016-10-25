@@ -309,6 +309,15 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string lua_placeholder {
+            get {
+                return ResourceManager.GetString("lua-placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap mouse {

@@ -76,8 +76,8 @@ namespace Artemis.ViewModels.Profiles
 
         public bool EditorEnabled
             =>
-                SelectedProfile != null && !SelectedProfile.IsDefault &&
-                _mainManager.DeviceManager.ActiveKeyboard != null;
+            SelectedProfile != null && !SelectedProfile.IsDefault &&
+            _mainManager.DeviceManager.ActiveKeyboard != null;
 
         public BindableCollection<ProfileModel> Profiles
         {
@@ -667,6 +667,20 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             ProfileProvider.ExportProfile(SelectedProfile, dialog.FileName);
+        }
+
+        public void EditLua()
+        {
+            try
+            {
+                SelectedProfile?.LuaWrapper.OpenEditor();
+            }
+            catch (Exception e)
+            {
+                DialogService.ShowMessageBox("Couldn't open LUA file",
+                    "Please make sure you have a program such as Notepad associated with the .lua extension.\n\n" +
+                    "Windows error message: \n" + e.Message);
+            }
         }
 
         private void EditorStateHandler(object sender, PropertyChangedEventArgs e)

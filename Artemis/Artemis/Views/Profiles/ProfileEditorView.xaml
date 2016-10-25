@@ -115,7 +115,7 @@
                        Margin="5,5,0,0" Text="Note: To edit a default profile, duplicate it first." FontWeight="Bold" />
         </StackPanel>
 
-        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,0" HorizontalAlignment="Right">
+        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
             <Button x:Name="ImportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Height="26" HorizontalAlignment="Right" ToolTip="Import profile">
                 <Button.Content>
@@ -143,6 +143,21 @@
                             </Rectangle.OpacityMask>
                         </Rectangle>
                         <TextBlock Margin="2,0,2,0">export profile</TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button x:Name="EditLua" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
+                    Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Import profile">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle
+                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
+                            Width="12" Height="12" Margin="3,0">
+                            <Rectangle.OpacityMask>
+                                <VisualBrush Visual="{StaticResource appbar_code_xml}" Stretch="Fill" />
+                            </Rectangle.OpacityMask>
+                        </Rectangle>
+                        <TextBlock Margin="2,0,2,0">edit lua</TextBlock>
                     </StackPanel>
                 </Button.Content>
             </Button>
