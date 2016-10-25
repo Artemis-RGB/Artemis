@@ -15,6 +15,7 @@ using Artemis.ViewModels.Profiles;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using Newtonsoft.Json;
+using NLog;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
@@ -24,6 +25,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private readonly MMDevice _device;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
         private readonly WasapiLoopbackCapture _waveIn;
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private int _lines;
         private AudioPropertiesModel _previousSettings;
 
@@ -38,7 +40,16 @@ namespace Artemis.Profiles.Layers.Types.Audio
             // Start listening for sound data
             _waveIn = new WasapiLoopbackCapture();
             _waveIn.DataAvailable += OnDataAvailable;
-            _waveIn.StartRecording();
+
+            try
+            {
+                _waveIn.StartRecording();
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(e, "Failed to start WASAPI audio capture");
+                throw;
+            }
         }
 
         [JsonIgnore]
