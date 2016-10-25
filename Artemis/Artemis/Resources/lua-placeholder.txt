@@ -1,0 +1,12 @@
+--------------------------------------------------------------------------------
+------------------------------- Artemis LUA file -------------------------------
+--------------------------------------------------------------------------------
+
+-- This is a default script to be executed by Artemis.
+-- You do not need to use this if you don't want to script. The default profiles
+-- should provide you with a lot of functionality out of the box.
+-- However, if you wan't to change the way profiles work, this is the ideal way 
+-- go about it.
+
+-- Note: You are editing a temporary file. Whenever you save this file the 
+-- changes are applied to the profile and the script restarted.

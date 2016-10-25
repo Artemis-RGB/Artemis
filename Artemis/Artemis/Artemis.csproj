@@ -414,6 +414,10 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematType.cs" />
+    <Compile Include="Profiles\Lua\LuaEventsWrapper.cs" />
+    <Compile Include="Profiles\Lua\LuaLayerWrapper.cs" />
+    <Compile Include="Profiles\Lua\LuaProfileWrapper.cs" />
+    <Compile Include="Profiles\Lua\LuaWrapper.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
@@ -637,6 +641,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\lua-placeholder.txt" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -890,7 +895,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Profiles\Lua\" />
+    <Folder Include="Resources\Lua\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets')" />
