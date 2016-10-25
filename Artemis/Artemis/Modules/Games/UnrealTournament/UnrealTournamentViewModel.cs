@@ -115,9 +115,15 @@ namespace Artemis.Modules.Games.UnrealTournament
         private void InstallGif()
         {
             var gif = Resources.redeemer;
-            ProfileProvider.InsertGif(ProfileProvider.GetAll()
-                    .Where(p => (p.GameName == "UnrealTournament") && (p.Name == "Default")), "Redeemer GIF", gif,
-                "redeemer");
+            if (gif == null)
+                return;
+            var utProfiles = ProfileProvider.GetAll()?
+                .Where(p => (p.GameName == "UnrealTournament") && (p.Name == "Default")).ToList();
+
+            if (utProfiles == null || !utProfiles.Any())
+                return;
+
+            ProfileProvider.InsertGif(utProfiles, "Redeemer GIF", gif, "redeemer");
         }
     }
 }

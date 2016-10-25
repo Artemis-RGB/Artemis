@@ -137,7 +137,7 @@ namespace Artemis.DAL
                     }
                     catch (Exception e)
                     {
-                        Logger.Error("Failed to load profile: {0} - {1}", path, e.InnerException.Message);
+                        Logger.Error("Failed to load profile: {0} - {1}", path, e);
                     }
                 }
             }
