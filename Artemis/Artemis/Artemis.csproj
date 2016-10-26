@@ -414,9 +414,15 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematType.cs" />
+    <Compile Include="Profiles\Lua\Brushes\ILuaBrush.cs" />
+    <Compile Include="Profiles\Lua\Brushes\LuaLinearGradientBrush.cs" />
+    <Compile Include="Profiles\Lua\Brushes\LuaRadialGradientBrush.cs" />
+    <Compile Include="Profiles\Lua\LuaBrushWrapper.cs" />
+    <Compile Include="Profiles\Lua\LuaDrawWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaEventsWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaLayerWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaProfileWrapper.cs" />
+    <Compile Include="Profiles\Lua\Brushes\LuaSolidColorBrush.cs" />
     <Compile Include="Profiles\Lua\LuaWrapper.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
@@ -641,7 +647,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <None Include="Resources\lua-placeholder.txt" />
+    <None Include="Resources\lua-placeholder.lua" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>

@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
 using Artemis.Models.Interfaces;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
+    [MoonSharpUserData]
     public class UnrealTournamentDataModel : IDataModel
     {
         public State State { get; set; }
@@ -19,6 +21,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         Dead
     }
 
+    [MoonSharpUserData]
     public class Player
     {
         public int Health { get; set; }
@@ -41,6 +44,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         MonsterKill = 5
     }
 
+    [MoonSharpUserData]
     public class PlayerState
     {
         public string PlayerName { get; set; }
@@ -72,6 +76,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         public int No_Showdowns { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Inventory
     {
         public bool HasJumpBoots { get; set; }
@@ -84,6 +89,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         public bool HasHelmet { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Weapon
     {
         public string Name { get; set; }
@@ -102,6 +108,7 @@ namespace Artemis.Modules.Games.UnrealTournament
         ZoomingOut = 2
     }
 
+    [MoonSharpUserData]
     public class Environment
     {
         public string GameMode { get; set; }

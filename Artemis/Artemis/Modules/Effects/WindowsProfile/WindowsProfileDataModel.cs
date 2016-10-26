@@ -1,7 +1,9 @@
 using Artemis.Models.Interfaces;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
+    [MoonSharpUserData]
     public class WindowsProfileDataModel : IDataModel
     {
         public WindowsProfileDataModel()
@@ -18,6 +20,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public CurrentTime CurrentTime { get; set; }
     }
 
+    [MoonSharpUserData]
     public class CurrentTime
     {
         public int Hours24 { get; set; }
@@ -26,6 +29,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Seconds { get; set; }
     }
 
+    [MoonSharpUserData]
     public class CpuDataModel
     {
         public int TotalUsage { get; set; }
@@ -39,11 +43,13 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Core8Usage { get; set; }
     }
 
+    [MoonSharpUserData]
     public class PerformanceDataModel
     {
         public int RAMUsage { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Spotify
     {
         public bool Running { get; set; }

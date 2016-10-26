@@ -309,11 +309,12 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string lua_placeholder {
+        internal static byte[] lua_placeholder {
             get {
-                return ResourceManager.GetString("lua-placeholder", resourceCulture);
+                object obj = ResourceManager.GetObject("lua_placeholder", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
