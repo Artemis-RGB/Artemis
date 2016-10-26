@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.ViewModels.Profiles;
 using Castle.Components.DictionaryAdapter;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Effects.ProfilePreview
 {
@@ -90,6 +91,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
         }
     }
 
+    [MoonSharpUserData]
     public class ProfilePreviewDataModel : IDataModel
     {
     }

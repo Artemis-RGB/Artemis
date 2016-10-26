@@ -1,7 +1,9 @@
 ﻿using Artemis.Models.Interfaces;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.Dota2
 {
+    [MoonSharpUserData]
     public class Dota2DataModel : IDataModel
     {
         public Provider provider { get; set; }
@@ -13,6 +15,7 @@ namespace Artemis.Modules.Games.Dota2
         public Previously previously { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Provider
     {
         public string name { get; set; }
@@ -21,6 +24,7 @@ namespace Artemis.Modules.Games.Dota2
         public int timestamp { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Map
     {
         public int dayCyclePercentage;
@@ -36,6 +40,7 @@ namespace Artemis.Modules.Games.Dota2
         public int ward_purchase_cooldown { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Player
     {
         public string steamid { get; set; }
@@ -55,6 +60,7 @@ namespace Artemis.Modules.Games.Dota2
         public int xpm { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Hero
     {
         public int id { get; set; }
@@ -80,6 +86,7 @@ namespace Artemis.Modules.Games.Dota2
         public bool has_debuff { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Abilities
     {
         public Ability0 ability0 { get; set; }
@@ -90,6 +97,7 @@ namespace Artemis.Modules.Games.Dota2
         public Attributes attributes { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Ability0
     {
         public string name { get; set; }
@@ -101,6 +109,7 @@ namespace Artemis.Modules.Games.Dota2
         public bool ultimate { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Ability1
     {
         public string name { get; set; }
@@ -112,6 +121,7 @@ namespace Artemis.Modules.Games.Dota2
         public bool ultimate { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Ability2
     {
         public string name { get; set; }
@@ -123,6 +133,7 @@ namespace Artemis.Modules.Games.Dota2
         public bool ultimate { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Ability3
     {
         public string name { get; set; }
@@ -134,11 +145,13 @@ namespace Artemis.Modules.Games.Dota2
         public bool ultimate { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Attributes
     {
         public int level { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Items
     {
         public Slot0 slot0 { get; set; }
@@ -155,71 +168,85 @@ namespace Artemis.Modules.Games.Dota2
         public Stash5 stash5 { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot0
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot1
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot2
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot3
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot4
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Slot5
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash0
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash1
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash2
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash3
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash4
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Stash5
     {
         public string name { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Previously
     {
         public Player1 player { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Player1
     {
         public int gold { get; set; }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Text;
+using Artemis.DAL;
 using Artemis.Properties;
 using Castle.Core.Internal;
 using MoonSharp.Interpreter;
 using NLog;
-using NuGet;
 
 namespace Artemis.Profiles.Lua
 {
@@ -16,25 +17,25 @@ namespace Artemis.Profiles.Lua
         {
             ProfileModel = profileModel;
             LuaProfileWrapper = new LuaProfileWrapper(ProfileModel);
-            LuaEventsWrapper = new LuaEventsWrapper();
-
+            LuaBrushWrapper = new LuaBrushWrapper();
             SetupLuaScript();
         }
-
+        
         public ProfileModel ProfileModel { get; set; }
-
         public LuaEventsWrapper LuaEventsWrapper { get; set; }
-
+        public LuaBrushWrapper LuaBrushWrapper { get; set; }
         public LuaProfileWrapper LuaProfileWrapper { get; set; }
-
         public Script LuaScript { get; set; }
 
         private void SetupLuaScript()
         {
+            LuaEventsWrapper = new LuaEventsWrapper();
             LuaScript = new Script(CoreModules.Preset_SoftSandbox);
+
             LuaScript.Options.DebugPrint = LuaPrint;
             LuaScript.Globals["Profile"] = LuaProfileWrapper;
             LuaScript.Globals["Events"] = LuaEventsWrapper;
+            LuaScript.Globals["Brushes"] = LuaBrushWrapper;
 
             if (ProfileModel.LuaScript.IsNullOrEmpty())
                 return;
@@ -42,6 +43,14 @@ namespace Artemis.Profiles.Lua
             try
             {
                 LuaScript.DoString(ProfileModel.LuaScript);
+            }
+            catch (InternalErrorException e)
+            {
+                Logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+            }
+            catch (SyntaxErrorException e)
+            {
+                Logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
             catch (ScriptRuntimeException e)
             {
@@ -69,7 +78,7 @@ namespace Artemis.Profiles.Lua
 
             // Add instructions to LUA script if it's a new file
             if (ProfileModel.LuaScript.IsNullOrEmpty())
-                ProfileModel.LuaScript = Resources.lua_placeholder;
+                ProfileModel.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
             File.WriteAllText(Path.GetTempPath() + fileName, ProfileModel.LuaScript);
 
             // Watch the file for changes
@@ -95,7 +104,7 @@ namespace Artemis.Profiles.Lua
                 }
             }
 
-            DAL.ProfileProvider.AddOrUpdate(ProfileModel);
+            ProfileProvider.AddOrUpdate(ProfileModel);
             SetupLuaScript();
         }
 

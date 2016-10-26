@@ -26,7 +26,7 @@ namespace Artemis.Profiles
             LuaWrapper = new LuaWrapper(this);
             DrawingVisual = new DrawingVisual();
         }
-        
+
         /// <summary>
         ///     Indicates whether the profile is actively being rendered
         /// </summary>
@@ -111,18 +111,22 @@ namespace Artemis.Profiles
             bool preview, bool updateAnimations)
         {
             var visual = new DrawingVisual();
+            var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
             {
                 // Setup the DrawingVisual's size
                 c.PushClip(new RectangleGeometry(rect));
                 c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, rect);
 
-                // Draw the layers
-                foreach (var layerModel in renderLayers)
-                {
+                // Update the layers
+                foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
+                LuaWrapper?.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
+
+                // Draw the layers
+                foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                }
+                LuaWrapper?.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
 
                 // Remove the clip
                 c.Pop();
