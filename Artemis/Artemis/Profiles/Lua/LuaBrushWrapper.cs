@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using Artemis.Profiles.Lua.Brushes;
+﻿using Artemis.Profiles.Lua.Brushes;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua
@@ -14,9 +13,11 @@ namespace Artemis.Profiles.Lua
             _script = script;
         }
 
-        public LuaRadialGradientBrush GetSolidColorBrush(string hexCode)
+        // TODO: Check default values
+        public LuaRadialGradientBrush GetSolidColorBrush(Table gradientColors,
+            double centerX = 0.5, double centerY = 0.5, double originX = 0.5, double originY = 0.5)
         {
-            return new LuaRadialGradientBrush(new RadialGradientBrush());
+            return new LuaRadialGradientBrush(_script, gradientColors, centerX, centerY, originX, originY);
         }
 
         public LuaLinearGradientBrush GetLinearGradientBrush(Table gradientColors,
