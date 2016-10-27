@@ -414,7 +414,7 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematType.cs" />
-    <Compile Include="Profiles\Lua\Brushes\ILuaBrush.cs" />
+    <Compile Include="Profiles\Lua\Brushes\LuaBrush.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaLinearGradientBrush.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaRadialGradientBrush.cs" />
     <Compile Include="Profiles\Lua\LuaBrushWrapper.cs" />
