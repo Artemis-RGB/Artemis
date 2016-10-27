@@ -13,13 +13,14 @@ namespace Artemis.Profiles.Lua.Brushes
         private readonly Script _script;
         private LinearGradientBrush _brush;
 
-        public LuaLinearGradientBrush(LinearGradientBrush linearGradientBrush)
+        public LuaLinearGradientBrush(Script script, LinearGradientBrush linearGradientBrush)
         {
+            _script = script;
             Brush = linearGradientBrush;
         }
 
-        public LuaLinearGradientBrush(Script script, Table gradientColors, double startX = 0.5, double startY = 0.0,
-            double endX = 0.5, double endY = 1.0)
+        public LuaLinearGradientBrush(Script script, Table gradientColors, 
+            double startX, double startY, double endX, double endY)
         {
             _script = script;
             SetupBrush(gradientColors, startX, startY, endX, endY);
@@ -44,7 +45,7 @@ namespace Artemis.Profiles.Lua.Brushes
         /// </summary>
         public Table Colors
         {
-            get { return CreateGradientTable(); }
+            get { return CreateGradientTable(_script, Brush.GradientStops); }
             set
             {
                 var updatedBrush = Brush.CloneCurrentValue();
@@ -72,7 +73,7 @@ namespace Artemis.Profiles.Lua.Brushes
         /// </summary>
         /// <param name="gradientColors"></param>
         /// <returns></returns>
-        private GradientStopCollection CreateGradientCollection(Table gradientColors)
+        public static GradientStopCollection CreateGradientCollection(Table gradientColors)
         {
             var collection = new GradientStopCollection();
             foreach (var gradientColor in gradientColors.Values)
@@ -89,12 +90,12 @@ namespace Artemis.Profiles.Lua.Brushes
         ///     Maps the current brush's GradientStopsCollection to a LUA table
         /// </summary>
         /// <returns></returns>
-        private Table CreateGradientTable()
+        public static Table CreateGradientTable(Script script, GradientStopCollection gradientStops)
         {
-            var table = new Table(_script);
-            foreach (var gradientStop in Brush.GradientStops)
+            var table = new Table(script);
+            foreach (var gradientStop in gradientStops)
             {
-                var inner = new Table(_script);
+                var inner = new Table(script);
                 inner.Append(DynValue.NewString(gradientStop.Color.ToHex()));
                 inner.Append(DynValue.NewNumber(gradientStop.Offset));
                 table.Append(DynValue.NewTable(inner));
