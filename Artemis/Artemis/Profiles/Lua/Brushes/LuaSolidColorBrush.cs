@@ -1,13 +1,15 @@
 ﻿using System.Windows.Media;
+using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
 namespace Artemis.Profiles.Lua.Brushes
 {
     [MoonSharpUserData]
-    public class LuaSolidColorBrush : ILuaBrush
+    public class LuaSolidColorBrush : LuaBrush
     {
-        // ReSharper disable once SuggestBaseTypeForParameter
+        private SolidColorBrush _brush;
+
         public LuaSolidColorBrush(SolidColorBrush solidColorBrush)
         {
             Brush = solidColorBrush;
@@ -15,35 +17,30 @@ namespace Artemis.Profiles.Lua.Brushes
 
         public LuaSolidColorBrush(string hexCode)
         {
-            SetupBrush(hexCode);
+            Brush = new SolidColorBrush(new Color().FromHex(hexCode));
         }
 
-        public string HexCode
-        {
-            get
-            {
-                var c = ((SolidColorBrush) Brush).Color;
-                return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
-            }
-            set { SetupBrush(value); }
-        }
-
+        /// <summary>
+        ///     The underlying brush
+        /// </summary>
         [MoonSharpVisible(false)]
-        public Brush Brush { get; set; }
-
-        private void SetupBrush(string hexCode)
+        public new SolidColorBrush Brush
         {
-            var convertFromString = ColorConverter.ConvertFromString(hexCode);
-            if (convertFromString != null)
+            get { return _brush; }
+            set
             {
-                var col = (Color) convertFromString;
-                Brush = new SolidColorBrush(col);
-                Brush.Freeze();
+                _brush = value;
+                _brush.Freeze();
             }
-            else
-            {
-                Brush = null;
-            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the brush's color using a hex notation
+        /// </summary>
+        public string Color
+        {
+            get { return Brush.Color.ToHex(); }
+            set { Brush = new SolidColorBrush(new Color().FromHex(value)); }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Artemis.Profiles.Lua
         {
             ProfileModel = profileModel;
             LuaProfileWrapper = new LuaProfileWrapper(ProfileModel);
-            LuaBrushWrapper = new LuaBrushWrapper();
+            LuaBrushWrapper = new LuaBrushWrapper(LuaScript);
             SetupLuaScript();
         }
         

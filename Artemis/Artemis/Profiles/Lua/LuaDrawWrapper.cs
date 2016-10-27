@@ -17,7 +17,7 @@ namespace Artemis.Profiles.Lua
             _ctx = ctx;
         }
 
-        public void DrawCircle(ILuaBrush luaBrush, double x, double y, double height, double width)
+        public void DrawCircle(LuaBrush luaBrush, double x, double y, double height, double width)
         {
             var center = new Point(x + width/2, y + height/2);
             _ctx.DrawEllipse(luaBrush.Brush, new Pen(), center, width, height);

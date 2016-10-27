@@ -16,9 +16,9 @@ namespace Artemis.DeviceProviders.Logitech
                 @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
             {
                 CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
-                                 "The Visual C++ 2012 Redistributable could not be found, which is required.\n" +
-                                 "Please download it by going to the following URL:\n\n" +
-                                 "https://www.microsoft.com/download/confirmation.aspx?id=30679";
+                                 "The Visual C++ 2012 Redistributable v11.0.61030.0 could not be found, which is required.\n" +
+                                 "Please download it by going to the following URL (link also in wiki):\n\n" +
+                                 "https://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x64.exe";
 
                 return false;
             }
