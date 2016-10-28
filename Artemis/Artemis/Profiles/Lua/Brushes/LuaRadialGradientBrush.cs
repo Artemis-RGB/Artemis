@@ -14,7 +14,7 @@ namespace Artemis.Profiles.Lua.Brushes
         public LuaRadialGradientBrush(Script script, RadialGradientBrush radialGradientBrush)
         {
             _script = script;
-            Brush = radialGradientBrush;
+            RadialGradientBrush = radialGradientBrush;
         }
 
         public LuaRadialGradientBrush(Script script, Table gradientColors,
@@ -28,13 +28,14 @@ namespace Artemis.Profiles.Lua.Brushes
         ///     The underlying brush
         /// </summary>
         [MoonSharpVisible(false)]
-        public new RadialGradientBrush Brush
+        public RadialGradientBrush RadialGradientBrush
         {
             get { return _brush; }
             set
             {
                 _brush = value;
                 _brush.Freeze();
+                Brush = _brush;
             }
         }
 
@@ -43,12 +44,12 @@ namespace Artemis.Profiles.Lua.Brushes
         /// </summary>
         public Table Colors
         {
-            get { return LuaLinearGradientBrush.CreateGradientTable(_script, Brush.GradientStops); }
+            get { return LuaLinearGradientBrush.CreateGradientTable(_script, RadialGradientBrush.GradientStops); }
             set
             {
-                var updatedBrush = Brush.CloneCurrentValue();
+                var updatedBrush = RadialGradientBrush.CloneCurrentValue();
                 updatedBrush.GradientStops = LuaLinearGradientBrush.CreateGradientCollection(value);
-                Brush = updatedBrush;
+                RadialGradientBrush = updatedBrush;
             }
         }
 
@@ -63,7 +64,7 @@ namespace Artemis.Profiles.Lua.Brushes
         private void SetupBrush(Table gradientColors, double centerX, double centerY, double originX, double originY)
         {
             var collection = LuaLinearGradientBrush.CreateGradientCollection(gradientColors);
-            Brush = new RadialGradientBrush(collection)
+            RadialGradientBrush = new RadialGradientBrush(collection)
             {
                 Center = new Point(centerX, centerY),
                 GradientOrigin = new Point(originX, originY)

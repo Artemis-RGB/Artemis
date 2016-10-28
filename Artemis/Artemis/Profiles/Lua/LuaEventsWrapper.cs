@@ -15,14 +15,30 @@ namespace Artemis.Profiles.Lua
 
         internal void InvokeProfileUpdate(ProfileModel profileModel, IDataModel dataModel, bool preview)
         {
-            OnLuaProfileUpdating(new LuaProfileWrapper(profileModel),
+            try
+            {
+                OnLuaProfileUpdating(new LuaProfileWrapper(profileModel),
                 new LuaProfileUpdatingEventArgs(dataModel, preview));
+            }
+            catch (Exception)
+            {
+                
+            }
+            
         }
 
         internal void InvokeProfileDraw(ProfileModel profileModel, IDataModel dataModel, bool preview, DrawingContext c)
         {
-            OnLuaProfileDrawing(new LuaProfileWrapper(profileModel),
+            try
+            {
+                OnLuaProfileDrawing(new LuaProfileWrapper(profileModel),
                 new LuaProfileDrawingEventArgs(dataModel, preview, new LuaDrawWrapper(c)));
+            }
+            catch (Exception)
+            {
+                
+            }
+            
         }
 
         
