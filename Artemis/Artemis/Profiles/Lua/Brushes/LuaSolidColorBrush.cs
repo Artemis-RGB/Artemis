@@ -12,25 +12,26 @@ namespace Artemis.Profiles.Lua.Brushes
 
         public LuaSolidColorBrush(SolidColorBrush solidColorBrush)
         {
-            Brush = solidColorBrush;
+            SolidColorBrush = solidColorBrush;
         }
 
         public LuaSolidColorBrush(string hexCode)
         {
-            Brush = new SolidColorBrush(new Color().FromHex(hexCode));
+            SolidColorBrush = new SolidColorBrush(new Color().FromHex(hexCode));
         }
 
         /// <summary>
         ///     The underlying brush
         /// </summary>
         [MoonSharpVisible(false)]
-        public new SolidColorBrush Brush
+        public  SolidColorBrush SolidColorBrush
         {
             get { return _brush; }
             set
             {
                 _brush = value;
                 _brush.Freeze();
+                Brush = _brush;
             }
         }
 
@@ -39,8 +40,8 @@ namespace Artemis.Profiles.Lua.Brushes
         /// </summary>
         public string Color
         {
-            get { return Brush.Color.ToHex(); }
-            set { Brush = new SolidColorBrush(new Color().FromHex(value)); }
+            get { return SolidColorBrush.Color.ToHex(); }
+            set { SolidColorBrush = new SolidColorBrush(new Color().FromHex(value)); }
         }
     }
 }

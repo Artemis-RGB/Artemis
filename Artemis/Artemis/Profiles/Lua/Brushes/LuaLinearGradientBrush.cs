@@ -16,7 +16,7 @@ namespace Artemis.Profiles.Lua.Brushes
         public LuaLinearGradientBrush(Script script, LinearGradientBrush linearGradientBrush)
         {
             _script = script;
-            Brush = linearGradientBrush;
+            LinearGradientBrush = linearGradientBrush;
         }
 
         public LuaLinearGradientBrush(Script script, Table gradientColors, 
@@ -30,13 +30,14 @@ namespace Artemis.Profiles.Lua.Brushes
         ///     The underlying brush
         /// </summary>
         [MoonSharpVisible(false)]
-        public new LinearGradientBrush Brush
+        public LinearGradientBrush LinearGradientBrush
         {
             get { return _brush; }
             set
             {
                 _brush = value;
                 _brush.Freeze();
+                Brush = _brush;
             }
         }
 
@@ -45,12 +46,12 @@ namespace Artemis.Profiles.Lua.Brushes
         /// </summary>
         public Table Colors
         {
-            get { return CreateGradientTable(_script, Brush.GradientStops); }
+            get { return CreateGradientTable(_script, LinearGradientBrush.GradientStops); }
             set
             {
-                var updatedBrush = Brush.CloneCurrentValue();
+                var updatedBrush = LinearGradientBrush.CloneCurrentValue();
                 updatedBrush.GradientStops = CreateGradientCollection(value);
-                Brush = updatedBrush;
+                LinearGradientBrush = updatedBrush;
             }
         }
 
@@ -65,7 +66,7 @@ namespace Artemis.Profiles.Lua.Brushes
         private void SetupBrush(Table gradientColors, double startX, double startY, double endX, double endY)
         {
             var collection = CreateGradientCollection(gradientColors);
-            Brush = new LinearGradientBrush(collection, new Point(startX, startY), new Point(endX, endY));
+            LinearGradientBrush = new LinearGradientBrush(collection, new Point(startX, startY), new Point(endX, endY));
         }
 
         /// <summary>

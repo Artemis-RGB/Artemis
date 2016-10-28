@@ -13,22 +13,22 @@ namespace Artemis.Profiles.Lua
             _script = script;
         }
 
-        // TODO: Check default values
-        public LuaRadialGradientBrush GetSolidColorBrush(Table gradientColors,
-            double centerX = 0.5, double centerY = 0.5, double originX = 0.5, double originY = 0.5)
+        public LuaSolidColorBrush GetSolidColorBrush(string hexCode)
         {
-            return new LuaRadialGradientBrush(_script, gradientColors, centerX, centerY, originX, originY);
+            return new LuaSolidColorBrush(hexCode);
         }
-
+        
         public LuaLinearGradientBrush GetLinearGradientBrush(Table gradientColors,
             double startX = 0.5, double startY = 0.0, double endX = 0.5, double endY = 1.0)
         {
             return new LuaLinearGradientBrush(_script, gradientColors, startX, startY, endX, endY);
         }
 
-        public LuaSolidColorBrush GetRadialGradientBrush(string hexCode)
+        // TODO: Check default values
+        public LuaRadialGradientBrush GetRadialGradientBrush(Table gradientColors,
+            double centerX = 0.5, double centerY = 0.5, double originX = 0.5, double originY = 0.5)
         {
-            return new LuaSolidColorBrush(hexCode);
+            return new LuaRadialGradientBrush(_script, gradientColors, centerX, centerY, originX, originY);
         }
     }
 }
