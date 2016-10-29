@@ -96,19 +96,21 @@ namespace Artemis.Modules.Games.UnrealTournament
             }
 
             // Load the ZIP from resources
-            var stream = new MemoryStream(Resources.ut_plugin);
-            var archive = new ZipArchive(stream);
-            try
+            using (var stream = new MemoryStream(Resources.ut_plugin))
             {
-                Directory.CreateDirectory(path + @"\UnrealTournament\Plugins\Artemis");
-                archive.ExtractToDirectory(path + @"\UnrealTournament\Plugins\Artemis", true);
-            }
-            catch (Exception e)
-            {
-                MainManager.Logger.Error(e, "Failed to install Unreal Tournament plugin in '{0}'", path);
-                return;
-            }
+                var archive = new ZipArchive(stream);
 
+                try
+                {
+                    Directory.CreateDirectory(path + @"\UnrealTournament\Plugins\Artemis");
+                    archive.ExtractToDirectory(path + @"\UnrealTournament\Plugins\Artemis", true);
+                }
+                catch (Exception e)
+                {
+                    MainManager.Logger.Error(e, "Failed to install Unreal Tournament plugin in '{0}'", path);
+                    return;
+                }
+            }
             MainManager.Logger.Info("Installed Unreal Tournament plugin in '{0}'", path);
         }
 
@@ -117,13 +119,8 @@ namespace Artemis.Modules.Games.UnrealTournament
             var gif = Resources.redeemer;
             if (gif == null)
                 return;
-            var utProfiles = ProfileProvider.GetAll()?
-                .Where(p => (p.GameName == "UnrealTournament") && (p.Name == "Default")).ToList();
 
-            if (utProfiles == null || !utProfiles.Any())
-                return;
-
-            ProfileProvider.InsertGif(utProfiles, "Redeemer GIF", gif, "redeemer");
+            ProfileProvider.InsertGif("UnrealTournament", "Default", "Redeemer GIF", gif, "redeemer");
         }
     }
 }

@@ -66,10 +66,11 @@ namespace Artemis.Modules.Games.Witcher3
             if (_witcherSettings == null)
                 return;
 
-            var reader = new StreamReader(
-                File.Open(_witcherSettings, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+            var reader =
+                new StreamReader(File.Open(_witcherSettings, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
             var configContent = reader.ReadToEnd();
             reader.Close();
+            reader.Dispose();
 
             var signRes = _configRegex.Match(configContent);
             var parts = signRes.Value.Split('\n').Skip(1).Select(v => v.Replace("\r", "")).ToList();

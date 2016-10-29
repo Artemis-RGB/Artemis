@@ -11,6 +11,7 @@ using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic;
 using CUE.NET.Devices.Generic.Enums;
 using CUE.NET.Devices.Keyboard;
+using CUE.NET.Helper;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
@@ -103,15 +104,17 @@ namespace Artemis.DeviceProviders.Corsair
             // For STRAFE, stretch the image on row 2.
             if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
             {
-                var strafeBitmap = new Bitmap(22, 8);
-                using (var g = Graphics.FromImage(strafeBitmap))
+                using (var strafeBitmap = new Bitmap(22, 8))
                 {
-                    g.DrawImage(image, new Point(0, 0));
-                    g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
-                }
+                    using (var g = Graphics.FromImage(strafeBitmap))
+                    {
+                        g.DrawImage(image, new Point(0, 0));
+                        g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
+                    }
 
-                image.Dispose();
-                image = strafeBitmap;
+                    image.Dispose();
+                    image = strafeBitmap;
+                }
             }
 
             _keyboardBrush.Image = image;
@@ -136,11 +139,11 @@ namespace Artemis.DeviceProviders.Corsair
                 // ignored
             }
 
-            if (cueLed != null)
-                return new KeyMatch(keyCode, (int) (cueLed.LedRectangle.X*widthMultiplier),
-                    (int) (cueLed.LedRectangle.Y*heightMultiplier));
+            if (cueLed == null)
+                return null;
 
-            return null;
+            var center = cueLed.LedRectangle.GetCenter();
+            return new KeyMatch(keyCode, (int) (center.X*widthMultiplier),(int) (center.Y*heightMultiplier));
         }
     }
 }

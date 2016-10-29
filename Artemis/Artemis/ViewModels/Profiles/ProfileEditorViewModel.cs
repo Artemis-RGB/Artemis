@@ -40,7 +40,7 @@ namespace Artemis.ViewModels.Profiles
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private BindableCollection<LayerModel> _layers;
-        private BindableCollection<ProfileModel> _profiles;
+        private BindableCollection<string> _profileNames;
         private bool _saving;
         private ProfileModel _selectedProfile;
 
@@ -51,7 +51,7 @@ namespace Artemis.ViewModels.Profiles
             _gameModel = gameModel;
             _layerEditorVmFactory = layerEditorVmFactory;
 
-            Profiles = new BindableCollection<ProfileModel>();
+            ProfileNames = new BindableCollection<string>();
             Layers = new BindableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
             DialogService = dialogService;
@@ -76,17 +76,17 @@ namespace Artemis.ViewModels.Profiles
 
         public bool EditorEnabled
             =>
-            SelectedProfile != null && !SelectedProfile.IsDefault &&
-            _mainManager.DeviceManager.ActiveKeyboard != null;
+            (SelectedProfile != null) && !SelectedProfile.IsDefault &&
+            (_mainManager.DeviceManager.ActiveKeyboard != null);
 
-        public BindableCollection<ProfileModel> Profiles
+        public BindableCollection<string> ProfileNames
         {
-            get { return _profiles; }
+            get { return _profileNames; }
             set
             {
-                if (Equals(value, _profiles)) return;
-                _profiles = value;
-                NotifyOfPropertyChange(() => Profiles);
+                if (Equals(value, _profileNames)) return;
+                _profileNames = value;
+                NotifyOfPropertyChange(() => ProfileNames);
             }
         }
 
@@ -98,6 +98,23 @@ namespace Artemis.ViewModels.Profiles
                 if (Equals(value, _layers)) return;
                 _layers = value;
                 NotifyOfPropertyChange(() => Layers);
+            }
+        }
+
+        public string SelectedProfileName
+        {
+            get { return SelectedProfile.Name; }
+            set
+            {
+                if (value == SelectedProfile.Name)
+                    return;
+
+                SelectedProfile = ProfileProvider.GetProfile(
+                    _mainManager.DeviceManager.ActiveKeyboard, 
+                    _gameModel, 
+                    value);
+
+                NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
 
@@ -126,16 +143,16 @@ namespace Artemis.ViewModels.Profiles
         public PreviewSettings? PreviewSettings => _mainManager.DeviceManager.ActiveKeyboard?.PreviewSettings;
 
         public bool ProfileSelected => SelectedProfile != null;
-        public bool LayerSelected => SelectedProfile != null && ProfileViewModel.SelectedLayer != null;
+        public bool LayerSelected => (SelectedProfile != null) && (ProfileViewModel.SelectedLayer != null);
 
         public void DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if (source == null || target == null || source == target)
+            if ((source == null) || (target == null) || (source == target))
                 return;
 
-            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
+            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
                 target.LayerType is FolderType)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
@@ -152,7 +169,7 @@ namespace Artemis.ViewModels.Profiles
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if (source == null || target == null || source == target)
+            if ((source == null) || (target == null) || (source == target))
                 return;
 
             // Don't allow a folder to become it's own child, that's just weird
@@ -173,7 +190,7 @@ namespace Artemis.ViewModels.Profiles
                 parent.FixOrder();
             }
 
-            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
+            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
                 target.LayerType is FolderType)
             {
                 // Insert into folder
@@ -185,9 +202,9 @@ namespace Artemis.ViewModels.Profiles
             else
             {
                 // Insert the source into it's new profile/parent and update the order
-                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem ||
-                    dropInfo.InsertPosition ==
-                    (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem))
+                if ((dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem) ||
+                    (dropInfo.InsertPosition ==
+                     (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem)))
                     target.InsertAfter(source);
                 else
                     target.InsertBefore(source);
@@ -222,19 +239,33 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         private void LoadProfiles()
         {
-            Profiles.Clear();
-            if (_gameModel == null || _mainManager.DeviceManager.ActiveKeyboard == null)
+            ProfileNames.Clear();
+            if ((_gameModel == null) || (_mainManager.DeviceManager.ActiveKeyboard == null))
                 return;
 
-            Profiles.AddRange(ProfileProvider.GetAll(_gameModel, _mainManager.DeviceManager.ActiveKeyboard));
+            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_mainManager.DeviceManager.ActiveKeyboard, _gameModel));
 
             // If a profile name was provided, try to load it
             ProfileModel lastProfileModel = null;
             if (!string.IsNullOrEmpty(LastProfile))
-                lastProfileModel = Profiles.FirstOrDefault(p => p.Name == LastProfile);
+            {
+                lastProfileModel = ProfileProvider.GetProfile(
+                    _mainManager.DeviceManager.ActiveKeyboard,
+                    _gameModel,
+                    LastProfile);
+            }
 
-            SelectedProfile = lastProfileModel ?? Profiles.FirstOrDefault();
+            if (lastProfileModel != null)
+                SelectedProfile = lastProfileModel;
+            else
+            {
+                SelectedProfile = ProfileProvider.GetProfile(
+                    _mainManager.DeviceManager.ActiveKeyboard,
+                    _gameModel,
+                    ProfileNames.FirstOrDefault());
+            }
         }
+
 
         public void EditLayerFromDoubleClick()
         {
@@ -279,7 +310,6 @@ namespace Artemis.ViewModels.Profiles
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())
-            {
                 while (layer.Children.Any())
                 {
                     var child = layer.Children[0];
@@ -295,7 +325,6 @@ namespace Artemis.ViewModels.Profiles
                         layer.Profile.FixOrder();
                     }
                 }
-            }
 
             UpdateLayerList(layer);
         }
@@ -495,7 +524,7 @@ namespace Artemis.ViewModels.Profiles
                 GameName = _gameModel.Name
             };
 
-            if (ProfileProvider.GetAll().Contains(profile))
+            if (!ProfileProvider.IsProfileUnique(profile))
             {
                 var overwrite = await DialogService.ShowQuestionMessageBox("Overwrite existing profile",
                     "A profile with this name already exists for this game. Would you like to overwrite it?");
@@ -517,18 +546,17 @@ namespace Artemis.ViewModels.Profiles
             var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
-            if (string.IsNullOrEmpty(name) || name.Length < 2)
+            if (string.IsNullOrEmpty(name) || (name.Length < 2))
                 return;
 
             // Verify the name
-            while (ProfileProvider.GetAll().Any(p => p.Name == name && p.GameName == SelectedProfile.GameName &&
-                                                     p.KeyboardSlug == SelectedProfile.KeyboardSlug))
+            while (!ProfileProvider.IsProfileUnique(SelectedProfile))
             {
                 name =
                     await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(name) || name.Length < 2)
+                if (string.IsNullOrEmpty(name) || (name.Length < 2))
                     return;
             }
 
@@ -554,7 +582,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             // Verify the name
-            while (ProfileProvider.GetAll().Contains(newProfile))
+            while (!ProfileProvider.IsProfileUnique(newProfile))
             {
                 newProfile.Name =
                     await DialogService.ShowInputDialog("Name already in use", "Please enter a unique profile name");
@@ -567,7 +595,7 @@ namespace Artemis.ViewModels.Profiles
             newProfile.IsDefault = false;
             ProfileProvider.AddOrUpdate(newProfile);
             LoadProfiles();
-            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == newProfile.Name);
+            SelectedProfile = newProfile;
         }
 
         public async void DeleteProfile()
@@ -640,7 +668,7 @@ namespace Artemis.ViewModels.Profiles
             profile.IsDefault = false;
 
             // Verify the name
-            while (ProfileProvider.GetAll().Contains(profile))
+            while (!ProfileProvider.IsProfileUnique(profile))
             {
                 profile.Name = await DialogService.ShowInputDialog("Rename imported profile",
                     "A profile with this name already exists for this game. Please enter a new name");
@@ -653,7 +681,7 @@ namespace Artemis.ViewModels.Profiles
             ProfileProvider.AddOrUpdate(profile);
             LoadProfiles();
 
-            SelectedProfile = Profiles.FirstOrDefault(p => p.Name == profile.Name);
+            SelectedProfile = profile;
         }
 
         public void ExportProfile()
@@ -711,7 +739,7 @@ namespace Artemis.ViewModels.Profiles
 
         private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
         {
-            if (_saving || SelectedProfile == null)
+            if (_saving || (SelectedProfile == null))
                 return;
 
             _saving = true;

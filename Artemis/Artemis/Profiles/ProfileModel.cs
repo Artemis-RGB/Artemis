@@ -24,7 +24,6 @@ namespace Artemis.Profiles
         {
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
             LuaWrapper = new LuaWrapper(this);
-            DrawingVisual = new DrawingVisual();
         }
 
         /// <summary>
@@ -41,9 +40,6 @@ namespace Artemis.Profiles
         public int Width { get; set; }
         public int Height { get; set; }
         public string LuaScript { get; set; }
-
-        [JsonIgnore]
-        public DrawingVisual DrawingVisual { get; set; }
 
         [JsonIgnore]
         public LuaWrapper LuaWrapper { get; set; }
