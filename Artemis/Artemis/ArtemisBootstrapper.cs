@@ -88,8 +88,6 @@ namespace Artemis
                 ContractResolver = _kernel.Get<NinjectContractResolver>()
             };
             JsonConvert.DefaultSettings = () => settings;
-            // Configure MoonSharp
-            UserData.RegisterAssembly();
         }
 
         protected override void OnExit(object sender, EventArgs e)

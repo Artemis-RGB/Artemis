@@ -66,12 +66,16 @@ namespace ColorBox
                     arr = stream.ToArray();
                 }
 
-                BitmapSource bitmap = BitmapFrame.Create(new MemoryStream(arr));
+                using (var ms = new MemoryStream(arr))
+                {
+                    BitmapSource bitmap = BitmapFrame.Create(ms);
 
-                var pixels = new byte[4];
-                var cb = new CroppedBitmap(bitmap, new Int32Rect((int) p.X, (int) p.Y, 1, 1));
-                cb.CopyPixels(pixels, 4, 0);
-                return Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
+                    var pixels = new byte[4];
+                    var cb = new CroppedBitmap(bitmap, new Int32Rect((int) p.X, (int) p.Y, 1, 1));
+
+                    cb.CopyPixels(pixels, 4, 0);
+                    return Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
+                }
             }
             catch (Exception)
             {
