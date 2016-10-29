@@ -53,7 +53,10 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             lock (layer.GifImage)
             {
                 var draw = layer.GifImage.GetNextFrame();
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(new Bitmap(draw)), rect);
+                using (var drawBitmap = new Bitmap(draw))
+                {
+                    c.DrawImage(ImageUtilities.BitmapToBitmapImage(drawBitmap), rect);
+                }
             }
         }
 
