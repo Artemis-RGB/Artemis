@@ -34,19 +34,96 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _selectedLayer;
         private bool _showAll;
 
-        public ProfileViewModel(DeviceManager deviceManager)
+        public ProfileViewModel(DeviceManager deviceManager, LoopManager loopManager)
         {
             _deviceManager = deviceManager;
 
-            PreviewTimer = new Timer(40);
             ShowAll = false;
 
-            PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
+            loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
             deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
 
+        private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
+        {
+            if (!Activated)
+                return;
+
+            if (_blurProgress > 2)
+                _blurProgress = 0;
+            _blurProgress = _blurProgress + 0.025;
+            BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
+
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
+            {
+                var preview = new DrawingImage();
+                preview.Freeze();
+                KeyboardPreview = preview;
+                return;
+            }
+
+            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
+            var visual = new DrawingVisual();
+            using (var drawingContext = visual.RenderOpen())
+            {
+                // Setup the DrawingVisual's size
+                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                // Get the layers that must be drawn
+                var drawLayers = GetRenderLayers();
+
+                // Draw the layers
+                foreach (var layer in drawLayers)
+                {
+                    layer.Update(null, true, false);
+                    if (layer.LayerType.ShowInEdtor)
+                        layer.Draw(null, drawingContext, true, false);
+                }
+
+                // Get the selection color
+                var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
+                if (accentColor == null)
+                {
+                    var preview = new DrawingImage();
+                    preview.Freeze();
+                    KeyboardPreview = preview;
+                    return;
+                }
+
+                var pen = new Pen(new SolidColorBrush((Color)accentColor), 0.4);
+
+                // Draw the selection outline and resize indicator
+                if (SelectedLayer != null && SelectedLayer.MustDraw())
+                {
+                    var layerRect = SelectedLayer.Properties.GetRect();
+                    // Deflate the rect so that the border is drawn on the inside
+                    layerRect.Inflate(-0.2, -0.2);
+
+                    // Draw an outline around the selected layer
+                    drawingContext.DrawRectangle(null, pen, layerRect);
+                    // Draw a resize indicator in the bottom-right
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
+                }
+
+                // Remove the clip
+                drawingContext.Pop();
+            }
+            var drawnPreview = new DrawingImage(visual.Drawing);
+            drawnPreview.Freeze();
+
+            KeyboardPreview = drawnPreview;
+        }
+
         public ProfileModel SelectedProfile { get; set; }
-        public Timer PreviewTimer { get; set; }
 
         public LayerModel SelectedLayer
         {
@@ -102,92 +179,15 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => KeyboardImage);
         }
 
-        private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
-        {
-            if (_blurProgress > 2)
-                _blurProgress = 0;
-            _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
-
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
-            {
-                var preview = new DrawingImage();
-                preview.Freeze();
-                KeyboardPreview = preview;
-                return;
-            }
-
-
-            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
-            var visual = new DrawingVisual();
-            using (var drawingContext = visual.RenderOpen())
-            {
-                // Setup the DrawingVisual's size
-                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
-                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
-
-                // Get the layers that must be drawn
-                var drawLayers = GetRenderLayers();
-
-                // Draw the layers
-                foreach (var layer in drawLayers)
-                {
-                    layer.Update(null, true, false);
-                    if (layer.LayerType.ShowInEdtor)
-                        layer.Draw(null, drawingContext, true, false);
-                }
-
-                // Get the selection color
-                var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
-                if (accentColor == null)
-                {
-                    var preview = new DrawingImage();
-                    preview.Freeze();
-                    KeyboardPreview = preview;
-                    return;
-                }
-
-                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
-
-                // Draw the selection outline and resize indicator
-                if (SelectedLayer != null && SelectedLayer.MustDraw())
-                {
-                    var layerRect = SelectedLayer.Properties.GetRect();
-                    // Deflate the rect so that the border is drawn on the inside
-                    layerRect.Inflate(-0.2, -0.2);
-
-                    // Draw an outline around the selected layer
-                    drawingContext.DrawRectangle(null, pen, layerRect);
-                    // Draw a resize indicator in the bottom-right
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
-                        new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
-                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
-                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
-                }
-
-                // Remove the clip
-                drawingContext.Pop();
-            }
-            var drawnPreview = new DrawingImage(visual.Drawing);
-            drawnPreview.Freeze();
-            KeyboardPreview = drawnPreview;
-        }
 
         public void Activate()
         {
             Activated = true;
-            PreviewTimer.Start();
         }
 
         public void Deactivate()
         {
             Activated = false;
-            PreviewTimer.Stop();
         }
 
         #region Processing

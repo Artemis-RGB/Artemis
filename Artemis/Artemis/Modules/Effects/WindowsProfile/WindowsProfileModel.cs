@@ -20,11 +20,14 @@ namespace Artemis.Modules.Effects.WindowsProfile
         private PerformanceCounter _overallCpu;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
+        private DateTime _lastSpotifyUpdate;
 
         public WindowsProfileModel(ILogger logger, MainManager mainManager)
             : base(mainManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
         {
             _logger = logger;
+            _lastSpotifyUpdate = DateTime.Now;
+
             Name = "WindowsProfile";
         }
 
@@ -163,10 +166,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 return;
 
             _spotifySetupBusy = true;
-            _spotify = new SpotifyLocalAPI {ListenForEvents = true};
-            _spotify.OnPlayStateChange += UpdateSpotifyPlayState;
-            _spotify.OnTrackChange += UpdateSpotifyTrack;
-            _spotify.OnTrackTimeChange += UpdateSpotifyTrackTime;
+            _spotify = new SpotifyLocalAPI();
 
             // Connecting can sometimes use a little bit more conviction
             Task.Factory.StartNew(() =>
@@ -186,31 +186,28 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public void UpdateSpotify(WindowsProfileDataModel dataModel)
         {
+            // This is quite resource hungry so only update it once every two seconds
+            if (DateTime.Now - _lastSpotifyUpdate < TimeSpan.FromSeconds(2))
+                return;
+            _lastSpotifyUpdate = DateTime.Now;
+
             if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
                 SetupSpotify();
 
+            var status = _spotify.GetStatus();
+            dataModel.Spotify.Playing = status.Playing;
             dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
-        }
+            if (status.Track != null)
+            {
+                dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
+                dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
+                dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
+                dataModel.Spotify.SongLength = status.Track.Length;
+            }
 
-        private void UpdateSpotifyPlayState(object sender, PlayStateEventArgs e)
-        {
-            ((WindowsProfileDataModel) DataModel).Spotify.Playing = e.Playing;
-        }
-
-        private void UpdateSpotifyTrack(object sender, TrackChangeEventArgs e)
-        {
-            var dataModel = (WindowsProfileDataModel) DataModel;
-            dataModel.Spotify.Artist = e.NewTrack.ArtistResource?.Name;
-            dataModel.Spotify.SongName = e.NewTrack.TrackResource?.Name;
-            dataModel.Spotify.Album = e.NewTrack.AlbumResource?.Name;
-            dataModel.Spotify.SongLength = e.NewTrack.Length;
-        }
-
-        private void UpdateSpotifyTrackTime(object sender, TrackTimeChangeEventArgs e)
-        {
-            var dataModel = (WindowsProfileDataModel) DataModel;
             if (dataModel.Spotify.SongLength > 0)
-                dataModel.Spotify.SongPercentCompleted = (int) (e.TrackTime/dataModel.Spotify.SongLength*100.0);
+                dataModel.Spotify.SongPercentCompleted =
+                    (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
         }
 
         #endregion

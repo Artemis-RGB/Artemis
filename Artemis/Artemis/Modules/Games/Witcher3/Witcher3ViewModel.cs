@@ -48,39 +48,43 @@ namespace Artemis.Modules.Games.Witcher3
             }
 
             // Load the ZIP from resources
-            var stream = new MemoryStream(Resources.witcher3_mod);
-            var archive = new ZipArchive(stream);
-
-            // Look for any conflicting mods
-            if (Directory.Exists(dialog.SelectedPath + @"\mods"))
+            using (var stream = new MemoryStream(Resources.witcher3_mod))
             {
-                var file =
-                    Directory.GetFiles(dialog.SelectedPath + @"\mods", "playerWitcher.ws", SearchOption.AllDirectories)
-                        .FirstOrDefault();
-                if (file != null)
-                    if (!file.Contains("modArtemis"))
+                using (var archive = new ZipArchive(stream))
+                {
+                    // Look for any conflicting mods
+                    if (Directory.Exists(dialog.SelectedPath + @"\mods"))
                     {
-                        var viewHelp = await
-                            DialogService.ShowQuestionMessageBox("Conflicting mod found",
-                                "Oh no, you have a conflicting mod!\n\n" +
-                                $"Conflicting file: {file.Remove(0, dialog.SelectedPath.Length)}\n\n" +
-                                "Would you like to view instructions on how to manually install the mod?");
-                        if (!viewHelp.Value)
-                            return;
+                        var file = Directory.GetFiles(dialog.SelectedPath + @"\mods", "playerWitcher.ws",
+                                SearchOption.AllDirectories)
+                            .FirstOrDefault();
+                        if (file != null)
+                            if (!file.Contains("modArtemis"))
+                            {
+                                var viewHelp = await
+                                    DialogService.ShowQuestionMessageBox("Conflicting mod found",
+                                        "Oh no, you have a conflicting mod!\n\n" +
+                                        $"Conflicting file: {file.Remove(0, dialog.SelectedPath.Length)}\n\n" +
+                                        "Would you like to view instructions on how to manually install the mod?");
+                                if (!viewHelp.Value)
+                                    return;
 
-                        // Put the mod in the documents folder instead
-                        // Create the directory structure
-                        var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis";
+                                // Put the mod in the documents folder instead
+                                // Create the directory structure
+                                var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                             @"\Artemis";
 
-                        archive.ExtractToDirectory(folder + @"witcher3-mod", true);
+                                archive.ExtractToDirectory(folder + @"witcher3-mod", true);
 
-                        System.Diagnostics.Process.Start(new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
-                        return;
+                                System.Diagnostics.Process.Start(
+                                    new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
+                                return;
+                            }
                     }
+                    archive.ExtractToDirectory(dialog.SelectedPath, true);
+                    DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
+                }
             }
-
-            archive.ExtractToDirectory(dialog.SelectedPath, true);
-            DialogService.ShowMessageBox("Success", "The mod was successfully installed!");
         }
     }
 }

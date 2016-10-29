@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.DeviceProviders;
-using Caliburn.Micro;
 using Ninject.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
@@ -160,8 +159,17 @@ namespace Artemis.Managers
                         generic.UpdateDevice(frame.GenericBitmap);
                     foreach (var mousemat in mousemats)
                         mousemat.UpdateDevice(frame.MousematBitmap);
+
+                    OnRenderCompleted();
                 }
             }
+        }
+
+        public event EventHandler RenderCompleted;
+
+        protected virtual void OnRenderCompleted()
+        {
+            RenderCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -185,15 +193,25 @@ namespace Artemis.Managers
             MousematBitmap.SetResolution(96, 96);
 
             using (var g = Graphics.FromImage(KeyboardBitmap))
+            {
                 g.Clear(Color.Black);
+            }
             using (var g = Graphics.FromImage(MouseBitmap))
+            {
                 g.Clear(Color.Black);
+            }
             using (var g = Graphics.FromImage(HeadsetBitmap))
+            {
                 g.Clear(Color.Black);
+            }
             using (var g = Graphics.FromImage(GenericBitmap))
+            {
                 g.Clear(Color.Black);
+            }
             using (var g = Graphics.FromImage(MousematBitmap))
+            {
                 g.Clear(Color.Black);
+            }
         }
 
         public Bitmap KeyboardBitmap { get; set; }

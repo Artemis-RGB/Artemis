@@ -11,6 +11,7 @@ using Artemis.Profiles;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using NLog;
 
@@ -27,17 +28,23 @@ namespace Artemis.DAL
 
         static ProfileProvider()
         {
+            // Configure MoonSharp
+            UserData.RegisterAssembly();
             CheckProfiles();
             InstallDefaults();
         }
 
         public static List<string> GetProfileNames(KeyboardProvider keyboard, EffectModel effect)
         {
+            if (keyboard == null || effect == null)
+                return null;
             return ReadProfiles(keyboard.Slug + "/" + effect.Name).Select(p => p.Name).ToList();
         }
 
         public static ProfileModel GetProfile(KeyboardProvider keyboard, EffectModel effect, string name)
         {
+            if (keyboard == null || effect == null)
+                return null;
             return ReadProfiles(keyboard.Slug + "/" + effect.Name).FirstOrDefault(p => p.Name == name);
         }
 
