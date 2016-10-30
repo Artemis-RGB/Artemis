@@ -38,6 +38,7 @@ namespace Artemis.Modules.Games.Witcher3
             _witcherSettings = null;
 
             _updateSw.Reset();
+            base.Dispose();
         }
 
         public override void Enable()

@@ -34,6 +34,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public override void Dispose()
         {
             Initialized = false;
+            base.Dispose();
         }
 
         public override void Enable()
@@ -195,8 +196,12 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 SetupSpotify();
 
             var status = _spotify.GetStatus();
+            if (status == null)
+                return;
+
             dataModel.Spotify.Playing = status.Playing;
             dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
+
             if (status.Track != null)
             {
                 dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
@@ -206,8 +211,10 @@ namespace Artemis.Modules.Effects.WindowsProfile
             }
 
             if (dataModel.Spotify.SongLength > 0)
+            {
                 dataModel.Spotify.SongPercentCompleted =
                     (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
+            }
         }
 
         #endregion

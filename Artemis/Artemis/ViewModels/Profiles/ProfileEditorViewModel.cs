@@ -17,6 +17,7 @@ using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Lua;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
@@ -231,6 +232,8 @@ namespace Artemis.ViewModels.Profiles
         public void Deactivate()
         {
             ProfileViewModel.Deactivate();
+            if (SelectedProfile != null)
+                SelectedProfile.LuaWrapper = null;
             _saveTimer.Stop();
         }
 
@@ -699,9 +702,14 @@ namespace Artemis.ViewModels.Profiles
 
         public void EditLua()
         {
+            if (SelectedProfile == null)
+                return;
             try
             {
-                SelectedProfile?.LuaWrapper.OpenEditor();
+                if (SelectedProfile.LuaWrapper == null)
+                    SelectedProfile.LuaWrapper = new LuaWrapper(SelectedProfile);
+
+                SelectedProfile.LuaWrapper.OpenEditor();
             }
             catch (Exception e)
             {

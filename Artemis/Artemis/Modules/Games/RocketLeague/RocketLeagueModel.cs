@@ -50,6 +50,7 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Initialized = false;
             _memory = null;
+            base.Dispose();
         }
 
         public override void Enable()

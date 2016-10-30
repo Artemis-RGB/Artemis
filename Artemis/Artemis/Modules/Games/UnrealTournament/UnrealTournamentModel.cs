@@ -35,6 +35,7 @@ namespace Artemis.Modules.Games.UnrealTournament
 
             _killTimer.Stop();
             MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            base.Dispose();
         }
 
         public override void Enable()

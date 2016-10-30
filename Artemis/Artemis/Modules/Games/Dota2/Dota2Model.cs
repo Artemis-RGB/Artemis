@@ -26,12 +26,11 @@ namespace Artemis.Modules.Games.Dota2
         {
             Initialized = false;
             MainManager.GameStateWebServer.GameDataReceived -= HandleGameData;
+            base.Dispose();
         }
 
         public override void Enable()
         {
-            Initialized = false;
-
             MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }

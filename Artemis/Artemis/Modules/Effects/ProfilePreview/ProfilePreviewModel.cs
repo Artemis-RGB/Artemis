@@ -25,6 +25,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
         public override void Dispose()
         {
             Initialized = false;
+            base.Dispose();
         }
 
         public override void Enable()
