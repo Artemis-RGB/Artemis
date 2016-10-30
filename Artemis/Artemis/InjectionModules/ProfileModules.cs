@@ -1,6 +1,7 @@
 ﻿using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Types.AmbientLight;
 using Artemis.Profiles.Layers.Types.Audio;
 using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Profiles.Layers.Types.Generic;
@@ -41,10 +42,12 @@ namespace Artemis.InjectionModules
             Bind<ILayerType>().To<GenericType>();
             Bind<ILayerType>().To<KeyPressType>();
             Bind<ILayerType>().To<AudioType>();
+            Bind<ILayerType>().To<AmbientLightType>();
 
             // Bind some Layer Types to self as well in order to allow JSON.NET injection
             Bind<KeyPressType>().ToSelf();
             Bind<AudioType>().ToSelf();
+            Bind<AmbientLightType>().ToSelf();
         }
     }
 }
