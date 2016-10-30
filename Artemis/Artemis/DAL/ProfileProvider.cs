@@ -51,7 +51,7 @@ namespace Artemis.DAL
         public static bool IsProfileUnique(ProfileModel profileModel)
         {
             var existing = ReadProfiles(profileModel.KeyboardSlug + "/" + profileModel.GameName);
-            return existing.Contains(profileModel);
+            return !existing.Contains(profileModel);
         }
 
         /// <summary>

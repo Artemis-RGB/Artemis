@@ -38,7 +38,11 @@ namespace Artemis.Models
         public IDataModel DataModel { get; set; }
         public ProfileModel Profile { get; set; }
 
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+            if (Profile != null)
+                Profile.LuaWrapper = null;
+        }
 
         // Called on creation
         public abstract void Enable();

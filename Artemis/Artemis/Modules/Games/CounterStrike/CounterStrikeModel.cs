@@ -34,6 +34,7 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             Initialized = false;
             MainManager.GameStateWebServer.GameDataReceived -= HandleGameData;
+            base.Dispose();
         }
 
         public override void Enable()

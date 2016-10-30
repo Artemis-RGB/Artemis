@@ -42,6 +42,7 @@ namespace Artemis.Modules.Games.TheDivision
             _stickyHp.Dispose();
 
             MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            base.Dispose();
         }
 
         public override void Enable()

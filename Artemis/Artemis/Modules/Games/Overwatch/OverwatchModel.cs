@@ -91,6 +91,7 @@ namespace Artemis.Modules.Games.Overwatch
             _stickyUltimateUsed.Dispose();
 
             MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            base.Dispose();
         }
 
         private void PipeServerOnPipeMessage(string message)

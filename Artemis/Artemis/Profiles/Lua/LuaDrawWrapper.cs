@@ -19,6 +19,11 @@ namespace Artemis.Profiles.Lua
 
         public void DrawEllipse(LuaBrush luaBrush, double x, double y, double height, double width)
         {
+            x *= 4;
+            y *= 4;
+            height *= 4;
+            width *= 4;
+
             var center = new Point(x + width/2, y + height/2);
             _ctx.DrawEllipse(luaBrush.Brush, new Pen(), center, width, height);
         }
@@ -26,16 +31,30 @@ namespace Artemis.Profiles.Lua
         public void DrawLine(LuaBrush luaBrush, double startX, double startY, double endX, double endY,
             double thickness)
         {
+            startX *= 4;
+            startY *= 4;
+            endX *= 4;
+            endY *= 4;
+            thickness *= 4;
+
             _ctx.DrawLine(new Pen(luaBrush.Brush, thickness), new Point(startX, startY), new Point(endX, endY));
         }
 
         public void DrawRectangle(LuaBrush luaBrush, double x, double y, double height, double width)
         {
+            x *= 4;
+            y *= 4;
+            height *= 4;
+            width *= 4;
+
             _ctx.DrawRectangle(luaBrush.Brush, new Pen(), new Rect(x, y, width, height));
         }
 
         public void DrawText(string text, string fontName, int fontSize, LuaBrush luaBrush, double x, double y)
         {
+            x *= 4;
+            y *= 4;
+
             var font = Fonts.SystemTypefaces.FirstOrDefault(f => f.FontFamily.ToString() == fontName);
             if (font == null)
                 throw new ScriptRuntimeException($"Font '{fontName}' not found");

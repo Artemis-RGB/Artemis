@@ -27,6 +27,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
         public override void Dispose()
         {
             Initialized = false;
+            base.Dispose();
         }
 
         public override void Enable()

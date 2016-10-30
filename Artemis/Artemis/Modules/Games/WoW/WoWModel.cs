@@ -73,6 +73,7 @@ namespace Artemis.Modules.Games.WoW
 
             _process.Dispose();
             _process = null;
+            base.Dispose();
         }
 
         public override void Enable()

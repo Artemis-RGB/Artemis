@@ -11,6 +11,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Castle.Core.Internal;
 using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
@@ -23,7 +24,6 @@ namespace Artemis.Profiles
         public ProfileModel()
         {
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
-            LuaWrapper = new LuaWrapper(this);
         }
 
         /// <summary>
@@ -106,6 +106,9 @@ namespace Artemis.Profiles
         internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
             bool preview, bool updateAnimations)
         {
+            if (LuaWrapper == null && !LuaScript.IsNullOrEmpty())
+                LuaWrapper = new LuaWrapper(this);
+
             var visual = new DrawingVisual();
             var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
