@@ -11,9 +11,9 @@
         private int _bCount = 0;
         private int _b = 0;
 
-        public byte R => (byte)(_r / _rCount);
-        public byte G => (byte)(_g / _gCount);
-        public byte B => (byte)(_b / _bCount);
+        public byte R => (byte)(_rCount > 0 ? (_r / _rCount) : 0);
+        public byte G => (byte)(_gCount > 0 ? (_g / _gCount) : 0);
+        public byte B => (byte)(_bCount > 0 ? (_b / _bCount) : 0);
 
         #endregion
 

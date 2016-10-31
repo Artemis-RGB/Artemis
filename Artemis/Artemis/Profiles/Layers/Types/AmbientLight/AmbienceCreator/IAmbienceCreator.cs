@@ -2,6 +2,6 @@
 {
     public interface IAmbienceCreator
     {
-        byte[] GetAmbience(byte[] data, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight);
+        byte[] GetAmbience(byte[] pixels, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight, AmbientLightPropertiesModel settings);
     }
 }

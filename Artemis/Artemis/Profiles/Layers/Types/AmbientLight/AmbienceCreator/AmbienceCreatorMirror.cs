@@ -1,31 +1,50 @@
 ﻿using System;
+using Artemis.Profiles.Layers.Types.AmbientLight.Model;
+using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 
 namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
 {
     public class AmbienceCreatorMirror : IAmbienceCreator
     {
-        #region Properties & Fields
-
-        #endregion
-
-        #region Constructors
-
-        #endregion
-
         #region Methods
 
-        public byte[] GetAmbience(byte[] data, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
+        public byte[] GetAmbience(byte[] pixels, int sourceWidth, int sourceHeight,
+                                                 int targetWidth, int targetHeight,
+                                                 AmbientLightPropertiesModel settings)
         {
-            int heightPixelCount = (int)Math.Round(sourceHeight * 0.1);
-            int sourceHeightOffset = sourceHeight - heightPixelCount;
+            AvgColor[] colors = new AvgColor[targetWidth * targetHeight];
+            for (int i = 0; i < colors.Length; i++)
+                colors[i] = new AvgColor();
 
-            AvgColor[] avgData = new AvgColor[targetWidth * targetHeight];
-            double widthPixels = (sourceWidth / (double)targetWidth);
-            double heightPixels = (heightPixelCount / (double)targetHeight);
+            int offsetLeft = settings.OffsetLeft + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Left)
+                ? pixels.DetectBlackBarLeft(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                : 0);
+            int offsetRight = settings.OffsetRight + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Right)
+                ? pixels.DetectBlackBarRight(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                : 0);
+            int offsetTop = settings.OffsetTop + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Top)
+                ? pixels.DetectBlackBarTop(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                : 0);
+            int offsetBottom = settings.OffsetBottom + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Bottom)
+                ? pixels.DetectBlackBarBottom(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                : 0);
+
+            int effectiveSourceWidth = sourceWidth - offsetLeft - offsetRight;
+            int effectiveSourceHeight = sourceHeight - offsetTop - offsetBottom;
+
+            int relevantSourceHeight = (int)Math.Round(effectiveSourceHeight * settings.MirroredAmount);
+            int relevantOffsetTop = sourceHeight - offsetBottom - relevantSourceHeight;
+
+            double widthPixels = effectiveSourceWidth / (double)targetWidth;
+            double heightPixels = relevantSourceHeight / (double)targetHeight;
+
+            if (widthPixels <= 0 || heightPixels <= 0 || (relevantSourceHeight + relevantOffsetTop > sourceHeight) || effectiveSourceWidth > sourceWidth)
+                return colors.ToBGRArray();
+
             int targetHeightIndex = 0;
             double heightCounter = heightPixels;
 
-            for (int y = 0; y < heightPixelCount; y += 2)
+            for (int y = 0; y < relevantSourceHeight; y += 2)
             {
                 if (y >= heightCounter)
                 {
@@ -36,7 +55,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
                 int targetWidthIndex = 0;
                 double widthCounter = widthPixels;
 
-                for (int x = 0; x < sourceWidth; x += 2)
+                for (int x = 0; x < effectiveSourceWidth; x += 2)
                 {
                     if (x >= widthCounter)
                     {
@@ -44,56 +63,18 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
                         targetWidthIndex++;
                     }
 
-                    int newOffset = (targetHeightIndex * targetWidth) + targetWidthIndex;
-                    int offset = ((((sourceHeightOffset + y) * sourceWidth) + x) * 4);
+                    int colorsOffset = (targetHeightIndex * targetWidth) + targetWidthIndex;
+                    int sourceOffset = ((((relevantOffsetTop + y) * sourceWidth) + offsetLeft + x) * 4);
 
-                    if (avgData[newOffset] == null)
-                        avgData[newOffset] = new AvgColor();
-
-                    AvgColor avgDataObject = avgData[newOffset];
-
-                    avgDataObject.AddB(data[offset]);
-                    avgDataObject.AddG(data[offset + 1]);
-                    avgDataObject.AddR(data[offset + 2]);
+                    AvgColor color = colors[colorsOffset];
+                    color.AddB(pixels[sourceOffset]);
+                    color.AddG(pixels[sourceOffset + 1]);
+                    color.AddR(pixels[sourceOffset + 2]);
                 }
             }
 
-            avgData = FlipVertical(avgData, targetWidth);
-            return ToByteArray(avgData, targetWidth, targetHeight);
-        }
-
-        private byte[] ToByteArray(AvgColor[] colors, int width, int height)
-        {
-            byte[] newData = new byte[width * height * 3];
-            int counter = 0;
-            foreach (AvgColor color in colors)
-            {
-                newData[counter++] = color.B;
-                newData[counter++] = color.G;
-                newData[counter++] = color.R;
-            }
-
-            return newData;
-        }
-
-        private T[] FlipVertical<T>(T[] data, int width)
-        {
-            T[] flipped = new T[data.Length];
-            for (int i = 0, j = data.Length - width; i < data.Length; i += width, j -= width)
-                for (int k = 0; k < width; ++k)
-                    flipped[i + k] = data[j + k];
-
-            return flipped;
-        }
-
-        private T[] FlipHorizontal<T>(T[] data, int width)
-        {
-            T[] flipped = new T[data.Length];
-            for (int i = 0; i < data.Length; i += width)
-                for (int j = 0, k = width - 1; j < width; ++j, --k)
-                    flipped[i + j] = data[i + k];
-
-            return flipped;
+            colors = colors.Flip(targetWidth, settings.FlipMode);
+            return colors.ToBGRArray();
         }
 
         #endregion
