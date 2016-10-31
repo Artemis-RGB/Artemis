@@ -1,4 +1,6 @@
-﻿namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
+﻿using System;
+
+namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 {
     public static class PixelDataExtension
     {
@@ -80,6 +82,26 @@
             }
 
             return height;
+        }
+
+        public static byte[] Blend(this byte[] pixels, byte[] blendPixels, SmoothMode smoothMode)
+        {
+            if (smoothMode == SmoothMode.None || pixels.Length != blendPixels.Length) return blendPixels;
+            
+            double percentage = smoothMode == SmoothMode.Low? 0.25: (smoothMode == SmoothMode.Medium ? 0.075 : 0.025 /*high*/);
+
+            byte[] blended = new byte[pixels.Length];
+
+            for (int i = 0; i < blended.Length; i++)
+                blended[i] = GetIntColor((blendPixels[i] / 255.0) * percentage + (pixels[i] / 255.0) * (1 - percentage));
+
+            return blended;
+        }
+
+        private static byte GetIntColor(double d)
+        {
+            double calcF = Math.Max(0, Math.Min(1, d));
+            return (byte)(calcF.Equals(1) ? 255 : calcF * 256);
         }
     }
 }

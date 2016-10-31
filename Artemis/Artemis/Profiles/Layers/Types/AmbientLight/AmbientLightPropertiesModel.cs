@@ -18,8 +18,9 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public int OffsetTop { get; set; } = 0;
         public int OffsetBottom { get; set; } = 0;
 
-        public double MirroredAmount { get; set; } = 0.1;
+        public double MirroredAmount { get; set; } = 10;
 
+        public SmoothMode SmoothMode { get; set; } = SmoothMode.Low;
         public BlackBarDetectionMode BlackBarDetectionMode { get; set; } = BlackBarDetectionMode.Bottom;
         public FlipMode FlipMode { get; set; } = FlipMode.Vertical;
 
