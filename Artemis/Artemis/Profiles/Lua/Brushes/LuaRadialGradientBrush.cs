@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
@@ -8,19 +10,16 @@ namespace Artemis.Profiles.Lua.Brushes
     [MoonSharpUserData]
     public class LuaRadialGradientBrush : LuaBrush
     {
-        private readonly Script _script;
         private RadialGradientBrush _brush;
 
-        public LuaRadialGradientBrush(Script script, RadialGradientBrush radialGradientBrush)
+        public LuaRadialGradientBrush(RadialGradientBrush radialGradientBrush)
         {
-            _script = script;
             RadialGradientBrush = radialGradientBrush;
         }
 
-        public LuaRadialGradientBrush(Script script, Table gradientColors,
-            double centerX, double centerY, double originX, double originY)
+        public LuaRadialGradientBrush(Dictionary<LuaColor, double> gradientColors, double centerX,
+            double centerY, double originX, double originY)
         {
-            _script = script;
             SetupBrush(gradientColors, centerX, centerY, originX, originY);
         }
 
@@ -42,13 +41,18 @@ namespace Artemis.Profiles.Lua.Brushes
         /// <summary>
         ///     Gets or sets the Brush's GradientStops using a LUA table
         /// </summary>
-        public Table Colors
+        public Dictionary<LuaColor, double> GradientColors
         {
-            get { return LuaLinearGradientBrush.CreateGradientTable(_script, RadialGradientBrush.GradientStops); }
+            get
+            {
+                return RadialGradientBrush.GradientStops.ToDictionary(gs => new LuaColor(gs.Color), gs => gs.Offset);
+            }
             set
             {
                 var updatedBrush = RadialGradientBrush.CloneCurrentValue();
-                updatedBrush.GradientStops = LuaLinearGradientBrush.CreateGradientCollection(value);
+                updatedBrush.GradientStops = new GradientStopCollection(value
+                    .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
+
                 RadialGradientBrush = updatedBrush;
             }
         }
@@ -61,9 +65,12 @@ namespace Artemis.Profiles.Lua.Brushes
         /// <param name="centerY"></param>
         /// <param name="originX"></param>
         /// <param name="originY"></param>
-        private void SetupBrush(Table gradientColors, double centerX, double centerY, double originX, double originY)
+        private void SetupBrush(Dictionary<LuaColor, double> gradientColors, double centerX, double centerY,
+            double originX, double originY)
         {
-            var collection = LuaLinearGradientBrush.CreateGradientCollection(gradientColors);
+            var collection = new GradientStopCollection(gradientColors
+                .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
+
             RadialGradientBrush = new RadialGradientBrush(collection)
             {
                 Center = new Point(centerX, centerY),

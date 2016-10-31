@@ -55,9 +55,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
         [JsonIgnore]
         public List<byte> SpectrumData { get; set; } = new List<byte>();
 
-        public string Name { get; } = "Keyboard - Audio visualization";
-        public bool ShowInEdtor { get; } = true;
-        public DrawType DrawType { get; } = DrawType.Keyboard;
+        public string Name => "Keyboard - Audio visualization";
+        public bool ShowInEdtor => true;
+        public DrawType DrawType => DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

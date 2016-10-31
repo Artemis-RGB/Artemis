@@ -11,7 +11,7 @@
 -- For docs and examples, see wiki: https://github.com/SpoinkyNL/Artemis/wiki/LUA
 
 -- Note: You are editing a temporary file. Whenever you save this file the 
--- changes are applied to the profile and the script restarted.
+-- changes are applied to the profile and the script is restarted.
 
 -- This event is raised after every profile update, before drawing.
 function updateHandler(profile, eventArgs)
@@ -36,5 +36,5 @@ end
 
 -- Register the default events, you can rename/remove these if you so desire.
 -- These events are raised every 40 ms (25 times a second).
-Events.LuaProfileUpdating.add(updateHandler);
-Events.LuaProfileDrawing.add(drawHandler);
+Events.ProfileUpdating.add(updateHandler);
+Events.ProfileDrawing.add(drawHandler);
