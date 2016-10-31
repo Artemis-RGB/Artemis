@@ -1,5 +1,4 @@
 ﻿using System.Windows.Media;
-using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
@@ -10,21 +9,16 @@ namespace Artemis.Profiles.Lua.Brushes
     {
         private SolidColorBrush _brush;
 
-        public LuaSolidColorBrush(SolidColorBrush solidColorBrush)
+        public LuaSolidColorBrush(LuaColor luaColor)
         {
-            SolidColorBrush = solidColorBrush;
-        }
-
-        public LuaSolidColorBrush(string hexCode)
-        {
-            SolidColorBrush = new SolidColorBrush(new Color().FromHex(hexCode));
+            SolidColorBrush = new SolidColorBrush(luaColor.Color);
         }
 
         /// <summary>
         ///     The underlying brush
         /// </summary>
         [MoonSharpVisible(false)]
-        public  SolidColorBrush SolidColorBrush
+        public SolidColorBrush SolidColorBrush
         {
             get { return _brush; }
             set
@@ -35,13 +29,10 @@ namespace Artemis.Profiles.Lua.Brushes
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the brush's color using a hex notation
-        /// </summary>
-        public string Color
+        public LuaColor Color
         {
-            get { return SolidColorBrush.Color.ToHex(); }
-            set { SolidColorBrush = new SolidColorBrush(new Color().FromHex(value)); }
+            get { return new LuaColor(SolidColorBrush.Color); }
+            set { SolidColorBrush = new SolidColorBrush(value.Color); }
         }
     }
 }

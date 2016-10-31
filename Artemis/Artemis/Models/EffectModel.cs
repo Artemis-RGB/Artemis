@@ -8,6 +8,7 @@ using Artemis.Models.Interfaces;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Lua;
 using Artemis.Settings;
 using Newtonsoft.Json;
 
@@ -40,8 +41,10 @@ namespace Artemis.Models
 
         public virtual void Dispose()
         {
-            if (Profile != null)
-                Profile.LuaWrapper = null;
+            if (Profile?.LuaWrapper == null)
+                return;
+            Profile.LuaWrapper.Dispose();
+            Profile.LuaWrapper = null;
         }
 
         // Called on creation
@@ -66,12 +69,16 @@ namespace Artemis.Models
                 // Get all enabled layers who's conditions are met
                 var renderLayers = GetRenderLayers(keyboardOnly);
 
+                // If the profile has no active LUA wrapper, create one
+                if (Profile.LuaWrapper == null && !string.IsNullOrEmpty(Profile.LuaScript))
+                    Profile.LuaWrapper = new LuaWrapper(Profile, MainManager.DeviceManager.ActiveKeyboard);
+
                 // Render the keyboard layer-by-layer
                 var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
                 using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
-                        DataModel, keyboardRect, false, true);
+                        DataModel, keyboardRect, false, true, true);
                 }
                 // Render mice layer-by-layer
                 var devRec = new Rect(0, 0, 40, 40);

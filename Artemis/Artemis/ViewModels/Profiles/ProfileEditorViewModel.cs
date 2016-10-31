@@ -111,8 +111,8 @@ namespace Artemis.ViewModels.Profiles
                     return;
 
                 SelectedProfile = ProfileProvider.GetProfile(
-                    _mainManager.DeviceManager.ActiveKeyboard, 
-                    _gameModel, 
+                    _mainManager.DeviceManager.ActiveKeyboard,
+                    _gameModel,
                     value);
 
                 NotifyOfPropertyChange(() => SelectedProfileName);
@@ -125,6 +125,11 @@ namespace Artemis.ViewModels.Profiles
             set
             {
                 if (Equals(value, _selectedProfile)) return;
+                if (_selectedProfile?.LuaWrapper != null)
+                {
+                    _selectedProfile.LuaWrapper.Dispose();
+                    _selectedProfile.LuaWrapper = null;
+                }
                 _selectedProfile = value;
                 NotifyOfPropertyChange(() => SelectedProfile);
             }
@@ -232,8 +237,11 @@ namespace Artemis.ViewModels.Profiles
         public void Deactivate()
         {
             ProfileViewModel.Deactivate();
-            if (SelectedProfile != null)
+            if (SelectedProfile?.LuaWrapper != null)
+            {
+                SelectedProfile.LuaWrapper.Dispose();
                 SelectedProfile.LuaWrapper = null;
+            }
             _saveTimer.Stop();
         }
 
@@ -537,8 +545,8 @@ namespace Artemis.ViewModels.Profiles
 
             ProfileProvider.AddOrUpdate(profile);
 
+            LastProfile = profile.Name;
             LoadProfiles();
-            SelectedProfile = profile;
         }
 
         public async void RenameProfile()
@@ -564,9 +572,9 @@ namespace Artemis.ViewModels.Profiles
             }
 
             var profile = SelectedProfile;
-            SelectedProfile = null;
             ProfileProvider.RenameProfile(profile, name);
 
+            SelectedProfile = null;
             LastProfile = name;
             LoadProfiles();
         }
@@ -597,8 +605,8 @@ namespace Artemis.ViewModels.Profiles
 
             newProfile.IsDefault = false;
             ProfileProvider.AddOrUpdate(newProfile);
+            LastProfile = newProfile.Name;
             LoadProfiles();
-            SelectedProfile = newProfile;
         }
 
         public async void DeleteProfile()
@@ -682,9 +690,8 @@ namespace Artemis.ViewModels.Profiles
             }
 
             ProfileProvider.AddOrUpdate(profile);
+            LastProfile = profile.Name;
             LoadProfiles();
-
-            SelectedProfile = profile;
         }
 
         public void ExportProfile()
@@ -707,7 +714,8 @@ namespace Artemis.ViewModels.Profiles
             try
             {
                 if (SelectedProfile.LuaWrapper == null)
-                    SelectedProfile.LuaWrapper = new LuaWrapper(SelectedProfile);
+                    SelectedProfile.LuaWrapper = new LuaWrapper(SelectedProfile,
+                        _mainManager.DeviceManager.ActiveKeyboard);
 
                 SelectedProfile.LuaWrapper.OpenEditor();
             }

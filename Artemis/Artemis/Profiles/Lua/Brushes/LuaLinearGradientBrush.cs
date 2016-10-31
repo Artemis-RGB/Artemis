@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
@@ -10,19 +10,16 @@ namespace Artemis.Profiles.Lua.Brushes
     [MoonSharpUserData]
     public class LuaLinearGradientBrush : LuaBrush
     {
-        private readonly Script _script;
         private LinearGradientBrush _brush;
 
-        public LuaLinearGradientBrush(Script script, LinearGradientBrush linearGradientBrush)
+        public LuaLinearGradientBrush(LinearGradientBrush linearGradientBrush)
         {
-            _script = script;
             LinearGradientBrush = linearGradientBrush;
         }
 
-        public LuaLinearGradientBrush(Script script, Table gradientColors, 
-            double startX, double startY, double endX, double endY)
+        public LuaLinearGradientBrush(Dictionary<LuaColor, double> gradientColors, double startX, double startY,
+            double endX, double endY)
         {
-            _script = script;
             SetupBrush(gradientColors, startX, startY, endX, endY);
         }
 
@@ -44,13 +41,18 @@ namespace Artemis.Profiles.Lua.Brushes
         /// <summary>
         ///     Gets or sets the Brush's GradientStops using a LUA table
         /// </summary>
-        public Table Colors
+        public Dictionary<LuaColor, double> GradientColors
         {
-            get { return CreateGradientTable(_script, LinearGradientBrush.GradientStops); }
+            get
+            {
+                return LinearGradientBrush.GradientStops.ToDictionary(gs => new LuaColor(gs.Color), gs => gs.Offset);
+            }
             set
             {
                 var updatedBrush = LinearGradientBrush.CloneCurrentValue();
-                updatedBrush.GradientStops = CreateGradientCollection(value);
+                updatedBrush.GradientStops = new GradientStopCollection(value
+                    .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
+
                 LinearGradientBrush = updatedBrush;
             }
         }
@@ -63,45 +65,13 @@ namespace Artemis.Profiles.Lua.Brushes
         /// <param name="startY"></param>
         /// <param name="endX"></param>
         /// <param name="endY"></param>
-        private void SetupBrush(Table gradientColors, double startX, double startY, double endX, double endY)
+        private void SetupBrush(Dictionary<LuaColor, double> gradientColors, double startX, double startY, double endX,
+            double endY)
         {
-            var collection = CreateGradientCollection(gradientColors);
+            var collection = new GradientStopCollection(gradientColors
+                .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
+
             LinearGradientBrush = new LinearGradientBrush(collection, new Point(startX, startY), new Point(endX, endY));
-        }
-
-        /// <summary>
-        ///     Maps a LUA table to a GradientStopsCollection
-        /// </summary>
-        /// <param name="gradientColors"></param>
-        /// <returns></returns>
-        public static GradientStopCollection CreateGradientCollection(Table gradientColors)
-        {
-            var collection = new GradientStopCollection();
-            foreach (var gradientColor in gradientColors.Values)
-            {
-                var pair = gradientColor.Table.Values.ToList();
-                var hexCode = pair[0].String;
-                var position = pair[1].Number;
-                collection.Add(new GradientStop(new Color().FromHex(hexCode), position));
-            }
-            return collection;
-        }
-
-        /// <summary>
-        ///     Maps the current brush's GradientStopsCollection to a LUA table
-        /// </summary>
-        /// <returns></returns>
-        public static Table CreateGradientTable(Script script, GradientStopCollection gradientStops)
-        {
-            var table = new Table(script);
-            foreach (var gradientStop in gradientStops)
-            {
-                var inner = new Table(script);
-                inner.Append(DynValue.NewString(gradientStop.Color.ToHex()));
-                inner.Append(DynValue.NewNumber(gradientStop.Offset));
-                table.Append(DynValue.NewTable(inner));
-            }
-            return table;
         }
     }
 }

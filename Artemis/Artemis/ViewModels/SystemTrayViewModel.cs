@@ -179,6 +179,9 @@ namespace Artemis.ViewModels
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);
+
+            // Force a GC since the UI releases a lot of resources
+            GC.Collect();
         }
 
         public void ExitApplication()

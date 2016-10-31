@@ -91,6 +91,7 @@ namespace Artemis.ViewModels.Abstract
         {
             if (e.PropertyName != "SelectedProfile" && IsActive)
                 return;
+            
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 

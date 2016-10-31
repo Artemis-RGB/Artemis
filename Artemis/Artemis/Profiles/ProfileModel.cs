@@ -11,7 +11,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
-using Castle.Core.Internal;
 using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
@@ -104,11 +103,8 @@ namespace Artemis.Profiles
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
         internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
-            bool preview, bool updateAnimations)
+            bool preview, bool updateAnimations, bool triggerLua = false)
         {
-            if (LuaWrapper == null && !LuaScript.IsNullOrEmpty())
-                LuaWrapper = new LuaWrapper(this);
-
             var visual = new DrawingVisual();
             var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
@@ -120,12 +116,16 @@ namespace Artemis.Profiles
                 // Update the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
-                LuaWrapper?.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
+
+                if (triggerLua)
+                    LuaWrapper?.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                LuaWrapper?.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
+
+                if (triggerLua)
+                    LuaWrapper?.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
 
                 // Remove the clip
                 c.Pop();
