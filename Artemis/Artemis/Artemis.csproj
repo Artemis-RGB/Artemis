@@ -413,6 +413,7 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\AvgColorExtension.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\PixelDataExtension.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\FlipMode.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\SmoothMode.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />

@@ -32,7 +32,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
             int effectiveSourceWidth = sourceWidth - offsetLeft - offsetRight;
             int effectiveSourceHeight = sourceHeight - offsetTop - offsetBottom;
 
-            int relevantSourceHeight = (int)Math.Round(effectiveSourceHeight * settings.MirroredAmount);
+            int relevantSourceHeight = (int)Math.Round(effectiveSourceHeight * (settings.MirroredAmount / 100.0));
             int relevantOffsetTop = sourceHeight - offsetBottom - relevantSourceHeight;
 
             double widthPixels = effectiveSourceWidth / (double)targetWidth;

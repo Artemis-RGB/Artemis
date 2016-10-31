@@ -7,6 +7,7 @@ using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator;
+using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.ViewModels.Profiles;
 using Newtonsoft.Json;
@@ -56,8 +57,9 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             int height = (int)Math.Round(properties.Height);
 
             byte[] data = ScreenCaptureManager.GetLastScreenCapture();
-            _lastData = GetAmbienceCreator().GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width, height, properties);
+            byte[] newData = GetAmbienceCreator().GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width, height, properties);
 
+            _lastData = _lastData?.Blend(newData, properties.SmoothMode) ?? newData;
             int stride = (width * ScreenCaptureManager.LastCapturePixelFormat.BitsPerPixel + 7) / 8;
             properties.AmbientLightBrush = new DrawingBrush(new ImageDrawing
                 (BitmapSource.Create(width, height, 96, 96, ScreenCaptureManager.LastCapturePixelFormat, null, _lastData, stride), new Rect(0, 0, width, height)));
