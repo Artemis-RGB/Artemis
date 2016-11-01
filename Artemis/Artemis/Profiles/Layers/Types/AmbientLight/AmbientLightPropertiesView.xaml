@@ -61,11 +61,16 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <!-- MirrorAmount -->
+        <!-- MirrorAmount & Downsampling-->
         <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,13,10,10" FontSize="13.333" Text="Mirrored Amount (%):"
                    Height="18" VerticalAlignment="Top" />
         <controls:NumericUpDown Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Minimum="0" Maximum="100"
                                 Value="{Binding Path=LayerModel.Properties.MirroredAmount, Mode=TwoWay}" Margin="10,12,10,2" Height="24" />
+        
+        <TextBlock Grid.Row="1" Grid.Column="2" Margin="10,13,10,10" FontSize="13.333" Text="Downsampling:"
+                   Height="18" VerticalAlignment="Top" />
+        <controls:NumericUpDown Grid.Row="1" Grid.Column="3" VerticalAlignment="Top" Minimum="1" Maximum="20"
+                                Value="{Binding Path=LayerModel.Properties.Downsampling, Mode=TwoWay}" Margin="10,12,10,2" Height="24" />
 
         <!-- SmoothMode -->
         <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,13,10,10" FontSize="13.333" Text="Smoothing:"

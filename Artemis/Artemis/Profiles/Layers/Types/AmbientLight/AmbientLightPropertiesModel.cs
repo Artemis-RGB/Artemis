@@ -20,6 +20,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public int OffsetTop { get; set; } = 0;
         public int OffsetBottom { get; set; } = 0;
 
+        public int Downsampling { get; set; } = 2;
         public double MirroredAmount { get; set; } = 10;
 
         public SmoothMode SmoothMode { get; set; } = SmoothMode.Low;
