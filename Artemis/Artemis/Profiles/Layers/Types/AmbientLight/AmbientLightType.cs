@@ -11,6 +11,8 @@ using Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator;
 using Artemis.Profiles.Layers.Types.AmbientLight.Model;
 using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
+using Artemis.Properties;
+using Artemis.Utilities;
 using Artemis.ViewModels.Profiles;
 using Newtonsoft.Json;
 
@@ -81,11 +83,10 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
-            //TODO DarthAffe 30.10.2016: Add a real thumbnail
             Rect thumbnailRect = new Rect(0, 0, 18, 18);
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext c = visual.RenderOpen())
-                c.DrawRectangle(new SolidColorBrush(Colors.Magenta), new Pen(new SolidColorBrush(Colors.DarkMagenta), 2), thumbnailRect);
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.ambilight), thumbnailRect);
 
             return new DrawingImage(visual.Drawing);
         }
