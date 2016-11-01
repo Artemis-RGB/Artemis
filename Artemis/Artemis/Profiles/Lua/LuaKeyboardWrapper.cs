@@ -11,11 +11,9 @@ namespace Artemis.Profiles.Lua
     public class LuaKeyboardWrapper : IDisposable
     {
         private readonly KeyboardProvider _keyboardProvider;
-        private readonly LuaWrapper _luaWrapper;
 
-        public LuaKeyboardWrapper(LuaWrapper luaWrapper, KeyboardProvider keyboardProvider)
+        public LuaKeyboardWrapper(KeyboardProvider keyboardProvider)
         {
-            _luaWrapper = luaWrapper;
             _keyboardProvider = keyboardProvider;
 
             KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
@@ -36,8 +34,8 @@ namespace Artemis.Profiles.Lua
         {
             var keyMatch = _keyboardProvider.GetKeyPosition(e.KeyCode);
             if (keyMatch != null)
-                _luaWrapper.LuaEventsWrapper.InvokeKeyPressed(_luaWrapper.ProfileModel, this,
-                    keyMatch.Value.KeyCode, keyMatch.Value.X, keyMatch.Value.Y);
+                LuaWrapper.LuaEventsWrapper.InvokeKeyPressed(LuaWrapper.ProfileModel, this, keyMatch.Value.KeyCode,
+                    keyMatch.Value.X, keyMatch.Value.Y);
         }
 
         public void SendKeys(string keys)

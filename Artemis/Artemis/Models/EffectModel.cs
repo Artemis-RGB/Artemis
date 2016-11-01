@@ -41,10 +41,7 @@ namespace Artemis.Models
 
         public virtual void Dispose()
         {
-            if (Profile?.LuaWrapper == null)
-                return;
-            Profile.LuaWrapper.Dispose();
-            Profile.LuaWrapper = null;
+            Profile?.Deactivate();
         }
 
         // Called on creation
@@ -70,8 +67,8 @@ namespace Artemis.Models
                 var renderLayers = GetRenderLayers(keyboardOnly);
 
                 // If the profile has no active LUA wrapper, create one
-                if (Profile.LuaWrapper == null && !string.IsNullOrEmpty(Profile.LuaScript))
-                    Profile.LuaWrapper = new LuaWrapper(Profile, MainManager.DeviceManager.ActiveKeyboard);
+                if (!string.IsNullOrEmpty(Profile.LuaScript))
+                    Profile.Activate(MainManager.DeviceManager.ActiveKeyboard);
 
                 // Render the keyboard layer-by-layer
                 var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);

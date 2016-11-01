@@ -40,9 +40,6 @@ namespace Artemis.Profiles
         public int Height { get; set; }
         public string LuaScript { get; set; }
 
-        [JsonIgnore]
-        public LuaWrapper LuaWrapper { get; set; }
-
         public void FixOrder()
         {
             Layers.Sort(l => l.Order);
@@ -118,14 +115,14 @@ namespace Artemis.Profiles
                     layerModel.Update(dataModel, preview, updateAnimations);
 
                 if (triggerLua)
-                    LuaWrapper?.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
+                    LuaWrapper.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
 
                 if (triggerLua)
-                    LuaWrapper?.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
+                    LuaWrapper.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
 
                 // Remove the clip
                 c.Pop();
@@ -206,5 +203,21 @@ namespace Artemis.Profiles
         }
 
         #endregion
+
+        public void Activate(KeyboardProvider keyboard)
+        {
+            if (!Equals(LuaWrapper.ProfileModel, this))
+            {
+                LuaWrapper.SetupLua(this, keyboard);
+            }
+        }
+
+        public void Deactivate()
+        {
+            if (Equals(LuaWrapper.ProfileModel, this))
+            {
+                LuaWrapper.Clear();
+            }
+        }
     }
 }

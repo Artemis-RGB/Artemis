@@ -11,6 +11,7 @@ namespace Artemis.Profiles.Lua.Events
     public class LuaEventsWrapper
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly string _invokeLock = string.Empty;
         public event EventHandler<LuaProfileUpdatingEventArgs> ProfileUpdating;
         public event EventHandler<LuaProfileDrawingEventArgs> ProfileDrawing;
         public event EventHandler<LuaKeyPressEventArgs> KeyboardKeyPressed;
@@ -19,8 +20,8 @@ namespace Artemis.Profiles.Lua.Events
         {
             try
             {
-                OnProfileUpdating(new LuaProfileWrapper(profileModel),
-                    new LuaProfileUpdatingEventArgs(dataModel, preview));
+                LuaInvoke(profileModel, () => OnProfileUpdating(new LuaProfileWrapper(profileModel),
+                    new LuaProfileUpdatingEventArgs(dataModel, preview)));
             }
             catch (Exception)
             {
@@ -32,8 +33,8 @@ namespace Artemis.Profiles.Lua.Events
         {
             try
             {
-                OnProfileDrawing(new LuaProfileWrapper(profileModel),
-                    new LuaProfileDrawingEventArgs(dataModel, preview, new LuaDrawWrapper(c)));
+                LuaInvoke(profileModel, () => OnProfileDrawing(new LuaProfileWrapper(profileModel),
+                    new LuaProfileDrawingEventArgs(dataModel, preview, new LuaDrawWrapper(c))));
             }
             catch (Exception)
             {
@@ -45,7 +46,8 @@ namespace Artemis.Profiles.Lua.Events
         {
             try
             {
-                OnKeyboardKeyPressed(new LuaProfileWrapper(profileModel), keyboard, new LuaKeyPressEventArgs(key, x, y));
+                LuaInvoke(profileModel, () => OnKeyboardKeyPressed(new LuaProfileWrapper(profileModel), 
+                    keyboard, new LuaKeyPressEventArgs(key, x, y)));
             }
             catch (Exception)
             {
@@ -53,65 +55,43 @@ namespace Artemis.Profiles.Lua.Events
             }
         }
 
+        private void LuaInvoke(ProfileModel profileModel, Action action)
+        {
+            lock (_invokeLock)
+            {
+                try
+                {
+                    action.Invoke();
+                }
+                catch (InternalErrorException ex)
+                {
+                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                }
+                catch (SyntaxErrorException ex)
+                {
+                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                }
+                catch (ScriptRuntimeException ex)
+                {
+                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                }
+            }
+        }
+
         protected virtual void OnProfileUpdating(LuaProfileWrapper profileModel, LuaProfileUpdatingEventArgs e)
         {
-            try
-            {
-                ProfileUpdating?.Invoke(profileModel, e);
-            }
-            catch (InternalErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (SyntaxErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (ScriptRuntimeException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
+            ProfileUpdating?.Invoke(profileModel, e);
         }
 
         protected virtual void OnProfileDrawing(LuaProfileWrapper profileModel, LuaProfileDrawingEventArgs e)
         {
-            try
-            {
-                ProfileDrawing?.Invoke(profileModel, e);
-            }
-            catch (InternalErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (SyntaxErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (ScriptRuntimeException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
+            ProfileDrawing?.Invoke(profileModel, e);
         }
 
         protected virtual void OnKeyboardKeyPressed(LuaProfileWrapper profileModel, LuaKeyboardWrapper keyboard,
             LuaKeyPressEventArgs e)
         {
-            try
-            {
-                KeyboardKeyPressed?.Invoke(profileModel, e);
-            }
-            catch (InternalErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (SyntaxErrorException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
-            catch (ScriptRuntimeException ex)
-            {
-                _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
-            }
+            KeyboardKeyPressed?.Invoke(profileModel, e);
         }
     }
 }
