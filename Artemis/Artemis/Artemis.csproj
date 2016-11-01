@@ -400,6 +400,7 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorExtend.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorMirror.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AvgColor.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\IAmbienceCreator.cs" />
