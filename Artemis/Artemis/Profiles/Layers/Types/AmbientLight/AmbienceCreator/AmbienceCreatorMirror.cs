@@ -44,7 +44,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
             int targetHeightIndex = 0;
             double heightCounter = heightPixels;
 
-            for (int y = 0; y < relevantSourceHeight; y += 2)
+            int increment = Math.Max(1, Math.Min(20, settings.Downsampling));
+            for (int y = 0; y < relevantSourceHeight; y += increment)
             {
                 if (y >= heightCounter)
                 {
@@ -55,7 +56,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
                 int targetWidthIndex = 0;
                 double widthCounter = widthPixels;
 
-                for (int x = 0; x < effectiveSourceWidth; x += 2)
+                for (int x = 0; x < effectiveSourceWidth; x += increment)
                 {
                     if (x >= widthCounter)
                     {

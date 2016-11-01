@@ -41,12 +41,13 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
             if (widthPixels <= 0 || heightPixels <= 0 || (relevantSourceHeight + relevantOffsetTop > sourceHeight) || effectiveSourceWidth > sourceWidth)
                 return colors.ToBGRArray();
 
-            for (int y = 0; y < relevantSourceHeight; y += 2)
+            int increment = Math.Max(1, Math.Min(20, settings.Downsampling));
+            for (int y = 0; y < relevantSourceHeight; y += increment)
             {
                 int targetWidthIndex = 0;
                 double widthCounter = widthPixels;
 
-                for (int x = 0; x < effectiveSourceWidth; x += 2)
+                for (int x = 0; x < effectiveSourceWidth; x += increment)
                 {
                     if (x >= widthCounter)
                     {
