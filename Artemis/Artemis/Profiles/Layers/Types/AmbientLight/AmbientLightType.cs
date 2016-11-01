@@ -96,6 +96,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             if (_lastAmbienceCreatorType == properties.AmbienceCreatorType)
                 return _lastAmbienceCreator;
 
+            _lastAmbienceCreatorType = properties.AmbienceCreatorType;
             switch (properties.AmbienceCreatorType)
             {
                 case AmbienceCreatorType.Mirror: return _lastAmbienceCreator = new AmbienceCreatorMirror();
