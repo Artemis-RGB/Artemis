@@ -250,6 +250,14 @@
       <HintPath>..\packages\Process.NET.1.0.5\lib\Process.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SharpDX, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.3.1.1\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D9.3.1.1\lib\net45\SharpDX.Direct3D9.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
@@ -392,6 +400,28 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorExtend.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorMirror.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AvgColor.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\IAmbienceCreator.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesView.xaml.cs">
+      <DependentUpon>AmbientLightPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightType.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Helper\CheckboxEnumFlagHelper.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\AmbienceCreatorType.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\BlackBarDetectionMode.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\AvgColorExtension.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\EnumExtension.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\PixelDataExtension.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\FlipMode.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\ScreenCaptureMode.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\SmoothMode.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
@@ -751,6 +781,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -885,6 +919,7 @@
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <None Include="Resources\audio.png" />
+    <None Include="Resources\ambilight.png" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>
