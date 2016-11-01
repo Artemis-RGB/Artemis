@@ -99,6 +99,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             switch (properties.AmbienceCreatorType)
             {
                 case AmbienceCreatorType.Mirror: return _lastAmbienceCreator = new AmbienceCreatorMirror();
+                case AmbienceCreatorType.Extend: return _lastAmbienceCreator = new AmbienceCreatorExtend();
                 default: throw new InvalidEnumArgumentException();
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator;
 
 namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
@@ -18,6 +19,16 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
                 return colors.FlipHorizontal(width);
 
             return colors;
+        }
+
+        public static AvgColor[] ExtendHeight(this AvgColor[] colors, int height)
+        {
+            AvgColor[] extended = new AvgColor[colors.Length * height];
+
+            for (int i = 0; i < height; i++)
+                Array.Copy(colors, 0, extended, i * colors.Length, colors.Length);
+
+            return extended;
         }
 
         public static AvgColor[] FlipVertical(this AvgColor[] colors, int width)
