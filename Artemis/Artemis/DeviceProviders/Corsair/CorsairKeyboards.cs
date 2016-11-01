@@ -118,7 +118,7 @@ namespace Artemis.DeviceProviders.Corsair
             }
 
             _keyboardBrush.Image = image;
-            _keyboard.Update(true);
+            _keyboard.Update();
 
             image.Dispose();
         }
