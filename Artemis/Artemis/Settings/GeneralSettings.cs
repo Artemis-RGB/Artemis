@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using Artemis.DAL;
+using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.Utilities;
 using Caliburn.Micro;
 using MahApps.Metro;
@@ -59,6 +60,10 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string Theme { get; set; }
 
+        [DefaultValue(20)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int ScreenCaptureFPS { get; set; }
+
         [DefaultValue("Info")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LogLevel { get; set; }
@@ -71,6 +76,7 @@ namespace Artemis.Settings
             ApplyAutorun();
             ApplyTheme();
             ApplyGamestatePort();
+            ApplyScreenCaptureFPS();
             Logging.SetupLogging(LogLevel);
         }
 
@@ -109,7 +115,7 @@ namespace Artemis.Settings
                 {
                     // Ignored, only happens when running from VS
                 }
-                
+
             }
         }
 
@@ -137,6 +143,11 @@ namespace Artemis.Settings
                         break;
                 }
             });
+        }
+
+        public void ApplyScreenCaptureFPS()
+        {
+            ScreenCaptureManager.UpdateRate = 1.0 / ScreenCaptureFPS;
         }
     }
 }
