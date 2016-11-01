@@ -409,8 +409,11 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbientLightType.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Helper\CheckboxEnumFlagHelper.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\AmbienceCreatorType.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\BlackBarDetectionMode.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\AvgColorExtension.cs" />
+    <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\EnumExtension.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\Extensions\PixelDataExtension.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\FlipMode.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\Model\SmoothMode.cs" />

@@ -13,6 +13,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         [JsonIgnore]
         public Brush AmbientLightBrush { get; set; }
 
+        public AmbienceCreatorType AmbienceCreatorType { get; set; } = AmbienceCreatorType.Mirror;
+
         public int OffsetLeft { get; set; } = 0;
         public int OffsetRight { get; set; } = 0;
         public int OffsetTop { get; set; } = 0;

@@ -4,6 +4,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 {
     public static class PixelDataExtension
     {
+        #region Methods
+
         public static int DetectBlackBarLeft(this byte[] pixels, int width, int height, int offsetLeft, int offsetRight, int offsetTop, int offsetBottom)
         {
             int bottomBorder = height - offsetBottom;
@@ -103,5 +105,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
             double calcF = Math.Max(0, Math.Min(1, d));
             return (byte)(calcF.Equals(1) ? 255 : calcF * 256);
         }
+
+        #endregion
     }
 }
