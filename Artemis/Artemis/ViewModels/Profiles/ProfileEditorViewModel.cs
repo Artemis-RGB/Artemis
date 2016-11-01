@@ -125,11 +125,7 @@ namespace Artemis.ViewModels.Profiles
             set
             {
                 if (Equals(value, _selectedProfile)) return;
-                if (_selectedProfile?.LuaWrapper != null)
-                {
-                    _selectedProfile.LuaWrapper.Dispose();
-                    _selectedProfile.LuaWrapper = null;
-                }
+                _selectedProfile?.Deactivate();
                 _selectedProfile = value;
                 NotifyOfPropertyChange(() => SelectedProfile);
             }
@@ -237,12 +233,7 @@ namespace Artemis.ViewModels.Profiles
         public void Deactivate()
         {
             ProfileViewModel.Deactivate();
-            if (SelectedProfile?.LuaWrapper != null)
-            {
-                SelectedProfile.LuaWrapper.Dispose();
-                SelectedProfile.LuaWrapper = null;
-            }
-            _saveTimer.Stop();
+            SelectedProfile?.Deactivate();
         }
 
         /// <summary>
@@ -713,11 +704,8 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                if (SelectedProfile.LuaWrapper == null)
-                    SelectedProfile.LuaWrapper = new LuaWrapper(SelectedProfile,
-                        _mainManager.DeviceManager.ActiveKeyboard);
-
-                SelectedProfile.LuaWrapper.OpenEditor();
+                SelectedProfile?.Activate(_mainManager.DeviceManager.ActiveKeyboard);
+                LuaWrapper.OpenEditor();
             }
             catch (Exception e)
             {
@@ -755,7 +743,7 @@ namespace Artemis.ViewModels.Profiles
 
         private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
         {
-            if (_saving || (SelectedProfile == null))
+            if (_saving || (SelectedProfile == null) || !IsActive)
                 return;
 
             _saving = true;

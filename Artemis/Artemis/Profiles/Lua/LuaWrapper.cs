@@ -12,37 +12,40 @@ using NLog;
 
 namespace Artemis.Profiles.Lua
 {
-    public class LuaWrapper : IDisposable
+    public static class LuaWrapper
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Script LuaScript = new Script(CoreModules.Preset_SoftSandbox);
+        private static KeyboardProvider _keyboardProvider;
+        private static FileSystemWatcher _watcher;
 
-        public LuaWrapper(ProfileModel profileModel, KeyboardProvider keyboardProvider)
+        public static ProfileModel ProfileModel { get; private set; }
+        public static LuaProfileWrapper LuaProfileWrapper { get; private set; }
+        public static LuaBrushWrapper LuaBrushWrapper { get; private set; }
+        public static LuaKeyboardWrapper LuaKeyboardWrapper { get; private set; }
+        public static LuaEventsWrapper LuaEventsWrapper { get; private set; }
+
+        public static void SetupLua(ProfileModel profileModel, KeyboardProvider keyboardProvider)
         {
+            Clear();
+
+            if (profileModel == null || keyboardProvider == null)
+                return;
+
+            // Setup a new environment
+            _keyboardProvider = keyboardProvider;
             ProfileModel = profileModel;
             LuaProfileWrapper = new LuaProfileWrapper(ProfileModel);
             LuaBrushWrapper = new LuaBrushWrapper();
-            LuaKeyboardWrapper = new LuaKeyboardWrapper(this, keyboardProvider);
-            SetupLuaScript();
-        }
-
-        public ProfileModel ProfileModel { get; set; }
-        public LuaProfileWrapper LuaProfileWrapper { get; set; }
-        public LuaBrushWrapper LuaBrushWrapper { get; set; }
-        public LuaKeyboardWrapper LuaKeyboardWrapper { get; set; }
-        public LuaEventsWrapper LuaEventsWrapper { get; set; }
-        public Script LuaScript { get; set; }
-
-        private void SetupLuaScript()
-        {
+            LuaKeyboardWrapper = new LuaKeyboardWrapper(keyboardProvider);
             LuaEventsWrapper = new LuaEventsWrapper();
-            LuaScript = new Script(CoreModules.Preset_SoftSandbox);
 
             LuaScript.Options.DebugPrint = LuaPrint;
             LuaScript.Globals["Profile"] = LuaProfileWrapper;
             LuaScript.Globals["Events"] = LuaEventsWrapper;
             LuaScript.Globals["Brushes"] = LuaBrushWrapper;
             LuaScript.Globals["Keyboard"] = LuaKeyboardWrapper;
-
+           
             if (ProfileModel.LuaScript.IsNullOrEmpty())
                 return;
 
@@ -66,7 +69,7 @@ namespace Artemis.Profiles.Lua
 
         #region Private lua functions
 
-        private void LuaPrint(string s)
+        private static void LuaPrint(string s)
         {
             Logger.Debug("[{0}-LUA]: {1}", ProfileModel.Name, s);
         }
@@ -75,8 +78,11 @@ namespace Artemis.Profiles.Lua
 
         #region Editor
 
-        public void OpenEditor()
+        public static void OpenEditor()
         {
+            if (ProfileModel == null)
+                return;
+
             // Create a temp file
             var fileName = Guid.NewGuid() + ".lua";
             var file = File.Create(Path.GetTempPath() + fileName);
@@ -88,21 +94,31 @@ namespace Artemis.Profiles.Lua
             File.WriteAllText(Path.GetTempPath() + fileName, ProfileModel.LuaScript);
 
             // Watch the file for changes
-            var watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
-            watcher.Changed += LuaFileChanged;
-            watcher.EnableRaisingEvents = true;
+            SetupWatcher(Path.GetTempPath(), fileName);
 
             // Open the temp file with the default editor
             System.Diagnostics.Process.Start(Path.GetTempPath() + fileName);
         }
 
-        private void LuaFileChanged(object sender, FileSystemEventArgs fileSystemEventArgs)
+        private static void SetupWatcher(string path, string fileName)
         {
-            if (fileSystemEventArgs.ChangeType != WatcherChangeTypes.Changed)
+            if (_watcher == null)
+            {
+                _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
+                _watcher.Changed += LuaFileChanged;
+                _watcher.EnableRaisingEvents = true;
+            }
+
+            _watcher.Path = path;
+            _watcher.Filter = fileName;
+        }
+
+        private static void LuaFileChanged(object sender, FileSystemEventArgs args)
+        {
+            if (args.ChangeType != WatcherChangeTypes.Changed)
                 return;
 
-            using (var fs = new FileStream(fileSystemEventArgs.FullPath,
-                FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 using (var sr = new StreamReader(fs))
                 {
@@ -111,29 +127,27 @@ namespace Artemis.Profiles.Lua
             }
 
             ProfileProvider.AddOrUpdate(ProfileModel);
-            SetupLuaScript();
+
+            if (_keyboardProvider != null)
+                SetupLua(ProfileModel, _keyboardProvider);
         }
 
         #endregion
 
-        #region Event triggers
-
-        public void TriggerUpdate()
+        public static void Clear()
         {
-        }
+            // Clear old fields/properties
+            _keyboardProvider = null;
+            ProfileModel = null;
+            LuaKeyboardWrapper?.Dispose();
+            LuaKeyboardWrapper = null;
 
-        public void TriggerDraw()
-        {
-        }
-
-        #endregion
-
-        public void Dispose()
-        {
-            LuaKeyboardWrapper.Dispose();
             LuaScript.Globals.Clear();
             LuaScript.Registry.Clear();
-            LuaScript = null;
+            LuaScript.Registry.RegisterConstants();
+            LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+            LuaScript.Globals.RegisterConstants();
+            LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
         }
     }
 }
