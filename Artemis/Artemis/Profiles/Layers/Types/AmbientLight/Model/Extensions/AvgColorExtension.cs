@@ -5,6 +5,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 {
     public static class AvgColorExtension
     {
+        #region Methods
+
         public static AvgColor[] Flip(this AvgColor[] colors, int width, FlipMode flipMode)
         {
             if (colors == null || width <= 0) return colors;
@@ -55,5 +57,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 
             return newData;
         }
+
+        #endregion
     }
 }

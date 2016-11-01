@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -7,6 +8,7 @@ using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator;
+using Artemis.Profiles.Layers.Types.AmbientLight.Model;
 using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.ViewModels.Profiles;
@@ -22,6 +24,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
 
+        [JsonIgnore]
+        private AmbienceCreatorType? _lastAmbienceCreatorType = null;
         [JsonIgnore]
         private IAmbienceCreator _lastAmbienceCreator;
 
@@ -57,7 +61,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             int height = (int)Math.Round(properties.Height);
 
             byte[] data = ScreenCaptureManager.GetLastScreenCapture();
-            byte[] newData = GetAmbienceCreator().GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width, height, properties);
+            byte[] newData = GetAmbienceCreator(properties).GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width, height, properties);
 
             _lastData = _lastData?.Blend(newData, properties.SmoothMode) ?? newData;
             int stride = (width * ScreenCaptureManager.LastCapturePixelFormat.BitsPerPixel + 7) / 8;
@@ -86,10 +90,16 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             return new DrawingImage(visual.Drawing);
         }
 
-        private IAmbienceCreator GetAmbienceCreator()
+        private IAmbienceCreator GetAmbienceCreator(AmbientLightPropertiesModel properties)
         {
-            //TODO DarthAffe 30.10.2016: Create from settings
-            return _lastAmbienceCreator ?? (_lastAmbienceCreator = new AmbienceCreatorMirror());
+            if (_lastAmbienceCreatorType == properties.AmbienceCreatorType)
+                return _lastAmbienceCreator;
+
+            switch (properties.AmbienceCreatorType)
+            {
+                case AmbienceCreatorType.Mirror: return _lastAmbienceCreator = new AmbienceCreatorMirror();
+                default: throw new InvalidEnumArgumentException();
+            }
         }
 
         #endregion
