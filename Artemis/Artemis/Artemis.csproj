@@ -912,6 +912,7 @@
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win32\ets2-telemetry-server.dll" />
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <None Include="Resources\audio.png" />
+    <None Include="Resources\ambilight.png" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>
