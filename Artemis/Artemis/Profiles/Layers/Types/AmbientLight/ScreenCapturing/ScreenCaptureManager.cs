@@ -20,7 +20,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
         private static IScreenCapture _screenCapture;
 
         public static double StandByTime { get; set; } = 3;
-        public static double UpdateRate { get; set; } = 1f / 20f; // DarthAffe 29.10.2016: I think 20 FPS should be enough as default
+        public static double UpdateRate { get; set; } = 1.0 / 20.0; // DarthAffe 29.10.2016: I think 20 FPS should be enough as default
         public static ScreenCaptureMode ScreenCaptureMode { get; set; } = ScreenCaptureMode.DirectX9;
 
         public static int LastCaptureWidth { get; private set; }
@@ -33,7 +33,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
 
         private static IScreenCapture GetScreenCapture()
         {
-            if (_lastScreenCaptureMode == ScreenCaptureMode)
+            if (_lastScreenCaptureMode == ScreenCaptureMode && _screenCapture != null)
                 return _screenCapture;
 
             DisposeScreenCapture();
