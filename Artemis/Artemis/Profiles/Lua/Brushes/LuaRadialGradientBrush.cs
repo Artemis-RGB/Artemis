@@ -12,9 +12,9 @@ namespace Artemis.Profiles.Lua.Brushes
     {
         private RadialGradientBrush _brush;
 
-        public LuaRadialGradientBrush(RadialGradientBrush radialGradientBrush)
+        public LuaRadialGradientBrush(RadialGradientBrush brush)
         {
-            RadialGradientBrush = radialGradientBrush;
+            RadialGradientBrush = brush;
         }
 
         public LuaRadialGradientBrush(Dictionary<LuaColor, double> gradientColors, double centerX,
@@ -36,6 +36,12 @@ namespace Artemis.Profiles.Lua.Brushes
                 _brush.Freeze();
                 Brush = _brush;
             }
+        }
+
+        public override Brush Brush
+        {
+            get { return RadialGradientBrush; }
+            set { RadialGradientBrush = (RadialGradientBrush) value; }
         }
 
         /// <summary>

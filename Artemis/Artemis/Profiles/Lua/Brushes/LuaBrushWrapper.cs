@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Media;
 using Artemis.Utilities;
-using CUE.NET.Helper;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua.Brushes

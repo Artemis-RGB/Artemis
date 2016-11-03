@@ -51,7 +51,10 @@ namespace Artemis.Profiles.Lua
 
             try
             {
-                LuaScript.DoString(ProfileModel.LuaScript);
+                lock (LuaEventsWrapper.InvokeLock)
+                {
+                    LuaScript.DoString(ProfileModel.LuaScript);
+                }
             }
             catch (InternalErrorException e)
             {

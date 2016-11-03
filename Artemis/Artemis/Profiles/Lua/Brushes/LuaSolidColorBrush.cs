@@ -9,11 +9,16 @@ namespace Artemis.Profiles.Lua.Brushes
     {
         private SolidColorBrush _brush;
 
+        public LuaSolidColorBrush(SolidColorBrush brush)
+        {
+            SolidColorBrush = brush;
+        }
+
         public LuaSolidColorBrush(LuaColor luaColor)
         {
             SolidColorBrush = new SolidColorBrush(luaColor.Color);
         }
-
+        
         /// <summary>
         ///     The underlying brush
         /// </summary>
@@ -27,6 +32,12 @@ namespace Artemis.Profiles.Lua.Brushes
                 _brush.Freeze();
                 Brush = _brush;
             }
+        }
+
+        public override Brush Brush
+        {
+            get { return SolidColorBrush; }
+            set { SolidColorBrush = (SolidColorBrush)value; }
         }
 
         public LuaColor Color

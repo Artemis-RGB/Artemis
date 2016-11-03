@@ -8,6 +8,6 @@ namespace Artemis.Profiles.Lua.Brushes
     public abstract class LuaBrush
     {
         [MoonSharpVisible(false)]
-        public Brush Brush { get; set; }
+        public virtual Brush Brush { get; set; }
     }
 }

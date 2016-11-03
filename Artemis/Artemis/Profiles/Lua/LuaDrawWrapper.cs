@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Drawing.Text;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -11,10 +13,12 @@ namespace Artemis.Profiles.Lua
     public class LuaDrawWrapper
     {
         private readonly DrawingContext _ctx;
+        private FontFamily _font;
 
         public LuaDrawWrapper(DrawingContext ctx)
         {
             _ctx = ctx;
+            _font = new FontFamily(new Uri("pack://application:,,,/"), "./resources/#Silkscreen");
         }
 
         public void DrawEllipse(LuaBrush luaBrush, double x, double y, double height, double width)
@@ -50,17 +54,16 @@ namespace Artemis.Profiles.Lua
             _ctx.DrawRectangle(luaBrush.Brush, new Pen(), new Rect(x, y, width, height));
         }
 
-        public void DrawText(string text, string fontName, int fontSize, LuaBrush luaBrush, double x, double y)
+        public void DrawText(LuaBrush luaBrush, double x, double y, string text, int fontSize)
         {
             x *= 4;
             y *= 4;
+            fontSize *= 4;
 
-            var font = Fonts.SystemTypefaces.FirstOrDefault(f => f.FontFamily.ToString() == fontName);
-            if (font == null)
-                throw new ScriptRuntimeException($"Font '{fontName}' not found");
-
-            var formatted = new FormattedText(text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, font,
+            var typeFace = new Typeface(_font, new FontStyle(), new FontWeight(), new FontStretch());
+            var formatted = new FormattedText(text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, typeFace,
                 fontSize, luaBrush.Brush);
+
             _ctx.DrawText(formatted, new Point(x, y));
         }
     }
