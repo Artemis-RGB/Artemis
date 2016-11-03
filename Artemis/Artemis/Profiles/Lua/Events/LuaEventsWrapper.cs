@@ -11,7 +11,7 @@ namespace Artemis.Profiles.Lua.Events
     public class LuaEventsWrapper
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly string _invokeLock = string.Empty;
+        public readonly string InvokeLock = string.Empty;
         public event EventHandler<LuaProfileUpdatingEventArgs> ProfileUpdating;
         public event EventHandler<LuaProfileDrawingEventArgs> ProfileDrawing;
         public event EventHandler<LuaKeyPressEventArgs> KeyboardKeyPressed;
@@ -57,7 +57,7 @@ namespace Artemis.Profiles.Lua.Events
 
         private void LuaInvoke(ProfileModel profileModel, Action action)
         {
-            lock (_invokeLock)
+            lock (InvokeLock)
             {
                 try
                 {

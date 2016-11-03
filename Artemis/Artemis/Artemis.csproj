@@ -682,6 +682,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Resource Include="Resources\Kottke Silkscreen License.txt" />
     <None Include="Resources\lua-placeholder.lua" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
@@ -708,6 +709,7 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\slkscr.ttf" />
     <Resource Include="Resources\bow.png" />
     <Content Include="lib\CUE.NET.dll" />
     <Content Include="lib\Ets2SdkClient.dll" />

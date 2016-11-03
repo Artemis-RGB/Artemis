@@ -12,6 +12,7 @@ using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Lua;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -113,6 +114,8 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
+
+                LuaWrapper.LuaEventsWrapper?.InvokeProfileDraw(SelectedProfile, new ProfilePreviewDataModel(), true, drawingContext);
 
                 // Remove the clip
                 drawingContext.Pop();

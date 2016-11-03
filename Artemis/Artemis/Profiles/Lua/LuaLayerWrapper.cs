@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Lua.Brushes;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua
@@ -105,6 +107,23 @@ namespace Artemis.Profiles.Lua
         {
             get { return _layerModel.Properties.AnimationProgress; }
             set { _layerModel.Properties.AnimationProgress = value; }
+        }
+
+        public string BrushType => _layerModel.Properties.Brush?.GetType().Name;
+
+        public LuaBrush Brush
+        {
+            get
+            {
+                if (_layerModel.Properties.Brush is SolidColorBrush)
+                    return new LuaSolidColorBrush((SolidColorBrush) _layerModel.Properties.Brush);
+                if (_layerModel.Properties.Brush is LinearGradientBrush)
+                    return new LuaLinearGradientBrush((LinearGradientBrush) _layerModel.Properties.Brush);
+                if (_layerModel.Properties.Brush is RadialGradientBrush)
+                    return new LuaRadialGradientBrush((RadialGradientBrush) _layerModel.Properties.Brush);
+                return null;
+            }
+            set { _layerModel.Properties.Brush = value.Brush; }
         }
 
         #endregion

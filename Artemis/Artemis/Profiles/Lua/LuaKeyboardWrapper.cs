@@ -38,9 +38,9 @@ namespace Artemis.Profiles.Lua
                     keyMatch.Value.X, keyMatch.Value.Y);
         }
 
-        public void SendKeys(string keys)
+        public void PressKeys(string keys)
         {
-            System.Windows.Forms.SendKeys.SendWait(keys);
+            SendKeys.SendWait(keys);
         }
     }
 }
