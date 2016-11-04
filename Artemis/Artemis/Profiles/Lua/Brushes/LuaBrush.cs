@@ -7,7 +7,17 @@ namespace Artemis.Profiles.Lua.Brushes
     [MoonSharpUserData]
     public abstract class LuaBrush
     {
+        private Brush _brush;
+
         [MoonSharpVisible(false)]
-        public virtual Brush Brush { get; set; }
+        public Brush Brush
+        {
+            get { return _brush; }
+            set
+            {
+                value.Freeze();
+                _brush = value;
+            }
+        }
     }
 }

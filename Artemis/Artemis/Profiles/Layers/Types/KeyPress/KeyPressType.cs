@@ -67,6 +67,8 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
+            layerModel.AppliedProperties = new KeyPressPropertiesModel(layerModel.Properties);
+
             _layerModel = layerModel;
 
             if (isPreview)
