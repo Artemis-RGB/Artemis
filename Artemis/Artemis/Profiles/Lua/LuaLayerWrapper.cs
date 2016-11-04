@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua.Brushes;
 using MoonSharp.Interpreter;
@@ -18,6 +19,9 @@ namespace Artemis.Profiles.Lua
         public LuaLayerWrapper(LayerModel layerModel)
         {
             _layerModel = layerModel;
+
+            // Triger an update to fill up the AppliedProperties
+            _layerModel.Update(new ProfilePreviewDataModel(), true, false);
         }
 
         #region Child methods
@@ -63,67 +67,67 @@ namespace Artemis.Profiles.Lua
 
         public double X
         {
-            get { return _layerModel.Properties.X; }
-            set { _layerModel.Properties.X = value; }
+            get { return _layerModel.AppliedProperties.X; }
+            set { _layerModel.AppliedProperties.X = value; }
         }
 
         public double Y
         {
-            get { return _layerModel.Properties.Y; }
-            set { _layerModel.Properties.Y = value; }
+            get { return _layerModel.AppliedProperties.Y; }
+            set { _layerModel.AppliedProperties.Y = value; }
         }
 
         public double Width
         {
-            get { return _layerModel.Properties.Width; }
-            set { _layerModel.Properties.Width = value; }
+            get { return _layerModel.AppliedProperties.Width; }
+            set { _layerModel.AppliedProperties.Width = value; }
         }
 
         public double Height
         {
-            get { return _layerModel.Properties.Height; }
-            set { _layerModel.Properties.Height = value; }
+            get { return _layerModel.AppliedProperties.Height; }
+            set { _layerModel.AppliedProperties.Height = value; }
         }
 
         public bool Contain
         {
-            get { return _layerModel.Properties.Contain; }
-            set { _layerModel.Properties.Contain = value; }
+            get { return _layerModel.AppliedProperties.Contain; }
+            set { _layerModel.AppliedProperties.Contain = value; }
         }
 
         public double Opacity
         {
-            get { return _layerModel.Properties.Opacity; }
-            set { _layerModel.Properties.Opacity = value; }
+            get { return _layerModel.AppliedProperties.Opacity; }
+            set { _layerModel.AppliedProperties.Opacity = value; }
         }
 
         public double AnimationSpeed
         {
-            get { return _layerModel.Properties.AnimationSpeed; }
-            set { _layerModel.Properties.AnimationSpeed = value; }
+            get { return _layerModel.AppliedProperties.AnimationSpeed; }
+            set { _layerModel.AppliedProperties.AnimationSpeed = value; }
         }
 
         public double AnimationProgress
         {
-            get { return _layerModel.Properties.AnimationProgress; }
-            set { _layerModel.Properties.AnimationProgress = value; }
+            get { return _layerModel.AppliedProperties.AnimationProgress; }
+            set { _layerModel.AppliedProperties.AnimationProgress = value; }
         }
 
-        public string BrushType => _layerModel.Properties.Brush?.GetType().Name;
+        public string BrushType => _layerModel.AppliedProperties.Brush?.GetType().Name;
 
         public LuaBrush Brush
         {
             get
             {
-                if (_layerModel.Properties.Brush is SolidColorBrush)
-                    return new LuaSolidColorBrush((SolidColorBrush) _layerModel.Properties.Brush);
-                if (_layerModel.Properties.Brush is LinearGradientBrush)
-                    return new LuaLinearGradientBrush((LinearGradientBrush) _layerModel.Properties.Brush);
-                if (_layerModel.Properties.Brush is RadialGradientBrush)
-                    return new LuaRadialGradientBrush((RadialGradientBrush) _layerModel.Properties.Brush);
+                if (_layerModel.AppliedProperties.Brush is SolidColorBrush)
+                    return new LuaSolidColorBrush(_layerModel.AppliedProperties.Brush);
+                if (_layerModel.AppliedProperties.Brush is LinearGradientBrush)
+                    return new LuaLinearGradientBrush(_layerModel.AppliedProperties.Brush);
+                if (_layerModel.AppliedProperties.Brush is RadialGradientBrush)
+                    return new LuaRadialGradientBrush(_layerModel.AppliedProperties.Brush);
                 return null;
             }
-            set { _layerModel.Properties.Brush = value.Brush; }
+            set { _layerModel.AppliedProperties.Brush = value.Brush; }
         }
 
         #endregion

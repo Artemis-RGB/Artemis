@@ -1,49 +1,29 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Interop;
 
 namespace Artemis.Profiles.Lua.Brushes
 {
     [MoonSharpUserData]
     public class LuaSolidColorBrush : LuaBrush
     {
-        private SolidColorBrush _brush;
-
-        public LuaSolidColorBrush(SolidColorBrush brush)
+        public LuaSolidColorBrush(Brush brush)
         {
-            SolidColorBrush = brush;
+            if (!(brush is SolidColorBrush))
+                throw new ArgumentException("Brush type must be SolidColorBrush");
+
+            Brush = brush;
         }
 
         public LuaSolidColorBrush(LuaColor luaColor)
         {
-            SolidColorBrush = new SolidColorBrush(luaColor.Color);
-        }
-        
-        /// <summary>
-        ///     The underlying brush
-        /// </summary>
-        [MoonSharpVisible(false)]
-        public SolidColorBrush SolidColorBrush
-        {
-            get { return _brush; }
-            set
-            {
-                _brush = value;
-                _brush.Freeze();
-                Brush = _brush;
-            }
-        }
-
-        public override Brush Brush
-        {
-            get { return SolidColorBrush; }
-            set { SolidColorBrush = (SolidColorBrush)value; }
+            Brush = new SolidColorBrush(luaColor.Color);
         }
 
         public LuaColor Color
         {
-            get { return new LuaColor(SolidColorBrush.Color); }
-            set { SolidColorBrush = new SolidColorBrush(value.Color); }
+            get { return new LuaColor(((SolidColorBrush) Brush).Color); }
+            set { Brush = new SolidColorBrush(value.Color); }
         }
     }
 }

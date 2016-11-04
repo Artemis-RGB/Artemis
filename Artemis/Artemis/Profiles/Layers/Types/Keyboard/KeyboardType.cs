@@ -44,7 +44,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             }
 
             // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
-            var rect = layer.Properties.Contain
+            var rect = layer.AppliedProperties.Contain
                 ? new Rect(layer.AppliedProperties.X*4,
                     layer.AppliedProperties.Y*4,
                     layer.AppliedProperties.Width*4,
