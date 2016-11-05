@@ -230,12 +230,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             // Google Play Music
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            if (!File.Exists(appData + @"\Google Play Music Desktop Player\json_store\playback.json"))
+            var json = appData + @"\Google Play Music Desktop Player\json_store\playback.json";
+            if (!File.Exists(json))
                 return;
 
-            dataModel.GooglePlayMusic =
-                JsonConvert.DeserializeObject<GooglePlayMusic>(
-                    File.ReadAllText(appData + @"\Google Play Music Desktop Player\json_store\playback.json"));
+            dataModel.GooglePlayMusic = JsonConvert.DeserializeObject<GooglePlayMusic>(File.ReadAllText(json));
         }
 
         #endregion
