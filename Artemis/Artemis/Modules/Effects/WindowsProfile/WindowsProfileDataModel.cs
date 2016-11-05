@@ -9,6 +9,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public WindowsProfileDataModel()
         {
             Spotify = new Spotify();
+            GooglePlayMusic = new GooglePlayMusic();
             Cpu = new CpuDataModel();
             Performance = new PerformanceDataModel();
             CurrentTime = new CurrentTime();
@@ -17,6 +18,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public CpuDataModel Cpu { get; set; }
         public PerformanceDataModel Performance { get; set; }
         public Spotify Spotify { get; set; }
+        public GooglePlayMusic GooglePlayMusic { get; set; }
         public CurrentTime CurrentTime { get; set; }
     }
 
@@ -63,4 +65,39 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public bool Playing { get; set; }
         public int SongLength { get; set; }
     }
+
+    [MoonSharpUserData]
+    public class GooglePlayMusic
+    {
+        public bool playing { get; set; }
+        public Song song { get; set; }
+        public Rating rating { get; set; }
+        public Time time { get; set; }
+        public string shuffle { get; set; }
+        public string repeat { get; set; }
+        public int volume { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Song
+    {
+        public string title { get; set; }
+        public string artist { get; set; }
+        public string album { get; set; }
+        public string albumArt { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Rating
+    {
+        public bool liked { get; set; }
+        public bool disliked { get; set; }
+    }
+
+    public class Time
+    {
+        public int current { get; set; }
+        public int total { get; set; }
+    }
+
 }
