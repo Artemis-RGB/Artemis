@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
+using Newtonsoft.Json;
 using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
 
@@ -20,13 +22,13 @@ namespace Artemis.Modules.Effects.WindowsProfile
         private PerformanceCounter _overallCpu;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
-        private DateTime _lastSpotifyUpdate;
+        private DateTime _lastMusicUpdate;
 
         public WindowsProfileModel(ILogger logger, MainManager mainManager)
             : base(mainManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
         {
             _logger = logger;
-            _lastSpotifyUpdate = DateTime.Now;
+            _lastMusicUpdate = DateTime.Now;
 
             Name = "WindowsProfile";
         }
@@ -49,7 +51,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             var dataModel = (WindowsProfileDataModel) DataModel;
             UpdateCpu(dataModel);
-            UpdateSpotify(dataModel);
+            UpdateMusicPlayers(dataModel);
             UpdateDay(dataModel);
         }
 
@@ -185,13 +187,20 @@ namespace Artemis.Modules.Effects.WindowsProfile
             });
         }
 
-        public void UpdateSpotify(WindowsProfileDataModel dataModel)
+        public void UpdateMusicPlayers(WindowsProfileDataModel dataModel)
         {
             // This is quite resource hungry so only update it once every two seconds
-            if (DateTime.Now - _lastSpotifyUpdate < TimeSpan.FromSeconds(2))
+            if (DateTime.Now - _lastMusicUpdate < TimeSpan.FromSeconds(2))
                 return;
-            _lastSpotifyUpdate = DateTime.Now;
+            _lastMusicUpdate = DateTime.Now;
 
+            UpdateSpotify(dataModel);
+            UpdateGooglePlayMusic(dataModel);
+        }
+
+        private void UpdateSpotify(WindowsProfileDataModel dataModel)
+        {
+            // Spotify
             if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
                 SetupSpotify();
 
@@ -215,6 +224,18 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 dataModel.Spotify.SongPercentCompleted =
                     (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
             }
+        }
+
+        private void UpdateGooglePlayMusic(WindowsProfileDataModel dataModel)
+        {
+            // Google Play Music
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (!File.Exists(appData + @"\Google Play Music Desktop Player\json_store\playback.json"))
+                return;
+
+            dataModel.GooglePlayMusic =
+                JsonConvert.DeserializeObject<GooglePlayMusic>(
+                    File.ReadAllText(appData + @"\Google Play Music Desktop Player\json_store\playback.json"));
         }
 
         #endregion
