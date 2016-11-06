@@ -161,7 +161,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         #endregion
 
-        #region Spotify
+        #region Music
 
         public void SetupSpotify()
         {

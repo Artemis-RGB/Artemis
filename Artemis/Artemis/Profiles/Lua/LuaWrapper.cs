@@ -16,28 +16,30 @@ namespace Artemis.Profiles.Lua
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Script LuaScript = new Script(CoreModules.Preset_SoftSandbox);
-        private static KeyboardProvider _keyboardProvider;
         private static FileSystemWatcher _watcher;
 
         public static ProfileModel ProfileModel { get; private set; }
+        public static KeyboardProvider KeyboardProvider { get; private set; }
         public static LuaProfileWrapper LuaProfileWrapper { get; private set; }
         public static LuaBrushWrapper LuaBrushWrapper { get; private set; }
         public static LuaKeyboardWrapper LuaKeyboardWrapper { get; private set; }
+        public static LuaMouseWrapper LuaMouseWrapper { get; set; }
         public static LuaEventsWrapper LuaEventsWrapper { get; private set; }
 
         public static void SetupLua(ProfileModel profileModel, KeyboardProvider keyboardProvider)
         {
             Clear();
 
-            if (profileModel == null || keyboardProvider == null)
+            if ((profileModel == null) || (keyboardProvider == null))
                 return;
 
             // Setup a new environment
-            _keyboardProvider = keyboardProvider;
+            KeyboardProvider = keyboardProvider;
             ProfileModel = profileModel;
             LuaProfileWrapper = new LuaProfileWrapper(ProfileModel);
             LuaBrushWrapper = new LuaBrushWrapper();
             LuaKeyboardWrapper = new LuaKeyboardWrapper(keyboardProvider);
+            LuaMouseWrapper = new LuaMouseWrapper();
             LuaEventsWrapper = new LuaEventsWrapper();
 
             LuaScript.Options.DebugPrint = LuaPrint;
@@ -45,7 +47,10 @@ namespace Artemis.Profiles.Lua
             LuaScript.Globals["Events"] = LuaEventsWrapper;
             LuaScript.Globals["Brushes"] = LuaBrushWrapper;
             LuaScript.Globals["Keyboard"] = LuaKeyboardWrapper;
-           
+            LuaScript.Globals["Mouse"] = LuaMouseWrapper;
+
+            if (ProfileModel == null)
+                return;
             if (ProfileModel.LuaScript.IsNullOrEmpty())
                 return;
 
@@ -81,6 +86,25 @@ namespace Artemis.Profiles.Lua
         }
 
         #endregion
+
+        public static void Clear()
+        {
+            lock (LuaScript)
+            {
+                // Clear old fields/properties
+                KeyboardProvider = null;
+                ProfileModel = null;
+                LuaKeyboardWrapper?.Dispose();
+                LuaKeyboardWrapper = null;
+
+                LuaScript.Globals.Clear();
+                LuaScript.Registry.Clear();
+                LuaScript.Registry.RegisterConstants();
+                LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                LuaScript.Globals.RegisterConstants();
+                LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+            }
+        }
 
         #region Editor
 
@@ -134,29 +158,10 @@ namespace Artemis.Profiles.Lua
 
             ProfileProvider.AddOrUpdate(ProfileModel);
 
-            if (_keyboardProvider != null)
-                SetupLua(ProfileModel, _keyboardProvider);
+            if (KeyboardProvider != null)
+                SetupLua(ProfileModel, KeyboardProvider);
         }
 
         #endregion
-
-        public static void Clear()
-        {
-            lock (LuaScript)
-            {
-                // Clear old fields/properties
-                _keyboardProvider = null;
-                ProfileModel = null;
-                LuaKeyboardWrapper?.Dispose();
-                LuaKeyboardWrapper = null;
-
-                LuaScript.Globals.Clear();
-                LuaScript.Registry.Clear();
-                LuaScript.Registry.RegisterConstants();
-                LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-                LuaScript.Globals.RegisterConstants();
-                LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-            }
-        }
     }
 }

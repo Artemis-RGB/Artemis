@@ -12,16 +12,17 @@ namespace Artemis.Profiles.Lua.Events
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         public readonly string InvokeLock = string.Empty;
-        public event EventHandler<LuaProfileUpdatingEventArgs> ProfileUpdating;
-        public event EventHandler<LuaProfileDrawingEventArgs> ProfileDrawing;
+        public event EventHandler<LuaDeviceUpdatingEventArgs> DeviceUpdating;
+        public event EventHandler<LuaDeviceDrawingEventArgs> DeviceDrawing;
         public event EventHandler<LuaKeyPressEventArgs> KeyboardKeyPressed;
 
-        internal void InvokeProfileUpdate(ProfileModel profileModel, IDataModel dataModel, bool preview)
+        internal void InvokeDeviceUpdate(ProfileModel profileModel, string deviceType, IDataModel dataModel,
+            bool preview)
         {
             try
             {
-                LuaInvoke(profileModel, () => OnProfileUpdating(new LuaProfileWrapper(profileModel),
-                    new LuaProfileUpdatingEventArgs(dataModel, preview)));
+                LuaInvoke(profileModel, () => OnDeviceUpdating(new LuaProfileWrapper(profileModel),
+                    new LuaDeviceUpdatingEventArgs(deviceType, dataModel, preview)));
             }
             catch (Exception)
             {
@@ -29,12 +30,13 @@ namespace Artemis.Profiles.Lua.Events
             }
         }
 
-        internal void InvokeProfileDraw(ProfileModel profileModel, IDataModel dataModel, bool preview, DrawingContext c)
+        internal void InvokeDeviceDraw(ProfileModel profileModel, string deviceType, IDataModel dataModel, bool preview,
+            DrawingContext c)
         {
             try
             {
-                LuaInvoke(profileModel, () => OnProfileDrawing(new LuaProfileWrapper(profileModel),
-                    new LuaProfileDrawingEventArgs(dataModel, preview, new LuaDrawWrapper(c))));
+                LuaInvoke(profileModel, () => OnDeviceDrawing(new LuaProfileWrapper(profileModel),
+                    new LuaDeviceDrawingEventArgs(deviceType, dataModel, preview, new LuaDrawWrapper(c))));
             }
             catch (Exception)
             {
@@ -46,7 +48,7 @@ namespace Artemis.Profiles.Lua.Events
         {
             try
             {
-                LuaInvoke(profileModel, () => OnKeyboardKeyPressed(new LuaProfileWrapper(profileModel), 
+                LuaInvoke(profileModel, () => OnKeyboardKeyPressed(new LuaProfileWrapper(profileModel),
                     keyboard, new LuaKeyPressEventArgs(key, x, y)));
             }
             catch (Exception)
@@ -78,14 +80,14 @@ namespace Artemis.Profiles.Lua.Events
             }
         }
 
-        protected virtual void OnProfileUpdating(LuaProfileWrapper profileModel, LuaProfileUpdatingEventArgs e)
+        protected virtual void OnDeviceUpdating(LuaProfileWrapper profileModel, LuaDeviceUpdatingEventArgs e)
         {
-            ProfileUpdating?.Invoke(profileModel, e);
+            DeviceUpdating?.Invoke(profileModel, e);
         }
 
-        protected virtual void OnProfileDrawing(LuaProfileWrapper profileModel, LuaProfileDrawingEventArgs e)
+        protected virtual void OnDeviceDrawing(LuaProfileWrapper profileModel, LuaDeviceDrawingEventArgs e)
         {
-            ProfileDrawing?.Invoke(profileModel, e);
+            DeviceDrawing?.Invoke(profileModel, e);
         }
 
         protected virtual void OnKeyboardKeyPressed(LuaProfileWrapper profileModel, LuaKeyboardWrapper keyboard,
