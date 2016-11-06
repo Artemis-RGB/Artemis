@@ -75,32 +75,32 @@ namespace Artemis.Models
                 using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
-                        DataModel, keyboardRect, false, true, true);
+                        DataModel, keyboardRect, false, true, "keyboard");
                 }
                 // Render mice layer-by-layer
                 var devRec = new Rect(0, 0, 40, 40);
                 using (var g = Graphics.FromImage(frame.MouseBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), DataModel,
-                        devRec, false, true);
+                        devRec, false, true, "mouse");
                 }
                 // Render headsets layer-by-layer
                 using (var g = Graphics.FromImage(frame.HeadsetBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Headset),
-                        DataModel, devRec, false, true);
+                        DataModel, devRec, false, true, "headset");
                 }
                 // Render generic devices layer-by-layer
                 using (var g = Graphics.FromImage(frame.GenericBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Generic),
-                        DataModel, devRec, false, true);
+                        DataModel, devRec, false, true, "generic");
                 }
                 // Render mousemats layer-by-layer
                 using (var g = Graphics.FromImage(frame.MousematBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mousemat),
-                        DataModel, devRec, false, true);
+                        DataModel, devRec, false, true, "mousemat");
                 }
 
                 // Trace debugging

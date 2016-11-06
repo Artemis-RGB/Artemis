@@ -53,7 +53,7 @@ namespace Artemis.ViewModels.Profiles
             if (_blurProgress > 2)
                 _blurProgress = 0;
             _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
+            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
 
             if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
             {
@@ -92,7 +92,7 @@ namespace Artemis.ViewModels.Profiles
                     return;
                 }
 
-                var pen = new Pen(new SolidColorBrush((Color)accentColor), 0.4);
+                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
 
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
@@ -115,7 +115,8 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
 
-                LuaWrapper.LuaEventsWrapper?.InvokeProfileDraw(SelectedProfile, new ProfilePreviewDataModel(), true, drawingContext);
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(SelectedProfile, "preview", new ProfilePreviewDataModel(),
+                    true, drawingContext);
 
                 // Remove the clip
                 drawingContext.Pop();

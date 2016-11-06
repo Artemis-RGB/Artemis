@@ -99,8 +99,9 @@ namespace Artemis.Profiles
         /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
+        /// <param name="updateType">The type of layers that are being updated, for reference in LUA</param>
         internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
-            bool preview, bool updateAnimations, bool triggerLua = false)
+            bool preview, bool updateAnimations, string updateType)
         {
             var visual = new DrawingVisual();
             var layerModels = renderLayers.ToList();
@@ -113,16 +114,12 @@ namespace Artemis.Profiles
                 // Update the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
-
-                if (triggerLua)
-                    LuaWrapper.LuaEventsWrapper?.InvokeProfileUpdate(this, dataModel, preview);
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceUpdate(this, updateType, dataModel, preview);
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-
-                if (triggerLua)
-                    LuaWrapper.LuaEventsWrapper?.InvokeProfileDraw(this, dataModel, preview, c);
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(this, updateType, dataModel, preview, c);
 
                 // Remove the clip
                 c.Pop();
