@@ -15,20 +15,20 @@
 
 -- This event is raised after every profile update, before drawing.
 function updateHandler(profile, eventArgs)
-	-- Don't do anything when previewing. You can ofcourse remove this if you want
-	if eventArgs.Preview == true then
-		return
-	end
+	-- In this example we only want to update once per frame when the keyboard is updated
+    if eventArgs.DeviceType != "keyboard" then
+        return
+    end
 	
 	-- Custom update code here
 end
 
 -- This event is raised after every profile draw, after updating.
 function drawHandler(profile, eventArgs)
-	-- Don't do anything when previewing. You can ofcourse remove this if you want
-	if eventArgs.Preview == true then
-		return
-	end
+	-- In this example we only want to draw to the keyboard
+    if eventArgs.DeviceType != "keyboard" then
+        return
+    end
 	
 	-- Custom draw code here
 end
@@ -36,5 +36,5 @@ end
 
 -- Register the default events, you can rename/remove these if you so desire.
 -- These events are raised every 40 ms (25 times a second).
-Events.ProfileUpdating.add(updateHandler);
-Events.ProfileDrawing.add(drawHandler);
+Events.DeviceUpdating.add(updateHandler);
+Events.DeviceDrawing.add(drawHandler);
