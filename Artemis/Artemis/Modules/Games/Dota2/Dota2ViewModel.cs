@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -10,8 +10,8 @@ namespace Artemis.Modules.Games.Dota2
 {
     public sealed class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainManager main, IProfileEditorVmFactory pFactory, Dota2Model model)
-            : base(main, model, pFactory)
+        public Dota2ViewModel(MainManager main, IKernel kernel, Dota2Model model)
+            : base(main, model, kernel)
         {
             DisplayName = "Dota 2";
 

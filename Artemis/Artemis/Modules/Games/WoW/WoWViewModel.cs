@@ -1,4 +1,4 @@
-﻿using Artemis.InjectionFactories;
+﻿using Ninject;
 using Artemis.Managers;
 using Artemis.ViewModels.Abstract;
 
@@ -6,8 +6,8 @@ namespace Artemis.Modules.Games.WoW
 {
     public sealed class WoWViewModel : GameViewModel
     {
-        public WoWViewModel(MainManager main, IProfileEditorVmFactory pFactory, WoWModel model)
-            : base(main, model, pFactory)
+        public WoWViewModel(MainManager main, IKernel kernel, WoWModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "WoW";
         }

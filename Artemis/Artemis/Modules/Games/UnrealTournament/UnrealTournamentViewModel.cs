@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Artemis.DAL;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -17,8 +17,8 @@ namespace Artemis.Modules.Games.UnrealTournament
 {
     public sealed class UnrealTournamentViewModel : GameViewModel
     {
-        public UnrealTournamentViewModel(MainManager main, IProfileEditorVmFactory pFactory, UnrealTournamentModel model)
-            : base(main, model, pFactory)
+        public UnrealTournamentViewModel(MainManager main, IKernel kernel, UnrealTournamentModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "Unreal Tournament";
             MainManager.EffectManager.EffectModels.Add(GameModel);

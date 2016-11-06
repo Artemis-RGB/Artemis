@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -15,8 +15,8 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public sealed class Witcher3ViewModel : GameViewModel
     {
-        public Witcher3ViewModel(MainManager main, IProfileEditorVmFactory pFactory, Witcher3Model model)
-            : base(main, model, pFactory)
+        public Witcher3ViewModel(MainManager main, IKernel kernel, Witcher3Model model)
+            : base(main, model, kernel)
         {
             DisplayName = "The Witcher 3";
         }

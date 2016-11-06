@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -11,8 +11,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 {
     public sealed class EurotruckSimulator2ViewModel : GameViewModel
     {
-        public EurotruckSimulator2ViewModel(MainManager main, IProfileEditorVmFactory pFactory,
-            EurotruckSimulator2Model model) : base(main, model, pFactory)
+        public EurotruckSimulator2ViewModel(MainManager main, IKernel kernel,
+            EurotruckSimulator2Model model) : base(main, model, kernel)
         {
             DisplayName = "ETS 2";
 

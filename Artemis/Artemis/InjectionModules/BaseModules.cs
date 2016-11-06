@@ -1,11 +1,9 @@
-﻿using Artemis.InjectionFactories;
-using Artemis.Modules.Effects.ProfilePreview;
+﻿using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Services;
 using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
-using Ninject.Extensions.Factory;
 using Ninject.Modules;
 
 namespace Artemis.InjectionModules
@@ -16,9 +14,8 @@ namespace Artemis.InjectionModules
         {
             // ViewModels
             Bind<IScreen>().To<ShellViewModel>().InSingletonScope();
-            Bind<IProfileEditorVmFactory>().ToFactory();
-            Bind<ILayerEditorVmFactory>().ToFactory();
             Bind<ProfileViewModel>().ToSelf();
+            Bind<ProfileEditorViewModel>().ToSelf();
             Bind<DebugViewModel>().ToSelf().InSingletonScope();
 
             Bind<BaseViewModel>().To<WelcomeViewModel>().InSingletonScope();
@@ -31,6 +28,7 @@ namespace Artemis.InjectionModules
 
             // Services
             Bind<MetroDialogService>().ToSelf().InSingletonScope();
+            Bind<WindowService>().ToSelf().InSingletonScope();
         }
     }
 }

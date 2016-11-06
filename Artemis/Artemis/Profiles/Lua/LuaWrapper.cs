@@ -53,7 +53,10 @@ namespace Artemis.Profiles.Lua
             {
                 lock (LuaEventsWrapper.InvokeLock)
                 {
-                    LuaScript.DoString(ProfileModel.LuaScript);
+                    lock (LuaScript)
+                    {
+                        LuaScript.DoString(ProfileModel.LuaScript);
+                    }
                 }
             }
             catch (InternalErrorException e)
@@ -139,18 +142,21 @@ namespace Artemis.Profiles.Lua
 
         public static void Clear()
         {
-            // Clear old fields/properties
-            _keyboardProvider = null;
-            ProfileModel = null;
-            LuaKeyboardWrapper?.Dispose();
-            LuaKeyboardWrapper = null;
+            lock (LuaScript)
+            {
+                // Clear old fields/properties
+                _keyboardProvider = null;
+                ProfileModel = null;
+                LuaKeyboardWrapper?.Dispose();
+                LuaKeyboardWrapper = null;
 
-            LuaScript.Globals.Clear();
-            LuaScript.Registry.Clear();
-            LuaScript.Registry.RegisterConstants();
-            LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-            LuaScript.Globals.RegisterConstants();
-            LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                LuaScript.Globals.Clear();
+                LuaScript.Registry.Clear();
+                LuaScript.Registry.RegisterConstants();
+                LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                LuaScript.Globals.RegisterConstants();
+                LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+            }
         }
     }
 }

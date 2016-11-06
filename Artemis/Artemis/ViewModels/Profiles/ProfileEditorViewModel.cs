@@ -11,7 +11,6 @@ using System.Windows.Media;
 using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
-using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles;
@@ -25,6 +24,7 @@ using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
+using Ninject.Parameters;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -36,7 +36,6 @@ namespace Artemis.ViewModels.Profiles
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly EffectModel _gameModel;
-        private readonly ILayerEditorVmFactory _layerEditorVmFactory;
         private readonly MainManager _mainManager;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
@@ -46,16 +45,16 @@ namespace Artemis.ViewModels.Profiles
         private ProfileModel _selectedProfile;
 
         public ProfileEditorViewModel(MainManager mainManager, EffectModel gameModel, ProfileViewModel profileViewModel,
-            MetroDialogService dialogService, string lastProfile, ILayerEditorVmFactory layerEditorVmFactory)
+            MetroDialogService dialogService, WindowService windowService, string lastProfile)
         {
             _mainManager = mainManager;
             _gameModel = gameModel;
-            _layerEditorVmFactory = layerEditorVmFactory;
 
             ProfileNames = new BindableCollection<string>();
             Layers = new BindableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
             DialogService = dialogService;
+            WindowService = windowService;
             LastProfile = lastProfile;
 
             PropertyChanged += EditorStateHandler;
@@ -70,6 +69,8 @@ namespace Artemis.ViewModels.Profiles
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
+
+        public WindowService WindowService { get; set; }
 
         public string LastProfile { get; set; }
 
@@ -104,10 +105,10 @@ namespace Artemis.ViewModels.Profiles
 
         public string SelectedProfileName
         {
-            get { return SelectedProfile.Name; }
+            get { return SelectedProfile?.Name; }
             set
             {
-                if (value == SelectedProfile.Name)
+                if (value == SelectedProfile?.Name)
                     return;
 
                 SelectedProfile = ProfileProvider.GetProfile(
@@ -295,20 +296,11 @@ namespace Artemis.ViewModels.Profiles
             if (layer == null)
                 return;
 
-            IWindowManager manager = new WindowManager();
-            var editorVm = _layerEditorVmFactory.CreateLayerEditorVm(_gameModel.DataModel, layer);
-
-            dynamic settings = new ExpandoObject();
-            var icon = ImageUtilities.GenerateWindowIcon();
-
-            settings.Title = "Artemis | Edit " + layer.Name;
-            settings.Icon = icon;
-
-            manager.ShowDialog(editorVm, null, settings);
-
-            //// The layer editor VM may have created a new instance of the layer, reapply it to the list
-            //layer.Replace(editorVm.Layer);
-            //layer = editorVm.Layer;
+            IParameter[] args = {
+                new ConstructorArgument("dataModel", _gameModel.DataModel),
+                new ConstructorArgument("layer", layer)
+            };
+            WindowService.ShowDialog<LayerEditorViewModel>(args);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())
@@ -339,18 +331,9 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return null;
 
-            // Create a new layer
-            var layer = LayerModel.CreateLayer();
-
-            if (ProfileViewModel.SelectedLayer != null)
-                ProfileViewModel.SelectedLayer.InsertAfter(layer);
-            else
-            {
-                SelectedProfile.Layers.Add(layer);
-                SelectedProfile.FixOrder();
-            }
-
+            var layer = SelectedProfile.AddLayer(ProfileViewModel.SelectedLayer);
             UpdateLayerList(layer);
+
             return layer;
         }
 
