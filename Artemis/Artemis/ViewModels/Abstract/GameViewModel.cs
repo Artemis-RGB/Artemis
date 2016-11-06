@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using Artemis.InjectionFactories;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
@@ -9,6 +8,7 @@ using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
+using Ninject.Parameters;
 
 namespace Artemis.ViewModels.Abstract
 {
@@ -16,14 +16,19 @@ namespace Artemis.ViewModels.Abstract
     {
         private GameSettings _gameSettings;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel, IProfileEditorVmFactory pFactory)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel, IKernel kernel)
         {
             MainManager = mainManager;
             GameModel = gameModel;
-            PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorVm(mainManager, gameModel, GameSettings.LastProfile);
+            IParameter[] args =
+            {
+                new ConstructorArgument("mainManager", mainManager),
+                new ConstructorArgument("gameModel", gameModel),
+                new ConstructorArgument("lastProfile", GameSettings.LastProfile)
+            };
+            ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
         }
@@ -36,8 +41,6 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
-
-        public IProfileEditorVmFactory PFactory { get; set; }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
 
@@ -89,14 +92,14 @@ namespace Artemis.ViewModels.Abstract
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "SelectedProfile" && IsActive)
+            if ((e.PropertyName != "SelectedProfile") && IsActive)
                 return;
-            
+
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
-            if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
-                ProfileEditor.ProfileViewModel.SelectedProfile == null)
+            if ((e.PropertyName != "SelectedProfile") || !ProfileEditor.ProfileViewModel.Activated ||
+                (ProfileEditor.ProfileViewModel.SelectedProfile == null))
                 return;
             GameSettings.LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             GameSettings.Save();

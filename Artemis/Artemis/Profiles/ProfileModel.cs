@@ -219,5 +219,21 @@ namespace Artemis.Profiles
                 LuaWrapper.Clear();
             }
         }
+
+        public LayerModel AddLayer(LayerModel afterLayer)
+        {
+            // Create a new layer
+            var layer = LayerModel.CreateLayer();
+
+            if (afterLayer!= null)
+                afterLayer.InsertAfter(layer);
+            else
+            {
+                Layers.Add(layer);
+                FixOrder();
+            }
+
+            return layer;
+        }
     }
 }

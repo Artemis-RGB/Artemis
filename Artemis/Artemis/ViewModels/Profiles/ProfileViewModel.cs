@@ -206,8 +206,7 @@ namespace Artemis.ViewModels.Profiles
         }
 
         /// <summary>
-        ///     Second handler for clicking, selects a the layer the user clicked on
-        ///     if the used clicked on an empty spot, deselects the current layer
+        ///     Second handler for clicking, selects a the layer the user clicked on.
         /// </summary>
         /// <param name="e"></param>
         public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
@@ -229,7 +228,8 @@ namespace Artemis.ViewModels.Profiles
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
-            SelectedLayer = hoverLayer;
+            if (hoverLayer != null)
+                SelectedLayer = hoverLayer;
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace Artemis.ViewModels.Profiles
             if (ShowAll)
                 return SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
 
-            if (SelectedLayer == null)
+            if (SelectedLayer == null || !SelectedLayer.Enabled)
                 return new EditableList<LayerModel>();
 
             if (SelectedLayer.LayerType is FolderType)
@@ -355,21 +355,17 @@ namespace Artemis.ViewModels.Profiles
 
         private List<LayerModel> GetLayers()
         {
+            if (ShowAll)
+                return SelectedProfile.GetLayers();
             if (SelectedLayer == null)
                 return new List<LayerModel>();
 
             lock (SelectedLayer)
             {
                 // Get the layers that must be drawn
-                List<LayerModel> drawLayers;
-                if (ShowAll)
-                    drawLayers = SelectedProfile.GetLayers();
-                else if (SelectedLayer.LayerType is FolderType)
-                    drawLayers = SelectedLayer.GetLayers().ToList();
-                else
-                    drawLayers = new List<LayerModel> {SelectedLayer};
-
-                return drawLayers;
+                if (SelectedLayer.LayerType is FolderType)
+                    return SelectedLayer.GetLayers().ToList();
+                return new List<LayerModel> {SelectedLayer};
             }
         }
 

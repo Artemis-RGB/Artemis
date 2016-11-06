@@ -153,7 +153,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
         {
             if (b.Width > 21 || b.Height > 6)
                 b = ResizeImage(b, 21, 6);
-            b.Save(@"D:\Gebruiker folder\Mijn afbeeldingen\BitmapOutput\test.bmp");
+            
             var rect = new Rectangle(0, 0, b.Width, b.Height);
             var bitmapData = b.LockBits(rect, ImageLockMode.ReadWrite, b.PixelFormat);
 

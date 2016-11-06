@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels.Abstract;
@@ -10,8 +10,8 @@ namespace Artemis.Modules.Games.Overwatch
 {
     public sealed class OverwatchViewModel : GameViewModel
     {
-        public OverwatchViewModel(MainManager main, IProfileEditorVmFactory pFactory, OverwatchModel model)
-            : base(main, model, pFactory)
+        public OverwatchViewModel(MainManager main, IKernel kernel, OverwatchModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "Overwatch";
 

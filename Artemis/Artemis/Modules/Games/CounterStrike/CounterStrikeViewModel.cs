@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using Artemis.InjectionFactories;
+using Ninject;
 using Artemis.Managers;
 using Artemis.Properties;
 using Artemis.Utilities;
@@ -10,8 +10,8 @@ namespace Artemis.Modules.Games.CounterStrike
 {
     public sealed class CounterStrikeViewModel : GameViewModel
     {
-        public CounterStrikeViewModel(MainManager main, IProfileEditorVmFactory pFactory, CounterStrikeModel model)
-            : base(main, model, pFactory)
+        public CounterStrikeViewModel(MainManager main, IKernel kernel, CounterStrikeModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "CS:GO";
 

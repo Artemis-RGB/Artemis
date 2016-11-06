@@ -226,10 +226,6 @@
       <HintPath>..\packages\Ninject.Extensions.Conventions.3.2.0.0\lib\net45-full\Ninject.Extensions.Conventions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ninject.Extensions.Factory, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.Extensions.Factory.3.2.1.0\lib\net45-full\Ninject.Extensions.Factory.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Ninject.Extensions.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.Extensions.Logging.3.2.3.0\lib\net45-full\Ninject.Extensions.Logging.dll</HintPath>
       <Private>True</Private>
@@ -337,8 +333,6 @@
     <Compile Include="Events\KeyboardChangedEventArgs.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
     <Compile Include="Events\RazerColorsChangedEventArgs.cs" />
-    <Compile Include="InjectionFactories\ILayerEditorVmFactory.cs" />
-    <Compile Include="InjectionFactories\IProfileEditorVmFactory.cs" />
     <Compile Include="InjectionModules\DeviceModules.cs" />
     <Compile Include="InjectionModules\EffectModules.cs" />
     <Compile Include="InjectionModules\ProfileModules.cs" />
@@ -545,6 +539,7 @@
     </Compile>
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\MetroDialogService.cs" />
+    <Compile Include="Services\WindowService.cs" />
     <Compile Include="Settings\EffectSettings.cs" />
     <Compile Include="Settings\GameSettings.cs" />
     <Compile Include="Settings\GeneralSettings.cs" />
