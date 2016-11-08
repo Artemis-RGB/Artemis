@@ -9,25 +9,22 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Newtonsoft.Json;
-using Ninject.Extensions.Logging;
 using SpotifyAPI.Local;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     public class WindowsProfileModel : EffectModel
     {
-        private readonly ILogger _logger;
         private List<PerformanceCounter> _cores;
         private int _cpuFrames;
+        private DateTime _lastMusicUpdate;
         private PerformanceCounter _overallCpu;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
-        private DateTime _lastMusicUpdate;
 
-        public WindowsProfileModel(ILogger logger, MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
+        public WindowsProfileModel(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
         {
-            _logger = logger;
             _lastMusicUpdate = DateTime.Now;
 
             Name = "WindowsProfile";
@@ -85,7 +82,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             }
             catch (InvalidOperationException)
             {
-                _logger.Warn("Failed to setup CPU information, try running \"lodctr /R\" as administrator.");
+                Logger?.Warn("Failed to setup CPU information, try running \"lodctr /R\" as administrator.");
             }
         }
 
@@ -220,10 +217,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
             }
 
             if (dataModel.Spotify.SongLength > 0)
-            {
                 dataModel.Spotify.SongPercentCompleted =
                     (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
-            }
         }
 
         private void UpdateGooglePlayMusic(WindowsProfileDataModel dataModel)

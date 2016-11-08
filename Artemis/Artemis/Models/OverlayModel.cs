@@ -8,7 +8,7 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(MainManager mainManager, OverlaySettings settings) : base(mainManager, settings, null)
+        protected OverlayModel(DeviceManager deviceManager, OverlaySettings settings) : base(deviceManager, settings, null)
         {
             Settings = settings;
             Enabled = settings.Enabled;

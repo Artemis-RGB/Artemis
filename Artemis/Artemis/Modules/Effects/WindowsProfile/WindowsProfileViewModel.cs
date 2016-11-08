@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
@@ -12,7 +13,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
     public sealed class WindowsProfileViewModel : EffectViewModel
     {
         public WindowsProfileViewModel(MainManager main, IKernel kernel, ProfilePreviewModel profilePreviewModel,
-            WindowsProfileModel model) : base(main, model)
+            [Named("WindowsProfileModel")] EffectModel model) : base(main, model)
         {
             DisplayName = "Windows Profile";
             ProfilePreviewModel = profilePreviewModel;
@@ -25,10 +26,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 new ConstructorArgument("lastProfile", ((WindowsProfileSettings) EffectSettings).LastProfile)
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
-            ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
-
-            MainManager.EffectManager.EffectModels.Add(EffectModel);
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
@@ -44,6 +42,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             if ((e.PropertyName != "SelectedProfile") || !ProfileEditor.ProfileViewModel.Activated ||
                 (ProfileEditor.ProfileViewModel.SelectedProfile == null))
                 return;
+
             ((WindowsProfileSettings) EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             EffectSettings.Save();
         }

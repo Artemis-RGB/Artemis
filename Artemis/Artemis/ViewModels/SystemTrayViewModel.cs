@@ -14,18 +14,16 @@ namespace Artemis.ViewModels
 {
     public class SystemTrayViewModel : Screen
     {
-        private readonly ShellViewModel _shellViewModel;
-        private readonly IWindowManager _windowManager;
+        private readonly WindowService _windowService;
+        private ShellViewModel _shellViewModel;
         private string _activeIcon;
         private bool _checked;
         private bool _enabled;
         private string _toggleText;
 
-        public SystemTrayViewModel(IWindowManager windowManager, MetroDialogService dialogService,
-            ShellViewModel shellViewModel, MainManager mainManager)
+        public SystemTrayViewModel(WindowService windowService, MetroDialogService dialogService, MainManager mainManager)
         {
-            _windowManager = windowManager;
-            _shellViewModel = shellViewModel;
+            _windowService = windowService;
 
             DialogService = dialogService;
             MainManager = mainManager;
@@ -43,8 +41,17 @@ namespace Artemis.ViewModels
 
         public MainManager MainManager { get; set; }
 
-        public bool CanShowWindow => !_shellViewModel.IsActive;
-        public bool CanHideWindow => _shellViewModel.IsActive && !MainManager.DeviceManager.ChangingKeyboard;
+        public bool CanShowWindow
+        {
+            get
+            {
+                if (_shellViewModel == null)
+                    return true;
+                return !_shellViewModel.IsActive;
+            }
+        }
+
+        public bool CanHideWindow => (_shellViewModel?.IsActive == true) && !MainManager.DeviceManager.ChangingKeyboard;
         public bool CanToggleEnabled => !MainManager.DeviceManager.ChangingKeyboard;
 
         public bool Enabled
@@ -111,7 +118,7 @@ namespace Artemis.ViewModels
                 return;
 
             // manually show the next window view-model
-            _windowManager.ShowWindow(_shellViewModel);
+            _shellViewModel = _windowService.ShowWindow<ShellViewModel>();
 
             NotifyOfPropertyChange(() => CanShowWindow);
             NotifyOfPropertyChange(() => CanHideWindow);

@@ -16,26 +16,16 @@ namespace Artemis.InjectionModules
                     .SelectAllClasses()
                     .InheritedFrom<EffectModel>()
                     .BindBase()
-                    .Configure(b => b.InSingletonScope());
+                    .Configure((b, c) => b.InSingletonScope().Named(c.Name));
             });
 
+            // View models
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
                     .InheritedFrom<EffectViewModel>()
-                    .BindBase()
-                    .Configure(b => b.InSingletonScope());
-            });
-
-            // Games
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<GameModel>()
-                    .BindBase()
-                    .Configure(b => b.InSingletonScope());
+                    .BindBase();
             });
 
             Kernel.Bind(x =>
@@ -43,27 +33,14 @@ namespace Artemis.InjectionModules
                 x.FromThisAssembly()
                     .SelectAllClasses()
                     .InheritedFrom<GameViewModel>()
-                    .BindBase()
-                    .Configure(b => b.InSingletonScope());
+                    .BindBase();
             });
-
-            // Overlays
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<OverlayModel>()
-                    .BindBase()
-                    .Configure(b => b.InSingletonScope());
-            });
-
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
                     .InheritedFrom<OverlayViewModel>()
-                    .BindBase()
-                    .Configure(b => b.InSingletonScope());
+                    .BindBase();
             });
         }
     }

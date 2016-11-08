@@ -50,6 +50,9 @@ namespace Artemis.Utilities
 
         public static System.Windows.Media.Color FromHex(this System.Windows.Media.Color c, string hex)
         {
+            if (hex == null)
+                return new System.Windows.Media.Color();
+
             var convertFromString = ColorConverter.ConvertFromString(hex);
             if (convertFromString != null)
                 return (System.Windows.Media.Color) convertFromString;

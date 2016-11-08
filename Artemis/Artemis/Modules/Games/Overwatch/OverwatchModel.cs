@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
-using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Settings;
+using Artemis.Services;
 using Artemis.Utilities;
+using Artemis.Utilities.DataReaders;
+using Microsoft.Win32;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
+        private readonly PipeServer _pipeServer;
+        private readonly MetroDialogService _dialogService;
         private DateTime _characterChange;
         private string _lastMessage;
         // Using sticky values on these since they can cause flickering
@@ -23,9 +27,11 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
-        public OverwatchModel(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
+        public OverwatchModel(DeviceManager deviceManager, PipeServer pipeServer, MetroDialogService dialogService)
+            : base(deviceManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
         {
+            _pipeServer = pipeServer;
+            _dialogService = dialogService;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -33,11 +39,7 @@ namespace Artemis.Modules.Games.Overwatch
             Initialized = false;
 
             LoadOverwatchCharacters();
-        }
-
-        public OverwatchModel(MainManager mainManager, GameSettings settings, IDataModel dataModel)
-            : base(mainManager, settings, dataModel)
-        {
+            FindOverwatch();
         }
 
         public List<CharacterColor> OverwatchCharacters { get; set; }
@@ -77,7 +79,7 @@ namespace Artemis.Modules.Games.Overwatch
             _stickyStatus = new StickyValue<OverwatchStatus>(300);
             _stickyUltimateReady = new StickyValue<bool>(350);
             _stickyUltimateUsed = new StickyValue<bool>(350);
-            MainManager.PipeServer.PipeMessage += PipeServerOnPipeMessage;
+            _pipeServer.PipeMessage += PipeServerOnPipeMessage;
 
             Initialized = true;
         }
@@ -90,7 +92,7 @@ namespace Artemis.Modules.Games.Overwatch
             _stickyUltimateReady.Dispose();
             _stickyUltimateUsed.Dispose();
 
-            MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
             base.Dispose();
         }
 
@@ -177,7 +179,7 @@ namespace Artemis.Modules.Games.Overwatch
             }
             catch (FormatException e)
             {
-                MainManager.Logger.Trace(e, "Failed to parse to color array");
+                Logger?.Trace(e, "Failed to parse to color array");
                 return null;
             }
         }
@@ -270,6 +272,46 @@ namespace Artemis.Modules.Games.Overwatch
         public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
         {
             return Profile.GetRenderLayers(DataModel, keyboardOnly);
+        }
+
+        public void FindOverwatch()
+        {
+            var gameSettings = (OverwatchSettings) Settings;
+            // If already propertly set up, don't do anything
+            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
+                File.Exists(gameSettings.GameDirectory + "RzChromaSDK64.dll"))
+                return;
+
+            var key = Registry.LocalMachine.OpenSubKey(
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
+            if (key == null)
+                return;
+
+            var path = key.GetValue("DisplayIcon").ToString();
+            if (!File.Exists(path))
+                return;
+
+            gameSettings.GameDirectory = path.Substring(0, path.Length - 14);
+            gameSettings.Save();
+            PlaceDll();
+        }
+
+        public void PlaceDll()
+        {
+            var settings = (OverwatchSettings) Settings;
+            var path = settings.GameDirectory;
+
+            if (!File.Exists(path + @"\Overwatch.exe"))
+            {
+                _dialogService.ShowErrorMessageBox("Please select a valid Overwatch directory\n\n" +
+                                                   @"By default Overwatch is in C:\Program Files (x86)\Overwatch");
+
+                settings.GameDirectory = string.Empty;
+                settings.Save();
+                return;
+            }
+
+            DllManager.PlaceRazerDll(path);
         }
     }
 

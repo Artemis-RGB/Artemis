@@ -13,20 +13,22 @@ namespace Artemis.Services
             _kernel = kernel;
         }
 
-        public void ShowWindow<T>(params IParameter[] param) where T : class
+        public T ShowWindow<T>(params IParameter[] param) where T : class
         {
             var windowManager = new WindowManager();
             var viewModel = _kernel.Get<T>(param);
 
             windowManager.ShowWindow(viewModel);
+            return viewModel;
         }
 
-        public void ShowDialog<T>(params IParameter[] param) where T : class
+        public T ShowDialog<T>(params IParameter[] param) where T : class
         {
             var windowManager = new WindowManager();
             var viewModel = _kernel.Get<T>(param);
 
             windowManager.ShowDialog(viewModel);
+            return viewModel;
         }
     }
 }

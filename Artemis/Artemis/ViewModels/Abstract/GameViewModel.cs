@@ -29,7 +29,6 @@ namespace Artemis.ViewModels.Abstract
                 new ConstructorArgument("lastProfile", GameSettings.LastProfile)
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
-            GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfileEditor.PropertyChanged += ProfileUpdater;
         }
 
@@ -98,9 +97,11 @@ namespace Artemis.ViewModels.Abstract
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
+            // Only update the last selected profile if it the editor was active and the new profile isn't null
             if ((e.PropertyName != "SelectedProfile") || !ProfileEditor.ProfileViewModel.Activated ||
                 (ProfileEditor.ProfileViewModel.SelectedProfile == null))
                 return;
+
             GameSettings.LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             GameSettings.Save();
         }

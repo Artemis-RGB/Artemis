@@ -21,14 +21,24 @@ namespace Artemis.Managers
         private EffectModel _waitEffect;
         private readonly GeneralSettings _generalSettings;
 
-        public EffectManager(ILogger logger, DeviceManager deviceManager)
+        public EffectManager(ILogger logger, DeviceManager deviceManager, List<EffectModel> effectModels,
+            List<GameModel> gameModels, List<OverlayModel> overlayModels)
         {
-            EffectModels = new List<EffectModel>();
-
             _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
             _logger = logger;
             _deviceManager = deviceManager;
 
+            var models = new List<EffectModel>();
+            // Add regular effects
+            models.AddRange(effectModels);
+            // Add overlays
+            models.AddRange(overlayModels);
+            // Add games, exclude WoW if needed
+            models.AddRange(_generalSettings.GamestatePort != 62575
+                ? gameModels.Where(e => e.Name != "WoW")
+                : gameModels);
+
+            EffectModels = models;
             _logger.Info("Intialized EffectManager");
         }
 

@@ -62,6 +62,7 @@ namespace Artemis.Utilities.GameState
 
         private void ListenerRun()
         {
+            // TODO: Check for UI issue
             while (Running)
             {
                 _listener.BeginGetContext(HandleRequest, _listener);

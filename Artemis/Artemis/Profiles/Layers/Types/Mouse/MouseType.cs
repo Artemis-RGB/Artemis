@@ -47,8 +47,12 @@ namespace Artemis.Profiles.Layers.Types.Mouse
                 layer.AppliedProperties.Width*4,
                 layer.AppliedProperties.Height*4);
 
+            // Can't meddle with the original brush because it's frozen.
+            var brush = layer.AppliedProperties.Brush.Clone();
+            brush.Opacity = layer.AppliedProperties.Opacity;
+
             c.PushClip(new RectangleGeometry(rect));
-            c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
+            c.DrawRectangle(brush, null, rect);
             c.Pop();
         }
 

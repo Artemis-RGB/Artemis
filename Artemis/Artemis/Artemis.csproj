@@ -367,6 +367,13 @@
       <DependentUpon>EurotruckSimulator2View.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2ViewModel.cs" />
+    <Compile Include="Modules\Games\GtaV\GtaVDataModel.cs" />
+    <Compile Include="Modules\Games\GtaV\GtaVModel.cs" />
+    <Compile Include="Modules\Games\GtaV\GtaVSettings.cs" />
+    <Compile Include="Modules\Games\GtaV\GtaVView.xaml.cs">
+      <DependentUpon>GtaVView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\GtaV\GtaVViewModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentDataModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentSettings.cs" />
@@ -762,6 +769,10 @@
     <Page Include="Modules\Games\EurotruckSimulator2\EurotruckSimulator2View.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Games\GtaV\GtaVView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>
