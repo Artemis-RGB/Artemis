@@ -1,88 +1,22 @@
-﻿using System.IO;
-using System.Windows.Forms;
-using Ninject;
-using Artemis.Managers;
-using Artemis.Properties;
-using Artemis.Utilities;
+﻿using Artemis.Managers;
+using Artemis.Models;
 using Artemis.ViewModels.Abstract;
+using Ninject;
 
 namespace Artemis.Modules.Games.Dota2
 {
     public sealed class Dota2ViewModel : GameViewModel
     {
-        public Dota2ViewModel(MainManager main, IKernel kernel, Dota2Model model)
+        public Dota2ViewModel(MainManager main, IKernel kernel, [Named("Dota2Model")] GameModel model)
             : base(main, model, kernel)
         {
             DisplayName = "Dota 2";
-
-            FindGameDir();
-            PlaceConfigFile();
-        }
-
-        public void FindGameDir()
-        {
-            var gameSettings = (Dota2Settings) GameSettings;
-            // If already propertly set up, don't do anything
-            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
-                File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
-                return;
-
-            var dir = GeneralHelpers.FindSteamGame(@"\dota 2 beta\game\bin\win32\dota2.exe");
-            // Remove subdirectories where they stuck the executable
-            dir = dir?.Substring(0, dir.Length - 15);
-
-            gameSettings.GameDirectory = dir ?? string.Empty;
-            gameSettings.Save();
-        }
-
-        public void BrowseDirectory()
-        {
-            var dialog = new FolderBrowserDialog {SelectedPath = ((Dota2Settings) GameSettings).GameDirectory};
-            var result = dialog.ShowDialog();
-            if (result != DialogResult.OK)
-                return;
-
-            ((Dota2Settings) GameSettings).GameDirectory = dialog.SelectedPath;
-            NotifyOfPropertyChange(() => GameSettings);
-
-            GameSettings.Save();
-            PlaceConfigFile();
         }
 
         public void PlaceConfigFile()
         {
-            if (((Dota2Settings) GameSettings).GameDirectory == string.Empty)
-                return;
-            if (Directory.Exists(((Dota2Settings) GameSettings).GameDirectory + "/game/dota/cfg"))
-            {
-                var cfgFile = Resources.dotaGamestateConfiguration.Replace("{{port}}",
-                    MainManager.GameStateWebServer.Port.ToString());
-                try
-                {
-                    File.WriteAllText(
-                        ((Dota2Settings) GameSettings).GameDirectory +
-                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
-                        cfgFile);
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    Directory.CreateDirectory(((Dota2Settings) GameSettings).GameDirectory +
-                                              "/game/dota/cfg/gamestate_integration/");
-                    File.WriteAllText(
-                        ((Dota2Settings) GameSettings).GameDirectory +
-                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
-                        cfgFile);
-                }
-
-                return;
-            }
-
-            DialogService.ShowErrorMessageBox("Please select a valid Dota 2 directory\n\n" +
-                                              @"By default Dota 2 is in \SteamApps\common\dota 2 beta");
-            ((Dota2Settings) GameSettings).GameDirectory = string.Empty;
+            ((Dota2Model) GameModel).PlaceConfigFile();
             NotifyOfPropertyChange(() => GameSettings);
-
-            GameSettings.Save();
         }
     }
 }

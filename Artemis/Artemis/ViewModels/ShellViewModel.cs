@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using Artemis.Managers;
-using Artemis.Services;
+﻿using System;
+using System.Linq;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Flyouts;
 using Caliburn.Micro;
@@ -10,17 +9,18 @@ namespace Artemis.ViewModels
 {
     public sealed class ShellViewModel : Conductor<IScreen>.Collection.OneActive
     {
-        private readonly BaseViewModel[] _viewModels;
+        private readonly IKernel _kernel;
 
-        public ShellViewModel(IKernel kernel, BaseViewModel[] viewModels)
+        public ShellViewModel(IKernel kernel, FlyoutSettingsViewModel flyoutSettings)
         {
-            _viewModels = viewModels;
+            _kernel = kernel;
 
             // Setup UI
             DisplayName = "Artemis";
+
             Flyouts = new BindableCollection<FlyoutBaseViewModel>
             {
-                kernel.Get<FlyoutSettingsViewModel>()
+                flyoutSettings
             };
         }
 
@@ -29,10 +29,16 @@ namespace Artemis.ViewModels
         protected override void OnActivate()
         {
             base.OnActivate();
-            foreach (var screen in _viewModels)
-                ActivateItem(screen);
+            Items.Clear();
 
-            ActiveItem = _viewModels.FirstOrDefault();
+            var vms = _kernel.GetAll<BaseViewModel>();
+            Items.AddRange(vms);
+        }
+
+        protected override void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
+            Items.Clear();
         }
 
         public void Settings()

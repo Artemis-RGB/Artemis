@@ -35,8 +35,8 @@ namespace Artemis.ViewModels.Profiles
 {
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
+        private readonly DeviceManager _deviceManager;
         private readonly EffectModel _gameModel;
-        private readonly MainManager _mainManager;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private BindableCollection<LayerModel> _layers;
@@ -44,10 +44,11 @@ namespace Artemis.ViewModels.Profiles
         private bool _saving;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(MainManager mainManager, EffectModel gameModel, ProfileViewModel profileViewModel,
-            MetroDialogService dialogService, WindowService windowService, string lastProfile)
+        public ProfileEditorViewModel(DeviceManager deviceManager, EffectModel gameModel,
+            ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
+            string lastProfile)
         {
-            _mainManager = mainManager;
+            _deviceManager = deviceManager;
             _gameModel = gameModel;
 
             ProfileNames = new BindableCollection<string>();
@@ -59,7 +60,7 @@ namespace Artemis.ViewModels.Profiles
 
             PropertyChanged += EditorStateHandler;
             ProfileViewModel.PropertyChanged += LayerSelectedHandler;
-            mainManager.DeviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
+            _deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
 
             _saveTimer = new Timer(5000);
             _saveTimer.Elapsed += ProfileSaveHandler;
@@ -77,9 +78,7 @@ namespace Artemis.ViewModels.Profiles
         public ProfileViewModel ProfileViewModel { get; set; }
 
         public bool EditorEnabled
-            =>
-            (SelectedProfile != null) && !SelectedProfile.IsDefault &&
-            (_mainManager.DeviceManager.ActiveKeyboard != null);
+            => (SelectedProfile != null) && !SelectedProfile.IsDefault && (_deviceManager.ActiveKeyboard != null);
 
         public BindableCollection<string> ProfileNames
         {
@@ -111,11 +110,7 @@ namespace Artemis.ViewModels.Profiles
                 if (value == SelectedProfile?.Name)
                     return;
 
-                SelectedProfile = ProfileProvider.GetProfile(
-                    _mainManager.DeviceManager.ActiveKeyboard,
-                    _gameModel,
-                    value);
-
+                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, value);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
@@ -143,7 +138,7 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public PreviewSettings? PreviewSettings => _mainManager.DeviceManager.ActiveKeyboard?.PreviewSettings;
+        public PreviewSettings? PreviewSettings => _deviceManager.ActiveKeyboard?.PreviewSettings;
 
         public bool ProfileSelected => SelectedProfile != null;
         public bool LayerSelected => (SelectedProfile != null) && (ProfileViewModel.SelectedLayer != null);
@@ -243,28 +238,23 @@ namespace Artemis.ViewModels.Profiles
         private void LoadProfiles()
         {
             ProfileNames.Clear();
-            if ((_gameModel == null) || (_mainManager.DeviceManager.ActiveKeyboard == null))
+            if ((_gameModel == null) || (_deviceManager.ActiveKeyboard == null))
                 return;
 
-            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_mainManager.DeviceManager.ActiveKeyboard, _gameModel));
+            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _gameModel));
 
             // If a profile name was provided, try to load it
             ProfileModel lastProfileModel = null;
             if (!string.IsNullOrEmpty(LastProfile))
             {
-                lastProfileModel = ProfileProvider.GetProfile(
-                    _mainManager.DeviceManager.ActiveKeyboard,
-                    _gameModel,
-                    LastProfile);
+                lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, LastProfile);
             }
 
             if (lastProfileModel != null)
                 SelectedProfile = lastProfileModel;
             else
             {
-                SelectedProfile = ProfileProvider.GetProfile(
-                    _mainManager.DeviceManager.ActiveKeyboard,
-                    _gameModel,
+                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel,
                     ProfileNames.FirstOrDefault());
             }
         }
@@ -296,7 +286,8 @@ namespace Artemis.ViewModels.Profiles
             if (layer == null)
                 return;
 
-            IParameter[] args = {
+            IParameter[] args =
+            {
                 new ConstructorArgument("dataModel", _gameModel.DataModel),
                 new ConstructorArgument("layer", layer)
             };
@@ -480,7 +471,7 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public async void AddProfile()
         {
-            if (_mainManager.DeviceManager.ActiveKeyboard == null)
+            if (_deviceManager.ActiveKeyboard == null)
             {
                 DialogService.ShowMessageBox("Cannot add profile.",
                     "To add a profile, please select a keyboard in the options menu first.");
@@ -503,9 +494,9 @@ namespace Artemis.ViewModels.Profiles
             var profile = new ProfileModel
             {
                 Name = name,
-                KeyboardSlug = _mainManager.DeviceManager.ActiveKeyboard.Slug,
-                Width = _mainManager.DeviceManager.ActiveKeyboard.Width,
-                Height = _mainManager.DeviceManager.ActiveKeyboard.Height,
+                KeyboardSlug = _deviceManager.ActiveKeyboard.Slug,
+                Width = _deviceManager.ActiveKeyboard.Width,
+                Height = _deviceManager.ActiveKeyboard.Height,
                 GameName = _gameModel.Name
             };
 
@@ -601,7 +592,7 @@ namespace Artemis.ViewModels.Profiles
 
         public async void ImportProfile()
         {
-            if (_mainManager.DeviceManager.ActiveKeyboard == null)
+            if (_deviceManager.ActiveKeyboard == null)
             {
                 DialogService.ShowMessageBox("Cannot import profile.",
                     "To import a profile, please select a keyboard in the options menu first.");
@@ -629,7 +620,7 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the keyboard
-            var deviceManager = _mainManager.DeviceManager;
+            var deviceManager = _deviceManager;
             if (profile.KeyboardSlug != deviceManager.ActiveKeyboard.Slug)
             {
                 var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
@@ -687,7 +678,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                SelectedProfile?.Activate(_mainManager.DeviceManager.ActiveKeyboard);
+                SelectedProfile?.Activate(_deviceManager.ActiveKeyboard);
                 LuaWrapper.OpenEditor();
             }
             catch (Exception e)

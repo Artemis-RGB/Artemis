@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows;
+using Artemis.DAL;
+using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Lua;
 using Artemis.Settings;
 using Newtonsoft.Json;
+using Ninject;
+using Ninject.Extensions.Logging;
 
 namespace Artemis.Models
 {
@@ -20,24 +23,36 @@ namespace Artemis.Models
 
         protected DateTime LastTrace;
 
-        protected EffectModel(MainManager mainManager, EffectSettings settings, IDataModel dataModel)
+        protected EffectModel(DeviceManager deviceManager, EffectSettings settings, IDataModel dataModel)
         {
-            MainManager = mainManager;
+            DeviceManager = deviceManager;
             Settings = settings;
             DataModel = dataModel;
 
-            MainManager.EffectManager.EffectModels.Add(this);
+            // If set, load the last profile from settings
+            if (!string.IsNullOrEmpty(Settings?.LastProfile))
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
+
+            DeviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
+        }
+
+        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(Settings?.LastProfile))
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
         }
 
         public bool Initialized { get; set; }
-        public MainManager MainManager { get; set; }
+        public DeviceManager DeviceManager { get; set; }
         public EffectSettings Settings { get; set; }
         public string Name { get; set; }
         public int KeyboardScale { get; set; } = 4;
-
         // Used by profile system
         public IDataModel DataModel { get; set; }
         public ProfileModel Profile { get; set; }
+
+        [Inject]
+        public ILogger Logger { get; set; }
 
         public virtual void Dispose()
         {
@@ -58,7 +73,7 @@ namespace Artemis.Models
         /// <param name="keyboardOnly"></param>
         public virtual void Render(RenderFrame frame, bool keyboardOnly)
         {
-            if (Profile == null || DataModel == null || MainManager.DeviceManager.ActiveKeyboard == null)
+            if ((Profile == null) || (DataModel == null) || (DeviceManager.ActiveKeyboard == null))
                 return;
 
             lock (DataModel)
@@ -68,10 +83,10 @@ namespace Artemis.Models
 
                 // If the profile has no active LUA wrapper, create one
                 if (!string.IsNullOrEmpty(Profile.LuaScript))
-                    Profile.Activate(MainManager.DeviceManager.ActiveKeyboard);
+                    Profile.Activate(DeviceManager.ActiveKeyboard);
 
                 // Render the keyboard layer-by-layer
-                var keyboardRect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+                var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
                 using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
                     Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
@@ -104,15 +119,15 @@ namespace Artemis.Models
                 }
 
                 // Trace debugging
-                if (DateTime.Now.AddSeconds(-2) <= LastTrace)
+                if (DateTime.Now.AddSeconds(-2) <= LastTrace || Logger == null)
                     return;
+
                 LastTrace = DateTime.Now;
-                MainManager.Logger.Trace("Effect datamodel as JSON: \r\n{0}",
-                    JsonConvert.SerializeObject(DataModel, Formatting.Indented));
-                MainManager.Logger.Trace("Effect {0} has to render {1} layers", Name, renderLayers.Count);
+                var dmJson = JsonConvert.SerializeObject(DataModel, Formatting.Indented);
+                Logger.Trace("Effect datamodel as JSON: \r\n{0}", dmJson);
+                Logger.Trace("Effect {0} has to render {1} layers", Name, renderLayers.Count);
                 foreach (var renderLayer in renderLayers)
-                    MainManager.Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name,
-                        renderLayer.LayerType);
+                    Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name, renderLayer.LayerType);
             }
         }
 

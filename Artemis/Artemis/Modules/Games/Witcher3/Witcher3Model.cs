@@ -17,8 +17,8 @@ namespace Artemis.Modules.Games.Witcher3
         private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
+        public Witcher3Model(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";

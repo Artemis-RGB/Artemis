@@ -82,7 +82,7 @@ namespace Artemis.Profiles.Lua
 
         private static void LuaPrint(string s)
         {
-            Logger.Debug("[{0}-LUA]: {1}", ProfileModel.Name, s);
+            Logger.Debug("[{0}-LUA]: {1}", ProfileModel?.Name, s);
         }
 
         #endregion

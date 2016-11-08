@@ -17,8 +17,8 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<RocketLeagueSettings>(), new RocketLeagueDataModel())
+        public RocketLeagueModel(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<RocketLeagueSettings>(), new RocketLeagueDataModel())
         {
             Name = "RocketLeague";
             ProcessName = "RocketLeague";

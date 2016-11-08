@@ -11,7 +11,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
-using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -24,12 +23,6 @@ namespace Artemis.Profiles
         {
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
         }
-
-        /// <summary>
-        ///     Indicates whether the profile is actively being rendered
-        /// </summary>
-        [JsonIgnore]
-        public bool IsActive { get; set; }
 
         public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
         public string Name { get; set; }
@@ -171,6 +164,34 @@ namespace Artemis.Profiles
             }
         }
 
+        public void Activate(KeyboardProvider keyboard)
+        {
+            if (!Equals(LuaWrapper.ProfileModel, this))
+                LuaWrapper.SetupLua(this, keyboard);
+        }
+
+        public void Deactivate()
+        {
+            if (Equals(LuaWrapper.ProfileModel, this))
+                LuaWrapper.Clear();
+        }
+
+        public LayerModel AddLayer(LayerModel afterLayer)
+        {
+            // Create a new layer
+            var layer = LayerModel.CreateLayer();
+
+            if (afterLayer != null)
+                afterLayer.InsertAfter(layer);
+            else
+            {
+                Layers.Add(layer);
+                FixOrder();
+            }
+
+            return layer;
+        }
+
         #region Compare
 
         protected bool Equals(ProfileModel other)
@@ -200,37 +221,5 @@ namespace Artemis.Profiles
         }
 
         #endregion
-
-        public void Activate(KeyboardProvider keyboard)
-        {
-            if (!Equals(LuaWrapper.ProfileModel, this))
-            {
-                LuaWrapper.SetupLua(this, keyboard);
-            }
-        }
-
-        public void Deactivate()
-        {
-            if (Equals(LuaWrapper.ProfileModel, this))
-            {
-                LuaWrapper.Clear();
-            }
-        }
-
-        public LayerModel AddLayer(LayerModel afterLayer)
-        {
-            // Create a new layer
-            var layer = LayerModel.CreateLayer();
-
-            if (afterLayer!= null)
-                afterLayer.InsertAfter(layer);
-            else
-            {
-                Layers.Add(layer);
-                FixOrder();
-            }
-
-            return layer;
-        }
     }
 }
