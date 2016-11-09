@@ -70,7 +70,7 @@ namespace Artemis.Modules.Games.WoW
         {
             Initialized = false;
 
-            _process.Dispose();
+            _process?.Dispose();
             _process = null;
             base.Dispose();
         }
