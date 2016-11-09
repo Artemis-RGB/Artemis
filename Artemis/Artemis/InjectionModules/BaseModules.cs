@@ -14,7 +14,8 @@ namespace Artemis.InjectionModules
         public override void Load()
         {
             // ViewModels
-            Bind<ShellViewModel>().ToSelf();
+            Bind<ShellViewModel>().ToSelf().InSingletonScope();
+            Bind<SystemTrayViewModel>().ToSelf().InSingletonScope();
             Bind<ProfileViewModel>().ToSelf();
             Bind<ProfileEditorViewModel>().ToSelf();
             Bind<DebugViewModel>().ToSelf().InSingletonScope();

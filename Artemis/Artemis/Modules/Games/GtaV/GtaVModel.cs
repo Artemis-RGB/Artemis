@@ -59,17 +59,17 @@ namespace Artemis.Modules.Games.GtaV
 
         private void PipeServerOnPipeMessage(string reply)
         {
-//            if (!Initialized)
-//                return;
-//
-//            // Convert the given string to a list of ints
-//            var stringParts = reply.Split(' ');
-//            var parts = new string[stringParts.Length];
-//            for (var i = 0; i < stringParts.Length; i++)
-//                parts[i] = stringParts[i];
-//
-//            if (parts[0] == "0")
-//                InterpertrateLighting(parts);
+            if (!Initialized)
+                return;
+
+            // Convert the given string to a list of ints
+            var stringParts = reply.Split(' ');
+            var parts = new string[stringParts.Length];
+            for (var i = 0; i < stringParts.Length; i++)
+                parts[i] = stringParts[i];
+
+            if (parts[0] == "0")
+                InterpertrateLighting(parts);
         }
 
         private void InterpertrateLighting(string[] parts)
