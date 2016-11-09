@@ -6,11 +6,14 @@
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:cal="http://www.caliburnproject.org"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:viewModels="clr-namespace:Artemis.ViewModels"
+                      xmlns:tb="http://www.hardcodet.net/taskbar"
                       dialogs:DialogParticipation.Register="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
                       mc:Ignorable="d"
                       Title="Artemis" Height="800" Width="1210"
                       MinHeight="800" MinWidth="1210"
-                      GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
+                      GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico"
+                      d:DataContext="{d:DesignInstance viewModels:ShellViewModel}">
     <!-- Bit of extra code to use a different icon than in the taskbar -->
     <Controls:MetroWindow.Resources>
         <DrawingImage x:Key="BowIcon">
@@ -45,6 +48,22 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
+        
+        <!-- Tray icon -->
+        <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
+            <MenuItem Header="Show Artemis" cal:Message.Attach="ShowWindow" />
+            <MenuItem Header="Hide Artemis" cal:Message.Attach="HideWindow" />
+            <Separator />
+            <MenuItem Header="{Binding Path=ToggleText, Mode=OneWay}" cal:Message.Attach="ToggleEnabled" />
+            <MenuItem Header="Exit" cal:Message.Attach="ExitApplication" />
+        </ContextMenu>
+
+        <!-- the application main system tray icon -->
+        <tb:TaskbarIcon x:Key="SystemTrayIcon"
+                        IconSource="{Binding Path=ActiveIcon, Mode=OneWay}"
+                        ToolTipText="Artemis"
+                        cal:Message.Attach="[Event TrayMouseDoubleClick] = [Action ShowWindow]"
+                        ContextMenu="{StaticResource MainSysTrayMenu}" />
     </Controls:MetroWindow.Resources>
     <Controls:MetroWindow.IconTemplate>
         <DataTemplate>
@@ -105,5 +124,7 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
+
+        <ContentControl Content="{StaticResource SystemTrayIcon}" />
     </Grid>
 </Controls:MetroWindow>
