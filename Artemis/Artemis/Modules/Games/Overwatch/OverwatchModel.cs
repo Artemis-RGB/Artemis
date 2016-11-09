@@ -88,9 +88,9 @@ namespace Artemis.Modules.Games.Overwatch
         {
             Initialized = false;
 
-            _stickyStatus.Dispose();
-            _stickyUltimateReady.Dispose();
-            _stickyUltimateUsed.Dispose();
+            _stickyStatus?.Dispose();
+            _stickyUltimateReady?.Dispose();
+            _stickyUltimateUsed?.Dispose();
 
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
             base.Dispose();

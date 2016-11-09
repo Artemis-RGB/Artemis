@@ -40,8 +40,8 @@ namespace Artemis.Modules.Games.TheDivision
                 DllManager.RestoreLogitechDll();
             });
 
-            _stickyAmmo.Dispose();
-            _stickyHp.Dispose();
+            _stickyAmmo?.Dispose();
+            _stickyHp?.Dispose();
 
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
             base.Dispose();
