@@ -317,6 +317,8 @@
     <Compile Include="Controls\Log\MemoryEventTarget.cs" />
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DAL\SettingsProvider.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\Utilities\CMSDK.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMousemats.cs" />
@@ -716,6 +718,9 @@
     <Resource Include="Resources\bow.png" />
     <Content Include="lib\CUE.NET.dll" />
     <Content Include="lib\Ets2SdkClient.dll" />
+    <Content Include="lib\SDKDLL.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
