@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
+using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Microsoft.Win32;
 

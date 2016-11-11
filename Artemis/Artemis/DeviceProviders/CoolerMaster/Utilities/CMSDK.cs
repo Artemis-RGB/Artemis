@@ -2,7 +2,6 @@
 
 namespace Artemis.DeviceProviders.CoolerMaster.Utilities
 {
-
     public struct KEY_COLOR
     {
         public byte r;
@@ -17,12 +16,9 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         }
     }
 
-    //  set up/save the whole LED color structure
-
     public struct COLOR_MATRIX
     {
-        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 132)]
-        public KEY_COLOR[,] KeyColor;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 132)] public KEY_COLOR[,] KeyColor;
     }
 
     //Enumeration of device list
@@ -45,15 +41,52 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
 
     public static class CmSdk
     {
+        /// <summary>
+        ///     Sets the control device which all following actions are targetted to
+        /// </summary>
+        /// <param name="devIndex"></param>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetControlDevice(DEVICE_INDEX devIndex);
 
+        /// <summary>
+        ///     Obtain current device layout
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern LAYOUT_KEYBOARD GetDeviceLayout();
+
+        /// <summary>
+        ///     Verify if the currently conrolled device is plugged in
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IsDevicePlug();
+
+        /// <summary>
+        ///     Enables led control on the currently controlled device
+        /// </summary>
+        /// <param name="bEnable"></param>
+        /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool EnableLedControl(bool bEnable);
 
+        /// <summary>
+        ///     Sets the LED of the currently controlled device
+        /// </summary>
+        /// <param name="iRow"></param>
+        /// <param name="iColumn"></param>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SetLedColor(int iRow, int iColumn, byte r, byte g, byte b);
 
+        /// <summary>
+        ///     Sets all LEDS using the given color matrix
+        /// </summary>
+        /// <param name="colorMatrix"></param>
+        /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SetAllLedColor(COLOR_MATRIX colorMatrix);
     }

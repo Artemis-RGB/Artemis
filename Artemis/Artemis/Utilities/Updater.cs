@@ -56,7 +56,7 @@ namespace Artemis.Utilities
         /// </summary>
         /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
         /// <returns></returns>
-        public static async Task CheckChangelog(MetroDialogService dialogService)
+        public static async void CheckChangelog(MetroDialogService dialogService)
         {
             var settings = SettingsProvider.Load<GeneralSettings>();
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;

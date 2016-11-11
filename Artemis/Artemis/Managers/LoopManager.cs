@@ -177,6 +177,9 @@ namespace Artemis.Managers
     {
         public RenderFrame(KeyboardProvider keyboard)
         {
+            if (keyboard == null)
+                return;
+
             KeyboardBitmap = keyboard.KeyboardBitmap(4);
             KeyboardBitmap.SetResolution(96, 96);
 
@@ -222,10 +225,10 @@ namespace Artemis.Managers
 
         public void Dispose()
         {
-            KeyboardBitmap.Dispose();
-            MouseBitmap.Dispose();
-            HeadsetBitmap.Dispose();
-            GenericBitmap.Dispose();
+            KeyboardBitmap?.Dispose();
+            MouseBitmap?.Dispose();
+            HeadsetBitmap?.Dispose();
+            GenericBitmap?.Dispose();
         }
     }
 }
