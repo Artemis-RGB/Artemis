@@ -15,7 +15,6 @@ namespace Artemis.InjectionModules
         {
             // ViewModels
             Bind<ShellViewModel>().ToSelf().InSingletonScope();
-            Bind<SystemTrayViewModel>().ToSelf().InSingletonScope();
             Bind<ProfileViewModel>().ToSelf();
             Bind<ProfileEditorViewModel>().ToSelf();
             Bind<DebugViewModel>().ToSelf().InSingletonScope();

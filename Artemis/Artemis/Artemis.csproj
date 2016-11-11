@@ -318,7 +318,7 @@
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
-    <Compile Include="DeviceProviders\CoolerMaster\Utilities\CMSDK.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\Utilities\CmSdk.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMousemats.cs" />
@@ -611,7 +611,6 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="ViewModels\SystemTrayViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Views\DebugView.xaml.cs">
       <DependentUpon>DebugView.xaml</DependentUpon>
@@ -687,6 +686,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\Keyboards\masterkeys-pro-l.png" />
     <Resource Include="Resources\Kottke Silkscreen License.txt" />
     <None Include="Resources\lua-placeholder.lua" />
     <None Include="NLog.xsd">

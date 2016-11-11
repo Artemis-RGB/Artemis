@@ -40,8 +40,8 @@ namespace Artemis.Services
 
             Execute.OnUIThread(() =>
             {
-                window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault(w => w.IsActive) ??
-                         Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                window = Application.Current.Windows.OfType<MetroWindow>()
+                    .FirstOrDefault(w => w.IsActive && w.IsVisible);
             });
 
             return window;
