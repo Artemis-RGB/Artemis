@@ -16,8 +16,8 @@
                         <!--<GridViewColumn DisplayMemberBinding="{Binding LoggerName}" Header="Logger"/>-->
                         <GridViewColumn DisplayMemberBinding="{Binding Level}" Header="Level" />
                         <GridViewColumn DisplayMemberBinding="{Binding TimeStamp, StringFormat=HH:mm:ss.ffffff}" Header="Time" />
-                        <GridViewColumn DisplayMemberBinding="{Binding FormattedMessage}" Width="600" Header="Message" />
-                        <GridViewColumn DisplayMemberBinding="{Binding Exception}" Width="Auto" Header="Exception" />
+                        <GridViewColumn DisplayMemberBinding="{Binding FormattedMessage}" Width="500" Header="Message" />
+                        <GridViewColumn DisplayMemberBinding="{Binding Exception.Message}" Width="300" Header="Exception" />
                     </GridView.Columns>
                 </GridView>
             </ListView.View>

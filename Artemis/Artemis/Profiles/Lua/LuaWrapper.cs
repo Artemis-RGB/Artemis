@@ -97,12 +97,18 @@ namespace Artemis.Profiles.Lua
                 LuaKeyboardWrapper?.Dispose();
                 LuaKeyboardWrapper = null;
 
-                LuaScript.Globals.Clear();
-                LuaScript.Registry.Clear();
-                LuaScript.Registry.RegisterConstants();
-                LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-                LuaScript.Globals.RegisterConstants();
-                LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                try
+                {
+                    LuaScript.Registry.RegisterConstants();
+                    LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                    LuaScript.Globals.RegisterConstants();
+                    LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                }
+                catch (NullReferenceException)
+                {
+                    // Can be missing if the user script screwed up the globals
+                }
+
             }
         }
 

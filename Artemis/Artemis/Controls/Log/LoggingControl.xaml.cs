@@ -28,7 +28,7 @@ namespace Artemis.Controls.Log
             await Dispatcher.InvokeAsync(() =>
             {
                 if (LogCollection.Count >= 50)
-                    LogCollection.RemoveAt(LogCollection.Count - 1);
+                    LogCollection.RemoveAt(0);
 
                 LogCollection.Add(message);
             });
