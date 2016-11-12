@@ -127,7 +127,7 @@ namespace Artemis.Profiles.Lua
                     return new LuaRadialGradientBrush(_layerModel.AppliedProperties.Brush);
                 return null;
             }
-            set { _layerModel.AppliedProperties.Brush = value.Brush; }
+            set { _layerModel.AppliedProperties.Brush = value?.Brush; }
         }
 
         #endregion

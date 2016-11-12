@@ -37,29 +37,40 @@ using namespace std;
 
 static bool g_hasInitialised = false;
 static bool mustLog = false;
+static int throttle = 0;
 const char* game = "";
 
+
+const char* GetGame()
+{
+	CHAR divisionFind[] = ("Division");
+	CHAR gtaFind[] = ("GTA");
+	CHAR szPath[MAX_PATH];
+
+	GetModuleFileNameA(NULL, szPath, MAX_PATH);
+	char *output;
+
+	output = strstr(szPath, divisionFind);
+	if (output) 
+		return "division";
+	output = strstr(szPath, gtaFind);
+	if (output)
+		return "gta";
+
+	return "bf1";
+};
 
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
-	{
-		// Get the process that loaded the DLL
-		TCHAR divisionFind[] = _T("Division");
-		TCHAR gtaFind[] = _T("GTA");
-		TCHAR szPath[MAX_PATH];
-		GetModuleFileName(NULL, szPath, MAX_PATH);
-
-		if (_tcscmp(szPath, divisionFind) != 0)
-			game = "division";
-		else if (_tcscmp(szPath, gtaFind) != 0)
-			game = "gta";
+	{		
+		game = GetGame();		
 
 		if (mustLog)
 		{
 			ofstream myfile;
 			myfile.open("log.txt", ios::out | ios::app);
-			myfile << "Main called, DLL loaded into " << szPath << "\n";
+			myfile << "Main called, DLL loaded into " << game << "\n";
 			myfile.close();
 		}
 	}
@@ -120,6 +131,16 @@ void Transmit(const char* msg)
 // LogiLedSetLighting appears to have an undocumented extra argument
 bool LogiLedSetLighting(int redPercentage, int greenPercentage, int bluePercentage, int custom = 0)
 {
+	// GTA goes mental on the SetLighting calls, lets only send one in every 20
+	if (game == "gta")
+	{
+		throttle++;
+		if (throttle > 20)
+			throttle = 0;
+		else
+			return true;
+	}
+
 	if (mustLog)
 	{
 		ofstream myfile;
