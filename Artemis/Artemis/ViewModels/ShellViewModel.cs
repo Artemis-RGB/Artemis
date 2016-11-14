@@ -141,6 +141,12 @@ namespace Artemis.ViewModels
             CheckDuplicateInstances();
             Updater.CheckChangelog(MetroDialogService);
 
+            // Run this on the UI thread to avoid having to use dispatchers in VMs
+            Execute.OnUIThread(ActivateViews);
+        }
+
+        private void ActivateViews()
+        {
             var vms = _kernel.GetAll<BaseViewModel>().ToList();
             Items.Clear();
             Items.AddRange(vms);
