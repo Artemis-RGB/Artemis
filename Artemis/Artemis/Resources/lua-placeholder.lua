@@ -5,7 +5,7 @@
 -- This is a default script to be executed by Artemis.
 -- You do not need to use this if you don't want to script. The default profiles
 -- should provide you with a lot of functionality out of the box.
--- However, if you wan't to change the way profiles work, this is the ideal way 
+-- However, if you want to change the way profiles work, this is the ideal way 
 -- go about it.
 
 -- For docs and examples, see wiki: https://github.com/SpoinkyNL/Artemis/wiki/LUA
@@ -15,7 +15,9 @@
 
 -- This event is raised after every profile update, before drawing.
 function updateHandler(profile, eventArgs)
-	-- In this example we only want to update once per frame when the keyboard is updated
+	-- In this example we only want to update once per frame when the keyboard is 
+	-- updated. If you don't do this the updateHandler will trigger on every
+	-- device's update.
     if eventArgs.DeviceType != "keyboard" then
         return
     end
@@ -25,7 +27,8 @@ end
 
 -- This event is raised after every profile draw, after updating.
 function drawHandler(profile, eventArgs)
-	-- In this example we only want to draw to the keyboard
+	-- In this example we only want to draw to the keyboard. Each device has it's
+	-- own drawing event
     if eventArgs.DeviceType != "keyboard" then
         return
     end
