@@ -99,6 +99,8 @@ namespace Artemis.Profiles.Lua
 
                 try
                 {
+                    LuaScript.Globals.Clear();
+                    LuaScript.Registry.Clear();
                     LuaScript.Registry.RegisterConstants();
                     LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
                     LuaScript.Globals.RegisterConstants();
