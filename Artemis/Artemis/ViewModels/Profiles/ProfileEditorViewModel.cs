@@ -740,7 +740,7 @@ namespace Artemis.ViewModels.Profiles
             }
             _saving = false;
 
-            Execute.OnUIThread(() => UpdateLayerList(ProfileViewModel.SelectedLayer));
+            //Execute.OnUIThread(() => UpdateLayerList(ProfileViewModel.SelectedLayer));
         }
     }
 }
