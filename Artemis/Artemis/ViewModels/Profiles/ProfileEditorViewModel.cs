@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +25,7 @@ using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
 using Ninject.Parameters;
+using NuGet;
 using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -39,8 +40,8 @@ namespace Artemis.ViewModels.Profiles
         private readonly EffectModel _gameModel;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
-        private BindableCollection<LayerModel> _layers;
-        private BindableCollection<string> _profileNames;
+        private ObservableCollection<LayerModel> _layers;
+        private ObservableCollection<string> _profileNames;
         private bool _saving;
         private ProfileModel _selectedProfile;
 
@@ -51,8 +52,8 @@ namespace Artemis.ViewModels.Profiles
             _deviceManager = deviceManager;
             _gameModel = gameModel;
 
-            ProfileNames = new BindableCollection<string>();
-            Layers = new BindableCollection<LayerModel>();
+            ProfileNames = new ObservableCollection<string>();
+            Layers = new ObservableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
             DialogService = dialogService;
             WindowService = windowService;
@@ -80,7 +81,7 @@ namespace Artemis.ViewModels.Profiles
         public bool EditorEnabled
             => (SelectedProfile != null) && !SelectedProfile.IsDefault && (_deviceManager.ActiveKeyboard != null);
 
-        public BindableCollection<string> ProfileNames
+        public ObservableCollection<string> ProfileNames
         {
             get { return _profileNames; }
             set
@@ -91,7 +92,7 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public BindableCollection<LayerModel> Layers
+        public ObservableCollection<LayerModel> Layers
         {
             get { return _layers; }
             set
@@ -124,6 +125,7 @@ namespace Artemis.ViewModels.Profiles
                 _selectedProfile?.Deactivate();
                 _selectedProfile = value;
                 NotifyOfPropertyChange(() => SelectedProfile);
+                NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
 
@@ -519,21 +521,28 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return;
 
+            var oldName = SelectedProfile.Name;
             var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
             if (string.IsNullOrEmpty(name) || (name.Length < 2))
                 return;
 
+            SelectedProfile.Name = name;
+
             // Verify the name
             while (!ProfileProvider.IsProfileUnique(SelectedProfile))
             {
-                name =
-                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique new profile name");
+                name = await DialogService
+                    .ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
                 if (string.IsNullOrEmpty(name) || (name.Length < 2))
+                {
+                    SelectedProfile.Name = oldName;
                     return;
+                }
+                SelectedProfile.Name = name;
             }
 
             var profile = SelectedProfile;
@@ -560,8 +569,8 @@ namespace Artemis.ViewModels.Profiles
             // Verify the name
             while (!ProfileProvider.IsProfileUnique(newProfile))
             {
-                newProfile.Name =
-                    await DialogService.ShowInputDialog("Name already in use", "Please enter a unique profile name");
+                newProfile.Name = await DialogService
+                    .ShowInputDialog("Name already in use", "Please enter a unique profile name");
 
                 // Null when the user cancelled
                 if (string.IsNullOrEmpty(newProfile.Name))
@@ -717,7 +726,7 @@ namespace Artemis.ViewModels.Profiles
 
         private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
         {
-            if (_saving || (SelectedProfile == null) || !IsActive)
+            if (_saving || (SelectedProfile == null))
                 return;
 
             _saving = true;
@@ -730,6 +739,8 @@ namespace Artemis.ViewModels.Profiles
                 // ignored
             }
             _saving = false;
+
+            Execute.OnUIThread(() => UpdateLayerList(ProfileViewModel.SelectedLayer));
         }
     }
 }

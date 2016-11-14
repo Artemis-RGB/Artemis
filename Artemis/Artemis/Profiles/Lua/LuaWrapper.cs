@@ -110,7 +110,6 @@ namespace Artemis.Profiles.Lua
                 {
                     // Can be missing if the user script screwed up the globals
                 }
-
             }
         }
 
@@ -156,18 +155,24 @@ namespace Artemis.Profiles.Lua
             if (args.ChangeType != WatcherChangeTypes.Changed)
                 return;
 
-            using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            if (ProfileModel == null)
+                return;
+
+            lock (ProfileModel)
             {
-                using (var sr = new StreamReader(fs))
+                using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    ProfileModel.LuaScript = sr.ReadToEnd();
+                    using (var sr = new StreamReader(fs))
+                    {
+                        ProfileModel.LuaScript = sr.ReadToEnd();
+                    }
                 }
+
+                ProfileProvider.AddOrUpdate(ProfileModel);
+
+                if (KeyboardProvider != null)
+                    SetupLua(ProfileModel, KeyboardProvider);
             }
-
-            ProfileProvider.AddOrUpdate(ProfileModel);
-
-            if (KeyboardProvider != null)
-                SetupLua(ProfileModel, KeyboardProvider);
         }
 
         #endregion
