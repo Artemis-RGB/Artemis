@@ -28,9 +28,15 @@ namespace Artemis.DeviceProviders.Logitech
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            return _generalSettings.Layout == "Qwerty"
-                ? KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode)
-                : KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            switch (_generalSettings.Layout)
+            {
+                case "Qwerty":
+                    return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                case "Qwertz":
+                    return KeyMap.QwertzLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                default:
+                    return KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            }
         }
     }
 }

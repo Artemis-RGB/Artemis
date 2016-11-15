@@ -89,6 +89,7 @@ namespace Artemis.ViewModels.Flyouts
         public BindableCollection<string> Layouts => new BindableCollection<string>
         {
             "Qwerty",
+            "Qwertz",
             "Azerty"
         };
 

@@ -30,9 +30,19 @@ namespace Artemis.DeviceProviders.Logitech
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            var value = _generalSettings.Layout == "Qwerty"
-                ? KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode)
-                : KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            KeyMatch value;
+            switch (_generalSettings.Layout)
+            {
+                case "Qwerty":
+                    value = KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                    break;
+                case "Qwertz":
+                    value = KeyMap.QwertzLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                    break;
+                default:
+                    value = KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                    break;
+            }
 
             // Adjust the distance by 1 on both x and y for the G910
             return new KeyMatch(value.KeyCode, value.X + 1, value.Y + 1);

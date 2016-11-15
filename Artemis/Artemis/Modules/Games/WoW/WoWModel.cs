@@ -25,7 +25,7 @@ namespace Artemis.Modules.Games.WoW
             ProcessName = "Wow-64";
             Scale = 4;
 
-            // Currently WoW is locked behind a hidden trigger (obviously not that hidden if you're reading this)
+            // Currently WoW is locked behind a hidden trigger (obviously not that hidden since you're reading this)
             // It is using memory reading and lets first try to contact Blizzard
             var settings = SettingsProvider.Load<GeneralSettings>();
             Enabled = (settings.GamestatePort == 62575) && Settings.Enabled;

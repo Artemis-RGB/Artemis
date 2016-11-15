@@ -121,9 +121,15 @@ namespace Artemis.ViewModels.Profiles
             get { return _selectedProfile; }
             set
             {
-                if (Equals(value, _selectedProfile)) return;
+                if (Equals(value, _selectedProfile))
+                    return;
+
+                // Deactivate old profile
                 _selectedProfile?.Deactivate();
+                // Update the value
                 _selectedProfile = value;
+                // Activate new profile
+                _selectedProfile?.Activate(_deviceManager.ActiveKeyboard);
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
@@ -232,6 +238,7 @@ namespace Artemis.ViewModels.Profiles
         {
             ProfileViewModel.Deactivate();
             SelectedProfile?.Deactivate();
+            _saveTimer.Stop();
         }
 
         /// <summary>
@@ -726,7 +733,12 @@ namespace Artemis.ViewModels.Profiles
 
         private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
         {
-            if (_saving || (SelectedProfile == null))
+            SaveSelectedProfile();
+        }
+
+        public void SaveSelectedProfile()
+        {
+            if (_saving || (SelectedProfile == null) || _deviceManager.ChangingKeyboard)
                 return;
 
             _saving = true;
@@ -739,8 +751,6 @@ namespace Artemis.ViewModels.Profiles
                 // ignored
             }
             _saving = false;
-
-            //Execute.OnUIThread(() => UpdateLayerList(ProfileViewModel.SelectedLayer));
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Artemis.Profiles.Lua
             _ctx.DrawRectangle(luaBrush.Brush, new Pen(), new Rect(x, y, width, height));
         }
 
-        public void DrawText(LuaBrush luaBrush, double x, double y, string text, int fontSize)
+        public double DrawText(LuaBrush luaBrush, double x, double y, string text, int fontSize)
         {
             x *= 4;
             y *= 4;
@@ -65,6 +65,7 @@ namespace Artemis.Profiles.Lua
                 fontSize, luaBrush.Brush);
 
             _ctx.DrawText(formatted, new Point(x, y));
+            return formatted.Width/4;
         }
     }
 }

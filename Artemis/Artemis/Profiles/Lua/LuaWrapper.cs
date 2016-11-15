@@ -94,8 +94,11 @@ namespace Artemis.Profiles.Lua
                 // Clear old fields/properties
                 KeyboardProvider = null;
                 ProfileModel = null;
+                LuaProfileWrapper = null;
+                LuaBrushWrapper = null;
                 LuaKeyboardWrapper?.Dispose();
                 LuaKeyboardWrapper = null;
+                LuaMouseWrapper = null;
 
                 try
                 {
@@ -108,8 +111,29 @@ namespace Artemis.Profiles.Lua
                 }
                 catch (NullReferenceException)
                 {
-                    // Can be missing if the user script screwed up the globals
+                    // TODO: Ask MoonSharp folks why this is happening
                 }
+
+                if (LuaEventsWrapper != null)
+                {
+                    lock (LuaEventsWrapper.InvokeLock)
+                    {
+                        lock (LuaScript)
+                        {
+                            LuaScript.DoString("");
+                        }
+                    }
+                }
+                else
+                {
+                    lock (LuaScript)
+                    {
+                        LuaScript.DoString("");
+                    }
+                }
+
+
+                LuaEventsWrapper = null;
             }
         }
 
