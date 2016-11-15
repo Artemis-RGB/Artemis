@@ -11,7 +11,7 @@ Artemis adds highly configurable support for several games to a range of RGB key
  - Non-gaming effects such as type waves and audio visualization.
  - A layer-based profile system allowing an immense amount of customization.
  - A fancy, modern looking UI with multiple themes.
-
+ - LUA scripting engine ([docs in the wiki](https://github.com/SpoinkyNL/Artemis/wiki/LUA)).
 
 ##### Currently the following games are supported
  - Counter-Strike Global Offensive (uses native gamestate intergration)
