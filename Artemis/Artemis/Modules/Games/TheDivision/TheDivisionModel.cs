@@ -12,12 +12,14 @@ namespace Artemis.Modules.Games.TheDivision
 {
     public class TheDivisionModel : GameModel
     {
+        private readonly PipeServer _pipeServer;
         private StickyValue<bool> _stickyAmmo;
         private StickyValue<bool> _stickyHp;
 
-        public TheDivisionModel(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
+        public TheDivisionModel(DeviceManager deviceManager, PipeServer pipeServer)
+            : base(deviceManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
         {
+            _pipeServer = pipeServer;
             Name = "TheDivision";
             ProcessName = "TheDivision";
             Scale = 4;
@@ -38,10 +40,11 @@ namespace Artemis.Modules.Games.TheDivision
                 DllManager.RestoreLogitechDll();
             });
 
-            _stickyAmmo.Dispose();
-            _stickyHp.Dispose();
+            _stickyAmmo?.Dispose();
+            _stickyHp?.Dispose();
 
-            MainManager.PipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
+            base.Dispose();
         }
 
         public override void Enable()
@@ -53,7 +56,7 @@ namespace Artemis.Modules.Games.TheDivision
 
             DllManager.PlaceLogitechDll();
 
-            MainManager.PipeServer.PipeMessage += PipeServerOnPipeMessage;
+            _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             Initialized = true;
         }
 

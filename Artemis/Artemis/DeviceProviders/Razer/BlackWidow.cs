@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.DeviceProviders.Razer.Utilities;
 using Artemis.Properties;
+using Artemis.Settings;
 using Corale.Colore.Core;
 using Corale.Colore.Razer;
 using Constants = Corale.Colore.Razer.Keyboard.Constants;
@@ -13,6 +15,8 @@ namespace Artemis.DeviceProviders.Razer
 {
     public class BlackWidow : KeyboardProvider
     {
+        private GeneralSettings _generalSettings;
+
         public BlackWidow()
         {
             Name = "Razer BlackWidow Chroma";
@@ -24,6 +28,7 @@ namespace Artemis.DeviceProviders.Razer
             Height = Constants.MaxRows;
             Width = Constants.MaxColumns;
             PreviewSettings = new PreviewSettings(665, 175, new Thickness(0, -15, 0, 0), Resources.blackwidow);
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
         public override bool CanEnable()
@@ -56,7 +61,15 @@ namespace Artemis.DeviceProviders.Razer
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
             // TODO: Needs it's own keymap or a way to get it from the Chroma SDK
-            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            switch (_generalSettings.Layout)
+            {
+                case "Qwerty":
+                    return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                case "Qwertz":
+                    return KeyMap.QwertzLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                default:
+                    return KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            }
         }
     }
 }

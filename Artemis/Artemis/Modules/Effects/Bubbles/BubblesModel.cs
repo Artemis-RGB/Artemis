@@ -15,7 +15,7 @@ namespace Artemis.Modules.Effects.Bubbles
     {
         #region Constructors
 
-        public BubblesModel(MainManager mainManager) : base(mainManager, SettingsProvider.Load<BubblesSettings>(), null)
+        public BubblesModel(DeviceManager deviceManager) : base(deviceManager, SettingsProvider.Load<BubblesSettings>(), null)
         {
             Name = "Bubbles";
             Initialized = false;
@@ -40,8 +40,7 @@ namespace Artemis.Modules.Effects.Bubbles
         {
             KeyboardScale = Settings.Smoothness;
 
-            var rect = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
-
+            var rect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             var scaleFactor = Settings.Smoothness/25.0;
 
             for (var i = 0; i < Settings.BubbleCount; i++)
@@ -74,7 +73,7 @@ namespace Artemis.Modules.Effects.Bubbles
 
         public override void Update()
         {
-            var keyboardRectangle = MainManager.DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
+            var keyboardRectangle = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
             foreach (var bubble in _bubbles)
             {
                 if (Settings.IsShiftColors)

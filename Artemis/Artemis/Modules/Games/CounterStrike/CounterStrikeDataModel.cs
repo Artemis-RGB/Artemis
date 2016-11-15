@@ -1,8 +1,10 @@
 ﻿using Artemis.Models.Interfaces;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
+    [MoonSharpUserData]
     public class CounterStrikeDataModel : IDataModel
     {
         public Provider provider { get; set; }
@@ -12,6 +14,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public Previously previously { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Provider
     {
         public string name { get; set; }
@@ -21,16 +24,19 @@ namespace Artemis.Modules.Games.CounterStrike
         public int timestamp { get; set; }
     }
 
+    [MoonSharpUserData]
     public class TeamCt
     {
         public int score { get; set; }
     }
 
+    [MoonSharpUserData]
     public class TeamT
     {
         public int score { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Map
     {
         public string mode { get; set; }
@@ -41,11 +47,13 @@ namespace Artemis.Modules.Games.CounterStrike
         public TeamT team_t { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Round
     {
         public string phase { get; set; }
     }
 
+    [MoonSharpUserData]
     public class State
     {
         [JsonIgnore]
@@ -63,7 +71,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public int round_killhs { get; set; }
     }
 
-
+    [MoonSharpUserData]
     public class Weapon
     {
         public string name { get; set; }
@@ -75,6 +83,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public string state { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Weapons
     {
         public Weapon active_weapon { get; set; }
@@ -83,6 +92,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public Weapon weapon_2 { get; set; }
     }
 
+    [MoonSharpUserData]
     public class MatchStats
     {
         public int kills { get; set; }
@@ -92,6 +102,7 @@ namespace Artemis.Modules.Games.CounterStrike
         public int score { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Player
     {
         public string steamid { get; set; }
@@ -103,11 +114,13 @@ namespace Artemis.Modules.Games.CounterStrike
         public MatchStats match_stats { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Round2
     {
         public string phase { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Previously
     {
         public Round2 round { get; set; }

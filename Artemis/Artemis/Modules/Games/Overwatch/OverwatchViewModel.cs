@@ -1,43 +1,17 @@
-﻿using System.IO;
-using System.Windows.Forms;
-using Artemis.InjectionFactories;
+﻿using System.Windows.Forms;
 using Artemis.Managers;
-using Artemis.Utilities.DataReaders;
+using Artemis.Models;
 using Artemis.ViewModels.Abstract;
-using Microsoft.Win32;
+using Ninject;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public sealed class OverwatchViewModel : GameViewModel
     {
-        public OverwatchViewModel(MainManager main, IProfileEditorVmFactory pFactory, OverwatchModel model)
-            : base(main, model, pFactory)
+        public OverwatchViewModel(MainManager main, IKernel kernel, [Named("OverwatchModel")] GameModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "Overwatch";
-
-            FindOverwatch();
-        }
-
-        public void FindOverwatch()
-        {
-            var gameSettings = (OverwatchSettings) GameSettings;
-            // If already propertly set up, don't do anything
-            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
-                File.Exists(gameSettings.GameDirectory + "RzChromaSDK64.dll"))
-                return;
-
-            var key = Registry.LocalMachine.OpenSubKey(
-                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
-            if (key == null)
-                return;
-
-            var path = key.GetValue("DisplayIcon").ToString();
-            if (!File.Exists(path))
-                return;
-
-            gameSettings.GameDirectory = path.Substring(0, path.Length - 14);
-            gameSettings.Save();
-            PlaceDll();
         }
 
         public void BrowseDirectory()
@@ -48,28 +22,9 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
 
             ((OverwatchSettings) GameSettings).GameDirectory = dialog.SelectedPath;
-            NotifyOfPropertyChange(() => GameSettings);
             GameSettings.Save();
-
-            PlaceDll();
-        }
-
-        public void PlaceDll()
-        {
-            var path = ((OverwatchSettings) GameSettings).GameDirectory;
-
-            if (!File.Exists(path + @"\Overwatch.exe"))
-            {
-                DialogService.ShowErrorMessageBox("Please select a valid Overwatch directory\n\n" +
-                                                  @"By default Overwatch is in C:\Program Files (x86)\Overwatch");
-
-                ((OverwatchSettings) GameSettings).GameDirectory = string.Empty;
-                NotifyOfPropertyChange(() => GameSettings);
-                GameSettings.Save();
-                return;
-            }
-
-            DllManager.PlaceRazerDll(path);
+            ((OverwatchModel) GameModel).PlaceDll();
+            NotifyOfPropertyChange(() => GameSettings);
         }
     }
 }

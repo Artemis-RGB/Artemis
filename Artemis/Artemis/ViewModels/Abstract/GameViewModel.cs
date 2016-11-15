@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Artemis.InjectionFactories;
+using System.Timers;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
@@ -9,6 +9,7 @@ using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
+using Ninject.Parameters;
 
 namespace Artemis.ViewModels.Abstract
 {
@@ -16,16 +17,22 @@ namespace Artemis.ViewModels.Abstract
     {
         private GameSettings _gameSettings;
 
-        protected GameViewModel(MainManager mainManager, GameModel gameModel, IProfileEditorVmFactory pFactory)
+        protected GameViewModel(MainManager mainManager, GameModel gameModel, IKernel kernel)
         {
             MainManager = mainManager;
             GameModel = gameModel;
-            PFactory = pFactory;
             GameSettings = gameModel.Settings;
 
-            ProfileEditor = PFactory.CreateProfileEditorVm(mainManager, gameModel, GameSettings.LastProfile);
-            GameModel.Profile = ProfileEditor.SelectedProfile;
+            IParameter[] args =
+            {
+                new ConstructorArgument("mainManager", mainManager),
+                new ConstructorArgument("gameModel", gameModel),
+                new ConstructorArgument("lastProfile", GameSettings.LastProfile)
+            };
+            ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
             ProfileEditor.PropertyChanged += ProfileUpdater;
+
+            GameModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         [Inject]
@@ -36,8 +43,6 @@ namespace Artemis.ViewModels.Abstract
 
         [Inject]
         public MetroDialogService DialogService { get; set; }
-
-        public IProfileEditorVmFactory PFactory { get; set; }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
 
@@ -65,9 +70,11 @@ namespace Artemis.ViewModels.Abstract
         public void SaveSettings()
         {
             GameSettings?.Save();
+            ProfileEditor.SaveSelectedProfile();
+
             if (!GameEnabled)
                 return;
-
+            
             // Restart the game if it's currently running to apply settings.
             MainManager.EffectManager.ChangeEffect(GameModel, MainManager.LoopManager);
         }
@@ -89,14 +96,17 @@ namespace Artemis.ViewModels.Abstract
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "SelectedProfile" && IsActive)
+            if ((e.PropertyName != "SelectedProfile") && IsActive)
                 return;
+
             GameModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
-            if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
-                ProfileEditor.ProfileViewModel.SelectedProfile == null)
+            // Only update the last selected profile if it the editor was active and the new profile isn't null
+            if ((e.PropertyName != "SelectedProfile") || !ProfileEditor.ProfileViewModel.Activated ||
+                (ProfileEditor.ProfileViewModel.SelectedProfile == null))
                 return;
+
             GameSettings.LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             GameSettings.Save();
         }

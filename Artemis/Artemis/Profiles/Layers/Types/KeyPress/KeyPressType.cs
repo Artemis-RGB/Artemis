@@ -19,13 +19,13 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 {
     internal class KeyPressType : ILayerType
     {
-        private readonly MainManager _mainManager;
+        private readonly DeviceManager _deviceManager;
         private List<LayerModel> _keyPressLayers = new List<LayerModel>();
         private LayerModel _layerModel;
 
-        public KeyPressType(MainManager mainManager)
+        public KeyPressType(DeviceManager deviceManager)
         {
-            _mainManager = mainManager;
+            _deviceManager = deviceManager;
             KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
         }
 
@@ -61,11 +61,13 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
             // Key press is always as large as the entire keyboard it is drawn for
-            layerModel.Properties.Width = _mainManager.DeviceManager.ActiveKeyboard.Width;
-            layerModel.Properties.Height = _mainManager.DeviceManager.ActiveKeyboard.Height;
+            layerModel.Properties.Width = _deviceManager.ActiveKeyboard.Width;
+            layerModel.Properties.Height = _deviceManager.ActiveKeyboard.Height;
             layerModel.Properties.X = 0;
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
+
+            layerModel.AppliedProperties = new KeyPressPropertiesModel(layerModel.Properties);
 
             _layerModel = layerModel;
 
@@ -126,7 +128,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
                     return;
             }
 
-            var keyMatch = _mainManager.DeviceManager.ActiveKeyboard.GetKeyPosition(e.KeyCode);
+            var keyMatch = _deviceManager.ActiveKeyboard.GetKeyPosition(e.KeyCode);
             if (keyMatch == null)
                 return;
 

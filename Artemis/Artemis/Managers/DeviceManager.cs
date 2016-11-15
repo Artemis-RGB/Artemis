@@ -73,7 +73,7 @@ namespace Artemis.Managers
         public async void EnableKeyboard(KeyboardProvider keyboardProvider)
         {
             if (keyboardProvider == null)
-                throw new ArgumentNullException(nameof(keyboardProvider));
+                return;
 
             if (ChangingKeyboard || (ActiveKeyboard?.Name == keyboardProvider.Name))
                 return;

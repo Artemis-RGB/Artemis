@@ -202,9 +202,15 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
             {
                 graphics.CompositingMode = CompositingMode.SourceCopy;
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+                graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                // TODO: Make configurable
+                // Prevents light bleed
+                graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                // Soft/semi-transparent keys
+                //graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
                 using (var wrapMode = new ImageAttributes())
                 {

@@ -1,6 +1,8 @@
 ﻿using System.Windows.Media;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.ViewModels.Abstract;
+using Ninject;
 
 namespace Artemis.Modules.Effects.Bubbles
 {
@@ -9,11 +11,11 @@ namespace Artemis.Modules.Effects.Bubbles
         private readonly BubblesModel _model;
         private SolidColorBrush _bubbleColor;
 
-        public BubblesViewModel(MainManager main, BubblesModel model) : base(main, model)
+        public BubblesViewModel(MainManager main, [Named("BubblesModel")] EffectModel model) : base(main, model)
         {
-            _model = model;
+            _model = (BubblesModel) model;
             DisplayName = "Bubbles";
-            BubbleColor = new SolidColorBrush(model.Settings.BubbleColor);
+            BubbleColor = new SolidColorBrush(_model.Settings.BubbleColor);
         }
 
         /// <summary>

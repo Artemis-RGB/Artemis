@@ -17,8 +17,8 @@ namespace Artemis.Modules.Games.Witcher3
         private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
-        public Witcher3Model(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
+        public Witcher3Model(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
@@ -38,6 +38,7 @@ namespace Artemis.Modules.Games.Witcher3
             _witcherSettings = null;
 
             _updateSw.Reset();
+            base.Dispose();
         }
 
         public override void Enable()
@@ -66,10 +67,11 @@ namespace Artemis.Modules.Games.Witcher3
             if (_witcherSettings == null)
                 return;
 
-            var reader = new StreamReader(
-                File.Open(_witcherSettings, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+            var reader =
+                new StreamReader(File.Open(_witcherSettings, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
             var configContent = reader.ReadToEnd();
             reader.Close();
+            reader.Dispose();
 
             var signRes = _configRegex.Match(configContent);
             var parts = signRes.Value.Split('\n').Skip(1).Select(v => v.Replace("\r", "")).ToList();

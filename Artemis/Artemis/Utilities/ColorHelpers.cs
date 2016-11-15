@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Drawing.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 
 namespace Artemis.Utilities
 {
@@ -45,6 +46,23 @@ namespace Artemis.Utilities
             var returnColor = System.Windows.Media.Color.FromArgb(255, colors[0], colors[1], colors[2]);
 
             return returnColor;
+        }
+
+        public static System.Windows.Media.Color FromHex(this System.Windows.Media.Color c, string hex)
+        {
+            if (hex == null)
+                return new System.Windows.Media.Color();
+
+            var convertFromString = ColorConverter.ConvertFromString(hex);
+            if (convertFromString != null)
+                return (System.Windows.Media.Color) convertFromString;
+
+            throw new ArgumentException("Invalid hex color code");
+        }
+
+        public static string ToHex(this System.Windows.Media.Color c)
+        {
+            return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
         public static Color ShiftColor(Color c, int shiftAmount)

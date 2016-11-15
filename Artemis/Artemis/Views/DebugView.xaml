@@ -4,8 +4,9 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:log="clr-namespace:Artemis.Controls.Log"
                       mc:Ignorable="d"
-                      Title="DebugView" Height="329.904" Width="446.624"
+                      Title="DebugView" Height="600" Width="900"
                       GlowBrush="{DynamicResource AccentColorBrush}">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -14,16 +15,26 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Razer output -->
-        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" Content="Razer display" />
+        <Label Grid.Row="0" Grid.Column="0" FontSize="20" Content="Razer display" />
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="75" Width="300" HorizontalAlignment="Left"
                 VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
                 SnapsToDevicePixels="True">
             <Image Source="{Binding Path=RazerDisplay}" />
         </Border>
 
+        <!-- Log -->
+        <Label Grid.Row="2" Grid.Column="0" FontSize="20" Content="Log" />
+        <Button x:Name="OpenLog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"
+                Style="{DynamicResource SquareButtonStyle}" Content="Open log file" VerticalAlignment="Center" />
+        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1"
+                BorderBrush="{StaticResource GrayBrush7}" SnapsToDevicePixels="True">
+            <log:LoggingControl />
+        </Border>
     </Grid>
 </controls:MetroWindow>

@@ -51,34 +51,39 @@ namespace Artemis.Managers
                 ProfilePreviewModel == null)
                 return;
 
-            var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);
-            if (activePreview == null)
+            lock (GameViewModels)
             {
-                // Should not be active if no selected profile is set
-                if (_effectManager.ActiveEffect != ProfilePreviewModel)
-                    return;
+                var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);
 
-                _logger.Debug("Loading last effect after profile preview");
-                var lastEffect = _effectManager.GetLastEffect();
-                if (lastEffect != null)
-                    _effectManager.ChangeEffect(lastEffect);
-                else
-                    _effectManager.ClearEffect();
-            }
-            else
-            {
-                if (_effectManager.ActiveEffect != ProfilePreviewModel && !(_effectManager.ActiveEffect is GameModel))
+                if (activePreview == null)
                 {
-                    _logger.Debug("Activate profile preview");
-                    _effectManager.ChangeEffect(ProfilePreviewModel);
+                    // Should not be active if no selected profile is set
+                    if (_effectManager.ActiveEffect != ProfilePreviewModel)
+                        return;
+
+                    _logger.Debug("Loading last effect after profile preview");
+                    var lastEffect = _effectManager.GetLastEffect();
+                    if (lastEffect != null)
+                        _effectManager.ChangeEffect(lastEffect);
+                    else
+                        _effectManager.ClearEffect();
                 }
+                else
+                {
+                    if (_effectManager.ActiveEffect != ProfilePreviewModel &&
+                        !(_effectManager.ActiveEffect is GameModel))
+                    {
+                        _logger.Debug("Activate profile preview");
+                        _effectManager.ChangeEffect(ProfilePreviewModel);
+                    }
 
-                // LoopManager might be running, this method won't do any harm in that case.
-                _loopManager.StartAsync();
+                    // LoopManager might be running, this method won't do any harm in that case.
+                    _loopManager.StartAsync();
 
-                ProfilePreviewModel.ProfileViewModel = activePreview.ProfileEditor.ProfileViewModel;
-                if (!ReferenceEquals(ProfilePreviewModel.Profile, activePreview.ProfileEditor.SelectedProfile))
-                    ProfilePreviewModel.Profile = activePreview.ProfileEditor.SelectedProfile;
+                    ProfilePreviewModel.ProfileViewModel = activePreview.ProfileEditor.ProfileViewModel;
+                    if (!ReferenceEquals(ProfilePreviewModel.Profile, activePreview.ProfileEditor.SelectedProfile))
+                        ProfilePreviewModel.Profile = activePreview.ProfileEditor.SelectedProfile;
+                }
             }
         }
     }

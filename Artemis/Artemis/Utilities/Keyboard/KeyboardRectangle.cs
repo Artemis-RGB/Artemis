@@ -9,6 +9,7 @@ using Artemis.DeviceProviders;
 
 namespace Artemis.Utilities.Keyboard
 {
+    // TODO: Obsolete
     public class KeyboardRectangle
     {
         private readonly BackgroundWorker _blinkWorker = new BackgroundWorker {WorkerSupportsCancellation = true};

@@ -1,36 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
-using Ninject.Extensions.Logging;
+using Newtonsoft.Json;
 using SpotifyAPI.Local;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     public class WindowsProfileModel : EffectModel
     {
-        private readonly ILogger _logger;
         private List<PerformanceCounter> _cores;
         private int _cpuFrames;
+        private DateTime _lastMusicUpdate;
         private PerformanceCounter _overallCpu;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
 
-        public WindowsProfileModel(ILogger logger, MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
+        public WindowsProfileModel(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
         {
-            _logger = logger;
+            _lastMusicUpdate = DateTime.Now;
+
             Name = "WindowsProfile";
         }
 
         public override void Dispose()
         {
             Initialized = false;
+            base.Dispose();
         }
 
         public override void Enable()
@@ -45,7 +48,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             var dataModel = (WindowsProfileDataModel) DataModel;
             UpdateCpu(dataModel);
-            UpdateSpotify(dataModel);
+            UpdateMusicPlayers(dataModel);
             UpdateDay(dataModel);
         }
 
@@ -79,7 +82,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             }
             catch (InvalidOperationException)
             {
-                _logger.Warn("Failed to setup CPU information, try running \"lodctr /R\" as administrator.");
+                Logger?.Warn("Failed to setup CPU information, try running \"lodctr /R\" as administrator.");
             }
         }
 
@@ -155,7 +158,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         #endregion
 
-        #region Spotify
+        #region Music
 
         public void SetupSpotify()
         {
@@ -163,10 +166,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 return;
 
             _spotifySetupBusy = true;
-            _spotify = new SpotifyLocalAPI {ListenForEvents = true};
-            _spotify.OnPlayStateChange += UpdateSpotifyPlayState;
-            _spotify.OnTrackChange += UpdateSpotifyTrack;
-            _spotify.OnTrackTimeChange += UpdateSpotifyTrackTime;
+            _spotify = new SpotifyLocalAPI();
 
             // Connecting can sometimes use a little bit more conviction
             Task.Factory.StartNew(() =>
@@ -184,33 +184,52 @@ namespace Artemis.Modules.Effects.WindowsProfile
             });
         }
 
-        public void UpdateSpotify(WindowsProfileDataModel dataModel)
+        public void UpdateMusicPlayers(WindowsProfileDataModel dataModel)
         {
+            // This is quite resource hungry so only update it once every two seconds
+            if (DateTime.Now - _lastMusicUpdate < TimeSpan.FromSeconds(2))
+                return;
+            _lastMusicUpdate = DateTime.Now;
+
+            UpdateSpotify(dataModel);
+            UpdateGooglePlayMusic(dataModel);
+        }
+
+        private void UpdateSpotify(WindowsProfileDataModel dataModel)
+        {
+            // Spotify
             if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
                 SetupSpotify();
 
+            var status = _spotify.GetStatus();
+            if (status == null)
+                return;
+
+            dataModel.Spotify.Playing = status.Playing;
             dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
-        }
 
-        private void UpdateSpotifyPlayState(object sender, PlayStateEventArgs e)
-        {
-            ((WindowsProfileDataModel) DataModel).Spotify.Playing = e.Playing;
-        }
+            if (status.Track != null)
+            {
+                dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
+                dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
+                dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
+                dataModel.Spotify.SongLength = status.Track.Length;
+            }
 
-        private void UpdateSpotifyTrack(object sender, TrackChangeEventArgs e)
-        {
-            var dataModel = (WindowsProfileDataModel) DataModel;
-            dataModel.Spotify.Artist = e.NewTrack.ArtistResource?.Name;
-            dataModel.Spotify.SongName = e.NewTrack.TrackResource?.Name;
-            dataModel.Spotify.Album = e.NewTrack.AlbumResource?.Name;
-            dataModel.Spotify.SongLength = e.NewTrack.Length;
-        }
-
-        private void UpdateSpotifyTrackTime(object sender, TrackTimeChangeEventArgs e)
-        {
-            var dataModel = (WindowsProfileDataModel) DataModel;
             if (dataModel.Spotify.SongLength > 0)
-                dataModel.Spotify.SongPercentCompleted = (int) (e.TrackTime/dataModel.Spotify.SongLength*100.0);
+                dataModel.Spotify.SongPercentCompleted =
+                    (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
+        }
+
+        private void UpdateGooglePlayMusic(WindowsProfileDataModel dataModel)
+        {
+            // Google Play Music
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var json = appData + @"\Google Play Music Desktop Player\json_store\playback.json";
+            if (!File.Exists(json))
+                return;
+
+            dataModel.GooglePlayMusic = JsonConvert.DeserializeObject<GooglePlayMusic>(File.ReadAllText(json));
         }
 
         #endregion

@@ -2,7 +2,6 @@
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
-using Artemis.Modules.Games.WoW;
 using Artemis.Settings;
 using Artemis.ViewModels.Abstract;
 
@@ -10,30 +9,28 @@ namespace Artemis.ViewModels
 {
     public sealed class GamesViewModel : BaseViewModel
     {
-        private readonly GameViewModel[] _gameViewModels;
+        private readonly IOrderedEnumerable<GameViewModel> _vms;
 
         public GamesViewModel(GameViewModel[] gameViewModels, ProfileManager profileManager,
             ProfilePreviewModel profilePreviewModel)
         {
             DisplayName = "Games";
-            _gameViewModels = gameViewModels;
+
+            // Currently WoW is locked behind a hidden trigger (obviously not that hidden since you're reading this)
+            // It is using memory reading and lets first try to contact Blizzard
+            _vms = SettingsProvider.Load<GeneralSettings>().GamestatePort == 62575
+                ? gameViewModels.OrderBy(g => g.DisplayName)
+                : gameViewModels.Where(g => g.DisplayName != "WoW").OrderBy(g => g.DisplayName);
 
             profileManager.ProfilePreviewModel = profilePreviewModel;
-            profileManager.GameViewModels.AddRange(_gameViewModels);
+            profileManager.GameViewModels.AddRange(_vms);
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
-
-            var settings = SettingsProvider.Load<GeneralSettings>();
-            foreach (var gameViewModel in _gameViewModels.OrderBy(g => g.DisplayName))
-            {
-                if (settings.GamestatePort != 62575 && gameViewModel is WoWViewModel)
-                    continue;
-                
-                ActivateItem(gameViewModel);
-            }
+            Items.Clear();
+            Items.AddRange(_vms);
         }
     }
 }

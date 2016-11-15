@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Properties;
+using Artemis.Services;
+using Artemis.Utilities;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 
@@ -10,14 +14,24 @@ namespace Artemis.Modules.Games.Dota2
 {
     public class Dota2Model : GameModel
     {
-        public Dota2Model(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
+        private readonly MetroDialogService _dialogService;
+        private readonly GameStateWebServer _gameStateWebServer;
+
+        public Dota2Model(DeviceManager deviceManager, GameStateWebServer gameStateWebServer,
+            MetroDialogService dialogService)
+            : base(deviceManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
         {
+            _gameStateWebServer = gameStateWebServer;
+            _dialogService = dialogService;
+
             Name = "Dota2";
             ProcessName = "dota2";
             Enabled = Settings.Enabled;
             Initialized = false;
             Scale = 4;
+
+            FindGameDir();
+            PlaceConfigFile();
         }
 
         public int Scale { get; set; }
@@ -25,20 +39,68 @@ namespace Artemis.Modules.Games.Dota2
         public override void Dispose()
         {
             Initialized = false;
-            MainManager.GameStateWebServer.GameDataReceived -= HandleGameData;
+            _gameStateWebServer.GameDataReceived -= HandleGameData;
+            base.Dispose();
         }
 
         public override void Enable()
         {
-            Initialized = false;
-
-            MainManager.GameStateWebServer.GameDataReceived += HandleGameData;
+            _gameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }
 
         public override void Update()
         {
             UpdateDay();
+        }
+
+        public void FindGameDir()
+        {
+            var gameSettings = (Dota2Settings) Settings;
+            // If already propertly set up, don't do anything
+            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
+                File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
+                return;
+
+            var dir = GeneralHelpers.FindSteamGame(@"\dota 2 beta\game\bin\win32\dota2.exe");
+            // Remove subdirectories where they stuck the executable
+            dir = dir?.Substring(0, dir.Length - 15);
+
+            gameSettings.GameDirectory = dir ?? string.Empty;
+            gameSettings.Save();
+        }
+
+        public void PlaceConfigFile()
+        {
+            var gameSettings = (Dota2Settings) Settings;
+            if (gameSettings.GameDirectory == string.Empty)
+                return;
+            if (Directory.Exists(gameSettings.GameDirectory + "/game/dota/cfg"))
+            {
+                var cfgFile = Resources.dotaGamestateConfiguration.Replace("{{port}}",
+                    _gameStateWebServer.Port.ToString());
+                try
+                {
+                    File.WriteAllText(
+                        gameSettings.GameDirectory +
+                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg", cfgFile);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Directory.CreateDirectory(gameSettings.GameDirectory + "/game/dota/cfg/gamestate_integration/");
+                    File.WriteAllText(
+                        gameSettings.GameDirectory +
+                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
+                        cfgFile);
+                }
+
+                return;
+            }
+
+            _dialogService.ShowErrorMessageBox("Please select a valid Dota 2 directory\n\n" +
+                                               @"By default Dota 2 is in \SteamApps\common\dota 2 beta");
+            gameSettings.GameDirectory = string.Empty;
+            gameSettings.Save();
         }
 
         private void UpdateDay()

@@ -39,7 +39,7 @@ namespace Artemis.DeviceProviders
         /// <returns></returns>
         public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
 
-        public Rect KeyboardRectangle(int scale) => new Rect(new Size(Width*scale, Height*scale));
+        public Rect KeyboardRectangle(int scale = 4) => new Rect(new Size(Width*scale, Height*scale));
 
         /// <summary>
         ///     Runs CanEnable asynchronously multiple times until successful, cancelled or max tries reached

@@ -8,7 +8,6 @@ using Artemis.Modules.Games.WoW.Data;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
-using Newtonsoft.Json;
 using Process.NET;
 using Process.NET.Memory;
 
@@ -19,21 +18,21 @@ namespace Artemis.Modules.Games.WoW
         private readonly GamePointersCollection _pointer;
         private ProcessSharp _process;
 
-        public WoWModel(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
+        public WoWModel(DeviceManager deviceManager)
+            : base(deviceManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
         {
             Name = "WoW";
             ProcessName = "Wow-64";
             Scale = 4;
 
-            // Currently WoW is locked behind a hidden trigger (obviously not that hidden if you're reading this)
+            // Currently WoW is locked behind a hidden trigger (obviously not that hidden since you're reading this)
             // It is using memory reading and lets first try to contact Blizzard
             var settings = SettingsProvider.Load<GeneralSettings>();
-            Enabled = settings.GamestatePort == 62575 && Settings.Enabled;
+            Enabled = (settings.GamestatePort == 62575) && Settings.Enabled;
 
             Initialized = false;
 
-             _pointer = SettingsProvider.Load<OffsetSettings>().WorldOfWarcraft;
+            _pointer = SettingsProvider.Load<OffsetSettings>().WorldOfWarcraft;
             //_pointer = new GamePointersCollection
             //{
             //    Game = "WorldOfWarcraft",
@@ -71,8 +70,9 @@ namespace Artemis.Modules.Games.WoW
         {
             Initialized = false;
 
-            _process.Dispose();
+            _process?.Dispose();
             _process = null;
+            base.Dispose();
         }
 
         public override void Enable()
@@ -102,7 +102,7 @@ namespace Artemis.Modules.Games.WoW
                 _pointer.GameAddresses.First(a => a.Description == "TargetGuid").BasePointer, true);
 
             dataModel.Player = player;
-            if (dataModel.Player != null && dataModel.Player.Guid != Guid.Empty)
+            if ((dataModel.Player != null) && (dataModel.Player.Guid != Guid.Empty))
             {
                 dataModel.Player.UpdateDetails(nameCache);
                 var target = player.GetTarget(objectManager);
