@@ -35,7 +35,7 @@ namespace Artemis.Profiles.Layers.Animations
 
             const int scale = 4;
             // Set up variables for this frame
-            var rect = props.Contain
+            var rect = applied.Contain
                 ? new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale)
                 : new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
 

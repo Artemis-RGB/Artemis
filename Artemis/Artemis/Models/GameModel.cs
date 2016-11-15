@@ -6,7 +6,7 @@ namespace Artemis.Models
 {
     public abstract class GameModel : EffectModel
     {
-        protected GameModel(MainManager mainManager, GameSettings settings, IDataModel dataModel): base(mainManager, settings, dataModel)
+        protected GameModel(DeviceManager deviceManager, GameSettings settings, IDataModel dataModel): base(deviceManager, settings, dataModel)
         {
             // Override settings to the GameSettings type
             Settings = settings;

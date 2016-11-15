@@ -1,6 +1,8 @@
 ﻿using System.Windows.Media;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.ViewModels.Abstract;
+using Ninject;
 
 namespace Artemis.Modules.Overlays.VolumeDisplay
 {
@@ -10,13 +12,14 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
         private SolidColorBrush _mainColor;
         private SolidColorBrush _secondaryColor;
 
-        public VolumeDisplayViewModel(MainManager mainManager, VolumeDisplayModel model) : base(mainManager, model)
+        public VolumeDisplayViewModel(MainManager mainManager, [Named("VolumeDisplayModel")] OverlayModel model)
+            : base(mainManager, model)
         {
-            _model = model;
+            _model = (VolumeDisplayModel) model;
             DisplayName = "Volume Display";
 
-            MainColor = new SolidColorBrush(model.Settings.MainColor);
-            SecondaryColor = new SolidColorBrush(model.Settings.SecondaryColor);
+            MainColor = new SolidColorBrush(_model.Settings.MainColor);
+            SecondaryColor = new SolidColorBrush(_model.Settings.SecondaryColor);
         }
 
         public Brush MainColor

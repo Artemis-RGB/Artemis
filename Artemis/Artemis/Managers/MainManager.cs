@@ -23,7 +23,8 @@ namespace Artemis.Managers
         private readonly Timer _processTimer;
 
         public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
-            EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer)
+            EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer,
+            GameStateWebServer gameStateWebServer)
         {
             Logger = logger;
             LoopManager = loopManager;
@@ -40,7 +41,7 @@ namespace Artemis.Managers
             Running = false;
 
             // Create and start the web server
-            GameStateWebServer = new GameStateWebServer(logger);
+            GameStateWebServer = gameStateWebServer;
             GameStateWebServer.Start();
 
             // Start the named pipe

@@ -21,6 +21,7 @@
                     Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
                 <ResourceDictionary Source="Styles/ColorBox.xaml" />
+                <ResourceDictionary Source="Styles/MarkdownStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:MilliSecondTimespanConverter x:Key="MilliSecondTimespanConverter" />
         </ResourceDictionary>

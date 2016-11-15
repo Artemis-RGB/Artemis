@@ -44,7 +44,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             }
 
             // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
-            var rect = layer.Properties.Contain
+            var rect = layer.AppliedProperties.Contain
                 ? new Rect(layer.AppliedProperties.X*4,
                     layer.AppliedProperties.Y*4,
                     layer.AppliedProperties.Width*4,
@@ -57,9 +57,12 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             var clip = new Rect(layer.AppliedProperties.X*4, layer.AppliedProperties.Y*4,
                 layer.AppliedProperties.Width*4, layer.AppliedProperties.Height*4);
 
+            // Can't meddle with the original brush because it's frozen.
+            var brush = layer.AppliedProperties.Brush.Clone();
+            brush.Opacity = layer.AppliedProperties.Opacity;
 
             c.PushClip(new RectangleGeometry(clip));
-            c.DrawRectangle(layer.AppliedProperties.Brush, null, rect);
+            c.DrawRectangle(brush, null, rect);
             c.Pop();
         }
 

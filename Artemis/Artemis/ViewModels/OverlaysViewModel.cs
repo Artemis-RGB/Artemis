@@ -1,23 +1,23 @@
-﻿using Artemis.ViewModels.Abstract;
+﻿using System.Linq;
+using Artemis.ViewModels.Abstract;
 
 namespace Artemis.ViewModels
 {
     public sealed class OverlaysViewModel : BaseViewModel
     {
-        private readonly OverlayViewModel[] _overlayViewModels;
+        private IOrderedEnumerable<OverlayViewModel> _vms;
 
         public OverlaysViewModel(OverlayViewModel[] overlayViewModels)
         {
             DisplayName = "Overlays";
-            _overlayViewModels = overlayViewModels;
+            _vms = overlayViewModels.OrderBy(o => o.DisplayName);
         }
 
         protected override void OnActivate()
         {
             base.OnActivate();
-
-            foreach (var overlayViewModel in _overlayViewModels)
-                ActivateItem(overlayViewModel);
+            Items.Clear();
+            Items.AddRange(_vms);
         }
     }
 }

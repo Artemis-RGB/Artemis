@@ -1,4 +1,5 @@
 ﻿using Artemis.DeviceProviders;
+using Artemis.DeviceProviders.CoolerMaster;
 using Artemis.DeviceProviders.Corsair;
 using Artemis.DeviceProviders.Logitech;
 using Artemis.DeviceProviders.Razer;
@@ -15,6 +16,7 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<G910>().InSingletonScope();
             Bind<DeviceProvider>().To<G810>().InSingletonScope();
             Bind<DeviceProvider>().To<BlackWidow>().InSingletonScope();
+            Bind<DeviceProvider>().To<MasterkeysProL>().InSingletonScope();
 
             // Mice
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();

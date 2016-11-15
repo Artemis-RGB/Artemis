@@ -13,12 +13,11 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        public VolumeDisplayModel(MainManager mainManager)
-            : base(mainManager, SettingsProvider.Load<VolumeDisplaySettings>())
+        public VolumeDisplayModel(DeviceManager deviceManager): base(deviceManager, SettingsProvider.Load<VolumeDisplaySettings>())
         {
             Name = "VolumeDisplay";
             Settings = (VolumeDisplaySettings) base.Settings;
-            VolumeDisplay = new VolumeBar(MainManager.DeviceManager, Settings);
+            VolumeDisplay = new VolumeBar(DeviceManager, Settings);
         }
 
         public new VolumeDisplaySettings Settings { get; set; }
@@ -79,7 +78,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 
         public override void RenderOverlay(RenderFrame frame, bool keyboardOnly)
         {
-            if ((MainManager.DeviceManager.ActiveKeyboard == null) || (VolumeDisplay == null) || (VolumeDisplay.Ttl < 1))
+            if ((DeviceManager.ActiveKeyboard == null) || (VolumeDisplay == null) || (VolumeDisplay.Ttl < 1))
                 return;
 
             using (var g = Graphics.FromImage(frame.KeyboardBitmap))

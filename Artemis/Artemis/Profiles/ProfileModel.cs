@@ -8,9 +8,9 @@ using Artemis.DeviceProviders;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
-using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -22,14 +22,7 @@ namespace Artemis.Profiles
         public ProfileModel()
         {
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
-            DrawingVisual = new DrawingVisual();
         }
-
-        /// <summary>
-        ///     Indicates whether the profile is actively being rendered
-        /// </summary>
-        [JsonIgnore]
-        public bool IsActive { get; set; }
 
         public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
         public string Name { get; set; }
@@ -38,9 +31,7 @@ namespace Artemis.Profiles
         public string GameName { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-
-        [JsonIgnore]
-        public DrawingVisual DrawingVisual { get; set; }
+        public string LuaScript { get; set; }
 
         public void FixOrder()
         {
@@ -101,22 +92,27 @@ namespace Artemis.Profiles
         /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
+        /// <param name="updateType">The type of layers that are being updated, for reference in LUA</param>
         internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
-            bool preview, bool updateAnimations)
+            bool preview, bool updateAnimations, string updateType)
         {
             var visual = new DrawingVisual();
+            var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
             {
                 // Setup the DrawingVisual's size
                 c.PushClip(new RectangleGeometry(rect));
                 c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, rect);
 
-                // Draw the layers
-                foreach (var layerModel in renderLayers)
-                {
+                // Update the layers
+                foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceUpdate(this, updateType, dataModel, preview);
+
+                // Draw the layers
+                foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                }
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(this, updateType, dataModel, preview, c);
 
                 // Remove the clip
                 c.Pop();
@@ -166,6 +162,33 @@ namespace Artemis.Profiles
                 layer.Properties.Width = target.Width;
                 layer.Properties.Height = target.Height;
             }
+        }
+
+        public void Activate(KeyboardProvider keyboard)
+        {
+            if (!Equals(LuaWrapper.ProfileModel, this))
+                LuaWrapper.SetupLua(this, keyboard);
+        }
+
+        public void Deactivate()
+        {
+            LuaWrapper.Clear();
+        }
+
+        public LayerModel AddLayer(LayerModel afterLayer)
+        {
+            // Create a new layer
+            var layer = LayerModel.CreateLayer();
+
+            if (afterLayer != null)
+                afterLayer.InsertAfter(layer);
+            else
+            {
+                Layers.Add(layer);
+                FixOrder();
+            }
+
+            return layer;
         }
 
         #region Compare

@@ -23,6 +23,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Artemis.Dialogs;
+using Artemis.Styles;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -38,8 +40,8 @@ namespace Artemis.Services
 
             Execute.OnUIThread(() =>
             {
-                window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault(w => w.IsActive) ??
-                         Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                window = Application.Current.Windows.OfType<MetroWindow>()
+                    .FirstOrDefault(w => w.IsActive && w.IsVisible);
             });
 
             return window;
@@ -51,6 +53,20 @@ namespace Artemis.Services
                 return;
 
             Execute.OnUIThread(() => GetActiveWindow().ShowMessageAsync(title, message));
+        }
+
+        public void ShowMarkdownDialog(string title, string markdown)
+        {
+            if (GetActiveWindow() == null)
+                return;
+
+            var dialog = new MarkdownDialog
+            {
+                Markdown = markdown,
+                Title = title
+            };
+
+            Execute.OnUIThread(() => GetActiveWindow().ShowMetroDialogAsync(dialog));
         }
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)

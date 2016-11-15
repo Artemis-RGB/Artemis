@@ -8,9 +8,5 @@ namespace Artemis.Settings
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool Enabled { get; set; }
-
-        [DefaultValue("Default")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public string LastProfile { get; set; }
     }
 }

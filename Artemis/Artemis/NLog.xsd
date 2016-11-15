@@ -531,6 +531,7 @@
           <xs:element name="useDefaultRowHighlightingRules" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="highlight-row" minOccurs="0" maxOccurs="unbounded" type="NLog.Targets.ConsoleRowHighlightingRule" />
           <xs:element name="highlight-word" minOccurs="0" maxOccurs="unbounded" type="NLog.Targets.ConsoleWordHighlightingRule" />
+          <xs:element name="detectConsoleAvailable" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="errorStream" minOccurs="0" maxOccurs="1" type="xs:boolean" />
         </xs:choice>
@@ -557,6 +558,11 @@
         <xs:attribute name="useDefaultRowHighlightingRules" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to use default row highlighting rules.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="detectConsoleAvailable" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Indicates whether to auto-check if the console is available. - Disables console writing if Environment.UserInteractive = False (Windows Service) - Disables console writing if Console Standard Input is not available (Non-Console-App)</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="encoding" type="xs:string">
@@ -670,6 +676,7 @@
           <xs:element name="header" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="footer" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="error" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="detectConsoleAvailable" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
@@ -695,6 +702,11 @@
         <xs:attribute name="error" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to send the log messages to the standard error instead of the standard output.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="detectConsoleAvailable" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Indicates whether to auto-check if the console is available - Disables console writing if Environment.UserInteractive = False (Windows Service) - Disables console writing if Console Standard Input is not available (Non-Console-App)</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="encoding" type="xs:string">

@@ -1,9 +1,10 @@
 ﻿using Artemis.DAL;
-using Artemis.InjectionFactories;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.ViewModels.Abstract;
+using Ninject;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -11,8 +12,8 @@ namespace Artemis.Modules.Games.RocketLeague
     {
         private string _versionText;
 
-        public RocketLeagueViewModel(MainManager main, IProfileEditorVmFactory pFactory, RocketLeagueModel model)
-            : base(main, model, pFactory)
+        public RocketLeagueViewModel(MainManager main, IKernel kernel, [Named("RocketLeagueModel")] GameModel model)
+            : base(main, model, kernel)
         {
             DisplayName = "Rocket League";
             SetVersionText();

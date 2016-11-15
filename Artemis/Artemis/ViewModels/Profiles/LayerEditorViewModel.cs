@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
@@ -205,7 +204,7 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
 
             // If not a keyboard, ignore size and position
-            if (ProposedLayer.LayerType.DrawType != DrawType.Keyboard || !ProposedLayer.LayerType.ShowInEdtor)
+            if ((ProposedLayer.LayerType.DrawType != DrawType.Keyboard) || !ProposedLayer.LayerType.ShowInEdtor)
             {
                 ProposedLayer.Properties.Width = Layer.Properties.Width;
                 ProposedLayer.Properties.Height = Layer.Properties.Height;
@@ -213,7 +212,7 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.Properties.Y = Layer.Properties.Y;
                 ProposedLayer.Properties.Contain = Layer.Properties.Contain;
             }
-            
+
             // Ignore the children, can't just temporarily add them to the proposed layer because
             // that would upset the child layers' relations (sounds like Dr. Phil amirite?)
             var currentObj = Clone(Layer);

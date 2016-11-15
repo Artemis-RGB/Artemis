@@ -10,19 +10,21 @@ namespace Artemis.DeviceProviders.Razer.Utilities
         public static Custom BitmapColorArray(Bitmap b, int height, int width)
         {
             var keyboardGrid = Custom.Create();
-            if (b.Width > width || b.Height > height)
-                b = ImageUtilities.ResizeImage(b, width, height);
-
-            for (var y = 0; y < b.Height; y++)
+            // Resize the bitmap
+            using (b = ImageUtilities.ResizeImage(b, width, height))
             {
+                // Map the bytes to the grid
                 for (var x = 0; x < b.Width; x++)
                 {
-                    var pixel = b.GetPixel(x, y);
-                    keyboardGrid[y, x] = new Color(pixel.R, pixel.G, pixel.B);
+                    for (var y = 0; y < b.Height; y++)
+                    {
+                        var c = b.GetPixel(x, y);
+                        keyboardGrid[y, x] = new Color(c.R, c.G, c.B);
+                    }
                 }
-            }
 
-            return keyboardGrid;
+                return keyboardGrid;
+            }
         }
     }
 }

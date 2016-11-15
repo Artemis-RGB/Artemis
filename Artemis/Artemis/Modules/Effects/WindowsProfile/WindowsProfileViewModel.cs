@@ -1,46 +1,60 @@
 ﻿using System.ComponentModel;
-using Artemis.InjectionFactories;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.ViewModels.Abstract;
 using Artemis.ViewModels.Profiles;
+using Ninject;
+using Ninject.Parameters;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
     // TODO: This effect is a hybrid between a regular effect and a game, may want to clean this up
     public sealed class WindowsProfileViewModel : EffectViewModel
     {
-        public WindowsProfileViewModel(MainManager main, IProfileEditorVmFactory pFactory,
-            ProfilePreviewModel profilePreviewModel, WindowsProfileModel model) : base(main, model)
+        public WindowsProfileViewModel(MainManager main, IKernel kernel, ProfilePreviewModel profilePreviewModel,
+            [Named("WindowsProfileModel")] EffectModel model) : base(main, model)
         {
             DisplayName = "Windows Profile";
-            PFactory = pFactory;
             ProfilePreviewModel = profilePreviewModel;
             EffectSettings = ((WindowsProfileModel) EffectModel).Settings;
-            ProfileEditor = PFactory.CreateProfileEditorVm(main, (WindowsProfileModel) EffectModel,
-                ((WindowsProfileSettings) EffectSettings).LastProfile);
-            ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
+
+            IParameter[] args =
+            {
+                new ConstructorArgument("mainManager", main),
+                new ConstructorArgument("gameModel", (WindowsProfileModel) EffectModel),
+                new ConstructorArgument("lastProfile", ((WindowsProfileSettings) EffectSettings).LastProfile)
+            };
+            ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
             ProfileEditor.PropertyChanged += ProfileUpdater;
-            MainManager.EffectManager.EffectModels.Add(EffectModel);
+
+            EffectModel.Profile = ProfileEditor.SelectedProfile;
+            ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
-
-        public IProfileEditorVmFactory PFactory { get; set; }
         public ProfilePreviewModel ProfilePreviewModel { get; set; }
 
         private void ProfileUpdater(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "SelectedProfile" && IsActive)
+            if ((e.PropertyName != "SelectedProfile") && IsActive)
                 return;
+
             EffectModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
-            if (e.PropertyName != "SelectedProfile" || !ProfileEditor.ProfileViewModel.Activated ||
-                ProfileEditor.ProfileViewModel.SelectedProfile == null)
+            if ((e.PropertyName != "SelectedProfile") || !ProfileEditor.ProfileViewModel.Activated ||
+                (ProfileEditor.ProfileViewModel.SelectedProfile == null))
                 return;
+
             ((WindowsProfileSettings) EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             EffectSettings.Save();
+        }
+
+        public override void SaveSettings()
+        {
+            ProfileEditor.SaveSelectedProfile();
+            base.SaveSettings();
         }
 
         protected override void OnActivate()

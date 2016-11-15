@@ -6,14 +6,14 @@
              xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="300"
-             Width="270">
+             d:DesignHeight="600" d:DesignWidth="300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -89,27 +89,33 @@
                                      Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
                                      HorizontalAlignment="Right" />
 
+        <!-- Screen capturing -->
+        <Label Grid.Row="8" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Screen-Capture FPS:" />
+        <controls:NumericUpDown Grid.Row="8" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+                                HorizontalAlignment="Right" Width="140" Minimum="1" Maximum="60"
+                                Value="{Binding Path=GeneralSettings.ScreenCaptureFPS, Mode=TwoWay}" />
 
         <!-- Logging -->
-        <Label Grid.Row="8" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="9" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Log level:" />
-        <ComboBox Grid.Row="8" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="9" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
-        <Button Grid.Row="9" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
+        <Button Grid.Row="10" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
                 VerticalAlignment="Center" Width="90" HorizontalAlignment="Right"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Buttons -->
-        <Button Grid.Row="10" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+        <Button Grid.Row="11" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
                 VerticalAlignment="Center" HorizontalAlignment="Left" Width="90"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="10" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
+        <Button Grid.Row="11" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="90"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
-        <Grid Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

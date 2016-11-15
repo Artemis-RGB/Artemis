@@ -10,6 +10,7 @@ using Artemis.Utilities;
 using Artemis.Utilities.Converters;
 using Artemis.ViewModels;
 using Caliburn.Micro;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Ninject;
 
@@ -80,6 +81,7 @@ namespace Artemis
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
 
+            // Configure JSON.NET
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -114,7 +116,7 @@ namespace Artemis
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            DisplayRootViewFor<SystemTrayViewModel>();
+            DisplayRootViewFor<ShellViewModel>();
         }
     }
 }

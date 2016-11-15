@@ -1,12 +1,15 @@
 using Artemis.Models.Interfaces;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Effects.WindowsProfile
 {
+    [MoonSharpUserData]
     public class WindowsProfileDataModel : IDataModel
     {
         public WindowsProfileDataModel()
         {
             Spotify = new Spotify();
+            GooglePlayMusic = new GooglePlayMusic();
             Cpu = new CpuDataModel();
             Performance = new PerformanceDataModel();
             CurrentTime = new CurrentTime();
@@ -15,9 +18,11 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public CpuDataModel Cpu { get; set; }
         public PerformanceDataModel Performance { get; set; }
         public Spotify Spotify { get; set; }
+        public GooglePlayMusic GooglePlayMusic { get; set; }
         public CurrentTime CurrentTime { get; set; }
     }
 
+    [MoonSharpUserData]
     public class CurrentTime
     {
         public int Hours24 { get; set; }
@@ -26,6 +31,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Seconds { get; set; }
     }
 
+    [MoonSharpUserData]
     public class CpuDataModel
     {
         public int TotalUsage { get; set; }
@@ -39,11 +45,13 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public int Core8Usage { get; set; }
     }
 
+    [MoonSharpUserData]
     public class PerformanceDataModel
     {
         public int RAMUsage { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Spotify
     {
         public bool Running { get; set; }
@@ -57,4 +65,39 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public bool Playing { get; set; }
         public int SongLength { get; set; }
     }
+
+    [MoonSharpUserData]
+    public class GooglePlayMusic
+    {
+        public bool playing { get; set; }
+        public Song song { get; set; }
+        public Rating rating { get; set; }
+        public Time time { get; set; }
+        public string shuffle { get; set; }
+        public string repeat { get; set; }
+        public int volume { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Song
+    {
+        public string title { get; set; }
+        public string artist { get; set; }
+        public string album { get; set; }
+        public string albumArt { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Rating
+    {
+        public bool liked { get; set; }
+        public bool disliked { get; set; }
+    }
+
+    public class Time
+    {
+        public int current { get; set; }
+        public int total { get; set; }
+    }
+
 }

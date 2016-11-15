@@ -48,7 +48,7 @@ void FArtemis::Tick(float DeltaTime)
 		
 	LastFrameCounter = GFrameCounter;
 
-	// We may be going 120hz, don't spam the device
+	// We may be going 120hz, don't spam the pipe
 	DeltaTimeAccumulator += DeltaTime;
 	if (DeltaTimeAccumulator < FrameTimeMinimum)
 	{
@@ -112,7 +112,7 @@ void FArtemis::Tick(float DeltaTime)
 	{
 		EnvironmentJson->RemoveField("Players");
 	}
-		
+
 	// Update player data
 	// If character not found player must be spectating(?)
 	if (!UTPC->GetUTCharacter()) 
@@ -132,7 +132,8 @@ void FArtemis::Tick(float DeltaTime)
 		// Update HP and armor
 		RootJson->SetStringField("State", "Alive");
 		PlayerJson->SetNumberField("Health", UTPC->GetUTCharacter()->Health);
-		PlayerJson->SetNumberField("Armor", UTPC->GetUTCharacter()->ArmorAmount);
+		// TODO: Crashes the game
+		// PlayerJson->SetNumberField("Armor", UTPC->GetUTCharacter()->GetArmorAmount());
 
 		// Update player powerups data
 		TSharedRef<FJsonObject> InventoryJson(new FJsonObject());
@@ -146,6 +147,7 @@ void FArtemis::Tick(float DeltaTime)
 		InventoryJson->SetBoolField("HasChestArmor", false);
 		InventoryJson->SetBoolField("HasHelmet", false);
 				
+
 		for (TInventoryIterator<> It(UTPC->GetUTCharacter()); It; ++It)
 		{
 			AUTInventory* InventoryItem = (*It);
@@ -200,13 +202,14 @@ void FArtemis::Tick(float DeltaTime)
 			WeaponJson->SetStringField("Name", "None");
 		}
 	}
+
 	// Insert PlayerState JsonReport
 	TSharedRef<FJsonObject> PlayerStateJson(new FJsonObject());
 	PlayerJson->SetObjectField("State", PlayerStateJson);
 	if (UTPC->UTPlayerState) 
 	{
 		UTPC->UTPlayerState->MakeJsonReport(PlayerStateJson);
-	}		
+	}
 
 	FJsonSerializer::Serialize(RootJson, Writer);
 	WritePipe(Buffer);

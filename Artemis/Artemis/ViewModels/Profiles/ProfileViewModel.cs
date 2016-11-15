@@ -12,6 +12,7 @@ using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Lua;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -34,19 +35,99 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _selectedLayer;
         private bool _showAll;
 
-        public ProfileViewModel(DeviceManager deviceManager)
+        public ProfileViewModel(DeviceManager deviceManager, LoopManager loopManager)
         {
             _deviceManager = deviceManager;
 
-            PreviewTimer = new Timer(40);
             ShowAll = false;
 
-            PreviewTimer.Elapsed += InvokeUpdateKeyboardPreview;
+            loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
             deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
 
+        private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
+        {
+            if (!Activated)
+                return;
+
+            if (_blurProgress > 2)
+                _blurProgress = 0;
+            _blurProgress = _blurProgress + 0.025;
+            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
+
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
+            {
+                var preview = new DrawingImage();
+                preview.Freeze();
+                KeyboardPreview = preview;
+                return;
+            }
+
+            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
+            var visual = new DrawingVisual();
+            using (var drawingContext = visual.RenderOpen())
+            {
+                // Setup the DrawingVisual's size
+                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
+                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
+
+                // Get the layers that must be drawn
+                var drawLayers = GetRenderLayers();
+
+                // Draw the layers
+                foreach (var layer in drawLayers)
+                {
+                    layer.Update(null, true, false);
+                    if (layer.LayerType.ShowInEdtor)
+                        layer.Draw(null, drawingContext, true, false);
+                }
+
+                // Get the selection color
+                var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
+                if (accentColor == null)
+                {
+                    var preview = new DrawingImage();
+                    preview.Freeze();
+                    KeyboardPreview = preview;
+                    return;
+                }
+
+                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
+
+                // Draw the selection outline and resize indicator
+                if (SelectedLayer != null && SelectedLayer.MustDraw())
+                {
+                    var layerRect = SelectedLayer.Properties.GetRect();
+                    // Deflate the rect so that the border is drawn on the inside
+                    layerRect.Inflate(-0.2, -0.2);
+
+                    // Draw an outline around the selected layer
+                    drawingContext.DrawRectangle(null, pen, layerRect);
+                    // Draw a resize indicator in the bottom-right
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
+                    drawingContext.DrawLine(pen,
+                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
+                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
+                }
+
+                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(SelectedProfile, "preview", new ProfilePreviewDataModel(),
+                    true, drawingContext);
+
+                // Remove the clip
+                drawingContext.Pop();
+            }
+            var drawnPreview = new DrawingImage(visual.Drawing);
+            drawnPreview.Freeze();
+
+            KeyboardPreview = drawnPreview;
+        }
+
         public ProfileModel SelectedProfile { get; set; }
-        public Timer PreviewTimer { get; set; }
 
         public LayerModel SelectedLayer
         {
@@ -102,92 +183,15 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => KeyboardImage);
         }
 
-        private void InvokeUpdateKeyboardPreview(object sender, ElapsedEventArgs e)
-        {
-            if (_blurProgress > 2)
-                _blurProgress = 0;
-            _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
-
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
-            {
-                var preview = new DrawingImage();
-                preview.Freeze();
-                KeyboardPreview = preview;
-                return;
-            }
-
-
-            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
-            var visual = new DrawingVisual();
-            using (var drawingContext = visual.RenderOpen())
-            {
-                // Setup the DrawingVisual's size
-                drawingContext.PushClip(new RectangleGeometry(keyboardRect));
-                drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
-
-                // Get the layers that must be drawn
-                var drawLayers = GetRenderLayers();
-
-                // Draw the layers
-                foreach (var layer in drawLayers)
-                {
-                    layer.Update(null, true, false);
-                    if (layer.LayerType.ShowInEdtor)
-                        layer.Draw(null, drawingContext, true, false);
-                }
-
-                // Get the selection color
-                var accentColor = ThemeManager.DetectAppStyle(Application.Current)?.Item2?.Resources["AccentColor"];
-                if (accentColor == null)
-                {
-                    var preview = new DrawingImage();
-                    preview.Freeze();
-                    KeyboardPreview = preview;
-                    return;
-                }
-
-                var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
-
-                // Draw the selection outline and resize indicator
-                if (SelectedLayer != null && SelectedLayer.MustDraw())
-                {
-                    var layerRect = SelectedLayer.Properties.GetRect();
-                    // Deflate the rect so that the border is drawn on the inside
-                    layerRect.Inflate(-0.2, -0.2);
-
-                    // Draw an outline around the selected layer
-                    drawingContext.DrawRectangle(null, pen, layerRect);
-                    // Draw a resize indicator in the bottom-right
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 1, layerRect.BottomRight.Y - 0.5),
-                        new Point(layerRect.BottomRight.X - 1.2, layerRect.BottomRight.Y - 0.7));
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 1),
-                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 1.2));
-                    drawingContext.DrawLine(pen,
-                        new Point(layerRect.BottomRight.X - 0.5, layerRect.BottomRight.Y - 0.5),
-                        new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
-                }
-
-                // Remove the clip
-                drawingContext.Pop();
-            }
-            var drawnPreview = new DrawingImage(visual.Drawing);
-            drawnPreview.Freeze();
-            KeyboardPreview = drawnPreview;
-        }
 
         public void Activate()
         {
             Activated = true;
-            PreviewTimer.Start();
         }
 
         public void Deactivate()
         {
             Activated = false;
-            PreviewTimer.Stop();
         }
 
         #region Processing
@@ -203,8 +207,7 @@ namespace Artemis.ViewModels.Profiles
         }
 
         /// <summary>
-        ///     Second handler for clicking, selects a the layer the user clicked on
-        ///     if the used clicked on an empty spot, deselects the current layer
+        ///     Second handler for clicking, selects a the layer the user clicked on.
         /// </summary>
         /// <param name="e"></param>
         public void MouseUpKeyboardPreview(MouseButtonEventArgs e)
@@ -226,7 +229,8 @@ namespace Artemis.ViewModels.Profiles
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
 
-            SelectedLayer = hoverLayer;
+            if (hoverLayer != null)
+                SelectedLayer = hoverLayer;
         }
 
         /// <summary>
@@ -317,17 +321,31 @@ namespace Artemis.ViewModels.Profiles
             // If no setup or reset was done, handle the actual dragging action
             if (_resizing)
             {
-                draggingProps.Width = (int) Math.Round(x - draggingProps.X);
-                draggingProps.Height = (int) Math.Round(y - draggingProps.Y);
-                if (draggingProps.Width < 1)
-                    draggingProps.Width = 1;
-                if (draggingProps.Height < 1)
-                    draggingProps.Height = 1;
+                var newWidth = Math.Round(x - draggingProps.X);
+                var newHeight = Math.Round(y - draggingProps.Y);
+
+                // Ensure the layer doesn't leave the canvas
+                if (newWidth < 1 || draggingProps.X + newWidth <= 0)
+                    newWidth = draggingProps.Width;
+                if (newHeight < 1 || draggingProps.Y + newHeight <= 0)
+                    newHeight = draggingProps.Height;
+
+                draggingProps.Width = newWidth;
+                draggingProps.Height = newHeight;
             }
             else
             {
-                draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
-                draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
+                var newX = Math.Round(x - _draggingLayerOffset.Value.X);
+                var newY = Math.Round(y - _draggingLayerOffset.Value.Y);
+
+                // Ensure the layer doesn't leave the canvas
+                if (newX >= SelectedProfile.Width || newX + draggingProps.Width <= 0)
+                    newX = draggingProps.X;
+                if (newY >= SelectedProfile.Height || newY + draggingProps.Height <= 0)
+                    newY = draggingProps.Y;
+
+                draggingProps.X = newX;
+                draggingProps.Y = newY;
             }
         }
 
@@ -338,7 +356,7 @@ namespace Artemis.ViewModels.Profiles
             if (ShowAll)
                 return SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
 
-            if (SelectedLayer == null)
+            if (SelectedLayer == null || !SelectedLayer.Enabled)
                 return new EditableList<LayerModel>();
 
             if (SelectedLayer.LayerType is FolderType)
@@ -352,21 +370,17 @@ namespace Artemis.ViewModels.Profiles
 
         private List<LayerModel> GetLayers()
         {
+            if (ShowAll)
+                return SelectedProfile.GetLayers();
             if (SelectedLayer == null)
                 return new List<LayerModel>();
 
             lock (SelectedLayer)
             {
                 // Get the layers that must be drawn
-                List<LayerModel> drawLayers;
-                if (ShowAll)
-                    drawLayers = SelectedProfile.GetLayers();
-                else if (SelectedLayer.LayerType is FolderType)
-                    drawLayers = SelectedLayer.GetLayers().ToList();
-                else
-                    drawLayers = new List<LayerModel> {SelectedLayer};
-
-                return drawLayers;
+                if (SelectedLayer.LayerType is FolderType)
+                    return SelectedLayer.GetLayers().ToList();
+                return new List<LayerModel> {SelectedLayer};
             }
         }
 
