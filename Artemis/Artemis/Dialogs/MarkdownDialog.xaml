@@ -47,7 +47,7 @@
                     MinWidth="80"
                     Margin="0 0 5 0"
                     Content="Alrighty, let's go!"
-                    Style="{DynamicResource AccentedDialogSquareButton}" />
+                    Style="{DynamicResource AccentedDialogSquareButton}" Click="PART_AffirmativeButton_Click" />
         </StackPanel>
     </Grid>
 </dialogs:CustomDialog>
