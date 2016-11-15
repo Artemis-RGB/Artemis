@@ -3,16 +3,18 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
+using Artemis.DAL;
 using Artemis.DeviceProviders.CoolerMaster.Utilities;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
+using Artemis.Settings;
 using Artemis.Utilities;
 
 namespace Artemis.DeviceProviders.CoolerMaster
 {
     public class MasterkeysProL : KeyboardProvider
     {
-        private bool _hasControl;
+        private GeneralSettings _generalSettings;
 
         public MasterkeysProL()
         {
@@ -27,16 +29,13 @@ namespace Artemis.DeviceProviders.CoolerMaster
             Width = 22;
 
             PreviewSettings = new PreviewSettings(670, 189, new Thickness(-2, -5, 0, 0), Resources.masterkeys_pro_l);
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
         public override void Disable()
         {
-            if (_hasControl)
-            {
-                CmSdk.EnableLedControl(false);
-                Thread.Sleep(500);
-            }
-            _hasControl = false;
+            CmSdk.EnableLedControl(false);
+            Thread.Sleep(500);
         }
 
         public override bool CanEnable()
@@ -50,8 +49,6 @@ namespace Artemis.DeviceProviders.CoolerMaster
         public override void Enable()
         {
             CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
-
-            _hasControl = true;
             CmSdk.EnableLedControl(true);
         }
 
@@ -80,7 +77,15 @@ namespace Artemis.DeviceProviders.CoolerMaster
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            switch (_generalSettings.Layout)
+            {
+                case "Qwerty":
+                    return KeyMap.QwertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                case "Qwertz":
+                    return KeyMap.QwertzLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+                default:
+                    return KeyMap.AzertyLayout.FirstOrDefault(k => k.KeyCode == keyCode);
+            }
         }
     }
 }

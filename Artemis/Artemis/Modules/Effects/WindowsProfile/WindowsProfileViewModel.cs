@@ -27,6 +27,9 @@ namespace Artemis.Modules.Effects.WindowsProfile
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
             ProfileEditor.PropertyChanged += ProfileUpdater;
+
+            EffectModel.Profile = ProfileEditor.SelectedProfile;
+            ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
@@ -36,6 +39,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         {
             if ((e.PropertyName != "SelectedProfile") && IsActive)
                 return;
+
             EffectModel.Profile = ProfileEditor.SelectedProfile;
             ProfilePreviewModel.Profile = ProfileEditor.SelectedProfile;
 
@@ -45,6 +49,12 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
             ((WindowsProfileSettings) EffectSettings).LastProfile = ProfileEditor.ProfileViewModel.SelectedProfile.Name;
             EffectSettings.Save();
+        }
+
+        public override void SaveSettings()
+        {
+            ProfileEditor.SaveSelectedProfile();
+            base.SaveSettings();
         }
 
         protected override void OnActivate()

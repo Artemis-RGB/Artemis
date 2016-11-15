@@ -172,8 +172,7 @@ namespace Artemis.Profiles
 
         public void Deactivate()
         {
-            if (Equals(LuaWrapper.ProfileModel, this))
-                LuaWrapper.Clear();
+            LuaWrapper.Clear();
         }
 
         public LayerModel AddLayer(LayerModel afterLayer)

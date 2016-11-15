@@ -79,7 +79,7 @@ namespace Artemis.ViewModels.Abstract
                 MainManager.EffectManager.ChangeEffect(EffectModel, MainManager.LoopManager);
         }
 
-        public void SaveSettings()
+        public virtual void SaveSettings()
         {
             EffectSettings?.Save();
             if (!EffectEnabled)

@@ -55,7 +55,7 @@ namespace Artemis.ViewModels.Profiles
             _blurProgress = _blurProgress + 0.025;
             BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
 
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || (!ShowAll && SelectedLayer == null))
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
             {
                 var preview = new DrawingImage();
                 preview.Freeze();
@@ -321,17 +321,31 @@ namespace Artemis.ViewModels.Profiles
             // If no setup or reset was done, handle the actual dragging action
             if (_resizing)
             {
-                draggingProps.Width = (int) Math.Round(x - draggingProps.X);
-                draggingProps.Height = (int) Math.Round(y - draggingProps.Y);
-                if (draggingProps.Width < 1)
-                    draggingProps.Width = 1;
-                if (draggingProps.Height < 1)
-                    draggingProps.Height = 1;
+                var newWidth = Math.Round(x - draggingProps.X);
+                var newHeight = Math.Round(y - draggingProps.Y);
+
+                // Ensure the layer doesn't leave the canvas
+                if (newWidth < 1 || draggingProps.X + newWidth <= 0)
+                    newWidth = draggingProps.Width;
+                if (newHeight < 1 || draggingProps.Y + newHeight <= 0)
+                    newHeight = draggingProps.Height;
+
+                draggingProps.Width = newWidth;
+                draggingProps.Height = newHeight;
             }
             else
             {
-                draggingProps.X = (int) Math.Round(x - _draggingLayerOffset.Value.X);
-                draggingProps.Y = (int) Math.Round(y - _draggingLayerOffset.Value.Y);
+                var newX = Math.Round(x - _draggingLayerOffset.Value.X);
+                var newY = Math.Round(y - _draggingLayerOffset.Value.Y);
+
+                // Ensure the layer doesn't leave the canvas
+                if (newX >= SelectedProfile.Width || newX + draggingProps.Width <= 0)
+                    newX = draggingProps.X;
+                if (newY >= SelectedProfile.Height || newY + draggingProps.Height <= 0)
+                    newY = draggingProps.Y;
+
+                draggingProps.X = newX;
+                draggingProps.Y = newY;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Timers;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Effects.ProfilePreview;
@@ -30,6 +31,8 @@ namespace Artemis.ViewModels.Abstract
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
             ProfileEditor.PropertyChanged += ProfileUpdater;
+
+            GameModel.Profile = ProfileEditor.SelectedProfile;
         }
 
         [Inject]
@@ -67,9 +70,11 @@ namespace Artemis.ViewModels.Abstract
         public void SaveSettings()
         {
             GameSettings?.Save();
+            ProfileEditor.SaveSelectedProfile();
+
             if (!GameEnabled)
                 return;
-
+            
             // Restart the game if it's currently running to apply settings.
             MainManager.EffectManager.ChangeEffect(GameModel, MainManager.LoopManager);
         }
