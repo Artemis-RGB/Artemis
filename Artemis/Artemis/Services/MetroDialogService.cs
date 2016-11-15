@@ -60,7 +60,7 @@ namespace Artemis.Services
             if (GetActiveWindow() == null)
                 return;
 
-            var dialog = new MarkdownDialog
+            var dialog = new MarkdownDialog(GetActiveWindow())
             {
                 Markdown = markdown,
                 Title = title
