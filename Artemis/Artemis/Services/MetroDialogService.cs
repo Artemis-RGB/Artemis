@@ -24,7 +24,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Dialogs;
-using Artemis.Styles;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -57,28 +56,30 @@ namespace Artemis.Services
 
         public void ShowMarkdownDialog(string title, string markdown)
         {
-            if (GetActiveWindow() == null)
+            var window = GetActiveWindow();
+            if (window == null)
                 return;
 
-            var dialog = new MarkdownDialog(GetActiveWindow())
+            var dialog = new MarkdownDialog(window)
             {
                 Markdown = markdown,
                 Title = title
             };
 
-            Execute.OnUIThread(() => GetActiveWindow().ShowMetroDialogAsync(dialog));
+            window.Dispatcher.Invoke(() => window.ShowMetroDialogAsync(dialog));
         }
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)
         {
-            if (GetActiveWindow() == null)
+            var window = GetActiveWindow();
+            if (window == null)
                 return null;
 
             var metroDialogSettings = new MetroDialogSettings {AffirmativeButtonText = "Yes", NegativeButtonText = "No"};
-            var result =
-                await
-                    GetActiveWindow()
-                        .ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings);
+            var result = await window.Dispatcher.Invoke(() =>
+                window.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative,
+                    metroDialogSettings));
+
             switch (result)
             {
                 case MessageDialogResult.Negative:
@@ -92,10 +93,8 @@ namespace Artemis.Services
 
         public override Task<string> ShowInputDialog(string title, string message, MetroDialogSettings settings = null)
         {
-            if (GetActiveWindow() == null)
-                return null;
-
-            return GetActiveWindow().ShowInputAsync(title, message, settings);
+            var window = GetActiveWindow();
+            return window?.Dispatcher.Invoke(() => window.ShowInputAsync(title, message, settings));
         }
 
         public override bool ShowOpenDialog(out string path, string defaultExt, string filter, string initialDir = null)
@@ -132,15 +131,14 @@ namespace Artemis.Services
 
             path = lPath;
 
-            return res.Value;
+            return res != null && res.Value;
         }
 
         public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false,
             MetroDialogSettings settings = null)
         {
-            var activeWindow = GetActiveWindow();
-            return activeWindow?.Dispatcher.Invoke(
-                () => activeWindow.ShowProgressAsync(title, message, isCancelable, settings));
+            var window = GetActiveWindow();
+            return window?.Dispatcher.Invoke(() => window.ShowProgressAsync(title, message, isCancelable, settings));
         }
     }
 }
