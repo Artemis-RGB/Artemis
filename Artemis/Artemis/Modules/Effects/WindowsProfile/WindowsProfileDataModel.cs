@@ -13,6 +13,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             Cpu = new CpuDataModel();
             Performance = new PerformanceDataModel();
             CurrentTime = new CurrentTime();
+            Keyboard = new KbDataModel();
         }
 
         public CpuDataModel Cpu { get; set; }
@@ -20,6 +21,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public Spotify Spotify { get; set; }
         public GooglePlayMusic GooglePlayMusic { get; set; }
         public CurrentTime CurrentTime { get; set; }
+        public KbDataModel Keyboard { get; set; }
     }
 
     [MoonSharpUserData]
@@ -94,10 +96,18 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public bool disliked { get; set; }
     }
 
+    [MoonSharpUserData]
     public class Time
     {
         public int current { get; set; }
         public int total { get; set; }
     }
 
+    [MoonSharpUserData]
+    public class KbDataModel
+    {
+        public bool NumLock { get; set; }
+        public bool CapsLock { get; set; }
+        public bool ScrollLock { get; set; }
+    }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DAL;
@@ -50,6 +51,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             UpdateCpu(dataModel);
             UpdateMusicPlayers(dataModel);
             UpdateDay(dataModel);
+            UpdateKeyStates(dataModel);
         }
 
         #region Current Time
@@ -64,7 +66,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         }
 
         #endregion
-
+        
         #region CPU
 
         private void SetupCpu()
@@ -230,6 +232,21 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 return;
 
             dataModel.GooglePlayMusic = JsonConvert.DeserializeObject<GooglePlayMusic>(File.ReadAllText(json));
+        }
+
+        #endregion
+
+        #region System
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true,
+             CallingConvention = CallingConvention.Winapi)]
+        public static extern short GetKeyState(int keyCode);
+
+        private void UpdateKeyStates(WindowsProfileDataModel dataModel)
+        {
+            dataModel.Keyboard.NumLock = ((ushort)GetKeyState(0x90) & 0xffff) != 0;
+            dataModel.Keyboard.CapsLock = ((ushort)GetKeyState(0x14) & 0xffff) != 0;
+            dataModel.Keyboard.ScrollLock = ((ushort)GetKeyState(0x91) & 0xffff) != 0;
         }
 
         #endregion
