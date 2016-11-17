@@ -100,28 +100,30 @@ namespace Artemis.DeviceProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            var image = ImageUtilities.ResizeImage(bitmap, Width, Height);
-
-            // For STRAFE, stretch the image on row 2.
-            if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
+            using (var image = ImageUtilities.ResizeImage(bitmap, Width, Height))
             {
-                using (var strafeBitmap = new Bitmap(22, 8))
+                // For STRAFE, stretch the image on row 2.
+                if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
                 {
-                    using (var g = Graphics.FromImage(strafeBitmap))
+                    using (var strafeBitmap = new Bitmap(22, 8))
                     {
-                        g.DrawImage(image, new Point(0, 0));
-                        g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7), GraphicsUnit.Pixel);
-                    }
+                        using (var g = Graphics.FromImage(strafeBitmap))
+                        {
+                            g.DrawImage(image, new Point(0, 0));
+                            g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7),
+                                GraphicsUnit.Pixel);
 
-                    image.Dispose();
-                    image = strafeBitmap;
+                            _keyboardBrush.Image = strafeBitmap;
+                            _keyboard.Update();
+                        }
+                    }
+                }
+                else
+                {
+                    _keyboardBrush.Image = image;
+                    _keyboard.Update();
                 }
             }
-
-            _keyboardBrush.Image = image;
-            _keyboard.Update();
-
-            image.Dispose();
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
@@ -144,7 +146,7 @@ namespace Artemis.DeviceProviders.Corsair
                 return null;
 
             var center = cueLed.LedRectangle.GetCenter();
-            return new KeyMatch(keyCode, (int) (center.X*widthMultiplier),(int) (center.Y*heightMultiplier));
+            return new KeyMatch(keyCode, (int) (center.X*widthMultiplier), (int) (center.Y*heightMultiplier));
         }
     }
 }
