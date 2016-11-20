@@ -10,14 +10,16 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
+using Artemis.ViewModels;
 using Microsoft.Win32;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     public class OverwatchModel : GameModel
     {
-        private readonly PipeServer _pipeServer;
+        private readonly DebugViewModel _debugViewModel;
         private readonly MetroDialogService _dialogService;
+        private readonly PipeServer _pipeServer;
         private DateTime _characterChange;
         private string _lastMessage;
         // Using sticky values on these since they can cause flickering
@@ -27,11 +29,13 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
-        public OverwatchModel(DeviceManager deviceManager, PipeServer pipeServer, MetroDialogService dialogService)
+        public OverwatchModel(DeviceManager deviceManager, PipeServer pipeServer, MetroDialogService dialogService,
+            DebugViewModel debugViewModel)
             : base(deviceManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
         {
             _pipeServer = pipeServer;
             _dialogService = dialogService;
+            _debugViewModel = debugViewModel;
             Name = "Overwatch";
             ProcessName = "Overwatch";
             Scale = 4;
@@ -70,7 +74,9 @@ namespace Artemis.Modules.Games.Overwatch
                 new CharacterColor {Character = OverwatchCharacter.Lúcio, Color = Color.FromRgb(34, 142, 2)},
                 new CharacterColor {Character = OverwatchCharacter.Mercy, Color = Color.FromRgb(243, 226, 106)},
                 new CharacterColor {Character = OverwatchCharacter.Symmetra, Color = Color.FromRgb(46, 116, 148)},
-                new CharacterColor {Character = OverwatchCharacter.Zenyatta, Color = Color.FromRgb(248, 218, 26)}
+                new CharacterColor {Character = OverwatchCharacter.Zenyatta, Color = Color.FromRgb(248, 218, 26)},
+                new CharacterColor {Character = OverwatchCharacter.Ana, Color = Color.FromRgb(16, 36, 87)},
+                new CharacterColor {Character = OverwatchCharacter.Sombra, Color = Color.FromRgb(20, 5, 101)}
             };
         }
 
@@ -127,8 +133,7 @@ namespace Artemis.Modules.Games.Overwatch
             if (colors == null)
                 return;
 
-            // TODO: Get the debug viewmodel and update the color array
-            //_events.PublishOnUIThread(new RazerColorArrayChanged(colors));
+            _debugViewModel.UpdateRazerDisplay(colors);
 
             // Determine general game state
             ParseGameSate(gameDataModel, colors);

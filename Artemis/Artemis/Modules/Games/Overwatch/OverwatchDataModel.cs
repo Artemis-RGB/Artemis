@@ -46,6 +46,8 @@ namespace Artemis.Modules.Games.Overwatch
         Lúcio,
         Mercy,
         Symmetra,
-        Zenyatta
+        Zenyatta,
+        Ana,
+        Sombra
     }
 }
