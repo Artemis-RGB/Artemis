@@ -19,7 +19,7 @@ namespace Artemis.Profiles.Layers.Models
         public LayerModel()
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
-
+            TweenModel = new TweenModel(this, 200);
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
                 GifImage = new GifImage(model.GifFile);
@@ -27,6 +27,8 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
+        [JsonIgnore]
+        public TweenModel TweenModel { get; set; }
 
         /// <summary>
         ///     Checks whether this layers conditions are met.
@@ -51,6 +53,8 @@ namespace Artemis.Profiles.Layers.Models
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
+            TweenModel.Update();
+            
             LastRender = DateTime.Now;
         }
 
@@ -220,7 +224,14 @@ namespace Artemis.Profiles.Layers.Models
 
         public Rect LayerRect(int scale = 4)
         {
-            return new Rect(X* scale, Y* scale, Width*scale, Height*scale);
+            var width = Width;
+            var height = Height;
+            if (width < 0)
+                width = 0;
+            if (height < 0)
+                height = 0;
+
+            return new Rect(X * scale, Y * scale, width * scale, height * scale);
         }
 
         /// <summary>
