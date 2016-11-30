@@ -7,17 +7,17 @@ namespace Artemis.Profiles.Layers.Conditions
 {
     public class EventCondition : ILayerCondition
     {
-        public bool ConditionsMet(LayerModel layer, IDataModel dataModel)
+        public bool ConditionsMet(LayerModel layerModel, IDataModel dataModel)
         {
-            lock (layer.Properties.Conditions)
+            lock (layerModel.Properties.Conditions)
             {
-                var conditionsMet = layer.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
-                layer.EventProperties.Update(layer, conditionsMet);
+                var conditionsMet = layerModel.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+                layerModel.EventProperties.Update(layerModel, conditionsMet);
 
-                if (conditionsMet && layer.EventProperties.CanTrigger)
-                    layer.EventProperties.TriggerEvent(layer);
+                if (conditionsMet && layerModel.EventProperties.CanTrigger)
+                    layerModel.EventProperties.TriggerEvent(layerModel);
 
-                return layer.EventProperties.MustDraw;
+                return layerModel.EventProperties.MustDraw;
             }
         }
     }

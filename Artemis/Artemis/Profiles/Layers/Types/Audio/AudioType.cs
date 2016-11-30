@@ -72,7 +72,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
             lock (SpectrumData)
             {
@@ -84,10 +84,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
                     var oldX = audioLayer.Properties.X;
                     var oldY = audioLayer.Properties.Y;
 
-                    audioLayer.Properties.Width = layer.Properties.Width;
-                    audioLayer.Properties.Height = layer.Properties.Height;
-                    audioLayer.Properties.X = layer.Properties.X;
-                    audioLayer.Properties.Y = layer.Properties.Y;
+                    audioLayer.Properties.Width = layerModel.Properties.Width;
+                    audioLayer.Properties.Height = layerModel.Properties.Height;
+                    audioLayer.Properties.X = layerModel.Properties.X;
+                    audioLayer.Properties.Y = layerModel.Properties.Y;
                     audioLayer.LayerType.Draw(audioLayer, c);
 
                     audioLayer.Properties.Width = oldWidth;

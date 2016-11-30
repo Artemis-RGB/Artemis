@@ -71,14 +71,14 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
                 (BitmapSource.Create(width, height, 96, 96, ScreenCaptureManager.LastCapturePixelFormat, null, _lastData, stride), new Rect(0, 0, width, height)));
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            Rect rect = new Rect(layer.Properties.X * 4,
-                                 layer.Properties.Y * 4,
-                                 layer.Properties.Width * 4,
-                                 layer.Properties.Height * 4);
+            Rect rect = new Rect(layerModel.Properties.X * 4,
+                                 layerModel.Properties.Y * 4,
+                                 layerModel.Properties.Width * 4,
+                                 layerModel.Properties.Height * 4);
 
-            c.DrawRectangle(((AmbientLightPropertiesModel)layer.Properties).AmbientLightBrush, null, rect);
+            c.DrawRectangle(((AmbientLightPropertiesModel)layerModel.Properties).AmbientLightBrush, null, rect);
         }
 
         public ImageSource DrawThumbnail(LayerModel layer)

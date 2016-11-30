@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
@@ -38,9 +37,9 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// <summary>
         ///     Draws the layer
         /// </summary>
-        /// <param name="layer">The layer to draw</param>
+        /// <param name="layerModel">The layer to draw</param>
         /// <param name="c">The drawing context to draw with</param>
-        void Draw(LayerModel layer, DrawingContext c);
+        void Draw(LayerModel layerModel, DrawingContext c);
 
         /// <summary>
         ///     Updates the provided layer layerModel according to this type
@@ -61,7 +60,8 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// </summary>
         /// <param name="layerEditorViewModel">The layer editor VM this type resides in</param>
         /// <param name="layerPropertiesViewModel">The current viewmodel</param>
-        LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel, LayerPropertiesViewModel layerPropertiesViewModel);
+        LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel);
     }
 
     public enum DrawType

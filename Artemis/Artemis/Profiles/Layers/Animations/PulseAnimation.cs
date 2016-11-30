@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Media;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -8,16 +7,16 @@ namespace Artemis.Profiles.Layers.Animations
 {
     public class PulseAnimation : ILayerAnimation
     {
-        public string Name { get; } = "Pulse";
+        public string Name => "Pulse";
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
             // TODO: Generic implementation
             // Reset animation progress if layer wasn't drawn for 100ms
             if ((new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - layerModel.LastRender) && updateAnimations)
-                layerModel.Properties.AnimationProgress = 0;
+                layerModel.AnimationProgress = 0;
 
-            var progress = layerModel.Properties.AnimationProgress;
+            var progress = layerModel.AnimationProgress;
 
             if (MustExpire(layerModel))
                 progress = 0;
@@ -25,32 +24,31 @@ namespace Artemis.Profiles.Layers.Animations
 
             // If not previewing, store the animation progress in the actual model for the next frame
             if (updateAnimations)
-                layerModel.Properties.AnimationProgress = progress;
+                layerModel.AnimationProgress = progress;
         }
 
-        public void Draw(LayerPropertiesModel props, LayerPropertiesModel applied, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            if (applied.Brush == null)
+            if (layerModel.Brush == null)
                 return;
 
-            const int scale = 4;
             // Set up variables for this frame
-            var rect = applied.Contain
-                ? new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale)
-                : new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
+            var rect = layerModel.Properties.Contain
+                ? layerModel.LayerRect()
+                : layerModel.Properties.PropertiesRect();
 
-            var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);
+            var clip = layerModel.LayerRect();
 
             // Can't meddle with the original brush because it's frozen.
-            var brush = applied.Brush.Clone();
-            brush.Opacity = (Math.Sin(props.AnimationProgress*Math.PI) + 1)*(props.Opacity/2);
-            applied.Brush = brush;
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = (Math.Sin(layerModel.AnimationProgress*Math.PI) + 1)*(layerModel.Opacity/2);
+            layerModel.Brush = brush;
 
             c.PushClip(new RectangleGeometry(clip));
-            c.DrawRectangle(applied.Brush, null, rect);
+            c.DrawRectangle(layerModel.Brush, null, rect);
             c.Pop();
         }
 
-        public bool MustExpire(LayerModel layer) => layer.Properties.AnimationProgress > 2;
+        public bool MustExpire(LayerModel layer) => layer.AnimationProgress > 2;
     }
 }

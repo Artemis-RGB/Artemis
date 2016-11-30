@@ -19,8 +19,9 @@ namespace Artemis.Profiles.Lua
         public LuaLayerWrapper(LayerModel layerModel)
         {
             _layerModel = layerModel;
+            SavedProperties = new LuaLayerProperties(layerModel);
 
-            // Triger an update to fill up the AppliedProperties
+            // Triger an update to fill up the Properties
             _layerModel.Update(new ProfilePreviewDataModel(), true, false);
         }
 
@@ -63,73 +64,120 @@ namespace Artemis.Profiles.Lua
 
         #endregion
 
-        #region Advanced layer properties
+        #region Render layer properties
 
         public double X
         {
-            get { return _layerModel.AppliedProperties.X; }
-            set { _layerModel.AppliedProperties.X = value; }
+            get { return _layerModel.X; }
+            set { _layerModel.X = value; }
         }
 
         public double Y
         {
-            get { return _layerModel.AppliedProperties.Y; }
-            set { _layerModel.AppliedProperties.Y = value; }
+            get { return _layerModel.Y; }
+            set { _layerModel.Y = value; }
         }
 
         public double Width
         {
-            get { return _layerModel.AppliedProperties.Width; }
-            set { _layerModel.AppliedProperties.Width = value; }
+            get { return _layerModel.Width; }
+            set { _layerModel.Width = value; }
         }
 
         public double Height
         {
-            get { return _layerModel.AppliedProperties.Height; }
-            set { _layerModel.AppliedProperties.Height = value; }
-        }
-
-        public bool Contain
-        {
-            get { return _layerModel.AppliedProperties.Contain; }
-            set { _layerModel.AppliedProperties.Contain = value; }
+            get { return _layerModel.Height; }
+            set { _layerModel.Height = value; }
         }
 
         public double Opacity
         {
-            get { return _layerModel.AppliedProperties.Opacity; }
-            set { _layerModel.AppliedProperties.Opacity = value; }
-        }
-
-        public double AnimationSpeed
-        {
-            get { return _layerModel.AppliedProperties.AnimationSpeed; }
-            set { _layerModel.AppliedProperties.AnimationSpeed = value; }
+            get { return _layerModel.Opacity; }
+            set { _layerModel.Opacity = value; }
         }
 
         public double AnimationProgress
         {
-            get { return _layerModel.AppliedProperties.AnimationProgress; }
-            set { _layerModel.AppliedProperties.AnimationProgress = value; }
+            get { return _layerModel.AnimationProgress; }
+            set { _layerModel.AnimationProgress = value; }
         }
 
-        public string BrushType => _layerModel.AppliedProperties.Brush?.GetType().Name;
+        #endregion
+
+        #region Advanced layer properties
+
+        public LuaLayerProperties SavedProperties { get; set; }
+
+        public string BrushType => _layerModel.Properties.Brush?.GetType().Name;
 
         public LuaBrush Brush
         {
             get
             {
-                if (_layerModel.AppliedProperties.Brush is SolidColorBrush)
-                    return new LuaSolidColorBrush(_layerModel.AppliedProperties.Brush);
-                if (_layerModel.AppliedProperties.Brush is LinearGradientBrush)
-                    return new LuaLinearGradientBrush(_layerModel.AppliedProperties.Brush);
-                if (_layerModel.AppliedProperties.Brush is RadialGradientBrush)
-                    return new LuaRadialGradientBrush(_layerModel.AppliedProperties.Brush);
+                if (_layerModel.Properties.Brush is SolidColorBrush)
+                    return new LuaSolidColorBrush(_layerModel.Properties.Brush);
+                if (_layerModel.Properties.Brush is LinearGradientBrush)
+                    return new LuaLinearGradientBrush(_layerModel.Properties.Brush);
+                if (_layerModel.Properties.Brush is RadialGradientBrush)
+                    return new LuaRadialGradientBrush(_layerModel.Properties.Brush);
                 return null;
             }
-            set { _layerModel.AppliedProperties.Brush = value?.Brush; }
+            set { _layerModel.Properties.Brush = value?.Brush; }
         }
 
         #endregion
+    }
+
+    [MoonSharpUserData]
+    public class LuaLayerProperties
+    {
+        private readonly LayerModel _layerModel;
+
+        public LuaLayerProperties(LayerModel layerModel)
+        {
+            _layerModel = layerModel;
+        }
+
+        public double X
+        {
+            get { return _layerModel.Properties.X; }
+            set { _layerModel.Properties.X = value; }
+        }
+
+        public double Y
+        {
+            get { return _layerModel.Properties.Y; }
+            set { _layerModel.Properties.Y = value; }
+        }
+
+        public double Width
+        {
+            get { return _layerModel.Properties.Width; }
+            set { _layerModel.Properties.Width = value; }
+        }
+
+        public double Height
+        {
+            get { return _layerModel.Properties.Height; }
+            set { _layerModel.Properties.Height = value; }
+        }
+
+        public bool Contain
+        {
+            get { return _layerModel.Properties.Contain; }
+            set { _layerModel.Properties.Contain = value; }
+        }
+
+        public double Opacity
+        {
+            get { return _layerModel.Properties.Opacity; }
+            set { _layerModel.Properties.Opacity = value; }
+        }
+
+        public double AnimationSpeed
+        {
+            get { return _layerModel.Properties.AnimationSpeed; }
+            set { _layerModel.Properties.AnimationSpeed = value; }
+        }
     }
 }

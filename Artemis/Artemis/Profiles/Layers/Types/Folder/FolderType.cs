@@ -29,7 +29,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
         }
 

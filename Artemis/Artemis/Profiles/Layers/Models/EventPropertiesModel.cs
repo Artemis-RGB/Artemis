@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -19,6 +17,8 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore]
         public bool MustDraw { get; set; }
+
+        public DateTime EventCanTriggerTime { get; set; }
 
         /// <summary>
         ///     Resets the event's properties and triggers it
@@ -42,10 +42,8 @@ namespace Artemis.Profiles.Layers.Models
             CanTrigger = false;
             MustDraw = true;
             EventTriggerTime = DateTime.Now;
-            layer.Properties.AnimationProgress = 0.0;
+            layer.AnimationProgress = 0.0;
         }
-
-        public DateTime EventCanTriggerTime { get; set; }
 
 
         /// <summary>

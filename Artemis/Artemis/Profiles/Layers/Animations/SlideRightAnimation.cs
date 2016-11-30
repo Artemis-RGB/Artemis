@@ -7,45 +7,46 @@ namespace Artemis.Profiles.Layers.Animations
 {
     public class SlideRightAnimation : ILayerAnimation
     {
-        public string Name { get; } = "Slide right";
+        public string Name => "Slide right";
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
-            var progress = layerModel.Properties.AnimationProgress;
+            var progress = layerModel.AnimationProgress;
             if (MustExpire(layerModel))
                 progress = 0;
             progress = progress + layerModel.Properties.AnimationSpeed*2;
 
             // If not previewing, store the animation progress in the actual model for the next frame
             if (updateAnimations)
-                layerModel.Properties.AnimationProgress = progress;
+                layerModel.AnimationProgress = progress;
         }
 
-        public void Draw(LayerPropertiesModel props, LayerPropertiesModel applied, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            if (applied.Brush == null)
+            if (layerModel.Brush == null)
                 return;
 
-            const int scale = 4;
             // Set up variables for this frame
-            var rect = applied.Contain
-                ? new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale)
-                : new Rect(props.X*scale, props.Y*scale, props.Width*scale, props.Height*scale);
+            var rect = layerModel.Properties.Contain
+                ? layerModel.LayerRect()
+                : layerModel.Properties.PropertiesRect();
 
-            var s1 = new Rect(new Point(rect.X + props.AnimationProgress, rect.Y), new Size(rect.Width, rect.Height));
-            var s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), new Size(rect.Width + .5, rect.Height));
+            var s1 = new Rect(new Point(rect.X + layerModel.AnimationProgress, rect.Y), 
+                new Size(rect.Width, rect.Height));
+            var s2 = new Rect(new Point(s1.X - rect.Width, rect.Y), 
+                new Size(rect.Width + .5, rect.Height));
 
-            var clip = new Rect(applied.X*scale, applied.Y*scale, applied.Width*scale, applied.Height*scale);
+            var clip = layerModel.LayerRect();
 
             c.PushClip(new RectangleGeometry(clip));
-            c.DrawRectangle(applied.Brush, null, s1);
-            c.DrawRectangle(applied.Brush, null, s2);
+            c.DrawRectangle(layerModel.Brush, null, s1);
+            c.DrawRectangle(layerModel.Brush, null, s2);
             c.Pop();
         }
 
         public bool MustExpire(LayerModel layer)
         {
-            return layer.Properties.AnimationProgress + layer.Properties.AnimationSpeed*2 >= layer.Properties.Width*4;
+            return layer.AnimationProgress + layer.Properties.AnimationSpeed*2 >= layer.Properties.Width*4;
         }
     }
 }

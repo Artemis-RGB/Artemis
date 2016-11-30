@@ -37,15 +37,15 @@ namespace Artemis.Profiles.Layers.Models
         /// </summary>
         public LayerPropertyOptions LayerPropertyOptions { get; set; }
 
-        internal void ApplyProperty(IDataModel dataModel, LayerPropertiesModel properties)
+        internal void ApplyProperty(IDataModel dataModel, LayerModel layerModel)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
-                ApplyPercentageOf(dataModel, properties, PercentageSource);
+                ApplyPercentageOf(dataModel, layerModel, PercentageSource);
             if (LayerPropertyType == LayerPropertyType.PercentageOfProperty)
-                ApplyPercentageOfProperty(dataModel, properties);
+                ApplyPercentageOfProperty(dataModel, layerModel);
         }
 
-        private void ApplyPercentageOf(IDataModel dataModel, LayerPropertiesModel properties, float src)
+        private void ApplyPercentageOf(IDataModel dataModel, LayerModel layerModel, float src)
         {
             if (GameProperty == null)
                 return;
@@ -54,61 +54,61 @@ namespace Artemis.Profiles.Layers.Models
             var percentage = gameProperty/src;
 
             if (LayerProperty == "Width")
-                ApplyWidth(properties, percentage);
+                ApplyWidth(layerModel, percentage);
             else if (LayerProperty == "Height")
-                ApplyHeight(properties, percentage);
+                ApplyHeight(layerModel, percentage);
             else if (LayerProperty == "Opacity")
-                ApplyOpacity(properties, percentage);
+                ApplyOpacity(layerModel, percentage);
         }
 
-        private void ApplyWidth(LayerPropertiesModel properties, float percentage)
+        private void ApplyWidth(LayerModel layerModel, float percentage)
         {
-            var newWidth = Math.Round(percentage*(float) properties.Width, 2);
-            var difference = properties.Width - newWidth;
+            var newWidth = Math.Round(percentage*(float) layerModel.Width, 2);
+            var difference = layerModel.Width - newWidth;
             if (newWidth < 0)
                 newWidth = 0;
 
-            properties.Width = newWidth;
+            layerModel.Width = newWidth;
 
             // Apply the right to left option
             if (LayerPropertyOptions == LayerPropertyOptions.RightToLeft)
-                properties.X = properties.X + difference;
+                layerModel.X = layerModel.X + difference;
         }
 
-        private void ApplyHeight(LayerPropertiesModel properties, float percentage)
+        private void ApplyHeight(LayerModel layerModel, float percentage)
         {
-            var newHeight = Math.Round(percentage*(float) properties.Height, 2);
-            var difference = properties.Height - newHeight;
+            var newHeight = Math.Round(percentage*(float) layerModel.Height, 2);
+            var difference = layerModel.Height - newHeight;
             if (newHeight < 0)
                 newHeight = 0;
 
-            properties.Height = newHeight;
+            layerModel.Height = newHeight;
 
             if (LayerPropertyOptions == LayerPropertyOptions.Downwards)
-                properties.Y = properties.Y + difference;
+                layerModel.Y = layerModel.Y + difference;
         }
 
-        private void ApplyOpacity(LayerPropertiesModel properties, float percentage)
+        private void ApplyOpacity(LayerModel layerModel, float percentage)
         {
-            properties.Opacity = percentage*(float) properties.Opacity;
-            if (properties.Opacity < 0.0)
-                properties.Opacity = 0.0;
-            if (properties.Opacity > 1.0)
-                properties.Opacity = 1.0;
+            layerModel.Opacity = percentage*(float) layerModel.Opacity;
+            if (layerModel.Opacity < 0.0)
+                layerModel.Opacity = 0.0;
+            if (layerModel.Opacity > 1.0)
+                layerModel.Opacity = 1.0;
 
             // Apply the inverse/decrease option
             if (LayerPropertyOptions == LayerPropertyOptions.Decrease)
-                properties.Opacity = 1.0 - properties.Opacity;
+                layerModel.Opacity = 1.0 - layerModel.Opacity;
 
-            var brush = properties.Brush.Clone();
-            brush.Opacity = properties.Opacity;
-            properties.Brush = brush;
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = layerModel.Opacity;
+            layerModel.Brush = brush;
         }
 
-        private void ApplyPercentageOfProperty(IDataModel dataModel, LayerPropertiesModel properties)
+        private void ApplyPercentageOfProperty(IDataModel dataModel, LayerModel layerModel)
         {
             var value = dataModel.GetPropValue<float>(PercentageProperty);
-            ApplyPercentageOf(dataModel, properties, value);
+            ApplyPercentageOf(dataModel, layerModel, value);
         }
     }
 

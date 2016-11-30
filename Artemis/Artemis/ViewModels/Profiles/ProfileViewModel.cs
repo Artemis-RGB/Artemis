@@ -97,7 +97,7 @@ namespace Artemis.ViewModels.Profiles
                 // Draw the selection outline and resize indicator
                 if (SelectedLayer != null && SelectedLayer.MustDraw())
                 {
-                    var layerRect = SelectedLayer.Properties.GetRect();
+                    var layerRect = SelectedLayer.Properties.PropertiesRect();
                     // Deflate the rect so that the border is drawn on the inside
                     layerRect.Inflate(-0.2, -0.2);
 
@@ -227,7 +227,7 @@ namespace Artemis.ViewModels.Profiles
             var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
 
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
-                .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
+                .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
 
             if (hoverLayer != null)
                 SelectedLayer = hoverLayer;
@@ -247,7 +247,7 @@ namespace Artemis.ViewModels.Profiles
             var x = pos.X/((double) keyboard.PreviewSettings.Width/keyboard.Width);
             var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
-                .FirstOrDefault(l => l.Properties.GetRect(1).Contains(x, y));
+                .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
 
             HandleDragging(e, x, y, hoverLayer);
 
@@ -260,7 +260,7 @@ namespace Artemis.ViewModels.Profiles
             // Turn the mouse pointer into a hand if hovering over an active layer
             if (hoverLayer == SelectedLayer)
             {
-                var rect = hoverLayer.Properties.GetRect(1);
+                var rect = hoverLayer.Properties.PropertiesRect(1);
                 KeyboardPreviewCursor =
                     Math.Sqrt(Math.Pow(x - rect.BottomRight.X, 2) + Math.Pow(y - rect.BottomRight.Y, 2)) < 0.6
                         ? Cursors.SizeNWSE
@@ -305,7 +305,7 @@ namespace Artemis.ViewModels.Profiles
             // Setup the dragging state on mouse press
             if (_draggingLayerOffset == null && hoverLayer != null && e.LeftButton == MouseButtonState.Pressed)
             {
-                var layerRect = hoverLayer.Properties.GetRect(1);
+                var layerRect = hoverLayer.Properties.PropertiesRect(1);
 
                 _draggingLayerOffset = new Point(x - SelectedLayer.Properties.X, y - SelectedLayer.Properties.Y);
                 _draggingLayer = hoverLayer;

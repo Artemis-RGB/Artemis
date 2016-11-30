@@ -38,9 +38,6 @@ namespace Artemis.Profiles.Layers.Models
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
-        [JsonIgnore]
-        public double AnimationProgress { get; set; }
-
         [JsonConverter(typeof(BrushJsonConverter))]
         public Brush Brush
         {
@@ -66,7 +63,7 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
-        public Rect GetRect(int scale = 4)
+        public Rect PropertiesRect(int scale = 4)
         {
             return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }
