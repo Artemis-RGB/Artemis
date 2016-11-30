@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -31,28 +30,25 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            var props = (KeyboardPropertiesModel) layer.Properties;
+            var props = (KeyboardPropertiesModel) layerModel.Properties;
             if (string.IsNullOrEmpty(props.GifFile))
                 return;
             if (!File.Exists(props.GifFile))
                 return;
 
             // Only reconstruct GifImage if the underlying source has changed
-            if (layer.GifImage == null)
-                layer.GifImage = new GifImage(props.GifFile);
-            if (layer.GifImage.Source != props.GifFile)
-                layer.GifImage = new GifImage(props.GifFile);
+            if (layerModel.GifImage == null)
+                layerModel.GifImage = new GifImage(props.GifFile);
+            if (layerModel.GifImage.Source != props.GifFile)
+                layerModel.GifImage = new GifImage(props.GifFile);
 
-            var rect = new Rect(layer.AppliedProperties.X*4,
-                layer.AppliedProperties.Y*4,
-                layer.AppliedProperties.Width*4,
-                layer.AppliedProperties.Height*4);
+            var rect = new Rect(layerModel.X*4, layerModel.Y*4, layerModel.Width*4, layerModel.Height*4);
 
-            lock (layer.GifImage)
+            lock (layerModel.GifImage)
             {
-                var draw = layer.GifImage.GetNextFrame();
+                var draw = layerModel.GifImage.GetNextFrame();
                 using (var drawBitmap = new Bitmap(draw))
                 {
                     c.DrawImage(ImageUtilities.BitmapToBitmapImage(drawBitmap), rect);
@@ -62,14 +58,13 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = new KeyboardPropertiesModel(layerModel.Properties);
+            layerModel.ApplyProperties(true);
             if (isPreview)
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
-            var keyboardProps = (KeyboardPropertiesModel) layerModel.AppliedProperties;
-            foreach (var dynamicProperty in keyboardProps.DynamicProperties)
-                dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
+            foreach (var dynamicProperty in layerModel.Properties.DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, layerModel);
         }
 
         public void SetupProperties(LayerModel layerModel)

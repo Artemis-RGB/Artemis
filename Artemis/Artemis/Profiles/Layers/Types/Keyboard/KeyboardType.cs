@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
@@ -34,32 +33,26 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
             // If an animation is present, let it handle the drawing
-            if (layer.LayerAnimation != null && !(layer.LayerAnimation is NoneAnimation))
+            if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layer.LayerAnimation.Draw(layer.Properties, layer.AppliedProperties, c);
+                layerModel.LayerAnimation.Draw(layerModel, c);
                 return;
             }
 
             // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
-            var rect = layer.AppliedProperties.Contain
-                ? new Rect(layer.AppliedProperties.X*4,
-                    layer.AppliedProperties.Y*4,
-                    layer.AppliedProperties.Width*4,
-                    layer.AppliedProperties.Height*4)
-                : new Rect(layer.Properties.X*4,
-                    layer.Properties.Y*4,
-                    layer.Properties.Width*4,
-                    layer.Properties.Height*4);
+            var rect = layerModel.Properties.Contain
+                ? layerModel.LayerRect()
+                : new Rect(layerModel.Properties.X*4, layerModel.Properties.Y*4,
+                    layerModel.Properties.Width*4, layerModel.Properties.Height*4);
 
-            var clip = new Rect(layer.AppliedProperties.X*4, layer.AppliedProperties.Y*4,
-                layer.AppliedProperties.Width*4, layer.AppliedProperties.Height*4);
+            var clip = layerModel.LayerRect();
 
             // Can't meddle with the original brush because it's frozen.
-            var brush = layer.AppliedProperties.Brush.Clone();
-            brush.Opacity = layer.AppliedProperties.Opacity;
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = layerModel.Opacity;
 
             c.PushClip(new RectangleGeometry(clip));
             c.DrawRectangle(brush, null, rect);
@@ -68,14 +61,13 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            layerModel.AppliedProperties = new KeyboardPropertiesModel(layerModel.Properties);
+            layerModel.ApplyProperties(true);
             if (isPreview || dataModel == null)
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
-            var keyboardProps = (KeyboardPropertiesModel) layerModel.AppliedProperties;
-            foreach (var dynamicProperty in keyboardProps.DynamicProperties)
-                dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
+            foreach (var dynamicProperty in layerModel.Properties.DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, layerModel);
         }
 
         public void SetupProperties(LayerModel layerModel)
