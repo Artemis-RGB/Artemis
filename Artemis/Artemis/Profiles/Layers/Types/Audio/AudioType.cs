@@ -21,11 +21,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
 {
     internal class AudioType : ILayerType
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly MMDevice _device;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
         private readonly WasapiLoopbackCapture _waveIn;
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private int _lines;
         private AudioPropertiesModel _previousSettings;
 

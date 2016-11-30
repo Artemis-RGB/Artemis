@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -15,7 +14,7 @@ namespace Artemis.Profiles.Layers.Types.Headset
 {
     public class HeadsetType : ILayerType
     {
-        public string Name { get; } = "Headset";
+        public string Name => "Headset";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Headset;
 

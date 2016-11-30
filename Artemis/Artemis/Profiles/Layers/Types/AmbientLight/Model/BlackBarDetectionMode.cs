@@ -9,6 +9,6 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model
         Left = 1 << 0,
         Right = 1 << 1,
         Top = 1 << 2,
-        Bottom = 1 << 3,
+        Bottom = 1 << 3
     }
 }

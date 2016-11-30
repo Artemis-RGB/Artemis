@@ -10,7 +10,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
         PixelFormat PixelFormat { get; }
 
         /// <summary>
-        /// As Pixel-Data BGRA
+        ///     As Pixel-Data BGRA
         /// </summary>
         /// <returns>The Pixel-Data</returns>
         byte[] CaptureScreen();

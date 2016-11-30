@@ -32,7 +32,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
         public RadialGradientBrush TempBrush { get; set; }
 
 
-        public string Name { get; } = "Keyboard - Key press";
+        public string Name => "Keyboard - Key press";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Keyboard;
 
