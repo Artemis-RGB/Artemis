@@ -26,9 +26,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private readonly MMDevice _device;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
         private readonly WasapiLoopbackCapture _waveIn;
+        private DateTime _lastAudioUpdate;
         private int _lines;
         private AudioPropertiesModel _previousSettings;
-        private DateTime _lastAudioUpdate;
 
         public AudioType()
         {
@@ -37,7 +37,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
-            
+
             // Start listening for sound data
             _waveIn = new WasapiLoopbackCapture();
             _waveIn.DataAvailable += OnDataAvailable;
@@ -223,8 +223,6 @@ namespace Artemis.Profiles.Layers.Types.Audio
             audioLayer.Properties.Width = settings.Width;
             audioLayer.Properties.Height = settings.Height;
             audioLayer.LayerAnimation?.Update(audioLayer, true);
-
-            audioLayer.TweenModel.Update();
             
             // Restore the height and width
             audioLayer.Properties.Height = oldHeight;
@@ -329,9 +327,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
         // TODO: Check how often this is called
         private void OnDataAvailable(object sender, WaveInEventArgs e)
         {
-            if ((DateTime.Now - _lastAudioUpdate) < TimeSpan.FromMilliseconds(200))
+            if (DateTime.Now - _lastAudioUpdate < TimeSpan.FromMilliseconds(40))
                 return;
-            
+
             _lastAudioUpdate = DateTime.Now;
 
             var buffer = e.Buffer;
