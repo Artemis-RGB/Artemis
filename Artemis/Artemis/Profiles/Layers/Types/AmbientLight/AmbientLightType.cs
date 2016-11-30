@@ -26,13 +26,11 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
 
-        [JsonIgnore]
-        private AmbienceCreatorType? _lastAmbienceCreatorType = null;
-        [JsonIgnore]
-        private IAmbienceCreator _lastAmbienceCreator;
+        [JsonIgnore] private AmbienceCreatorType? _lastAmbienceCreatorType;
 
-        [JsonIgnore]
-        private byte[] _lastData;
+        [JsonIgnore] private IAmbienceCreator _lastAmbienceCreator;
+
+        [JsonIgnore] private byte[] _lastData;
 
         #endregion
 
@@ -56,36 +54,39 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            AmbientLightPropertiesModel properties = layerModel?.Properties as AmbientLightPropertiesModel;
+            var properties = layerModel?.Properties as AmbientLightPropertiesModel;
             if (properties == null) return;
 
-            int width = (int)Math.Round(properties.Width);
-            int height = (int)Math.Round(properties.Height);
+            var width = (int) Math.Round(properties.Width);
+            var height = (int) Math.Round(properties.Height);
 
-            byte[] data = ScreenCaptureManager.GetLastScreenCapture();
-            byte[] newData = GetAmbienceCreator(properties).GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width, height, properties);
+            var data = ScreenCaptureManager.GetLastScreenCapture();
+            var newData = GetAmbienceCreator(properties)
+                .GetAmbience(data, ScreenCaptureManager.LastCaptureWidth, ScreenCaptureManager.LastCaptureHeight, width,
+                    height, properties);
 
             _lastData = _lastData?.Blend(newData, properties.SmoothMode) ?? newData;
-            int stride = (width * ScreenCaptureManager.LastCapturePixelFormat.BitsPerPixel + 7) / 8;
+            var stride = (width*ScreenCaptureManager.LastCapturePixelFormat.BitsPerPixel + 7)/8;
             properties.AmbientLightBrush = new DrawingBrush(new ImageDrawing
-                (BitmapSource.Create(width, height, 96, 96, ScreenCaptureManager.LastCapturePixelFormat, null, _lastData, stride), new Rect(0, 0, width, height)));
+                (BitmapSource.Create(width, height, 96, 96, ScreenCaptureManager.LastCapturePixelFormat, null, _lastData,
+                    stride), new Rect(0, 0, width, height)));
         }
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            Rect rect = new Rect(layerModel.Properties.X * 4,
-                                 layerModel.Properties.Y * 4,
-                                 layerModel.Properties.Width * 4,
-                                 layerModel.Properties.Height * 4);
+            var rect = new Rect(layerModel.Properties.X*4,
+                layerModel.Properties.Y*4,
+                layerModel.Properties.Width*4,
+                layerModel.Properties.Height*4);
 
-            c.DrawRectangle(((AmbientLightPropertiesModel)layerModel.Properties).AmbientLightBrush, null, rect);
+            c.DrawRectangle(((AmbientLightPropertiesModel) layerModel.Properties).AmbientLightBrush, null, rect);
         }
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
-            Rect thumbnailRect = new Rect(0, 0, 18, 18);
-            DrawingVisual visual = new DrawingVisual();
-            using (DrawingContext c = visual.RenderOpen())
+            var thumbnailRect = new Rect(0, 0, 18, 18);
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
                 c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.ambilight), thumbnailRect);
 
             return new DrawingImage(visual.Drawing);
@@ -99,9 +100,12 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             _lastAmbienceCreatorType = properties.AmbienceCreatorType;
             switch (properties.AmbienceCreatorType)
             {
-                case AmbienceCreatorType.Mirror: return _lastAmbienceCreator = new AmbienceCreatorMirror();
-                case AmbienceCreatorType.Extend: return _lastAmbienceCreator = new AmbienceCreatorExtend();
-                default: throw new InvalidEnumArgumentException();
+                case AmbienceCreatorType.Mirror:
+                    return _lastAmbienceCreator = new AmbienceCreatorMirror();
+                case AmbienceCreatorType.Extend:
+                    return _lastAmbienceCreator = new AmbienceCreatorExtend();
+                default:
+                    throw new InvalidEnumArgumentException();
             }
         }
 

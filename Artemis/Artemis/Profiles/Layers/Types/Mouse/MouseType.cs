@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -15,7 +14,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
 {
     public class MouseType : ILayerType
     {
-        public string Name { get; } = "Mouse";
+        public string Name => "Mouse";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Mouse;
 

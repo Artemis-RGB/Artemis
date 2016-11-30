@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -15,7 +14,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
 {
     public class GenericType : ILayerType
     {
-        public string Name { get; } = "Generic (Logitech)";
+        public string Name => "Generic (Logitech)";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Generic;
 
@@ -43,7 +42,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
 
             // Otherwise draw the rectangle with its applied dimensions and brush
             var rect = layerModel.LayerRect();
-            
+
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();
             brush.Opacity = layerModel.Opacity;
