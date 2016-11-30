@@ -19,7 +19,8 @@ namespace Artemis.Profiles.Layers.Models
         public LayerModel()
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
-            TweenModel = new TweenModel(this, 200);
+            TweenModel = new TweenModel(this);
+
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
                 GifImage = new GifImage(model.GifFile);
@@ -53,8 +54,9 @@ namespace Artemis.Profiles.Layers.Models
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
-            TweenModel.Update();
-            
+            if (!preview && updateAnimations)
+                TweenModel.Update();
+
             LastRender = DateTime.Now;
         }
 

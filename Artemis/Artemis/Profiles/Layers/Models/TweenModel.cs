@@ -17,64 +17,36 @@ namespace Artemis.Profiles.Layers.Models
         private float _y;
         private Tweener<float> _yTweener;
 
-        public TweenModel(LayerModel layerModel, double defaultDuration)
+        public TweenModel(LayerModel layerModel)
         {
             _layerModel = layerModel;
 
-            XDuration = defaultDuration;
-            YDuration = defaultDuration;
-            WidthDuration = defaultDuration;
-            HeightDuration = defaultDuration;
-            OpacityDuration = defaultDuration;
-
-            XFunc = Ease.Quad.InOut;
-            YFunc  = Ease.Quad.InOut;
-            WidthFunc = Ease.Quad.InOut;
-            HeightFunc = Ease.Quad.InOut;
-            OpacityFunc = Ease.Quad.InOut;
-
-            _xTweener = new Tweener<float>(0, (float) layerModel.X, XDuration, XFunc);
-            _yTweener = new Tweener<float>(0, (float) layerModel.Y, YDuration, YFunc);
-            _widthTweener = new Tweener<float>(0, (float) layerModel.Width, WidthDuration, WidthFunc);
-            _heightTweener = new Tweener<float>(0, (float) layerModel.Height, HeightDuration, HeightFunc);
-            _opacityTweener = new Tweener<float>(0, (float) layerModel.Opacity, OpacityDuration, OpacityFunc);
+            _xTweener = new Tweener<float>((float) layerModel.X, (float) layerModel.X, 0);
+            _yTweener = new Tweener<float>((float) layerModel.Y, (float) layerModel.Y, 0);
+            _widthTweener = new Tweener<float>((float) layerModel.Width, (float) layerModel.Width, 0);
+            _heightTweener = new Tweener<float>((float) layerModel.Height, (float) layerModel.Height, 0);
+            _opacityTweener = new Tweener<float>((float) layerModel.Opacity, (float) layerModel.Opacity, 0);
 
             StoreCurrentValues();
-        }
-
-        public double XDuration { get; set; }
-        public double YDuration { get; set; }
-        public double WidthDuration { get; set; }
-        public double HeightDuration { get; set; }
-        public double OpacityDuration { get; set; }
-
-        public EaseFunc XFunc { get; set; }
-        public EaseFunc YFunc { get; set; }
-        public EaseFunc WidthFunc { get; set; }
-        public EaseFunc HeightFunc { get; set; }
-        public EaseFunc OpacityFunc { get; set; }
-
-        private void StoreCurrentValues()
-        {
-            _x = (float) _layerModel.X;
-            _y = (float) _layerModel.Y;
-            _width = (float) _layerModel.Width;
-            _height = (float) _layerModel.Height;
-            _opacity = (float) _layerModel.Opacity;
         }
 
         public void Update()
         {
             if (Math.Abs(_layerModel.X - _x) > 0.001)
-                _xTweener = new Tweener<float>(_x, (float) _layerModel.X, XDuration, XFunc);
+                _xTweener = new Tweener<float>(_x, (float) _layerModel.X, _layerModel.Properties.XEaseTime,
+                    GetEaseFunction(_layerModel.Properties.XEase));
             if (Math.Abs(_layerModel.Y - _y) > 0.001)
-                _yTweener = new Tweener<float>(_y, (float) _layerModel.Y, YDuration, YFunc);
+                _yTweener = new Tweener<float>(_y, (float) _layerModel.Y, _layerModel.Properties.YEaseTime,
+                    GetEaseFunction(_layerModel.Properties.YEase));
             if (Math.Abs(_layerModel.Width - _width) > 0.001)
-                _widthTweener = new Tweener<float>(_width, (float) _layerModel.Width, WidthDuration, WidthFunc);
+                _widthTweener = new Tweener<float>(_width, (float) _layerModel.Width,
+                    _layerModel.Properties.WidthEaseTime, GetEaseFunction(_layerModel.Properties.WidthEase));
             if (Math.Abs(_layerModel.Height - _height) > 0.001)
-                _heightTweener = new Tweener<float>(_height, (float) _layerModel.Height, HeightDuration, HeightFunc);
+                _heightTweener = new Tweener<float>(_height, (float) _layerModel.Height,
+                    _layerModel.Properties.HeightEaseTime, GetEaseFunction(_layerModel.Properties.HeightEase));
             if (Math.Abs(_layerModel.Opacity - _opacity) > 0.001)
-                _opacityTweener = new Tweener<float>(_opacity, (float) _layerModel.Opacity, OpacityDuration, OpacityFunc);
+                _opacityTweener = new Tweener<float>(_opacity, (float) _layerModel.Opacity,
+                    _layerModel.Properties.OpacityEaseTime, GetEaseFunction(_layerModel.Properties.OpacityEase));
 
             _xTweener.Update(40);
             _yTweener.Update(40);
@@ -89,6 +61,30 @@ namespace Artemis.Profiles.Layers.Models
             _layerModel.Width = _widthTweener.Value;
             _layerModel.Height = _heightTweener.Value;
             _layerModel.Opacity = _opacityTweener.Value;
+        }
+
+        private void StoreCurrentValues()
+        {
+            _x = (float) _layerModel.X;
+            _y = (float) _layerModel.Y;
+            _width = (float) _layerModel.Width;
+            _height = (float) _layerModel.Height;
+            _opacity = (float) _layerModel.Opacity;
+        }
+
+        private static EaseFunc GetEaseFunction(string functionName)
+        {
+            switch (functionName)
+            {
+                case "In":
+                    return Ease.Quint.In;
+                case "Out":
+                    return Ease.Quint.Out;
+                case "InOut":
+                    return Ease.Quint.InOut;
+                default:
+                    return Ease.Linear;
+            }
         }
     }
 }
