@@ -127,6 +127,10 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Betwixt, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Betwixt.1.4.1\lib\net35\Betwixt.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
@@ -403,6 +407,7 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Models\TweenModel.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorExtend.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorMirror.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AvgColor.cs" />

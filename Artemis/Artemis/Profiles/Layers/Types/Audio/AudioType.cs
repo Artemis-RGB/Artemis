@@ -28,6 +28,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private readonly WasapiLoopbackCapture _waveIn;
         private int _lines;
         private AudioPropertiesModel _previousSettings;
+        private DateTime _lastAudioUpdate;
 
         public AudioType()
         {
@@ -36,7 +37,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             _sampleAggregator.FftCalculated += FftCalculated;
             _sampleAggregator.PerformFFT = true;
-
+            
             // Start listening for sound data
             _waveIn = new WasapiLoopbackCapture();
             _waveIn.DataAvailable += OnDataAvailable;
@@ -107,14 +108,15 @@ namespace Artemis.Profiles.Layers.Types.Audio
             {
                 UpdateLayers(layerModel);
 
-                if (!SpectrumData.Any())
-                    return;
-
-                var settings = (AudioPropertiesModel) layerModel.Properties;
-                if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
-                    ApplyVertical(settings);
-                else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
-                    ApplyHorizontal(settings);
+                if (SpectrumData.Any())
+                {
+                    var settings = (AudioPropertiesModel) layerModel.Properties;
+                    if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
+                        ApplyVertical(settings);
+                    else if ((settings.Direction == Direction.LeftToRight) ||
+                             (settings.Direction == Direction.RightToLeft))
+                        ApplyHorizontal(settings);
+                }
             }
         }
 
@@ -222,6 +224,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
             audioLayer.Properties.Height = settings.Height;
             audioLayer.LayerAnimation?.Update(audioLayer, true);
 
+            audioLayer.TweenModel.Update();
+            
             // Restore the height and width
             audioLayer.Properties.Height = oldHeight;
             audioLayer.Properties.Width = oldWidth;
@@ -325,6 +329,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
         // TODO: Check how often this is called
         private void OnDataAvailable(object sender, WaveInEventArgs e)
         {
+            if ((DateTime.Now - _lastAudioUpdate) < TimeSpan.FromMilliseconds(200))
+                return;
+            
+            _lastAudioUpdate = DateTime.Now;
+
             var buffer = e.Buffer;
             var bytesRecorded = e.BytesRecorded;
             var bufferIncrement = _waveIn.WaveFormat.BlockAlign;
