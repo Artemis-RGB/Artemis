@@ -6,7 +6,6 @@ using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
@@ -15,6 +14,7 @@ using Artemis.ViewModels.Profiles;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using Newtonsoft.Json;
+using Ninject;
 using NLog;
 
 namespace Artemis.Profiles.Layers.Types.Audio
@@ -24,15 +24,17 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly MMDevice _device;
+        private readonly IKernel _kernel;
         private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
         private readonly WasapiLoopbackCapture _waveIn;
         private DateTime _lastAudioUpdate;
+        private DateTime _lastUpdate;
         private int _lines;
         private string _previousSettings;
-        private DateTime _lastUpdate;
 
-        public AudioType()
+        public AudioType(IKernel kernel)
         {
+            _kernel = kernel;
             _device = new MMDeviceEnumerator()
                 .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).FirstOrDefault();
 
@@ -107,7 +109,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             lock (SpectrumData)
             {
-                UpdateLayers(layerModel);
+                SetupLayers(layerModel);
 
                 if (SpectrumData.Any())
                 {
@@ -223,6 +225,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             // Fake the height and width and update the animation
             audioLayer.Properties.Width = settings.Width;
             audioLayer.Properties.Height = settings.Height;
+            audioLayer.LastRender = DateTime.Now;
             audioLayer.LayerAnimation?.Update(audioLayer, true);
 
             // Restore the height and width
@@ -231,13 +234,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
         }
 
         /// <summary>
-        ///     Updates the inner layers when the settings have changed
+        ///     Sets up the inner layers when the settings have changed
         /// </summary>
         /// <param name="layerModel"></param>
-        private void UpdateLayers(LayerModel layerModel)
+        private void SetupLayers(LayerModel layerModel)
         {
-            // TODO: Animation every frame before checking settings
-
             // Checking on settings update is expensive, only do it every second
             if (DateTime.Now - _lastUpdate < TimeSpan.FromSeconds(1))
                 return;
@@ -245,9 +246,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             var settings = (AudioPropertiesModel) layerModel.Properties;
             var currentSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            if (currentSettings == _previousSettings)
+            var currentType = _audioLayers.FirstOrDefault()?.LayerAnimation?.GetType();
+
+            if (currentSettings == _previousSettings && (layerModel.LayerAnimation.GetType() == currentType))
                 return;
-            
+
             _previousSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
 
             _audioLayers.Clear();
@@ -255,51 +258,51 @@ namespace Artemis.Profiles.Layers.Types.Audio
             {
                 case Direction.TopToBottom:
                 case Direction.BottomToTop:
-                    SetupVertical(settings);
+                    SetupVertical(layerModel);
                     break;
                 case Direction.LeftToRight:
                 case Direction.RightToLeft:
-                    SetupHorizontal(settings);
+                    SetupHorizontal(layerModel);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        private void SetupVertical(AudioPropertiesModel settings)
+        private void SetupVertical(LayerModel layerModel)
         {
-            _lines = (int) settings.Width;
+            _lines = (int) layerModel.Properties.Width;
             for (var i = 0; i < _lines; i++)
             {
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.X = settings.X + i;
-                layer.Properties.Y = settings.Y;
+                layer.Properties.X = layerModel.Properties.X + i;
+                layer.Properties.Y = layerModel.Properties.Y;
                 layer.Properties.Width = 1;
                 layer.Properties.Height = 0;
-                // TODO: Setup animation
-                layer.LayerAnimation = new NoneAnimation();
-                layer.Properties.Brush = settings.Brush;
+                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
+                layer.Properties.Brush = layerModel.Properties.Brush;
                 layer.Properties.Contain = false;
+                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
 
                 _audioLayers.Add(layer);
                 layer.Update(null, false, true);
             }
         }
 
-        private void SetupHorizontal(AudioPropertiesModel settings)
+        private void SetupHorizontal(LayerModel layerModel)
         {
-            _lines = (int) settings.Height;
+            _lines = (int) layerModel.Properties.Height;
             for (var i = 0; i < _lines; i++)
             {
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.X = settings.X;
-                layer.Properties.Y = settings.Y + i;
+                layer.Properties.X = layerModel.Properties.X;
+                layer.Properties.Y = layerModel.Properties.Y + i;
                 layer.Properties.Width = 0;
                 layer.Properties.Height = 1;
-                // TODO: Setup animation
-                layer.LayerAnimation = new NoneAnimation();
-                layer.Properties.Brush = settings.Brush;
+                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
+                layer.Properties.Brush = layerModel.Properties.Brush;
                 layer.Properties.Contain = false;
+                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
 
                 _audioLayers.Add(layer);
                 layer.Update(null, false, true);
