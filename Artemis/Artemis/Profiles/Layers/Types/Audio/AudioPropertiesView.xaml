@@ -47,7 +47,7 @@
                    VerticalAlignment="Top" Height="18" />
         <Slider x:Name="RotationSpeed" Grid.Row="0" Grid.Column="3" VerticalAlignment="Top"
                 Value="{Binding Path=LayerModel.Properties.FadeSpeed, Mode=TwoWay}" Margin="10,12,10,2"
-                Height="24" TickPlacement="BottomRight" TickFrequency="1" Minimum="1" Maximum="3" SmallChange="1"
+                Height="24" TickPlacement="BottomRight" TickFrequency="0.1" Minimum="0.1" Maximum="1" SmallChange="0.1"
                 IsSnapToTickEnabled="True" />
 
         <!-- Colors -->
