@@ -28,7 +28,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private readonly WasapiLoopbackCapture _waveIn;
         private DateTime _lastAudioUpdate;
         private int _lines;
-        private AudioPropertiesModel _previousSettings;
+        private string _previousSettings;
+        private DateTime _lastUpdate;
 
         public AudioType()
         {
@@ -223,7 +224,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             audioLayer.Properties.Width = settings.Width;
             audioLayer.Properties.Height = settings.Height;
             audioLayer.LayerAnimation?.Update(audioLayer, true);
-            
+
             // Restore the height and width
             audioLayer.Properties.Height = oldHeight;
             audioLayer.Properties.Width = oldWidth;
@@ -235,20 +236,34 @@ namespace Artemis.Profiles.Layers.Types.Audio
         /// <param name="layerModel"></param>
         private void UpdateLayers(LayerModel layerModel)
         {
-            // TODO: Animation
-            var settings = (AudioPropertiesModel) layerModel.Properties;
-            if ((settings.Direction == _previousSettings?.Direction) &&
-                (settings.Sensitivity == _previousSettings.Sensitivity) &&
-                (Math.Abs(settings.FadeSpeed - _previousSettings.FadeSpeed) < 0.001))
-                return;
+            // TODO: Animation every frame before checking settings
 
-            _previousSettings = GeneralHelpers.Clone((AudioPropertiesModel) layerModel.Properties);
+            // Checking on settings update is expensive, only do it every second
+            if (DateTime.Now - _lastUpdate < TimeSpan.FromSeconds(1))
+                return;
+            _lastUpdate = DateTime.Now;
+
+            var settings = (AudioPropertiesModel) layerModel.Properties;
+            var currentSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            if (currentSettings == _previousSettings)
+                return;
+            
+            _previousSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
 
             _audioLayers.Clear();
-            if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
-                SetupVertical(settings);
-            else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
-                SetupHorizontal(settings);
+            switch (settings.Direction)
+            {
+                case Direction.TopToBottom:
+                case Direction.BottomToTop:
+                    SetupVertical(settings);
+                    break;
+                case Direction.LeftToRight:
+                case Direction.RightToLeft:
+                    SetupHorizontal(settings);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void SetupVertical(AudioPropertiesModel settings)
