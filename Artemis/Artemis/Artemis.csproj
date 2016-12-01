@@ -602,6 +602,7 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerTweenViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
@@ -673,6 +674,9 @@
     </Compile>
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\LayerTweenView.xaml.cs">
+      <DependentUpon>LayerTweenView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Profiles\ProfileEditorView.xaml.cs">
       <DependentUpon>ProfileEditorView.xaml</DependentUpon>
@@ -913,6 +917,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerTweenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
