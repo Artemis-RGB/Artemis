@@ -6,16 +6,16 @@ namespace Artemis.Profiles.Layers.Models
     public class TweenModel
     {
         private readonly LayerModel _layerModel;
-        private float _height;
-        private Tweener<float> _heightTweener;
-        private float _opacity;
-        private Tweener<float> _opacityTweener;
-        private float _width;
-        private Tweener<float> _widthTweener;
         private float _x;
         private Tweener<float> _xTweener;
         private float _y;
         private Tweener<float> _yTweener;
+        private float _width;
+        private Tweener<float> _widthTweener;
+        private float _height;
+        private Tweener<float> _heightTweener;
+        private float _opacity;
+        private Tweener<float> _opacityTweener;
 
         public TweenModel(LayerModel layerModel)
         {
@@ -32,6 +32,7 @@ namespace Artemis.Profiles.Layers.Models
 
         public void Update()
         {
+            // TODO: Don't update if animation speed is 0
             if (Math.Abs(_layerModel.X - _x) > 0.001)
                 _xTweener = new Tweener<float>(_x, (float) _layerModel.X, _layerModel.Properties.XEaseTime,
                     GetEaseFunction(_layerModel.Properties.XEase));
@@ -80,7 +81,7 @@ namespace Artemis.Profiles.Layers.Models
                     return Ease.Quint.In;
                 case "Out":
                     return Ease.Quint.Out;
-                case "InOut":
+                case "In/out":
                     return Ease.Quint.InOut;
                 default:
                     return Ease.Linear;
