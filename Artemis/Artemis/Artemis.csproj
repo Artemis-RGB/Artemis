@@ -322,6 +322,7 @@
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProS.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\Utilities\CmSdk.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
@@ -695,6 +696,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\Keyboards\masterkeys-pro-s.png" />
     <None Include="Resources\Keyboards\masterkeys-pro-l.png" />
     <Resource Include="Resources\Kottke Silkscreen License.txt" />
     <None Include="Resources\lua-placeholder.lua" />

@@ -17,6 +17,7 @@ namespace Artemis.InjectionModules
             Bind<DeviceProvider>().To<G810>().InSingletonScope();
             Bind<DeviceProvider>().To<BlackWidow>().InSingletonScope();
             Bind<DeviceProvider>().To<MasterkeysProL>().InSingletonScope();
+            Bind<DeviceProvider>().To<MasterkeysProS>().InSingletonScope();
 
             // Mice
             Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
