@@ -12,23 +12,23 @@ using Artemis.Utilities;
 
 namespace Artemis.DeviceProviders.CoolerMaster
 {
-    public class MasterkeysProL : KeyboardProvider
+    public class MasterkeysProS : KeyboardProvider
     {
         private GeneralSettings _generalSettings;
 
-        public MasterkeysProL()
+        public MasterkeysProS()
         {
-            Name = "CM Masterkeys Pro L";
-            Slug = "cm-masterkeys-pro-l";
+            Name = "CM Masterkeys Pro S";
+            Slug = "cm-masterkeys-pro-s";
 
-            CantEnableText = "Couldn't connect to your CM Masterkeys Pro L.\n" +
+            CantEnableText = "Couldn't connect to your CM Masterkeys Pro S.\n" +
                              "Please check your cables and try updating your CM software.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
 
             Height = 6;
-            Width = 22;
+            Width = 17;
 
-            PreviewSettings = new PreviewSettings(670, 189, new Thickness(-2, -5, 0, 0), Resources.masterkeys_pro_l);
+            PreviewSettings = new PreviewSettings(683, 242, new Thickness(0, 0, 0, 0), Resources.masterkeys_pro_s);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
@@ -48,7 +48,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
 
         public override void Enable()
         {
-            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
+            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_S);
             CmSdk.EnableLedControl(true);
         }
 
@@ -58,7 +58,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             using (var b = ImageUtilities.ResizeImage(bitmap, Width, Height))
             {
                 // Create an empty matrix
-                var matrix = new COLOR_MATRIX {KeyColor = new KEY_COLOR[6, 22]};
+                var matrix = new COLOR_MATRIX { KeyColor = new KEY_COLOR[6, 22] };
 
                 // Map the bytes to the matix
                 for (var x = 0; x < Width; x++)
