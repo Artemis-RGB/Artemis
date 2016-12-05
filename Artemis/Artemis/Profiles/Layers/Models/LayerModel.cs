@@ -87,6 +87,9 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="updateAnimations"></param>
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
+            if (Brush == null)
+                return;
+
             LayerType.Draw(this, c);
         }
 

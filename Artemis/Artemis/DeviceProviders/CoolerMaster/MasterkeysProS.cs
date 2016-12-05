@@ -26,7 +26,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
                              "If needed, you can select a different keyboard in Artemis under settings.";
 
             Height = 6;
-            Width = 17;
+            Width = 18;
 
             PreviewSettings = new PreviewSettings(683, 242, new Thickness(0, 0, 0, 0), Resources.masterkeys_pro_s);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
