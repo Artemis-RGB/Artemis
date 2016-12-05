@@ -10,7 +10,6 @@ using Artemis.Utilities;
 using Artemis.Utilities.Converters;
 using Artemis.ViewModels;
 using Caliburn.Micro;
-using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Ninject;
 

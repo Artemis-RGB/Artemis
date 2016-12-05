@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
@@ -27,13 +26,9 @@ namespace Artemis.Profiles.Layers.Models
             Conditions = source.Conditions;
             DynamicProperties = source.DynamicProperties;
             Brush = source.Brush;
-            XEase = source.XEase;
-            YEase = source.YEase;
             HeightEase = source.HeightEase;
             WidthEase = source.WidthEase;
             OpacityEase = source.OpacityEase;
-            XEaseTime = source.XEaseTime;
-            YEaseTime = source.YEaseTime;
             HeightEaseTime = source.HeightEaseTime;
             WidthEaseTime = source.WidthEaseTime;
             OpacityEaseTime = source.OpacityEaseTime;
@@ -49,10 +44,6 @@ namespace Artemis.Profiles.Layers.Models
         public double OpacityEaseTime { get; set; }
         public double HeightEaseTime { get; set; }
         public double WidthEaseTime { get; set; }
-        public double YEaseTime { get; set; }
-        public double XEaseTime { get; set; }
-        public string XEase { get; set; }
-        public string YEase { get; set; }
         public string WidthEase { set; get; }
         public string HeightEase { get; set; }
         public string OpacityEase { get; set; }
