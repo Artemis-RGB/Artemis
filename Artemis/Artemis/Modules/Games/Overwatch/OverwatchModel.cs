@@ -281,19 +281,20 @@ namespace Artemis.Modules.Games.Overwatch
 
         public void FindOverwatch()
         {
-            var gameSettings = (OverwatchSettings) Settings;
+            var gameSettings = Settings as OverwatchSettings;
+            if (gameSettings == null)
+                return;
+
             // If already propertly set up, don't do anything
             if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
                 File.Exists(gameSettings.GameDirectory + "RzChromaSDK64.dll"))
                 return;
 
             var key = Registry.LocalMachine.OpenSubKey(
-                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
-            if (key == null)
-                return;
+                    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
+            var path = key?.GetValue("DisplayIcon")?.ToString();
 
-            var path = key.GetValue("DisplayIcon").ToString();
-            if (!File.Exists(path))
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
                 return;
 
             gameSettings.GameDirectory = path.Substring(0, path.Length - 14);

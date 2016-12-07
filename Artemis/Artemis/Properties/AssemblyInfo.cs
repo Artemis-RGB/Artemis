@@ -55,6 +55,5 @@ using System.Windows;
 
 [assembly: AssemblyVersion("1.5.0.4")]
 [assembly: AssemblyFileVersion("1.5.0.4")]
-[assembly: InternalsVisibleTo("Artemis.Tests")]
 [assembly: InternalsVisibleTo("Artemis.Explorables")]
 
