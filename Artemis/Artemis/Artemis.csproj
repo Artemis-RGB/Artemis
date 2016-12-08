@@ -431,6 +431,7 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
