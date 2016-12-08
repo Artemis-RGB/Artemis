@@ -3,6 +3,7 @@ using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.AmbientLight;
 using Artemis.Profiles.Layers.Types.Audio;
+using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Profiles.Layers.Types.Generic;
 using Artemis.Profiles.Layers.Types.Headset;
@@ -48,6 +49,9 @@ namespace Artemis.InjectionModules
             Bind<KeyPressType>().ToSelf();
             Bind<AudioType>().ToSelf();
             Bind<AmbientLightType>().ToSelf();
+
+            // Type helpers
+            Bind<AudioCaptureManager>().ToSelf().InSingletonScope();
         }
     }
 }
