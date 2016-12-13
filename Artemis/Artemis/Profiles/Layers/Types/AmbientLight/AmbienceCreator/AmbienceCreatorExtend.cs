@@ -9,34 +9,40 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
         #region Methods
 
         public byte[] GetAmbience(byte[] pixels, int sourceWidth, int sourceHeight,
-                                                 int targetWidth, int targetHeight,
-                                                 AmbientLightPropertiesModel settings)
+            int targetWidth, int targetHeight,
+            AmbientLightPropertiesModel settings)
         {
-            AvgColor[] colors = new AvgColor[targetWidth];
-            for (int i = 0; i < colors.Length; i++)
+            var colors = new AvgColor[targetWidth];
+            for (var i = 0; i < colors.Length; i++)
                 colors[i] = new AvgColor();
 
-            int offsetLeft = settings.OffsetLeft + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Left)
-                ? pixels.DetectBlackBarLeft(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+            var offsetLeft = settings.OffsetLeft + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Left)
+                ? pixels.DetectBlackBarLeft(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight,
+                    settings.OffsetTop, settings.OffsetBottom)
                 : 0);
-            int offsetRight = settings.OffsetRight + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Right)
-                ? pixels.DetectBlackBarRight(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+            var offsetRight = settings.OffsetRight +
+                              (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Right)
+                                  ? pixels.DetectBlackBarRight(sourceWidth, sourceHeight, settings.OffsetLeft,
+                                      settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                                  : 0);
+            var offsetTop = settings.OffsetTop + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Top)
+                ? pixels.DetectBlackBarTop(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight,
+                    settings.OffsetTop, settings.OffsetBottom)
                 : 0);
-            int offsetTop = settings.OffsetTop + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Top)
-                ? pixels.DetectBlackBarTop(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
-                : 0);
-            int offsetBottom = settings.OffsetBottom + (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Bottom)
-                ? pixels.DetectBlackBarBottom(sourceWidth, sourceHeight, settings.OffsetLeft, settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
-                : 0);
+            var offsetBottom = settings.OffsetBottom +
+                               (settings.BlackBarDetectionMode.HasFlag(BlackBarDetectionMode.Bottom)
+                                   ? pixels.DetectBlackBarBottom(sourceWidth, sourceHeight, settings.OffsetLeft,
+                                       settings.OffsetRight, settings.OffsetTop, settings.OffsetBottom)
+                                   : 0);
 
-            int effectiveSourceWidth = sourceWidth - offsetLeft - offsetRight;
-            int effectiveSourceHeight = sourceHeight - offsetTop - offsetBottom;
+            var effectiveSourceWidth = sourceWidth - offsetLeft - offsetRight;
+            var effectiveSourceHeight = sourceHeight - offsetTop - offsetBottom;
 
-            int relevantSourceHeight = (int)Math.Round(effectiveSourceHeight * (settings.MirroredAmount / 100.0));
-            int relevantOffsetTop = sourceHeight - offsetBottom - relevantSourceHeight;
+            var relevantSourceHeight = (int) Math.Round(effectiveSourceHeight*(settings.MirroredAmount/100.0));
+            var relevantOffsetTop = sourceHeight - offsetBottom - relevantSourceHeight;
 
-            double widthPixels = effectiveSourceWidth / (double)targetWidth;
-            double heightPixels = relevantSourceHeight / (double)targetHeight;
+            var widthPixels = effectiveSourceWidth/(double) targetWidth;
+            var heightPixels = relevantSourceHeight/(double) targetHeight;
 
             if (widthPixels <= 0 || heightPixels <= 0 || (relevantSourceHeight + relevantOffsetTop > sourceHeight) ||
                 effectiveSourceWidth > sourceWidth)
@@ -45,13 +51,13 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
                 return colors.ToBGRArray();
             }
 
-            int increment = Math.Max(1, Math.Min(20, settings.Downsampling));
-            for (int y = 0; y < relevantSourceHeight; y += increment)
+            var increment = Math.Max(1, Math.Min(20, settings.Downsampling));
+            for (var y = 0; y < relevantSourceHeight; y += increment)
             {
-                int targetWidthIndex = 0;
-                double widthCounter = widthPixels;
+                var targetWidthIndex = 0;
+                var widthCounter = widthPixels;
 
-                for (int x = 0; x < effectiveSourceWidth; x += increment)
+                for (var x = 0; x < effectiveSourceWidth; x += increment)
                 {
                     if (x >= widthCounter)
                     {
@@ -59,10 +65,10 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.AmbienceCreator
                         targetWidthIndex++;
                     }
 
-                    int colorsOffset = targetWidthIndex;
-                    int sourceOffset = ((((relevantOffsetTop + y) * sourceWidth) + offsetLeft + x) * 4);
+                    var colorsOffset = targetWidthIndex;
+                    var sourceOffset = ((relevantOffsetTop + y)*sourceWidth + offsetLeft + x)*4;
 
-                    AvgColor color = colors[colorsOffset];
+                    var color = colors[colorsOffset];
                     color.AddB(pixels[sourceOffset]);
                     color.AddG(pixels[sourceOffset + 1]);
                     color.AddR(pixels[sourceOffset + 2]);

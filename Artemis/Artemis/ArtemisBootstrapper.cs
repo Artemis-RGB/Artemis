@@ -8,9 +8,9 @@ using Artemis.InjectionModules;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Converters;
+using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels;
 using Caliburn.Micro;
-using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using Ninject;
 
@@ -24,6 +24,8 @@ namespace Artemis
         {
             // Start logging before anything else
             Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>().LogLevel);
+            // Restore DDLs before interacting with any SDKs
+            DllManager.RestoreLogitechDll();
 
             Initialize();
             BindSpecialValues();

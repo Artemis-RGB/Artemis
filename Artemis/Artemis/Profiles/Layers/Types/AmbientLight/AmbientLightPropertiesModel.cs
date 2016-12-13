@@ -7,6 +7,16 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
 {
     public class AmbientLightPropertiesModel : LayerPropertiesModel
     {
+        #region Constructors
+
+        public AmbientLightPropertiesModel(LayerPropertiesModel properties)
+            : base(properties)
+        {
+            Brush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+        }
+
+        #endregion
+
         #region Properties & Fields
 
         //HACK DarthAffe 30.10.2016: The 'normal' Brush-Property destoys the profile since Drawing-Brushes cannot be deserialized.
@@ -26,16 +36,6 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public SmoothMode SmoothMode { get; set; } = SmoothMode.Low;
         public BlackBarDetectionMode BlackBarDetectionMode { get; set; } = BlackBarDetectionMode.Bottom;
         public FlipMode FlipMode { get; set; } = FlipMode.Vertical;
-
-        #endregion
-
-        #region Constructors
-
-        public AmbientLightPropertiesModel(LayerPropertiesModel properties)
-            : base(properties)
-        {
-            Brush = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-        }
 
         #endregion
     }

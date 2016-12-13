@@ -32,7 +32,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
         public RadialGradientBrush TempBrush { get; set; }
 
 
-        public string Name { get; } = "Keyboard - Key press";
+        public string Name => "Keyboard - Key press";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Keyboard;
 
@@ -49,7 +49,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
             lock (_keyPressLayers)
             {
@@ -67,7 +67,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            layerModel.AppliedProperties = new KeyPressPropertiesModel(layerModel.Properties);
+            layerModel.ApplyProperties(true);
 
             _layerModel = layerModel;
 

@@ -4,16 +4,12 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model
 {
     public enum SmoothMode
     {
-        [Description("None")]
-        None,
+        [Description("None")] None,
 
-        [Description("Low")]
-        Low,
+        [Description("Low")] Low,
 
-        [Description("Medium")]
-        Medium,
+        [Description("Medium")] Medium,
 
-        [Description("High")]
-        High
+        [Description("High")] High
     }
 }

@@ -16,8 +16,6 @@ namespace Artemis.Dialogs
         public static readonly DependencyProperty MarkdownProperty = DependencyProperty.Register("Markdown",
             typeof(string), typeof(MarkdownDialog), new PropertyMetadata(default(string)));
 
-        
-
         public MarkdownDialog(MetroWindow parentWindow)
         {
             ParentWindow = parentWindow;

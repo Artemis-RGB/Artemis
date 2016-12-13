@@ -127,6 +127,10 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Betwixt, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Betwixt.1.4.1\lib\net35\Betwixt.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
@@ -318,10 +322,11 @@
     <Compile Include="DAL\ProfileProvider.cs" />
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProS.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\Utilities\CmSdk.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairMousemats.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMouse.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairHeadset.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMousemat.cs" />
     <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
@@ -339,7 +344,7 @@
     <Compile Include="InjectionModules\EffectModules.cs" />
     <Compile Include="InjectionModules\ProfileModules.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairKeyboards.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairKeyboard.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G910.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\KeyboardNames.cs" />
@@ -403,6 +408,7 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Models\TweenModel.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorExtend.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorMirror.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AvgColor.cs" />
@@ -425,6 +431,7 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
@@ -597,6 +604,7 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerTweenViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
@@ -669,6 +677,9 @@
     <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
       <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Profiles\LayerTweenView.xaml.cs">
+      <DependentUpon>LayerTweenView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Profiles\ProfileEditorView.xaml.cs">
       <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
@@ -686,6 +697,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\Keyboards\masterkeys-pro-s.png" />
     <None Include="Resources\Keyboards\masterkeys-pro-l.png" />
     <Resource Include="Resources\Kottke Silkscreen License.txt" />
     <None Include="Resources\lua-placeholder.lua" />
@@ -908,6 +920,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerTweenView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

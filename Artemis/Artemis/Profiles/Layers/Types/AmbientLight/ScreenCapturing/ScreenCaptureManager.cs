@@ -14,13 +14,14 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
         private static Thread _worker;
         private static DateTime _lastCaptureAccess;
         private static volatile byte[] _lastScreenCapture;
-        private static volatile bool _isRunning = false;
+        private static volatile bool _isRunning;
 
-        private static ScreenCaptureMode? _lastScreenCaptureMode = null;
+        private static ScreenCaptureMode? _lastScreenCaptureMode;
         private static IScreenCapture _screenCapture;
 
         public static double StandByTime { get; set; } = 3;
-        public static double UpdateRate { get; set; } = 1.0 / 20.0; // DarthAffe 29.10.2016: I think 20 FPS should be enough as default
+        public static double UpdateRate { get; set; } = 1.0/20.0;
+        // DarthAffe 29.10.2016: I think 20 FPS should be enough as default
         public static ScreenCaptureMode ScreenCaptureMode { get; set; } = ScreenCaptureMode.DirectX9;
 
         public static int LastCaptureWidth { get; private set; }
@@ -41,8 +42,10 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
             _lastScreenCaptureMode = ScreenCaptureMode;
             switch (ScreenCaptureMode)
             {
-                case ScreenCaptureMode.DirectX9: return _screenCapture = new DX9ScreenCapture();
-                default: throw new InvalidEnumArgumentException();
+                case ScreenCaptureMode.DirectX9:
+                    return _screenCapture = new DX9ScreenCapture();
+                default:
+                    throw new InvalidEnumArgumentException();
             }
         }
 
@@ -59,7 +62,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
             {
                 while ((DateTime.Now - _lastCaptureAccess).TotalSeconds < StandByTime)
                 {
-                    DateTime lastCapture = DateTime.Now;
+                    var lastCapture = DateTime.Now;
                     try
                     {
                         CaptureScreen();
@@ -69,7 +72,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
                         Debug.WriteLine("[CaptureLoop]: " + ex.Message);
                     }
 
-                    int sleep = (int)((UpdateRate - (DateTime.Now - lastCapture).TotalSeconds) * 1000);
+                    var sleep = (int) ((UpdateRate - (DateTime.Now - lastCapture).TotalSeconds)*1000);
                     if (sleep > 0)
                         Thread.Sleep(sleep);
                 }
@@ -83,7 +86,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing
 
         private static void CaptureScreen()
         {
-            IScreenCapture screenCapture = GetScreenCapture();
+            var screenCapture = GetScreenCapture();
 
             _lastScreenCapture = screenCapture.CaptureScreen();
             LastCaptureWidth = screenCapture.Width;

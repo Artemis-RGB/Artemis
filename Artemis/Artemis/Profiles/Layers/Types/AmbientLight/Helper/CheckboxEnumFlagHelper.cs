@@ -8,10 +8,13 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
     public class CheckboxEnumFlagHelper
     {
         #region DependencyProperties
+
         // ReSharper disable InconsistentNaming
 
         public static readonly DependencyProperty FlagsProperty = DependencyProperty.RegisterAttached(
-            "Flags", typeof(Enum), typeof(CheckboxEnumFlagHelper), new FrameworkPropertyMetadata(default(Enum), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, FlagsChanged));
+            "Flags", typeof(Enum), typeof(CheckboxEnumFlagHelper),
+            new FrameworkPropertyMetadata(default(Enum), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                FlagsChanged));
 
         public static void SetFlags(DependencyObject element, Enum value)
         {
@@ -20,7 +23,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
 
         public static Enum GetFlags(DependencyObject element)
         {
-            return (Enum)element.GetValue(FlagsProperty);
+            return (Enum) element.GetValue(FlagsProperty);
         }
 
         public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached(
@@ -33,10 +36,11 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
 
         public static Enum GetValue(DependencyObject element)
         {
-            return (Enum)element.GetValue(ValueProperty);
+            return (Enum) element.GetValue(ValueProperty);
         }
 
         // ReSharper restore InconsistentNaming
+
         #endregion
 
         #region Methods
@@ -50,7 +54,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
         private static void ValueChanged(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            CheckBox checkbox = dependencyObject as CheckBox;
+            var checkbox = dependencyObject as CheckBox;
             if (checkbox == null) return;
 
             checkbox.Checked -= UpdateSource;
@@ -69,17 +73,17 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
         {
             if (checkbox == null) return;
 
-            Enum value = GetValue(checkbox);
+            var value = GetValue(checkbox);
             checkbox.IsChecked = value != null && (flags?.HasFlag(value) ?? false);
         }
 
         private static void UpdateSource(object sender, RoutedEventArgs routedEventArgs)
         {
-            CheckBox checkbox = sender as CheckBox;
+            var checkbox = sender as CheckBox;
             if (checkbox == null) return;
 
-            Enum flags = GetFlags(checkbox);
-            Enum value = GetValue(checkbox);
+            var flags = GetFlags(checkbox);
+            var value = GetValue(checkbox);
             if (value == null) return;
 
             if (checkbox.IsChecked ?? false)

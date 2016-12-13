@@ -23,6 +23,7 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <!-- Animation -->
         <TextBlock Grid.Row="0" Grid.Column="0" Margin="10" FontSize="13.333" Text="Animation:"
@@ -60,7 +61,8 @@
                        VerticalAlignment="Top" Height="18" Width="130" />
             <Border Margin="10" BorderBrush="{StaticResource ControlBorderBrush}"
                     BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit">
-                <ncore:ColorBox Brush="{Binding Path=Brush, Mode=TwoWay}" Height="24" Width="134"/>
+                <ncore:ColorBox Brush="{Binding Path=Brush, Mode=TwoWay}" ShowNone="False" Height="24" Width="134"
+                                VerticalAlignment="Top" />
             </Border>
         </StackPanel>
 
@@ -86,8 +88,7 @@
             </Grid>
             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="10,2,10,10" FontSize="13.333"
                        Foreground="{DynamicResource HighlightBrush}"
-                       Text="Note: It is recommended to use very tiny gifs (25x7 per example, for size per keyboard see FAQ). Any higher will degrade performance without any noticeable quality difference."
-                       VerticalAlignment="Top" Height="Auto" TextWrapping="Wrap" />
+                       VerticalAlignment="Top" Height="Auto" TextWrapping="Wrap" ><Run Text="Note: It is recommended to use very tiny gifs (25x7 per example, for size per keyboard see FAQ). "/><LineBreak/><Run Text="Any higher will degrade performance without any noticeable quality difference."/></TextBlock>
         </Grid>
 
         <!-- Dynamic -->
@@ -98,5 +99,7 @@
         <ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" x:Name="HeightProperties" />
         <ContentControl Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" x:Name="WidthProperties" />
         <ContentControl Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="4" x:Name="OpacityProperties" />
+        
+        <ContentControl Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" x:Name="LayerTweenViewModel" />
     </Grid>
 </UserControl>

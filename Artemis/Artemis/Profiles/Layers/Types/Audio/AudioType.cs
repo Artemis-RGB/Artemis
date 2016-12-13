@@ -4,56 +4,35 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
-using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels.Profiles;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
 using Newtonsoft.Json;
-using NLog;
+using Ninject;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
     internal class AudioType : ILayerType
     {
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
-        private readonly MMDevice _device;
-        private readonly SampleAggregator _sampleAggregator = new SampleAggregator(1024);
-        private readonly WasapiLoopbackCapture _waveIn;
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly IKernel _kernel;
+
+        private DateTime _lastUpdate;
         private int _lines;
-        private AudioPropertiesModel _previousSettings;
+        private string _previousSettings;
 
-        public AudioType()
+        public AudioType(IKernel kernel, AudioCaptureManager audioCaptureManager)
         {
-            _device = new MMDeviceEnumerator()
-                .EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).FirstOrDefault();
-
-            _sampleAggregator.FftCalculated += FftCalculated;
-            _sampleAggregator.PerformFFT = true;
-
-            // Start listening for sound data
-            _waveIn = new WasapiLoopbackCapture();
-            _waveIn.DataAvailable += OnDataAvailable;
-
-            try
-            {
-                _waveIn.StartRecording();
-            }
-            catch (Exception e)
-            {
-                Logger.Warn(e, "Failed to start WASAPI audio capture");
-                throw;
-            }
+            _kernel = kernel;
+            AudioCaptureManager = audioCaptureManager;
         }
 
         [JsonIgnore]
-        public List<byte> SpectrumData { get; set; } = new List<byte>();
+        public AudioCaptureManager AudioCaptureManager { get; set; }
 
         public string Name => "Keyboard - Audio visualization";
         public bool ShowInEdtor => true;
@@ -72,9 +51,9 @@ namespace Artemis.Profiles.Layers.Types.Audio
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            lock (SpectrumData)
+            lock (_audioLayers)
             {
                 foreach (var audioLayer in _audioLayers)
                 {
@@ -84,10 +63,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
                     var oldX = audioLayer.Properties.X;
                     var oldY = audioLayer.Properties.Y;
 
-                    audioLayer.Properties.Width = layer.Properties.Width;
-                    audioLayer.Properties.Height = layer.Properties.Height;
-                    audioLayer.Properties.X = layer.Properties.X;
-                    audioLayer.Properties.Y = layer.Properties.Y;
+                    audioLayer.Properties.Width = layerModel.Properties.Width;
+                    audioLayer.Properties.Height = layerModel.Properties.Height;
+                    audioLayer.Properties.X = layerModel.Properties.X;
+                    audioLayer.Properties.Y = layerModel.Properties.Y;
                     audioLayer.LayerType.Draw(audioLayer, c);
 
                     audioLayer.Properties.Width = oldWidth;
@@ -100,21 +79,29 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
         public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
         {
-            if ((_device == null) || isPreview)
+            layerModel.ApplyProperties(true);
+            if (isPreview)
                 return;
 
-            lock (SpectrumData)
+            lock (_audioLayers)
             {
-                UpdateLayers(layerModel);
-
-                if (!SpectrumData.Any())
+                SetupLayers(layerModel);
+                var spectrumData = AudioCaptureManager.GetSpectrumData(_lines);
+                if (!spectrumData.Any())
                     return;
 
                 var settings = (AudioPropertiesModel) layerModel.Properties;
-                if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
-                    ApplyVertical(settings);
-                else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
-                    ApplyHorizontal(settings);
+                switch (settings.Direction)
+                {
+                    case Direction.TopToBottom:
+                    case Direction.BottomToTop:
+                        ApplyVertical(spectrumData, settings);
+                        break;
+                    case Direction.LeftToRight:
+                    case Direction.RightToLeft:
+                        ApplyHorizontal(spectrumData, settings);
+                        break;
+                }
             }
         }
 
@@ -138,14 +125,14 @@ namespace Artemis.Profiles.Layers.Types.Audio
             return new AudioPropertiesViewModel(layerEditorViewModel);
         }
 
-        private void ApplyVertical(AudioPropertiesModel settings)
+        private void ApplyVertical(List<byte> spectrumData, AudioPropertiesModel settings)
         {
             var index = 0;
             foreach (var audioLayer in _audioLayers)
             {
                 int height;
-                if (SpectrumData.Count > index)
-                    height = (int) Math.Round(SpectrumData[index]/2.55);
+                if (spectrumData.Count > index)
+                    height = (int) Math.Round(spectrumData[index]/2.55);
                 else
                     height = 0;
 
@@ -169,14 +156,14 @@ namespace Artemis.Profiles.Layers.Types.Audio
             }
         }
 
-        private void ApplyHorizontal(AudioPropertiesModel settings)
+        private void ApplyHorizontal(List<byte> spectrumData, AudioPropertiesModel settings)
         {
             var index = 0;
             foreach (var audioLayer in _audioLayers)
             {
                 int width;
-                if (SpectrumData.Count > index)
-                    width = (int) Math.Round(SpectrumData[index]/2.55);
+                if (spectrumData.Count > index)
+                    width = (int) Math.Round(spectrumData[index]/2.55);
                 else
                     width = 0;
 
@@ -220,6 +207,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             // Fake the height and width and update the animation
             audioLayer.Properties.Width = settings.Width;
             audioLayer.Properties.Height = settings.Height;
+            audioLayer.LastRender = DateTime.Now;
             audioLayer.LayerAnimation?.Update(audioLayer, true);
 
             // Restore the height and width
@@ -228,111 +216,78 @@ namespace Artemis.Profiles.Layers.Types.Audio
         }
 
         /// <summary>
-        ///     Updates the inner layers when the settings have changed
+        ///     Sets up the inner layers when the settings have changed
         /// </summary>
         /// <param name="layerModel"></param>
-        private void UpdateLayers(LayerModel layerModel)
+        private void SetupLayers(LayerModel layerModel)
         {
-            // TODO: Animation
+            // Checking on settings update is expensive, only do it every second
+            if (DateTime.Now - _lastUpdate < TimeSpan.FromSeconds(1))
+                return;
+            _lastUpdate = DateTime.Now;
+
             var settings = (AudioPropertiesModel) layerModel.Properties;
-            if ((settings.Direction == _previousSettings?.Direction) &&
-                (settings.Sensitivity == _previousSettings.Sensitivity) &&
-                (Math.Abs(settings.FadeSpeed - _previousSettings.FadeSpeed) < 0.001))
+            var currentSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            var currentType = _audioLayers.FirstOrDefault()?.LayerAnimation?.GetType();
+
+            if (currentSettings == _previousSettings && (layerModel.LayerAnimation.GetType() == currentType))
                 return;
 
-            _previousSettings = GeneralHelpers.Clone((AudioPropertiesModel) layerModel.Properties);
+            _previousSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
 
             _audioLayers.Clear();
-            if ((settings.Direction == Direction.TopToBottom) || (settings.Direction == Direction.BottomToTop))
-                SetupVertical(settings);
-            else if ((settings.Direction == Direction.LeftToRight) || (settings.Direction == Direction.RightToLeft))
-                SetupHorizontal(settings);
+            switch (settings.Direction)
+            {
+                case Direction.TopToBottom:
+                case Direction.BottomToTop:
+                    SetupVertical(layerModel);
+                    break;
+                case Direction.LeftToRight:
+                case Direction.RightToLeft:
+                    SetupHorizontal(layerModel);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        private void SetupVertical(AudioPropertiesModel settings)
+        private void SetupVertical(LayerModel layerModel)
         {
-            _lines = (int) settings.Width;
+            _lines = (int) layerModel.Properties.Width;
             for (var i = 0; i < _lines; i++)
             {
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.X = settings.X + i;
-                layer.Properties.Y = settings.Y;
+                layer.Properties.X = layerModel.Properties.X + i;
+                layer.Properties.Y = layerModel.Properties.Y;
                 layer.Properties.Width = 1;
                 layer.Properties.Height = 0;
-                // TODO: Setup animation
-                layer.LayerAnimation = new NoneAnimation();
-                layer.Properties.Brush = settings.Brush;
+                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
+                layer.Properties.Brush = layerModel.Properties.Brush;
                 layer.Properties.Contain = false;
+                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
 
                 _audioLayers.Add(layer);
                 layer.Update(null, false, true);
             }
         }
 
-        private void SetupHorizontal(AudioPropertiesModel settings)
+        private void SetupHorizontal(LayerModel layerModel)
         {
-            _lines = (int) settings.Height;
+            _lines = (int) layerModel.Properties.Height;
             for (var i = 0; i < _lines; i++)
             {
                 var layer = LayerModel.CreateLayer();
-                layer.Properties.X = settings.X;
-                layer.Properties.Y = settings.Y + i;
+                layer.Properties.X = layerModel.Properties.X;
+                layer.Properties.Y = layerModel.Properties.Y + i;
                 layer.Properties.Width = 0;
                 layer.Properties.Height = 1;
-                // TODO: Setup animation
-                layer.LayerAnimation = new NoneAnimation();
-                layer.Properties.Brush = settings.Brush;
+                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
+                layer.Properties.Brush = layerModel.Properties.Brush;
                 layer.Properties.Contain = false;
+                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
 
                 _audioLayers.Add(layer);
                 layer.Update(null, false, true);
-            }
-        }
-
-
-        private void FftCalculated(object sender, FftEventArgs e)
-        {
-            if (_lines == 0)
-                return;
-
-            lock (SpectrumData)
-            {
-                int x;
-                var b0 = 0;
-
-                SpectrumData.Clear();
-                for (x = 0; x < _lines; x++)
-                {
-                    float peak = 0;
-                    var b1 = (int) Math.Pow(2, x*10.0/(_lines - 1));
-                    if (b1 > 1023)
-                        b1 = 1023;
-                    if (b1 <= b0)
-                        b1 = b0 + 1;
-                    for (; b0 < b1; b0++)
-                        if (peak < e.Result[1 + b0].X)
-                            peak = e.Result[1 + b0].X;
-                    var y = (int) (Math.Sqrt(peak)*3*255 - 4);
-                    if (y > 255)
-                        y = 255;
-                    if (y < 0)
-                        y = 0;
-                    SpectrumData.Add((byte) y);
-                }
-            }
-        }
-
-        // TODO: Check how often this is called
-        private void OnDataAvailable(object sender, WaveInEventArgs e)
-        {
-            var buffer = e.Buffer;
-            var bytesRecorded = e.BytesRecorded;
-            var bufferIncrement = _waveIn.WaveFormat.BlockAlign;
-
-            for (var index = 0; index < bytesRecorded; index += bufferIncrement)
-            {
-                var sample32 = BitConverter.ToSingle(buffer, index);
-                _sampleAggregator.Add(sample32);
             }
         }
     }

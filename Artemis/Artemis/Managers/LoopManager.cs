@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
+using System.Windows.Threading;
 using Artemis.DeviceProviders;
 using Ninject.Extensions.Logging;
 using Timer = System.Timers.Timer;
@@ -19,19 +21,42 @@ namespace Artemis.Managers
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
+        private bool _canShowException;
 
         public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
         {
             _logger = logger;
             _effectManager = effectManager;
             _deviceManager = deviceManager;
+            _canShowException = true;
 
             // Setup timers
             _loopTimer = new Timer(40);
-            _loopTimer.Elapsed += Render;
+            _loopTimer.Elapsed += LoopTimerOnElapsed;
             _loopTimer.Start();
 
             _logger.Info("Intialized LoopManager");
+        }
+
+        private void LoopTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            try
+            {
+                Render();
+            }
+            catch (Exception e)
+            {
+                if (_canShowException)
+                {
+                    Caliburn.Micro.Execute.OnUIThread(delegate
+                    {
+                        _canShowException = false;
+                        _loopTimer.Stop();
+                        App.GetArtemisExceptionViewer(e).ShowDialog();
+                        Environment.Exit(0);
+                    });
+                }
+            }
         }
 
         /// <summary>
@@ -95,7 +120,7 @@ namespace Artemis.Managers
             _deviceManager.ReleaseActiveKeyboard();
         }
 
-        private void Render(object sender, ElapsedEventArgs e)
+        private void Render()
         {
             if (!Running || _deviceManager.ChangingKeyboard)
                 return;

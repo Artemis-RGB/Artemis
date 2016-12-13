@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
@@ -15,7 +14,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
 {
     public class MouseType : ILayerType
     {
-        public string Name { get; } = "Mouse";
+        public string Name => "Mouse";
         public bool ShowInEdtor { get; } = false;
         public DrawType DrawType { get; } = DrawType.Mouse;
 
@@ -32,24 +31,21 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
             // If an animation is present, let it handle the drawing
-            if (layer.LayerAnimation != null && !(layer.LayerAnimation is NoneAnimation))
+            if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layer.LayerAnimation.Draw(layer.Properties, layer.AppliedProperties, c);
+                layerModel.LayerAnimation.Draw(layerModel, c);
                 return;
             }
 
             // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = new Rect(layer.AppliedProperties.X*4,
-                layer.AppliedProperties.Y*4,
-                layer.AppliedProperties.Width*4,
-                layer.AppliedProperties.Height*4);
+            var rect = layerModel.LayerRect();
 
             // Can't meddle with the original brush because it's frozen.
-            var brush = layer.AppliedProperties.Brush.Clone();
-            brush.Opacity = layer.AppliedProperties.Opacity;
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = layerModel.Opacity;
 
             c.PushClip(new RectangleGeometry(rect));
             c.DrawRectangle(brush, null, rect);
@@ -65,15 +61,14 @@ namespace Artemis.Profiles.Layers.Types.Mouse
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            layerModel.AppliedProperties = new SimplePropertiesModel(layerModel.Properties);
+            layerModel.ApplyProperties(true);
 
             if (isPreview || dataModel == null)
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel
-            var props = (SimplePropertiesModel) layerModel.AppliedProperties;
-            foreach (var dynamicProperty in props.DynamicProperties)
-                dynamicProperty.ApplyProperty(dataModel, layerModel.AppliedProperties);
+            foreach (var dynamicProperty in layerModel.Properties.DynamicProperties)
+                dynamicProperty.ApplyProperty(dataModel, layerModel);
         }
 
         public void SetupProperties(LayerModel layerModel)

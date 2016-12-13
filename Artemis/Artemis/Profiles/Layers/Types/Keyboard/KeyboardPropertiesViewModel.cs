@@ -20,6 +20,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             HeightProperties = new LayerDynamicPropertiesViewModel("Height", editorVm);
             WidthProperties = new LayerDynamicPropertiesViewModel("Width", editorVm);
             OpacityProperties = new LayerDynamicPropertiesViewModel("Opacity", editorVm);
+            LayerTweenViewModel = new LayerTweenViewModel(editorVm);
 
             SelectedLayerAnimation =
                 LayerAnimations.FirstOrDefault(l => l.Name == editorVm.ProposedLayer.LayerAnimation?.Name) ??
@@ -33,6 +34,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         public LayerDynamicPropertiesViewModel HeightProperties { get; set; }
         public LayerDynamicPropertiesViewModel WidthProperties { get; set; }
         public LayerDynamicPropertiesViewModel OpacityProperties { get; set; }
+        public LayerTweenViewModel LayerTweenViewModel { get; set; }
 
         public bool IsGif
         {

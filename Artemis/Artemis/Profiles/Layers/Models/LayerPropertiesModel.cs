@@ -26,6 +26,12 @@ namespace Artemis.Profiles.Layers.Models
             Conditions = source.Conditions;
             DynamicProperties = source.DynamicProperties;
             Brush = source.Brush;
+            HeightEase = source.HeightEase;
+            WidthEase = source.WidthEase;
+            OpacityEase = source.OpacityEase;
+            HeightEaseTime = source.HeightEaseTime;
+            WidthEaseTime = source.WidthEaseTime;
+            OpacityEaseTime = source.OpacityEaseTime;
         }
 
         public double X { get; set; }
@@ -35,11 +41,14 @@ namespace Artemis.Profiles.Layers.Models
         public bool Contain { get; set; }
         public double Opacity { get; set; }
         public double AnimationSpeed { get; set; }
+        public double OpacityEaseTime { get; set; }
+        public double HeightEaseTime { get; set; }
+        public double WidthEaseTime { get; set; }
+        public string WidthEase { set; get; }
+        public string HeightEase { get; set; }
+        public string OpacityEase { get; set; }
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
-
-        [JsonIgnore]
-        public double AnimationProgress { get; set; }
 
         [JsonConverter(typeof(BrushJsonConverter))]
         public Brush Brush
@@ -66,7 +75,7 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
-        public Rect GetRect(int scale = 4)
+        public Rect PropertiesRect(int scale = 4)
         {
             return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }

@@ -8,9 +8,9 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairHeadsets : DeviceProvider
+    internal class CorsairHeadset : DeviceProvider
     {
-        public CorsairHeadsets(ILogger logger)
+        public CorsairHeadset(ILogger logger)
         {
             Logger = logger;
             Type = DeviceType.Headset;
