@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis86Wrapper.Intergrations.Skype;
 
 namespace Artemis86Wrapper
 {
