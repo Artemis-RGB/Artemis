@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Threading;
-using System.Windows;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Utilities.DataReaders;
 using Microsoft.Win32;
@@ -23,8 +22,17 @@ namespace Artemis.DeviceProviders.Logitech
                 return false;
             }
 
-            if (DllManager.RestoreLogitechDll())
-                RestoreDll();
+            if (DllManager.DllPlaced())
+            {
+                CantEnableText =
+                    "Artemis couldn't enable your Logitech keyboard, because the required files are not in place.\n\n" +
+                    "This happens when you run The Division or GTA and shut down Artemis before shutting down The Division\n" +
+                    "Artemis tries to fix this automatically on startup but because the files may have been in use it failed.\n\n" +
+                    "To try again, restart Artemis or check out the FAQ.";
+
+                return false;
+            }
+
             int majorNum = 0, minorNum = 0, buildNum = 0;
 
             LogitechGSDK.LogiLedInit();
@@ -40,15 +48,6 @@ namespace Artemis.DeviceProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
 
             return version >= 88115;
-        }
-
-        private void RestoreDll()
-        {
-            MessageBox.Show(
-                "Artemis couldn't enable your Logitech keyboard, because the required files are not in place.\n\n" +
-                "This happens when you run The Division and shut down Artemis before shutting down The Division\n" +
-                "It can be fixed automatically by clicking OK, but to avoid this message in the future please\n" +
-                "shut down The Division before shutting down Artemis.");
         }
 
         public override void Enable()

@@ -33,7 +33,7 @@ namespace Artemis.Utilities.DataReaders
 
         public static bool RestoreLogitechDll()
         {
-            if (!File.Exists(LogitechPath + @"\LogitechLed.dll") || !File.Exists(LogitechPath + @"\artemis.txt"))
+            if (!DllPlaced())
                 return false;
 
             try

@@ -28,6 +28,7 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
+
         [JsonIgnore]
         public TweenModel TweenModel { get; set; }
 
@@ -176,7 +177,13 @@ namespace Artemis.Profiles.Layers.Models
                     Width = 1,
                     X = 0,
                     Y = 0,
-                    Opacity = 1
+                    Opacity = 1,
+                    HeightEaseTime = 0,
+                    HeightEase = "Linear",
+                    WidthEaseTime = 0,
+                    WidthEase = "Linear",
+                    OpacityEaseTime = 0,
+                    OpacityEase = "Linear"
                 }
             };
         }
@@ -236,7 +243,7 @@ namespace Artemis.Profiles.Layers.Models
             if (height < 0)
                 height = 0;
 
-            return new Rect(X * scale, Y * scale, width * scale, height * scale);
+            return new Rect(X*scale, Y*scale, width*scale, height*scale);
         }
 
         /// <summary>

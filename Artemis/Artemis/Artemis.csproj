@@ -324,9 +324,9 @@
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProS.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\Utilities\CmSdk.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairMice.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairHeadsets.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairMousemats.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMouse.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairHeadset.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairMousemat.cs" />
     <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
@@ -344,7 +344,7 @@
     <Compile Include="InjectionModules\EffectModules.cs" />
     <Compile Include="InjectionModules\ProfileModules.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
-    <Compile Include="DeviceProviders\Corsair\CorsairKeyboards.cs" />
+    <Compile Include="DeviceProviders\Corsair\CorsairKeyboard.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G910.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\KeyboardNames.cs" />

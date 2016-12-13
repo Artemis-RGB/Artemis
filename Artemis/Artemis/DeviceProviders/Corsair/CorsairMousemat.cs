@@ -4,14 +4,13 @@ using System.Linq;
 using System.Threading;
 using CUE.NET;
 using CUE.NET.Devices.Generic.Enums;
-using CUE.NET.Devices.Mousemat.Enums;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairMousemats : DeviceProvider
+    internal class CorsairMousemat : DeviceProvider
     {
-        public CorsairMousemats(ILogger logger)
+        public CorsairMousemat(ILogger logger)
         {
             Logger = logger;
             Type = DeviceType.Mousemat;
@@ -40,7 +39,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void UpdateDevice(Bitmap bitmap)
         {
-            if (!CanUse || bitmap == null)
+            if (!CanUse || (bitmap == null))
                 return;
             if (bitmap.Width != bitmap.Height)
                 throw new ArgumentException("Bitmap must be a perfect square");
