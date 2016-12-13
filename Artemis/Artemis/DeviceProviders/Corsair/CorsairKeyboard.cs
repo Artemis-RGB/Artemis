@@ -10,19 +10,18 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic;
 using CUE.NET.Devices.Generic.Enums;
-using CUE.NET.Devices.Keyboard;
 using CUE.NET.Helper;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    public class CorsairKeyboards : KeyboardProvider
+    public class CorsairKeyboard : KeyboardProvider
     {
-        private CorsairKeyboard _keyboard;
+        private CUE.NET.Devices.Keyboard.CorsairKeyboard _keyboard;
         private ImageBrush _keyboardBrush;
 
-        public CorsairKeyboards(ILogger logger)
+        public CorsairKeyboard(ILogger logger)
         {
             Logger = logger;
             Name = "Corsair RGB Keyboards";
@@ -83,7 +82,6 @@ namespace Artemis.DeviceProviders.Corsair
             }
 
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
-
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 
