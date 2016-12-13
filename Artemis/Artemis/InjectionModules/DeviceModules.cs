@@ -12,20 +12,21 @@ namespace Artemis.InjectionModules
         public override void Load()
         {
             // Keyboards
-            Bind<DeviceProvider>().To<CorsairKeyboards>().InSingletonScope();
+            Bind<DeviceProvider>().To<CorsairKeyboard>().InSingletonScope();
             Bind<DeviceProvider>().To<G910>().InSingletonScope();
             Bind<DeviceProvider>().To<G810>().InSingletonScope();
             Bind<DeviceProvider>().To<BlackWidow>().InSingletonScope();
             Bind<DeviceProvider>().To<MasterkeysProL>().InSingletonScope();
+            Bind<DeviceProvider>().To<MasterkeysProS>().InSingletonScope();
 
             // Mice
-            Bind<DeviceProvider>().To<CorsairMice>().InSingletonScope();
+            Bind<DeviceProvider>().To<CorsairMouse>().InSingletonScope();
 
             // Headsets
-            Bind<DeviceProvider>().To<CorsairHeadsets>().InSingletonScope();
+            Bind<DeviceProvider>().To<CorsairHeadset>().InSingletonScope();
 
             // Mousemats
-            Bind<DeviceProvider>().To<CorsairMousemats>().InSingletonScope();
+            Bind<DeviceProvider>().To<CorsairMousemat>().InSingletonScope();
 
             // Other
             Bind<DeviceProvider>().To<LogitechGeneric>().InSingletonScope();

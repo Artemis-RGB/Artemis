@@ -38,7 +38,7 @@ namespace Artemis
             }
         }
 
-        private static ExceptionViewer GetArtemisExceptionViewer(Exception e)
+        public static ExceptionViewer GetArtemisExceptionViewer(Exception e)
         {
             var logger = LogManager.GetCurrentClassLogger();
             logger.Fatal(e, "Unhandled exception, showing dialog and shutting down.");

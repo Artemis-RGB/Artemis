@@ -60,13 +60,15 @@ namespace Artemis.Services
             if (window == null)
                 return;
 
-            var dialog = new MarkdownDialog(window)
+            window.Dispatcher.Invoke(() =>
             {
-                Markdown = markdown,
-                Title = title
-            };
-
-            window.Dispatcher.Invoke(() => window.ShowMetroDialogAsync(dialog));
+                var dialog = new MarkdownDialog(window)
+                {
+                    Markdown = markdown,
+                    Title = title
+                };
+                return window.ShowMetroDialogAsync(dialog);
+            });
         }
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)

@@ -4,16 +4,16 @@
     {
         #region Properties & Fields
 
-        private int _rCount = 0;
-        private int _r = 0;
-        private int _gCount = 0;
-        private int _g = 0;
-        private int _bCount = 0;
-        private int _b = 0;
+        private int _rCount;
+        private int _r;
+        private int _gCount;
+        private int _g;
+        private int _bCount;
+        private int _b;
 
-        public byte R => (byte)(_rCount > 0 ? (_r / _rCount) : 0);
-        public byte G => (byte)(_gCount > 0 ? (_g / _gCount) : 0);
-        public byte B => (byte)(_bCount > 0 ? (_b / _bCount) : 0);
+        public byte R => (byte) (_rCount > 0 ? _r/_rCount : 0);
+        public byte G => (byte) (_gCount > 0 ? _g/_gCount : 0);
+        public byte B => (byte) (_bCount > 0 ? _b/_bCount : 0);
 
         #endregion
 

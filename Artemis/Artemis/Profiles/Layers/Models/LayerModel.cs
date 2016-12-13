@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Animations;
@@ -18,43 +19,18 @@ namespace Artemis.Profiles.Layers.Models
         public LayerModel()
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
+            TweenModel = new TweenModel(this);
 
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
                 GifImage = new GifImage(model.GifFile);
         }
 
-        public ILayerType LayerType { get; set; }
-        public ILayerCondition LayerCondition { get; set; }
-        public ILayerAnimation LayerAnimation { get; set; }
-
-        public string Name { get; set; }
-        public int Order { get; set; }
-
-        public bool Enabled { get; set; }
-        public bool Expanded { get; set; }
-        public bool IsEvent { get; set; }
-        public LayerPropertiesModel Properties { get; set; }
-        public EventPropertiesModel EventProperties { get; set; }
-        public ChildItemCollection<LayerModel, LayerModel> Children { get; }
-
-        [JsonIgnore]
-        public LayerPropertiesModel AppliedProperties { get; set; }
-
         [JsonIgnore]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
 
         [JsonIgnore]
-        public LayerModel Parent { get; internal set; }
-
-        [JsonIgnore]
-        public ProfileModel Profile { get; internal set; }
-
-        [JsonIgnore]
-        public GifImage GifImage { get; set; }
-
-        [JsonIgnore]
-        public DateTime LastRender { get; set; }
+        public TweenModel TweenModel { get; set; }
 
         /// <summary>
         ///     Checks whether this layers conditions are met.
@@ -68,19 +44,59 @@ namespace Artemis.Profiles.Layers.Models
             return Enabled && LayerCondition.ConditionsMet(this, dataModel);
         }
 
+        /// <summary>
+        ///     Update the layer
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <param name="preview"></param>
+        /// <param name="updateAnimations"></param>
         public void Update(IDataModel dataModel, bool preview, bool updateAnimations)
         {
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
-            
+
+            if (!preview && updateAnimations)
+                TweenModel.Update();
+
             LastRender = DateTime.Now;
         }
 
+        /// <summary>
+        ///     Applies the saved properties to the current properties
+        /// </summary>
+        /// <param name="advanced">Include advanced properties (opacity, brush)</param>
+        public void ApplyProperties(bool advanced)
+        {
+            X = Properties.X;
+            Y = Properties.Y;
+            Width = Properties.Width;
+            Height = Properties.Height;
+
+            if (!advanced)
+                return;
+
+            Opacity = Properties.Opacity;
+            Brush = Properties.Brush;
+        }
+
+        /// <summary>
+        ///     Draw the layer using the provided context
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <param name="c"></param>
+        /// <param name="preview"></param>
+        /// <param name="updateAnimations"></param>
         public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
+            if (Brush == null)
+                return;
+
             LayerType.Draw(this, c);
         }
 
+        /// <summary>
+        ///     Tells the current layer type to setup the layer's LayerProperties
+        /// </summary>
         public void SetupProperties()
         {
             LayerType.SetupProperties(this);
@@ -97,6 +113,9 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
+        /// <summary>
+        ///     Ensures all child layers have a unique order
+        /// </summary>
         public void FixOrder()
         {
             Children.Sort(l => l.Order);
@@ -158,23 +177,41 @@ namespace Artemis.Profiles.Layers.Models
                     Width = 1,
                     X = 0,
                     Y = 0,
-                    Opacity = 1
+                    Opacity = 1,
+                    HeightEaseTime = 0,
+                    HeightEase = "Linear",
+                    WidthEaseTime = 0,
+                    WidthEase = "Linear",
+                    OpacityEaseTime = 0,
+                    OpacityEase = "Linear"
                 }
             };
         }
 
+        /// <summary>
+        ///     Insert this layer before the given layer
+        /// </summary>
+        /// <param name="source"></param>
         public void InsertBefore(LayerModel source)
         {
             source.Order = Order;
             Insert(source);
         }
 
+        /// <summary>
+        ///     Insert this layer after the given layer
+        /// </summary>
+        /// <param name="source"></param>
         public void InsertAfter(LayerModel source)
         {
             source.Order = Order + 1;
             Insert(source);
         }
 
+        /// <summary>
+        ///     Insert the layer as a sibling
+        /// </summary>
+        /// <param name="source"></param>
         private void Insert(LayerModel source)
         {
             if (Parent != null)
@@ -197,11 +234,22 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
+        public Rect LayerRect(int scale = 4)
+        {
+            var width = Width;
+            var height = Height;
+            if (width < 0)
+                width = 0;
+            if (height < 0)
+                height = 0;
+
+            return new Rect(X*scale, Y*scale, width*scale, height*scale);
+        }
+
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
         /// </summary>
-        /// <typeparam name="T">The game data model to base the conditions on</typeparam>
         /// <param name="dataModel">Instance of said game data model</param>
         /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
@@ -227,6 +275,105 @@ namespace Artemis.Profiles.Layers.Models
             return layers;
         }
 
+        public void SetupCondition()
+        {
+            if (IsEvent && !(LayerCondition is EventCondition))
+                LayerCondition = new EventCondition();
+            else if (!IsEvent && !(LayerCondition is DataModelCondition))
+                LayerCondition = new DataModelCondition();
+        }
+
+        #region Properties
+
+        #region Layer type properties
+
+        public ILayerType LayerType { get; set; }
+        public ILayerCondition LayerCondition { get; set; }
+        public ILayerAnimation LayerAnimation { get; set; }
+
+        #endregion
+
+        #region Generic properties
+
+        public string Name { get; set; }
+        public int Order { get; set; }
+        public bool Enabled { get; set; }
+        public bool Expanded { get; set; }
+        public bool IsEvent { get; set; }
+        public LayerPropertiesModel Properties { get; set; }
+        public EventPropertiesModel EventProperties { get; set; }
+
+        #endregion
+
+        #region Relational properties
+
+        public ChildItemCollection<LayerModel, LayerModel> Children { get; }
+
+        [JsonIgnore]
+        public LayerModel Parent { get; internal set; }
+
+        [JsonIgnore]
+        public ProfileModel Profile { get; internal set; }
+
+        #endregion
+
+        #region Render properties
+
+        [JsonIgnore] private Brush _brush;
+
+        [JsonIgnore]
+        public double X { get; set; }
+
+        [JsonIgnore]
+        public double Y { get; set; }
+
+        [JsonIgnore]
+        public double Width { get; set; }
+
+        [JsonIgnore]
+        public double Height { get; set; }
+
+        [JsonIgnore]
+        public double Opacity { get; set; }
+
+        [JsonIgnore]
+        public Brush Brush
+        {
+            get { return _brush; }
+            set
+            {
+                if (value == null)
+                {
+                    _brush = null;
+                    return;
+                }
+
+                if (value.IsFrozen)
+                {
+                    _brush = value;
+                    return;
+                }
+
+                // Clone the brush off of the UI thread and freeze it
+                var cloned = value.Dispatcher.Invoke(value.CloneCurrentValue);
+                cloned.Freeze();
+                _brush = cloned;
+            }
+        }
+
+        [JsonIgnore]
+        public double AnimationProgress { get; set; }
+
+        [JsonIgnore]
+        public GifImage GifImage { get; set; }
+
+        [JsonIgnore]
+        public DateTime LastRender { get; set; }
+
+        #endregion
+
+        #endregion
+
         #region IChildItem<Parent> Members
 
         LayerModel IChildItem<LayerModel>.Parent
@@ -242,13 +389,5 @@ namespace Artemis.Profiles.Layers.Models
         }
 
         #endregion
-
-        public void SetupCondition()
-        {
-            if (IsEvent && !(LayerCondition is EventCondition))
-                LayerCondition = new EventCondition();
-            else if (!IsEvent && !(LayerCondition is DataModelCondition))
-                LayerCondition = new DataModelCondition();
-        }
     }
 }

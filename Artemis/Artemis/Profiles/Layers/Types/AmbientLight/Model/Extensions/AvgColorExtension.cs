@@ -23,10 +23,10 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 
         public static AvgColor[] ExtendHeight(this AvgColor[] colors, int height)
         {
-            AvgColor[] extended = new AvgColor[colors.Length * height];
+            var extended = new AvgColor[colors.Length*height];
 
-            for (int i = 0; i < height; i++)
-                Array.Copy(colors, 0, extended, i * colors.Length, colors.Length);
+            for (var i = 0; i < height; i++)
+                Array.Copy(colors, 0, extended, i*colors.Length, colors.Length);
 
             return extended;
         }
@@ -35,9 +35,9 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
         {
             if (colors == null || width <= 0) return colors;
 
-            AvgColor[] flipped = new AvgColor[colors.Length];
+            var flipped = new AvgColor[colors.Length];
             for (int i = 0, j = colors.Length - width; i < colors.Length; i += width, j -= width)
-                for (int k = 0; k < width; ++k)
+                for (var k = 0; k < width; ++k)
                     flipped[i + k] = colors[j + k];
 
             return flipped;
@@ -47,8 +47,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
         {
             if (colors == null || width <= 0) return colors;
 
-            AvgColor[] flipped = new AvgColor[colors.Length];
-            for (int i = 0; i < colors.Length; i += width)
+            var flipped = new AvgColor[colors.Length];
+            for (var i = 0; i < colors.Length; i += width)
                 for (int j = 0, k = width - 1; j < width; ++j, --k)
                     flipped[i + j] = colors[i + k];
 
@@ -57,9 +57,9 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions
 
         public static byte[] ToBGRArray(this AvgColor[] colors)
         {
-            byte[] newData = new byte[colors.Length * 3];
-            int counter = 0;
-            foreach (AvgColor color in colors)
+            var newData = new byte[colors.Length*3];
+            var counter = 0;
+            foreach (var color in colors)
             {
                 newData[counter++] = color.B;
                 newData[counter++] = color.G;

@@ -49,9 +49,9 @@ namespace Artemis.Utilities.GameState
             {
                 _listener.Start();
             }
-            catch (HttpListenerException e)
+            catch (Exception e)
             {
-                _logger.Error(e, "Couldn't start the webserver on port {0}.", Port);
+                _logger.Error(e, "Couldn't start the webserver on port {0}. Try selecting a different port", Port);
                 Running = false;
                 return;
             }

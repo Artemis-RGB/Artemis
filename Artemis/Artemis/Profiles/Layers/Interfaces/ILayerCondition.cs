@@ -5,6 +5,6 @@ namespace Artemis.Profiles.Layers.Interfaces
 {
     public interface ILayerCondition
     {
-        bool ConditionsMet(LayerModel layer, IDataModel dataModel);
+        bool ConditionsMet(LayerModel layerModel, IDataModel dataModel);
     }
 }

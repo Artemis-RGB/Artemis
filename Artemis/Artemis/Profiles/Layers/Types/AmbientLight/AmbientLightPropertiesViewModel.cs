@@ -9,14 +9,16 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
 
         public AmbientLightPropertiesViewModel(LayerEditorViewModel editorVm)
             : base(editorVm)
-        { }
+        {
+        }
 
         #endregion
 
         #region Methods
 
         public override void ApplyProperties()
-        { }
+        {
+        }
 
         #endregion
     }

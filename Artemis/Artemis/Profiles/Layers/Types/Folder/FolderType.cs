@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Abstract;
@@ -13,7 +12,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
 {
     public class FolderType : ILayerType
     {
-        public string Name { get; } = "Folder";
+        public string Name => "Folder";
         public bool ShowInEdtor { get; } = false;
         // FolderType pretents to be a keyboard so it's children get drawn
         public DrawType DrawType { get; } = DrawType.Keyboard;
@@ -29,7 +28,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
             return image;
         }
 
-        public void Draw(LayerModel layer, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c)
         {
         }
 
