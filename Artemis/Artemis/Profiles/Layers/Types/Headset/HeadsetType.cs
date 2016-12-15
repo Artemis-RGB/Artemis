@@ -15,8 +15,8 @@ namespace Artemis.Profiles.Layers.Types.Headset
     public class HeadsetType : ILayerType
     {
         public string Name => "Headset";
-        public bool ShowInEdtor { get; } = false;
-        public DrawType DrawType { get; } = DrawType.Headset;
+        public bool ShowInEdtor => false;
+        public DrawType DrawType => DrawType.Headset;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

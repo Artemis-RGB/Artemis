@@ -12,27 +12,71 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="80" />
+            <RowDefinition Height="32" />
             <RowDefinition Height="80" />
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Keyboard output -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="16" Content="Keyboard" HorizontalAlignment="Center" />
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="75" Width="300" HorizontalAlignment="Center"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=Keyboard}" />
+        </Border>
+
         <!-- Razer output -->
-        <Label Grid.Row="0" Grid.Column="0" FontSize="20" Content="Razer display" />
-        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="75" Width="300" HorizontalAlignment="Left"
+        <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" FontSize="16" Content="Razer SDK feed" HorizontalAlignment="Center" />
+        <Border Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Height="75" Width="300" HorizontalAlignment="Center"
                 VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
                 SnapsToDevicePixels="True">
             <Image Source="{Binding Path=RazerDisplay}" />
         </Border>
 
+        <!-- Mouse output -->
+        <Label Grid.Row="2" Grid.Column="0" FontSize="16" Content="Mouse" HorizontalAlignment="Center" />
+        <Border Grid.Row="3" Grid.Column="0" Height="75" Width="75" HorizontalAlignment="Center"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=Mouse}" />
+        </Border>
+
+        <!-- Headset output -->
+        <Label Grid.Row="2" Grid.Column="1" FontSize="16" Content="Headset" HorizontalAlignment="Center" />
+        <Border Grid.Row="3" Grid.Column="1" Height="75" Width="75" HorizontalAlignment="Center"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=Headset}" />
+        </Border>
+
+        <!-- Mousemat output -->
+        <Label Grid.Row="2" Grid.Column="2" FontSize="16" Content="Mousemat" HorizontalAlignment="Center" />
+        <Border Grid.Row="3" Grid.Column="2" Height="75" Width="75" HorizontalAlignment="Center"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=Mousemat}" />
+        </Border>
+
+        <!-- Generic output -->
+        <Label Grid.Row="2" Grid.Column="3" FontSize="16" Content="Generic" HorizontalAlignment="Center" />
+        <Border Grid.Row="3" Grid.Column="3" Height="75" Width="75" HorizontalAlignment="Center"
+                VerticalAlignment="Top" BorderThickness="1" BorderBrush="{StaticResource GrayBrush7}"
+                SnapsToDevicePixels="True">
+            <Image Source="{Binding Path=Generic}" />
+        </Border>
+
         <!-- Log -->
-        <Label Grid.Row="2" Grid.Column="0" FontSize="20" Content="Log" />
-        <Button x:Name="OpenLog" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"
+        <Label Grid.Row="4" Grid.Column="0" FontSize="20" Content="Log" />
+        <Button x:Name="OpenLog" Grid.Row="4" Grid.Column="3" HorizontalAlignment="Right"
                 Style="{DynamicResource SquareButtonStyle}" Content="Open log file" VerticalAlignment="Center" />
-        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1"
+        <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="1"
                 BorderBrush="{StaticResource GrayBrush7}" SnapsToDevicePixels="True">
             <log:LoggingControl />
         </Border>
