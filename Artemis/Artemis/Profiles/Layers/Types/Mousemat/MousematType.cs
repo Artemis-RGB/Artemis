@@ -15,8 +15,8 @@ namespace Artemis.Profiles.Layers.Types.Mousemat
     public class MousematType : ILayerType
     {
         public string Name => "Mousemat";
-        public bool ShowInEdtor { get; } = false;
-        public DrawType DrawType { get; } = DrawType.Mousemat;
+        public bool ShowInEdtor => false;
+        public DrawType DrawType => DrawType.Mousemat;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

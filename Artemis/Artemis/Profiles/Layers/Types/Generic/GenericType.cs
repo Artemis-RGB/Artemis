@@ -15,17 +15,15 @@ namespace Artemis.Profiles.Layers.Types.Generic
     public class GenericType : ILayerType
     {
         public string Name => "Generic (Logitech)";
-        public bool ShowInEdtor { get; } = false;
-        public DrawType DrawType { get; } = DrawType.Generic;
+        public bool ShowInEdtor => false;
+        public DrawType DrawType => DrawType.Generic;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
-            {
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.generic), thumbnailRect);
-            }
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
 
             var image = new DrawingImage(visual.Drawing);
             return image;
@@ -61,7 +59,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
             layerModel.Properties.Y = 0;
             layerModel.Properties.Contain = true;
 
-            layerModel.ApplyProperties(false);
+            layerModel.ApplyProperties(true);
 
             if (isPreview || dataModel == null)
                 return;

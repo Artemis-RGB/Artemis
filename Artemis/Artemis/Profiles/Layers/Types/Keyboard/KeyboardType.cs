@@ -12,8 +12,8 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
     public class KeyboardType : ILayerType
     {
         public string Name => "Keyboard";
-        public bool ShowInEdtor { get; } = true;
-        public DrawType DrawType { get; } = DrawType.Keyboard;
+        public bool ShowInEdtor => true;
+        public DrawType DrawType => DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

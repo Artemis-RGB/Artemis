@@ -35,8 +35,8 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
 
         public string Name => "Keyboard - Key press";
-        public bool ShowInEdtor { get; } = false;
-        public DrawType DrawType { get; } = DrawType.Keyboard;
+        public bool ShowInEdtor => false;
+        public DrawType DrawType => DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
