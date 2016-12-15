@@ -20,12 +20,14 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
     internal class KeyPressType : ILayerType
     {
         private readonly DeviceManager _deviceManager;
-        private List<LayerModel> _keyPressLayers = new List<LayerModel>();
+        private List<LayerModel> _keyPressLayers;
         private LayerModel _layerModel;
 
         public KeyPressType(DeviceManager deviceManager)
         {
             _deviceManager = deviceManager;
+            _keyPressLayers = new List<LayerModel>();
+
             KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
         }
 
@@ -77,10 +79,12 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             lock (_keyPressLayers)
             {
                 // Remove expired key presses
-                _keyPressLayers = _keyPressLayers.Where(k => !k.LayerAnimation.MustExpire(k)).ToList();
+                var updateLayers = _keyPressLayers.Where(k => !k.LayerAnimation.MustExpire(k)).ToList();
                 // Update the ones that are still active
-                foreach (var keyPressLayer in _keyPressLayers)
-                    keyPressLayer.Update(null, false, true);
+                foreach (var updateLayer in updateLayers)
+                    updateLayer.Update(null, false, true);
+
+                _keyPressLayers = updateLayers;
             }
         }
 
