@@ -90,5 +90,21 @@ namespace Artemis.Utilities
             bitmap.Render(iconImage);
             return bitmap;
         }
+
+        public static DrawingImage BitmapToDrawingImage(Bitmap b, Rect rect)
+        {
+            if (b == null)
+                return new DrawingImage();
+
+            var visual = new DrawingVisual();
+            using (var c = visual.RenderOpen())
+            {
+                c.DrawImage(BitmapToBitmapImage(b), rect);
+            }
+
+            var image = new DrawingImage(visual.Drawing);
+            image.Freeze();
+            return image;
+        }
     }
 }

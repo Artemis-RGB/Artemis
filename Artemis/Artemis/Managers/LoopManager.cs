@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Windows;
-using System.Windows.Threading;
 using Artemis.DeviceProviders;
+using Artemis.ViewModels;
+using Caliburn.Micro;
 using Ninject.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
@@ -17,17 +17,20 @@ namespace Artemis.Managers
     /// </summary>
     public class LoopManager : IDisposable
     {
+        private readonly DebugViewModel _debugViewModel;
         private readonly DeviceManager _deviceManager;
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
         private bool _canShowException;
 
-        public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager)
+        public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
+            DebugViewModel debugViewModel)
         {
             _logger = logger;
             _effectManager = effectManager;
             _deviceManager = deviceManager;
+            _debugViewModel = debugViewModel;
             _canShowException = true;
 
             // Setup timers
@@ -36,6 +39,19 @@ namespace Artemis.Managers
             _loopTimer.Start();
 
             _logger.Info("Intialized LoopManager");
+        }
+
+        public DebugViewModel DebugViewModel { get; set; }
+
+        /// <summary>
+        ///     Gets whether the loop is running
+        /// </summary>
+        public bool Running { get; private set; }
+
+        public void Dispose()
+        {
+            _loopTimer.Stop();
+            _loopTimer.Dispose();
         }
 
         private void LoopTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -48,7 +64,7 @@ namespace Artemis.Managers
             {
                 if (_canShowException)
                 {
-                    Caliburn.Micro.Execute.OnUIThread(delegate
+                    Execute.OnUIThread(delegate
                     {
                         _canShowException = false;
                         _loopTimer.Stop();
@@ -57,17 +73,6 @@ namespace Artemis.Managers
                     });
                 }
             }
-        }
-
-        /// <summary>
-        ///     Gets whether the loop is running
-        /// </summary>
-        public bool Running { get; private set; }
-
-        public void Dispose()
-        {
-            _loopTimer.Stop();
-            _loopTimer.Dispose();
         }
 
         public Task StartAsync()
@@ -185,6 +190,8 @@ namespace Artemis.Managers
                     foreach (var mousemat in mousemats)
                         mousemat.UpdateDevice(frame.MousematBitmap);
 
+                    _debugViewModel.DrawFrame(frame);
+
                     OnRenderCompleted();
                 }
             }
@@ -254,6 +261,7 @@ namespace Artemis.Managers
             MouseBitmap?.Dispose();
             HeadsetBitmap?.Dispose();
             GenericBitmap?.Dispose();
+            MousematBitmap?.Dispose();
         }
     }
 }

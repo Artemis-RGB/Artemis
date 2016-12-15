@@ -36,12 +36,6 @@ namespace Artemis.Models
             DeviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
 
-        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
-        {
-            if (!string.IsNullOrEmpty(Settings?.LastProfile))
-                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
-        }
-
         public bool Initialized { get; set; }
         public DeviceManager DeviceManager { get; set; }
         public EffectSettings Settings { get; set; }
@@ -57,6 +51,12 @@ namespace Artemis.Models
         public virtual void Dispose()
         {
             Profile?.Deactivate();
+        }
+
+        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(Settings?.LastProfile))
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
         }
 
         // Called on creation
@@ -89,15 +89,15 @@ namespace Artemis.Models
                 var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
                 using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
-                        Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
-                                                DataModel, keyboardRect, false, true, "keyboard");
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
+                        DataModel, keyboardRect, false, true, "keyboard");
                 }
                 // Render mice layer-by-layer
                 var devRec = new Rect(0, 0, 40, 40);
                 using (var g = Graphics.FromImage(frame.MouseBitmap))
                 {
-                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), DataModel,
-                        devRec, false, true, "mouse");
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Mouse), 
+                        DataModel, devRec, false, true, "mouse");
                 }
                 // Render headsets layer-by-layer
                 using (var g = Graphics.FromImage(frame.HeadsetBitmap))
