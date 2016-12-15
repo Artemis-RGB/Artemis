@@ -70,11 +70,7 @@ namespace Artemis.ViewModels.Flyouts
         {
             get
             {
-                var collection = new BindableCollection<string>
-                    (MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
-
-                collection.Insert(0, "None");
-                return collection;
+                return new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
             }
         }
 
