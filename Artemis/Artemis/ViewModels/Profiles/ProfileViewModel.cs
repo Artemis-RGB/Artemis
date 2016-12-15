@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -45,6 +44,57 @@ namespace Artemis.ViewModels.Profiles
             deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
 
+        public ProfileModel SelectedProfile { get; set; }
+
+        public LayerModel SelectedLayer
+        {
+            get { return _selectedLayer; }
+            set
+            {
+                if (Equals(value, _selectedLayer)) return;
+                _selectedLayer = value;
+                NotifyOfPropertyChange(() => SelectedLayer);
+            }
+        }
+
+        public DrawingImage KeyboardPreview
+        {
+            get { return _keyboardPreview; }
+            set
+            {
+                if (Equals(value, _keyboardPreview)) return;
+                _keyboardPreview = value;
+                NotifyOfPropertyChange(() => KeyboardPreview);
+            }
+        }
+
+        public double BlurRadius
+        {
+            get { return _blurRadius; }
+            set
+            {
+                if (value.Equals(_blurRadius)) return;
+                _blurRadius = value;
+                NotifyOfPropertyChange(() => BlurRadius);
+            }
+        }
+
+        public bool ShowAll
+        {
+            get { return _showAll; }
+            set
+            {
+                if (value == _showAll) return;
+                _showAll = value;
+                NotifyOfPropertyChange(() => ShowAll);
+            }
+        }
+
+        public ImageSource KeyboardImage => ImageUtilities
+            .BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image ?? Resources.none);
+
+        public bool Activated { get; set; }
+
         private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
         {
             if (!Activated)
@@ -55,7 +105,8 @@ namespace Artemis.ViewModels.Profiles
             _blurProgress = _blurProgress + 0.025;
             BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
 
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null)
+            // Besides the usual checks, also check if the ActiveKeyboard isn't the NoneKeyboard
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || _deviceManager.ActiveKeyboard.Slug == "none")
             {
                 var preview = new DrawingImage();
                 preview.Freeze();
@@ -126,57 +177,6 @@ namespace Artemis.ViewModels.Profiles
 
             KeyboardPreview = drawnPreview;
         }
-
-        public ProfileModel SelectedProfile { get; set; }
-
-        public LayerModel SelectedLayer
-        {
-            get { return _selectedLayer; }
-            set
-            {
-                if (Equals(value, _selectedLayer)) return;
-                _selectedLayer = value;
-                NotifyOfPropertyChange(() => SelectedLayer);
-            }
-        }
-
-        public DrawingImage KeyboardPreview
-        {
-            get { return _keyboardPreview; }
-            set
-            {
-                if (Equals(value, _keyboardPreview)) return;
-                _keyboardPreview = value;
-                NotifyOfPropertyChange(() => KeyboardPreview);
-            }
-        }
-
-        public double BlurRadius
-        {
-            get { return _blurRadius; }
-            set
-            {
-                if (value.Equals(_blurRadius)) return;
-                _blurRadius = value;
-                NotifyOfPropertyChange(() => BlurRadius);
-            }
-        }
-
-        public bool ShowAll
-        {
-            get { return _showAll; }
-            set
-            {
-                if (value == _showAll) return;
-                _showAll = value;
-                NotifyOfPropertyChange(() => ShowAll);
-            }
-        }
-
-        public ImageSource KeyboardImage => ImageUtilities
-            .BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image ?? Resources.none);
-
-        public bool Activated { get; set; }
 
         private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
         {

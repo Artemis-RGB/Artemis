@@ -23,7 +23,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
             var thumbnailRect = new Rect(0, 0, 18, 18);
             var visual = new DrawingVisual();
             using (var c = visual.RenderOpen())
-                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.headset), thumbnailRect);
+                c.DrawImage(ImageUtilities.BitmapToBitmapImage(Resources.generic), thumbnailRect);
 
             var image = new DrawingImage(visual.Drawing);
             return image;
