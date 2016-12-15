@@ -46,20 +46,19 @@ namespace Artemis.DeviceProviders.Corsair
 
             var leds = CueSDK.HeadsetSDK.Leds.Count();
             var step = (double) bitmap.Width/leds;
-            using (bitmap)
-            {
-                var ledIndex = 0;
-                // Color each LED according to one of the pixels
-                foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
-                {
-                    var col = ledIndex == 0
-                        ? bitmap.GetPixel(0, 0)
-                        : bitmap.GetPixel((int) ((ledIndex + 1)*step - 1), (int) ((ledIndex + 1)*step - 1));
 
-                    corsairLed.Color = col;
-                    ledIndex++;
-                }
+            var ledIndex = 0;
+            // Color each LED according to one of the pixels
+            foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
+            {
+                var col = ledIndex == 0
+                    ? bitmap.GetPixel(0, 0)
+                    : bitmap.GetPixel((int) ((ledIndex + 1)*step - 1), (int) ((ledIndex + 1)*step - 1));
+
+                corsairLed.Color = col;
+                ledIndex++;
             }
+
             CueSDK.HeadsetSDK.Update();
         }
 

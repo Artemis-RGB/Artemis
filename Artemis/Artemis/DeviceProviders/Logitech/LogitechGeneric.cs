@@ -25,12 +25,9 @@ namespace Artemis.DeviceProviders.Logitech
             if (!CanUse || bitmap == null)
                 return;
 
-            using (bitmap)
-            {
-                var col = bitmap.GetPixel(bitmap.Width/2, bitmap.Height/2);
-                LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_RGB);
-                LogitechGSDK.LogiLedSetLighting((int) (col.R/2.55), (int) (col.G/2.55), (int) (col.B/2.55));
-            }
+            var col = bitmap.GetPixel(bitmap.Width/2, bitmap.Height/2);
+            LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_RGB);
+            LogitechGSDK.LogiLedSetLighting((int) (col.R/2.55), (int) (col.G/2.55), (int) (col.B/2.55));
         }
 
         public override bool TryEnable()
