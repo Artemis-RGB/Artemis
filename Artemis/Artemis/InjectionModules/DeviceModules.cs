@@ -1,4 +1,5 @@
 ﻿using Artemis.DeviceProviders;
+using Artemis.DeviceProviders.Artemis;
 using Artemis.DeviceProviders.CoolerMaster;
 using Artemis.DeviceProviders.Corsair;
 using Artemis.DeviceProviders.Logitech;
@@ -12,6 +13,7 @@ namespace Artemis.InjectionModules
         public override void Load()
         {
             // Keyboards
+            Bind<DeviceProvider>().To<NoneKeyboard>().InSingletonScope();
             Bind<DeviceProvider>().To<CorsairKeyboard>().InSingletonScope();
             Bind<DeviceProvider>().To<G910>().InSingletonScope();
             Bind<DeviceProvider>().To<G810>().InSingletonScope();

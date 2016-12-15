@@ -48,39 +48,36 @@ namespace Artemis.DeviceProviders.Corsair
             var xStep = (double) bitmap.Width/6;
 
             // This approach will break if any mousemats with different LED amounts are released, for now it will do.
-            using (bitmap)
+            var ledIndex = 0;
+            // Color each LED according to one of the pixels
+            foreach (var corsairLed in CueSDK.MousematSDK.Leds.OrderBy(l => l.ToString()))
             {
-                var ledIndex = 0;
-                // Color each LED according to one of the pixels
-                foreach (var corsairLed in CueSDK.MousematSDK.Leds.OrderBy(l => l.ToString()))
+                Color col;
+                // Left side
+                if (ledIndex < 5)
                 {
-                    Color col;
-                    // Left side
-                    if (ledIndex < 5)
-                    {
-                        col = ledIndex == 0
-                            ? bitmap.GetPixel(0, (int) (ledIndex*yStep))
-                            : bitmap.GetPixel(0, (int) (ledIndex*yStep) - 1);
-                    }
-                    // Bottom
-                    else if (ledIndex < 10)
-                    {
-                        // Start at index 1 because the corner belongs to the left side
-                        var zoneIndex = ledIndex - 4;
-                        col = bitmap.GetPixel((int) (zoneIndex*xStep), bitmap.Height - 1);
-                    }
-                    // Right side
-                    else
-                    {
-                        var zoneIndex = ledIndex - 10;
-                        col = zoneIndex == 4
-                            ? bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - (int) (zoneIndex*yStep))
-                            : bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - 1 - (int) (zoneIndex*yStep));
-                    }
-
-                    corsairLed.Color = col;
-                    ledIndex++;
+                    col = ledIndex == 0
+                        ? bitmap.GetPixel(0, (int) (ledIndex*yStep))
+                        : bitmap.GetPixel(0, (int) (ledIndex*yStep) - 1);
                 }
+                // Bottom
+                else if (ledIndex < 10)
+                {
+                    // Start at index 1 because the corner belongs to the left side
+                    var zoneIndex = ledIndex - 4;
+                    col = bitmap.GetPixel((int) (zoneIndex*xStep), bitmap.Height - 1);
+                }
+                // Right side
+                else
+                {
+                    var zoneIndex = ledIndex - 10;
+                    col = zoneIndex == 4
+                        ? bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - (int) (zoneIndex*yStep))
+                        : bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - 1 - (int) (zoneIndex*yStep));
+                }
+
+                corsairLed.Color = col;
+                ledIndex++;
             }
             CueSDK.MousematSDK.Update();
         }
