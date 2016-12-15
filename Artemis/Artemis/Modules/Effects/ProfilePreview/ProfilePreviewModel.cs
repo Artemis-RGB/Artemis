@@ -62,7 +62,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
                 var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
                 using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                 {
-                    Profile.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
+                    Profile?.DrawLayers(g, renderLayers.Where(rl => rl.LayerType.DrawType == DrawType.Keyboard),
                         DataModel, keyboardRect, true, true, "keyboard");
                 }
                 // Render mice layer-by-layer

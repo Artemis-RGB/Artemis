@@ -16,8 +16,8 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
     internal class KeyboardGifType : ILayerType
     {
         public string Name => "Keyboard - GIF";
-        public bool ShowInEdtor { get; } = true;
-        public DrawType DrawType { get; } = DrawType.Keyboard;
+        public bool ShowInEdtor => true;
+        public DrawType DrawType => DrawType.Keyboard;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
