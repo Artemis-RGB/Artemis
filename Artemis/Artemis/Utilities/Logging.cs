@@ -36,11 +36,13 @@ namespace Artemis.Utilities
 
             // Step 3. Set target properties 
             debuggerTarget.Layout = @"${logger:shortName=True} - ${uppercase:${level}}: ${message}";
-            fileTarget.FileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/${shortdate}.txt";
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=tostring}";
-            fileTarget.EnableFileDelete = true;
+            fileTarget.FileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/log.txt";
+            fileTarget.ArchiveFileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/log-{#}.txt";
+            fileTarget.ArchiveEvery = FileArchivePeriod.Day;
+            fileTarget.ArchiveNumbering = ArchiveNumberingMode.Date;
+            fileTarget.ArchiveOldFileOnStartup = true;
             fileTarget.MaxArchiveFiles = 7;
-            fileTarget.ArchiveEvery = FileArchivePeriod.Minute;
 
             // Step 4. Define rules
             var rule1 = new LoggingRule("*", logLevel, debuggerTarget);
@@ -53,9 +55,12 @@ namespace Artemis.Utilities
             // Step 5. Activate the configuration
             LogManager.Configuration = config;
 
-            // Log as fatal so it always shows
+            // Log as fatal so it always shows, add some spacing since this indicates the start of a new log
             var logger = LogManager.GetCurrentClassLogger();
-            logger.Fatal("INFO: Set log level to {0}", logLevel);
+            var logMsg = $"  INFO: Set log level to {logLevel}  ";
+            logger.Fatal(new string('-', logMsg.Length));
+            logger.Fatal(logMsg);
+            logger.Fatal(new string('-', logMsg.Length));
         }
 
         private static void MemoryTargetOnEventReceived(LogEventInfo logEventInfo)
