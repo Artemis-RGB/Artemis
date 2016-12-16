@@ -21,38 +21,41 @@ namespace Artemis.Profiles.Layers.Models
 
         public bool ConditionMet(IDataModel subject)
         {
-            if (string.IsNullOrEmpty(Field) || string.IsNullOrEmpty(Value) || string.IsNullOrEmpty(Type))
-                return false;
-
-            var inspect = GeneralHelpers.GetPropertyValue(subject, Field);
-            if (inspect == null)
-                return false;
-
-            // Put the subject in a list, allowing Dynamic Linq to be used.
-            if (Type == "String")
+            lock (subject)
             {
-                return _interpreter.Eval<bool>($"subject.{Field}.ToLower(){Operator}(value)",
-                    new Parameter("subject", subject.GetType(), subject),
-                    new Parameter("value", Value.ToLower()));
-            }
+                if (string.IsNullOrEmpty(Field) || string.IsNullOrEmpty(Value) || string.IsNullOrEmpty(Type))
+                    return false;
 
-            Parameter rightParam = null;
-            switch (Type)
-            {
-                case "Enum":
-                    var enumType = GeneralHelpers.GetPropertyValue(subject, Field).GetType();
-                    rightParam = new Parameter("value", Enum.Parse(enumType, Value));
-                    break;
-                case "Boolean":
-                    rightParam = new Parameter("value", bool.Parse(Value));
-                    break;
-                case "Int32":
-                    rightParam = new Parameter("value", int.Parse(Value));
-                    break;
-            }
+                var inspect = GeneralHelpers.GetPropertyValue(subject, Field);
+                if (inspect == null)
+                    return false;
 
-            return _interpreter.Eval<bool>($"subject.{Field} {Operator} value",
-                new Parameter("subject", subject.GetType(), subject), rightParam);
+                // Put the subject in a list, allowing Dynamic Linq to be used.
+                if (Type == "String")
+                {
+                    return _interpreter.Eval<bool>($"subject.{Field}.ToLower(){Operator}(value)",
+                        new Parameter("subject", subject.GetType(), subject),
+                        new Parameter("value", Value.ToLower()));
+                }
+
+                Parameter rightParam = null;
+                switch (Type)
+                {
+                    case "Enum":
+                        var enumType = GeneralHelpers.GetPropertyValue(subject, Field).GetType();
+                        rightParam = new Parameter("value", Enum.Parse(enumType, Value));
+                        break;
+                    case "Boolean":
+                        rightParam = new Parameter("value", bool.Parse(Value));
+                        break;
+                    case "Int32":
+                        rightParam = new Parameter("value", int.Parse(Value));
+                        break;
+                }
+
+                return _interpreter.Eval<bool>($"subject.{Field} {Operator} value",
+                    new Parameter("subject", subject.GetType(), subject), rightParam);
+            }
         }
     }
 }

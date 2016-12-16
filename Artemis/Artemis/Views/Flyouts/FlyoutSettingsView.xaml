@@ -102,16 +102,19 @@
         <ComboBox Grid.Row="9" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
+        <Button Grid.Row="10" Grid.Column="0" Margin="10" x:Name="ShowLogs" Content="Show logs"
+                VerticalAlignment="Center" Width="100" HorizontalAlignment="Left"
+                Style="{DynamicResource SquareButtonStyle}" />
         <Button Grid.Row="10" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
-                VerticalAlignment="Center" Width="90" HorizontalAlignment="Right"
+                VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Buttons -->
         <Button Grid.Row="11" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
-                VerticalAlignment="Center" HorizontalAlignment="Left" Width="90"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Width="100"
                 Style="{DynamicResource SquareButtonStyle}" />
         <Button Grid.Row="11" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
-                VerticalAlignment="Center" HorizontalAlignment="Right" Width="90"
+                VerticalAlignment="Center" HorizontalAlignment="Right" Width="100"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
