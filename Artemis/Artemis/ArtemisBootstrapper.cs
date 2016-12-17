@@ -90,11 +90,15 @@ namespace Artemis
                 ContractResolver = _kernel.Get<NinjectContractResolver>()
             };
             JsonConvert.DefaultSettings = () => settings;
+
+            //TODO DarthAffe 17.12.2016: Is this the right location for this?
+            ActiveWindowHelper.Initialize();
         }
 
         protected override void OnExit(object sender, EventArgs e)
         {
             _kernel.Dispose();
+            ActiveWindowHelper.Dispose();
             base.OnExit(sender, e);
         }
 
