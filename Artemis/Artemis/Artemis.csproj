@@ -464,7 +464,6 @@
     <Compile Include="Profiles\Lua\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Events\LuaDeviceUpdatingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaBrushWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaActiveWindowWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaDrawWrapper.cs" />
     <Compile Include="Profiles\Lua\Events\LuaEventsWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaKeyboardWrapper.cs" />

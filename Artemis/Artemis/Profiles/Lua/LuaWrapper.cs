@@ -25,7 +25,6 @@ namespace Artemis.Profiles.Lua
         public static LuaKeyboardWrapper LuaKeyboardWrapper { get; private set; }
         public static LuaMouseWrapper LuaMouseWrapper { get; set; }
         public static LuaEventsWrapper LuaEventsWrapper { get; private set; }
-        public static LuaActiveWindowWrapper LuaActiveWindowWrapper { get; private set; }
 
         public static void SetupLua(ProfileModel profileModel, KeyboardProvider keyboardProvider)
         {
@@ -42,7 +41,6 @@ namespace Artemis.Profiles.Lua
             LuaKeyboardWrapper = new LuaKeyboardWrapper(keyboardProvider);
             LuaMouseWrapper = new LuaMouseWrapper();
             LuaEventsWrapper = new LuaEventsWrapper();
-            LuaActiveWindowWrapper = new LuaActiveWindowWrapper();
 
             LuaScript.Options.DebugPrint = LuaPrint;
             LuaScript.Globals["Profile"] = LuaProfileWrapper;
@@ -50,7 +48,6 @@ namespace Artemis.Profiles.Lua
             LuaScript.Globals["Brushes"] = LuaBrushWrapper;
             LuaScript.Globals["Keyboard"] = LuaKeyboardWrapper;
             LuaScript.Globals["Mouse"] = LuaMouseWrapper;
-            LuaScript.Globals["ActiveWindow"] = LuaActiveWindowWrapper;
 
             if (ProfileModel == null)
                 return;
@@ -102,7 +99,6 @@ namespace Artemis.Profiles.Lua
                 LuaKeyboardWrapper?.Dispose();
                 LuaKeyboardWrapper = null;
                 LuaMouseWrapper = null;
-                LuaActiveWindowWrapper = null;
 
                 try
                 {
