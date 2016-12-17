@@ -70,6 +70,8 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             properties.AmbientLightBrush = new DrawingBrush(new ImageDrawing
                 (BitmapSource.Create(width, height, 96, 96, ScreenCaptureManager.LastCapturePixelFormat, null, _lastData,
                     stride), new Rect(0, 0, width, height)));
+
+            layerModel.ApplyProperties(true);
         }
 
         public void Draw(LayerModel layerModel, DrawingContext c)
