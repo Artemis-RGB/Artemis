@@ -464,6 +464,7 @@
     <Compile Include="Profiles\Lua\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Events\LuaDeviceUpdatingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaBrushWrapper.cs" />
+    <Compile Include="Profiles\Lua\LuaActiveWindowWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaDrawWrapper.cs" />
     <Compile Include="Profiles\Lua\Events\LuaEventsWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaKeyboardWrapper.cs" />
@@ -566,6 +567,7 @@
     <Compile Include="Settings\OverlaySettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
+    <Compile Include="Utilities\ActiveWindowHelper.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\Converters\JsonConverters.cs" />
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
