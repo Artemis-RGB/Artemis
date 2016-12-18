@@ -382,6 +382,50 @@
       <DependentUpon>GtaVView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\GtaV\GtaVViewModel.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eAPIStructLengths.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCarFlags.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCrashDamageState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCurrentSector.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eFlagColors.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eFlagReason.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eGameState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eHeaderVersion.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\ePitMode.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\ePitSchedule.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eRaceState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eSessionState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eTerrain.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eTyreFlags.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eTyres.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eVector.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_eNums\_EnumGetDescription.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\CarDamage.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\CarState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Classes\LapTimeClass.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Classes\ParticipantClass.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\EventInfo.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Flags.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\GameState.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Methods\pCarsAPI-MapStructToClass.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\MotionDevice.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\ParticipantInfo.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\pCarsAPI-Class.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\PitInfo.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Timings.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\UnfilteredInput.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Vehicle.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Version.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\Weather.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIClass\WheelTyre.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIStruct\pCarsAPI-ReadAPI.cs" />
+    <Compile Include="Modules\Games\ProjectCars\Data\_pCarsAPIStruct\pCarsAPI-Struct.cs" />
+    <Compile Include="Modules\Games\ProjectCars\ProjectCarsDataModel.cs" />
+    <Compile Include="Modules\Games\ProjectCars\ProjectCarsModel.cs" />
+    <Compile Include="Modules\Games\ProjectCars\ProjectCarsSettings.cs" />
+    <Compile Include="Modules\Games\ProjectCars\ProjectCarsView.xaml.cs">
+      <DependentUpon>ProjectCarsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\ProjectCars\ProjectCarsViewModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentDataModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentModel.cs" />
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentSettings.cs" />
@@ -566,6 +610,7 @@
     <Compile Include="Settings\OverlaySettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
+    <Compile Include="Utilities\ActiveWindowHelper.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\Converters\JsonConverters.cs" />
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
@@ -795,6 +840,10 @@
     <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\ProjectCars\ProjectCarsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Games\TheDivision\TheDivisionView.xaml">
       <SubType>Designer</SubType>

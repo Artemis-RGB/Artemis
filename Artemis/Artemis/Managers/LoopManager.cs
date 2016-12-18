@@ -62,16 +62,7 @@ namespace Artemis.Managers
             }
             catch (Exception e)
             {
-                if (_canShowException)
-                {
-                    Execute.OnUIThread(delegate
-                    {
-                        _canShowException = false;
-                        _loopTimer.Stop();
-                        App.GetArtemisExceptionViewer(e).ShowDialog();
-                        Environment.Exit(0);
-                    });
-                }
+                _logger.Warn(e, "Exception in render loop");
             }
         }
 

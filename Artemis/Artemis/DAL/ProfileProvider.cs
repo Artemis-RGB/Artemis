@@ -152,13 +152,14 @@ namespace Artemis.DAL
             File.WriteAllText(path, json);
         }
 
-        public static void InsertGif(string effectName, string profileName, string layerName, Bitmap gifFile, string fileName)
+        public static void InsertGif(string effectName, string profileName, string layerName, Bitmap gifFile,
+            string fileName)
         {
             var directories = new DirectoryInfo(ProfileFolder).GetDirectories();
             var profiles = new List<ProfileModel>();
             foreach (var directoryInfo in directories)
                 profiles.AddRange(ReadProfiles(directoryInfo.Name + "/effectName").Where(d => d.Name == profileName));
-            
+
             // Extract the GIF file
             var gifDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\gifs";
             Directory.CreateDirectory(gifDir);
@@ -219,23 +220,31 @@ namespace Artemis.DAL
         /// </summary>
         private static void InstallDefaults()
         {
-            // Only install the defaults once per session
-            if (_installedDefaults)
-                return;
-            _installedDefaults = true;
+            try
+            {
+                // Only install the defaults once per session
+                if (_installedDefaults)
+                    return;
+                _installedDefaults = true;
 
-            // Load the ZIP from resources
-            var stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Artemis.Resources.Keyboards.default-profiles.zip");
+                // Load the ZIP from resources
+                var stream = Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream("Artemis.Resources.Keyboards.default-profiles.zip");
 
-            // Extract it over the old defaults in case one was updated
-            if (stream == null)
-                return;
-            var archive = new ZipArchive(stream);
-            archive.ExtractToDirectory(ProfileFolder, true);
+                // Extract it over the old defaults in case one was updated
+                if (stream == null)
+                    return;
+                var archive = new ZipArchive(stream);
+                archive.ExtractToDirectory(ProfileFolder, true);
 
 
-            InsertGif("WindowsProfile", "Demo (duplicate to keep changes)", "GIF", Resources.demo_gif, "demo-gif");
+                InsertGif("WindowsProfile", "Demo (duplicate to keep changes)", "GIF", Resources.demo_gif, "demo-gif");
+            }
+            catch (IOException e)
+            {
+                Logger.Warn(e, "Failed to place default profiles, perhaps there are two instances of Artemis " +
+                               "starting at the same time?");
+            }
         }
 
         /// <summary>

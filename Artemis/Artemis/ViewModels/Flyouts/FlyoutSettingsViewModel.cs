@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
@@ -12,6 +13,7 @@ using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
 using ILogger = Ninject.Extensions.Logging.ILogger;
+using Process = System.Diagnostics.Process;
 
 namespace Artemis.ViewModels.Flyouts
 {
@@ -199,6 +201,12 @@ namespace Artemis.ViewModels.Flyouts
                 MainManager.DisableProgram();
             else
                 MainManager.EnableProgram();
+        }
+
+        public void ShowLogs()
+        {
+            var logPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\logs";
+            System.Diagnostics.Process.Start(logPath);
         }
 
         public void ShowDebug()
