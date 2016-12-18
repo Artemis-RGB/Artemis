@@ -14,6 +14,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             Performance = new PerformanceDataModel();
             CurrentTime = new CurrentTime();
             Keyboard = new KbDataModel();
+            ActiveWindow = new ActiveWindow();
         }
 
         public CpuDataModel Cpu { get; set; }
@@ -22,6 +23,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public GooglePlayMusic GooglePlayMusic { get; set; }
         public CurrentTime CurrentTime { get; set; }
         public KbDataModel Keyboard { get; set; }
+        public ActiveWindow ActiveWindow { get; set; }
     }
 
     [MoonSharpUserData]
@@ -109,5 +111,12 @@ namespace Artemis.Modules.Effects.WindowsProfile
         public bool NumLock { get; set; }
         public bool CapsLock { get; set; }
         public bool ScrollLock { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class ActiveWindow
+    {
+        public string ProcessName { get; set; }
+        public string WindowTitle { get; set; }
     }
 }
