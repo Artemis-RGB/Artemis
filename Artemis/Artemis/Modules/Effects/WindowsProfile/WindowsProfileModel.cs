@@ -9,6 +9,7 @@ using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
+using Artemis.Utilities;
 using Newtonsoft.Json;
 using SpotifyAPI.Local;
 
@@ -52,6 +53,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             UpdateMusicPlayers(dataModel);
             UpdateDay(dataModel);
             UpdateKeyStates(dataModel);
+            UpdateActiveWindow(dataModel);
         }
 
         #region Current Time
@@ -66,7 +68,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
         }
 
         #endregion
-        
+
         #region CPU
 
         private void SetupCpu()
@@ -247,6 +249,12 @@ namespace Artemis.Modules.Effects.WindowsProfile
             dataModel.Keyboard.NumLock = ((ushort)GetKeyState(0x90) & 0xffff) != 0;
             dataModel.Keyboard.CapsLock = ((ushort)GetKeyState(0x14) & 0xffff) != 0;
             dataModel.Keyboard.ScrollLock = ((ushort)GetKeyState(0x91) & 0xffff) != 0;
+        }
+
+        private void UpdateActiveWindow(WindowsProfileDataModel dataModel)
+        {
+            dataModel.ActiveWindow.ProcessName = ActiveWindowHelper.ActiveWindowProcessName;
+            dataModel.ActiveWindow.WindowTitle = ActiveWindowHelper.ActiveWindowWindowTitle;
         }
 
         #endregion
