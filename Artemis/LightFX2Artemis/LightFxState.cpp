@@ -11,3 +11,10 @@ LightFxState::LightFxState(char* game)
 LightFxState::~LightFxState()
 {
 }
+
+void LightFxState::Update()
+{
+	// Serialize self
+
+	// Transmit through Pipe
+}
