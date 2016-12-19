@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Utilities.Converters;
@@ -24,6 +25,7 @@ namespace Artemis.Profiles.Layers.Models
             Opacity = source.Opacity;
             AnimationSpeed = source.AnimationSpeed;
             Conditions = source.Conditions;
+            ConditionType = source.ConditionType;
             DynamicProperties = source.DynamicProperties;
             Brush = source.Brush;
             HeightEase = source.HeightEase;
@@ -47,6 +49,7 @@ namespace Artemis.Profiles.Layers.Models
         public string WidthEase { set; get; }
         public string HeightEase { get; set; }
         public string OpacityEase { get; set; }
+        public ConditionType ConditionType { get; set; }
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
@@ -79,5 +82,12 @@ namespace Artemis.Profiles.Layers.Models
         {
             return new Rect(X*scale, Y*scale, Width*scale, Height*scale);
         }
+    }
+
+    public enum ConditionType
+    {
+        [Description("All met")] AllMet,
+        [Description("Any met")] AnyMet,
+        [Description("None met")] NoneMet
     }
 }
