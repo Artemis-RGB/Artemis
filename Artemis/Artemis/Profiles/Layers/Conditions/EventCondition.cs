@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -11,7 +12,19 @@ namespace Artemis.Profiles.Layers.Conditions
         {
             lock (layerModel.Properties.Conditions)
             {
-                var conditionsMet = layerModel.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+                var conditionsMet = false;
+                switch (layerModel.Properties.ConditionType)
+                {
+                    case ConditionType.AnyMet:
+                        conditionsMet = layerModel.Properties.Conditions.Any(cm => cm.ConditionMet(dataModel));
+                        break;
+                    case ConditionType.AllMet:
+                        conditionsMet = layerModel.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+                        break;
+                    case ConditionType.NoneMet:
+                        conditionsMet = !layerModel.Properties.Conditions.Any(cm => cm.ConditionMet(dataModel));
+                        break;
+                }
                 layerModel.EventProperties.Update(layerModel, conditionsMet);
 
                 if (conditionsMet && layerModel.EventProperties.CanTrigger)
