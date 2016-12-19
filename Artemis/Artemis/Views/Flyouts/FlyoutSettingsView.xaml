@@ -44,7 +44,6 @@
                                      Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
                                      HorizontalAlignment="Right" />
 
-
         <!-- Show on startup -->
         <Label Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Show on startup:" />

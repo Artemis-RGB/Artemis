@@ -387,7 +387,7 @@ namespace Artemis.Profiles.Layers.Models
             get { return Profile; }
             set { Profile = value; }
         }
-
+        
         #endregion
     }
 }

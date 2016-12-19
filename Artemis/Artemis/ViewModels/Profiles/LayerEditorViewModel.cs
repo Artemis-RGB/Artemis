@@ -118,7 +118,7 @@ namespace Artemis.ViewModels.Profiles
                 NotifyOfPropertyChange(() => SelectedLayerType);
             }
         }
-
+        
         public void PreSelect()
         {
             SelectedLayerType = LayerTypes.FirstOrDefault(t => t.Name == ProposedLayer.LayerType.Name);
