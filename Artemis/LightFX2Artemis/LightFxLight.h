@@ -1,5 +1,5 @@
 #pragma once
-#include "includes/LFXDecl.h"
+#include "LFXDecl.h"
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -10,5 +10,6 @@ public:
 	LightFxLight();
 	~LightFxLight();
 	json GetJson();
-	PLFX_COLOR Color;
+	void FromInt(const unsigned colorVal);
+	LFX_COLOR* Color;
 };
