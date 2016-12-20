@@ -25,7 +25,7 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		lightFxState = new LightFxState(GetGame());
+		lightFxState = new LightFxState("Payday2");
 		FILELog::ReportingLevel() = logDEBUG1;
 		FILE* log_fd = fopen("log.txt", "w");
 		Output2FILE::Stream() = log_fd;
@@ -75,7 +75,8 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_Update()
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_Update()";
 
-	lightFxState->Update();
+	const char* jsonString = lightFxState->Update();
+	FILE_LOG(logDEBUG1) << "JSON: " << jsonString;
 	return LFX_SUCCESS;
 }
 
@@ -147,7 +148,7 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_GetLightLocation(const unsigned int devIndex,
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_GetLightLocation()";
 
-	*lightLoc = LFX_POSITION{ 0,0,0 };
+	*lightLoc = LFX_POSITION{0,0,0};
 	return LFX_SUCCESS;
 }
 
@@ -170,6 +171,11 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_SetLightColor(const unsigned int devIndex, co
 FN_DECLSPEC LFX_RESULT STDCALL LFX_Light(const unsigned int locationMask, const unsigned int colorVal)
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_Light()";
+
+	for (LightFxDevice device : lightFxState->Devices)
+	{
+		device.SetLightFromInt(0, colorVal);
+	}
 	return LFX_SUCCESS;
 }
 

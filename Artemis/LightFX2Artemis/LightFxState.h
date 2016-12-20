@@ -3,10 +3,10 @@
 
 class LightFxState
 {
-public:	
+public:
 	LightFxState(char* game);
 	~LightFxState();
-	void Update();
+	const char* Update();
 	char* Game;
 	LightFxDevice Devices[5];
 };
