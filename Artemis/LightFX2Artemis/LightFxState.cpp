@@ -1,6 +1,7 @@
 #include "LightFxState.h"
+#include "json.hpp"
 
-
+using json = nlohmann::json;
 
 LightFxState::LightFxState(char* game)
 {
@@ -12,9 +13,16 @@ LightFxState::~LightFxState()
 {
 }
 
-void LightFxState::Update()
+const char* LightFxState::Update()
 {
-	// Serialize self
+	json j;
+	j["game"] = Game;
+	j["devices"] = {};
+	for (LightFxDevice device : Devices)
+	{
+		j["devices"].push_back(device.GetJson());
+	}
 
-	// Transmit through Pipe
+	std::string s = j.dump();
+	return s.c_str();
 }
