@@ -4,28 +4,27 @@
 #include <complex>
 #include <filesystem>
 #include <fstream>
-#include "../LightFX2Artemis/LightFxState.h"
-#include "includes/LFX2.h"
-#include "includes/LFXDecl.h"
-#include "includes/log.h"
+#include "LightFxState.h"
+#include "LFX2.h"
+#include "LFXDecl.h"
+#include "log.h"
 
 using namespace std;
 
 LightFxState* lightFxState;
 
-char* GetGame()
-{
-	CHAR szPath[MAX_PATH];
-	GetModuleFileNameA(NULL, szPath, MAX_PATH);
-
-	return szPath;
-};
-
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH)
 	{
-		lightFxState = new LightFxState("Payday2");
+		// Get executing .exe path. Not very pretty but other methods messed JSON up
+		WCHAR ownPth[MAX_PATH];
+		HMODULE hModule = GetModuleHandle(NULL);
+		GetModuleFileName(hModule, ownPth, sizeof ownPth);
+		char* moduleName = new char[sizeof ownPth];
+		wcstombs(moduleName, ownPth, sizeof ownPth);
+
+		lightFxState = new LightFxState(moduleName);
 		FILELog::ReportingLevel() = logDEBUG1;
 		FILE* log_fd = fopen("log.txt", "w");
 		Output2FILE::Stream() = log_fd;
@@ -75,8 +74,15 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_Update()
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_Update()";
 
-	const char* jsonString = lightFxState->Update();
-	FILE_LOG(logDEBUG1) << "JSON: " << jsonString;
+	// Get the JSON
+	json j = lightFxState->GetJson();
+	// Transmit to Artemis
+	Transmit(j.dump().c_str());
+
+	// Only bother dumping it indented if actually debugging
+	if (FILELog::ReportingLevel() == logDEBUG1)	
+		FILE_LOG(logDEBUG1) << "JSON: " << j.dump(4);
+
 	return LFX_SUCCESS;
 }
 
@@ -126,7 +132,7 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_GetNumLights(const unsigned int devIndex, uns
 	FILE_LOG(logDEBUG1) << "Called LFX_GetNumLights()";
 
 	// Just do one for now
-	*numLights = 1;
+	*numLights = 5;
 	return LFX_SUCCESS;
 }
 
@@ -156,7 +162,7 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_GetLightColor(const unsigned int devIndex, co
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_GetLightColor()";
 
-	*lightCol = *lightFxState->Devices[devIndex].Lights[lightIndex].Color;
+	*lightCol = *lightFxState->Devices[devIndex]->Lights[lightIndex]->Color;
 	return LFX_SUCCESS;
 }
 
@@ -164,18 +170,16 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_SetLightColor(const unsigned int devIndex, co
 {
 	FILE_LOG(logDEBUG1) << "Called LFX_SetLightColor()";
 
-	lightFxState->Devices[devIndex].Lights[lightIndex].Color = lightCol;
+	lightFxState->Devices[devIndex]->Lights[lightIndex]->Color = lightCol;
 	return LFX_SUCCESS;
 }
 
 FN_DECLSPEC LFX_RESULT STDCALL LFX_Light(const unsigned int locationMask, const unsigned int colorVal)
 {
-	FILE_LOG(logDEBUG1) << "Called LFX_Light()";
+	FILE_LOG(logDEBUG1) << "Called LFX_Light(locationMask " << locationMask << ", colorVal " << colorVal << ")";
 
-	for (LightFxDevice device : lightFxState->Devices)
-	{
-		device.SetLightFromInt(0, colorVal);
-	}
+	lightFxState->LocationMask = locationMask;
+	lightFxState->LocationMaskLight->FromInt(colorVal);
 	return LFX_SUCCESS;
 }
 

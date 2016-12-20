@@ -3,6 +3,7 @@
 
 LightFxLight::LightFxLight()
 {
+	Color = new LFX_COLOR{0,0,0,0};
 }
 
 
@@ -20,4 +21,12 @@ json LightFxLight::GetJson()
 		{"brightness", Color->brightness}
 	};
 	return j;
+}
+
+void LightFxLight::FromInt(const unsigned colorVal)
+{
+	Color->brightness = (colorVal >> 24) & 0xFF;
+	Color->red = (colorVal >> 16) & 0xFF;
+	Color->green = (colorVal >> 8) & 0xFF;
+	Color->blue = colorVal & 0xFF;
 }

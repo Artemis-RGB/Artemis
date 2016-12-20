@@ -3,7 +3,11 @@ using json = nlohmann::json;
 
 
 LightFxDevice::LightFxDevice()
-{	
+{
+	for (int i = 0; i < 6; i++)
+	{
+		Lights[i] = new LightFxLight();
+	}
 }
 
 
@@ -12,20 +16,17 @@ LightFxDevice::~LightFxDevice()
 }
 
 void LightFxDevice::SetLightFromInt(int lightIndex, const unsigned colorVal)
-{	
-	Lights[lightIndex].Color->brightness = (colorVal >> 24) & 0xFF;
-	Lights[lightIndex].Color->red = (colorVal >> 16) & 0xFF;
-	Lights[lightIndex].Color->green = (colorVal >> 8) & 0xFF;
-	Lights[lightIndex].Color->blue = colorVal & 0xFF;
+{
+	Lights[lightIndex]->FromInt(colorVal);
 }
 
 json LightFxDevice::GetJson()
 {
 	json j;
 	j["lights"] = {};
-	for (LightFxLight light : Lights)
+	for (LightFxLight* light : Lights)
 	{
-		j["lights"].push_back(light.GetJson());
+		j["lights"].push_back(light->GetJson());
 	}
 
 	return j;

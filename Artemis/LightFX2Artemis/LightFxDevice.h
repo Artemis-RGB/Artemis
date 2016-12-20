@@ -1,6 +1,6 @@
 #pragma once
 #include "LightFxLight.h"
-#include <json.hpp>
+#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -11,5 +11,5 @@ public:
 	~LightFxDevice();
 	void SetLightFromInt(int lightIndex, const unsigned colorVal);
 	json GetJson();
-	LightFxLight Lights[128];
+	LightFxLight* Lights[5];
 };
