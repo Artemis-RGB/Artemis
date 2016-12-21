@@ -379,6 +379,13 @@
       <DependentUpon>GtaVView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\GtaV\GtaVViewModel.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxDataModel.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxModel.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxSettings.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxView.xaml.cs">
+      <DependentUpon>LightFxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\LightFx\LightFxViewModel.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eAPIStructLengths.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCarFlags.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCrashDamageState.cs" />
@@ -833,6 +840,10 @@
     <Page Include="Modules\Games\GtaV\GtaVView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\LightFx\LightFxView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>

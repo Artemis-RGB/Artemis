@@ -21,7 +21,7 @@ namespace Artemis.Profiles.Layers.Conditions
                     case ConditionType.NoneMet:
                         return !layerModel.Properties.Conditions.Any(cm => cm.ConditionMet(dataModel));
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        return false;
                 }
             }
         }
