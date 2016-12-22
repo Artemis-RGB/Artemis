@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
+using Artemis.Profiles.Lua.Modules;
 using MoonSharp.Interpreter;
 using NLog;
 
@@ -36,7 +37,7 @@ namespace Artemis.Profiles.Lua.Events
             try
             {
                 LuaInvoke(profileModel, () => OnDeviceDrawing(new LuaProfileWrapper(profileModel),
-                    new LuaDeviceDrawingEventArgs(deviceType, dataModel, preview, new LuaDrawWrapper(c))));
+                    new LuaDeviceDrawingEventArgs(deviceType, dataModel, preview, new LuaDrawModule(c))));
             }
             catch (Exception)
             {

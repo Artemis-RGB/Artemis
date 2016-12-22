@@ -67,7 +67,7 @@ namespace Artemis.DAL
             lock (prof)
             {
                 // Store the file
-                if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Name?.Length > 1))
+                if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Slug?.Length > 1))
                     throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
                 var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}";
@@ -84,11 +84,11 @@ namespace Artemis.DAL
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e, "Couldn't save profile '{0}.json'", prof.Name);
+                    Logger.Error(e, "Couldn't save profile '{0}.json'", prof.Slug);
                     return;
                 }
 
-                File.WriteAllText(path + $@"\{prof.Name}.json", json);
+                File.WriteAllText(path + $@"\{prof.Slug}.json", json);
                 Logger.Debug("Saved profile {0}/{1}/{2}", prof.KeyboardSlug, prof.GameName, prof.Name);
             }
         }
@@ -114,7 +114,7 @@ namespace Artemis.DAL
         public static void DeleteProfile(ProfileModel prof)
         {
             // Remove the file
-            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}\{prof.Name}.json";
+            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}\{prof.Slug}.json";
             if (File.Exists(path))
                 File.Delete(path);
         }

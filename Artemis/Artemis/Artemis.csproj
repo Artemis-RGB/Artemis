@@ -513,13 +513,15 @@
     <Compile Include="Profiles\Lua\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Events\LuaDeviceUpdatingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaBrushWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaDrawWrapper.cs" />
+    <Compile Include="Profiles\Lua\Modules\ILuaModule.cs" />
     <Compile Include="Profiles\Lua\Events\LuaEventsWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaKeyboardWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaLayerWrapper.cs" />
     <Compile Include="Profiles\Lua\LuaProfileWrapper.cs" />
     <Compile Include="Profiles\Lua\Brushes\LuaSolidColorBrush.cs" />
     <Compile Include="Profiles\Lua\LuaWrapper.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaDrawModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaKeyboardModule.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
