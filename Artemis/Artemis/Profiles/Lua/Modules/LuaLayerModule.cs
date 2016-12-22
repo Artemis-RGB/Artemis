@@ -6,24 +6,31 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua.Brushes;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Modules
 {
-    /// <summary>
-    ///     Serves as a sandboxed wrapper around the LayerModel
-    /// </summary>
     [MoonSharpUserData]
-    public class LuaLayerWrapper
+    public class LuaLayerModule : LuaModule
     {
         private readonly LayerModel _layerModel;
 
-        public LuaLayerWrapper(LayerModel layerModel)
+        public LuaLayerModule(LuaWrapper luaWrapper) : base(luaWrapper)
         {
-            _layerModel = layerModel;
-            SavedProperties = new LuaLayerProperties(layerModel);
+            _layerModel = luaWrapper.LayerModel;
+            SavedProperties = new Lua.LuaLayerProperties(_layerModel);
 
             // Triger an update to fill up the Properties
             _layerModel.Update(new ProfilePreviewDataModel(), true, false);
         }
+
+        public override string ModuleName => "Layer";
+
+        #region Overriding members
+
+        public override void Dispose()
+        {
+        }
+
+        #endregion
 
         #region Child methods
 
@@ -106,7 +113,7 @@ namespace Artemis.Profiles.Lua
 
         #region Advanced layer properties
 
-        public LuaLayerProperties SavedProperties { get; set; }
+        public Lua.LuaLayerProperties SavedProperties { get; set; }
 
         public string BrushType => _layerModel.Properties.Brush?.GetType().Name;
 

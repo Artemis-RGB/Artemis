@@ -1,45 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using Artemis.DeviceProviders;
-using MoonSharp.Interpreter.Interop;
+using Artemis.Utilities.Keyboard;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua.Modules
 {
-    public class LuaKeyboardModule : ILuaModule
+    [MoonSharpUserData]
+    public class LuaKeyboardModule : LuaModule
     {
-        public bool AlwaysPresent => true;
-        public string ModuleName => "Keyboard";
-
         private readonly KeyboardProvider _keyboardProvider;
 
-        public LuaKeyboardModule(KeyboardProvider keyboardProvider)
+        public LuaKeyboardModule(LuaWrapper luaWrapper) : base(luaWrapper)
         {
-            _keyboardProvider = keyboardProvider;
-
+            _keyboardProvider = luaWrapper.KeyboardProvider;
             KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
         }
+
+        // TODO: Visible in LUA? Decladed as invisile in base class
+        public override string ModuleName => "Keyboard";
 
         public string Name => _keyboardProvider.Name;
         public string Slug => _keyboardProvider.Slug;
         public int Width => _keyboardProvider.Width;
         public int Height => _keyboardProvider.Height;
 
-        [MoonSharpVisible(false)]
-        public void Dispose()
+        #region Overriding members
+
+        public override void Dispose()
         {
             KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
         }
 
+        #endregion
+
         private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
         {
-            var keyMatch = _keyboardProvider.GetKeyPosition(e.KeyCode);
-            if (keyMatch != null)
-                LuaWrapper.LuaEventsWrapper.InvokeKeyPressed(LuaWrapper.ProfileModel, this, keyMatch.Value.KeyCode,
-                    keyMatch.Value.X, keyMatch.Value.Y);
+            // TODO
+            //var keyMatch = _keyboardProvider.GetKeyPosition(e.KeyCode);
+            //if (keyMatch != null)
+            //    LuaWrapper.LuaEventsWrapper.InvokeKeyPressed(LuaWrapper.ProfileModel, this, keyMatch.Value.KeyCode,
+            //        keyMatch.Value.X, keyMatch.Value.Y);
         }
 
         public void PressKeys(string keys)

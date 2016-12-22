@@ -3,28 +3,36 @@ using System.IO;
 using System.Text;
 using Artemis.DAL;
 using Artemis.DeviceProviders;
+using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua.Brushes;
-using Artemis.Profiles.Lua.Events;
+using Artemis.Profiles.Lua.Modules.Events;
 using Artemis.Properties;
 using Castle.Core.Internal;
 using MoonSharp.Interpreter;
+using Ninject;
 using NLog;
 
 namespace Artemis.Profiles.Lua
 {
-    public static class LuaWrapper
+    /// <summary>
+    /// This class is a singleton due to the fact that the LuaScript isn't very memory
+    /// friendly when creating new ones over and over.
+    /// </summary>
+    public class LuaWrapper
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly Script LuaScript = new Script(CoreModules.Preset_SoftSandbox);
-        private static FileSystemWatcher _watcher;
+        private readonly IKernel _kernel;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Script _luaScript = new Script(CoreModules.Preset_SoftSandbox);
+        private FileSystemWatcher _watcher;
 
-        public static ProfileModel ProfileModel { get; private set; }
-        public static KeyboardProvider KeyboardProvider { get; private set; }
-        public static LuaProfileWrapper LuaProfileWrapper { get; private set; }
-        public static LuaBrushWrapper LuaBrushWrapper { get; private set; }
-        public static LuaKeyboardWrapper LuaKeyboardWrapper { get; private set; }
-        public static LuaMouseWrapper LuaMouseWrapper { get; set; }
-        public static LuaEventsWrapper LuaEventsWrapper { get; private set; }
+        public ProfileModel ProfileModel { get; private set; }
+        public KeyboardProvider KeyboardProvider { get; private set; }
+        public LayerModel LayerModel { get; set; }
+
+        public LuaWrapper(IKernel kernel)
+        {
+            _kernel = kernel;
+        }
 
         public static void SetupLua(ProfileModel profileModel, KeyboardProvider keyboardProvider)
         {
@@ -42,12 +50,12 @@ namespace Artemis.Profiles.Lua
             LuaMouseWrapper = new LuaMouseWrapper();
             LuaEventsWrapper = new LuaEventsWrapper();
 
-            LuaScript.Options.DebugPrint = LuaPrint;
-            LuaScript.Globals["Profile"] = LuaProfileWrapper;
-            LuaScript.Globals["Events"] = LuaEventsWrapper;
-            LuaScript.Globals["Brushes"] = LuaBrushWrapper;
-            LuaScript.Globals["Keyboard"] = LuaKeyboardWrapper;
-            LuaScript.Globals["Mouse"] = LuaMouseWrapper;
+            _luaScript.Options.DebugPrint = LuaPrint;
+            _luaScript.Globals["Profile"] = LuaProfileWrapper;
+            _luaScript.Globals["Events"] = LuaEventsWrapper;
+            _luaScript.Globals["Brushes"] = LuaBrushWrapper;
+            _luaScript.Globals["Keyboard"] = LuaKeyboardWrapper;
+            _luaScript.Globals["Mouse"] = LuaMouseWrapper;
 
             if (ProfileModel == null)
                 return;
@@ -58,29 +66,29 @@ namespace Artemis.Profiles.Lua
             {
                 lock (LuaEventsWrapper.InvokeLock)
                 {
-                    lock (LuaScript)
+                    lock (_luaScript)
                     {
-                        LuaScript.DoString(ProfileModel.LuaScript);
+                        _luaScript.DoString(ProfileModel.LuaScript);
                     }
                 }
             }
             catch (InternalErrorException e)
             {
-                Logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
             catch (SyntaxErrorException e)
             {
-                Logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
             catch (ScriptRuntimeException e)
             {
-                Logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
         }
 
         public static void Clear()
         {
-            lock (LuaScript)
+            lock (_luaScript)
             {
                 // Clear old fields/properties
                 KeyboardProvider = null;
@@ -93,12 +101,12 @@ namespace Artemis.Profiles.Lua
 
                 try
                 {
-                    LuaScript.Globals.Clear();
-                    LuaScript.Registry.Clear();
-                    LuaScript.Registry.RegisterConstants();
-                    LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-                    LuaScript.Globals.RegisterConstants();
-                    LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                    _luaScript.Globals.Clear();
+                    _luaScript.Registry.Clear();
+                    _luaScript.Registry.RegisterConstants();
+                    _luaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                    _luaScript.Globals.RegisterConstants();
+                    _luaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
                 }
                 catch (NullReferenceException)
                 {
@@ -109,17 +117,17 @@ namespace Artemis.Profiles.Lua
                 {
                     lock (LuaEventsWrapper.InvokeLock)
                     {
-                        lock (LuaScript)
+                        lock (_luaScript)
                         {
-                            LuaScript.DoString("");
+                            _luaScript.DoString("");
                         }
                     }
                 }
                 else
                 {
-                    lock (LuaScript)
+                    lock (_luaScript)
                     {
-                        LuaScript.DoString("");
+                        _luaScript.DoString("");
                     }
                 }
 
@@ -132,7 +140,7 @@ namespace Artemis.Profiles.Lua
 
         private static void LuaPrint(string s)
         {
-            Logger.Debug("[{0}-LUA]: {1}", ProfileModel?.Name, s);
+            _logger.Debug("[{0}-LUA]: {1}", ProfileModel?.Name, s);
         }
 
         #endregion
