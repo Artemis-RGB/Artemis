@@ -1,24 +1,29 @@
 ﻿using System;
-using System.Drawing.Text;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Profiles.Lua.Brushes;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Modules
 {
     [MoonSharpUserData]
-    public class LuaDrawWrapper
+    public class LuaDrawModule : ILuaModule
     {
         private readonly DrawingContext _ctx;
-        private FontFamily _font;
+        private readonly FontFamily _font;
 
-        public LuaDrawWrapper(DrawingContext ctx)
+        public LuaDrawModule(DrawingContext ctx)
         {
             _ctx = ctx;
             _font = new FontFamily(new Uri("pack://application:,,,/"), "./resources/#Silkscreen");
+        }
+
+        public bool AlwaysPresent => false;
+        public string ModuleName => null;
+
+        public void Dispose()
+        {
         }
 
         public void DrawEllipse(LuaBrush luaBrush, double x, double y, double height, double width)
