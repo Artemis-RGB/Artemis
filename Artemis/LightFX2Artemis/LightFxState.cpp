@@ -20,14 +20,11 @@ LightFxState::~LightFxState()
 
 json LightFxState::GetJson()
 {
-	json root;
 	json j;
-	root["lightFxState"] = { j };
-
 	j["game"] = Game;
 	j["mask"] = {
-		{ "location", LocationMask },
-		{ "light", LocationMaskLight->GetJson() }
+		{"location", LocationMask},
+		{"light", LocationMaskLight->GetJson()}
 	};
 	j["devices"] = {};
 	for (LightFxDevice* device : Devices)
@@ -35,5 +32,5 @@ json LightFxState::GetJson()
 		j["devices"].push_back(device->GetJson());
 	}
 
-	return j;
+	return json{{"lightFxState", j}};
 }
