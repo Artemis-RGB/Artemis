@@ -379,6 +379,7 @@
       <DependentUpon>GtaVView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\GtaV\GtaVViewModel.cs" />
+    <Compile Include="Modules\Games\LightFx\Data\LightFxState.cs" />
     <Compile Include="Modules\Games\LightFx\LightFxDataModel.cs" />
     <Compile Include="Modules\Games\LightFx\LightFxModel.cs" />
     <Compile Include="Modules\Games\LightFx\LightFxSettings.cs" />
