@@ -78,15 +78,6 @@ namespace Artemis.Profiles.Lua
             }
         }
 
-        #region Private lua functions
-
-        private static void LuaPrint(string s)
-        {
-            Logger.Debug("[{0}-LUA]: {1}", ProfileModel?.Name, s);
-        }
-
-        #endregion
-
         public static void Clear()
         {
             lock (LuaScript)
@@ -136,6 +127,15 @@ namespace Artemis.Profiles.Lua
                 LuaEventsWrapper = null;
             }
         }
+
+        #region Private lua functions
+
+        private static void LuaPrint(string s)
+        {
+            Logger.Debug("[{0}-LUA]: {1}", ProfileModel?.Name, s);
+        }
+
+        #endregion
 
         #region Editor
 
