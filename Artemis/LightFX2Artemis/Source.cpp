@@ -80,8 +80,8 @@ FN_DECLSPEC LFX_RESULT STDCALL LFX_Update()
 	Transmit(j.dump().c_str());
 
 	// Only bother dumping it indented if actually debugging
-	if (FILELog::ReportingLevel() == logDEBUG1)	
-		FILE_LOG(logDEBUG1) << "JSON: " << j.dump(4);
+	if (FILELog::ReportingLevel() == logDEBUG1)
+	FILE_LOG(logDEBUG1) << "JSON: " << j.dump(4);
 
 	return LFX_SUCCESS;
 }
