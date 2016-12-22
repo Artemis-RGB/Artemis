@@ -2,7 +2,7 @@
 using Artemis.Models.Interfaces;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua.Events
+namespace Artemis.Profiles.Lua.Modules.Events
 {
     [MoonSharpUserData]
     public class LuaDeviceUpdatingEventArgs : EventArgs

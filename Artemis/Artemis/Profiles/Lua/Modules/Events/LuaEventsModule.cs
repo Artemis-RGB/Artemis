@@ -2,17 +2,22 @@
 using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Models.Interfaces;
-using Artemis.Profiles.Lua.Modules;
+using Artemis.Profiles.Lua.Wrappers;
 using MoonSharp.Interpreter;
 using NLog;
 
-namespace Artemis.Profiles.Lua.Events
+namespace Artemis.Profiles.Lua.Modules.Events
 {
-    [MoonSharpUserData]
-    public class LuaEventsWrapper
+    public class LuaEventsModule : LuaModule
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         public readonly string InvokeLock = string.Empty;
+
+        public LuaEventsModule(LuaWrapper luaWrapper) : base(luaWrapper)
+        {
+        }
+
+        public override string ModuleName => "Events";
         public event EventHandler<LuaDeviceUpdatingEventArgs> DeviceUpdating;
         public event EventHandler<LuaDeviceDrawingEventArgs> DeviceDrawing;
         public event EventHandler<LuaKeyPressEventArgs> KeyboardKeyPressed;
@@ -37,7 +42,7 @@ namespace Artemis.Profiles.Lua.Events
             try
             {
                 LuaInvoke(profileModel, () => OnDeviceDrawing(new LuaProfileWrapper(profileModel),
-                    new LuaDeviceDrawingEventArgs(deviceType, dataModel, preview, new LuaDrawModule(c))));
+                    new LuaDeviceDrawingEventArgs(deviceType, dataModel, preview, new LuaDrawWrapper(c))));
             }
             catch (Exception)
             {
@@ -45,7 +50,7 @@ namespace Artemis.Profiles.Lua.Events
             }
         }
 
-        internal void InvokeKeyPressed(ProfileModel profileModel, LuaKeyboardWrapper keyboard, Keys key, int x, int y)
+        internal void InvokeKeyPressed(ProfileModel profileModel, LuaKeyboardModule keyboard, Keys key, int x, int y)
         {
             try
             {
@@ -91,10 +96,18 @@ namespace Artemis.Profiles.Lua.Events
             DeviceDrawing?.Invoke(profileModel, e);
         }
 
-        protected virtual void OnKeyboardKeyPressed(LuaProfileWrapper profileModel, LuaKeyboardWrapper keyboard,
+        protected virtual void OnKeyboardKeyPressed(LuaProfileWrapper profileModel, LuaKeyboardModule keyboard,
             LuaKeyPressEventArgs e)
         {
             KeyboardKeyPressed?.Invoke(profileModel, e);
         }
+
+        #region Overriding members
+
+        public override void Dispose()
+        {
+        }
+
+        #endregion
     }
 }
