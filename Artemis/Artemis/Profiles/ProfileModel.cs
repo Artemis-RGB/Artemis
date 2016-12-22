@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Newtonsoft.Json;
 using Color = System.Windows.Media.Color;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
@@ -19,8 +21,11 @@ namespace Artemis.Profiles
 {
     public class ProfileModel
     {
+        private readonly char[] _invalidFileNameChars;
+
         public ProfileModel()
         {
+            _invalidFileNameChars = Path.GetInvalidFileNameChars();
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
         }
 
@@ -32,6 +37,9 @@ namespace Artemis.Profiles
         public int Width { get; set; }
         public int Height { get; set; }
         public string LuaScript { get; set; }
+
+        [JsonIgnore]
+        public string Slug => new string(Name.Where(ch => !_invalidFileNameChars.Contains(ch)).ToArray());
 
         public void FixOrder()
         {
@@ -195,7 +203,7 @@ namespace Artemis.Profiles
 
         protected bool Equals(ProfileModel other)
         {
-            return string.Equals(Name, other.Name) &&
+            return string.Equals(Slug, other.Slug) &&
                    string.Equals(KeyboardSlug, other.KeyboardSlug) &&
                    string.Equals(GameName, other.GameName);
         }
@@ -212,7 +220,7 @@ namespace Artemis.Profiles
         {
             unchecked
             {
-                var hashCode = Name?.GetHashCode() ?? 0;
+                var hashCode = Slug?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
                 hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
