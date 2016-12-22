@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Artemis.DeviceProviders;
-using Artemis.Utilities.Keyboard;
-using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Modules
 {
-    [MoonSharpUserData]
-    public class LuaKeyboardWrapper : IDisposable
+    public class LuaKeyboardModule : ILuaModule
     {
+        public bool AlwaysPresent => true;
+        public string ModuleName => "Keyboard";
+
         private readonly KeyboardProvider _keyboardProvider;
 
-        public LuaKeyboardWrapper(KeyboardProvider keyboardProvider)
+        public LuaKeyboardModule(KeyboardProvider keyboardProvider)
         {
             _keyboardProvider = keyboardProvider;
 
