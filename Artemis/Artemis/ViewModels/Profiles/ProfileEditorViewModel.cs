@@ -16,11 +16,9 @@ using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
-using Artemis.Profiles.Lua;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
-using Caliburn.Micro;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
@@ -38,6 +36,7 @@ namespace Artemis.ViewModels.Profiles
     {
         private readonly DeviceManager _deviceManager;
         private readonly EffectModel _gameModel;
+        private readonly LuaManager _luaManager;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
@@ -45,11 +44,12 @@ namespace Artemis.ViewModels.Profiles
         private bool _saving;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(DeviceManager deviceManager, EffectModel gameModel,
+        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel gameModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
             string lastProfile)
         {
             _deviceManager = deviceManager;
+            _luaManager = luaManager;
             _gameModel = gameModel;
 
             ProfileNames = new ObservableCollection<string>();
@@ -79,7 +79,7 @@ namespace Artemis.ViewModels.Profiles
         public ProfileViewModel ProfileViewModel { get; set; }
 
         public bool EditorEnabled
-            => (SelectedProfile != null) && !SelectedProfile.IsDefault && (_deviceManager.ActiveKeyboard != null);
+            => SelectedProfile != null && !SelectedProfile.IsDefault && _deviceManager.ActiveKeyboard != null;
 
         public ObservableCollection<string> ProfileNames
         {
@@ -125,11 +125,11 @@ namespace Artemis.ViewModels.Profiles
                     return;
 
                 // Deactivate old profile
-                _selectedProfile?.Deactivate();
+                _selectedProfile?.Deactivate(_luaManager);
                 // Update the value
                 _selectedProfile = value;
                 // Activate new profile
-                _selectedProfile?.Activate(_deviceManager.ActiveKeyboard);
+                _selectedProfile?.Activate(_luaManager);
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
@@ -149,16 +149,16 @@ namespace Artemis.ViewModels.Profiles
         public PreviewSettings? PreviewSettings => _deviceManager.ActiveKeyboard?.PreviewSettings;
 
         public bool ProfileSelected => SelectedProfile != null;
-        public bool LayerSelected => (SelectedProfile != null) && (ProfileViewModel.SelectedLayer != null);
+        public bool LayerSelected => SelectedProfile != null && ProfileViewModel.SelectedLayer != null;
 
         public void DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if ((source == null) || (target == null) || (source == target))
+            if (source == null || target == null || source == target)
                 return;
 
-            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
                 target.LayerType is FolderType)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
@@ -175,7 +175,7 @@ namespace Artemis.ViewModels.Profiles
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if ((source == null) || (target == null) || (source == target))
+            if (source == null || target == null || source == target)
                 return;
 
             // Don't allow a folder to become it's own child, that's just weird
@@ -196,7 +196,7 @@ namespace Artemis.ViewModels.Profiles
                 parent.FixOrder();
             }
 
-            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
                 target.LayerType is FolderType)
             {
                 // Insert into folder
@@ -208,9 +208,9 @@ namespace Artemis.ViewModels.Profiles
             else
             {
                 // Insert the source into it's new profile/parent and update the order
-                if ((dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem) ||
-                    (dropInfo.InsertPosition ==
-                     (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem)))
+                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem ||
+                    dropInfo.InsertPosition ==
+                    (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem))
                     target.InsertAfter(source);
                 else
                     target.InsertBefore(source);
@@ -237,7 +237,7 @@ namespace Artemis.ViewModels.Profiles
         public void Deactivate()
         {
             ProfileViewModel.Deactivate();
-            SelectedProfile?.Deactivate();
+            SelectedProfile?.Deactivate(_luaManager);
             _saveTimer.Stop();
         }
 
@@ -247,7 +247,7 @@ namespace Artemis.ViewModels.Profiles
         private void LoadProfiles()
         {
             ProfileNames.Clear();
-            if ((_gameModel == null) || (_deviceManager.ActiveKeyboard == null))
+            if (_gameModel == null || _deviceManager.ActiveKeyboard == null)
                 return;
 
             ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _gameModel));
@@ -255,17 +255,13 @@ namespace Artemis.ViewModels.Profiles
             // If a profile name was provided, try to load it
             ProfileModel lastProfileModel = null;
             if (!string.IsNullOrEmpty(LastProfile))
-            {
                 lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, LastProfile);
-            }
 
             if (lastProfileModel != null)
                 SelectedProfile = lastProfileModel;
             else
-            {
                 SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel,
                     ProfileNames.FirstOrDefault());
-            }
         }
 
 
@@ -532,7 +528,7 @@ namespace Artemis.ViewModels.Profiles
             var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
-            if (string.IsNullOrEmpty(name) || (name.Length < 2))
+            if (string.IsNullOrEmpty(name) || name.Length < 2)
                 return;
 
             SelectedProfile.Name = name;
@@ -544,7 +540,7 @@ namespace Artemis.ViewModels.Profiles
                     .ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(name) || (name.Length < 2))
+                if (string.IsNullOrEmpty(name) || name.Length < 2)
                 {
                     SelectedProfile.Name = oldName;
                     return;
@@ -694,8 +690,8 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                SelectedProfile?.Activate(_deviceManager.ActiveKeyboard);
-                LuaWrapper.OpenEditor();
+                SelectedProfile?.Activate(_luaManager);
+                _luaManager.OpenEditor();
             }
             catch (Exception e)
             {
@@ -738,7 +734,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void SaveSelectedProfile()
         {
-            if (_saving || (SelectedProfile == null) || _deviceManager.ChangingKeyboard)
+            if (_saving || SelectedProfile == null || _deviceManager.ChangingKeyboard)
                 return;
 
             _saving = true;

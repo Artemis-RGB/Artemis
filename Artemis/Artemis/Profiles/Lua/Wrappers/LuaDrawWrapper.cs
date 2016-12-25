@@ -2,13 +2,13 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Profiles.Lua.Brushes;
+using Artemis.Profiles.Lua.Modules.Brushes;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua.Wrappers
 {
     /// <summary>
-    /// A wrapper that is provided to each OnDraw event to allow drawing in LUA
+    ///     A wrapper that is provided to each OnDraw event to allow drawing in LUA
     /// </summary>
     [MoonSharpUserData]
     public class LuaDrawWrapper

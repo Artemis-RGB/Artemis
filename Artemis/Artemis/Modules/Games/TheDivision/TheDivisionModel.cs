@@ -16,8 +16,8 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyAmmo;
         private StickyValue<bool> _stickyHp;
 
-        public TheDivisionModel(DeviceManager deviceManager, PipeServer pipeServer)
-            : base(deviceManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
+        public TheDivisionModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
+            : base(deviceManager, luaManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
         {
             _pipeServer = pipeServer;
             Name = "TheDivision";

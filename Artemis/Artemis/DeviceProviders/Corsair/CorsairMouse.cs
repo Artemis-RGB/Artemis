@@ -8,7 +8,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairMouse : DeviceProvider
+    public class CorsairMouse : DeviceProvider
     {
         public CorsairMouse(ILogger logger)
         {

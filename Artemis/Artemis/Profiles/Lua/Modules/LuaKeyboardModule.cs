@@ -1,6 +1,8 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Diagnostics;
+using System.Windows.Forms;
 using Artemis.DeviceProviders;
-using Artemis.Utilities.Keyboard;
+using Artemis.Managers;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua.Modules
@@ -10,13 +12,14 @@ namespace Artemis.Profiles.Lua.Modules
     {
         private readonly KeyboardProvider _keyboardProvider;
 
-        public LuaKeyboardModule(LuaWrapper luaWrapper) : base(luaWrapper)
+        public LuaKeyboardModule(LuaManager luaManager) : base(luaManager)
         {
-            _keyboardProvider = luaWrapper.KeyboardProvider;
-            KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
+            _keyboardProvider = luaManager.KeyboardProvider;
+
+            // Register the KeyMatch type for usage in GetKeyPosition
+            UserData.RegisterType(typeof(KeyMatch));
         }
 
-        // TODO: Visible in LUA? Decladed as invisile in base class
         public override string ModuleName => "Keyboard";
 
         public string Name => _keyboardProvider.Name;
@@ -24,32 +27,23 @@ namespace Artemis.Profiles.Lua.Modules
         public int Width => _keyboardProvider.Width;
         public int Height => _keyboardProvider.Height;
 
-        #region Overriding members
-
-        public override void Dispose()
-        {
-            KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
-        }
-
-        #endregion
-
-        private void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
-        {
-            // TODO
-            //var keyMatch = _keyboardProvider.GetKeyPosition(e.KeyCode);
-            //if (keyMatch != null)
-            //    LuaWrapper.LuaEventsWrapper.InvokeKeyPressed(LuaWrapper.ProfileModel, this, keyMatch.Value.KeyCode,
-            //        keyMatch.Value.X, keyMatch.Value.Y);
-        }
-
         public void PressKeys(string keys)
         {
             SendKeys.SendWait(keys);
         }
 
-        public void GetKeyPosition(Keys key)
+        public KeyMatch? GetKeyPosition(string key)
         {
-            _keyboardProvider.GetKeyPosition(key);
+            // Convert string to Keys enum, I'm not sure if built-in enums can be converted automatically
+            try
+            {
+                var keyEnum = (Keys)Enum.Parse(typeof(Keys), key);
+                return _keyboardProvider.GetKeyPosition(keyEnum);
+            }
+            catch (ArgumentException)
+            {
+                throw new ScriptRuntimeException($"Key '{key}' not found");
+            }
         }
     }
 }
