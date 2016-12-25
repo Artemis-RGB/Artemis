@@ -16,7 +16,7 @@ using Ninject;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
-    internal class AudioType : ILayerType
+    public class AudioType : ILayerType
     {
         private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
         private readonly IKernel _kernel;

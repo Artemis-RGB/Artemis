@@ -17,7 +17,7 @@ using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyPress
 {
-    internal class KeyPressType : ILayerType
+    public class KeyPressType : ILayerType
     {
         private readonly DeviceManager _deviceManager;
         private List<LayerModel> _keyPressLayers;

@@ -8,7 +8,8 @@ namespace Artemis.Profiles.Lua.Modules.Events
     [MoonSharpUserData]
     public class LuaDeviceDrawingEventArgs : EventArgs
     {
-        public LuaDeviceDrawingEventArgs(string deviceType, IDataModel dataModel, bool preview, LuaDrawWrapper luaDrawWrapper)
+        public LuaDeviceDrawingEventArgs(string deviceType, IDataModel dataModel, bool preview,
+            LuaDrawWrapper luaDrawWrapper)
         {
             DeviceType = deviceType;
             DataModel = dataModel;

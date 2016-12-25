@@ -24,8 +24,9 @@ namespace Artemis.Modules.Effects.WindowsProfile
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
 
-        public WindowsProfileModel(DeviceManager deviceManager)
-            : base(deviceManager, SettingsProvider.Load<WindowsProfileSettings>(), new WindowsProfileDataModel())
+        public WindowsProfileModel(DeviceManager deviceManager, LuaManager luaManager)
+            : base(deviceManager, luaManager, SettingsProvider.Load<WindowsProfileSettings>(),
+                new WindowsProfileDataModel())
         {
             _lastMusicUpdate = DateTime.Now;
 
@@ -125,7 +126,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
             var phav = PerformanceInfo.GetPhysicalAvailableMemoryInMiB();
             var tot = PerformanceInfo.GetTotalMemoryInMiB();
-            var percentFree = phav/(decimal) tot*100;
+            var percentFree = phav / (decimal) tot * 100;
             var percentOccupied = 100 - percentFree;
 
             dataModel.Performance.RAMUsage = (int) percentOccupied;
@@ -222,7 +223,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
             if (dataModel.Spotify.SongLength > 0)
                 dataModel.Spotify.SongPercentCompleted =
-                    (int) (status.PlayingPosition/dataModel.Spotify.SongLength*100.0);
+                    (int) (status.PlayingPosition / dataModel.Spotify.SongLength * 100.0);
         }
 
         private void UpdateGooglePlayMusic(WindowsProfileDataModel dataModel)
@@ -241,14 +242,14 @@ namespace Artemis.Modules.Effects.WindowsProfile
         #region System
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true,
-             CallingConvention = CallingConvention.Winapi)]
+            CallingConvention = CallingConvention.Winapi)]
         public static extern short GetKeyState(int keyCode);
 
         private void UpdateKeyStates(WindowsProfileDataModel dataModel)
         {
-            dataModel.Keyboard.NumLock = ((ushort)GetKeyState(0x90) & 0xffff) != 0;
-            dataModel.Keyboard.CapsLock = ((ushort)GetKeyState(0x14) & 0xffff) != 0;
-            dataModel.Keyboard.ScrollLock = ((ushort)GetKeyState(0x91) & 0xffff) != 0;
+            dataModel.Keyboard.NumLock = ((ushort) GetKeyState(0x90) & 0xffff) != 0;
+            dataModel.Keyboard.CapsLock = ((ushort) GetKeyState(0x14) & 0xffff) != 0;
+            dataModel.Keyboard.ScrollLock = ((ushort) GetKeyState(0x91) & 0xffff) != 0;
         }
 
         private void UpdateActiveWindow(WindowsProfileDataModel dataModel)

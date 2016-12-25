@@ -6,15 +6,14 @@ using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities.DataReaders;
-using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.LightFx
 {
     public class LightFxModel : GameModel
     {
-        public LightFxModel(DeviceManager deviceManager, PipeServer pipeServer)
-            : base(deviceManager, SettingsProvider.Load<LightFxSettings>(), new LightFxDataModel())
+        public LightFxModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
+            : base(deviceManager, luaManager, SettingsProvider.Load<LightFxSettings>(), new LightFxDataModel())
         {
             Name = "LightFX";
             ProcessName = "LoL";
@@ -25,6 +24,8 @@ namespace Artemis.Modules.Games.LightFx
             // This model can enable itself by changing its process name to the currently running Light FX game.
             pipeServer.PipeMessage += PipeServerOnPipeMessage;
         }
+
+        public int Scale { get; set; }
 
         private void PipeServerOnPipeMessage(string msg)
         {
@@ -44,10 +45,8 @@ namespace Artemis.Modules.Games.LightFx
             }
 
             // Setup process name
-            ProcessName = Path.GetFileNameWithoutExtension(((LightFxDataModel)DataModel).LightFxState.game);
+            ProcessName = Path.GetFileNameWithoutExtension(((LightFxDataModel) DataModel).LightFxState.game);
         }
-
-        public int Scale { get; set; }
 
         public override void Dispose()
         {

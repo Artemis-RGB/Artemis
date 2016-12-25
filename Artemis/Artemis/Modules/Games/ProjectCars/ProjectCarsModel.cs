@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Games.ProjectCars.Data;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Properties;
 using Artemis.Services;
-using Artemis.Settings;
-using Artemis.Utilities;
-using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Games.ProjectCars
 {
@@ -18,8 +12,8 @@ namespace Artemis.Modules.Games.ProjectCars
     {
         private readonly MetroDialogService _dialogService;
 
-        public ProjectCarsModel(DeviceManager deviceManager, MetroDialogService dialogService)
-            : base(deviceManager, SettingsProvider.Load<ProjectCarsSettings>(), new ProjectCarsDataModel())
+        public ProjectCarsModel(DeviceManager deviceManager, LuaManager luaManager, MetroDialogService dialogService)
+            : base(deviceManager, luaManager, SettingsProvider.Load<ProjectCarsSettings>(), new ProjectCarsDataModel())
         {
             _dialogService = dialogService;
             Name = "ProjectCars";
@@ -49,10 +43,7 @@ namespace Artemis.Modules.Games.ProjectCars
 
             // item1 is the true/false indicating a good read or not
             if (returnTuple.Item1)
-            {
-                // map the data that's read from the struct and map it to the class
                 dataModel.GameData = dataModel.GameData.MapStructToClass(returnTuple.Item2, dataModel.GameData);
-            }
         }
 
         public override List<LayerModel> GetRenderLayers(bool keyboardOnly)

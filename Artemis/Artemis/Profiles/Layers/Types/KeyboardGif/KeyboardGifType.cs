@@ -13,7 +13,7 @@ using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
 {
-    internal class KeyboardGifType : ILayerType
+    public class KeyboardGifType : ILayerType
     {
         public string Name => "Keyboard - GIF";
         public bool ShowInEdtor => true;

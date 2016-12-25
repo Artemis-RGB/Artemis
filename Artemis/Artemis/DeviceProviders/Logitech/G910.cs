@@ -10,7 +10,7 @@ using Artemis.Settings;
 
 namespace Artemis.DeviceProviders.Logitech
 {
-    internal class G910 : LogitechKeyboard
+    public class G910 : LogitechKeyboard
     {
         private readonly GeneralSettings _generalSettings;
 

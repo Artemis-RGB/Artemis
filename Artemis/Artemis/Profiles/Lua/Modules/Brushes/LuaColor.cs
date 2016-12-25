@@ -3,7 +3,7 @@ using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
-namespace Artemis.Profiles.Lua.Brushes
+namespace Artemis.Profiles.Lua.Modules.Brushes
 {
     [MoonSharpUserData]
     public class LuaColor

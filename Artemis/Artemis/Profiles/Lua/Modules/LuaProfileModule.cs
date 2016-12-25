@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.Managers;
+using Artemis.Profiles.Lua.Wrappers;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Profiles.Lua.Modules
 {
+    [MoonSharpUserData]
     public class LuaProfileModule : LuaModule
     {
         private readonly ProfileModel _profileModel;
 
-        public LuaProfileModule(LuaWrapper luaWrapper) : base(luaWrapper)
+        public LuaProfileModule(LuaManager luaManager) : base(luaManager)
         {
-            _profileModel = luaWrapper.ProfileModel;
+            _profileModel = luaManager.ProfileModel;
         }
 
         public override string ModuleName => "Profile";
@@ -17,14 +21,6 @@ namespace Artemis.Profiles.Lua.Modules
         #region General profile properties
 
         public string Name => _profileModel.Name;
-
-        #endregion
-
-        #region Overriding members
-
-        public override void Dispose()
-        {
-        }
 
         #endregion
 

@@ -25,8 +25,10 @@ namespace Artemis.Modules.Games.UnrealTournament
         private Timer _killTimer;
         private int _lastScore;
 
-        public UnrealTournamentModel(DeviceManager deviceManager, PipeServer pipeServer, MetroDialogService dialogService)
-            : base(deviceManager, SettingsProvider.Load<UnrealTournamentSettings>(), new UnrealTournamentDataModel())
+        public UnrealTournamentModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer,
+            MetroDialogService dialogService)
+            : base(deviceManager, luaManager, SettingsProvider.Load<UnrealTournamentSettings>(),
+                new UnrealTournamentDataModel())
         {
             _pipeServer = pipeServer;
             _dialogService = dialogService;
@@ -44,7 +46,7 @@ namespace Artemis.Modules.Games.UnrealTournament
 
         public void FindGame()
         {
-            var gameSettings = (UnrealTournamentSettings)Settings;
+            var gameSettings = (UnrealTournamentSettings) Settings;
             // If already propertly set up, don't do anything
             if ((gameSettings.GameDirectory != null) &&
                 File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
@@ -77,13 +79,13 @@ namespace Artemis.Modules.Games.UnrealTournament
 
         public void PlaceFiles()
         {
-            var gameSettings = (UnrealTournamentSettings)Settings;
+            var gameSettings = (UnrealTournamentSettings) Settings;
             var path = gameSettings.GameDirectory;
 
             if (!File.Exists(path + @"\UE4-Win64-Shipping.exe"))
             {
                 _dialogService.ShowErrorMessageBox("Please select a valid Unreal Tournament directory\n\n" +
-                                                  @"By default Unreal Tournament is in C:\Program Files\Epic Games\UnrealTournament");
+                                                   @"By default Unreal Tournament is in C:\Program Files\Epic Games\UnrealTournament");
 
                 gameSettings.GameDirectory = string.Empty;
                 gameSettings.Save();

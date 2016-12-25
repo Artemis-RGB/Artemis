@@ -1,30 +1,36 @@
 ﻿using System;
-using MoonSharp.Interpreter;
+using Artemis.Managers;
 using MoonSharp.Interpreter.Interop;
 
-namespace Artemis.Profiles.Lua.Modules
+namespace Artemis.Profiles.Lua
 {
     /// <summary>
     ///     Defines a module which will be accessable in all LUA scripts.
     /// </summary>
-    [MoonSharpUserData]
     public abstract class LuaModule : IDisposable
     {
-        public LuaModule(LuaWrapper luaWrapper)
+        public LuaModule(LuaManager luaManager)
         {
-            LuaWrapper = luaWrapper;
+            LuaManager = luaManager;
         }
 
         /// <summary>
         ///     The name under which this module will be accessable in LUA
         /// </summary>
-        [MoonSharpVisible(false)]
         public abstract string ModuleName { get; }
 
+        /// <summary>
+        ///     The LUA manager containing this module
+        /// </summary>
         [MoonSharpVisible(false)]
-        public LuaWrapper LuaWrapper { get; set; }
+        public LuaManager LuaManager { get; set; }
 
+        /// <summary>
+        ///     Called when the LUA script is restarted
+        /// </summary>
         [MoonSharpVisible(false)]
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+        }
     }
 }
