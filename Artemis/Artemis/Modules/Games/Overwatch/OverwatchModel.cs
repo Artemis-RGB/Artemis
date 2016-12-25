@@ -29,9 +29,9 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
-        public OverwatchModel(DeviceManager deviceManager, PipeServer pipeServer, MetroDialogService dialogService,
-            DebugViewModel debugViewModel)
-            : base(deviceManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
+        public OverwatchModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer,
+            MetroDialogService dialogService, DebugViewModel debugViewModel)
+            : base(deviceManager, luaManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
         {
             _pipeServer = pipeServer;
             _dialogService = dialogService;
@@ -240,7 +240,8 @@ namespace Artemis.Modules.Games.Overwatch
 
             // Ultimate is ready when Q is blinking
             var charCol = characterMatch.Value.Color;
-            var backlidColor = Color.FromRgb((byte) (charCol.R*0.25), (byte) (charCol.G*0.25), (byte) (charCol.B*0.25));
+            var backlidColor = Color.FromRgb((byte) (charCol.R * 0.25), (byte) (charCol.G * 0.25),
+                (byte) (charCol.B * 0.25));
             var ultReady = !backlidColor.Equals(colors[2, 2]);
 
             if (_ultimateUsed.AddSeconds(15) <= DateTime.Now)
@@ -291,7 +292,7 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
 
             var key = Registry.LocalMachine.OpenSubKey(
-                    @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Overwatch");
             var path = key?.GetValue("DisplayIcon")?.ToString();
 
             if (string.IsNullOrEmpty(path) || !File.Exists(path))

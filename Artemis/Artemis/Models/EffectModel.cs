@@ -23,9 +23,10 @@ namespace Artemis.Models
 
         protected DateTime LastTrace;
 
-        protected EffectModel(DeviceManager deviceManager, EffectSettings settings, IDataModel dataModel)
+        protected EffectModel(DeviceManager deviceManager, LuaManager luaManager, EffectSettings settings, IDataModel dataModel)
         {
             DeviceManager = deviceManager;
+            LuaManager = luaManager;
             Settings = settings;
             DataModel = dataModel;
 
@@ -38,6 +39,7 @@ namespace Artemis.Models
 
         public bool Initialized { get; set; }
         public DeviceManager DeviceManager { get; set; }
+        public LuaManager LuaManager { get; }
         public EffectSettings Settings { get; set; }
         public string Name { get; set; }
         public int KeyboardScale { get; set; } = 4;
@@ -50,7 +52,7 @@ namespace Artemis.Models
 
         public virtual void Dispose()
         {
-            Profile?.Deactivate();
+            Profile?.Deactivate(LuaManager);
         }
 
         private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
@@ -85,7 +87,7 @@ namespace Artemis.Models
 
                     // If the profile has no active LUA wrapper, create one
                     if (!string.IsNullOrEmpty(Profile.LuaScript))
-                        Profile.Activate(DeviceManager.ActiveKeyboard);
+                        Profile.Activate(LuaManager);
 
                     // Render the keyboard layer-by-layer
                     var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2.Data.Reader
 {
-    internal class SharedProcessMemory<T> : IDisposable
+    public class SharedProcessMemory<T> : IDisposable
     {
         private readonly string _mapName;
         private MemoryMappedViewAccessor _memoryMappedAccessor;

@@ -22,9 +22,10 @@ namespace Artemis.Modules.Games.CounterStrike
         private DateTime _lastKill;
         private int _lastKills;
 
-        public CounterStrikeModel(DeviceManager deviceManager, GameStateWebServer gameStateWebServer,
-            MetroDialogService dialogService)
-            : base(deviceManager, SettingsProvider.Load<CounterStrikeSettings>(), new CounterStrikeDataModel())
+        public CounterStrikeModel(DeviceManager deviceManager, LuaManager luaManager,
+            GameStateWebServer gameStateWebServer, MetroDialogService dialogService)
+            : base(deviceManager, luaManager, SettingsProvider.Load<CounterStrikeSettings>(),
+                new CounterStrikeDataModel())
         {
             _gameStateWebServer = gameStateWebServer;
             _dialogService = dialogService;

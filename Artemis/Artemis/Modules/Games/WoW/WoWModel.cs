@@ -18,8 +18,8 @@ namespace Artemis.Modules.Games.WoW
         private readonly GamePointersCollection _pointer;
         private ProcessSharp _process;
 
-        public WoWModel(DeviceManager deviceManager)
-            : base(deviceManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
+        public WoWModel(DeviceManager deviceManager, LuaManager luaManager)
+            : base(deviceManager, luaManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
         {
             Name = "WoW";
             ProcessName = "Wow-64";

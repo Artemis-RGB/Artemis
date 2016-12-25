@@ -6,10 +6,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.DeviceProviders;
+using Artemis.Events;
+using Artemis.Managers;
 using Artemis.Models.Interfaces;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Lua;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
@@ -40,6 +41,9 @@ namespace Artemis.Profiles
 
         [JsonIgnore]
         public string Slug => new string(Name.Where(ch => !_invalidFileNameChars.Contains(ch)).ToArray());
+
+        public event EventHandler<ProfileDeviceEventsArg> OnDeviceUpdatedEvent;
+        public event EventHandler<ProfileDeviceEventsArg> OnDeviceDrawnEvent;
 
         public void FixOrder()
         {
@@ -77,12 +81,14 @@ namespace Artemis.Profiles
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
             {
-                if (!layerModel.Enabled || (keyboardOnly && (layerModel.LayerType.DrawType != DrawType.Keyboard)))
+                if (!layerModel.Enabled || keyboardOnly && layerModel.LayerType.DrawType != DrawType.Keyboard)
                     continue;
 
                 if (!ignoreConditions)
+                {
                     if (!layerModel.ConditionsMet(dataModel))
                         continue;
+                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -115,12 +121,12 @@ namespace Artemis.Profiles
                 // Update the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
-                LuaWrapper.LuaEventsWrapper?.InvokeDeviceUpdate(this, updateType, dataModel, preview);
+                RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(updateType, dataModel, preview, null));
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(this, updateType, dataModel, preview, c);
+                RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(updateType, dataModel, preview, c));
 
                 // Remove the clip
                 c.Pop();
@@ -130,6 +136,18 @@ namespace Artemis.Profiles
             {
                 g.DrawImage(bmp, new PointF(0, 0));
             }
+        }
+
+        private void RaiseDeviceUpdatedEvent(ProfileDeviceEventsArg e)
+        {
+            var handler = OnDeviceUpdatedEvent;
+            handler?.Invoke(this, e);
+        }
+
+        public void RaiseDeviceDrawnEvent(ProfileDeviceEventsArg e)
+        {
+            var handler = OnDeviceDrawnEvent;
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -172,15 +190,15 @@ namespace Artemis.Profiles
             }
         }
 
-        public void Activate(KeyboardProvider keyboard)
+        public void Activate(LuaManager luaManager)
         {
-            if (!Equals(LuaWrapper.ProfileModel, this))
-                LuaWrapper.SetupLua(this, keyboard);
+            if (!Equals(luaManager.ProfileModel, this))
+                luaManager.SetupLua(this);
         }
 
-        public void Deactivate()
+        public void Deactivate(LuaManager luaManager)
         {
-            LuaWrapper.Clear();
+            luaManager.ClearLua();
         }
 
         public LayerModel AddLayer(LayerModel afterLayer)
@@ -189,7 +207,9 @@ namespace Artemis.Profiles
             var layer = LayerModel.CreateLayer();
 
             if (afterLayer != null)
+            {
                 afterLayer.InsertAfter(layer);
+            }
             else
             {
                 Layers.Add(layer);
@@ -221,8 +241,8 @@ namespace Artemis.Profiles
             unchecked
             {
                 var hashCode = Slug?.GetHashCode() ?? 0;
-                hashCode = (hashCode*397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
-                hashCode = (hashCode*397) ^ (GameName?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (KeyboardSlug?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (GameName?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

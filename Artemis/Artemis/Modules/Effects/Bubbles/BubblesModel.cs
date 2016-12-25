@@ -15,7 +15,8 @@ namespace Artemis.Modules.Effects.Bubbles
     {
         #region Constructors
 
-        public BubblesModel(DeviceManager deviceManager) : base(deviceManager, SettingsProvider.Load<BubblesSettings>(), null)
+        public BubblesModel(DeviceManager deviceManager, LuaManager luaManager)
+            : base(deviceManager, luaManager, SettingsProvider.Load<BubblesSettings>(), null)
         {
             Name = "Bubbles";
             Initialized = false;
@@ -41,7 +42,7 @@ namespace Artemis.Modules.Effects.Bubbles
             KeyboardScale = Settings.Smoothness;
 
             var rect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);
-            var scaleFactor = Settings.Smoothness/25.0;
+            var scaleFactor = Settings.Smoothness / 25.0;
 
             for (var i = 0; i < Settings.BubbleCount; i++)
             {
@@ -49,16 +50,18 @@ namespace Artemis.Modules.Effects.Bubbles
                     ? ColorHelpers.GetRandomRainbowColor()
                     : ColorHelpers.ToDrawingColor(Settings.BubbleColor);
                 // -Settings.MoveSpeed because we want to spawn at least one move away from borders
-                var initialPositionX = (rect.Width - Settings.BubbleSize*scaleFactor*2 - Settings.MoveSpeed*scaleFactor)*
-                                       _random.NextDouble() + Settings.BubbleSize*scaleFactor;
-                var initialPositionY = (rect.Height - Settings.BubbleSize*scaleFactor*2 - Settings.MoveSpeed*scaleFactor)*
-                                       _random.NextDouble() + Settings.BubbleSize*scaleFactor;
-                var initialDirectionX = Settings.MoveSpeed*scaleFactor*_random.NextDouble()*
+                var initialPositionX = (rect.Width - Settings.BubbleSize * scaleFactor * 2 -
+                                        Settings.MoveSpeed * scaleFactor) *
+                                       _random.NextDouble() + Settings.BubbleSize * scaleFactor;
+                var initialPositionY = (rect.Height - Settings.BubbleSize * scaleFactor * 2 -
+                                        Settings.MoveSpeed * scaleFactor) *
+                                       _random.NextDouble() + Settings.BubbleSize * scaleFactor;
+                var initialDirectionX = Settings.MoveSpeed * scaleFactor * _random.NextDouble() *
                                         (_random.Next(1) == 0 ? -1 : 1);
-                var initialDirectionY = (Settings.MoveSpeed*scaleFactor - Math.Abs(initialDirectionX))*
+                var initialDirectionY = (Settings.MoveSpeed * scaleFactor - Math.Abs(initialDirectionX)) *
                                         (_random.Next(1) == 0 ? -1 : 1);
 
-                _bubbles.Add(new Bubble(color, (int) Math.Round(Settings.BubbleSize*scaleFactor),
+                _bubbles.Add(new Bubble(color, (int) Math.Round(Settings.BubbleSize * scaleFactor),
                     new Point(initialPositionX, initialPositionY), new Vector(initialDirectionX, initialDirectionY)));
             }
 
@@ -79,7 +82,7 @@ namespace Artemis.Modules.Effects.Bubbles
                 if (Settings.IsShiftColors)
                     bubble.Color = ColorHelpers.ShiftColor(bubble.Color,
                         Settings.IsRandomColors
-                            ? (int) Math.Round(Settings.ShiftColorSpeed*_random.NextDouble())
+                            ? (int) Math.Round(Settings.ShiftColorSpeed * _random.NextDouble())
                             : Settings.ShiftColorSpeed);
 
                 bubble.CheckCollision(keyboardRectangle);

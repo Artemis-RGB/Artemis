@@ -52,6 +52,9 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="updateAnimations"></param>
         public void Update(IDataModel dataModel, bool preview, bool updateAnimations)
         {
+            if (LayerType == null)
+                return;
+
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
