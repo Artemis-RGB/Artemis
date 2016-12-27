@@ -21,8 +21,8 @@ namespace Artemis.Managers
         private readonly DeviceManager _deviceManager;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
-        private List<LuaModule> _luaModules;
         private readonly Script _luaScript;
+        private List<LuaModule> _luaModules;
         private FileSystemWatcher _watcher;
 
         public LuaManager(IKernel kernel, ILogger logger, DeviceManager deviceManager)
@@ -52,17 +52,15 @@ namespace Artemis.Managers
 
             // Get new instances of all modules
             _luaModules = _kernel.Get<List<LuaModule>>();
-            ProfileModule = (LuaProfileModule)_luaModules.First(m => m.ModuleName == "Profile");
-            EventsModule = (LuaEventsModule)_luaModules.First(m => m.ModuleName == "Events");
+            ProfileModule = (LuaProfileModule) _luaModules.First(m => m.ModuleName == "Profile");
+            EventsModule = (LuaEventsModule) _luaModules.First(m => m.ModuleName == "Events");
 
             // Setup new state
             _luaScript.Options.DebugPrint = LuaPrint;
 
             // Insert each module into the script's globals
             foreach (var luaModule in _luaModules)
-            {                
                 _luaScript.Globals[luaModule.ModuleName] = luaModule;
-            }
 
             // If there is no LUA script, don't bother executing the string
             if (ProfileModel.LuaScript.IsNullOrEmpty())
@@ -74,6 +72,7 @@ namespace Artemis.Managers
                 {
                     lock (_luaScript)
                     {
+                        UpdateLuaSource(ProfileModel);
                         _luaScript.DoString(ProfileModel.LuaScript);
                     }
                 }
@@ -116,7 +115,6 @@ namespace Artemis.Managers
             }
 
             if (EventsModule != null)
-            {
                 lock (EventsModule.InvokeLock)
                 {
                     lock (_luaScript)
@@ -124,13 +122,51 @@ namespace Artemis.Managers
                         _luaScript.DoString("");
                     }
                 }
-            }
             else
-            {
                 lock (_luaScript)
                 {
                     _luaScript.DoString("");
                 }
+        }
+
+        /// <summary>
+        ///     Safely call a function on the active script
+        /// </summary>
+        /// <param name="function"></param>
+        /// <param name="args"></param>
+        public void Call(DynValue function, DynValue[] args = null)
+        {
+            if (EventsModule == null)
+                return;
+
+            try
+            {
+                lock (EventsModule.InvokeLock)
+                {
+                    lock (_luaScript)
+                    {
+                        if (args != null)
+                            _luaScript.Call(function, args);
+                        else
+                            _luaScript.Call(function);
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.Message);
+            }
+            catch (InternalErrorException e)
+            {
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+            }
+            catch (SyntaxErrorException e)
+            {
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
         }
 
@@ -142,6 +178,20 @@ namespace Artemis.Managers
         }
 
         #endregion
+
+        /// <summary>
+        ///     Updates a profile's LUA script to be compatible with the latest version of Artemis, if needed.
+        ///     This function obviously won't fix completely custom profiles but it'll fix copied LUA.
+        /// </summary>
+        /// <param name="profileModel"></param>
+        private static void UpdateLuaSource(ProfileModel profileModel)
+        {
+            // 1.7.1.0 - Events cleanup
+            profileModel.LuaScript = profileModel.LuaScript.Replace("function updateHandler(profile, eventArgs)",
+                "function updateHandler(eventArgs)");
+            profileModel.LuaScript = profileModel.LuaScript.Replace("function drawHandler(profile, eventArgs)",
+                "function drawHandler(eventArgs)");
+        }
 
         #region Editor
 
