@@ -80,15 +80,15 @@ namespace Artemis.Managers
             }
             catch (InternalErrorException e)
             {
-                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
             catch (SyntaxErrorException e)
             {
-                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
             catch (ScriptRuntimeException e)
             {
-                _logger.Error(e, "[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
+                _logger.Error("[{0}-LUA]: Error: {1}", ProfileModel.Name, e.DecoratedMessage);
             }
         }
 
