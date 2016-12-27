@@ -10,6 +10,7 @@ using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic;
 using CUE.NET.Devices.Generic.Enums;
+using CUE.NET.Exceptions;
 using CUE.NET.Helper;
 using Ninject.Extensions.Logging;
 using Point = System.Drawing.Point;
@@ -44,7 +45,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Enable()
         {
             if (!CueSDK.IsInitialized)
-                CueSDK.Initialize(true);
+                CueSDK.Initialize();
 
             CueSDK.UpdateMode = UpdateMode.Manual;
             _keyboard = CueSDK.KeyboardSDK;
@@ -87,8 +88,17 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            if (CueSDK.IsInitialized)
-                CueSDK.Reinitialize();
+            try
+            {
+                if (CueSDK.IsInitialized)
+                    CueSDK.Reinitialize();
+            }
+            catch (WrapperException e)
+            {
+                // This occurs when releasing the SDK after sleep, ignore it
+                if (e.Message != "The previously loaded Keyboard got disconnected.")
+                    throw;
+            }
         }
 
         /// <summary>
