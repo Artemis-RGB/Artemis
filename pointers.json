@@ -2,20 +2,54 @@
 [
    {
      "Game": "RocketLeague",
-     "GameVersion": "1.21",
+     "GameVersion": "1.24",
      "GameAddresses": [
        {
          "Description": "Boost",
          "BasePointer": {
-           "value": 23719204
+           "value": 23838644
          },
          "Offsets": [
-           188,
-           24,
-           904,
-           1824,
+           196,
+           528,
+           800,
+           1844,
            548
          ]
+       }
+     ]
+   },
+   {
+     "Game": "WorldOfWarcraft",
+     "GameVersion": "7.0.3.22810",
+     "GameAddresses": [
+       {
+         "Description": "ObjectManager",
+         "BasePointer": {
+           "value": 22511728
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "LocalPlayer",
+         "BasePointer": {
+           "value": 23715600
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "NameCache",
+         "BasePointer": {
+           "value": 22142184
+         },
+         "Offsets": null
+       },
+       {
+         "Description": "TargetGuid",
+         "BasePointer": {
+           "value": 24758592
+         },
+         "Offsets": null
        }
      ]
    }
