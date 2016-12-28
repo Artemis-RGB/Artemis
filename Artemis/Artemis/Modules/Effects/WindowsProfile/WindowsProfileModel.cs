@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -179,11 +180,20 @@ namespace Artemis.Modules.Effects.WindowsProfile
                 var tryCount = 0;
                 while (tryCount <= 10)
                 {
-                    tryCount++;
-                    var connected = _spotify.Connect();
-                    if (connected)
+                    // Causes WebException if not internet connection is available
+                    try
+                    {
+                        tryCount++;
+                        var connected = _spotify.Connect();
+                        if (connected)
+                            break;
+                        Thread.Sleep(1000);
+                    }
+                    catch (WebException)
+                    {
                         break;
-                    Thread.Sleep(1000);
+                    }
+                    
                 }
                 _spotifySetupBusy = false;
             });

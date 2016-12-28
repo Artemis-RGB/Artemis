@@ -46,7 +46,6 @@ namespace Artemis.Utilities
                 {
                     // These exceptions should only really occur when running from VS
                     Logger.Error(e, "Update check failed");
-                    mgr.Result.Dispose();
                 }
             }
         }
