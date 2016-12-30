@@ -1,6 +1,10 @@
 # Artemis
 Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.
 
+[![Github All Releases](https://img.shields.io/github/downloads/spoinkynl/artemis/setup.exe.svg)]() 
+[![AUR](https://img.shields.io/aur/license/yaourt.svg)]()
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
+
 **Download**: https://github.com/SpoinkyNL/Artemis/releases
 
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
