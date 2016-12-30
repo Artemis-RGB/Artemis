@@ -5,10 +5,8 @@
 [![GitHub stars](https://img.shields.io/github/stars/SpoinkyNL/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/stargazers)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
 
-Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.
-
-**Download**: https://github.com/SpoinkyNL/Artemis/releases
-
+Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
+**Download**: https://github.com/SpoinkyNL/Artemis/releases  
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
 ### Current Features
