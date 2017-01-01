@@ -29,14 +29,14 @@ namespace Artemis.Modules.Games.RocketLeague
             //var offset = new GamePointersCollection
             //{
             //    Game = "RocketLeague",
-            //    GameVersion = "1.24",
+            //    GameVersion = "1.26",
             //    GameAddresses = new List<GamePointer>
             //    {
             //        new GamePointer
             //        {
             //            Description = "Boost",
-            //            BasePointer = new IntPtr(0x016BBFB4),
-            //            Offsets = new[] { 0xc4, 0x210, 0x320, 0x734, 0x224}
+            //            BasePointer = new IntPtr(0x01666C38),
+            //            Offsets = new[] { 0x58, 0x668, 0x73C, 0x224}
             //        }
             //    }
             //};
@@ -54,8 +54,9 @@ namespace Artemis.Modules.Games.RocketLeague
 
         public override void Enable()
         {
-            Initialized = false;
+            base.Enable();
 
+            Initialized = false;
             Updater.GetPointers();
             _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
 

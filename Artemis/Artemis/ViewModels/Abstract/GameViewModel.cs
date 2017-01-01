@@ -26,7 +26,7 @@ namespace Artemis.ViewModels.Abstract
             IParameter[] args =
             {
                 new ConstructorArgument("mainManager", mainManager),
-                new ConstructorArgument("gameModel", gameModel),
+                new ConstructorArgument("effectModel", gameModel),
                 new ConstructorArgument("lastProfile", GameSettings.LastProfile)
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
@@ -60,7 +60,7 @@ namespace Artemis.ViewModels.Abstract
             }
         }
 
-        public bool GameEnabled => MainManager.EffectManager.ActiveEffect == GameModel;
+        public bool GameEnabled => MainManager.EffectManager.ActiveEffect.Name == GameModel.Name;
 
         public void ToggleEffect()
         {

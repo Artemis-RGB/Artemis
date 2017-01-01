@@ -23,16 +23,13 @@ namespace Artemis.Models
 
         protected DateTime LastTrace;
 
-        protected EffectModel(DeviceManager deviceManager, LuaManager luaManager, EffectSettings settings, IDataModel dataModel)
+        protected EffectModel(DeviceManager deviceManager, LuaManager luaManager, EffectSettings settings,
+            IDataModel dataModel)
         {
             DeviceManager = deviceManager;
             LuaManager = luaManager;
             Settings = settings;
             DataModel = dataModel;
-
-            // If set, load the last profile from settings
-            if (!string.IsNullOrEmpty(Settings?.LastProfile))
-                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
 
             DeviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
         }
@@ -45,6 +42,7 @@ namespace Artemis.Models
         public int KeyboardScale { get; set; } = 4;
         // Used by profile system
         public IDataModel DataModel { get; set; }
+
         public ProfileModel Profile { get; set; }
 
         [Inject]
@@ -53,16 +51,26 @@ namespace Artemis.Models
         public virtual void Dispose()
         {
             Profile?.Deactivate(LuaManager);
+            Profile = null;
         }
 
         private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
         {
             if (!string.IsNullOrEmpty(Settings?.LastProfile))
                 Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
+            else
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, "Default");
         }
 
         // Called on creation
-        public abstract void Enable();
+        public virtual void Enable()
+        {
+            // If set, load the last profile from settings
+            if (!string.IsNullOrEmpty(Settings?.LastProfile))
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
+            else
+                Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, "Default");
+        }
 
         // Called every frame
         public abstract void Update();
@@ -75,9 +83,9 @@ namespace Artemis.Models
         /// <param name="keyboardOnly"></param>
         public virtual void Render(RenderFrame frame, bool keyboardOnly)
         {
-            if ((Profile == null) || (DataModel == null) || (DeviceManager.ActiveKeyboard == null))
+            if (Profile == null || DataModel == null || DeviceManager.ActiveKeyboard == null)
                 return;
-            
+
             lock (DataModel)
             {
                 lock (Profile)

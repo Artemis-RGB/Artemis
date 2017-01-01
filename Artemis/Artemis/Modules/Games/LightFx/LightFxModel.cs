@@ -56,6 +56,8 @@ namespace Artemis.Modules.Games.LightFx
 
         public override void Enable()
         {
+            base.Enable();
+
             Initialized = true;
         }
 

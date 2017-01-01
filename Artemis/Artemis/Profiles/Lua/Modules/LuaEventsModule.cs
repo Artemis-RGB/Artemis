@@ -83,15 +83,15 @@ namespace Artemis.Profiles.Lua.Modules
                 }
                 catch (InternalErrorException ex)
                 {
-                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                    _logger.Error("[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
                 }
                 catch (SyntaxErrorException ex)
                 {
-                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                    _logger.Error("[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
                 }
                 catch (ScriptRuntimeException ex)
                 {
-                    _logger.Error(ex, "[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
+                    _logger.Error("[{0}-LUA]: Error: {1}", profileModel.Name, ex.DecoratedMessage);
                 }
             }
         }

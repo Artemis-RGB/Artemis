@@ -22,7 +22,7 @@ namespace Artemis.Modules.Effects.WindowsProfile
             IParameter[] args =
             {
                 new ConstructorArgument("mainManager", main),
-                new ConstructorArgument("gameModel", (WindowsProfileModel) EffectModel),
+                new ConstructorArgument("effectModel", (WindowsProfileModel) EffectModel),
                 new ConstructorArgument("lastProfile", ((WindowsProfileSettings) EffectSettings).LastProfile)
             };
             ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);

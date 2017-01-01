@@ -77,6 +77,8 @@ namespace Artemis.Modules.Games.WoW
 
         public override void Enable()
         {
+            base.Enable();
+
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             if (tempProcess == null)
                 return;
