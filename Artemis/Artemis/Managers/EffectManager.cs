@@ -35,8 +35,8 @@ namespace Artemis.Managers
             models.AddRange(overlayModels);
             // Add games, exclude WoW if needed
             models.AddRange(_generalSettings.GamestatePort != 62575
-                ? gameModels.Where(e => e.Name != "WoW").Where(e => e.Name != "LightFX")
-                : gameModels.Where(e => e.Name != "LightFX"));
+                ? gameModels.Where(e => e.Name != "WoW")
+                : gameModels);
 
             EffectModels = models;
             _logger.Info("Intialized EffectManager");
