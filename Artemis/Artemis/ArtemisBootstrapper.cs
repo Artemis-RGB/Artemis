@@ -77,8 +77,7 @@ namespace Artemis
 
         protected override void Configure()
         {
-            _kernel = new StandardKernel(new BaseModules(), new ManagerModules(), new DeviceModules(),
-                new EffectModules(), new ProfileModules());
+            _kernel = new StandardKernel(new BaseModules(), new ManagerModules());
 
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
             _kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();

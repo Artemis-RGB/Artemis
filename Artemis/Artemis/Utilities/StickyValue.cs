@@ -7,7 +7,7 @@ namespace Artemis.Utilities
     /// <summary>
     ///     A value that only changes it's not changed again within a set time
     /// </summary>
-    internal class StickyValue<T> : IDisposable
+    public class StickyValue<T> : IDisposable
     {
         private readonly int _stickyTime;
         private readonly BackgroundWorker _updateWorker;

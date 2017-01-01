@@ -4,7 +4,7 @@ using Artemis.Modules.Games.EurotruckSimulator2.Data.Reader;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2.Data
 {
-    internal class Ets2TelemetryData : IEts2TelemetryData
+    public class Ets2TelemetryData : IEts2TelemetryData
     {
         private Box<Ets2TelemetryStructure> _rawData;
 
@@ -38,7 +38,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
         }
     }
 
-    internal class Ets2Game : IEts2Game
+    public class Ets2Game : IEts2Game
     {
         private readonly Box<Ets2TelemetryStructure> _rawData;
 
@@ -55,7 +55,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
         public string TelemetryPluginVersion => _rawData.Struct.ets2_telemetry_plugin_revision.ToString();
     }
 
-    internal class Ets2Vector : IEts2Vector
+    public class Ets2Vector : IEts2Vector
     {
         public Ets2Vector(float x, float y, float z)
         {
@@ -69,7 +69,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
         public float Z { get; }
     }
 
-    internal class Ets2Placement : IEts2Placement
+    public class Ets2Placement : IEts2Placement
     {
         public Ets2Placement(float x, float y, float z,
             float heading, float pitch, float roll)
@@ -90,7 +90,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
         public float Roll { get; }
     }
 
-    internal class Ets2Truck : IEts2Truck
+    public class Ets2Truck : IEts2Truck
     {
         private readonly Box<Ets2TelemetryStructure> _rawData;
 
@@ -242,7 +242,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
         */
     }
 
-    internal class Ets2Trailer : IEts2Trailer
+    public class Ets2Trailer : IEts2Trailer
     {
         private readonly Box<Ets2TelemetryStructure> _rawData;
 
@@ -271,7 +271,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
             _rawData.Struct.trailerRotationZ);
     }
 
-    internal class Ets2Navigation : IEts2Navigation
+    public class Ets2Navigation : IEts2Navigation
     {
         private readonly Box<Ets2TelemetryStructure> _rawData;
 
@@ -288,7 +288,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
             _rawData.Struct.navigationSpeedLimit > 0 ? (int) Math.Round(_rawData.Struct.navigationSpeedLimit*3.6f) : 0;
     }
 
-    internal class Ets2Job : IEts2Job
+    public class Ets2Job : IEts2Job
     {
         private readonly Box<Ets2TelemetryStructure> _rawData;
 
@@ -355,7 +355,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2.Data
     }
     */
 
-    internal class Box<T> where T : struct
+    public class Box<T> where T : struct
     {
         public Box(T @struct)
         {

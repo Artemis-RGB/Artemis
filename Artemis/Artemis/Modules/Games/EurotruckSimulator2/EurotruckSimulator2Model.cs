@@ -18,9 +18,10 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
     {
         private readonly MetroDialogService _dialogService;
 
-        public EurotruckSimulator2Model(DeviceManager deviceManager, MetroDialogService dialogService)
-            : base(
-                deviceManager, SettingsProvider.Load<EurotruckSimulator2Settings>(), new EurotruckSimulator2DataModel())
+        public EurotruckSimulator2Model(DeviceManager deviceManager, LuaManager luaManager,
+            MetroDialogService dialogService)
+            : base(deviceManager, luaManager, SettingsProvider.Load<EurotruckSimulator2Settings>(),
+                new EurotruckSimulator2DataModel())
         {
             _dialogService = dialogService;
             Name = "EurotruckSimulator2";
@@ -42,6 +43,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public override void Enable()
         {
+            base.Enable();
+
             Initialized = true;
         }
 

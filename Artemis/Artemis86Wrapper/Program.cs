@@ -3,7 +3,7 @@ using Artemis86Wrapper.Intergrations.Skype;
 
 namespace Artemis86Wrapper
 {
-    internal class Program
+    public class Program
     {
         private static void Main(string[] args)
         {

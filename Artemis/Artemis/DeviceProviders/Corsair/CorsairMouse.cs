@@ -8,7 +8,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairMouse : DeviceProvider
+    public class CorsairMouse : DeviceProvider
     {
         public CorsairMouse(ILogger logger)
         {
@@ -22,7 +22,7 @@ namespace Artemis.DeviceProviders.Corsair
         {
             CanUse = CanInitializeSdk();
             if (CanUse && !CueSDK.IsInitialized)
-                CueSDK.Initialize(true);
+                CueSDK.Initialize();
 
             Logger.Debug("Attempted to enable Corsair mice. CanUse: {0}", CanUse);
 

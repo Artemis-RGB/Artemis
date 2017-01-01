@@ -16,8 +16,8 @@ namespace Artemis.Modules.Games.TheDivision
         private StickyValue<bool> _stickyAmmo;
         private StickyValue<bool> _stickyHp;
 
-        public TheDivisionModel(DeviceManager deviceManager, PipeServer pipeServer)
-            : base(deviceManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
+        public TheDivisionModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
+            : base(deviceManager, luaManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
         {
             _pipeServer = pipeServer;
             Name = "TheDivision";
@@ -49,8 +49,9 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override void Enable()
         {
-            Initialized = false;
+            base.Enable();
 
+            Initialized = false;
             _stickyAmmo = new StickyValue<bool>(200);
             _stickyHp = new StickyValue<bool>(200);
 

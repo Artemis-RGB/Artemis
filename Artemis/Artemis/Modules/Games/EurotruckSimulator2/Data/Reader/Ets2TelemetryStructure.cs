@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Artemis.Modules.Games.EurotruckSimulator2.Data.Reader
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    internal struct Ets2TelemetryStructure
+    public struct Ets2TelemetryStructure
     {
         private const int GeneralStringSize = 64;
 

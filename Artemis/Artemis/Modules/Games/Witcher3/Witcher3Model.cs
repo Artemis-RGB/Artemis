@@ -17,8 +17,8 @@ namespace Artemis.Modules.Games.Witcher3
         private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
-        public Witcher3Model(DeviceManager deviceManager)
-            : base(deviceManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
+        public Witcher3Model(DeviceManager deviceManager, LuaManager luaManager)
+            : base(deviceManager, luaManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
         {
             Name = "Witcher3";
             ProcessName = "witcher3";
@@ -43,8 +43,9 @@ namespace Artemis.Modules.Games.Witcher3
 
         public override void Enable()
         {
-            Initialized = false;
+            base.Enable();
 
+            Initialized = false;
             // Ensure the config file is found
             var witcherSettings = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                   @"\The Witcher 3\user.settings";

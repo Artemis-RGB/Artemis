@@ -1,29 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using Artemis.Managers;
 using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Profiles.Lua.Brushes;
+using Artemis.Profiles.Lua.Modules.Brushes;
+using Artemis.Profiles.Lua.Wrappers;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Modules
 {
-    /// <summary>
-    ///     Serves as a sandboxed wrapper around the LayerModel
-    /// </summary>
     [MoonSharpUserData]
-    public class LuaLayerWrapper
+    public class LuaLayerModule : LuaModule
     {
         private readonly LayerModel _layerModel;
 
-        public LuaLayerWrapper(LayerModel layerModel)
+        public LuaLayerModule(LuaManager luaManager, LayerModel layerModel) : base(luaManager)
         {
             _layerModel = layerModel;
-            SavedProperties = new LuaLayerProperties(layerModel);
+            SavedProperties = new Wrappers.LuaLayerProperties(_layerModel);
 
-            // Triger an update to fill up the Properties
+            // Trigger an update to fill up the Properties
             _layerModel.Update(new ProfilePreviewDataModel(), true, false);
         }
+
+        public override string ModuleName => "Layer";
 
         #region Child methods
 
@@ -106,7 +107,7 @@ namespace Artemis.Profiles.Lua
 
         #region Advanced layer properties
 
-        public LuaLayerProperties SavedProperties { get; set; }
+        public Wrappers.LuaLayerProperties SavedProperties { get; set; }
 
         public string BrushType => _layerModel.Properties.Brush?.GetType().Name;
 
