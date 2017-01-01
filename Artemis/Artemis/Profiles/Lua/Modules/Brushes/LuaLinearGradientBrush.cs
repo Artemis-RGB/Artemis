@@ -57,7 +57,7 @@ namespace Artemis.Profiles.Lua.Modules.Brushes
         {
             var collection = new GradientStopCollection(gradientColors
                 .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
-
+            
             Brush = new LinearGradientBrush(collection, new Point(startX, startY), new Point(endX, endY));
         }
     }

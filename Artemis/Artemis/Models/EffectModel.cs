@@ -56,10 +56,15 @@ namespace Artemis.Models
 
         private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs args)
         {
+            if (!Initialized)
+                return;
+
             if (!string.IsNullOrEmpty(Settings?.LastProfile))
                 Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
             else
                 Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, "Default");
+
+            Profile?.Activate(LuaManager);
         }
 
         // Called on creation
@@ -70,6 +75,8 @@ namespace Artemis.Models
                 Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, Settings.LastProfile);
             else
                 Profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, "Default");
+
+            Profile?.Activate(LuaManager);
         }
 
         // Called every frame
