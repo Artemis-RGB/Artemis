@@ -20,7 +20,7 @@ namespace Artemis.Profiles.Lua.Modules
             _layerModel = layerModel;
             SavedProperties = new Wrappers.LuaLayerProperties(_layerModel);
 
-            // Triger an update to fill up the Properties
+            // Trigger an update to fill up the Properties
             _layerModel.Update(new ProfilePreviewDataModel(), true, false);
         }
 

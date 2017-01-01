@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Profiles;
 using Artemis.Profiles.Lua;
 using Artemis.Profiles.Lua.Modules;
-using Artemis.Properties;
 using Castle.Core.Internal;
 using MoonSharp.Interpreter;
 using Ninject;
@@ -23,7 +19,6 @@ namespace Artemis.Managers
         private readonly ILogger _logger;
         private readonly Script _luaScript;
         private List<LuaModule> _luaModules;
-        private FileSystemWatcher _watcher;
 
         public LuaManager(IKernel kernel, ILogger logger, DeviceManager deviceManager)
         {
@@ -175,68 +170,6 @@ namespace Artemis.Managers
         private void LuaPrint(string s)
         {
             _logger.Info("[{0}-LUA]: {1}", ProfileModel?.Name, s);
-        }
-
-        #endregion
-
-        #region Editor
-
-        public void OpenEditor()
-        {
-            if (ProfileModel == null)
-                return;
-
-            // Create a temp file
-            var fileName = Guid.NewGuid() + ".lua";
-            var file = File.Create(Path.GetTempPath() + fileName);
-            file.Dispose();
-
-            // Add instructions to LUA script if it's a new file
-            if (ProfileModel.LuaScript.IsNullOrEmpty())
-                ProfileModel.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
-            File.WriteAllText(Path.GetTempPath() + fileName, ProfileModel.LuaScript);
-
-            // Watch the file for changes
-            SetupWatcher(Path.GetTempPath(), fileName);
-
-            // Open the temp file with the default editor
-            System.Diagnostics.Process.Start(Path.GetTempPath() + fileName);
-        }
-
-        private void SetupWatcher(string path, string fileName)
-        {
-            if (_watcher == null)
-            {
-                _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
-                _watcher.Changed += LuaFileChanged;
-                _watcher.EnableRaisingEvents = true;
-            }
-
-            _watcher.Path = path;
-            _watcher.Filter = fileName;
-        }
-
-        private void LuaFileChanged(object sender, FileSystemEventArgs args)
-        {
-            if (args.ChangeType != WatcherChangeTypes.Changed)
-                return;
-
-            if (ProfileModel == null)
-                return;
-
-            lock (ProfileModel)
-            {
-                using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (var sr = new StreamReader(fs))
-                    {
-                        ProfileModel.LuaScript = sr.ReadToEnd();
-                    }
-                }
-
-                ProfileProvider.AddOrUpdate(ProfileModel);
-                SetupLua(ProfileModel);
-            }
         }
 
         #endregion

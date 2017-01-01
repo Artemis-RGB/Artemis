@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -16,9 +18,12 @@ using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
+using Caliburn.Micro;
+using Castle.Core.Internal;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
@@ -43,6 +48,7 @@ namespace Artemis.ViewModels.Profiles
         private ObservableCollection<string> _profileNames;
         private bool _saving;
         private ProfileModel _selectedProfile;
+        private FileSystemWatcher _watcher;
 
         public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel effectModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
@@ -138,7 +144,7 @@ namespace Artemis.ViewModels.Profiles
                     // Update the value
                     _selectedProfile = value;
                 }
-                
+
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
@@ -256,22 +262,26 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         private void LoadProfiles()
         {
-            ProfileNames.Clear();
-            if (_effectModel == null || _deviceManager.ActiveKeyboard == null)
-                return;
+            Execute.OnUIThread(() =>
+            {
+                ProfileNames.Clear();
+                if (_effectModel == null || _deviceManager.ActiveKeyboard == null)
+                    return;
 
-            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _effectModel));
+                ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _effectModel));
 
-            // If a profile name was provided, try to load it
-            ProfileModel lastProfileModel = null;
-            if (!string.IsNullOrEmpty(LastProfile))
-                lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel, LastProfile);
+                // If a profile name was provided, try to load it
+                ProfileModel lastProfileModel = null;
+                if (!string.IsNullOrEmpty(LastProfile))
+                    lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
+                        LastProfile);
 
-            if (lastProfileModel != null)
-                SelectedProfile = lastProfileModel;
-            else
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
-                    ProfileNames.FirstOrDefault());
+                if (lastProfileModel != null)
+                    SelectedProfile = lastProfileModel;
+                else
+                    SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
+                        ProfileNames.FirstOrDefault());
+            });
         }
 
 
@@ -700,13 +710,12 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                _luaManager.SetupLua(SelectedProfile);
-                _luaManager.OpenEditor();
+                OpenEditor();
             }
             catch (Exception e)
             {
                 DialogService.ShowMessageBox("Couldn't open LUA file",
-                    "Please make sure you have a program such as Notepad associated with the .lua extension.\n\n" +
+                    "Please make sure you have a text editor associated with the .lua extension.\n\n" +
                     "Windows error message: \n" + e.Message);
             }
         }
@@ -758,5 +767,67 @@ namespace Artemis.ViewModels.Profiles
             }
             _saving = false;
         }
+
+        #region LUA Editor
+
+        public void OpenEditor()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            // Create a temp file
+            var fileName = Guid.NewGuid() + ".lua";
+            var file = File.Create(Path.GetTempPath() + fileName);
+            file.Dispose();
+
+            // Add instructions to LUA script if it's a new file
+            if (SelectedProfile.LuaScript.IsNullOrEmpty())
+                SelectedProfile.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
+            File.WriteAllText(Path.GetTempPath() + fileName, SelectedProfile.LuaScript);
+
+            // Watch the file for changes
+            SetupWatcher(Path.GetTempPath(), fileName);
+
+            // Open the temp file with the default editor
+            System.Diagnostics.Process.Start(Path.GetTempPath() + fileName);
+        }
+
+        private void SetupWatcher(string path, string fileName)
+        {
+            if (_watcher == null)
+            {
+                _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
+                _watcher.Changed += LuaFileChanged;
+                _watcher.EnableRaisingEvents = true;
+            }
+
+            _watcher.Path = path;
+            _watcher.Filter = fileName;
+        }
+
+        private void LuaFileChanged(object sender, FileSystemEventArgs args)
+        {
+            if (args.ChangeType != WatcherChangeTypes.Changed)
+                return;
+
+            if (SelectedProfile == null)
+                return;
+
+            lock (SelectedProfile)
+            {
+                using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (var sr = new StreamReader(fs))
+                    {
+                        SelectedProfile.LuaScript = sr.ReadToEnd();
+                    }
+                }
+
+                ProfileProvider.AddOrUpdate(SelectedProfile);
+                _luaManager.SetupLua(SelectedProfile);
+            }
+        }
+
+        #endregion
     }
 }
