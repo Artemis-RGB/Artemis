@@ -35,7 +35,7 @@ namespace Artemis.ViewModels.Profiles
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly DeviceManager _deviceManager;
-        private readonly EffectModel _gameModel;
+        private readonly EffectModel _effectModel;
         private readonly LuaManager _luaManager;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
@@ -44,13 +44,13 @@ namespace Artemis.ViewModels.Profiles
         private bool _saving;
         private ProfileModel _selectedProfile;
 
-        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel gameModel,
+        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel effectModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
             string lastProfile)
         {
             _deviceManager = deviceManager;
             _luaManager = luaManager;
-            _gameModel = gameModel;
+            _effectModel = effectModel;
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
@@ -111,7 +111,7 @@ namespace Artemis.ViewModels.Profiles
                 if (value == SelectedProfile?.Name)
                     return;
 
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, value);
+                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel, value);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
@@ -124,12 +124,21 @@ namespace Artemis.ViewModels.Profiles
                 if (Equals(value, _selectedProfile))
                     return;
 
-                // Deactivate old profile
-                _selectedProfile?.Deactivate(_luaManager);
-                // Update the value
-                _selectedProfile = value;
-                // Activate new profile
-                _selectedProfile?.Activate(_luaManager);
+                if (IsActive)
+                {
+                    // Deactivate old profile
+                    _selectedProfile?.Deactivate(_luaManager);
+                    // Update the value
+                    _selectedProfile = value;
+                    // Activate new profile
+                    _selectedProfile?.Activate(_luaManager);
+                }
+                else
+                {
+                    // Update the value
+                    _selectedProfile = value;
+                }
+                
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
@@ -230,6 +239,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void Activate()
         {
+            _selectedProfile?.Activate(_luaManager);
             ProfileViewModel.Activate();
             _saveTimer.Start();
         }
@@ -247,20 +257,20 @@ namespace Artemis.ViewModels.Profiles
         private void LoadProfiles()
         {
             ProfileNames.Clear();
-            if (_gameModel == null || _deviceManager.ActiveKeyboard == null)
+            if (_effectModel == null || _deviceManager.ActiveKeyboard == null)
                 return;
 
-            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _gameModel));
+            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _effectModel));
 
             // If a profile name was provided, try to load it
             ProfileModel lastProfileModel = null;
             if (!string.IsNullOrEmpty(LastProfile))
-                lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, LastProfile);
+                lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel, LastProfile);
 
             if (lastProfileModel != null)
                 SelectedProfile = lastProfileModel;
             else
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel,
+                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
                     ProfileNames.FirstOrDefault());
         }
 
@@ -293,7 +303,7 @@ namespace Artemis.ViewModels.Profiles
 
             IParameter[] args =
             {
-                new ConstructorArgument("dataModel", _gameModel.DataModel),
+                new ConstructorArgument("dataModel", _effectModel.DataModel),
                 new ConstructorArgument("layer", layer)
             };
             WindowService.ShowDialog<LayerEditorViewModel>(args);
@@ -502,7 +512,7 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardSlug = _deviceManager.ActiveKeyboard.Slug,
                 Width = _deviceManager.ActiveKeyboard.Width,
                 Height = _deviceManager.ActiveKeyboard.Height,
-                GameName = _gameModel.Name
+                GameName = _effectModel.Name
             };
 
             if (!ProfileProvider.IsProfileUnique(profile))
@@ -624,10 +634,10 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the game
-            if (profile.GameName != _gameModel.Name)
+            if (profile.GameName != _effectModel.Name)
             {
                 DialogService.ShowErrorMessageBox(
-                    $"Oh oops! This profile is ment for {profile.GameName}, not {_gameModel.Name} :c");
+                    $"Oh oops! This profile is ment for {profile.GameName}, not {_effectModel.Name} :c");
                 return;
             }
 
@@ -690,7 +700,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                SelectedProfile?.Activate(_luaManager);
+                _luaManager.SetupLua(SelectedProfile);
                 _luaManager.OpenEditor();
             }
             catch (Exception e)

@@ -45,6 +45,8 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Enable()
         {
+            base.Enable();
+
             _gameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }

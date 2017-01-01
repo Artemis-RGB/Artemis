@@ -42,6 +42,8 @@ namespace Artemis.Modules.Effects.WindowsProfile
 
         public override void Enable()
         {
+            base.Enable();
+
             SetupCpu();
             SetupSpotify();
 

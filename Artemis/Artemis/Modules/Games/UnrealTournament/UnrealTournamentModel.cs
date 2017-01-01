@@ -126,6 +126,8 @@ namespace Artemis.Modules.Games.UnrealTournament
 
         public override void Enable()
         {
+            base.Enable();
+
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             _killTimer.Start();
 

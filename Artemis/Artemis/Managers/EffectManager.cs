@@ -35,8 +35,8 @@ namespace Artemis.Managers
             models.AddRange(overlayModels);
             // Add games, exclude WoW if needed
             models.AddRange(_generalSettings.GamestatePort != 62575
-                ? gameModels.Where(e => e.Name != "WoW")
-                : gameModels);
+                ? gameModels.Where(e => e.Name != "WoW").Where(e => e.Name != "LightFX")
+                : gameModels.Where(e => e.Name != "LightFX"));
 
             EffectModels = models;
             _logger.Info("Intialized EffectManager");
@@ -72,7 +72,7 @@ namespace Artemis.Managers
         /// </summary>
         public IEnumerable<GameModel> EnabledGames
         {
-            get { return EffectModels.OfType<GameModel>().Where(g => g.Enabled); }
+            get { return EffectModels.OfType<GameModel>().Where(g => g.Enabled && g.Settings.Enabled); }
         }
 
         public event EventHandler<EffectChangedEventArgs> OnEffectChangedEvent;
@@ -138,14 +138,16 @@ namespace Artemis.Managers
             {
                 if (!wasNull)
                     ActiveEffect.Dispose();
-
-                ActiveEffect = effectModel;
-                ActiveEffect.Enable();
-                if (!ActiveEffect.Initialized)
+                lock (effectModel)
                 {
-                    _logger.Debug("Cancelling effect change, couldn't initialize the effect ({0})", effectModel.Name);
-                    ActiveEffect = null;
-                    return;
+                    ActiveEffect = effectModel;
+                    ActiveEffect.Enable();
+                    if (!ActiveEffect.Initialized)
+                    {
+                        _logger.Debug("Cancelling effect change, couldn't initialize the effect ({0})", effectModel.Name);
+                        ActiveEffect = null;
+                        return;
+                    }
                 }
             }
 

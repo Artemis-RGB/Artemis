@@ -43,6 +43,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public override void Enable()
         {
+            base.Enable();
+
             Initialized = true;
         }
 

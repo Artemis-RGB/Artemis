@@ -52,6 +52,8 @@ namespace Artemis.Modules.Games.CounterStrike
 
         public override void Enable()
         {
+            base.Enable();
+
             _gameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }

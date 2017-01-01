@@ -49,8 +49,9 @@ namespace Artemis.Modules.Games.TheDivision
 
         public override void Enable()
         {
-            Initialized = false;
+            base.Enable();
 
+            Initialized = false;
             _stickyAmmo = new StickyValue<bool>(200);
             _stickyHp = new StickyValue<bool>(200);
 

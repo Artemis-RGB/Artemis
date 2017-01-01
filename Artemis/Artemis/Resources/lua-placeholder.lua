@@ -14,7 +14,7 @@
 -- changes are applied to the profile and the script is restarted.
 
 -- This event is raised after every profile update, before drawing.
-function updateHandler(eventArgs)
+function updateHandler(profile, eventArgs)
 	-- In this example we only want to update once per frame when the keyboard is 
 	-- updated. If you don't do this the updateHandler will trigger on every
 	-- device's update.
@@ -26,7 +26,7 @@ function updateHandler(eventArgs)
 end
 
 -- This event is raised after every profile draw, after updating.
-function drawHandler(eventArgs)
+function drawHandler(profile, eventArgs)
 	-- In this example we only want to draw to the keyboard. Each device has it's
 	-- own drawing event
     if eventArgs.DeviceType != "keyboard" then

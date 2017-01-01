@@ -40,6 +40,7 @@ namespace Artemis.Managers
 
         public void SetupLua(ProfileModel profileModel)
         {
+            _logger.Debug("Setting up LUA for {0}-{1}.", profileModel?.Name, profileModel?.GameName);
             // Clear old state
             ClearLua();
 
@@ -72,7 +73,6 @@ namespace Artemis.Managers
                 {
                     lock (_luaScript)
                     {
-                        UpdateLuaSource(ProfileModel);
                         _luaScript.DoString(ProfileModel.LuaScript);
                     }
                 }
@@ -178,20 +178,6 @@ namespace Artemis.Managers
         }
 
         #endregion
-
-        /// <summary>
-        ///     Updates a profile's LUA script to be compatible with the latest version of Artemis, if needed.
-        ///     This function obviously won't fix completely custom profiles but it'll fix copied LUA.
-        /// </summary>
-        /// <param name="profileModel"></param>
-        private static void UpdateLuaSource(ProfileModel profileModel)
-        {
-            // 1.7.1.0 - Events cleanup
-            profileModel.LuaScript = profileModel.LuaScript.Replace("function updateHandler(profile, eventArgs)",
-                "function updateHandler(eventArgs)");
-            profileModel.LuaScript = profileModel.LuaScript.Replace("function drawHandler(profile, eventArgs)",
-                "function drawHandler(eventArgs)");
-        }
 
         #region Editor
 

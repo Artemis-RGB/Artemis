@@ -82,6 +82,8 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override void Enable()
         {
+            base.Enable();
+
             _stickyStatus = new StickyValue<OverwatchStatus>(300);
             _stickyUltimateReady = new StickyValue<bool>(350);
             _stickyUltimateUsed = new StickyValue<bool>(350);

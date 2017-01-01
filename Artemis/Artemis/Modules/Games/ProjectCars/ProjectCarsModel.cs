@@ -33,6 +33,8 @@ namespace Artemis.Modules.Games.ProjectCars
 
         public override void Enable()
         {
+            base.Enable();
+
             Initialized = true;
         }
 

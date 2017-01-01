@@ -27,6 +27,8 @@ namespace Artemis.Modules.Games.GtaV
 
         public override void Enable()
         {
+            base.Enable();
+
             DllManager.PlaceLogitechDll();
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             Initialized = true;
