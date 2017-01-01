@@ -8,7 +8,8 @@ namespace Artemis.Models
         private bool _enabled;
         public string ProcessName;
 
-        protected OverlayModel(DeviceManager deviceManager, OverlaySettings settings) : base(deviceManager, settings, null)
+        protected OverlayModel(DeviceManager deviceManager, LuaManager luaManager, OverlaySettings settings)
+            : base(deviceManager, luaManager, settings, null)
         {
             Settings = settings;
             Enabled = settings.Enabled;

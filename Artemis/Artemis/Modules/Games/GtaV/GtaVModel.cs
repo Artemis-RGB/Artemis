@@ -15,8 +15,8 @@ namespace Artemis.Modules.Games.GtaV
     {
         private readonly PipeServer _pipeServer;
 
-        public GtaVModel(DeviceManager deviceManager, PipeServer pipeServer)
-            : base(deviceManager, SettingsProvider.Load<GtaVSettings>(), new GtaVDataModel())
+        public GtaVModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
+            : base(deviceManager, luaManager, SettingsProvider.Load<GtaVSettings>(), new GtaVDataModel())
         {
             _pipeServer = pipeServer;
             Name = "GTAV";
@@ -27,6 +27,8 @@ namespace Artemis.Modules.Games.GtaV
 
         public override void Enable()
         {
+            base.Enable();
+
             DllManager.PlaceLogitechDll();
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             Initialized = true;

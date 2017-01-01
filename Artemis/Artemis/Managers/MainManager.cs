@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
 using Artemis.ViewModels;
+using Microsoft.Win32;
 using Ninject;
 using Ninject.Extensions.Logging;
 
@@ -51,6 +51,9 @@ namespace Artemis.Managers
             var updateTask = new Task(Updater.UpdateApp);
             updateTask.Start();
 
+            // Listen for power mode changes
+            SystemEvents.PowerModeChanged += OnPowerChange;
+
             Logger.Info("Intialized MainManager");
             Logger.Info($"Artemis version {Assembly.GetExecutingAssembly().GetName().Version} is ready!");
         }
@@ -82,6 +85,23 @@ namespace Artemis.Managers
         }
 
         public event EventHandler<EnabledChangedEventArgs> OnEnabledChangedEvent;
+
+        /// <summary>
+        ///     Restarts the loop manager when the system resumes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnPowerChange(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != PowerModes.Resume)
+                return;
+
+            Logger.Debug("Restarting for OnPowerChange");
+            DisableProgram();
+            // Wait an extra while for device providers to be fully ready
+            await Task.Delay(2000);
+            EnableProgram();
+        }
 
         /// <summary>
         ///     Loads the last active effect and starts the program
@@ -124,13 +144,11 @@ namespace Artemis.Managers
             // If the currently active effect is a no longer running game, get rid of it.
             var activeGame = EffectManager.ActiveEffect as GameModel;
             if (activeGame != null)
-            {
                 if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
                 {
                     Logger.Info("Disabling game: {0}", activeGame.Name);
                     EffectManager.DisableGame(activeGame);
                 }
-            }
 
             // Look for running games, stopping on the first one that's found.
             var newGame = EffectManager.EnabledGames

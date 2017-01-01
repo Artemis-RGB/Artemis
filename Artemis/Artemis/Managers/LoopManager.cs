@@ -22,7 +22,6 @@ namespace Artemis.Managers
         private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
-        private bool _canShowException;
 
         public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
             DebugViewModel debugViewModel)
@@ -31,7 +30,6 @@ namespace Artemis.Managers
             _effectManager = effectManager;
             _deviceManager = deviceManager;
             _debugViewModel = debugViewModel;
-            _canShowException = true;
 
             // Setup timers
             _loopTimer = new Timer(40);

@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.Managers;
+using Artemis.Profiles.Lua.Wrappers;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Modules
 {
-    /// <summary>
-    ///     Serves as a sandboxed wrapper around the ProfileModel
-    /// </summary>
     [MoonSharpUserData]
-    public class LuaProfileWrapper
+    public class LuaProfileModule : LuaModule
     {
         private readonly ProfileModel _profileModel;
 
-        public LuaProfileWrapper(ProfileModel profileModel)
+        public LuaProfileModule(LuaManager luaManager) : base(luaManager)
         {
-            _profileModel = profileModel;
+            _profileModel = luaManager.ProfileModel;
         }
+
+        public override string ModuleName => "Profile";
 
         #region General profile properties
 

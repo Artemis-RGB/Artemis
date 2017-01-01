@@ -17,9 +17,9 @@ namespace Artemis.Modules.Games.Dota2
         private readonly MetroDialogService _dialogService;
         private readonly GameStateWebServer _gameStateWebServer;
 
-        public Dota2Model(DeviceManager deviceManager, GameStateWebServer gameStateWebServer,
+        public Dota2Model(DeviceManager deviceManager, LuaManager luaManager, GameStateWebServer gameStateWebServer,
             MetroDialogService dialogService)
-            : base(deviceManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
+            : base(deviceManager, luaManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
         {
             _gameStateWebServer = gameStateWebServer;
             _dialogService = dialogService;
@@ -45,6 +45,8 @@ namespace Artemis.Modules.Games.Dota2
 
         public override void Enable()
         {
+            base.Enable();
+
             _gameStateWebServer.GameDataReceived += HandleGameData;
             Initialized = true;
         }
@@ -109,8 +111,8 @@ namespace Artemis.Modules.Games.Dota2
             if (dataModel?.map?.daytime == null)
                 return;
 
-            var timeLeft = 240 - dataModel.map.clock_time%240;
-            dataModel.map.dayCyclePercentage = (int) (100.00/240*timeLeft);
+            var timeLeft = 240 - dataModel.map.clock_time % 240;
+            dataModel.map.dayCyclePercentage = (int) (100.00 / 240 * timeLeft);
         }
 
         public void HandleGameData(object sender, GameDataReceivedEventArgs e)

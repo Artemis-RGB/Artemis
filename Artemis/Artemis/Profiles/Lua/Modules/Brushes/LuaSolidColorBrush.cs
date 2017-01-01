@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua.Brushes
+namespace Artemis.Profiles.Lua.Modules.Brushes
 {
     [MoonSharpUserData]
     public class LuaSolidColorBrush : LuaBrush

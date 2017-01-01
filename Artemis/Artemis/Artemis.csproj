@@ -191,9 +191,6 @@
       <HintPath>..\packages\MahApps.Metro.1.3.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll</HintPath>
       <Private>True</Private>
@@ -339,11 +336,9 @@
     <Compile Include="Events\EffectChangedEventArgs.cs" />
     <Compile Include="Events\EnabledChangedEventArgs.cs" />
     <Compile Include="Events\KeyboardChangedEventArgs.cs" />
+    <Compile Include="Events\ProfileDeviceEventsArg.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
     <Compile Include="Events\RazerColorsChangedEventArgs.cs" />
-    <Compile Include="InjectionModules\DeviceModules.cs" />
-    <Compile Include="InjectionModules\EffectModules.cs" />
-    <Compile Include="InjectionModules\ProfileModules.cs" />
     <Compile Include="ItemBehaviours\BindableSelectedItemBehavior.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairKeyboard.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
@@ -357,6 +352,7 @@
     <Compile Include="Managers\EffectManager.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />
+    <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Models\EffectModel.cs" />
@@ -382,6 +378,14 @@
       <DependentUpon>GtaVView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\GtaV\GtaVViewModel.cs" />
+    <Compile Include="Modules\Games\LightFx\Data\LightFxState.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxDataModel.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxModel.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxSettings.cs" />
+    <Compile Include="Modules\Games\LightFx\LightFxView.xaml.cs">
+      <DependentUpon>LightFxView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\LightFx\LightFxViewModel.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eAPIStructLengths.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCarFlags.cs" />
     <Compile Include="Modules\Games\ProjectCars\Data\_eNums\eCrashDamageState.cs" />
@@ -499,22 +503,25 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mousemat\MousematType.cs" />
-    <Compile Include="Profiles\LuaMouseWrapper.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaBrush.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaColor.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaLinearGradientBrush.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaRadialGradientBrush.cs" />
-    <Compile Include="Profiles\Lua\Events\LuaKeyPressEventArgs.cs" />
-    <Compile Include="Profiles\Lua\Events\LuaDeviceDrawingEventArgs.cs" />
-    <Compile Include="Profiles\Lua\Events\LuaDeviceUpdatingEventArgs.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaBrushWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaDrawWrapper.cs" />
-    <Compile Include="Profiles\Lua\Events\LuaEventsWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaKeyboardWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaLayerWrapper.cs" />
-    <Compile Include="Profiles\Lua\LuaProfileWrapper.cs" />
-    <Compile Include="Profiles\Lua\Brushes\LuaSolidColorBrush.cs" />
-    <Compile Include="Profiles\Lua\LuaWrapper.cs" />
+    <Compile Include="Profiles\Lua\Modules\Brushes\LuaBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\Brushes\LuaColor.cs" />
+    <Compile Include="Profiles\Lua\Modules\Brushes\LuaLinearGradientBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\Brushes\LuaRadialGradientBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\Events\LuaKeyPressEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceDrawingEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceUpdatingEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaEventsModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaBrushesModule.cs" />
+    <Compile Include="Profiles\Lua\LuaModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\Brushes\LuaSolidColorBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaKeyboardModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaLayerModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaMouseModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaProfileModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\Timer\LuaTimer.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaTimerModule.cs" />
+    <Compile Include="Profiles\Lua\Wrappers\LuaDrawWrapper.cs" />
+    <Compile Include="Profiles\Lua\Wrappers\LuaLayerWrapper.cs" />
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
@@ -836,6 +843,10 @@
     <Page Include="Modules\Games\GtaV\GtaVView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\LightFx\LightFxView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Games\Overwatch\OverwatchView.xaml">
       <SubType>Designer</SubType>

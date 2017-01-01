@@ -27,14 +27,14 @@ namespace Artemis.ViewModels.Profiles
         private ILayerType _selectedLayerType;
 
         public LayerEditorViewModel(LayerModel layer, IDataModel dataModel, IEnumerable<ILayerType> types,
-            List<ILayerAnimation> layerAnimations)
+            IEnumerable<ILayerAnimation> layerAnimations)
         {
             Layer = layer;
             ProposedLayer = Clone(layer);
             ProposedLayer.Children.Clear();
             DataModel = DataModel;
-            LayerTypes = new BindableCollection<ILayerType>(types);
-            LayerAnimations = layerAnimations;
+            LayerTypes = new BindableCollection<ILayerType>(types.OrderBy(t => t.Name));
+            LayerAnimations = layerAnimations.OrderBy(l => l.Name).ToList();
 
             DataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
 

@@ -15,6 +15,11 @@
 
 -- This event is raised after every profile update, before drawing.
 function updateHandler(profile, eventArgs)
+	-- Don't do anything when previewing (this means the editor is open)
+	if eventArgs.Preview then 
+		return 
+	end
+
 	-- In this example we only want to update once per frame when the keyboard is 
 	-- updated. If you don't do this the updateHandler will trigger on every
 	-- device's update.
@@ -27,6 +32,11 @@ end
 
 -- This event is raised after every profile draw, after updating.
 function drawHandler(profile, eventArgs)
+	-- Don't do anything when previewing (this means the editor is open)
+	if eventArgs.Preview then 
+		return 
+	end
+
 	-- In this example we only want to draw to the keyboard. Each device has it's
 	-- own drawing event
     if eventArgs.DeviceType != "keyboard" then

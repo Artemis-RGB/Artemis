@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -16,11 +18,12 @@ using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
-using Artemis.Profiles.Lua;
+using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using Castle.Core.Internal;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Ninject;
@@ -37,20 +40,23 @@ namespace Artemis.ViewModels.Profiles
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly DeviceManager _deviceManager;
-        private readonly EffectModel _gameModel;
+        private readonly EffectModel _effectModel;
+        private readonly LuaManager _luaManager;
         private readonly Timer _saveTimer;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
         private ObservableCollection<string> _profileNames;
         private bool _saving;
         private ProfileModel _selectedProfile;
+        private FileSystemWatcher _watcher;
 
-        public ProfileEditorViewModel(DeviceManager deviceManager, EffectModel gameModel,
+        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel effectModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
             string lastProfile)
         {
             _deviceManager = deviceManager;
-            _gameModel = gameModel;
+            _luaManager = luaManager;
+            _effectModel = effectModel;
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
@@ -79,7 +85,7 @@ namespace Artemis.ViewModels.Profiles
         public ProfileViewModel ProfileViewModel { get; set; }
 
         public bool EditorEnabled
-            => (SelectedProfile != null) && !SelectedProfile.IsDefault && (_deviceManager.ActiveKeyboard != null);
+            => SelectedProfile != null && !SelectedProfile.IsDefault && _deviceManager.ActiveKeyboard != null;
 
         public ObservableCollection<string> ProfileNames
         {
@@ -111,7 +117,7 @@ namespace Artemis.ViewModels.Profiles
                 if (value == SelectedProfile?.Name)
                     return;
 
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, value);
+                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel, value);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
@@ -124,12 +130,21 @@ namespace Artemis.ViewModels.Profiles
                 if (Equals(value, _selectedProfile))
                     return;
 
-                // Deactivate old profile
-                _selectedProfile?.Deactivate();
-                // Update the value
-                _selectedProfile = value;
-                // Activate new profile
-                _selectedProfile?.Activate(_deviceManager.ActiveKeyboard);
+                if (IsActive)
+                {
+                    // Deactivate old profile
+                    _selectedProfile?.Deactivate(_luaManager);
+                    // Update the value
+                    _selectedProfile = value;
+                    // Activate new profile
+                    _selectedProfile?.Activate(_luaManager);
+                }
+                else
+                {
+                    // Update the value
+                    _selectedProfile = value;
+                }
+
                 NotifyOfPropertyChange(() => SelectedProfile);
                 NotifyOfPropertyChange(() => SelectedProfileName);
             }
@@ -149,16 +164,16 @@ namespace Artemis.ViewModels.Profiles
         public PreviewSettings? PreviewSettings => _deviceManager.ActiveKeyboard?.PreviewSettings;
 
         public bool ProfileSelected => SelectedProfile != null;
-        public bool LayerSelected => (SelectedProfile != null) && (ProfileViewModel.SelectedLayer != null);
+        public bool LayerSelected => SelectedProfile != null && ProfileViewModel.SelectedLayer != null;
 
         public void DragOver(IDropInfo dropInfo)
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if ((source == null) || (target == null) || (source == target))
+            if (source == null || target == null || source == target)
                 return;
 
-            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
                 target.LayerType is FolderType)
             {
                 dropInfo.DropTargetAdorner = typeof(DropTargetMetroHighlightAdorner);
@@ -175,7 +190,7 @@ namespace Artemis.ViewModels.Profiles
         {
             var source = dropInfo.Data as LayerModel;
             var target = dropInfo.TargetItem as LayerModel;
-            if ((source == null) || (target == null) || (source == target))
+            if (source == null || target == null || source == target)
                 return;
 
             // Don't allow a folder to become it's own child, that's just weird
@@ -196,7 +211,7 @@ namespace Artemis.ViewModels.Profiles
                 parent.FixOrder();
             }
 
-            if ((dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter) &&
+            if (dropInfo.InsertPosition == RelativeInsertPosition.TargetItemCenter &&
                 target.LayerType is FolderType)
             {
                 // Insert into folder
@@ -208,9 +223,9 @@ namespace Artemis.ViewModels.Profiles
             else
             {
                 // Insert the source into it's new profile/parent and update the order
-                if ((dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem) ||
-                    (dropInfo.InsertPosition ==
-                     (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem)))
+                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem ||
+                    dropInfo.InsertPosition ==
+                    (RelativeInsertPosition.TargetItemCenter | RelativeInsertPosition.AfterTargetItem))
                     target.InsertAfter(source);
                 else
                     target.InsertBefore(source);
@@ -230,6 +245,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void Activate()
         {
+            _selectedProfile?.Activate(_luaManager);
             ProfileViewModel.Activate();
             _saveTimer.Start();
         }
@@ -237,7 +253,7 @@ namespace Artemis.ViewModels.Profiles
         public void Deactivate()
         {
             ProfileViewModel.Deactivate();
-            SelectedProfile?.Deactivate();
+            SelectedProfile?.Deactivate(_luaManager);
             _saveTimer.Stop();
         }
 
@@ -246,26 +262,26 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         private void LoadProfiles()
         {
-            ProfileNames.Clear();
-            if ((_gameModel == null) || (_deviceManager.ActiveKeyboard == null))
-                return;
-
-            ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _gameModel));
-
-            // If a profile name was provided, try to load it
-            ProfileModel lastProfileModel = null;
-            if (!string.IsNullOrEmpty(LastProfile))
+            Execute.OnUIThread(() =>
             {
-                lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel, LastProfile);
-            }
+                ProfileNames.Clear();
+                if (_effectModel == null || _deviceManager.ActiveKeyboard == null)
+                    return;
 
-            if (lastProfileModel != null)
-                SelectedProfile = lastProfileModel;
-            else
-            {
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _gameModel,
-                    ProfileNames.FirstOrDefault());
-            }
+                ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _effectModel));
+
+                // If a profile name was provided, try to load it
+                ProfileModel lastProfileModel = null;
+                if (!string.IsNullOrEmpty(LastProfile))
+                    lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
+                        LastProfile);
+
+                if (lastProfileModel != null)
+                    SelectedProfile = lastProfileModel;
+                else
+                    SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
+                        ProfileNames.FirstOrDefault());
+            });
         }
 
 
@@ -297,7 +313,7 @@ namespace Artemis.ViewModels.Profiles
 
             IParameter[] args =
             {
-                new ConstructorArgument("dataModel", _gameModel.DataModel),
+                new ConstructorArgument("dataModel", _effectModel.DataModel),
                 new ConstructorArgument("layer", layer)
             };
             WindowService.ShowDialog<LayerEditorViewModel>(args);
@@ -506,7 +522,7 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardSlug = _deviceManager.ActiveKeyboard.Slug,
                 Width = _deviceManager.ActiveKeyboard.Width,
                 Height = _deviceManager.ActiveKeyboard.Height,
-                GameName = _gameModel.Name
+                GameName = _effectModel.Name
             };
 
             if (!ProfileProvider.IsProfileUnique(profile))
@@ -532,7 +548,7 @@ namespace Artemis.ViewModels.Profiles
             var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
-            if (string.IsNullOrEmpty(name) || (name.Length < 2))
+            if (string.IsNullOrEmpty(name) || name.Length < 2)
                 return;
 
             SelectedProfile.Name = name;
@@ -544,7 +560,7 @@ namespace Artemis.ViewModels.Profiles
                     .ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
-                if (string.IsNullOrEmpty(name) || (name.Length < 2))
+                if (string.IsNullOrEmpty(name) || name.Length < 2)
                 {
                     SelectedProfile.Name = oldName;
                     return;
@@ -628,10 +644,10 @@ namespace Artemis.ViewModels.Profiles
             }
 
             // Verify the game
-            if (profile.GameName != _gameModel.Name)
+            if (profile.GameName != _effectModel.Name)
             {
                 DialogService.ShowErrorMessageBox(
-                    $"Oh oops! This profile is ment for {profile.GameName}, not {_gameModel.Name} :c");
+                    $"Oh oops! This profile is ment for {profile.GameName}, not {_effectModel.Name} :c");
                 return;
             }
 
@@ -694,13 +710,12 @@ namespace Artemis.ViewModels.Profiles
                 return;
             try
             {
-                SelectedProfile?.Activate(_deviceManager.ActiveKeyboard);
-                LuaWrapper.OpenEditor();
+                OpenEditor();
             }
             catch (Exception e)
             {
                 DialogService.ShowMessageBox("Couldn't open LUA file",
-                    "Please make sure you have a program such as Notepad associated with the .lua extension.\n\n" +
+                    "Please make sure you have a text editor associated with the .lua extension.\n\n" +
                     "Windows error message: \n" + e.Message);
             }
         }
@@ -738,7 +753,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void SaveSelectedProfile()
         {
-            if (_saving || (SelectedProfile == null) || _deviceManager.ChangingKeyboard)
+            if (_saving || SelectedProfile == null || _deviceManager.ChangingKeyboard)
                 return;
 
             _saving = true;
@@ -752,5 +767,67 @@ namespace Artemis.ViewModels.Profiles
             }
             _saving = false;
         }
+
+        #region LUA Editor
+
+        public void OpenEditor()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            // Create a temp file
+            var fileName = Guid.NewGuid() + ".lua";
+            var file = File.Create(Path.GetTempPath() + fileName);
+            file.Dispose();
+
+            // Add instructions to LUA script if it's a new file
+            if (SelectedProfile.LuaScript.IsNullOrEmpty())
+                SelectedProfile.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
+            File.WriteAllText(Path.GetTempPath() + fileName, SelectedProfile.LuaScript);
+
+            // Watch the file for changes
+            SetupWatcher(Path.GetTempPath(), fileName);
+
+            // Open the temp file with the default editor
+            System.Diagnostics.Process.Start(Path.GetTempPath() + fileName);
+        }
+
+        private void SetupWatcher(string path, string fileName)
+        {
+            if (_watcher == null)
+            {
+                _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
+                _watcher.Changed += LuaFileChanged;
+                _watcher.EnableRaisingEvents = true;
+            }
+
+            _watcher.Path = path;
+            _watcher.Filter = fileName;
+        }
+
+        private void LuaFileChanged(object sender, FileSystemEventArgs args)
+        {
+            if (args.ChangeType != WatcherChangeTypes.Changed)
+                return;
+
+            if (SelectedProfile == null)
+                return;
+
+            lock (SelectedProfile)
+            {
+                using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (var sr = new StreamReader(fs))
+                    {
+                        SelectedProfile.LuaScript = sr.ReadToEnd();
+                    }
+                }
+
+                ProfileProvider.AddOrUpdate(SelectedProfile);
+                _luaManager.SetupLua(SelectedProfile);
+            }
+        }
+
+        #endregion
     }
 }

@@ -3,7 +3,7 @@ using Ninject.Modules;
 
 namespace Artemis.InjectionModules
 {
-    internal class ManagerModules : NinjectModule
+    public class ManagerModules : NinjectModule
     {
         public override void Load()
         {
@@ -12,6 +12,7 @@ namespace Artemis.InjectionModules
             Bind<DeviceManager>().ToSelf().InSingletonScope();
             Bind<EffectManager>().ToSelf().InSingletonScope();
             Bind<ProfileManager>().ToSelf().InSingletonScope();
+            Bind<LuaManager>().ToSelf().InSingletonScope();
         }
     }
 }

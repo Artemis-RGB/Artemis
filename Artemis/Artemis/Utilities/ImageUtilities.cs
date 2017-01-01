@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace Artemis.Utilities
 {
-    internal class ImageUtilities
+    public class ImageUtilities
     {
         /// <summary>
         ///     Resize the image to the specified width and height.

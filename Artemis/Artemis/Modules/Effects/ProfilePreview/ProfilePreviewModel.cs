@@ -16,8 +16,7 @@ namespace Artemis.Modules.Effects.ProfilePreview
 {
     public class ProfilePreviewModel : EffectModel
     {
-        public ProfilePreviewModel(DeviceManager deviceManager)
-            : base(deviceManager, null, new ProfilePreviewDataModel())
+        public ProfilePreviewModel(DeviceManager deviceManager, LuaManager luaManager): base(deviceManager, luaManager, null, new ProfilePreviewDataModel())
         {
             Name = "Profile Preview";
         }
@@ -55,8 +54,8 @@ namespace Artemis.Modules.Effects.ProfilePreview
                 var renderLayers = GetRenderLayers(keyboardOnly);
 
                 // If the profile has no active LUA wrapper, create one
-                if (!Equals(LuaWrapper.ProfileModel, Profile))
-                    Profile.Activate(DeviceManager.ActiveKeyboard);
+                if (!Equals(LuaManager.ProfileModel, Profile))
+                    Profile.Activate(LuaManager);
 
                 // Render the keyboard layer-by-layer
                 var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle(KeyboardScale);

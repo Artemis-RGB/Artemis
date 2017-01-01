@@ -1,19 +1,20 @@
 ﻿using System;
-using System.Drawing.Text;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Profiles.Lua.Brushes;
+using Artemis.Profiles.Lua.Modules.Brushes;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua
+namespace Artemis.Profiles.Lua.Wrappers
 {
+    /// <summary>
+    ///     A wrapper that is provided to each OnDraw event to allow drawing in LUA
+    /// </summary>
     [MoonSharpUserData]
     public class LuaDrawWrapper
     {
         private readonly DrawingContext _ctx;
-        private FontFamily _font;
+        private readonly FontFamily _font;
 
         public LuaDrawWrapper(DrawingContext ctx)
         {
@@ -28,7 +29,7 @@ namespace Artemis.Profiles.Lua
             height *= 4;
             width *= 4;
 
-            var center = new Point(x + width/2, y + height/2);
+            var center = new Point(x + width / 2, y + height / 2);
             _ctx.DrawEllipse(luaBrush.Brush, new Pen(), center, width, height);
         }
 
@@ -65,7 +66,7 @@ namespace Artemis.Profiles.Lua
                 fontSize, luaBrush.Brush);
 
             _ctx.DrawText(formatted, new Point(x, y));
-            return formatted.Width/4;
+            return formatted.Width / 4;
         }
     }
 }

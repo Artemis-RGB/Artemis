@@ -11,7 +11,6 @@ using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
-using Artemis.Profiles.Lua;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Caliburn.Micro;
@@ -103,10 +102,11 @@ namespace Artemis.ViewModels.Profiles
             if (_blurProgress > 2)
                 _blurProgress = 0;
             _blurProgress = _blurProgress + 0.025;
-            BlurRadius = (Math.Sin(_blurProgress*Math.PI) + 1)*10 + 10;
+            BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
 
             // Besides the usual checks, also check if the ActiveKeyboard isn't the NoneKeyboard
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || _deviceManager.ActiveKeyboard.Slug == "none")
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null ||
+                _deviceManager.ActiveKeyboard.Slug == "none")
             {
                 var preview = new DrawingImage();
                 preview.Freeze();
@@ -166,8 +166,8 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
 
-                LuaWrapper.LuaEventsWrapper?.InvokeDeviceDraw(SelectedProfile, "preview", new ProfilePreviewDataModel(),
-                    true, drawingContext);
+                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg("preview",
+                    new ProfilePreviewDataModel(), true, drawingContext));
 
                 // Remove the clip
                 drawingContext.Pop();
@@ -223,8 +223,8 @@ namespace Artemis.ViewModels.Profiles
 
             var keyboard = _deviceManager.ActiveKeyboard;
             var pos = e.GetPosition((Image) e.OriginalSource);
-            var x = pos.X/((double) keyboard.PreviewSettings.Width/keyboard.Width);
-            var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
+            var x = pos.X / ((double) keyboard.PreviewSettings.Width / keyboard.Width);
+            var y = pos.Y / ((double) keyboard.PreviewSettings.Height / keyboard.Height);
 
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
@@ -244,8 +244,8 @@ namespace Artemis.ViewModels.Profiles
 
             var pos = e.GetPosition((Image) e.OriginalSource);
             var keyboard = _deviceManager.ActiveKeyboard;
-            var x = pos.X/((double) keyboard.PreviewSettings.Width/keyboard.Width);
-            var y = pos.Y/((double) keyboard.PreviewSettings.Height/keyboard.Height);
+            var x = pos.X / ((double) keyboard.PreviewSettings.Width / keyboard.Width);
+            var y = pos.Y / ((double) keyboard.PreviewSettings.Height / keyboard.Height);
             var hoverLayer = GetLayers().Where(l => l.MustDraw())
                 .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
 
@@ -267,7 +267,9 @@ namespace Artemis.ViewModels.Profiles
                         : Cursors.SizeAll;
             }
             else
+            {
                 KeyboardPreviewCursor = Cursors.Hand;
+            }
         }
 
         public Cursor KeyboardPreviewCursor
@@ -292,14 +294,14 @@ namespace Artemis.ViewModels.Profiles
         {
             // Reset the dragging state on mouse release
             if (e.LeftButton == MouseButtonState.Released ||
-                (_draggingLayer != null && SelectedLayer != _draggingLayer))
+                _draggingLayer != null && SelectedLayer != _draggingLayer)
             {
                 _draggingLayerOffset = null;
                 _draggingLayer = null;
                 return;
             }
 
-            if (SelectedLayer == null || (SelectedLayer.LayerType != null && !SelectedLayer.LayerType.ShowInEdtor))
+            if (SelectedLayer == null || SelectedLayer.LayerType != null && !SelectedLayer.LayerType.ShowInEdtor)
                 return;
 
             // Setup the dragging state on mouse press
@@ -314,7 +316,7 @@ namespace Artemis.ViewModels.Profiles
                                       Math.Pow(y - layerRect.BottomRight.Y, 2)) < 0.6;
             }
 
-            if (_draggingLayerOffset == null || _draggingLayer == null || (_draggingLayer != SelectedLayer))
+            if (_draggingLayerOffset == null || _draggingLayer == null || _draggingLayer != SelectedLayer)
                 return;
 
             var draggingProps = _draggingLayer.Properties;

@@ -8,7 +8,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.DeviceProviders.Corsair
 {
-    internal class CorsairHeadset : DeviceProvider
+    public class CorsairHeadset : DeviceProvider
     {
         public CorsairHeadset(ILogger logger)
         {
@@ -22,7 +22,7 @@ namespace Artemis.DeviceProviders.Corsair
         {
             CanUse = CanInitializeSdk();
             if (CanUse && !CueSDK.IsInitialized)
-                CueSDK.Initialize(true);
+                CueSDK.Initialize();
 
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
 

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using MoonSharp.Interpreter;
 
-namespace Artemis.Profiles.Lua.Brushes
+namespace Artemis.Profiles.Lua.Modules.Brushes
 {
     [MoonSharpUserData]
     public class LuaLinearGradientBrush : LuaBrush
@@ -57,7 +57,7 @@ namespace Artemis.Profiles.Lua.Brushes
         {
             var collection = new GradientStopCollection(gradientColors
                 .Select(gc => new GradientStop(gc.Key.Color, gc.Value)));
-
+            
             Brush = new LinearGradientBrush(collection, new Point(startX, startY), new Point(endX, endY));
         }
     }

@@ -15,20 +15,27 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LightFX2Artemis.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\LogiLed2Artemis\main.cpp">
+    <ClCompile Include="LightFxState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightFxState.cpp">
+    <ClCompile Include="LightFxDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LightFxLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightFxState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightFxDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LightFxLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

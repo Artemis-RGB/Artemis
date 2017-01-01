@@ -13,7 +13,8 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
 {
     public class VolumeDisplayModel : OverlayModel
     {
-        public VolumeDisplayModel(DeviceManager deviceManager): base(deviceManager, SettingsProvider.Load<VolumeDisplaySettings>())
+        public VolumeDisplayModel(DeviceManager deviceManager, LuaManager luaManager)
+            : base(deviceManager, luaManager, SettingsProvider.Load<VolumeDisplaySettings>())
         {
             Name = "VolumeDisplay";
             Settings = (VolumeDisplaySettings) base.Settings;
@@ -44,7 +45,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
             if (VolumeDisplay.Ttl < 1)
                 return;
 
-            var decreaseAmount = 500/fps;
+            var decreaseAmount = 500 / fps;
             VolumeDisplay.Ttl = VolumeDisplay.Ttl - decreaseAmount;
             if (VolumeDisplay.Ttl < 128)
                 VolumeDisplay.Transparancy = (byte) (VolumeDisplay.Transparancy - 20);
@@ -55,7 +56,7 @@ namespace Artemis.Modules.Overlays.VolumeDisplay
                 var volumeFloat =
                     enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console)
                         .AudioEndpointVolume.MasterVolumeLevelScalar;
-                VolumeDisplay.Volume = (int) (volumeFloat*100);
+                VolumeDisplay.Volume = (int) (volumeFloat * 100);
             }
             catch (COMException)
             {
