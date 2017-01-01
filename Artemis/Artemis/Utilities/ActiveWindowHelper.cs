@@ -21,13 +21,15 @@ namespace Artemis.Utilities
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-
+        
         #endregion
 
         #region Constants
 
-        private const uint WINEVENT_OUTOFCONTEXT = 0;
-        private const uint EVENT_SYSTEM_FOREGROUND = 3;
+        private const uint WINEVENT_OUTOFCONTEXT = 0x0000;
+        private const uint EVENT_SYSTEM_FOREGROUND = 0x0003;
+        private const uint EVENT_OBJECT_NAMECHANGE = 0x800C;
+        private const uint EVENT_SYSTEM_MINIMIZEEND = 0x0017;
 
         private const int MAX_TITLE_LENGTH = 256;
 
@@ -37,7 +39,15 @@ namespace Artemis.Utilities
 
         // DarthAffe 17.12.2016: We need to keep a reference to this or it might get collected by the garbage collector and cause some random crashes afterwards.
         private static WinEventDelegate _activeWindowChangedDelegate;
-        private static IntPtr _winEventHook;
+        private static IntPtr _activeWindowEventHook;
+
+        private static WinEventDelegate _windowTitleChangedDelegate;
+        private static IntPtr _windowTitleEventHook;
+
+        private static WinEventDelegate _windowMinimizedChangedDelegate;
+        private static IntPtr _windowMinimizedEventHook;
+
+        private static IntPtr _activeWindow;
 
         public static string ActiveWindowProcessName { get; private set; }
         public static string ActiveWindowWindowTitle { get; private set; }
@@ -49,6 +59,28 @@ namespace Artemis.Utilities
         private static void ActiveWindowChanged(IntPtr hWinEventHook, uint eventType,
             IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
+            UpdateForWindow(hwnd);
+        }
+
+        private static void WindowTitleChanged(IntPtr hWinEventHook, uint eventType,
+            IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            if (_activeWindow == hwnd)
+                UpdateForWindow(hwnd);
+        }
+
+        private static void WindowMinimizedChanged(IntPtr hWinEventHook, uint eventType,
+            IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            // DarthAffe 19.12.2016: We expect currently un-minimized windows to be active.
+            // DarthAffe 19.12.2016: The result of the API-function GetActiveWindow at this moment is 'idle' so we can't use this to validate this estimation.
+            UpdateForWindow(hwnd);
+        }
+
+        private static void UpdateForWindow(IntPtr hwnd)
+        {
+            _activeWindow = hwnd;
+
             ActiveWindowProcessName = GetActiveWindowProcessName(hwnd) ?? string.Empty;
             ActiveWindowWindowTitle = GetActiveWindowTitle(hwnd) ?? string.Empty;
         }
@@ -84,10 +116,23 @@ namespace Artemis.Utilities
         {
             try
             {
-                if (_winEventHook != IntPtr.Zero) return;
+                if (_activeWindowEventHook == IntPtr.Zero)
+                {
+                    _activeWindowChangedDelegate = ActiveWindowChanged;
+                    _activeWindowEventHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, _activeWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                }
 
-                _activeWindowChangedDelegate = ActiveWindowChanged;
-                _winEventHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, _activeWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                if (_windowTitleEventHook == IntPtr.Zero)
+                {
+                    _windowTitleChangedDelegate = WindowTitleChanged;
+                    _windowTitleEventHook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero, _windowTitleChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                }
+
+                if (_windowMinimizedEventHook == IntPtr.Zero)
+                {
+                    _windowMinimizedChangedDelegate = WindowMinimizedChanged;
+                    _windowMinimizedEventHook = SetWinEventHook(EVENT_SYSTEM_MINIMIZEEND, EVENT_SYSTEM_MINIMIZEEND, IntPtr.Zero, _windowMinimizedChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                }
             }
             catch { /* catch'em all - I don't want it to crash here */ }
         }
@@ -96,11 +141,26 @@ namespace Artemis.Utilities
         {
             try
             {
-                if (_winEventHook == IntPtr.Zero) return;
+                if (_activeWindowEventHook != IntPtr.Zero)
+                {
+                    UnhookWinEvent(_activeWindowEventHook);
+                    _activeWindowChangedDelegate = null;
+                    _activeWindowEventHook = IntPtr.Zero;
+                }
 
-                UnhookWinEvent(_winEventHook);
-                _activeWindowChangedDelegate = null;
-                _winEventHook = IntPtr.Zero;
+                if (_windowTitleEventHook != IntPtr.Zero)
+                {
+                    UnhookWinEvent(_windowTitleEventHook);
+                    _windowTitleChangedDelegate = null;
+                    _windowTitleEventHook = IntPtr.Zero;
+                }
+
+                if (_windowMinimizedEventHook != IntPtr.Zero)
+                {
+                    UnhookWinEvent(_windowMinimizedEventHook);
+                    _windowMinimizedChangedDelegate = null;
+                    _windowMinimizedEventHook = IntPtr.Zero;
+                }
             }
             catch { /* catch'em all - I don't want it to crash here */ }
         }
