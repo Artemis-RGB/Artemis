@@ -5,21 +5,22 @@ using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.ViewModels.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public sealed class Witcher3ViewModel : GameViewModel
+    public sealed class Witcher3ViewModel : ModuleViewModel
     {
-        public Witcher3ViewModel(MainManager main, IKernel kernel, [Named("Witcher3Model")] GameModel model)
-            : base(main, model, kernel)
+        public Witcher3ViewModel(MainManager mainManager, [Named(nameof(Witcher3Model))] ModuleModel moduleModel,
+            IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "The Witcher 3";
         }
+
+        public override bool UsesProfileEditor => true;
 
         public async void AutoInstall()
         {

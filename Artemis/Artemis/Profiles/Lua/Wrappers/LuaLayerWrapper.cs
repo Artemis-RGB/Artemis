@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua.Modules.Brushes;
 using MoonSharp.Interpreter;
@@ -22,7 +21,7 @@ namespace Artemis.Profiles.Lua.Wrappers
             SavedProperties = new LuaLayerProperties(layerModel);
 
             // Triger an update to fill up the Properties
-            _layerModel.Update(new ProfilePreviewDataModel(), true, false);
+            _layerModel.Update(null, true, false);
         }
 
         #region Child methods

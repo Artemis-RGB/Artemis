@@ -1,10 +1,10 @@
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.Witcher3
 {
     [MoonSharpUserData]
-    public class Witcher3DataModel : IDataModel
+    public class Witcher3DataModel : ModuleDataModel
     {
         public WitcherSign WitcherSign { get; set; }
         public int MaxHealth { get; set; }

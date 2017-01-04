@@ -1,35 +1,35 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2
 {
-    public sealed class EurotruckSimulator2ViewModel : GameViewModel
+    public sealed class EurotruckSimulator2ViewModel : ModuleViewModel
     {
-        public EurotruckSimulator2ViewModel(MainManager main, IKernel kernel,
-            [Named("EurotruckSimulator2Model")] GameModel model) : base(main, model, kernel)
+        public EurotruckSimulator2ViewModel(MainManager mainManager,
+            [Named(nameof(EurotruckSimulator2Model))] ModuleModel moduleModel,
+            IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "ETS 2";
         }
 
+        public override bool UsesProfileEditor => true;
+        public new EurotruckSimulator2Settings Settings { get; set; }
+
         public void BrowseDirectory()
         {
-            var dialog = new FolderBrowserDialog
-            {
-                SelectedPath = ((EurotruckSimulator2Settings) GameSettings).GameDirectory
-            };
+            var dialog = new FolderBrowserDialog {SelectedPath = Settings.GameDirectory};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
 
-            ((EurotruckSimulator2Settings) GameSettings).GameDirectory = Path.GetDirectoryName(dialog.SelectedPath);
-            NotifyOfPropertyChange(() => GameSettings);
+            Settings.GameDirectory = Path.GetDirectoryName(dialog.SelectedPath);
+            NotifyOfPropertyChange(() => Settings);
+            Settings.Save();
 
-            GameSettings.Save();
-            ((EurotruckSimulator2Model) GameModel).PlacePlugin();
+            ((EurotruckSimulator2Model) ModuleModel).PlacePlugin();
         }
     }
 }

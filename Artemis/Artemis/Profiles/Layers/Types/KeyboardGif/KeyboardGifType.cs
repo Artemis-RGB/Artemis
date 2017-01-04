@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -56,10 +56,10 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             }
         }
 
-        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             layerModel.ApplyProperties(true);
-            if (isPreview)
+            if (isPreview || dataModel == null)
                 return;
 
             // If not previewing, apply dynamic properties according to datamodel

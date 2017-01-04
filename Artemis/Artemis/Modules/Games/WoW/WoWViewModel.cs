@@ -1,16 +1,17 @@
 ﻿using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.WoW
 {
-    public sealed class WoWViewModel : GameViewModel
+    public sealed class WoWViewModel : ModuleViewModel
     {
-        public WoWViewModel(MainManager main, IKernel kernel, [Named("WoWModel")] GameModel model)
-            : base(main, model, kernel)
+        public WoWViewModel(MainManager mainManager, [Named(nameof(WoWModel))] ModuleModel moduleModel, IKernel kernel)
+            : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "WoW";
         }
+
+        public override bool UsesProfileEditor => true;
     }
 }

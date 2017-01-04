@@ -1,4 +1,4 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.LightFx.Data;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Artemis.Modules.Games.LightFx
 {
     [MoonSharpUserData]
-    public class LightFxDataModel : IDataModel
+    public class LightFxDataModel : ModuleDataModel
     {
         [JsonProperty(PropertyName = "lightFxState")]
         public LightFxState LightFxState { get; set; }

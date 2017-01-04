@@ -1,11 +1,7 @@
 ﻿using Artemis.DeviceProviders;
-using Artemis.Models;
-using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
-using Artemis.Profiles.Layers.Types.AmbientLight;
-using Artemis.Profiles.Layers.Types.Audio;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
-using Artemis.Profiles.Layers.Types.KeyPress;
 using Artemis.Profiles.Lua;
 using Artemis.Services;
 using Artemis.Utilities.DataReaders;
@@ -33,12 +29,6 @@ namespace Artemis.InjectionModules
                     .SelectAllClasses()
                     .InheritedFrom<BaseViewModel>()
                     .BindAllBaseClasses());
-
-            #endregion
-
-            #region Models
-
-            Bind<ProfilePreviewModel>().ToSelf().InSingletonScope();
 
             #endregion
 
@@ -71,25 +61,17 @@ namespace Artemis.InjectionModules
             Kernel.Bind(x =>
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<EffectModel>()
+                    .InheritedFrom<ModuleModel>()
                     .BindAllBaseClasses()
                     .Configure((b, c) => b.InSingletonScope().Named(c.Name))
             );
             Kernel.Bind(x =>
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<EffectViewModel>()
-                    .BindBase());
-            Kernel.Bind(x =>
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<GameViewModel>()
-                    .BindBase());
-            Kernel.Bind(x =>
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<OverlayViewModel>()
-                    .BindBase());
+                    .InheritedFrom<ModuleViewModel>()
+                    .BindAllBaseClasses()
+                    .Configure(b => b.InSingletonScope())
+            );
 
             #endregion
 
@@ -115,7 +97,7 @@ namespace Artemis.InjectionModules
                     .SelectAllClasses()
                     .InheritedFrom<ILayerType>()
                     .BindToSelf());
-            
+
             // Type helpers
             Bind<AudioCaptureManager>().ToSelf().InSingletonScope();
 

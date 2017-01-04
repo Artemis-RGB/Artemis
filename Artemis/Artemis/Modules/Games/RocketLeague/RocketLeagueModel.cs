@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
-using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
-    public class RocketLeagueModel : GameModel
+    public class RocketLeagueModel : ModuleModel
     {
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-        public RocketLeagueModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager, SettingsProvider.Load<RocketLeagueSettings>(), new RocketLeagueDataModel())
+
+        public RocketLeagueModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
         {
-            Name = "RocketLeague";
+            Settings = SettingsProvider.Load<RocketLeagueSettings>();
+            DataModel = new RocketLeagueDataModel();
             ProcessName = "RocketLeague";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
 
             // Generate a new offset when the game is updated
             //var offset = new GamePointersCollection
@@ -43,20 +38,20 @@ namespace Artemis.Modules.Games.RocketLeague
             //var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
         }
 
-        public int Scale { get; set; }
+        public override string Name => "RocketLeague";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
-            _memory = null;
             base.Dispose();
+
+            _memory?.Dispose();
+            _memory = null;
         }
 
         public override void Enable()
         {
-            base.Enable();
-
-            Initialized = false;
             Updater.GetPointers();
             _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
 
@@ -66,28 +61,23 @@ namespace Artemis.Modules.Games.RocketLeague
 
             _memory = new Memory(tempProcess);
 
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Update()
         {
-            if ((Profile == null) || (DataModel == null) || (_memory == null))
+            if (ProfileModel == null || DataModel == null || _memory == null)
                 return;
 
             var offsets = _pointer.GameAddresses.First(ga => ga.Description == "Boost").ToString();
             var boostAddress = _memory.GetAddress("\"RocketLeague.exe\"" + offsets);
-            var boostInt = (int) (_memory.ReadFloat(boostAddress)*100);
+            var boostInt = (int) (_memory.ReadFloat(boostAddress) * 100);
             if (boostInt > 100)
                 boostInt = 100;
             if (boostInt < 0)
                 boostInt = 0;
 
             ((RocketLeagueDataModel) DataModel).Boost = boostInt;
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

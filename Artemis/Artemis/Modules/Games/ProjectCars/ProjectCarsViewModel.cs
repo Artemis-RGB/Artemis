@@ -1,16 +1,17 @@
 ﻿using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.ProjectCars
 {
-    public sealed class ProjectCarsViewModel : GameViewModel
+    public sealed class ProjectCarsViewModel : ModuleViewModel
     {
-        public ProjectCarsViewModel(MainManager main, IKernel kernel,
-            [Named("ProjectCarsModel")] GameModel model) : base(main, model, kernel)
+        public ProjectCarsViewModel(MainManager mainManager, [Named(nameof(ProjectCarsModel))] ModuleModel moduleModel,
+            IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "Project CARS";
         }
+
+        public override bool UsesProfileEditor => true;
     }
 }

@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.WoW
 {
-    public class WoWSettings : GameSettings
+    public class WoWSettings : ModuleSettings
     {
     }
 }

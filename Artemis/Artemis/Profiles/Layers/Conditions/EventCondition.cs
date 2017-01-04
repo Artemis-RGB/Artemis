@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 
@@ -8,7 +8,7 @@ namespace Artemis.Profiles.Layers.Conditions
 {
     public class EventCondition : ILayerCondition
     {
-        public bool ConditionsMet(LayerModel layerModel, IDataModel dataModel)
+        public bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel)
         {
             lock (layerModel.Properties.Conditions)
             {

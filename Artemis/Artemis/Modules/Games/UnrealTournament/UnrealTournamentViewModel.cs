@@ -1,39 +1,35 @@
 ﻿using System.Windows.Forms;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Properties;
-using Artemis.ViewModels.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
-    public sealed class UnrealTournamentViewModel : GameViewModel
+    public sealed class UnrealTournamentViewModel : ModuleViewModel
     {
-        public UnrealTournamentViewModel(MainManager main, IKernel kernel,
-            [Named("UnrealTournamentModel")] GameModel model) : base(main, model, kernel)
+        public UnrealTournamentViewModel(MainManager mainManager,
+            [Named(nameof(UnrealTournamentModel))] ModuleModel moduleModel, IKernel kernel)
+            : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "Unreal Tournament";
             InstallGif();
         }
 
-        public UnrealTournamentModel UnrealTournamentModel { get; set; }
-
+        public override bool UsesProfileEditor => true;
 
         public void BrowseDirectory()
         {
-            var dialog = new FolderBrowserDialog
-            {
-                SelectedPath = ((UnrealTournamentSettings) GameSettings).GameDirectory
-            };
+            var dialog = new FolderBrowserDialog {SelectedPath = ((UnrealTournamentSettings) Settings).GameDirectory};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
 
-            ((UnrealTournamentSettings) GameSettings).GameDirectory = dialog.SelectedPath;
-            GameSettings.Save();
-            ((UnrealTournamentModel) GameModel).PlaceFiles();
-            NotifyOfPropertyChange(() => GameSettings);
+            ((UnrealTournamentSettings) Settings).GameDirectory = dialog.SelectedPath;
+            ((UnrealTournamentModel) ModuleModel).PlaceFiles();
+            Settings.Save();
+            NotifyOfPropertyChange(() => Settings);
         }
 
         // Installing GIF on editor open to make sure the proper profiles are loaded

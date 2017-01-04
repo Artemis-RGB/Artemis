@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 
 namespace Artemis.Profiles.Layers.Models
@@ -37,7 +37,7 @@ namespace Artemis.Profiles.Layers.Models
         /// </summary>
         public LayerPropertyOptions LayerPropertyOptions { get; set; }
 
-        internal void ApplyProperty(IDataModel dataModel, LayerModel layerModel)
+        internal void ApplyProperty(ModuleDataModel dataModel, LayerModel layerModel)
         {
             if (LayerPropertyType == LayerPropertyType.PercentageOf)
                 ApplyPercentageOf(dataModel, layerModel, PercentageSource);
@@ -45,7 +45,7 @@ namespace Artemis.Profiles.Layers.Models
                 ApplyPercentageOfProperty(dataModel, layerModel);
         }
 
-        private void ApplyPercentageOf(IDataModel dataModel, LayerModel layerModel, float src)
+        private void ApplyPercentageOf(ModuleDataModel dataModel, LayerModel layerModel, float src)
         {
             if (GameProperty == null)
                 return;
@@ -105,7 +105,7 @@ namespace Artemis.Profiles.Layers.Models
             layerModel.Brush = brush;
         }
 
-        private void ApplyPercentageOfProperty(IDataModel dataModel, LayerModel layerModel)
+        private void ApplyPercentageOfProperty(ModuleDataModel dataModel, LayerModel layerModel)
         {
             var value = dataModel.GetPropValue<float>(PercentageProperty);
             ApplyPercentageOf(dataModel, layerModel, value);

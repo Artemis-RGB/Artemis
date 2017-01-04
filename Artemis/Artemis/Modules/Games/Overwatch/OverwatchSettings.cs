@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.Overwatch
 {
-    public class OverwatchSettings : GameSettings
+    public class OverwatchSettings : ModuleSettings
     {
         public string GameDirectory { get; set; }
     }

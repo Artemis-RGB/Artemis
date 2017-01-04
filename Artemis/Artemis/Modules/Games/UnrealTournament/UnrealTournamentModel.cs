@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Timers;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Properties;
 using Artemis.Services;
-using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Newtonsoft.Json;
@@ -18,25 +15,22 @@ using Newtonsoft.Json.Linq;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
-    public class UnrealTournamentModel : GameModel
+    public class UnrealTournamentModel : ModuleModel
     {
-        private readonly PipeServer _pipeServer;
         private readonly MetroDialogService _dialogService;
-        private Timer _killTimer;
+        private readonly PipeServer _pipeServer;
+        private readonly Timer _killTimer;
         private int _lastScore;
 
         public UnrealTournamentModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer,
-            MetroDialogService dialogService)
-            : base(deviceManager, luaManager, SettingsProvider.Load<UnrealTournamentSettings>(),
-                new UnrealTournamentDataModel())
+            MetroDialogService dialogService) : base(deviceManager, luaManager)
         {
             _pipeServer = pipeServer;
             _dialogService = dialogService;
-            Name = "UnrealTournament";
+
+            Settings = SettingsProvider.Load<UnrealTournamentSettings>();
+            DataModel = new UnrealTournamentDataModel();
             ProcessName = "UE4-Win64-Shipping";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
 
             _killTimer = new Timer(3500);
             _killTimer.Elapsed += KillTimerOnElapsed;
@@ -44,11 +38,15 @@ namespace Artemis.Modules.Games.UnrealTournament
             FindGame();
         }
 
+        public override string Name => "UnrealTournament";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
+
         public void FindGame()
         {
             var gameSettings = (UnrealTournamentSettings) Settings;
             // If already propertly set up, don't do anything
-            if ((gameSettings.GameDirectory != null) &&
+            if (gameSettings.GameDirectory != null &&
                 File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
                 return;
 
@@ -56,12 +54,10 @@ namespace Artemis.Modules.Games.UnrealTournament
             if (!File.Exists(@"C:\ProgramData\Epic\UnrealEngineLauncher\LauncherInstalled.dat"))
                 return;
 
-            var json =
-                JsonConvert.DeserializeObject<JObject>(
-                    File.ReadAllText(@"C:\ProgramData\Epic\UnrealEngineLauncher\LauncherInstalled.dat"));
-            var utEntry =
-                json["InstallationList"].Children()
-                    .FirstOrDefault(c => c["AppName"].Value<string>() == "UnrealTournamentDev");
+            var json = JsonConvert.DeserializeObject<JObject>(
+                File.ReadAllText(@"C:\ProgramData\Epic\UnrealEngineLauncher\LauncherInstalled.dat"));
+            var utEntry = json["InstallationList"].Children()
+                .FirstOrDefault(c => c["AppName"].Value<string>() == "UnrealTournamentDev");
             if (utEntry == null)
                 return;
 
@@ -113,25 +109,20 @@ namespace Artemis.Modules.Games.UnrealTournament
             Logger?.Info("Installed Unreal Tournament plugin in '{0}'", path);
         }
 
-        public int Scale { get; set; }
-
         public override void Dispose()
         {
-            Initialized = false;
+            base.Dispose();
 
             _killTimer.Stop();
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
-            base.Dispose();
         }
 
         public override void Enable()
         {
-            base.Enable();
-
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             _killTimer.Start();
 
-            Initialized = true;
+            base.Enable();
         }
 
         private void PipeServerOnPipeMessage(string message)
@@ -180,11 +171,6 @@ namespace Artemis.Modules.Games.UnrealTournament
             var dataModel = (UnrealTournamentDataModel) DataModel;
             if (dataModel.Player != null)
                 dataModel.Player.KillState = KillState.None;
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

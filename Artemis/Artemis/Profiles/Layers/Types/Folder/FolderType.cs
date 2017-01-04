@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -32,7 +32,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
         {
         }
 
-        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
         }
 

@@ -1,42 +1,22 @@
-﻿using System.Collections.Generic;
-using Artemis.DAL;
+﻿using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.ProjectCars.Data;
-using Artemis.Profiles.Layers.Models;
-using Artemis.Services;
 
 namespace Artemis.Modules.Games.ProjectCars
 {
-    public class ProjectCarsModel : GameModel
+    public class ProjectCarsModel : ModuleModel
     {
-        private readonly MetroDialogService _dialogService;
-
-        public ProjectCarsModel(DeviceManager deviceManager, LuaManager luaManager, MetroDialogService dialogService)
-            : base(deviceManager, luaManager, SettingsProvider.Load<ProjectCarsSettings>(), new ProjectCarsDataModel())
+        public ProjectCarsModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
         {
-            _dialogService = dialogService;
-            Name = "ProjectCars";
+            Settings = SettingsProvider.Load<ProjectCarsSettings>();
+            DataModel = new ProjectCarsDataModel();
             ProcessName = "pCARS64";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
         }
 
-        public int Scale { get; set; }
-
-        public override void Dispose()
-        {
-            Initialized = false;
-            base.Dispose();
-        }
-
-        public override void Enable()
-        {
-            base.Enable();
-
-            Initialized = true;
-        }
+        public override string Name => "ProjectCars";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Update()
         {
@@ -46,11 +26,6 @@ namespace Artemis.Modules.Games.ProjectCars
             // item1 is the true/false indicating a good read or not
             if (returnTuple.Item1)
                 dataModel.GameData = dataModel.GameData.MapStructToClass(returnTuple.Item2, dataModel.GameData);
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

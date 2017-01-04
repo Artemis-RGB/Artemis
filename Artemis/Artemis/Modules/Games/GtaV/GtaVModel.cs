@@ -1,42 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 
 namespace Artemis.Modules.Games.GtaV
 {
-    public class GtaVModel : GameModel
+    public class GtaVModel : ModuleModel
     {
         private readonly PipeServer _pipeServer;
 
         public GtaVModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
-            : base(deviceManager, luaManager, SettingsProvider.Load<GtaVSettings>(), new GtaVDataModel())
+            : base(deviceManager, luaManager)
         {
             _pipeServer = pipeServer;
-            Name = "GTAV";
+
+            Settings = SettingsProvider.Load<GtaVSettings>();
+            DataModel = new GtaVDataModel();
             ProcessName = "GTA5";
-            Enabled = Settings.Enabled;
-            Initialized = false;
         }
+
+        public override string Name => "GTAV";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Enable()
         {
-            base.Enable();
-
             DllManager.PlaceLogitechDll();
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Dispose()
         {
-            Initialized = false;
+            base.Dispose();
 
             // Delay restoring the DLL to allow GTA to release it
             Task.Factory.StartNew(() =>
@@ -46,7 +46,6 @@ namespace Artemis.Modules.Games.GtaV
             });
 
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
-            base.Dispose();
         }
 
         public override void Update()
@@ -54,14 +53,9 @@ namespace Artemis.Modules.Games.GtaV
             // DataModel updating is done whenever a pipe message is received
         }
 
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
-        }
-
         private void PipeServerOnPipeMessage(string reply)
         {
-            if (!Initialized)
+            if (!IsInitialized)
                 return;
 
             // Convert the given string to a list of ints

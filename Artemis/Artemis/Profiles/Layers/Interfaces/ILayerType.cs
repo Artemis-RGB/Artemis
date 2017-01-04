@@ -1,5 +1,5 @@
 ﻿using System.Windows.Media;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
 using Artemis.ViewModels.Profiles;
@@ -47,7 +47,7 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// <param name="layerModel">The layerModel to apply to</param>
         /// <param name="dataModel">The datamodel to base the layer on</param>
         /// <param name="isPreview">Set to true if previewing this layer</param>
-        void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false);
+        void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false);
 
         /// <summary>
         ///     Sets up the layer's properties to accommodate this layerType
@@ -71,6 +71,7 @@ namespace Artemis.Profiles.Layers.Interfaces
         Mouse,
         Headset,
         Generic,
-        Mousemat
+        Mousemat,
+        Preview
     }
 }

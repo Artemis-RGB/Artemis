@@ -1,30 +1,31 @@
 ﻿using System.Windows.Forms;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.Overwatch
 {
-    public sealed class OverwatchViewModel : GameViewModel
+    public sealed class OverwatchViewModel : ModuleViewModel
     {
-        public OverwatchViewModel(MainManager main, IKernel kernel, [Named("OverwatchModel")] GameModel model)
-            : base(main, model, kernel)
+        public OverwatchViewModel(MainManager mainManager, [Named(nameof(OverwatchModel))] ModuleModel moduleModel,
+            IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "Overwatch";
         }
 
+        public override bool UsesProfileEditor => true;
+
         public void BrowseDirectory()
         {
-            var dialog = new FolderBrowserDialog {SelectedPath = ((OverwatchSettings) GameSettings).GameDirectory};
+            var dialog = new FolderBrowserDialog {SelectedPath = ((OverwatchSettings) Settings).GameDirectory};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
 
-            ((OverwatchSettings) GameSettings).GameDirectory = dialog.SelectedPath;
-            GameSettings.Save();
-            ((OverwatchModel) GameModel).PlaceDll();
-            NotifyOfPropertyChange(() => GameSettings);
+            ((OverwatchSettings) Settings).GameDirectory = dialog.SelectedPath;
+            ((OverwatchModel) ModuleModel).PlaceDll();
+            Settings.Save();
+            NotifyOfPropertyChange(() => Settings);
         }
     }
 }

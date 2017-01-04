@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
@@ -50,7 +50,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
             c.Pop();
         }
 
-        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             // Generic layers are always drawn 10*10 (which is 40*40 when scaled up)
             layerModel.Properties.Width = 10;

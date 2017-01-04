@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.LightFx
 {
-    public class LightFxSettings : GameSettings
+    public class LightFxSettings : ModuleSettings
     {
     }
 }

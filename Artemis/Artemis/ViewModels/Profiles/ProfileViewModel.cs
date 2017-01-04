@@ -7,8 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
-using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles;
+using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
 using Artemis.Properties;
@@ -40,7 +40,7 @@ namespace Artemis.ViewModels.Profiles
             ShowAll = false;
 
             loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
-            deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
+            deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
         }
 
         public ProfileModel SelectedProfile { get; set; }
@@ -166,8 +166,8 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
 
-                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg("preview",
-                    new ProfilePreviewDataModel(), true, drawingContext));
+                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(DrawType.Preview, null, true,
+                    drawingContext));
 
                 // Remove the clip
                 drawingContext.Pop();
@@ -178,7 +178,7 @@ namespace Artemis.ViewModels.Profiles
             KeyboardPreview = drawnPreview;
         }
 
-        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
+        private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => KeyboardImage);
         }
@@ -356,13 +356,13 @@ namespace Artemis.ViewModels.Profiles
             // Get the layers that must be drawn
             List<LayerModel> drawLayers;
             if (ShowAll)
-                return SelectedProfile.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
+                return SelectedProfile.GetRenderLayers(null, false, true);
 
             if (SelectedLayer == null || !SelectedLayer.Enabled)
                 return new EditableList<LayerModel>();
 
             if (SelectedLayer.LayerType is FolderType)
-                drawLayers = SelectedLayer.GetRenderLayers(new ProfilePreviewDataModel(), false, true);
+                drawLayers = SelectedLayer.GetRenderLayers(null, false, true);
             else
                 drawLayers = new List<LayerModel> {SelectedLayer};
 

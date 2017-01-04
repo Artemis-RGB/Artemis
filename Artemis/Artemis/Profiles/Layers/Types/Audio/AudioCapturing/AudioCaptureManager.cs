@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Modules.Effects.AudioVisualizer.Utilities;
 using NAudio.CoreAudioApi;
 using NAudio.Dsp;
 using NAudio.Wave;

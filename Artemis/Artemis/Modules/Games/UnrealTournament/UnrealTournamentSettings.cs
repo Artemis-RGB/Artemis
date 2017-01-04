@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
-    public class UnrealTournamentSettings : GameSettings
+    public class UnrealTournamentSettings : ModuleSettings
     {
         public string GameDirectory { get; set; }
     }

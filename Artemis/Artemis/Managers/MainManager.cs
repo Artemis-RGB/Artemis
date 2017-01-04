@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Events;
-using Artemis.Models;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
@@ -23,13 +22,13 @@ namespace Artemis.Managers
         private readonly Timer _processTimer;
 
         public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
-            EffectManager effectManager, ProfileManager profileManager, PipeServer pipeServer,
+            ModuleManager moduleManager, ProfileManager profileManager, PipeServer pipeServer,
             GameStateWebServer gameStateWebServer)
         {
             Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
-            EffectManager = effectManager;
+            ModuleManager = moduleManager;
             ProfileManager = profileManager;
             PipeServer = pipeServer;
 
@@ -64,7 +63,7 @@ namespace Artemis.Managers
         public ILogger Logger { get; set; }
         public LoopManager LoopManager { get; }
         public DeviceManager DeviceManager { get; set; }
-        public EffectManager EffectManager { get; set; }
+        public ModuleManager ModuleManager { get; set; }
         public ProfileManager ProfileManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
@@ -79,12 +78,12 @@ namespace Artemis.Managers
             _processTimer?.Stop();
             _processTimer?.Dispose();
             LoopManager?.Stop();
-            EffectManager?.ActiveEffect?.Dispose();
+            ModuleManager?.ActiveModule?.Dispose();
             GameStateWebServer?.Stop();
             PipeServer?.Stop();
         }
 
-        public event EventHandler<EnabledChangedEventArgs> OnEnabledChangedEvent;
+        public event EventHandler<EnabledChangedEventArgs> EnabledChanged;
 
         /// <summary>
         ///     Restarts the loop manager when the system resumes
@@ -126,7 +125,7 @@ namespace Artemis.Managers
         }
 
         /// <summary>
-        ///     Manages active games by keeping an eye on their processes
+        ///     Manages active process bound modules by keeping an eye on their processes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -135,36 +134,38 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var runningProcesses = System.Diagnostics.Process.GetProcesses();
+            var processes = System.Diagnostics.Process.GetProcesses();
+            var module = ModuleManager.ActiveModule;
 
-            // If the currently active effect is a disabled game, get rid of it.
-            if (EffectManager.ActiveEffect != null)
-                EffectManager.DisableInactiveGame();
+            // If the active module is a process bound module, make sure it should still be enabled
+            if (module != null && module.IsBoundToProcess)
+            {
+                if (!module.Settings.IsEnabled)
+                    ModuleManager.DisableProcessBoundModule();
 
-            // If the currently active effect is a no longer running game, get rid of it.
-            var activeGame = EffectManager.ActiveEffect as GameModel;
-            if (activeGame != null)
-                if (!runningProcesses.Any(p => p.ProcessName == activeGame.ProcessName && p.HasExited == false))
+                // If the currently active effect is a no longer running game, get rid of it.
+                if (!processes.Any(p => p.ProcessName == module.ProcessName && p.HasExited == false))
                 {
-                    Logger.Info("Disabling game: {0}", activeGame.Name);
-                    EffectManager.DisableGame(activeGame);
+                    Logger.Info("Disabling process bound module because process stopped: {0}", module.Name);
+                    ModuleManager.DisableProcessBoundModule();
                 }
+            }
 
             // Look for running games, stopping on the first one that's found.
-            var newGame = EffectManager.EnabledGames
-                .FirstOrDefault(g => runningProcesses
-                    .Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+            var newModule = ModuleManager.ProcessModules.Where(g => g.Settings.IsEnabled && g.Settings.IsEnabled)
+                .FirstOrDefault(g => processes.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
 
-            if (newGame == null || EffectManager.ActiveEffect == newGame)
+            if (newModule == null || module == newModule)
                 return;
+
             // If it's not already enabled, do so.
-            Logger.Info("Detected and enabling game: {0}", newGame.Name);
-            EffectManager.ChangeEffect(newGame, LoopManager);
+            Logger.Info("Detected and enabling process bound module: {0}", newModule.Name);
+            ModuleManager.ChangeActiveModule(newModule, LoopManager);
         }
 
         protected virtual void RaiseEnabledChangedEvent(EnabledChangedEventArgs e)
         {
-            var handler = OnEnabledChangedEvent;
+            var handler = EnabledChanged;
             handler?.Invoke(this, e);
         }
     }

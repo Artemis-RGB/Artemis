@@ -131,24 +131,24 @@
       <HintPath>..\packages\Betwixt.1.4.1\lib\net35\Betwixt.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.0.1\lib\net45\Caliburn.Micro.dll</HintPath>
+    <Reference Include="Caliburn.Micro, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Platform, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.1.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.1\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.2\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Corale.Colore, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Colore.5.0.0\lib\net35\Corale.Colore.dll</HintPath>
+    <Reference Include="Corale.Colore, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Colore.5.1.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CUE.NET, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
@@ -236,7 +236,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.10\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -255,8 +255,8 @@
       <HintPath>..\packages\SharpDX.Direct3D9.3.1.1\lib\net45\SharpDX.Direct3D9.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Splat, Version=1.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+    <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.2.0.0\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -333,7 +333,7 @@
     <Compile Include="Dialogs\MarkdownDialog.xaml.cs">
       <DependentUpon>MarkdownDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Events\EffectChangedEventArgs.cs" />
+    <Compile Include="Events\ModuleChangedEventArgs.cs" />
     <Compile Include="Events\EnabledChangedEventArgs.cs" />
     <Compile Include="Events\KeyboardChangedEventArgs.cs" />
     <Compile Include="Events\ProfileDeviceEventsArg.cs" />
@@ -349,16 +349,17 @@
     <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
     <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
-    <Compile Include="Managers\EffectManager.cs" />
+    <Compile Include="Managers\ModuleManager.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
-    <Compile Include="Models\EffectModel.cs" />
-    <Compile Include="Models\Interfaces\IDataModel.cs" />
-    <Compile Include="Modules\Effects\Bubbles\Bubbles.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\PerformanceInfo.cs" />
+    <Compile Include="Modules\Abstract\ModuleDataModel.cs" />
+    <Compile Include="Modules\Abstract\ModuleModel.cs" />
+    <Compile Include="Modules\Abstract\ModuleSettings.cs" />
+    <Compile Include="Modules\Abstract\ModuleViewModel.cs" />
+    <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\IEts2TelemetryData.cs" />
@@ -454,6 +455,13 @@
     <Compile Include="Modules\Games\WoW\WoWSettings.cs" />
     <Compile Include="Modules\Games\WoW\WoWViewModel.cs" />
     <Compile Include="Modules\Games\WoW\WoWAddresses.cs" />
+    <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileDataModel.cs" />
+    <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileModel.cs" />
+    <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileSettings.cs" />
+    <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileView.xaml.cs">
+      <DependentUpon>OverlayProfileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileViewModel.cs" />
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
@@ -481,6 +489,8 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\FftEventArgs.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SampleAggregator.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
@@ -525,24 +535,20 @@
     <Compile Include="Profiles\ProfileModel.cs" />
     <Compile Include="Profiles\Layers\Models\SimplePropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\Utilities\FftEventArgs.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\Utilities\SampleAggregator.cs" />
-    <Compile Include="Modules\Effects\Bubbles\Bubble.cs" />
-    <Compile Include="Modules\Effects\Bubbles\BubblesSettings.cs" />
-    <Compile Include="Modules\Effects\Bubbles\BubblesModel.cs" />
-    <Compile Include="Modules\Effects\Bubbles\BubblesView.xaml.cs">
+    <Compile Include="Modules\General\Bubbles\Bubble.cs" />
+    <Compile Include="Modules\General\Bubbles\BubblesSettings.cs" />
+    <Compile Include="Modules\General\Bubbles\BubblesModel.cs" />
+    <Compile Include="Modules\General\Bubbles\BubblesView.xaml.cs">
       <DependentUpon>BubblesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Effects\Bubbles\BubblesViewModel.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileSettings.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml.cs">
-      <DependentUpon>WindowsProfileView.xaml</DependentUpon>
+    <Compile Include="Modules\General\Bubbles\BubblesViewModel.cs" />
+    <Compile Include="Modules\General\GeneralProfile\GeneralProfileSettings.cs" />
+    <Compile Include="Modules\General\GeneralProfile\GeneralProfileView.xaml.cs">
+      <DependentUpon>GeneralProfileView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileViewModel.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileDataModel.cs" />
-    <Compile Include="Modules\Effects\WindowsProfile\WindowsProfileModel.cs" />
-    <Compile Include="Modules\Effects\ProfilePreview\ProfilePreviewModel.cs" />
-    <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Modules\General\GeneralProfile\GeneralProfileViewModel.cs" />
+    <Compile Include="Modules\General\GeneralProfile\GeneralProfileDataModel.cs" />
+    <Compile Include="Modules\General\GeneralProfile\GeneralProfileModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeDataModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeModel.cs" />
     <Compile Include="Modules\Games\CounterStrike\CounterStrikeSettings.cs" />
@@ -568,15 +574,6 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3DataModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Settings.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3Model.cs" />
-    <Compile Include="Models\OverlayModel.cs" />
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.cs" />
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>VolumeDisplay.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayModel.cs" />
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplaySettings.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueSettings.cs" />
     <Compile Include="InjectionModules\BaseModules.cs" />
     <Compile Include="InjectionModules\ManagerModules.cs" />
@@ -609,12 +606,9 @@
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\MetroDialogService.cs" />
     <Compile Include="Services\WindowService.cs" />
-    <Compile Include="Settings\EffectSettings.cs" />
-    <Compile Include="Settings\GameSettings.cs" />
     <Compile Include="Settings\GeneralSettings.cs" />
     <Compile Include="Settings\IArtemisSettings.cs" />
     <Compile Include="Settings\OffsetSettings.cs" />
-    <Compile Include="Settings\OverlaySettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
     <Compile Include="Utilities\ActiveWindowHelper.cs" />
@@ -635,7 +629,6 @@
     <Compile Include="Utilities\Markdown\Markdown.cs" />
     <Compile Include="Utilities\Markdown\TextToFlowDocumentConverter.cs" />
     <Compile Include="Utilities\Memory\GamePointer.cs" />
-    <Compile Include="Utilities\Keyboard\KeyboardRectangle.cs" />
     <Compile Include="Utilities\Memory\Memory.cs" />
     <Compile Include="Utilities\Memory\MemoryHelpers.cs" />
     <Compile Include="Utilities\Memory\Win32.cs" />
@@ -644,12 +637,8 @@
     <Compile Include="Utilities\StickyValue.cs" />
     <Compile Include="Utilities\Updater.cs" />
     <Compile Include="ViewModels\Abstract\BaseViewModel.cs" />
-    <Compile Include="ViewModels\Abstract\OverlayViewModel.cs" />
-    <Compile Include="ViewModels\Abstract\EffectViewModel.cs" />
-    <Compile Include="ViewModels\Abstract\GameViewModel.cs" />
     <Compile Include="ViewModels\DebugViewModel.cs" />
-    <Compile Include="ViewModels\EffectsViewModel.cs" />
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerViewModel.cs" />
+    <Compile Include="ViewModels\GeneralViewModel.cs" />
     <Compile Include="ViewModels\FlyoutBaseViewModel.cs" />
     <Compile Include="ViewModels\Flyouts\FlyoutSettingsViewModel.cs" />
     <Compile Include="ViewModels\GamesViewModel.cs" />
@@ -669,21 +658,17 @@
     <Compile Include="Profiles\Layers\Types\Folder\FolderPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayViewModel.cs" />
     <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Views\DebugView.xaml.cs">
       <DependentUpon>DebugView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EffectsView.xaml.cs">
-      <DependentUpon>EffectsView.xaml</DependentUpon>
+    <Compile Include="Views\GeneralView.xaml.cs">
+      <DependentUpon>GeneralView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Flyouts\FlyoutSettingsView.xaml.cs">
       <DependentUpon>FlyoutSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml.cs">
-      <DependentUpon>AudioVisualizerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamesView.xaml.cs">
       <DependentUpon>GamesView.xaml</DependentUpon>
@@ -727,9 +712,6 @@
     <Compile Include="Views\OverlaysView.xaml.cs">
       <DependentUpon>OverlaysView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml.cs">
-      <DependentUpon>VolumeDisplayView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Profiles\LayerTweenView.xaml.cs">
       <DependentUpon>LayerTweenView.xaml</DependentUpon>
     </Compile>
@@ -750,13 +732,13 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\Keyboards\masterkeys-pro-s.png" />
     <None Include="Resources\Keyboards\masterkeys-pro-l.png" />
     <Resource Include="Resources\Kottke Silkscreen License.txt" />
     <None Include="Resources\lua-placeholder.lua" />
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Resources\keypress.png" />
     <None Include="Resources\mousemat.png" />
     <EmbeddedResource Include="Modules\Games\UnrealTournament\Resources\ut-plugin.zip" />
@@ -771,10 +753,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Modules\Overlays\VolumeDisplay\VolumeDisplay.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>VolumeDisplay.Designer.cs</LastGenOutput>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -828,11 +806,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Modules\Effects\Bubbles\BubblesView.xaml">
+    <Page Include="Modules\General\Bubbles\BubblesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Modules\Effects\WindowsProfile\WindowsProfileView.xaml">
+    <Page Include="Modules\General\GeneralProfile\GeneralProfileView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -865,6 +843,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\Games\WoW\WoWView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Overlays\OverlayProfile\OverlayProfileView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -912,11 +894,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\EffectsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Effects\AudioVisualizer\AudioVisualizerView.xaml">
+    <Page Include="Views\GeneralView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -977,10 +955,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\OverlaysView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Modules\Overlays\VolumeDisplay\VolumeDisplayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,10 +1,10 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Models;
 
 namespace Artemis.Profiles.Layers.Interfaces
 {
     public interface ILayerCondition
     {
-        bool ConditionsMet(LayerModel layerModel, IDataModel dataModel);
+        bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel);
     }
 }
