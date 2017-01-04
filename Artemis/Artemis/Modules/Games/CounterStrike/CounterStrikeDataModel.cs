@@ -1,11 +1,11 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
     [MoonSharpUserData]
-    public class CounterStrikeDataModel : IDataModel
+    public class CounterStrikeDataModel : ModuleDataModel
     {
         public Provider provider { get; set; }
         public Map map { get; set; }

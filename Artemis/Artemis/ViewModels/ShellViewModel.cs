@@ -42,7 +42,7 @@ namespace Artemis.ViewModels
                 flyoutSettings
             };
 
-            MainManager.OnEnabledChangedEvent += (sender, args) => Enabled = args.Enabled;
+            MainManager.EnabledChanged += (sender, args) => Enabled = args.Enabled;
 
             // This gets updated automatically but during startup lets quickly preset it
             Enabled = GeneralSettings.Suspended;

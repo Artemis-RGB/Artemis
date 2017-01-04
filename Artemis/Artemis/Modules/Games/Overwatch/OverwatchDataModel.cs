@@ -1,10 +1,10 @@
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.Overwatch
 {
     [MoonSharpUserData]
-    public class OverwatchDataModel : IDataModel
+    public class OverwatchDataModel : ModuleDataModel
     {
         public OverwatchStatus Status { get; set; }
         public OverwatchCharacter Character { get; set; }

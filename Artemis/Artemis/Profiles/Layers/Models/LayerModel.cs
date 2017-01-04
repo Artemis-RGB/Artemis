@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
@@ -38,7 +38,7 @@ namespace Artemis.Profiles.Layers.Models
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public bool ConditionsMet(IDataModel dataModel)
+        public bool ConditionsMet(ModuleDataModel dataModel)
         {
             // Conditions are not even checked if the layer isn't enabled
             return Enabled && LayerCondition.ConditionsMet(this, dataModel);
@@ -50,7 +50,7 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="dataModel"></param>
         /// <param name="preview"></param>
         /// <param name="updateAnimations"></param>
-        public void Update(IDataModel dataModel, bool preview, bool updateAnimations)
+        public void Update(ModuleDataModel dataModel, bool preview, bool updateAnimations)
         {
             if (LayerType == null)
                 return;
@@ -58,7 +58,7 @@ namespace Artemis.Profiles.Layers.Models
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
-            if (!preview && updateAnimations)
+            if (!preview)
                 TweenModel.Update();
 
             LastRender = DateTime.Now;
@@ -89,7 +89,7 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="c"></param>
         /// <param name="preview"></param>
         /// <param name="updateAnimations"></param>
-        public void Draw(IDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
+        public void Draw(ModuleDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
             if (Brush == null)
                 return;
@@ -257,7 +257,7 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Children.OrderByDescending(l => l.Order))

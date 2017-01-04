@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -26,7 +26,7 @@ namespace Artemis.ViewModels.Profiles
         private LayerModel _proposedLayer;
         private ILayerType _selectedLayerType;
 
-        public LayerEditorViewModel(LayerModel layer, IDataModel dataModel, IEnumerable<ILayerType> types,
+        public LayerEditorViewModel(LayerModel layer, ModuleDataModel dataModel, IEnumerable<ILayerType> types,
             IEnumerable<ILayerAnimation> layerAnimations)
         {
             Layer = layer;

@@ -1,10 +1,10 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.Dota2
 {
     [MoonSharpUserData]
-    public class Dota2DataModel : IDataModel
+    public class Dota2DataModel : ModuleDataModel
     {
         public Provider provider { get; set; }
         public Map map { get; set; }
@@ -14,6 +14,8 @@ namespace Artemis.Modules.Games.Dota2
         public Items items { get; set; }
         public Previously previously { get; set; }
     }
+
+
 
     [MoonSharpUserData]
     public class Provider

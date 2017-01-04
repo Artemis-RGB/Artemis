@@ -8,7 +8,7 @@ using System.Windows.Media;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Managers;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
@@ -71,12 +71,12 @@ namespace Artemis.Profiles
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
         /// </summary>
-        /// <typeparam name="T">The game data model to base the conditions on</typeparam>
         /// <param name="dataModel">Instance of said game data model</param>
         /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(IDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly,
+            bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
@@ -85,10 +85,8 @@ namespace Artemis.Profiles
                     continue;
 
                 if (!ignoreConditions)
-                {
                     if (!layerModel.ConditionsMet(dataModel))
                         continue;
-                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -102,14 +100,15 @@ namespace Artemis.Profiles
         /// </summary>
         /// <param name="g">The graphics to draw on</param>
         /// <param name="renderLayers">The layers to render</param>
+        /// <param name="drawType">The type of device to draw for</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
         /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
         /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
-        /// <param name="updateType">The type of layers that are being updated, for reference in LUA</param>
-        internal void DrawLayers(Graphics g, IEnumerable<LayerModel> renderLayers, IDataModel dataModel, Rect rect,
-            bool preview, bool updateAnimations, string updateType)
+        internal void DrawLayers(Graphics g, List<LayerModel> renderLayers, DrawType drawType, ModuleDataModel dataModel,
+            Rect rect, bool preview, bool updateAnimations)
         {
+            renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == drawType).ToList();
             var visual = new DrawingVisual();
             var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
@@ -121,12 +120,12 @@ namespace Artemis.Profiles
                 // Update the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Update(dataModel, preview, updateAnimations);
-                RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(updateType, dataModel, preview, null));
+                RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, null));
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
                     layerModel.Draw(dataModel, c, preview, updateAnimations);
-                RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(updateType, dataModel, preview, c));
+                RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, c));
 
                 // Remove the clip
                 c.Pop();

@@ -5,8 +5,7 @@ using System.Linq;
 using System.Windows.Media;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
@@ -15,7 +14,7 @@ using Microsoft.Win32;
 
 namespace Artemis.Modules.Games.Overwatch
 {
-    public class OverwatchModel : GameModel
+    public class OverwatchModel : ModuleModel
     {
         private readonly DebugViewModel _debugViewModel;
         private readonly MetroDialogService _dialogService;
@@ -29,26 +28,27 @@ namespace Artemis.Modules.Games.Overwatch
         private DateTime _ultimateReady;
         private DateTime _ultimateUsed;
 
+
         public OverwatchModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer,
-            MetroDialogService dialogService, DebugViewModel debugViewModel)
-            : base(deviceManager, luaManager, SettingsProvider.Load<OverwatchSettings>(), new OverwatchDataModel())
+            MetroDialogService dialogService, DebugViewModel debugViewModel) : base(deviceManager, luaManager)
         {
             _pipeServer = pipeServer;
             _dialogService = dialogService;
             _debugViewModel = debugViewModel;
-            Name = "Overwatch";
+
+            Settings = SettingsProvider.Load<OverwatchSettings>();
+            DataModel = new OverwatchDataModel();
             ProcessName = "Overwatch";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
 
             LoadOverwatchCharacters();
             FindOverwatch();
         }
 
-        public List<CharacterColor> OverwatchCharacters { get; set; }
+        public override string Name => "Overwatch";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
-        public int Scale { get; set; }
+        public List<CharacterColor> OverwatchCharacters { get; set; }
 
         private void LoadOverwatchCharacters()
         {
@@ -82,26 +82,22 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override void Enable()
         {
-            base.Enable();
-
             _stickyStatus = new StickyValue<OverwatchStatus>(300);
             _stickyUltimateReady = new StickyValue<bool>(350);
             _stickyUltimateUsed = new StickyValue<bool>(350);
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
 
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Dispose()
         {
-            Initialized = false;
+            base.Dispose();
 
             _stickyStatus?.Dispose();
             _stickyUltimateReady?.Dispose();
             _stickyUltimateUsed?.Dispose();
-
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
-            base.Dispose();
         }
 
         private void PipeServerOnPipeMessage(string message)
@@ -146,10 +142,10 @@ namespace Artemis.Modules.Games.Overwatch
             // Ult can't possibly be ready within 2 seconds of changing, this avoids false positives.
             // Filtering on ultReady and ultUsed removes false positives from the native ultimate effects
             // The control keys don't show during character select, so don't continue on those either.
-            if ((_characterChange.AddSeconds(2) >= DateTime.Now) ||
-                (_ultimateUsed.AddSeconds(2) >= DateTime.Now) ||
-                (_ultimateReady.AddSeconds(2) >= DateTime.Now) ||
-                (_stickyStatus.Value == OverwatchStatus.InCharacterSelect))
+            if (_characterChange.AddSeconds(2) >= DateTime.Now ||
+                _ultimateUsed.AddSeconds(2) >= DateTime.Now ||
+                _ultimateReady.AddSeconds(2) >= DateTime.Now ||
+                _stickyStatus.Value == OverwatchStatus.InCharacterSelect)
                 return;
 
             ParseSpecialKeys(gameDataModel, characterMatch, colors);
@@ -161,7 +157,7 @@ namespace Artemis.Modules.Games.Overwatch
             if (string.IsNullOrEmpty(arrayString))
                 return null;
             var intermediateArray = arrayString.Split('|');
-            if ((intermediateArray[0] == "1") || (intermediateArray.Length < 2))
+            if (intermediateArray[0] == "1" || intermediateArray.Length < 2)
                 return null;
             var array = intermediateArray[1].Substring(1).Split(' ');
             if (!array.Any())
@@ -177,7 +173,7 @@ namespace Artemis.Modules.Games.Overwatch
 
                     // Can't parse to a byte directly since it may contain values >254
                     var parts = intermediate.Split(',').Select(int.Parse).ToArray();
-                    if ((parts[0] >= 5) && (parts[1] >= 21))
+                    if (parts[0] >= 5 && parts[1] >= 21)
                         continue;
 
                     colors[parts[0], parts[1]] = Color.FromRgb((byte) parts[2], (byte) parts[3], (byte) parts[4]);
@@ -231,13 +227,13 @@ namespace Artemis.Modules.Games.Overwatch
         private bool ControlsShown(Color[,] colors)
         {
             var keyColor = Color.FromRgb(222, 153, 0);
-            return (colors[2, 3] == keyColor) || (colors[3, 2] == keyColor) ||
-                   (colors[3, 3] == keyColor) || (colors[3, 4] == keyColor);
+            return colors[2, 3] == keyColor || colors[3, 2] == keyColor ||
+                   colors[3, 3] == keyColor || colors[3, 4] == keyColor;
         }
 
         private void ParseSpecialKeys(OverwatchDataModel gameDataModel, CharacterColor? characterMatch, Color[,] colors)
         {
-            if ((characterMatch == null) || (characterMatch.Value.Character == OverwatchCharacter.None))
+            if (characterMatch == null || characterMatch.Value.Character == OverwatchCharacter.None)
                 return;
 
             // Ultimate is ready when Q is blinking
@@ -277,11 +273,6 @@ namespace Artemis.Modules.Games.Overwatch
             gameDataModel.Ability2Ready = colors[2, 4].Equals(Color.FromRgb(4, 141, 144));
         }
 
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
-        }
-
         public void FindOverwatch()
         {
             var gameSettings = Settings as OverwatchSettings;
@@ -289,7 +280,7 @@ namespace Artemis.Modules.Games.Overwatch
                 return;
 
             // If already propertly set up, don't do anything
-            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
+            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "Overwatch.exe") &&
                 File.Exists(gameSettings.GameDirectory + "RzChromaSDK64.dll"))
                 return;
 

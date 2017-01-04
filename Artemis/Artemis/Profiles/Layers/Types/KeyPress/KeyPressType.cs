@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using Artemis.Managers;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
@@ -60,7 +60,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             }
         }
 
-        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             // Key press is always as large as the entire keyboard it is drawn for
             layerModel.Properties.Width = _deviceManager.ActiveKeyboard.Width;

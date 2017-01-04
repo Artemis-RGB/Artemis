@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Utilities;
@@ -13,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public class CounterStrikeModel : GameModel
+    public class CounterStrikeModel : ModuleModel
     {
         private readonly MetroDialogService _dialogService;
         private readonly GameStateWebServer _gameStateWebServer;
@@ -22,40 +20,34 @@ namespace Artemis.Modules.Games.CounterStrike
         private DateTime _lastKill;
         private int _lastKills;
 
-        public CounterStrikeModel(DeviceManager deviceManager, LuaManager luaManager,
-            GameStateWebServer gameStateWebServer, MetroDialogService dialogService)
-            : base(deviceManager, luaManager, SettingsProvider.Load<CounterStrikeSettings>(),
-                new CounterStrikeDataModel())
+        public CounterStrikeModel(DeviceManager deviceManager, LuaManager luaManager, MetroDialogService dialogService,
+            GameStateWebServer gameStateWebServer) : base(deviceManager, luaManager)
         {
             _gameStateWebServer = gameStateWebServer;
             _dialogService = dialogService;
 
-            Name = "CounterStrike";
+            Settings = SettingsProvider.Load<CounterStrikeSettings>();
+            DataModel = new CounterStrikeDataModel();
             ProcessName = "csgo";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
 
             FindGameDir();
             PlaceConfigFile();
         }
 
-        public int Scale { get; set; }
+        public override string Name => "CounterStrike";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
-            _gameStateWebServer.GameDataReceived -= HandleGameData;
-
             base.Dispose();
+            _gameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
-            base.Enable();
-
             _gameStateWebServer.GameDataReceived += HandleGameData;
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Update()
@@ -80,8 +72,10 @@ namespace Artemis.Modules.Games.CounterStrike
                     dm.player.state.made_kill = true;
                     _lastKill = DateTime.Now;
                 }
-                else if (dm.player.state.made_kill && (DateTime.Now - _lastKill > TimeSpan.FromMilliseconds(500)))
+                else if (dm.player.state.made_kill && DateTime.Now - _lastKill > TimeSpan.FromMilliseconds(500))
+                {
                     dm.player.state.made_kill = false;
+                }
                 _lastKills = dm.player.state.round_kills;
 
                 // Detect a headshot
@@ -90,8 +84,10 @@ namespace Artemis.Modules.Games.CounterStrike
                     dm.player.state.made_headshot = true;
                     _lastHeadshot = DateTime.Now;
                 }
-                else if (dm.player.state.made_headshot && (DateTime.Now - _lastHeadshot > TimeSpan.FromMilliseconds(500)))
+                else if (dm.player.state.made_headshot && DateTime.Now - _lastHeadshot > TimeSpan.FromMilliseconds(500))
+                {
                     dm.player.state.made_headshot = false;
+                }
                 _lastHeadshots = dm.player.state.round_killhs;
 
                 // Detect a round win
@@ -106,7 +102,7 @@ namespace Artemis.Modules.Games.CounterStrike
         {
             var gameSettings = (CounterStrikeSettings) Settings;
             // If already propertly set up, don't do anything
-            if ((gameSettings.GameDirectory != null) && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
+            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + "csgo.exe") &&
                 File.Exists(gameSettings.GameDirectory + "/csgo/cfg/gamestate_integration_artemis.cfg"))
                 return;
 
@@ -158,12 +154,6 @@ namespace Artemis.Modules.Games.CounterStrike
                 Logger?.Error(ex, "Failed to deserialize CS:GO JSON");
                 throw;
             }
-        }
-
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

@@ -3,35 +3,35 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using Artemis.Utilities.DataReaders;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionModel : GameModel
+    public class TheDivisionModel : ModuleModel
     {
         private readonly PipeServer _pipeServer;
         private StickyValue<bool> _stickyAmmo;
         private StickyValue<bool> _stickyHp;
 
         public TheDivisionModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
-            : base(deviceManager, luaManager, SettingsProvider.Load<TheDivisionSettings>(), new TheDivisionDataModel())
+            : base(deviceManager, luaManager)
         {
             _pipeServer = pipeServer;
-            Name = "TheDivision";
+
+            Settings = SettingsProvider.Load<TheDivisionSettings>();
+            DataModel = new TheDivisionDataModel();
             ProcessName = "TheDivision";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
         }
 
-        public int Scale { get; set; }
+        public override string Name => "TheDivision";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
+            base.Dispose();
 
             // Delay restoring the DLL to allow The Division to release it
             Task.Factory.StartNew(() =>
@@ -42,28 +42,24 @@ namespace Artemis.Modules.Games.TheDivision
 
             _stickyAmmo?.Dispose();
             _stickyHp?.Dispose();
-
             _pipeServer.PipeMessage -= PipeServerOnPipeMessage;
-            base.Dispose();
         }
 
         public override void Enable()
         {
-            base.Enable();
-
-            Initialized = false;
             _stickyAmmo = new StickyValue<bool>(200);
             _stickyHp = new StickyValue<bool>(200);
 
             DllManager.PlaceLogitechDll();
 
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
-            Initialized = true;
+
+            base.Enable();
         }
 
         private void PipeServerOnPipeMessage(string reply)
         {
-            if (!Initialized)
+            if (!IsInitialized)
                 return;
 
             // Convert the given string to a list of ints
@@ -86,7 +82,7 @@ namespace Artemis.Modules.Games.TheDivision
             var bPer = parts[4];
 
             // F1 to F4 indicate the player and his party. Blinks red on damage taken
-            if ((keyCode >= 59) && (keyCode <= 62))
+            if (keyCode >= 59 && keyCode <= 62)
             {
                 var playerId = keyCode - 58;
 
@@ -110,15 +106,15 @@ namespace Artemis.Modules.Games.TheDivision
             // R blinks white when low on ammo
             else if (keyCode == 19)
             {
-                _stickyAmmo.Value = (rPer == 100) && (gPer > 1) && (bPer > 1);
+                _stickyAmmo.Value = rPer == 100 && gPer > 1 && bPer > 1;
                 gameDataModel.LowAmmo = _stickyAmmo.Value;
             }
             // G turns white when holding a grenade, turns off when out of grenades
             else if (keyCode == 34)
             {
-                if ((rPer == 100) && (gPer < 10) && (bPer < 10))
+                if (rPer == 100 && gPer < 10 && bPer < 10)
                     gameDataModel.GrenadeState = GrenadeState.HasGrenade;
-                else if ((rPer == 100) && (gPer > 10) && (bPer > 10))
+                else if (rPer == 100 && gPer > 10 && bPer > 10)
                     gameDataModel.GrenadeState = GrenadeState.GrenadeEquipped;
                 else
                     gameDataModel.GrenadeState = GrenadeState.HasNoGrenade;
@@ -126,7 +122,7 @@ namespace Artemis.Modules.Games.TheDivision
             // V blinks on low HP
             else if (keyCode == 47)
             {
-                _stickyHp.Value = (rPer == 100) && (gPer > 1) && (bPer > 1);
+                _stickyHp.Value = rPer == 100 && gPer > 1 && bPer > 1;
                 gameDataModel.LowHp = _stickyHp.Value;
             }
         }
@@ -134,11 +130,6 @@ namespace Artemis.Modules.Games.TheDivision
         public override void Update()
         {
             // DataModel updating is done whenever a pipe message is received
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

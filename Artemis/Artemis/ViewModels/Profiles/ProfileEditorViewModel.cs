@@ -14,7 +14,7 @@ using Artemis.DAL;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
@@ -23,10 +23,8 @@ using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using Castle.Core.Internal;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
-using Ninject;
 using Ninject.Parameters;
 using NuGet;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -40,34 +38,33 @@ namespace Artemis.ViewModels.Profiles
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly DeviceManager _deviceManager;
-        private readonly EffectModel _effectModel;
         private readonly LuaManager _luaManager;
+        private readonly ModuleModel _moduleModel;
         private readonly Timer _saveTimer;
+        private readonly MetroDialogService _dialogService;
+        private readonly WindowService _windowService;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
         private ObservableCollection<string> _profileNames;
         private bool _saving;
-        private ProfileModel _selectedProfile;
         private FileSystemWatcher _watcher;
 
-        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, EffectModel effectModel,
-            ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService,
-            string lastProfile)
+        public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, ModuleModel moduleModel,
+            ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService)
         {
             _deviceManager = deviceManager;
             _luaManager = luaManager;
-            _effectModel = effectModel;
+            _moduleModel = moduleModel;
+            _dialogService = dialogService;
+            _windowService = windowService;
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
-            DialogService = dialogService;
-            WindowService = windowService;
-            LastProfile = lastProfile;
 
             PropertyChanged += EditorStateHandler;
             ProfileViewModel.PropertyChanged += LayerSelectedHandler;
-            _deviceManager.OnKeyboardChangedEvent += DeviceManagerOnOnKeyboardChangedEvent;
+            _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
 
             _saveTimer = new Timer(5000);
             _saveTimer.Elapsed += ProfileSaveHandler;
@@ -75,17 +72,14 @@ namespace Artemis.ViewModels.Profiles
             LoadProfiles();
         }
 
-        [Inject]
-        public MetroDialogService DialogService { get; set; }
-
-        public WindowService WindowService { get; set; }
-
-        public string LastProfile { get; set; }
-
         public ProfileViewModel ProfileViewModel { get; set; }
 
         public bool EditorEnabled
-            => SelectedProfile != null && !SelectedProfile.IsDefault && _deviceManager.ActiveKeyboard != null;
+            =>
+                SelectedProfile != null && !SelectedProfile.IsDefault &&
+                _deviceManager.ActiveKeyboard != null;
+
+        public ProfileModel SelectedProfile => _moduleModel?.ProfileModel;
 
         public ObservableCollection<string> ProfileNames
         {
@@ -117,36 +111,9 @@ namespace Artemis.ViewModels.Profiles
                 if (value == SelectedProfile?.Name)
                     return;
 
-                SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel, value);
+                _moduleModel.ChangeProfile(ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _moduleModel, value));
                 NotifyOfPropertyChange(() => SelectedProfileName);
-            }
-        }
-
-        public ProfileModel SelectedProfile
-        {
-            get { return _selectedProfile; }
-            set
-            {
-                if (Equals(value, _selectedProfile))
-                    return;
-
-                if (IsActive)
-                {
-                    // Deactivate old profile
-                    _selectedProfile?.Deactivate(_luaManager);
-                    // Update the value
-                    _selectedProfile = value;
-                    // Activate new profile
-                    _selectedProfile?.Activate(_luaManager);
-                }
-                else
-                {
-                    // Update the value
-                    _selectedProfile = value;
-                }
-
                 NotifyOfPropertyChange(() => SelectedProfile);
-                NotifyOfPropertyChange(() => SelectedProfileName);
             }
         }
 
@@ -237,7 +204,7 @@ namespace Artemis.ViewModels.Profiles
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
         /// </summary>
-        private void DeviceManagerOnOnKeyboardChangedEvent(object sender, KeyboardChangedEventArgs e)
+        private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
@@ -245,7 +212,6 @@ namespace Artemis.ViewModels.Profiles
 
         public void Activate()
         {
-            _selectedProfile?.Activate(_luaManager);
             ProfileViewModel.Activate();
             _saveTimer.Start();
         }
@@ -265,22 +231,10 @@ namespace Artemis.ViewModels.Profiles
             Execute.OnUIThread(() =>
             {
                 ProfileNames.Clear();
-                if (_effectModel == null || _deviceManager.ActiveKeyboard == null)
-                    return;
+                if (_moduleModel != null && _deviceManager.ActiveKeyboard != null)
+                    ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _moduleModel));
 
-                ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _effectModel));
-
-                // If a profile name was provided, try to load it
-                ProfileModel lastProfileModel = null;
-                if (!string.IsNullOrEmpty(LastProfile))
-                    lastProfileModel = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
-                        LastProfile);
-
-                if (lastProfileModel != null)
-                    SelectedProfile = lastProfileModel;
-                else
-                    SelectedProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _effectModel,
-                        ProfileNames.FirstOrDefault());
+                NotifyOfPropertyChange(() => SelectedProfile);
             });
         }
 
@@ -313,10 +267,10 @@ namespace Artemis.ViewModels.Profiles
 
             IParameter[] args =
             {
-                new ConstructorArgument("dataModel", _effectModel.DataModel),
+                new ConstructorArgument("dataModel", _moduleModel.DataModel),
                 new ConstructorArgument("layer", layer)
             };
-            WindowService.ShowDialog<LayerEditorViewModel>(args);
+            _windowService.ShowDialog<LayerEditorViewModel>(args);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (!(layer.LayerType is FolderType) && layer.Children.Any())
@@ -410,7 +364,7 @@ namespace Artemis.ViewModels.Profiles
 
             var newName =
                 await
-                    DialogService.ShowInputDialog("Rename layer", "Please enter a name for the layer",
+                    _dialogService.ShowInputDialog("Rename layer", "Please enter a name for the layer",
                         new MetroDialogSettings {DefaultText = layer.Name});
             // Null when the user cancelled
             if (string.IsNullOrEmpty(newName))
@@ -498,12 +452,12 @@ namespace Artemis.ViewModels.Profiles
         {
             if (_deviceManager.ActiveKeyboard == null)
             {
-                DialogService.ShowMessageBox("Cannot add profile.",
+                _dialogService.ShowMessageBox("Cannot add profile.",
                     "To add a profile, please select a keyboard in the options menu first.");
                 return;
             }
 
-            var name = await DialogService.ShowInputDialog("Add new profile",
+            var name = await _dialogService.ShowInputDialog("Add new profile",
                 "Please provide a profile name unique to this game and keyboard.");
 
             // Null when the user cancelled
@@ -512,7 +466,7 @@ namespace Artemis.ViewModels.Profiles
 
             if (name.Length < 2)
             {
-                DialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
+                _dialogService.ShowMessageBox("Invalid profile name", "Please provide a valid profile name");
                 return;
             }
 
@@ -522,12 +476,12 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardSlug = _deviceManager.ActiveKeyboard.Slug,
                 Width = _deviceManager.ActiveKeyboard.Width,
                 Height = _deviceManager.ActiveKeyboard.Height,
-                GameName = _effectModel.Name
+                GameName = _moduleModel.Name
             };
 
             if (!ProfileProvider.IsProfileUnique(profile))
             {
-                var overwrite = await DialogService.ShowQuestionMessageBox("Overwrite existing profile",
+                var overwrite = await _dialogService.ShowQuestionMessageBox("Overwrite existing profile",
                     "A profile with this name already exists for this game. Would you like to overwrite it?");
                 if (!overwrite.Value)
                     return;
@@ -535,7 +489,6 @@ namespace Artemis.ViewModels.Profiles
 
             ProfileProvider.AddOrUpdate(profile);
 
-            LastProfile = profile.Name;
             LoadProfiles();
         }
 
@@ -545,7 +498,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             var oldName = SelectedProfile.Name;
-            var name = await DialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
+            var name = await _dialogService.ShowInputDialog("Rename profile", "Please enter a unique new profile name");
 
             // Null when the user cancelled
             if (string.IsNullOrEmpty(name) || name.Length < 2)
@@ -556,7 +509,7 @@ namespace Artemis.ViewModels.Profiles
             // Verify the name
             while (!ProfileProvider.IsProfileUnique(SelectedProfile))
             {
-                name = await DialogService
+                name = await _dialogService
                     .ShowInputDialog("Name already in use", "Please enter a unique new profile name");
 
                 // Null when the user cancelled
@@ -571,8 +524,6 @@ namespace Artemis.ViewModels.Profiles
             var profile = SelectedProfile;
             ProfileProvider.RenameProfile(profile, name);
 
-            SelectedProfile = null;
-            LastProfile = name;
             LoadProfiles();
         }
 
@@ -582,7 +533,7 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             var newProfile = GeneralHelpers.Clone(SelectedProfile);
-            newProfile.Name = await DialogService
+            newProfile.Name = await _dialogService
                 .ShowInputDialog("Duplicate profile", "Please enter a unique profile name");
 
             // Null when the user cancelled
@@ -592,7 +543,7 @@ namespace Artemis.ViewModels.Profiles
             // Verify the name
             while (!ProfileProvider.IsProfileUnique(newProfile))
             {
-                newProfile.Name = await DialogService
+                newProfile.Name = await _dialogService
                     .ShowInputDialog("Name already in use", "Please enter a unique profile name");
 
                 // Null when the user cancelled
@@ -602,7 +553,6 @@ namespace Artemis.ViewModels.Profiles
 
             newProfile.IsDefault = false;
             ProfileProvider.AddOrUpdate(newProfile);
-            LastProfile = newProfile.Name;
             LoadProfiles();
         }
 
@@ -612,13 +562,18 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             var confirm = await
-                DialogService.ShowQuestionMessageBox("Delete profile",
+                _dialogService.ShowQuestionMessageBox("Delete profile",
                     $"Are you sure you want to delete the profile named: {SelectedProfile.Name}?\n\n" +
                     "This cannot be undone.");
             if (!confirm.Value)
                 return;
 
-            ProfileProvider.DeleteProfile(SelectedProfile);
+            var defaultProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _moduleModel, "Default");
+            var deleteProfile = SelectedProfile;
+
+            _moduleModel.ChangeProfile(defaultProfile);
+            ProfileProvider.DeleteProfile(deleteProfile);
+
             LoadProfiles();
         }
 
@@ -626,7 +581,7 @@ namespace Artemis.ViewModels.Profiles
         {
             if (_deviceManager.ActiveKeyboard == null)
             {
-                DialogService.ShowMessageBox("Cannot import profile.",
+                _dialogService.ShowMessageBox("Cannot import profile.",
                     "To import a profile, please select a keyboard in the options menu first.");
                 return;
             }
@@ -638,16 +593,16 @@ namespace Artemis.ViewModels.Profiles
             var profile = ProfileProvider.LoadProfileIfValid(dialog.FileName);
             if (profile == null)
             {
-                DialogService.ShowErrorMessageBox("Oh noes, the profile you provided is invalid. " +
-                                                  "If this keeps happening, please make an issue on GitHub and provide the profile.");
+                _dialogService.ShowErrorMessageBox("Oh noes, the profile you provided is invalid. " +
+                                                   "If this keeps happening, please make an issue on GitHub and provide the profile.");
                 return;
             }
 
             // Verify the game
-            if (profile.GameName != _effectModel.Name)
+            if (profile.GameName != _moduleModel.Name)
             {
-                DialogService.ShowErrorMessageBox(
-                    $"Oh oops! This profile is ment for {profile.GameName}, not {_effectModel.Name} :c");
+                _dialogService.ShowErrorMessageBox(
+                    $"Oh oops! This profile is ment for {profile.GameName}, not {_moduleModel.Name} :c");
                 return;
             }
 
@@ -655,7 +610,8 @@ namespace Artemis.ViewModels.Profiles
             var deviceManager = _deviceManager;
             if (profile.KeyboardSlug != deviceManager.ActiveKeyboard.Slug)
             {
-                var adjustKeyboard = await DialogService.ShowQuestionMessageBox("Profile not inteded for this keyboard",
+                var adjustKeyboard = await _dialogService.ShowQuestionMessageBox(
+                    "Profile not inteded for this keyboard",
                     $"Watch out, this profile wasn't ment for this keyboard, but for the {profile.KeyboardSlug}. " +
                     "You can still import it but you'll probably have to do some adjusting\n\n" +
                     "Continue?");
@@ -678,7 +634,7 @@ namespace Artemis.ViewModels.Profiles
             // Verify the name
             while (!ProfileProvider.IsProfileUnique(profile))
             {
-                profile.Name = await DialogService.ShowInputDialog("Rename imported profile",
+                profile.Name = await _dialogService.ShowInputDialog("Rename imported profile",
                     "A profile with this name already exists for this game. Please enter a new name");
 
                 // Null when the user cancelled
@@ -687,7 +643,6 @@ namespace Artemis.ViewModels.Profiles
             }
 
             ProfileProvider.AddOrUpdate(profile);
-            LastProfile = profile.Name;
             LoadProfiles();
         }
 
@@ -714,7 +669,7 @@ namespace Artemis.ViewModels.Profiles
             }
             catch (Exception e)
             {
-                DialogService.ShowMessageBox("Couldn't open LUA file",
+                _dialogService.ShowMessageBox("Couldn't open LUA file",
                     "Please make sure you have a text editor associated with the .lua extension.\n\n" +
                     "Windows error message: \n" + e.Message);
             }
@@ -727,8 +682,6 @@ namespace Artemis.ViewModels.Profiles
 
             // Update editor enabled state
             NotifyOfPropertyChange(() => EditorEnabled);
-            // Update ProfileViewModel
-            ProfileViewModel.SelectedProfile = SelectedProfile;
             // Update interface
             Layers.Clear();
 
@@ -781,7 +734,7 @@ namespace Artemis.ViewModels.Profiles
             file.Dispose();
 
             // Add instructions to LUA script if it's a new file
-            if (SelectedProfile.LuaScript.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(SelectedProfile.LuaScript))
                 SelectedProfile.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
             File.WriteAllText(Path.GetTempPath() + fileName, SelectedProfile.LuaScript);
 

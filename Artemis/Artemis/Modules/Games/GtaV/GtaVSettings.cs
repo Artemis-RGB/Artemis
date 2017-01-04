@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.GtaV
 {
-    public class GtaVSettings : GameSettings
+    public class GtaVSettings : ModuleSettings
     {
     }
 }

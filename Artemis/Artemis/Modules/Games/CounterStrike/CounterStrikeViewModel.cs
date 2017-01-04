@@ -1,22 +1,24 @@
 ﻿using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
-    public sealed class CounterStrikeViewModel : GameViewModel
+    public sealed class CounterStrikeViewModel : ModuleViewModel
     {
-        public CounterStrikeViewModel(MainManager main, IKernel kernel, [Named("CounterStrikeModel")] GameModel model)
-            : base(main, model, kernel)
+        public CounterStrikeViewModel(MainManager mainManager,
+            [Named(nameof(CounterStrikeModel))] ModuleModel moduleModel, IKernel kernel)
+            : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "CS:GO";
         }
 
+        public override bool UsesProfileEditor => true;
+
         public void BrowseDirectory()
         {
-            ((CounterStrikeModel) GameModel).PlaceConfigFile();
-            NotifyOfPropertyChange(() => GameSettings);
+            ((CounterStrikeModel) ModuleModel).PlaceConfigFile();
+            NotifyOfPropertyChange(() => Settings);
         }
     }
 }

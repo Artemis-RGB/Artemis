@@ -244,32 +244,6 @@
       <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:complexType name="AspResponse">
-    <xs:complexContent>
-      <xs:extension base="Target">
-        <xs:choice minOccurs="0" maxOccurs="unbounded">
-          <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
-          <xs:element name="layout" minOccurs="0" maxOccurs="1" type="Layout" />
-          <xs:element name="addComments" minOccurs="0" maxOccurs="1" type="xs:boolean" />
-        </xs:choice>
-        <xs:attribute name="name" type="xs:string">
-          <xs:annotation>
-            <xs:documentation>Name of the target.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="layout" type="SimpleLayoutAttribute">
-          <xs:annotation>
-            <xs:documentation>Layout used to format log messages.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="addComments" type="xs:boolean">
-          <xs:annotation>
-            <xs:documentation>Indicates whether to add &lt;!-- --&gt; comments around all written texts.</xs:documentation>
-          </xs:annotation>
-        </xs:attribute>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
   <xs:complexType name="AsyncWrapper">
     <xs:complexContent>
       <xs:extension base="WrapperTargetBase">
@@ -320,10 +294,16 @@
       <xs:extension base="WrapperTargetBase">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="condition" minOccurs="0" maxOccurs="1" type="Condition" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
           <xs:annotation>
             <xs:documentation>Name of the target.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="condition" type="Condition">
+          <xs:annotation>
+            <xs:documentation>Condition expression. Log events who meet this condition will cause a flush on the wrapped target.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
       </xs:extension>
@@ -1039,10 +1019,11 @@
           <xs:element name="archiveAboveSize" minOccurs="0" maxOccurs="1" type="xs:long" />
           <xs:element name="enableArchiveFileCompression" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="maxArchiveFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
-          <xs:element name="fileNameKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
+          <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="archiveFileKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
           <xs:element name="cleanupFileName" minOccurs="0" maxOccurs="1" type="xs:boolean" />
-          <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="fileNameKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
+          <xs:element name="forceMutexConcurrentWrites" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="writeFooterOnArchivingOnly" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="fileName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="archiveDateFormat" minOccurs="0" maxOccurs="1" type="xs:string" />
@@ -1123,9 +1104,9 @@
             <xs:documentation>Maximum number of archive files that should be kept.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="fileNameKind" type="NLog.Targets.FilePathKind">
+        <xs:attribute name="forceManaged" type="xs:boolean">
           <xs:annotation>
-            <xs:documentation>Is the  an absolute or relative path?</xs:documentation>
+            <xs:documentation>Gets or set a value indicating whether a managed file stream is forced, instead of using the native implementation.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="archiveFileKind" type="NLog.Targets.FilePathKind">
@@ -1138,9 +1119,14 @@
             <xs:documentation>Cleanup invalid values in a filename, e.g. slashes in a filename. If set to true, this can impact the performance of massive writes. If set to false, nothing gets written when the filename is wrong.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="forceManaged" type="xs:boolean">
+        <xs:attribute name="fileNameKind" type="NLog.Targets.FilePathKind">
           <xs:annotation>
-            <xs:documentation>Gets or set a value indicating whether a managed file stream is forced, instead of used the native implementation.</xs:documentation>
+            <xs:documentation>Is the  an absolute or relative path?</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="forceMutexConcurrentWrites" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Value indicationg whether file creation calls should be synchronized by a system global mutex.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="writeFooterOnArchivingOnly" type="xs:boolean">
@@ -1385,6 +1371,32 @@
       <xs:enumeration value="NewCredentials" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:complexType name="LimitingWrapper">
+    <xs:complexContent>
+      <xs:extension base="WrapperTargetBase">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="interval" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="messageLimit" minOccurs="0" maxOccurs="1" type="xs:integer" />
+        </xs:choice>
+        <xs:attribute name="name" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the target.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="interval" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Interval in which messages will be written up to the  number of messages.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="messageLimit" type="xs:integer">
+          <xs:annotation>
+            <xs:documentation>Maximum allowed number of messages written per .</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
   <xs:complexType name="LogReceiverService">
     <xs:complexContent>
       <xs:extension base="Target">
@@ -2241,10 +2253,14 @@
           <xs:element name="includeBOM" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="NLog.Targets.MethodCallParameter" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="escapeDataNLogLegacy" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="escapeDataRfc3986" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="methodName" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="namespace" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="protocol" minOccurs="0" maxOccurs="1" type="NLog.Targets.WebServiceProtocol" />
           <xs:element name="url" minOccurs="0" maxOccurs="1" type="xs:anyURI" />
+          <xs:element name="xmlRoot" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="xmlRootNamespace" minOccurs="0" maxOccurs="1" type="xs:string" />
         </xs:choice>
         <xs:attribute name="name" type="xs:string">
           <xs:annotation>
@@ -2259,6 +2275,16 @@
         <xs:attribute name="encoding" type="xs:string">
           <xs:annotation>
             <xs:documentation>Encoding.</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="escapeDataNLogLegacy" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Value whether escaping be done according to the old NLog style (Very non-standard)</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="escapeDataRfc3986" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Value whether escaping be done according to Rfc3986 (Supports Internationalized Resource Identifiers - IRIs)</xs:documentation>
           </xs:annotation>
         </xs:attribute>
         <xs:attribute name="methodName" type="xs:string">
@@ -2281,6 +2307,16 @@
             <xs:documentation>Web service URL.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="xmlRoot" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Name of the root XML element, if POST of XML document chosen. If so, this property must not be null. (see  and ).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="xmlRootNamespace" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>(optional) root namespace of the XML document, if POST of XML document chosen. (see  and ).</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -2290,6 +2326,8 @@
       <xs:enumeration value="Soap12" />
       <xs:enumeration value="HttpPost" />
       <xs:enumeration value="HttpGet" />
+      <xs:enumeration value="JsonPost" />
+      <xs:enumeration value="XmlPost" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="CompoundLayout">
@@ -2400,9 +2438,21 @@
       <xs:extension base="Layout">
         <xs:choice minOccurs="0" maxOccurs="unbounded">
           <xs:element name="attribute" minOccurs="0" maxOccurs="unbounded" type="NLog.Layouts.JsonAttribute" />
+          <xs:element name="excludeProperties" minOccurs="0" maxOccurs="1" type="xs:string" />
+          <xs:element name="includeAllProperties" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="renderEmptyObject" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="suppressSpaces" minOccurs="0" maxOccurs="1" type="xs:boolean" />
         </xs:choice>
+        <xs:attribute name="excludeProperties" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>List of property names to exclude when  is true</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="includeAllProperties" type="xs:boolean">
+          <xs:annotation>
+            <xs:documentation>Option to include all properties from the log events</xs:documentation>
+          </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="renderEmptyObject" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Option to render the empty object value {}</xs:documentation>

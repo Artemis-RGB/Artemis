@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Utilities;
@@ -12,43 +10,40 @@ using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.Dota2
 {
-    public class Dota2Model : GameModel
+    public class Dota2Model : ModuleModel
     {
         private readonly MetroDialogService _dialogService;
         private readonly GameStateWebServer _gameStateWebServer;
 
-        public Dota2Model(DeviceManager deviceManager, LuaManager luaManager, GameStateWebServer gameStateWebServer,
-            MetroDialogService dialogService)
-            : base(deviceManager, luaManager, SettingsProvider.Load<Dota2Settings>(), new Dota2DataModel())
+
+        public Dota2Model(DeviceManager deviceManager, LuaManager luaManager, MetroDialogService dialogService,
+            GameStateWebServer gameStateWebServer) : base(deviceManager, luaManager)
         {
             _gameStateWebServer = gameStateWebServer;
             _dialogService = dialogService;
 
-            Name = "Dota2";
+            Settings = SettingsProvider.Load<Dota2Settings>();
+            DataModel = new Dota2DataModel();
             ProcessName = "dota2";
-            Enabled = Settings.Enabled;
-            Initialized = false;
-            Scale = 4;
 
             FindGameDir();
             PlaceConfigFile();
         }
 
-        public int Scale { get; set; }
+        public override string Name => "Dota2";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
-            _gameStateWebServer.GameDataReceived -= HandleGameData;
             base.Dispose();
+            _gameStateWebServer.GameDataReceived -= HandleGameData;
         }
 
         public override void Enable()
         {
-            base.Enable();
-
             _gameStateWebServer.GameDataReceived += HandleGameData;
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Update()
@@ -83,16 +78,14 @@ namespace Artemis.Modules.Games.Dota2
                     _gameStateWebServer.Port.ToString());
                 try
                 {
-                    File.WriteAllText(
-                        gameSettings.GameDirectory +
-                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg", cfgFile);
+                    File.WriteAllText(gameSettings.GameDirectory +
+                                      "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg", cfgFile);
                 }
                 catch (DirectoryNotFoundException)
                 {
                     Directory.CreateDirectory(gameSettings.GameDirectory + "/game/dota/cfg/gamestate_integration/");
-                    File.WriteAllText(
-                        gameSettings.GameDirectory +
-                        "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
+                    File.WriteAllText(gameSettings.GameDirectory +
+                                      "/game/dota/cfg/gamestate_integration/gamestate_integration_artemis.cfg",
                         cfgFile);
                 }
 
@@ -125,11 +118,6 @@ namespace Artemis.Modules.Games.Dota2
 
             // Parse the JSON
             DataModel = JsonConvert.DeserializeObject<Dota2DataModel>(jsonString);
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

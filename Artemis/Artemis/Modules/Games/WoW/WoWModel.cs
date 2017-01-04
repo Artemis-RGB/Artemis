@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.WoW.Data;
-using Artemis.Profiles.Layers.Models;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
 using Process.NET;
@@ -13,24 +11,22 @@ using Process.NET.Memory;
 
 namespace Artemis.Modules.Games.WoW
 {
-    public class WoWModel : GameModel
+    public class WoWModel : ModuleModel
     {
         private readonly GamePointersCollection _pointer;
         private ProcessSharp _process;
 
-        public WoWModel(DeviceManager deviceManager, LuaManager luaManager)
-            : base(deviceManager, luaManager, SettingsProvider.Load<WoWSettings>(), new WoWDataModel())
+
+        public WoWModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
         {
-            Name = "WoW";
+            Settings = SettingsProvider.Load<WoWSettings>();
+            DataModel = new WoWDataModel();
             ProcessName = "Wow-64";
-            Scale = 4;
 
             // Currently WoW is locked behind a hidden trigger (obviously not that hidden since you're reading this)
             // It is using memory reading and lets first try to contact Blizzard
             var settings = SettingsProvider.Load<GeneralSettings>();
-            Enabled = (settings.GamestatePort == 62575) && Settings.Enabled;
-
-            Initialized = false;
+            Settings.IsEnabled = settings.GamestatePort == 62575 && Settings.IsEnabled;
 
             _pointer = SettingsProvider.Load<OffsetSettings>().WorldOfWarcraft;
             //_pointer = new GamePointersCollection
@@ -64,33 +60,32 @@ namespace Artemis.Modules.Games.WoW
             //var res = JsonConvert.SerializeObject(_pointer, Formatting.Indented);
         }
 
-        public int Scale { get; set; }
+        public override string Name => "WoW";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
+            base.Dispose();
 
             _process?.Dispose();
             _process = null;
-            base.Dispose();
         }
 
         public override void Enable()
         {
-            base.Enable();
-
             var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
             if (tempProcess == null)
                 return;
 
             _process = new ProcessSharp(tempProcess, MemoryType.Remote);
 
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Update()
         {
-            if ((Profile == null) || (DataModel == null) || (_process == null))
+            if (ProfileModel == null || DataModel == null || _process == null)
                 return;
 
             var dataModel = (WoWDataModel) DataModel;
@@ -104,7 +99,7 @@ namespace Artemis.Modules.Games.WoW
                 _pointer.GameAddresses.First(a => a.Description == "TargetGuid").BasePointer, true);
 
             dataModel.Player = player;
-            if ((dataModel.Player != null) && (dataModel.Player.Guid != Guid.Empty))
+            if (dataModel.Player != null && dataModel.Player.Guid != Guid.Empty)
             {
                 dataModel.Player.UpdateDetails(nameCache);
                 var target = player.GetTarget(objectManager);
@@ -118,11 +113,6 @@ namespace Artemis.Modules.Games.WoW
             {
                 dataModel.Target = null;
             }
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

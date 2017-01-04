@@ -2,32 +2,31 @@
 using System.Linq;
 using System.Timers;
 using Artemis.DAL;
-using Artemis.Models;
-using Artemis.Modules.Effects.ProfilePreview;
+using Artemis.Modules.Abstract;
 using Artemis.Settings;
-using Artemis.ViewModels.Abstract;
+using Ninject;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
 {
     public class ProfileManager
     {
-        private readonly DeviceManager _deviceManager;
-        private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
+        private readonly ModuleManager _moduleManager;
+        private readonly DeviceManager _deviceManager;
         private readonly LoopManager _loopManager;
-        private GeneralSettings _generalSettings;
+        private readonly GeneralSettings _generalSettings;
 
-        public ProfileManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
+        public ProfileManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
             LoopManager loopManager)
         {
             _logger = logger;
-            _effectManager = effectManager;
+            _moduleManager = moduleManager;
             _deviceManager = deviceManager;
             _loopManager = loopManager;
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
 
-            GameViewModels = new List<GameViewModel>();
+            PreviewViewModules = new List<ModuleViewModel>();
 
             var profilePreviewTimer = new Timer(500);
             profilePreviewTimer.Elapsed += SetupProfilePreview;
@@ -36,9 +35,7 @@ namespace Artemis.Managers
             _logger.Info("Intialized ProfileManager");
         }
 
-        public ProfilePreviewModel ProfilePreviewModel { get; set; }
-
-        public List<GameViewModel> GameViewModels { get; set; }
+        public List<ModuleViewModel> PreviewViewModules { get; set; }
 
         /// <summary>
         ///     Keeps track of profiles being previewed and sets up the active efffect accordingly
@@ -47,44 +44,39 @@ namespace Artemis.Managers
         /// <param name="e"></param>
         private void SetupProfilePreview(object sender, ElapsedEventArgs e)
         {
-            if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard ||
-                ProfilePreviewModel == null)
-                return;
-
-            lock (GameViewModels)
-            {
-                var activePreview = GameViewModels.FirstOrDefault(vm => vm.IsActive);
-
-                if (activePreview == null)
-                {
-                    // Should not be active if no selected profile is set
-                    if (_effectManager.ActiveEffect != ProfilePreviewModel)
-                        return;
-
-                    _logger.Debug("Loading last effect after profile preview");
-                    var lastEffect = _effectManager.GetLastEffect();
-                    if (lastEffect != null)
-                        _effectManager.ChangeEffect(lastEffect);
-                    else
-                        _effectManager.ClearEffect();
-                }
-                else
-                {
-                    if (_effectManager.ActiveEffect != ProfilePreviewModel &&
-                        !(_effectManager.ActiveEffect is GameModel))
-                    {
-                        _logger.Debug("Activate profile preview");
-                        _effectManager.ChangeEffect(ProfilePreviewModel);
-                    }
-
-                    // LoopManager might be running, this method won't do any harm in that case.
-                    _loopManager.StartAsync();
-
-                    ProfilePreviewModel.ProfileViewModel = activePreview.ProfileEditor.ProfileViewModel;
-                    if (!ReferenceEquals(ProfilePreviewModel.Profile, activePreview.ProfileEditor.SelectedProfile))
-                        ProfilePreviewModel.Profile = activePreview.ProfileEditor.SelectedProfile;
-                }
-            }
+//            if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard)
+//                return;
+//
+//            var activePreview = PreviewViewModules.FirstOrDefault(vm => vm.IsActive);
+//            if (activePreview == null)
+//            {
+//                // Should not be active if no selected profile is set
+//                if (_moduleManager.ActiveModule != _profilePreviewModel)
+//                    return;
+//
+//                _logger.Debug("Loading last module after profile preview");
+//                var lastModule = _moduleManager.GetLastModule();
+//                if (lastModule != null)
+//                    _moduleManager.ChangeActiveModule(lastModule);
+//                else
+//                    _moduleManager.ClearActiveModule();
+//            }
+//            else
+//            {
+//                if (_moduleManager.ActiveModule != null && _moduleManager.ActiveModule != _profilePreviewModel &&
+//                    _moduleManager.ActiveModule != activePreview.ModuleModel)
+//                {
+//                    _logger.Debug("Activate profile preview");
+//                    _moduleManager.ChangeActiveModule(_profilePreviewModel);
+//                }
+//
+//                // LoopManager might be running, this method won't do any harm in that case.
+//                _loopManager.StartAsync();
+//
+//                // Can safely spam this, it won't do anything if they are equal
+//                _profilePreviewModel.ProfileViewModel = activePreview.ProfileEditor.ProfileViewModel;
+//                _profilePreviewModel.ChangeProfile(activePreview.ModuleModel.ProfileModel);
+//            }
         }
     }
 }

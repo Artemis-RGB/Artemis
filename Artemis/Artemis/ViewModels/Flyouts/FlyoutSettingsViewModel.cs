@@ -40,8 +40,8 @@ namespace Artemis.ViewModels.Flyouts
             LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
 
             PropertyChanged += KeyboardUpdater;
-            mainManager.OnEnabledChangedEvent += MainManagerOnOnEnabledChangedEvent;
-            mainManager.EffectManager.OnEffectChangedEvent += EffectManagerOnOnEffectChangedEvent;
+            mainManager.EnabledChanged += MainManagerEnabledChanged;
+            mainManager.ModuleManager.EffectChanged += EffectManagerEffectChanged;
         }
 
         public MainManager MainManager { get; set; }
@@ -162,14 +162,14 @@ namespace Artemis.ViewModels.Flyouts
             }
         }
 
-        private void MainManagerOnOnEnabledChangedEvent(object sender, EnabledChangedEventArgs enabledChangedEventArgs)
+        private void MainManagerEnabledChanged(object sender, EnabledChangedEventArgs enabledChangedEventArgs)
         {
             NotifyOfPropertyChange(() => Enabled);
         }
 
-        private void EffectManagerOnOnEffectChangedEvent(object sender, EffectChangedEventArgs e)
+        private void EffectManagerEffectChanged(object sender, ModuleChangedEventArgs e)
         {
-            var effectDisplay = string.IsNullOrEmpty(e.Effect?.Name) ? "none" : e.Effect.Name;
+            var effectDisplay = string.IsNullOrEmpty(e.Module?.Name) ? "none" : e.Module.Name;
             ActiveEffectName = $"Active effect: {effectDisplay}";
         }
 

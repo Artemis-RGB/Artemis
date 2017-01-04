@@ -1,11 +1,11 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.EurotruckSimulator2.Data;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2
 {
     [MoonSharpUserData]
-    public class EurotruckSimulator2DataModel : IDataModel
+    public class EurotruckSimulator2DataModel : ModuleDataModel
     {
         public EurotruckSimulator2DataModel()
         {

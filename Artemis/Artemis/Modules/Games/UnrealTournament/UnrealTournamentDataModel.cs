@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.UnrealTournament
 {
     [MoonSharpUserData]
-    public class UnrealTournamentDataModel : IDataModel
+    public class UnrealTournamentDataModel : ModuleDataModel
     {
         public State State { get; set; }
         public Environment Environment { get; set; }

@@ -1,16 +1,17 @@
-﻿using Ninject;
-using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+﻿using Artemis.Managers;
+using Artemis.Modules.Abstract;
+using Ninject;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public sealed class TheDivisionViewModel : GameViewModel
+    public sealed class TheDivisionViewModel : ModuleViewModel
     {
-        public TheDivisionViewModel(MainManager main, IKernel kernel, [Named("TheDivisionModel")] GameModel model)
-            : base(main, model, kernel)
+        public TheDivisionViewModel(MainManager mainManager, [Named(nameof(TheDivisionModel))] ModuleModel moduleModel,
+            IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "The Division";
         }
+
+        public override bool UsesProfileEditor => true;
     }
 }

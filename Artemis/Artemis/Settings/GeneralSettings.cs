@@ -20,9 +20,9 @@ namespace Artemis.Settings
             ApplyAutorun();
         }
 
-        [DefaultValue("WindowsProfile")]
+        [DefaultValue("GeneralProfile")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public string LastEffect { get; set; }
+        public string LastModule { get; set; }
 
         [DefaultValue(null)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]

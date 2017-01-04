@@ -1,51 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
-using Artemis.Profiles.Layers.Models;
+using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.Witcher3
 {
-    public class Witcher3Model : GameModel
+    public class Witcher3Model : ModuleModel
     {
         private readonly Regex _configRegex;
         private readonly Stopwatch _updateSw;
         private string _witcherSettings;
 
-        public Witcher3Model(DeviceManager deviceManager, LuaManager luaManager)
-            : base(deviceManager, luaManager, SettingsProvider.Load<Witcher3Settings>(), new Witcher3DataModel())
+        public Witcher3Model(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
         {
-            Name = "Witcher3";
-            ProcessName = "witcher3";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
-
             _updateSw = new Stopwatch();
             _configRegex = new Regex("\\[Artemis\\](.+?)\\[", RegexOptions.Singleline);
+
+            Settings = SettingsProvider.Load<Witcher3Settings>();
+            DataModel = new Witcher3DataModel();
+            ProcessName = "witcher3";
         }
 
-        public int Scale { get; set; }
+        public override string Name => "Witcher3";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Dispose()
         {
-            Initialized = false;
-            _witcherSettings = null;
-
-            _updateSw.Reset();
             base.Dispose();
+
+            _witcherSettings = null;
+            _updateSw.Reset();
         }
 
         public override void Enable()
         {
-            base.Enable();
-
-            Initialized = false;
             // Ensure the config file is found
             var witcherSettings = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
                                   @"\The Witcher 3\user.settings";
@@ -54,7 +47,7 @@ namespace Artemis.Modules.Games.Witcher3
 
             _updateSw.Start();
 
-            Initialized = true;
+            base.Enable();
         }
 
         public override void Update()
@@ -138,11 +131,6 @@ namespace Artemis.Modules.Games.Witcher3
                 var vitalityInt = int.Parse(vitality.Split('=')[1].Split('.')[0]);
                 gameDataModel.Vitality = vitalityInt;
             }
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

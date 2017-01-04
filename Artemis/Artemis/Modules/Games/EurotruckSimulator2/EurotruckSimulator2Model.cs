@@ -1,52 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Artemis.DAL;
 using Artemis.Managers;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.EurotruckSimulator2.Data;
-using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Services;
-using Artemis.Settings;
 using Artemis.Utilities;
-using Ninject.Extensions.Logging;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2
 {
-    public class EurotruckSimulator2Model : GameModel
+    public class EurotruckSimulator2Model : ModuleModel
     {
         private readonly MetroDialogService _dialogService;
 
+
         public EurotruckSimulator2Model(DeviceManager deviceManager, LuaManager luaManager,
-            MetroDialogService dialogService)
-            : base(deviceManager, luaManager, SettingsProvider.Load<EurotruckSimulator2Settings>(),
-                new EurotruckSimulator2DataModel())
+            MetroDialogService dialogService) : base(deviceManager, luaManager)
         {
             _dialogService = dialogService;
-            Name = "EurotruckSimulator2";
+
+            Settings = SettingsProvider.Load<EurotruckSimulator2Settings>();
+            DataModel = new EurotruckSimulator2DataModel();
             ProcessName = "eurotrucks2";
-            Scale = 4;
-            Enabled = Settings.Enabled;
-            Initialized = false;
 
             FindGameDir();
         }
 
-        public int Scale { get; set; }
-
-        public override void Dispose()
-        {
-            Initialized = false;
-            base.Dispose();
-        }
-
-        public override void Enable()
-        {
-            base.Enable();
-
-            Initialized = true;
-        }
+        public override string Name => "EurotruckSimulator2";
+        public override bool IsOverlay => false;
+        public override bool IsBoundToProcess => true;
 
         public override void Update()
         {
@@ -62,7 +45,6 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public void FindGameDir()
         {
-            var gameSettings = (EurotruckSimulator2Settings) Settings;
             // Demo is also supported but resides in a different directory, the full game can also be 64-bits
             var dir = GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x64\eurotrucks2.exe") ??
                       GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x86\eurotrucks2.exe") ??
@@ -71,8 +53,8 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             if (string.IsNullOrEmpty(dir))
                 return;
 
-            gameSettings.GameDirectory = dir;
-            gameSettings.Save();
+            ((EurotruckSimulator2Settings) Settings).GameDirectory = dir;
+            Settings.Save();
 
             if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))
                 PlacePlugin();
@@ -80,11 +62,10 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public void PlacePlugin()
         {
-            var gameSettings = (EurotruckSimulator2Settings) Settings;
-            if (gameSettings.GameDirectory == string.Empty)
+            if (((EurotruckSimulator2Settings) Settings).GameDirectory == string.Empty)
                 return;
 
-            var path = gameSettings.GameDirectory;
+            var path = ((EurotruckSimulator2Settings) Settings).GameDirectory;
 
             // Ensure the selected directory exists
             if (!Directory.Exists(path))
@@ -118,11 +99,6 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
                 Logger?.Error(e, "Failed to install ETS2 plugin in {0}", path);
                 throw;
             }
-        }
-
-        public override List<LayerModel> GetRenderLayers(bool keyboardOnly)
-        {
-            return Profile.GetRenderLayers(DataModel, keyboardOnly);
         }
     }
 }

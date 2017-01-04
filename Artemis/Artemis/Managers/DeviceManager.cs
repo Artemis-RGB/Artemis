@@ -51,7 +51,7 @@ namespace Artemis.Managers
         public bool ChangingKeyboard { get; private set; }
         
 
-        public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChangedEvent;
+        public event EventHandler<KeyboardChangedEventArgs> OnKeyboardChanged;
 
         /// <summary>
         ///     Enables the last keyboard according to the settings file
@@ -178,7 +178,7 @@ namespace Artemis.Managers
         {
             // I do this in all to avoid a possible race condition
             // https://msdn.microsoft.com/en-us/library/w369ty8x.aspx
-            var handler = OnKeyboardChangedEvent;
+            var handler = OnKeyboardChanged;
             handler?.Invoke(this, e);
         }
     }

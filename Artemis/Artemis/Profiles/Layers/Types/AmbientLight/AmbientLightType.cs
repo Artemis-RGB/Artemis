@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -52,7 +52,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
             layerModel.Properties = new AmbientLightPropertiesModel(layerModel.Properties);
         }
 
-        public void Update(LayerModel layerModel, IDataModel dataModel, bool isPreview = false)
+        public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             var properties = layerModel?.Properties as AmbientLightPropertiesModel;
             if (properties == null) return;

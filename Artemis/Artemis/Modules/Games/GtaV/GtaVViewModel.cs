@@ -1,16 +1,17 @@
 ﻿using Artemis.Managers;
-using Artemis.Models;
-using Artemis.ViewModels.Abstract;
+using Artemis.Modules.Abstract;
 using Ninject;
 
 namespace Artemis.Modules.Games.GtaV
 {
-    public sealed class GtaVViewModel : GameViewModel
+    public sealed class GtaVViewModel : ModuleViewModel
     {
-        public GtaVViewModel(MainManager mainManager, [Named("GtaVModel")] GameModel model, IKernel kernel)
-            : base(mainManager, model, kernel)
+        public GtaVViewModel(MainManager mainManager, [Named(nameof(GtaVModel))] ModuleModel moduleModel, IKernel kernel)
+            : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "GTA V";
         }
+
+        public override bool UsesProfileEditor => true;
     }
 }

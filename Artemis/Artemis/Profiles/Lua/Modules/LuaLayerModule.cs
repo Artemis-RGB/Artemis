@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Managers;
-using Artemis.Modules.Effects.ProfilePreview;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Lua.Modules.Brushes;
 using Artemis.Profiles.Lua.Wrappers;
@@ -21,7 +20,7 @@ namespace Artemis.Profiles.Lua.Modules
             SavedProperties = new Wrappers.LuaLayerProperties(_layerModel);
 
             // Trigger an update to fill up the Properties
-            _layerModel.Update(new ProfilePreviewDataModel(), true, false);
+            _layerModel.Update(null, true, false);
         }
 
         public override string ModuleName => "Layer";

@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Models.Interfaces;
+using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using DynamicExpresso;
 
@@ -19,7 +19,7 @@ namespace Artemis.Profiles.Layers.Models
         public string Operator { get; set; }
         public string Type { get; set; }
 
-        public bool ConditionMet(IDataModel subject)
+        public bool ConditionMet(ModuleDataModel subject)
         {
             lock (subject)
             {

@@ -1,8 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.TheDivision
 {
-    public class TheDivisionSettings : GameSettings
+    public class TheDivisionSettings : ModuleSettings
     {
     }
 }

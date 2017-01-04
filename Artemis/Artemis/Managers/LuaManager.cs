@@ -35,7 +35,7 @@ namespace Artemis.Managers
 
         public void SetupLua(ProfileModel profileModel)
         {
-            _logger.Debug("Setting up LUA for {0}-{1}.", profileModel?.Name, profileModel?.GameName);
+            _logger.Debug("Setting up LUA for profile '{0}', module '{1}'", profileModel?.Name, profileModel?.GameName);
             // Clear old state
             ClearLua();
 

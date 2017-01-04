@@ -6,7 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Artemis.DeviceProviders;
-using Artemis.Models;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
@@ -34,18 +34,18 @@ namespace Artemis.DAL
             InstallDefaults();
         }
 
-        public static List<string> GetProfileNames(KeyboardProvider keyboard, EffectModel effect)
+        public static List<string> GetProfileNames(KeyboardProvider keyboard, ModuleModel module)
         {
-            if (keyboard == null || effect == null)
+            if (keyboard == null || module == null)
                 return null;
-            return ReadProfiles(keyboard.Slug + "/" + effect.Name).Select(p => p.Name).ToList();
+            return ReadProfiles(keyboard.Slug + "/" + module.Name).Select(p => p.Name).ToList();
         }
 
-        public static ProfileModel GetProfile(KeyboardProvider keyboard, EffectModel effect, string name)
+        public static ProfileModel GetProfile(KeyboardProvider keyboard, ModuleModel module, string name)
         {
-            if (keyboard == null || effect == null)
+            if (keyboard == null || module == null)
                 return null;
-            return ReadProfiles(keyboard.Slug + "/" + effect.Name).FirstOrDefault(p => p.Name == name);
+            return ReadProfiles(keyboard.Slug + "/" + module.Name).FirstOrDefault(p => p.Name == name);
         }
 
         public static bool IsProfileUnique(ProfileModel profileModel)
@@ -238,7 +238,7 @@ namespace Artemis.DAL
                 archive.ExtractToDirectory(ProfileFolder, true);
 
 
-                InsertGif("WindowsProfile", "Demo (duplicate to keep changes)", "GIF", Resources.demo_gif, "demo-gif");
+                InsertGif("GeneralProfile", "Demo (duplicate to keep changes)", "GIF", Resources.demo_gif, "demo-gif");
             }
             catch (IOException e)
             {

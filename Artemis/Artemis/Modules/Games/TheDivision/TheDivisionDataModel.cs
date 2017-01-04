@@ -1,10 +1,10 @@
-﻿using Artemis.Models.Interfaces;
+﻿using Artemis.Modules.Abstract;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.TheDivision
 {
     [MoonSharpUserData]
-    public class TheDivisionDataModel : IDataModel
+    public class TheDivisionDataModel : ModuleDataModel
     {
         public PlayerState PartyMember1 { get; set; }
         public PlayerState PartyMember2 { get; set; }

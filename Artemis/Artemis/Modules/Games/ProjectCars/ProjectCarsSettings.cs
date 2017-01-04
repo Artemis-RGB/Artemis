@@ -1,9 +1,8 @@
-﻿using Artemis.Settings;
+﻿using Artemis.Modules.Abstract;
 
 namespace Artemis.Modules.Games.ProjectCars
 {
-    public class ProjectCarsSettings : GameSettings
+    public class ProjectCarsSettings : ModuleSettings
     {
-        public string GameDirectory { get; set; }
     }
 }

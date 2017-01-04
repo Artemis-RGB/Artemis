@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Media;
 using Artemis.DeviceProviders;
 using Artemis.ViewModels;
-using Caliburn.Micro;
 using Ninject.Extensions.Logging;
+using Color = System.Drawing.Color;
 using Timer = System.Timers.Timer;
 
 namespace Artemis.Managers
@@ -19,15 +20,15 @@ namespace Artemis.Managers
     {
         private readonly DebugViewModel _debugViewModel;
         private readonly DeviceManager _deviceManager;
-        private readonly EffectManager _effectManager;
         private readonly ILogger _logger;
         private readonly Timer _loopTimer;
+        private readonly ModuleManager _moduleManager;
 
-        public LoopManager(ILogger logger, EffectManager effectManager, DeviceManager deviceManager,
+        public LoopManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
             DebugViewModel debugViewModel)
         {
             _logger = logger;
-            _effectManager = effectManager;
+            _moduleManager = moduleManager;
             _deviceManager = deviceManager;
             _debugViewModel = debugViewModel;
 
@@ -89,15 +90,15 @@ namespace Artemis.Managers
                 return;
             }
 
-            if (_effectManager.ActiveEffect == null)
+            if (_moduleManager.ActiveModule == null)
             {
-                var lastEffect = _effectManager.GetLastEffect();
-                if (lastEffect == null)
+                var lastModule = _moduleManager.GetLastModule();
+                if (lastModule == null)
                 {
-                    _logger.Debug("Cancel LoopManager start, no effect");
+                    _logger.Debug("Cancel LoopManager start, no module");
                     return;
                 }
-                _effectManager.ChangeEffect(lastEffect);
+                _moduleManager.ChangeActiveModule(lastModule);
             }
 
             Running = true;
@@ -119,14 +120,14 @@ namespace Artemis.Managers
             if (!Running || _deviceManager.ChangingKeyboard)
                 return;
 
-            // Stop if no active effect
-            if (_effectManager.ActiveEffect == null)
+            // Stop if no active module
+            if (_moduleManager.ActiveModule == null)
             {
-                _logger.Debug("No active effect, stopping");
+                _logger.Debug("No active module, stopping");
                 Stop();
                 return;
             }
-            var renderEffect = _effectManager.ActiveEffect;
+            var renderModule = _moduleManager.ActiveModule;
 
             // Stop if no active keyboard
             if (_deviceManager.ActiveKeyboard == null)
@@ -138,13 +139,13 @@ namespace Artemis.Managers
 
             lock (_deviceManager.ActiveKeyboard)
             {
-                // Skip frame if effect is still initializing
-                if (renderEffect.Initialized == false)
+                // Skip frame if module is still initializing
+                if (renderModule.IsInitialized == false)
                     return;
 
-                // ApplyProperties the current effect
-                if (renderEffect.Initialized)
-                    renderEffect.Update();
+                // ApplyProperties the current module
+                if (renderModule.IsInitialized)
+                    renderModule.Update();
 
                 // Get the devices that must be rendered to
                 var mice = _deviceManager.MiceProviders.Where(m => m.CanUse).ToList();
@@ -156,14 +157,14 @@ namespace Artemis.Managers
                 // Setup the frame for this tick
                 using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard))
                 {
-                    if (renderEffect.Initialized)
-                        renderEffect.Render(frame, keyboardOnly);
+                    if (renderModule.IsInitialized)
+                        renderModule.Render(frame, keyboardOnly);
 
-                    // Draw enabled overlays on top of the renderEffect
-                    foreach (var overlayModel in _effectManager.EnabledOverlays)
+                    // Draw enabled overlays on top of the renderModule
+                    foreach (var overlayModel in _moduleManager.OverlayModules.Where(o => o.Settings.IsEnabled))
                     {
                         overlayModel.Update();
-                        overlayModel.RenderOverlay(frame, keyboardOnly);
+                        overlayModel.Render(frame, keyboardOnly);
                     }
 
                     // Update the keyboard

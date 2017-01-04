@@ -47,11 +47,12 @@
                     project by Funbit
                 </TextBlock>
                 <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
-                    <Label Content="Enable effect" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                    <ToggleButton x:Name="EffectEnabled" Margin="0 3 0 0" Width="25" Height="25"
-                                  IsChecked="{Binding Path=GameSettings.Enabled, Mode=TwoWay}"
+                    <Label Content="Enable module" Margin="0 3 0 0" HorizontalAlignment="Right" />
+                    <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleEffect]" />
+                                  ToolTip="Note: You can't enable an module when Artemis is disabled"
+                                  IsChecked="{Binding Path=Settings.Enabled, Mode=OneWay}"
+                                  cal:Message.Attach="[Event Click] = [Action ToggleModule]" />
                 </StackPanel>
             </Grid>
 
@@ -62,7 +63,7 @@
                 <Label FontSize="20" HorizontalAlignment="Left" Content="Euro Truck Simulator 2 directory" />
                 <Grid>
                     <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                             Text="{Binding Path=GameSettings.GameDirectory, Mode=TwoWay}"
+                             Text="{Binding Path=Settings.GameDirectory, Mode=TwoWay}"
                              cal:Message.Attach="[Event LostFocus] = [Action PlacePlugin]" />
                     <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                             HorizontalAlignment="Right" Width="25"
