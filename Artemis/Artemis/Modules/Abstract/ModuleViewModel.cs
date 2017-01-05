@@ -1,6 +1,7 @@
 ﻿using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
+using Artemis.Settings;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
@@ -15,14 +16,17 @@ namespace Artemis.Modules.Abstract
         private readonly MainManager _mainManager;
         private readonly IKernel _kernel;
         private ModuleSettings _settings;
+        private GeneralSettings _generalSettings;
 
         public ModuleViewModel(MainManager mainManager, ModuleModel moduleModel, IKernel kernel)
         {
             _mainManager = mainManager;
             _kernel = kernel;
             _moduleManager = mainManager.ModuleManager;
+            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
             ModuleModel = moduleModel;
             Settings = moduleModel.Settings;
+            
 
             _mainManager.EnabledChanged += MainManagerOnEnabledChanged;
             _moduleManager.EffectChanged += ModuleManagerOnModuleChanged;
@@ -49,21 +53,33 @@ namespace Artemis.Modules.Abstract
         }
 
         public virtual bool IsModuleActive => _moduleManager.ActiveModule == ModuleModel;
+
+        public virtual bool IsModuleEnabled
+        {
+            get
+            {
+                if (ModuleModel.IsBoundToProcess || ModuleModel.IsBoundToProcess)
+                    return Settings.IsEnabled;
+                return _generalSettings.LastModule == ModuleModel.Name;
+            }
+        }
+
         public abstract bool UsesProfileEditor { get; }
 
         private void MainManagerOnEnabledChanged(object sender, EnabledChangedEventArgs e)
         {
+            UpdatedEnabledSetting();
             NotifyOfPropertyChange(() => IsModuleActive);
-            UpdateIsEnabled();
         }
 
         private void ModuleManagerOnModuleChanged(object sender, ModuleChangedEventArgs e)
         {
+            UpdatedEnabledSetting();
             NotifyOfPropertyChange(() => IsModuleActive);
-            UpdateIsEnabled();
+            NotifyOfPropertyChange(() => IsModuleEnabled);
         }
 
-        private void UpdateIsEnabled()
+        private void UpdatedEnabledSetting()
         {
             if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
                 return;
@@ -81,13 +97,20 @@ namespace Artemis.Modules.Abstract
 
             // On process-bound modules, only set the module model
             if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
+            {
+                NotifyOfPropertyChange(() => IsModuleActive);
+                NotifyOfPropertyChange(() => IsModuleEnabled);
                 return;
+            }
 
             // On other modules, activate them if necessary
             if (IsModuleActive && !Settings.IsEnabled)
                 _moduleManager.ClearActiveModule();
             else if (!IsModuleActive && Settings.IsEnabled)
                 _moduleManager.ChangeActiveModule(ModuleModel, _mainManager.LoopManager);
+
+            NotifyOfPropertyChange(() => IsModuleActive);
+            NotifyOfPropertyChange(() => IsModuleEnabled);
         }
 
         public virtual void SaveSettings()

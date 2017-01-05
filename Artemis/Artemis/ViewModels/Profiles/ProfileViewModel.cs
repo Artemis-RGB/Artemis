@@ -20,9 +20,10 @@ using MahApps.Metro;
 
 namespace Artemis.ViewModels.Profiles
 {
-    public class ProfileViewModel : PropertyChangedBase
+    public class ProfileViewModel : PropertyChangedBase, IDisposable
     {
         private readonly DeviceManager _deviceManager;
+        private readonly LoopManager _loopManager;
         private double _blurProgress;
         private double _blurRadius;
         private DateTime _downTime;
@@ -37,11 +38,12 @@ namespace Artemis.ViewModels.Profiles
         public ProfileViewModel(DeviceManager deviceManager, LoopManager loopManager)
         {
             _deviceManager = deviceManager;
+            _loopManager = loopManager;
 
             ShowAll = false;
 
-            loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
-            deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
+            _loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
+            _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
         }
 
         public ModuleModel ModuleModel { get; set; }
@@ -94,13 +96,8 @@ namespace Artemis.ViewModels.Profiles
         public ImageSource KeyboardImage => ImageUtilities
             .BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image ?? Resources.none);
 
-        public bool Activated { get; set; }
-
         private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
         {
-            if (!Activated)
-                return;
-
             // Update the glowing effect around the keyboard
             if (_blurProgress > 2)
                 _blurProgress = 0;
@@ -108,12 +105,9 @@ namespace Artemis.ViewModels.Profiles
             BlurRadius = (Math.Sin(_blurProgress * Math.PI) + 1) * 10 + 10;
 
             // Besides the usual checks, also check if the ActiveKeyboard isn't the NoneKeyboard
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null ||
-                _deviceManager.ActiveKeyboard.Slug == "none")
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || _deviceManager.ActiveKeyboard.Slug == "none")
             {
-                var preview = new DrawingImage();
-                preview.Freeze();
-                KeyboardPreview = preview;
+                KeyboardPreview = null;
 
                 // Setup layers for the next frame
                 if (ModuleModel.IsInitialized)
@@ -190,17 +184,6 @@ namespace Artemis.ViewModels.Profiles
         private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)
         {
             NotifyOfPropertyChange(() => KeyboardImage);
-        }
-
-
-        public void Activate()
-        {
-            Activated = true;
-        }
-
-        public void Deactivate()
-        {
-            Activated = false;
         }
 
         #region Processing
@@ -393,6 +376,13 @@ namespace Artemis.ViewModels.Profiles
                     return SelectedLayer.GetLayers().ToList();
                 return new List<LayerModel> {SelectedLayer};
             }
+        }
+
+        public void Dispose()
+        {
+            _keyboardPreviewCursor?.Dispose();
+            _loopManager.RenderCompleted -= LoopManagerOnRenderCompleted;
+            _deviceManager.OnKeyboardChanged -= DeviceManagerOnOnKeyboardChanged;
         }
 
         #endregion

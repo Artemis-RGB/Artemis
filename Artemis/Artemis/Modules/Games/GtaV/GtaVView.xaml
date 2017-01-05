@@ -34,7 +34,7 @@
                     <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   ToolTip="Note: You can't enable an module when Artemis is disabled"
-                                  IsChecked="{Binding Path=Settings.Enabled, Mode=OneWay}"
+                                  IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}"
                                   cal:Message.Attach="[Event Click] = [Action ToggleModule]" />
                 </StackPanel>
             </StackPanel>

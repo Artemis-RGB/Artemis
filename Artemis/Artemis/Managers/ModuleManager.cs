@@ -12,7 +12,6 @@ namespace Artemis.Managers
     {
         private readonly DeviceManager _deviceManager;
         private readonly ILogger _logger;
-        private ModuleModel _activeModule;
         private LoopManager _waitLoopManager;
         private ModuleModel _waitEffect;
         private readonly GeneralSettings _generalSettings;
@@ -36,16 +35,7 @@ namespace Artemis.Managers
         public List<ModuleModel> Modules { get; set; }
         public List<ModuleModel> ProcessModules { get; set; }
         public List<ModuleModel> OverlayModules { get; set; }
-
-        public ModuleModel ActiveModule
-        {
-            get { return _activeModule; }
-            private set
-            {
-                _activeModule = value;
-                RaiseEffectChangedEvent(new ModuleChangedEventArgs(value));
-            }
-        }
+        public ModuleModel ActiveModule { get; private set; }
 
         public event EventHandler<ModuleChangedEventArgs> EffectChanged;
 
@@ -130,14 +120,15 @@ namespace Artemis.Managers
                 _logger.Debug("Starting LoopManager for module change");
                 loopManager.StartAsync();
             }
+            
+            if (!ActiveModule.IsBoundToProcess && !ActiveModule.IsOverlay && storeAsLast)
+            {
+                _generalSettings.LastModule = ActiveModule?.Name;
+                _generalSettings.Save();
+            }
 
             _logger.Debug("Changed active module to: {0}", moduleModel.Name);
-
-            if (ActiveModule.IsBoundToProcess || ActiveModule.IsOverlay || !storeAsLast)
-                return;
-            // Regular modules are stored as the last active module
-            _generalSettings.LastModule = ActiveModule?.Name;
-            _generalSettings.Save();
+            RaiseEffectChangedEvent(new ModuleChangedEventArgs(moduleModel));
         }
 
         private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)
