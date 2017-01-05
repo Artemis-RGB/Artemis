@@ -2,6 +2,5 @@
 {
     public abstract class ModuleDataModel
     {
-        public ModuleDataModel ParentDataModel { get; set; }
     }
 }

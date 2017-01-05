@@ -23,12 +23,16 @@ namespace Artemis.Modules.Abstract
         public ModuleModel(DeviceManager deviceManager, LuaManager luaManager)
         {
             _luaManager = luaManager;
-
             DeviceManager = deviceManager;
-            PreviewLayers = new List<LayerModel>();
 
             DeviceManager.OnKeyboardChanged += OnKeyboardChanged;
         }
+
+        #region Events
+
+        public event EventHandler<ProfileChangedEventArgs> ProfileChanged;
+
+        #endregion
 
         #region Abstract properties
 
@@ -95,6 +99,8 @@ namespace Artemis.Modules.Abstract
 
             ProfileModel = profileModel;
             ProfileModel?.Activate(_luaManager);
+
+            RaiseProfileChangedEvent(new ProfileChangedEventArgs(ProfileModel));
         }
 
         public virtual void Enable()
@@ -107,7 +113,7 @@ namespace Artemis.Modules.Abstract
         {
             IsInitialized = false;
 
-            PreviewLayers.Clear();
+            PreviewLayers = null;
             ProfileModel?.Deactivate(_luaManager);
             ProfileModel = null;
         }
@@ -123,6 +129,12 @@ namespace Artemis.Modules.Abstract
             ChangeProfile(ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, profileName));
         }
 
+        protected virtual void RaiseProfileChangedEvent(ProfileChangedEventArgs e)
+        {
+            var handler = ProfileChanged;
+            handler?.Invoke(this, e);
+        }
+
         public abstract void Update();
 
         public virtual void Render(RenderFrame frame, bool keyboardOnly)
@@ -134,35 +146,36 @@ namespace Artemis.Modules.Abstract
             {
                 lock (ProfileModel)
                 {
-                    // Get all enabled layers who's conditions are met
-                    var layers = GetRenderLayers(keyboardOnly);
+                    // Use the preview layers if they are present, else get all layers who's conditions are met
+                    var layers = PreviewLayers ?? GetRenderLayers(keyboardOnly);
+                    var preview = PreviewLayers != null;
 
                     // Render the keyboard layer-by-layer
                     var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle();
                     using (var g = Graphics.FromImage(frame.KeyboardBitmap))
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Keyboard, DataModel, keyboardRect, false, true);
+                        ProfileModel?.DrawLayers(g, layers, DrawType.Keyboard, DataModel, keyboardRect, preview);
                     }
                     // Render mice layer-by-layer
                     var devRec = new Rect(0, 0, 40, 40);
                     using (var g = Graphics.FromImage(frame.MouseBitmap))
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, false, true);
+                        ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
                     }
                     // Render headsets layer-by-layer
                     using (var g = Graphics.FromImage(frame.HeadsetBitmap))
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, false, true);
+                        ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
                     }
                     // Render generic devices layer-by-layer
                     using (var g = Graphics.FromImage(frame.GenericBitmap))
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, false, true);
+                        ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
                     }
                     // Render mousemats layer-by-layer
                     using (var g = Graphics.FromImage(frame.MousematBitmap))
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, false, true);
+                        ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
                     }
 
                     // Trace debugging

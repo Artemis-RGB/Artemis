@@ -137,6 +137,10 @@ namespace Artemis.Managers
             var processes = System.Diagnostics.Process.GetProcesses();
             var module = ModuleManager.ActiveModule;
 
+            // If the current active module is in preview-mode, leave it alone
+            if (module?.PreviewLayers != null)
+                return;
+
             // If the active module is a process bound module, make sure it should still be enabled
             if (module != null && module.IsBoundToProcess)
             {

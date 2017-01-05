@@ -104,9 +104,8 @@ namespace Artemis.Profiles
         /// <param name="dataModel">The data model to base the layer's properties on</param>
         /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
-        /// <param name="updateAnimations">Wheter or not to update the layer's animations</param>
         internal void DrawLayers(Graphics g, List<LayerModel> renderLayers, DrawType drawType, ModuleDataModel dataModel,
-            Rect rect, bool preview, bool updateAnimations)
+            Rect rect, bool preview)
         {
             renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == drawType).ToList();
             var visual = new DrawingVisual();
@@ -119,12 +118,12 @@ namespace Artemis.Profiles
 
                 // Update the layers
                 foreach (var layerModel in layerModels)
-                    layerModel.Update(dataModel, preview, updateAnimations);
+                    layerModel.Update(dataModel, preview, true);
                 RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, null));
 
                 // Draw the layers
                 foreach (var layerModel in layerModels)
-                    layerModel.Draw(dataModel, c, preview, updateAnimations);
+                    layerModel.Draw(dataModel, c, preview, true);
                 RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, c));
 
                 // Remove the clip

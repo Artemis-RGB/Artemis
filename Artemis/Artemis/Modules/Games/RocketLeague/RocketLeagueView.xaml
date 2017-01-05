@@ -29,7 +29,7 @@
                 </Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Enable module" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                        <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
+                    <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
                                   Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                   ToolTip="Note: You can't enable an module when Artemis is disabled"
                                   IsChecked="{Binding Path=Settings.Enabled, Mode=OneWay}"
@@ -41,10 +41,9 @@
             <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
 
             <TextBlock x:Name="VersionText" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
-                       Margin="0,8"
-                       TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                       Foreground="{DynamicResource HighlightBrush}" MaxWidth="510" TextAlignment="Justify" />
-            
+                       Margin="0,8" TextWrapping="Wrap" HorizontalAlignment="Left"
+                       Foreground="{DynamicResource HighlightBrush}" />
+
             <!-- Buttons -->
             <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"

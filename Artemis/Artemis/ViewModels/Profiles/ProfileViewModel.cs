@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Modules.Abstract;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -43,7 +44,8 @@ namespace Artemis.ViewModels.Profiles
             deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
         }
 
-        public ProfileModel SelectedProfile { get; set; }
+        public ModuleModel ModuleModel { get; set; }
+        public ProfileModel SelectedProfile => ModuleModel?.ProfileModel;
 
         public LayerModel SelectedLayer
         {
@@ -99,6 +101,7 @@ namespace Artemis.ViewModels.Profiles
             if (!Activated)
                 return;
 
+            // Update the glowing effect around the keyboard
             if (_blurProgress > 2)
                 _blurProgress = 0;
             _blurProgress = _blurProgress + 0.025;
@@ -111,9 +114,16 @@ namespace Artemis.ViewModels.Profiles
                 var preview = new DrawingImage();
                 preview.Freeze();
                 KeyboardPreview = preview;
+
+                // Setup layers for the next frame
+                if (ModuleModel.IsInitialized)
+                    ModuleModel.PreviewLayers = new List<LayerModel>();
+
                 return;
             }
 
+            var renderLayers = GetRenderLayers();
+            // Draw the current frame to the preview
             var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
             var visual = new DrawingVisual();
             using (var drawingContext = visual.RenderOpen())
@@ -122,11 +132,8 @@ namespace Artemis.ViewModels.Profiles
                 drawingContext.PushClip(new RectangleGeometry(keyboardRect));
                 drawingContext.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, keyboardRect);
 
-                // Get the layers that must be drawn
-                var drawLayers = GetRenderLayers();
-
                 // Draw the layers
-                foreach (var layer in drawLayers)
+                foreach (var layer in renderLayers)
                 {
                     layer.Update(null, true, false);
                     if (layer.LayerType.ShowInEdtor)
@@ -166,16 +173,18 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
 
-                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(DrawType.Preview, null, true,
-                    drawingContext));
+                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(DrawType.Preview, null, true, drawingContext));
 
                 // Remove the clip
                 drawingContext.Pop();
             }
             var drawnPreview = new DrawingImage(visual.Drawing);
             drawnPreview.Freeze();
-
             KeyboardPreview = drawnPreview;
+
+            // Setup layers for the next frame
+            if (ModuleModel.IsInitialized)
+                ModuleModel.PreviewLayers = renderLayers;
         }
 
         private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)

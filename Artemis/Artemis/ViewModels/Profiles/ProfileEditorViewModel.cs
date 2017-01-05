@@ -35,13 +35,13 @@ using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels.Profiles
 {
-    public sealed class ProfileEditorViewModel : Screen, IDropTarget
+    public sealed class ProfileEditorViewModel : Screen, IDropTarget, IDisposable
     {
         private readonly DeviceManager _deviceManager;
+        private readonly MetroDialogService _dialogService;
         private readonly LuaManager _luaManager;
         private readonly ModuleModel _moduleModel;
         private readonly Timer _saveTimer;
-        private readonly MetroDialogService _dialogService;
         private readonly WindowService _windowService;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
@@ -62,14 +62,18 @@ namespace Artemis.ViewModels.Profiles
             Layers = new ObservableCollection<LayerModel>();
             ProfileViewModel = profileViewModel;
 
+            ProfileViewModel.ModuleModel = _moduleModel;
+
             PropertyChanged += EditorStateHandler;
             ProfileViewModel.PropertyChanged += LayerSelectedHandler;
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
+            _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
+            LoadProfiles();
+            ProfileViewModel.Activate();
 
             _saveTimer = new Timer(5000);
             _saveTimer.Elapsed += ProfileSaveHandler;
-
-            LoadProfiles();
+            _saveTimer.Start();
         }
 
         public ProfileViewModel ProfileViewModel { get; set; }
@@ -113,7 +117,6 @@ namespace Artemis.ViewModels.Profiles
 
                 _moduleModel.ChangeProfile(ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _moduleModel, value));
                 NotifyOfPropertyChange(() => SelectedProfileName);
-                NotifyOfPropertyChange(() => SelectedProfile);
             }
         }
 
@@ -201,6 +204,13 @@ namespace Artemis.ViewModels.Profiles
             UpdateLayerList(source);
         }
 
+        private void ModuleModelOnProfileChanged(object sender, ProfileChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(() => SelectedProfileName);
+            NotifyOfPropertyChange(() => SelectedProfile);
+            NotifyOfPropertyChange(() => ProfileViewModel.SelectedProfile);
+        }
+
         /// <summary>
         ///     Handles chaning the active keyboard, updating the preview image and profiles collection
         /// </summary>
@@ -208,19 +218,6 @@ namespace Artemis.ViewModels.Profiles
         {
             NotifyOfPropertyChange(() => PreviewSettings);
             LoadProfiles();
-        }
-
-        public void Activate()
-        {
-            ProfileViewModel.Activate();
-            _saveTimer.Start();
-        }
-
-        public void Deactivate()
-        {
-            ProfileViewModel.Deactivate();
-            SelectedProfile?.Deactivate(_luaManager);
-            _saveTimer.Stop();
         }
 
         /// <summary>
@@ -779,6 +776,15 @@ namespace Artemis.ViewModels.Profiles
                 ProfileProvider.AddOrUpdate(SelectedProfile);
                 _luaManager.SetupLua(SelectedProfile);
             }
+        }
+
+        public void Dispose()
+        {
+            ProfileViewModel.Deactivate();
+
+            _saveTimer?.Stop();
+            _saveTimer?.Dispose();
+            _watcher?.Dispose();
         }
 
         #endregion
