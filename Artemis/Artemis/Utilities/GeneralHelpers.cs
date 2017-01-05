@@ -35,7 +35,7 @@ namespace Artemis.Utilities
                 return null;
             var value = prop.GetValue(o, null);
 
-            if ((propertyNames.Length == 1) || (value == null))
+            if (propertyNames.Length == 1 || value == null)
                 return value;
             return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
         }
@@ -46,31 +46,31 @@ namespace Artemis.Utilities
             string path = "")
         {
             var list = new List<PropertyCollection>();
-            foreach (var propertyInfo in getProperties)
+            foreach (var propInfo in getProperties)
             {
                 var friendlyName = Empty;
-                if (propertyInfo.PropertyType.Name == "Int32")
+                if (propInfo.PropertyType.Name == "Int32")
                     friendlyName = "(Number)";
-                else if (propertyInfo.PropertyType.Name == "Single")
+                else if (propInfo.PropertyType.Name == "Single")
                     friendlyName = "(Decimal)";
-                else if (propertyInfo.PropertyType.Name == "String")
+                else if (propInfo.PropertyType.Name == "String")
                     friendlyName = "(Text)";
-                else if (propertyInfo.PropertyType.Name == "Boolean")
+                else if (propInfo.PropertyType.Name == "Boolean")
                     friendlyName = "(Yes/no)";
-                if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
+                if (propInfo.PropertyType.BaseType?.Name == "Enum")
                     friendlyName = "(Choice)";
 
                 var parent = new PropertyCollection
                 {
-                    Type = propertyInfo.PropertyType.Name,
+                    Type = propInfo.PropertyType.Name,
                     DisplayType = friendlyName,
-                    Display = $"{path.Replace(".", " → ")}{propertyInfo.Name}",
-                    Path = $"{path}{propertyInfo.Name}"
+                    Display = $"{path.Replace(".", " → ")}{propInfo.Name}",
+                    Path = $"{path}{propInfo.Name}"
                 };
 
-                if (propertyInfo.PropertyType.BaseType?.Name == "Enum")
+                if (propInfo.PropertyType.BaseType?.Name == "Enum")
                 {
-                    parent.EnumValues = Enum.GetNames(propertyInfo.PropertyType);
+                    parent.EnumValues = Enum.GetNames(propInfo.PropertyType);
                     parent.Type = "Enum";
                 }
 
@@ -78,13 +78,10 @@ namespace Artemis.Utilities
                     list.Add(parent);
 
                 // Don't go into Strings, DateTimes or anything with JsonIgnore on it
-                if (propertyInfo.PropertyType.Name != "String" &&
-                    propertyInfo.PropertyType.Name != "DateTime" &&
-                    propertyInfo.CustomAttributes.All(a => a.AttributeType != typeof(JsonIgnoreAttribute)))
-                {
-                    list.AddRange(GenerateTypeMap(propertyInfo.PropertyType.GetProperties(),
-                        path + $"{propertyInfo.Name}."));
-                }
+                if (propInfo.PropertyType.Name != "String" && 
+                    propInfo.PropertyType.Name != "DateTime" &&
+                    propInfo.CustomAttributes.All(a => a.AttributeType != typeof(JsonIgnoreAttribute)))
+                    list.AddRange(GenerateTypeMap(propInfo.PropertyType.GetProperties(), path + $"{propInfo.Name}."));
             }
             return list;
         }

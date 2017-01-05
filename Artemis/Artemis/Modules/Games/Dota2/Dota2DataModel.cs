@@ -1,4 +1,5 @@
 ﻿using Artemis.Modules.Abstract;
+using Artemis.Modules.General.GeneralProfile;
 using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Games.Dota2
@@ -14,9 +15,7 @@ namespace Artemis.Modules.Games.Dota2
         public Items items { get; set; }
         public Previously previously { get; set; }
     }
-
-
-
+    
     [MoonSharpUserData]
     public class Provider
     {

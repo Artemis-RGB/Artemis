@@ -7,7 +7,9 @@ namespace Artemis.Modules.Overlays.OverlayProfile
     {
         public OverlayProfileDataModel()
         {
-            ParentDataModel = new GeneralProfileDataModel();
+            GeneralDataModel = new GeneralProfileDataModel();
         }
+
+        public GeneralProfileDataModel GeneralDataModel { get; set; }
     }
 }

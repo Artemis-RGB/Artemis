@@ -72,7 +72,8 @@ namespace Artemis.Managers
         /// </summary>
         /// <param name="moduleModel">The module to activate</param>
         /// <param name="loopManager">Optionally pass the LoopManager to automatically start it, if it's not running.</param>
-        public void ChangeActiveModule(ModuleModel moduleModel, LoopManager loopManager = null)
+        /// <param name="storeAsLast">Whether or not to store this effect as the last effect</param>
+        public void ChangeActiveModule(ModuleModel moduleModel, LoopManager loopManager = null, bool storeAsLast = true)
         {
             if (_waitEffect != null)
             {
@@ -82,8 +83,6 @@ namespace Artemis.Managers
 
             if (moduleModel == null)
                 throw new ArgumentNullException(nameof(moduleModel));
-            if (moduleModel.IsOverlay)
-                throw new ArgumentException("Can't set an General module as the active module");
 
             if (_deviceManager.ActiveKeyboard == null)
             {
@@ -101,7 +100,6 @@ namespace Artemis.Managers
                 _logger.Debug("Cancelling module change, provided module is process bound and not enabled");
                 return;
             }
-
 
             var wasNull = false;
             if (ActiveModule == null)
@@ -135,9 +133,8 @@ namespace Artemis.Managers
 
             _logger.Debug("Changed active module to: {0}", moduleModel.Name);
 
-            if (ActiveModule.IsBoundToProcess || ActiveModule.IsOverlay || ActiveModule.Name == "Profile preview")
+            if (ActiveModule.IsBoundToProcess || ActiveModule.IsOverlay || !storeAsLast)
                 return;
-
             // Regular modules are stored as the last active module
             _generalSettings.LastModule = ActiveModule?.Name;
             _generalSettings.Save();
@@ -155,7 +152,6 @@ namespace Artemis.Managers
 
             ChangeActiveModule(module, loopManager);
         }
-
 
         /// <summary>
         ///     Clears the current module

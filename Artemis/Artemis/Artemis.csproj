@@ -336,6 +336,7 @@
     <Compile Include="Events\ModuleChangedEventArgs.cs" />
     <Compile Include="Events\EnabledChangedEventArgs.cs" />
     <Compile Include="Events\KeyboardChangedEventArgs.cs" />
+    <Compile Include="Events\ProfileChangedEventArgs.cs" />
     <Compile Include="Events\ProfileDeviceEventsArg.cs" />
     <Compile Include="Events\RazerColorArrayChanged.cs" />
     <Compile Include="Events\RazerColorsChangedEventArgs.cs" />

@@ -13,22 +13,16 @@ namespace Artemis.Modules.Abstract
     {
         private readonly ModuleManager _moduleManager;
         private readonly MainManager _mainManager;
+        private readonly IKernel _kernel;
         private ModuleSettings _settings;
 
         public ModuleViewModel(MainManager mainManager, ModuleModel moduleModel, IKernel kernel)
         {
             _mainManager = mainManager;
+            _kernel = kernel;
             _moduleManager = mainManager.ModuleManager;
             ModuleModel = moduleModel;
-
             Settings = moduleModel.Settings;
-            IParameter[] args =
-            {
-                new ConstructorArgument("mainManager", _mainManager),
-                new ConstructorArgument("moduleModel", ModuleModel),
-                new ConstructorArgument("lastProfile", Settings.LastProfile)
-            };
-            ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
 
             _mainManager.EnabledChanged += MainManagerOnEnabledChanged;
             _moduleManager.EffectChanged += ModuleManagerOnModuleChanged;
@@ -125,13 +119,24 @@ namespace Artemis.Modules.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
-            ProfileEditor.Activate();
+
+            if (!UsesProfileEditor)
+                return;
+
+            IParameter[] args =
+            {
+                new ConstructorArgument("mainManager", _mainManager),
+                new ConstructorArgument("moduleModel", ModuleModel),
+                new ConstructorArgument("lastProfile", Settings.LastProfile)
+            };
+            ProfileEditor = _kernel.Get<ProfileEditorViewModel>(args);
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-            ProfileEditor.Deactivate();
+            ProfileEditor?.Dispose();
+            ProfileEditor = null;
         }
     }
 }

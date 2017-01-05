@@ -25,7 +25,8 @@ namespace Artemis.Modules.Overlays.OverlayProfile
         public override void Update()
         {
             // TODO: Find a clean way to update the parent profile model
-            DataModel.ParentDataModel = _generalProfileModel.DataModel;
+            ((OverlayProfileDataModel) DataModel).GeneralDataModel =
+                (GeneralProfileDataModel) _generalProfileModel.DataModel;
         }
     }
 }
