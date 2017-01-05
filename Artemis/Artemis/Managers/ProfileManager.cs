@@ -46,7 +46,8 @@ namespace Artemis.Managers
             if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard)
                 return;
 
-            var activePreview = PreviewViewModules.FirstOrDefault(vm => vm.IsActive && vm.UsesProfileEditor);
+            var activePreview = PreviewViewModules.FirstOrDefault(
+                vm => vm.IsActive && vm.UsesProfileEditor && vm.ModuleModel.Settings.IsEnabled);
             if (activePreview != null)
                 EnsurePreviewActive(activePreview);
             else

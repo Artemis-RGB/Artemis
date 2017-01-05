@@ -69,7 +69,6 @@ namespace Artemis.ViewModels.Profiles
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
             _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
             LoadProfiles();
-            ProfileViewModel.Activate();
 
             _saveTimer = new Timer(5000);
             _saveTimer.Elapsed += ProfileSaveHandler;
@@ -780,8 +779,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void Dispose()
         {
-            ProfileViewModel.Deactivate();
-
+            ProfileViewModel.Dispose();
             _saveTimer?.Stop();
             _saveTimer?.Dispose();
             _watcher?.Dispose();
