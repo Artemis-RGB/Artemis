@@ -4,6 +4,7 @@ using System.Timers;
 using Artemis.DAL;
 using Artemis.Modules.Abstract;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
@@ -46,9 +47,10 @@ namespace Artemis.Managers
             if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard)
                 return;
 
+            // If Artemis doesn't have focus, don't preview
             var activePreview = PreviewViewModules.FirstOrDefault(
                 vm => vm.IsActive && vm.UsesProfileEditor && vm.ModuleModel.Settings.IsEnabled);
-            if (activePreview != null)
+            if (activePreview != null && ActiveWindowHelper.MainWindowActive)
                 EnsurePreviewActive(activePreview);
             else
                 EnsurePreviewInactive();

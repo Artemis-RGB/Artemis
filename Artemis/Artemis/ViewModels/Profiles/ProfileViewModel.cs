@@ -110,7 +110,7 @@ namespace Artemis.ViewModels.Profiles
                 KeyboardPreview = null;
 
                 // Setup layers for the next frame
-                if (ModuleModel.IsInitialized)
+                if (ModuleModel.IsInitialized && ActiveWindowHelper.MainWindowActive)
                     ModuleModel.PreviewLayers = new List<LayerModel>();
 
                 return;
@@ -177,7 +177,7 @@ namespace Artemis.ViewModels.Profiles
             KeyboardPreview = drawnPreview;
 
             // Setup layers for the next frame
-            if (ModuleModel.IsInitialized)
+            if (ModuleModel.IsInitialized && ActiveWindowHelper.MainWindowActive)
                 ModuleModel.PreviewLayers = renderLayers;
         }
 
