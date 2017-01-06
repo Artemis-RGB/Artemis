@@ -1,4 +1,5 @@
-// Pointers used to auto-update
+// Pointers used to auto-update. 
+// NOTE: If you're going to copy paste these for your own application, include a link to https://github.com/SpoinkyNL/Artemis
 [
    {
      "Game": "RocketLeague",
