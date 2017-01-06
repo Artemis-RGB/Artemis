@@ -89,7 +89,7 @@ namespace Artemis.DAL
                 }
 
                 File.WriteAllText(path + $@"\{prof.Slug}.json", json);
-                Logger.Debug("Saved profile {0}/{1}/{2}", prof.KeyboardSlug, prof.GameName, prof.Name);
+                Logger.Trace("Saved profile {0}/{1}/{2}", prof.KeyboardSlug, prof.GameName, prof.Name);
             }
         }
 

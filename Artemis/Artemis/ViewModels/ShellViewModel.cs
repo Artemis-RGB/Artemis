@@ -47,7 +47,7 @@ namespace Artemis.ViewModels
             // This gets updated automatically but during startup lets quickly preset it
             Enabled = GeneralSettings.Suspended;
         }
-
+        
         protected override void OnViewReady(object view)
         {
             base.OnViewReady(view);

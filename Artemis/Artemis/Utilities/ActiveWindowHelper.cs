@@ -8,10 +8,13 @@ namespace Artemis.Utilities
     {
         #region DLL-Imports
 
-        private delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        private delegate void WinEventDelegate(
+            IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread,
+            uint dwmsEventTime);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
+        private static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc,
+            WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
 
         [DllImport("user32.dll")]
         private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
@@ -21,7 +24,7 @@ namespace Artemis.Utilities
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
-        
+
         #endregion
 
         #region Constants
@@ -49,8 +52,9 @@ namespace Artemis.Utilities
 
         private static IntPtr _activeWindow;
 
-        public static string ActiveWindowProcessName { get; private set; }
-        public static string ActiveWindowWindowTitle { get; private set; }
+        public static string ActiveWindowProcessName { get; private set; } = string.Empty;
+        public static string ActiveWindowWindowTitle { get; private set; } = string.Empty;
+        public static bool MainWindowActive => ActiveWindowProcessName.Contains("Artemis");
 
         #endregion
 
@@ -91,7 +95,7 @@ namespace Artemis.Utilities
             {
                 uint pid;
                 GetWindowThreadProcessId(hwnd, out pid);
-                return System.Diagnostics.Process.GetProcessById((int)pid).ProcessName;
+                return System.Diagnostics.Process.GetProcessById((int) pid).ProcessName;
             }
             catch
             {
@@ -119,22 +123,28 @@ namespace Artemis.Utilities
                 if (_activeWindowEventHook == IntPtr.Zero)
                 {
                     _activeWindowChangedDelegate = ActiveWindowChanged;
-                    _activeWindowEventHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, _activeWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                    _activeWindowEventHook = SetWinEventHook(EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
+                        IntPtr.Zero, _activeWindowChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
                 }
 
                 if (_windowTitleEventHook == IntPtr.Zero)
                 {
                     _windowTitleChangedDelegate = WindowTitleChanged;
-                    _windowTitleEventHook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero, _windowTitleChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                    _windowTitleEventHook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE,
+                        IntPtr.Zero, _windowTitleChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
                 }
 
                 if (_windowMinimizedEventHook == IntPtr.Zero)
                 {
                     _windowMinimizedChangedDelegate = WindowMinimizedChanged;
-                    _windowMinimizedEventHook = SetWinEventHook(EVENT_SYSTEM_MINIMIZEEND, EVENT_SYSTEM_MINIMIZEEND, IntPtr.Zero, _windowMinimizedChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+                    _windowMinimizedEventHook = SetWinEventHook(EVENT_SYSTEM_MINIMIZEEND, EVENT_SYSTEM_MINIMIZEEND,
+                        IntPtr.Zero, _windowMinimizedChangedDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
                 }
             }
-            catch { /* catch'em all - I don't want it to crash here */ }
+            catch
+            {
+                /* catch'em all - I don't want it to crash here */
+            }
         }
 
         public static void Dispose()
@@ -162,7 +172,10 @@ namespace Artemis.Utilities
                     _windowMinimizedEventHook = IntPtr.Zero;
                 }
             }
-            catch { /* catch'em all - I don't want it to crash here */ }
+            catch
+            {
+                /* catch'em all - I don't want it to crash here */
+            }
         }
 
         #endregion
