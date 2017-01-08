@@ -24,15 +24,14 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private DateTime _lastUpdate;
         private int _lines;
         private string _previousSettings;
+        private LineSpectrum _lineSpectrum;
+        private AudioCapture _audioCapture;
 
         public AudioType(IKernel kernel, AudioCaptureManager audioCaptureManager)
         {
             _kernel = kernel;
-            AudioCaptureManager = audioCaptureManager;
+            _audioCapture = audioCaptureManager.GetAudioCapture(null);
         }
-
-        [JsonIgnore]
-        public AudioCaptureManager AudioCaptureManager { get; set; }
 
         public string Name => "Keyboard - Audio visualization";
         public bool ShowInEdtor => true;
@@ -83,23 +82,25 @@ namespace Artemis.Profiles.Layers.Types.Audio
             if (isPreview)
                 return;
 
+            // Start audio capture in case it wasn't running
+            _audioCapture.Start();
+            _audioCapture.MayStop = false;
+
             lock (_audioLayers)
             {
+                // Called every update but only runs every second
                 SetupLayers(layerModel);
-                var spectrumData = AudioCaptureManager.GetSpectrumData(_lines);
-                if (!spectrumData.Any())
-                    return;
-
+                
                 var settings = (AudioPropertiesModel) layerModel.Properties;
                 switch (settings.Direction)
                 {
                     case Direction.TopToBottom:
                     case Direction.BottomToTop:
-                        ApplyVertical(spectrumData, settings);
+                        _lineSpectrum.SetupLayersVertical(layerModel.Height, _audioLayers);
                         break;
                     case Direction.LeftToRight:
                     case Direction.RightToLeft:
-                        ApplyHorizontal(spectrumData, settings);
+                        _lineSpectrum.SetupLayersHorizontal(layerModel.Width, _audioLayers);
                         break;
                 }
             }
@@ -124,97 +125,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 return layerPropertiesViewModel;
             return new AudioPropertiesViewModel(layerEditorViewModel);
         }
-
-        private void ApplyVertical(List<byte> spectrumData, AudioPropertiesModel settings)
-        {
-            var index = 0;
-            foreach (var audioLayer in _audioLayers)
-            {
-                int height;
-                if (spectrumData.Count > index)
-                    height = (int) Math.Round(spectrumData[index]/2.55);
-                else
-                    height = 0;
-
-                // Apply Sensitivity setting
-                height = height*settings.Sensitivity;
-
-                var newHeight = settings.Height/100.0*height;
-                if (newHeight >= audioLayer.Properties.Height)
-                    audioLayer.Properties.Height = newHeight;
-                else
-                    audioLayer.Properties.Height = audioLayer.Properties.Height - settings.FadeSpeed;
-                if (audioLayer.Properties.Height < 0)
-                    audioLayer.Properties.Height = 0;
-
-                // Reverse the direction if settings require it
-                if (settings.Direction == Direction.BottomToTop)
-                    audioLayer.Properties.Y = settings.Y + (settings.Height - audioLayer.Properties.Height);
-
-                FakeUpdate(settings, audioLayer);
-                index++;
-            }
-        }
-
-        private void ApplyHorizontal(List<byte> spectrumData, AudioPropertiesModel settings)
-        {
-            var index = 0;
-            foreach (var audioLayer in _audioLayers)
-            {
-                int width;
-                if (spectrumData.Count > index)
-                    width = (int) Math.Round(spectrumData[index]/2.55);
-                else
-                    width = 0;
-
-                // Apply Sensitivity setting
-                width = width*settings.Sensitivity;
-
-                var newWidth = settings.Width/100.0*width;
-                if (newWidth >= audioLayer.Properties.Width)
-                    audioLayer.Properties.Width = newWidth;
-                else
-                    audioLayer.Properties.Width = audioLayer.Properties.Width - settings.FadeSpeed;
-                if (audioLayer.Properties.Width < 0)
-                    audioLayer.Properties.Width = 0;
-
-                audioLayer.Properties.Brush = settings.Brush;
-                audioLayer.Properties.Contain = false;
-
-                // Reverse the direction if settings require it
-                if (settings.Direction == Direction.RightToLeft)
-                    audioLayer.Properties.X = settings.X + (settings.Width - audioLayer.Properties.Width);
-
-                FakeUpdate(settings, audioLayer);
-                index++;
-            }
-        }
-
-        /// <summary>
-        ///     Updates the layer manually faking the width and height for a properly working animation
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="audioLayer"></param>
-        private static void FakeUpdate(LayerPropertiesModel settings, LayerModel audioLayer)
-        {
-            // Call the regular update
-            audioLayer.LayerType?.Update(audioLayer, null);
-
-            // Store the original height and width
-            var oldHeight = audioLayer.Properties.Height;
-            var oldWidth = audioLayer.Properties.Width;
-
-            // Fake the height and width and update the animation
-            audioLayer.Properties.Width = settings.Width;
-            audioLayer.Properties.Height = settings.Height;
-            audioLayer.LastRender = DateTime.Now;
-            audioLayer.LayerAnimation?.Update(audioLayer, true);
-
-            // Restore the height and width
-            audioLayer.Properties.Height = oldHeight;
-            audioLayer.Properties.Width = oldWidth;
-        }
-
+        
         /// <summary>
         ///     Sets up the inner layers when the settings have changed
         /// </summary>
@@ -230,7 +141,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             var currentSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
             var currentType = _audioLayers.FirstOrDefault()?.LayerAnimation?.GetType();
 
-            if (currentSettings == _previousSettings && (layerModel.LayerAnimation.GetType() == currentType))
+            if (currentSettings == _previousSettings && layerModel.LayerAnimation.GetType() == currentType)
                 return;
 
             _previousSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
@@ -249,6 +160,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            _lineSpectrum = _audioCapture.GetLineSpectrum(_audioLayers.Count, 5, ScalingStrategy.Decibel);
         }
 
         private void SetupVertical(LayerModel layerModel)
