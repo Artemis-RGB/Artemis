@@ -72,19 +72,17 @@ namespace Artemis.Modules.Games.WoW
             _process = null;
         }
 
-        public override void Enable()
-        {
-            var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
-            if (tempProcess == null)
-                return;
-
-            _process = new ProcessSharp(tempProcess, MemoryType.Remote);
-
-            base.Enable();
-        }
-
         public override void Update()
         {
+            if (_process == null)
+            {
+                var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+                if (tempProcess == null)
+                    return;
+
+                _process = new ProcessSharp(tempProcess, MemoryType.Remote);
+            }
+
             if (ProfileModel == null || DataModel == null || _process == null)
                 return;
 

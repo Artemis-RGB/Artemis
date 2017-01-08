@@ -99,6 +99,11 @@ namespace Artemis.Modules.Abstract
 
             ProfileModel = profileModel;
             ProfileModel?.Activate(_luaManager);
+            if (ProfileModel != null)
+            {
+                Settings.LastProfile = ProfileModel.Name;
+                Settings.Save();
+            }
 
             RaiseProfileChangedEvent(new ProfileChangedEventArgs(ProfileModel));
         }

@@ -118,7 +118,7 @@ namespace Artemis.ViewModels.Profiles
 
             var renderLayers = GetRenderLayers();
             // Draw the current frame to the preview
-            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle(4);
+            var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle();
             var visual = new DrawingVisual();
             using (var drawingContext = visual.RenderOpen())
             {
