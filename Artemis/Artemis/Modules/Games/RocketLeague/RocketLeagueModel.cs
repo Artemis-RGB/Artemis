@@ -54,18 +54,21 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Updater.GetPointers();
             _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
-
-            var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
-            if (tempProcess == null)
-                return;
-
-            _memory = new Memory(tempProcess);
-
+            
             base.Enable();
         }
 
         public override void Update()
         {
+            if (_memory == null)
+            {
+                var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+                if (tempProcess == null)
+                    return;
+
+                _memory = new Memory(tempProcess);
+            }
+            
             if (ProfileModel == null || DataModel == null || _memory == null)
                 return;
 

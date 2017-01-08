@@ -21,4 +21,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
         [Description("Left to right")] LeftToRight,
         [Description("Right to left")] RightToLeft
     }
+
+    public enum ScalingStrategy
+    {
+        [Description("Decibel")] Decibel,
+        [Description("Linear")] Linear,
+        [Description("Square root")] Sqrt
+    }
 }

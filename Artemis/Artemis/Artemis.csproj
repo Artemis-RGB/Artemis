@@ -151,6 +151,10 @@
       <HintPath>..\packages\Colore.5.1.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="CSCore, Version=1.1.5992.18249, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSCore.1.1.0\lib\net35-client\CSCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CUE.NET, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CUE.NET.1.1.0.2\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
@@ -209,10 +213,6 @@
     </Reference>
     <Reference Include="MoonSharp.Interpreter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=921e73ce94aa17f8, processorArchitecture=MSIL">
       <HintPath>..\packages\MoonSharp.2.0.0.0\lib\net40-client\MoonSharp.Interpreter.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -489,9 +489,12 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCapture.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\FftEventArgs.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SampleAggregator.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\BaseSpectrumProvider.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\ISpectrumProvider.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\LineSpectrum.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SpectrumBase.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
