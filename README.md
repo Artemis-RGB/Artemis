@@ -1,7 +1,7 @@
 # Artemis
 [![GitHub release](https://img.shields.io/github/release/spoinkynl/Artemis.svg)]()
 [![Github All Releases](https://img.shields.io/github/downloads/spoinkynl/artemis/setup.exe.svg)]()
-[![GitHub license](https://img.shields.io/badge/license-AGPL-blue.svg)](https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-GPL3-blue.svg)](https://raw.githubusercontent.com/SpoinkyNL/Artemis/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/SpoinkyNL/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/stargazers)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
 
