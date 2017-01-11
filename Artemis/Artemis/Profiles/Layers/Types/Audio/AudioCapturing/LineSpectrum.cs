@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using Artemis.Profiles.Layers.Models;
+using System.Windows;
 using CSCore.DSP;
 
 namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
@@ -27,30 +26,36 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             }
         }
 
-        public void SetupLayersVertical(double height, List<LayerModel> audioLayers)
+        public void UpdateLinesVertical(double height, Point[] points)
         {
-            var fftBuffer = new float[(int)FftSize];
+            var fftBuffer = new float[(int) FftSize];
 
             // get the fft result from the spectrum provider
             if (!SpectrumProvider.GetFftData(fftBuffer, this))
                 return;
 
             var spectrumPoints = CalculateSpectrumPoints(height, fftBuffer);
-            foreach (var p in spectrumPoints)
-                audioLayers[p.SpectrumPointIndex].Height = p.Value;
+            for (var index = 0; index < spectrumPoints.Length; index++)
+            {
+                var spectrumPointData = spectrumPoints[index];
+                points[index].Y = spectrumPointData.Value;
+            }
         }
 
-        public void SetupLayersHorizontal(double width, List<LayerModel> audioLayers)
+        public void UpdateLinesHorizontal(double width, Point[] points)
         {
-            var fftBuffer = new float[(int)FftSize];
+            var fftBuffer = new float[(int) FftSize];
 
             // get the fft result from the spectrum provider
             if (!SpectrumProvider.GetFftData(fftBuffer, this))
                 return;
 
             var spectrumPoints = CalculateSpectrumPoints(width, fftBuffer);
-            foreach (var p in spectrumPoints)
-                audioLayers[p.SpectrumPointIndex].Width = p.Value;
+            for (var index = 0; index < spectrumPoints.Length; index++)
+            {
+                var spectrumPointData = spectrumPoints[index];
+                points[index].X = spectrumPointData.Value;
+            }
         }
     }
 }

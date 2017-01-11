@@ -89,13 +89,12 @@ namespace Artemis.DeviceProviders
 
         public override void UpdateDevice(Bitmap bitmap)
         {
-            throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
+            throw new NotSupportedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
         }
 
         public override bool TryEnable()
         {
-            throw new NotImplementedException(
-                "KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
+            throw new NotSupportedException("KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
         }
 
         /// <summary>

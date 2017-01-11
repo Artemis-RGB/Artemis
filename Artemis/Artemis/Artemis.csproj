@@ -494,6 +494,7 @@
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\BaseSpectrumProvider.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\ISpectrumProvider.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\LineSpectrum.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SingleSpectrum.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SpectrumBase.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">

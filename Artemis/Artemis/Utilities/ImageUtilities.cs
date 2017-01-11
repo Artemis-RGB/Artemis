@@ -56,6 +56,7 @@ namespace Artemis.Utilities
 
         public static Bitmap DrawingVisualToBitmap(DrawingVisual visual, Rect rect)
         {
+            // TODO: Improve performance by dividing by 4 here
             var bmp = new RenderTargetBitmap((int) rect.Width, (int) rect.Height, 96, 96, PixelFormats.Pbgra32);
             bmp.Render(visual);
 
