@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Timers;
 using CSCore;
 using CSCore.CoreAudioAPI;
@@ -12,32 +13,31 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
     public class AudioCapture
     {
         private const FftSize FftSize = CSCore.DSP.FftSize.Fft4096;
+        private readonly Timer _activityTimer;
+        private readonly Timer _volumeTimer;
+        private readonly double[] _volumeValues;
+        private SingleSpectrum _singleSpectrum;
         private WasapiLoopbackCapture _soundIn;
         private GainSource _source;
         private BasicSpectrumProvider _spectrumProvider;
         private GainSource _volume;
-        private Timer _timer;
+        private int _volumeIndex;
 
         public AudioCapture(ILogger logger, MMDevice device)
         {
             Logger = logger;
             Device = device;
+            DesiredAverage = 0.75;
 
-            _timer = new Timer(1000);
-            _timer.Elapsed += TimerOnElapsed;
+            _volumeValues = new double[5];
+            _volumeIndex = 0;
+            _activityTimer = new Timer(1000);
+            _activityTimer.Elapsed += ActivityTimerOnElapsed;
+            _volumeTimer = new Timer(200);
+            _volumeTimer.Elapsed += VolumeTimerOnElapsed;
         }
 
-        private void TimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            // If MayStop is true for longer than a second, this will stop the audio capture
-            if (MayStop)
-            {
-                Stop();
-                MayStop = false;
-            }
-            else
-                MayStop = true;
-        }
+        public double DesiredAverage { get; set; }
 
         public bool MayStop { get; set; }
 
@@ -52,7 +52,64 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
         public MMDevice Device { get; }
         public bool Running { get; set; }
 
-        public LineSpectrum GetLineSpectrum(int barCount, int volume, ScalingStrategy scalingStrategy)
+        private void VolumeTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (Volume <= 0)
+                Volume = 1;
+
+            var currentValue = _singleSpectrum.GetValue();
+            if (currentValue == null)
+                return;
+
+            _volumeValues[_volumeIndex] = currentValue.Value;
+
+            if (_volumeIndex == 4)
+            {
+                _volumeIndex = 0;
+            }
+            else
+            {
+                _volumeIndex++;
+                return;
+            }
+
+            var averageVolume = _volumeValues.Average();
+            // Don't adjust when there is virtually no audio
+            if (averageVolume < 0.01)
+                return;
+            // Don't bother when the volume with within a certain marigin
+            if (averageVolume > DesiredAverage - 0.1 && averageVolume < DesiredAverage + 0.1)
+                return;
+
+            if (averageVolume < DesiredAverage && Volume < 50)
+            {
+                Logger.Trace("averageVolume:{0} | DesiredAverage:{1} | Volume:{2} so increase.", currentValue,
+                    DesiredAverage, Volume);
+                Volume++;
+            }
+            else if (Volume > 1)
+            {
+                Logger.Trace("averageVolume:{0} | DesiredAverage:{1} | Volume:{2} so decrease.", currentValue,
+                    DesiredAverage, Volume);
+                Volume--;
+            }
+        }
+
+        private void ActivityTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            // If MayStop is true for longer than a second, this will stop the audio capture
+            if (MayStop)
+            {
+                Stop();
+                MayStop = false;
+            }
+            else
+            {
+                MayStop = true;
+            }
+        }
+
+        public LineSpectrum GetLineSpectrum(int barCount, ScalingStrategy scalingStrategy)
         {
             return new LineSpectrum(FftSize)
             {
@@ -64,10 +121,40 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             };
         }
 
-        public void Start()
+        public void Stop()
         {
+            if (!Running)
+                return;
+
+            Logger.Debug("Stopping audio capture for device: {0}", Device?.FriendlyName ?? "default");
+
+            try
+            {
+                _activityTimer.Stop();
+                _volumeTimer.Stop();
+
+                _soundIn.Stop();
+                _soundIn.Dispose();
+                _source.Dispose();
+                _soundIn = null;
+                _source = null;
+
+                Running = false;
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(e, "Failed to stop WASAPI audio capture");
+            }
+        }
+
+        public void Pulse()
+        {
+            MayStop = false;
+
             if (Running)
                 return;
+
+            Logger.Debug("Starting audio capture for device: {0}", Device?.FriendlyName ?? "default");
 
             try
             {
@@ -99,36 +186,18 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
                     }
                 };
 
+                _singleSpectrum = new SingleSpectrum(FftSize, _spectrumProvider);
+
+                _activityTimer.Start();
+                _volumeTimer.Start();
+
                 _soundIn.Start();
-                _timer.Start();
                 Running = true;
                 MayStop = false;
             }
             catch (Exception e)
             {
                 Logger.Warn(e, "Failed to start WASAPI audio capture");
-            }
-        }
-
-        public void Stop()
-        {
-            if (!Running)
-                return;
-
-            try
-            {
-                _timer.Stop();
-                _soundIn.Stop();
-                _soundIn.Dispose();
-                _source.Dispose();
-                _soundIn = null;
-                _source = null;
-
-                Running = false;
-            }
-            catch (Exception e)
-            {
-                Logger.Warn(e, "Failed to stop WASAPI audio capture");
             }
         }
     }
