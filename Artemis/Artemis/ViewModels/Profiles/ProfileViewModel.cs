@@ -167,7 +167,7 @@ namespace Artemis.ViewModels.Profiles
                         new Point(layerRect.BottomRight.X - 0.7, layerRect.BottomRight.Y - 0.7));
                 }
 
-                SelectedProfile.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(DrawType.Preview, null, true, drawingContext));
+                SelectedProfile?.RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(DrawType.Preview, null, true, drawingContext));
 
                 // Remove the clip
                 drawingContext.Pop();
@@ -380,7 +380,6 @@ namespace Artemis.ViewModels.Profiles
 
         public void Dispose()
         {
-            _keyboardPreviewCursor?.Dispose();
             _loopManager.RenderCompleted -= LoopManagerOnRenderCompleted;
             _deviceManager.OnKeyboardChanged -= DeviceManagerOnOnKeyboardChanged;
         }

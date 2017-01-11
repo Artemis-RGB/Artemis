@@ -49,7 +49,7 @@ namespace Artemis.DeviceProviders.Logitech
 
         public override void Disable()
         {
-            throw new NotImplementedException("Can only disable a keyboard");
+            throw new NotSupportedException("Can only disable a keyboard");
         }
     }
 }

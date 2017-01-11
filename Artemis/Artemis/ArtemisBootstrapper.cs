@@ -91,6 +91,7 @@ namespace Artemis
             JsonConvert.DefaultSettings = () => settings;
 
             //TODO DarthAffe 17.12.2016: Is this the right location for this?
+            //TODO Move to Mainmanager and make disposable
             ActiveWindowHelper.Initialize();
         }
 

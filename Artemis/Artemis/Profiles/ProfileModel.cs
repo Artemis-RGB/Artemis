@@ -108,8 +108,10 @@ namespace Artemis.Profiles
             Rect rect, bool preview)
         {
             renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == drawType).ToList();
+            if (!renderLayers.Any())
+                return;
+
             var visual = new DrawingVisual();
-            var layerModels = renderLayers.ToList();
             using (var c = visual.RenderOpen())
             {
                 // Setup the DrawingVisual's size
@@ -117,12 +119,12 @@ namespace Artemis.Profiles
                 c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, rect);
 
                 // Update the layers
-                foreach (var layerModel in layerModels)
+                foreach (var layerModel in renderLayers)
                     layerModel.Update(dataModel, preview, true);
                 RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, null));
 
                 // Draw the layers
-                foreach (var layerModel in layerModels)
+                foreach (var layerModel in renderLayers)
                     layerModel.Draw(dataModel, c, preview, true);
                 RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, c));
 

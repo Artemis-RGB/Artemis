@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -31,7 +30,6 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using IDropTarget = GongSolutions.Wpf.DragDrop.IDropTarget;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using Screen = Caliburn.Micro.Screen;
-using Timer = System.Timers.Timer;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -41,7 +39,6 @@ namespace Artemis.ViewModels.Profiles
         private readonly MetroDialogService _dialogService;
         private readonly LuaManager _luaManager;
         private readonly ModuleModel _moduleModel;
-        private readonly Timer _saveTimer;
         private readonly WindowService _windowService;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
@@ -69,10 +66,6 @@ namespace Artemis.ViewModels.Profiles
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
             _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
             LoadProfiles();
-
-            _saveTimer = new Timer(5000);
-            _saveTimer.Elapsed += ProfileSaveHandler;
-            _saveTimer.Start();
         }
 
         public ProfileViewModel ProfileViewModel { get; set; }
@@ -695,11 +688,6 @@ namespace Artemis.ViewModels.Profiles
             NotifyOfPropertyChange(() => LayerSelected);
         }
 
-        private void ProfileSaveHandler(object sender, ElapsedEventArgs e)
-        {
-            SaveSelectedProfile();
-        }
-
         public void SaveSelectedProfile()
         {
             if (_saving || SelectedProfile == null || _deviceManager.ChangingKeyboard)
@@ -779,9 +767,8 @@ namespace Artemis.ViewModels.Profiles
 
         public void Dispose()
         {
+            SaveSelectedProfile();
             ProfileViewModel.Dispose();
-            _saveTimer?.Stop();
-            _saveTimer?.Dispose();
             _watcher?.Dispose();
         }
 

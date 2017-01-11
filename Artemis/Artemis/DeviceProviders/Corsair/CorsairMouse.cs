@@ -34,7 +34,7 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override void Disable()
         {
-            throw new NotImplementedException("Can only disable a keyboard");
+            throw new NotSupportedException("Can only disable a keyboard");
         }
 
         public override void UpdateDevice(Bitmap bitmap)

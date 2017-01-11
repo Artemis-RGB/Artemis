@@ -76,6 +76,11 @@ namespace Artemis.Managers
                 return;
 
             _logger.Debug("Deactivate profile preview");
+
+            // Save the profile the editor was using
+            var activePreview = PreviewViewModules.FirstOrDefault(p => p.IsModuleActive);
+            activePreview?.ProfileEditor?.SaveSelectedProfile();
+
             var lastModule = _moduleManager.GetLastModule();
             if (lastModule != null)
                 _moduleManager.ChangeActiveModule(lastModule);
