@@ -355,7 +355,7 @@
     <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
-    <Compile Include="Managers\ProfileManager.cs" />
+    <Compile Include="Managers\PreviewManager.cs" />
     <Compile Include="Modules\Abstract\ModuleDataModel.cs" />
     <Compile Include="Modules\Abstract\ModuleModel.cs" />
     <Compile Include="Modules\Abstract\ModuleSettings.cs" />
@@ -622,6 +622,7 @@
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
     <Compile Include="Utilities\Converters\ValueConverters.cs" />
     <Compile Include="Utilities\DataReaders\DllManager.cs" />
+    <Compile Include="Utilities\EditorHelper.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />

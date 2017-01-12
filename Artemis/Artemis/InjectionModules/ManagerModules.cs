@@ -11,7 +11,7 @@ namespace Artemis.InjectionModules
             Bind<LoopManager>().ToSelf().InSingletonScope();
             Bind<DeviceManager>().ToSelf().InSingletonScope();
             Bind<ModuleManager>().ToSelf().InSingletonScope();
-            Bind<ProfileManager>().ToSelf().InSingletonScope();
+            Bind<PreviewManager>().ToSelf().InSingletonScope();
             Bind<LuaManager>().ToSelf().InSingletonScope();
         }
     }

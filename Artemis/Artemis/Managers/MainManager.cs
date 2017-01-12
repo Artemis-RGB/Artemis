@@ -22,14 +22,14 @@ namespace Artemis.Managers
         private readonly Timer _processTimer;
 
         public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
-            ModuleManager moduleManager, ProfileManager profileManager, PipeServer pipeServer,
+            ModuleManager moduleManager, PreviewManager previewManager, PipeServer pipeServer,
             GameStateWebServer gameStateWebServer)
         {
             Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
             ModuleManager = moduleManager;
-            ProfileManager = profileManager;
+            PreviewManager = previewManager;
             PipeServer = pipeServer;
 
             _processTimer = new Timer(1000);
@@ -64,7 +64,7 @@ namespace Artemis.Managers
         public LoopManager LoopManager { get; }
         public DeviceManager DeviceManager { get; set; }
         public ModuleManager ModuleManager { get; set; }
-        public ProfileManager ProfileManager { get; set; }
+        public PreviewManager PreviewManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
