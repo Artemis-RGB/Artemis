@@ -32,7 +32,6 @@ namespace Artemis.ViewModels.Profiles
         private DrawingImage _keyboardPreview;
         private Cursor _keyboardPreviewCursor;
         private bool _resizing;
-        private LayerModel _selectedLayer;
         private bool _showAll;
 
         public ProfileViewModel(DeviceManager deviceManager, LoopManager loopManager)
@@ -47,18 +46,9 @@ namespace Artemis.ViewModels.Profiles
         }
 
         public ModuleModel ModuleModel { get; set; }
-        public ProfileModel SelectedProfile => ModuleModel?.ProfileModel;
+        public LayerModel SelectedLayer { get; set; }
 
-        public LayerModel SelectedLayer
-        {
-            get { return _selectedLayer; }
-            set
-            {
-                if (Equals(value, _selectedLayer)) return;
-                _selectedLayer = value;
-                NotifyOfPropertyChange(() => SelectedLayer);
-            }
-        }
+        public ProfileModel SelectedProfile => ModuleModel?.ProfileModel;
 
         public DrawingImage KeyboardPreview
         {
@@ -380,9 +370,12 @@ namespace Artemis.ViewModels.Profiles
 
         public void Dispose()
         {
+            Disposed = true;
             _loopManager.RenderCompleted -= LoopManagerOnRenderCompleted;
             _deviceManager.OnKeyboardChanged -= DeviceManagerOnOnKeyboardChanged;
         }
+
+        public bool Disposed { get; set; }
 
         #endregion
     }

@@ -26,7 +26,6 @@ namespace Artemis.Modules.Abstract
             _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
             ModuleModel = moduleModel;
             Settings = moduleModel.Settings;
-            
 
             _mainManager.EnabledChanged += MainManagerOnEnabledChanged;
             _moduleManager.EffectChanged += ModuleManagerOnModuleChanged;
