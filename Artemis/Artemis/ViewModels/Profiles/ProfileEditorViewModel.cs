@@ -45,6 +45,8 @@ namespace Artemis.ViewModels.Profiles
         private ObservableCollection<string> _profileNames;
         private bool _saving;
         private FileSystemWatcher _watcher;
+        private ProfileViewModel _profileViewModel;
+        private LayerModel _selectedLayer;
 
         public ProfileEditorViewModel(DeviceManager deviceManager, LuaManager luaManager, ModuleModel moduleModel,
             ProfileViewModel profileViewModel, MetroDialogService dialogService, WindowService windowService)
@@ -62,13 +64,22 @@ namespace Artemis.ViewModels.Profiles
             ProfileViewModel.ModuleModel = _moduleModel;
 
             PropertyChanged += EditorStateHandler;
-            ProfileViewModel.PropertyChanged += LayerSelectedHandler;
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
             _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
             LoadProfiles();
         }
 
-        public ProfileViewModel ProfileViewModel { get; set; }
+        public ProfileViewModel ProfileViewModel
+        {
+            get { return _profileViewModel; }
+            set
+            {
+                if (Equals(value, _profileViewModel)) return;
+                _profileViewModel = value;
+                NotifyOfPropertyChange();
+                NotifyOfPropertyChange(nameof(LayerSelected));
+            }
+        }
 
         public bool EditorEnabled
             =>
@@ -76,6 +87,21 @@ namespace Artemis.ViewModels.Profiles
                 _deviceManager.ActiveKeyboard != null;
 
         public ProfileModel SelectedProfile => _moduleModel?.ProfileModel;
+        public LayerModel SelectedLayer
+        {
+            get { return _selectedLayer; }
+            set
+            {
+                if (_profileViewModel != null)
+                    _profileViewModel.SelectedLayer = value;
+                if (Equals(value, _selectedLayer))
+                    return;
+                
+                _selectedLayer = value;
+                NotifyOfPropertyChange(() => SelectedLayer);
+                NotifyOfPropertyChange(() => LayerSelected);
+            }
+        }
 
         public ObservableCollection<string> ProfileNames
         {
@@ -126,7 +152,7 @@ namespace Artemis.ViewModels.Profiles
         public PreviewSettings? PreviewSettings => _deviceManager.ActiveKeyboard?.PreviewSettings;
 
         public bool ProfileSelected => SelectedProfile != null;
-        public bool LayerSelected => SelectedProfile != null && ProfileViewModel.SelectedLayer != null;
+        public bool LayerSelected => SelectedProfile != null && SelectedLayer != null;
 
         public void DragOver(IDropInfo dropInfo)
         {
@@ -230,7 +256,7 @@ namespace Artemis.ViewModels.Profiles
 
         public void EditLayerFromDoubleClick()
         {
-            if (ProfileViewModel.SelectedLayer?.LayerType is FolderType)
+            if (SelectedLayer?.LayerType is FolderType)
                 return;
 
             EditLayer();
@@ -238,10 +264,10 @@ namespace Artemis.ViewModels.Profiles
 
         public void EditLayer()
         {
-            if (ProfileViewModel.SelectedLayer == null)
+            if (SelectedLayer == null)
                 return;
 
-            var selectedLayer = ProfileViewModel.SelectedLayer;
+            var selectedLayer = SelectedLayer;
             EditLayer(selectedLayer);
         }
 
@@ -290,7 +316,7 @@ namespace Artemis.ViewModels.Profiles
             if (SelectedProfile == null)
                 return null;
 
-            var layer = SelectedProfile.AddLayer(ProfileViewModel.SelectedLayer);
+            var layer = SelectedProfile.AddLayer(SelectedLayer);
             UpdateLayerList(layer);
 
             return layer;
@@ -314,7 +340,7 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void RemoveLayer()
         {
-            RemoveLayer(ProfileViewModel.SelectedLayer);
+            RemoveLayer(SelectedLayer);
         }
 
         /// <summary>
@@ -368,10 +394,10 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void CloneLayer()
         {
-            if (ProfileViewModel.SelectedLayer == null)
+            if (SelectedLayer == null)
                 return;
 
-            CloneLayer(ProfileViewModel.SelectedLayer);
+            CloneLayer(SelectedLayer);
         }
 
         /// <summary>
@@ -390,7 +416,7 @@ namespace Artemis.ViewModels.Profiles
         {
             // Update the UI
             Layers.Clear();
-            ProfileViewModel.SelectedLayer = null;
+            SelectedLayer = null;
 
             if (SelectedProfile != null)
                 Layers.AddRange(SelectedProfile.Layers);
@@ -402,7 +428,7 @@ namespace Artemis.ViewModels.Profiles
             Task.Factory.StartNew(() =>
             {
                 Thread.Sleep(100);
-                ProfileViewModel.SelectedLayer = selectModel;
+                SelectedLayer = selectModel;
             });
         }
 
@@ -678,14 +704,6 @@ namespace Artemis.ViewModels.Profiles
                 Layers.AddRange(SelectedProfile.Layers);
 
             NotifyOfPropertyChange(() => ProfileSelected);
-        }
-
-        private void LayerSelectedHandler(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != "SelectedLayer")
-                return;
-
-            NotifyOfPropertyChange(() => LayerSelected);
         }
 
         public void SaveSelectedProfile()

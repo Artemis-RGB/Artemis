@@ -57,7 +57,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             switch (direction)
             {
-                case Direction.BottomToTop:
+                case Direction.TopToBottom:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
                         var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
@@ -65,10 +65,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
                         barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
                     }
                     break;
-                case Direction.TopToBottom:
+                case Direction.BottomToTop:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
                         var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        clipRect.Y = clipRect.Y + layerModel.Height*4 - clipRect.Height;
                         var barRect = new RectangleGeometry(clipRect);
                         barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
                     }
@@ -115,9 +116,6 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 currentLines = (int) layerModel.Height;
                 currentHeight = layerModel.Width;
             }
-
-            // Let audio capture know it is being listened to
-            _audioCapture.Pulse();
 
             if (_lines != currentLines || _lineSpectrum == null)
             {

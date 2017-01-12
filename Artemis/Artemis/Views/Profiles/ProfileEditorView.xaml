@@ -185,7 +185,7 @@
                       cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]">
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior
-                        SelectedItem="{Binding ProfileViewModel.SelectedLayer, Mode=TwoWay}" />
+                        SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>
                 <TreeView.Resources>
                     <ResourceDictionary

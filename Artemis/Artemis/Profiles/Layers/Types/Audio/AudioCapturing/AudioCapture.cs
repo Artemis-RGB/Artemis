@@ -13,7 +13,6 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
     public class AudioCapture
     {
         private const FftSize FftSize = CSCore.DSP.FftSize.Fft4096;
-        private readonly Timer _activityTimer;
         private readonly Timer _volumeTimer;
         private readonly double[] _volumeValues;
         private SingleSpectrum _singleSpectrum;
@@ -31,26 +30,21 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
             _volumeValues = new double[5];
             _volumeIndex = 0;
-            _activityTimer = new Timer(1000);
-            _activityTimer.Elapsed += ActivityTimerOnElapsed;
             _volumeTimer = new Timer(200);
             _volumeTimer.Elapsed += VolumeTimerOnElapsed;
+
+            Start();
         }
 
-        public double DesiredAverage { get; set; }
-
-        public bool MayStop { get; set; }
-
         public ILogger Logger { get; }
+        public MMDevice Device { get; }
+        public double DesiredAverage { get; set; }
 
         public float Volume
         {
             get { return _volume.Volume; }
             set { _volume.Volume = value; }
         }
-
-        public MMDevice Device { get; }
-        public bool Running { get; set; }
 
         private void VolumeTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
@@ -95,20 +89,6 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             }
         }
 
-        private void ActivityTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            // If MayStop is true for longer than a second, this will stop the audio capture
-            if (MayStop)
-            {
-                Stop();
-                MayStop = false;
-            }
-            else
-            {
-                MayStop = true;
-            }
-        }
-
         public LineSpectrum GetLineSpectrum(int barCount, ScalingStrategy scalingStrategy)
         {
             return new LineSpectrum(FftSize)
@@ -121,39 +101,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             };
         }
 
-        public void Stop()
+        private void Start()
         {
-            if (!Running)
-                return;
-
-            Logger.Debug("Stopping audio capture for device: {0}", Device?.FriendlyName ?? "default");
-
-            try
-            {
-                _activityTimer.Stop();
-                _volumeTimer.Stop();
-
-                _soundIn.Stop();
-                _soundIn.Dispose();
-                _source.Dispose();
-                _soundIn = null;
-                _source = null;
-
-                Running = false;
-            }
-            catch (Exception e)
-            {
-                Logger.Warn(e, "Failed to stop WASAPI audio capture");
-            }
-        }
-
-        public void Pulse()
-        {
-            MayStop = false;
-
-            if (Running)
-                return;
-
             Logger.Debug("Starting audio capture for device: {0}", Device?.FriendlyName ?? "default");
 
             try
@@ -188,12 +137,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
                 _singleSpectrum = new SingleSpectrum(FftSize, _spectrumProvider);
 
-                _activityTimer.Start();
                 _volumeTimer.Start();
-
                 _soundIn.Start();
-                Running = true;
-                MayStop = false;
             }
             catch (Exception e)
             {

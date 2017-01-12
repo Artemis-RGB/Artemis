@@ -9,7 +9,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
 {
-    public class ProfileManager
+    public class PreviewManager
     {
         private readonly DeviceManager _deviceManager;
         private readonly GeneralSettings _generalSettings;
@@ -17,7 +17,7 @@ namespace Artemis.Managers
         private readonly LoopManager _loopManager;
         private readonly ModuleManager _moduleManager;
 
-        public ProfileManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
+        public PreviewManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
             LoopManager loopManager)
         {
             _logger = logger;
@@ -32,7 +32,7 @@ namespace Artemis.Managers
             profilePreviewTimer.Elapsed += SetupProfilePreview;
             profilePreviewTimer.Start();
 
-            _logger.Info("Intialized ProfileManager");
+            _logger.Info("Intialized PreviewManager");
         }
 
         public List<ModuleViewModel> PreviewViewModules { get; set; }
