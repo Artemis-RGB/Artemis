@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using CSCore.DSP;
 
@@ -26,36 +28,17 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             }
         }
 
-        public void UpdateLinesVertical(double height, Point[] points)
+        public List<double> GetLineValues(double height)
         {
             var fftBuffer = new float[(int) FftSize];
 
             // get the fft result from the spectrum provider
             if (!SpectrumProvider.GetFftData(fftBuffer, this))
-                return;
+                return null;
 
             var spectrumPoints = CalculateSpectrumPoints(height, fftBuffer);
-            for (var index = 0; index < spectrumPoints.Length; index++)
-            {
-                var spectrumPointData = spectrumPoints[index];
-                points[index].Y = spectrumPointData.Value;
-            }
-        }
+            return spectrumPoints?.Select(s => s.Value).ToList();
 
-        public void UpdateLinesHorizontal(double width, Point[] points)
-        {
-            var fftBuffer = new float[(int) FftSize];
-
-            // get the fft result from the spectrum provider
-            if (!SpectrumProvider.GetFftData(fftBuffer, this))
-                return;
-
-            var spectrumPoints = CalculateSpectrumPoints(width, fftBuffer);
-            for (var index = 0; index < spectrumPoints.Length; index++)
-            {
-                var spectrumPointData = spectrumPoints[index];
-                points[index].X = spectrumPointData.Value;
-            }
         }
     }
 }
