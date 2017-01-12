@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
+using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
@@ -13,10 +15,11 @@ namespace Artemis.Profiles.Layers.Types.Audio
 {
     public class AudioType : ILayerType
     {
+        private const GeometryCombineMode CombineMode = GeometryCombineMode.Union;
         private readonly AudioCapture _audioCapture;
         private int _lines;
         private LineSpectrum _lineSpectrum;
-        private Point[] _points;
+        private List<double> _lineValues;
 
         public AudioType(AudioCaptureManager audioCaptureManager)
         {
@@ -42,31 +45,56 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            var parentX = layerModel.X * 4;
-            var parentY = layerModel.Y * 4;
-            var pen = new Pen(layerModel.Brush, 4);
+            if (_lineValues == null)
+                return;
+
+            var parentX = layerModel.X;
+            var parentY = layerModel.Y;
             var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
-            if (direction == Direction.BottomToTop || direction == Direction.TopToBottom)
+
+            // Create a geometry that will be formed by all the bars
+            Geometry barGeometry = new RectangleGeometry();
+
+            switch (direction)
             {
-                for (var index = 0; index < _points.Length; index++)
-                {
-                    var startPoint = new Point(index * 4 + 2 + parentX, _points[index].Y * 4 + parentY);
-                    var endPoint = new Point(index * 4 + 2 + parentX, parentY);
-                    var clip = new Rect(startPoint, endPoint);
-                    clip.Width = 4;
-                    c.PushClip(new RectangleGeometry(new Rect(startPoint, endPoint)));
-                    var point = new Point(index * 4 + 2 + parentX, _points[index].Y * 4 + parentY);
-                    c.DrawLine(pen, startPoint, endPoint);
-                }
+                case Direction.BottomToTop:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                    }
+                    break;
+                case Direction.TopToBottom:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                    }
+                    break;
+                case Direction.LeftToRight:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                    }
+                    break;
+                default:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                    }
+                    break;
             }
-            else
-            {
-                for (var index = 0; index < _points.Length; index++)
-                {
-                    var point = new Point(_points[index].X * 4 + parentX, index * 4 + 2 + parentY);
-                    c.DrawLine(pen, point, new Point(parentX, index * 4 + 2 + parentY));
-                }
-            }
+
+            // Push the created geometry
+            c.PushClip(barGeometry);
+            BrushDraw(layerModel, c);
+            c.Pop();
         }
 
         public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
@@ -88,23 +116,18 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 currentHeight = layerModel.Width;
             }
 
-            if (_lines != currentLines)
-            {
-                _lines = currentLines;
-                _points = new Point[_lines];
-                _lineSpectrum = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel);
-            }
-
             // Let audio capture know it is being listened to
             _audioCapture.Pulse();
 
-            if (_lineSpectrum == null)
-                return;
+            if (_lines != currentLines || _lineSpectrum == null)
+            {
+                _lines = currentLines;
+                _lineSpectrum = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel);
+            }
 
-            if (direction == Direction.BottomToTop || direction == Direction.TopToBottom)
-                _lineSpectrum.UpdateLinesVertical(currentHeight, _points);
-            else
-                _lineSpectrum.UpdateLinesHorizontal(currentHeight, _points);
+            var newLineValues = _lineSpectrum?.GetLineValues(currentHeight);
+            if (newLineValues != null)
+                _lineValues = newLineValues;
         }
 
         public void SetupProperties(LayerModel layerModel)
@@ -125,6 +148,32 @@ namespace Artemis.Profiles.Layers.Types.Audio
             if (layerPropertiesViewModel is AudioPropertiesViewModel)
                 return layerPropertiesViewModel;
             return new AudioPropertiesViewModel(layerEditorViewModel);
+        }
+
+        public void BrushDraw(LayerModel layerModel, DrawingContext c)
+        {
+            // If an animation is present, let it handle the drawing
+            if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
+            {
+                layerModel.LayerAnimation.Draw(layerModel, c);
+                return;
+            }
+
+            // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
+            var rect = layerModel.Properties.Contain
+                ? layerModel.LayerRect()
+                : new Rect(layerModel.Properties.X*4, layerModel.Properties.Y*4,
+                    layerModel.Properties.Width*4, layerModel.Properties.Height*4);
+
+            var clip = layerModel.LayerRect();
+
+            // Can't meddle with the original brush because it's frozen.
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = layerModel.Opacity;
+
+            c.PushClip(new RectangleGeometry(clip));
+            c.DrawRectangle(brush, null, rect);
+            c.Pop();
         }
     }
 }
