@@ -2,6 +2,7 @@
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;

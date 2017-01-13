@@ -1,4 +1,5 @@
 ﻿using Artemis.Profiles.Layers.Abstract;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Folder

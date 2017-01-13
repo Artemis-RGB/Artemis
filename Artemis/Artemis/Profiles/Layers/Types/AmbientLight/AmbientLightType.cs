@@ -13,6 +13,7 @@ using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Newtonsoft.Json;
 
