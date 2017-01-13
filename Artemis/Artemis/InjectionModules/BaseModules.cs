@@ -1,4 +1,5 @@
 ﻿using Artemis.DeviceProviders;
+using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
@@ -8,7 +9,6 @@ using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
 using Artemis.ViewModels;
 using Artemis.ViewModels.Abstract;
-using Artemis.ViewModels.Profiles;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -18,10 +18,16 @@ namespace Artemis.InjectionModules
     {
         public override void Load()
         {
+            #region Models
+
+            Bind<ProfileEditorModel>().ToSelf();
+            Bind<LayerEditorModel>().ToSelf();
+
+            #endregion
+
             #region ViewModels
 
             Bind<ShellViewModel>().ToSelf().InSingletonScope();
-            Bind<ProfileViewModel>().ToSelf();
             Bind<ProfileEditorViewModel>().ToSelf();
             Bind<DebugViewModel>().ToSelf().InSingletonScope();
             Kernel.Bind(x =>

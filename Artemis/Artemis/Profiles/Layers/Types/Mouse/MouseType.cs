@@ -8,6 +8,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Mouse

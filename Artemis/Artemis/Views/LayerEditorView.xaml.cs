@@ -1,6 +1,6 @@
 ﻿using MahApps.Metro.Controls;
 
-namespace Artemis.Views.Profiles
+namespace Artemis.Views
 {
     /// <summary>
     ///     Interaction logic for LayerEditorView.xaml
