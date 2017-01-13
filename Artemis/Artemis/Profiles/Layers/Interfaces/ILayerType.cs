@@ -2,6 +2,7 @@
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Newtonsoft.Json;
 

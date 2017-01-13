@@ -13,6 +13,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyPress

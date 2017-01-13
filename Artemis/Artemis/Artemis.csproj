@@ -356,6 +356,8 @@
     <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\PreviewManager.cs" />
+    <Compile Include="Models\LayerEditorModel.cs" />
+    <Compile Include="Models\ProfileEditorModel.cs" />
     <Compile Include="Modules\Abstract\ModuleDataModel.cs" />
     <Compile Include="Modules\Abstract\ModuleModel.cs" />
     <Compile Include="Modules\Abstract\ModuleSettings.cs" />
@@ -654,17 +656,16 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerTweenViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerDynamicPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditorViewModel.cs" />
     <Compile Include="Profiles\Layers\Abstract\LayerPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Headset\HeadsetPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Folder\FolderPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
+    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Views\DebugView.xaml.cs">
@@ -709,7 +710,7 @@
     <Compile Include="Views\Profiles\LayerDynamicPropertiesView.xaml.cs">
       <DependentUpon>LayerDynamicPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\LayerEditorView.xaml.cs">
+    <Compile Include="Views\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesView.xaml.cs">
@@ -721,7 +722,7 @@
     <Compile Include="Views\Profiles\LayerTweenView.xaml.cs">
       <DependentUpon>LayerTweenView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\ProfileEditorView.xaml.cs">
+    <Compile Include="Views\ProfileEditorView.xaml.cs">
       <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
@@ -952,7 +953,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\LayerEditorView.xaml">
+    <Page Include="Views\LayerEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -968,7 +969,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\ProfileEditorView.xaml">
+    <Page Include="Views\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

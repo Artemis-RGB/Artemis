@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Audio
