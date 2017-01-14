@@ -63,26 +63,8 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
             WidthProperties.Apply(LayerModel);
             OpacityProperties.Apply(LayerModel);
 
-            ((AngularBrushPropertiesModel)LayerModel.Properties).GradientStops = GetGradientStops().Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
-
+            LayerModel.Properties.Brush = Brush;
             LayerModel.LayerAnimation = SelectedLayerAnimation;
-        }
-
-        private GradientStopCollection GetGradientStops()
-        {
-            LinearGradientBrush linearBrush = Brush as LinearGradientBrush;
-            if (linearBrush != null)
-                return linearBrush.GradientStops;
-
-            RadialGradientBrush radialBrush = Brush as RadialGradientBrush;
-            if (radialBrush != null)
-                return radialBrush.GradientStops;
-
-            SolidColorBrush solidBrush = Brush as SolidColorBrush;
-            if (solidBrush != null)
-                return new GradientStopCollection(new[] { new GradientStop(solidBrush.Color, 0), new GradientStop(solidBrush.Color, 1) });
-
-            return null;
         }
 
         #endregion
