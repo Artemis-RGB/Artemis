@@ -17,6 +17,7 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
         #region Properties & Fields
 
         private GradientDrawer _gradientDrawer;
+        private GradientDrawer _gradientDrawerThumbnail;
 
         public string Name => "Angular Brush";
         public bool ShowInEdtor => true;
@@ -27,20 +28,21 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
         public AngularBrushType()
         {
             _gradientDrawer = new GradientDrawer();
+            _gradientDrawerThumbnail = new GradientDrawer(18, 18);
         }
 
         #region Methods
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
-            //TODO DarthAffe 14.01.2017: This could be replaced with the real brush but it complaints about the thread too
+            _gradientDrawerThumbnail.GradientStops = GetGradientStops(layer.Brush).Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
+            _gradientDrawerThumbnail.Update();
+
             Rect thumbnailRect = new Rect(0, 0, 18, 18);
             DrawingVisual visual = new DrawingVisual();
             using (DrawingContext c = visual.RenderOpen())
-                if (layer.Properties.Brush != null)
-                    c.DrawRectangle(layer.Properties.Brush,
-                        new Pen(new SolidColorBrush(Colors.White), 1),
-                        thumbnailRect);
+                if (_gradientDrawerThumbnail.Brush != null)
+                    c.DrawRectangle(_gradientDrawerThumbnail.Brush.Clone(), new Pen(new SolidColorBrush(Colors.White), 1), thumbnailRect);
 
             DrawingImage image = new DrawingImage(visual.Drawing);
             return image;
@@ -53,10 +55,9 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
 
             Brush origBrush = layerModel.Brush;
 
-            //TODO DarthAffe 14.01.2017: Check if an update is needed
             _gradientDrawer.GradientStops = GetGradientStops(layerModel.Brush).Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
             _gradientDrawer.Update();
-            layerModel.Brush = _gradientDrawer.Brush.Clone();
+            layerModel.Brush = _gradientDrawer.Brush;
 
             // If an animation is present, let it handle the drawing
             if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
