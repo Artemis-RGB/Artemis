@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
+using Artemis.Events;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
@@ -11,20 +15,35 @@ using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
+using CSCore.CoreAudioAPI;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
     public class AudioType : ILayerType
     {
+        private readonly AudioCaptureManager _audioCaptureManager;
         private const GeometryCombineMode CombineMode = GeometryCombineMode.Union;
-        private readonly AudioCapture _audioCapture;
+        private AudioCapture _audioCapture;
         private int _lines;
         private LineSpectrum _lineSpectrum;
         private List<double> _lineValues;
+        private int _drawCount;
 
         public AudioType(AudioCaptureManager audioCaptureManager)
         {
-            _audioCapture = audioCaptureManager.GetAudioCapture(null);
+            _audioCaptureManager = audioCaptureManager;
+
+            // TODO: Setup according to settings
+            _audioCapture = _audioCaptureManager.GetAudioCapture(MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
+            _audioCaptureManager.AudioDeviceChanged += OnAudioDeviceChanged;
+        }
+
+        private void OnAudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
+        {
+            // TODO: Check if layer must use default
+            // TODO: Check recording type
+            _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultPlayback);
+            _lines = 0;
         }
 
         public string Name => "Keyboard - Audio visualization";
@@ -46,6 +65,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
+            _drawCount++;
             if (_lineValues == null)
                 return;
 
@@ -136,8 +156,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             layerModel.Properties = new AudioPropertiesModel(layerModel.Properties)
             {
-                FadeSpeed = 0.2,
-                Sensitivity = 2
+                DeviceType = MmDeviceType.Ouput,
+                Device = "Default",
+                Direction = Direction.BottomToTop,
+                ScalingStrategy = ScalingStrategy.Decibel
             };
         }
 
