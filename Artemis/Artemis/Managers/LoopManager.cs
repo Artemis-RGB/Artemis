@@ -3,13 +3,10 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
-using System.Windows.Media;
 using Artemis.DeviceProviders;
 using Artemis.ViewModels;
 using Ninject.Extensions.Logging;
 using Color = System.Drawing.Color;
-using Timer = System.Timers.Timer;
 
 namespace Artemis.Managers
 {
@@ -21,7 +18,8 @@ namespace Artemis.Managers
         private readonly DebugViewModel _debugViewModel;
         private readonly DeviceManager _deviceManager;
         private readonly ILogger _logger;
-        private readonly Timer _loopTimer;
+        //private readonly Timer _loopTimer;
+        private readonly Task _loopTask;
         private readonly ModuleManager _moduleManager;
 
         public LoopManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
@@ -33,10 +31,10 @@ namespace Artemis.Managers
             _debugViewModel = debugViewModel;
 
             // Setup timers
-            _loopTimer = new Timer(40);
-            _loopTimer.Elapsed += LoopTimerOnElapsed;
-            _loopTimer.Start();
-
+            //_loopTimer = new Timer(40);
+            //_loopTimer.Elapsed += LoopTimerOnElapsed;
+            //_loopTimer.Start();
+            _loopTask = Task.Factory.StartNew(ProcessLoop);
             _logger.Info("Intialized LoopManager");
         }
 
@@ -49,21 +47,44 @@ namespace Artemis.Managers
 
         public void Dispose()
         {
-            _loopTimer.Stop();
-            _loopTimer.Dispose();
+            _loopTask.Dispose();
+            //_loopTimer.Stop();
+            //_loopTimer.Dispose();
         }
 
-        private void LoopTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        private void ProcessLoop()
         {
-            try
+            //TODO DarthAffe 14.01.2017: A stop-condition and a real cleanup instead of just aborting might be better
+            while (true)
             {
-                Render();
-            }
-            catch (Exception e)
-            {
-                _logger.Warn(e, "Exception in render loop");
+                try
+                {
+                    long preUpdateTicks = DateTime.Now.Ticks;
+
+                    Render();
+
+                    int sleep = (int)(40f - ((DateTime.Now.Ticks - preUpdateTicks) / 10000f));
+                    if (sleep > 0)
+                        Thread.Sleep(sleep);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warn(e, "Exception in render loop");
+                }
             }
         }
+
+        //private void LoopTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
+        //{
+        //    try
+        //    {
+        //        Render();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.Warn(e, "Exception in render loop");
+        //    }
+        //}
 
         public Task StartAsync()
         {
