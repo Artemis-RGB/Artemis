@@ -56,6 +56,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -65,6 +66,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>EAC088BE27A2DE790AE6F37A020409F4A1B5EC0E</ManifestCertificateThumbprint>
@@ -491,6 +493,13 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
+    <Compile Include="Profiles\Layers\Types\AngularBrush\AngularBrushPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AngularBrush\AngularBrushPropertiesView.xaml.cs">
+      <DependentUpon>AngularBrushPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\AngularBrush\AngularBrushPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\AngularBrush\AngularBrushType.cs" />
+    <Compile Include="Profiles\Layers\Types\AngularBrush\Drawing\GradientDrawer.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCapture.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
     <Compile Include="Events\AudioDeviceChangedEventArgs.cs" />
@@ -861,6 +870,10 @@
     <Page Include="Profiles\Layers\Types\AmbientLight\AmbientLightPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profiles\Layers\Types\AngularBrush\AngularBrushPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
