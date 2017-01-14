@@ -33,7 +33,7 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
         {
             set
             {
-                int hash = value.GetHashCode();
+                int hash = GetHash(value);
                 if (_lastGradientHash != hash)
                 {
                     _gradientStops = FixGradientStops(value);
@@ -174,6 +174,14 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
                 stops.Add(new Tuple<double, Color>(1, lastStop.Item2));
 
             return stops;
+        }
+
+        private static int GetHash(IList<Tuple<double, Color>> sequence)
+        {
+            unchecked
+            {
+                return sequence.Aggregate(487, (current, item) => (((current * 31) + item.Item1.GetHashCode()) * 31) + item.Item2.GetHashCode());
+            }
         }
 
         #endregion
