@@ -40,7 +40,7 @@ using Screen = Caliburn.Micro.Screen;
 
 namespace Artemis.ViewModels
 {
-    public sealed class ProfileEditorViewModel : Screen, IDropTarget, IDisposable
+    public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
         private readonly DeviceManager _deviceManager;
         private readonly MetroDialogService _dialogService;
@@ -68,16 +68,22 @@ namespace Artemis.ViewModels
             PropertyChanged += EditorStateHandler;
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
             _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
-            _loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
             LoadProfiles();
         }
 
-        public void Dispose()
+        public new void OnActivate()
         {
+            base.OnActivate();
+
+            _loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
+        }
+
+        public new void OnDeactivate(bool close)
+        {
+            base.OnDeactivate(close);
+
             SaveSelectedProfile();
-            ProfileEditorModel.Dispose();
             _loopManager.RenderCompleted -= LoopManagerOnRenderCompleted;
-            _deviceManager.OnKeyboardChanged -= DeviceManagerOnOnKeyboardChanged;
         }
 
         #region LUA
@@ -154,11 +160,10 @@ namespace Artemis.ViewModels
             get { return SelectedProfile?.Name; }
             set
             {
-                if (value == SelectedProfile?.Name)
-                    return;
-
-                _moduleModel.ChangeProfile(ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, _moduleModel, value));
+                SaveSelectedProfile();
                 NotifyOfPropertyChange(() => SelectedProfileName);
+                if (value != null)
+                    ProfileEditorModel.ChangeProfileByName(_moduleModel, value);
             }
         }
 
@@ -206,6 +211,15 @@ namespace Artemis.ViewModels
 
             ProfileEditorModel.EditLayer(SelectedLayer, _moduleModel.DataModel);
             UpdateLayerList(SelectedLayer);
+        }
+
+        public void EditLayer(LayerModel layerModel)
+        {
+            if (layerModel == null)
+                return;
+
+            ProfileEditorModel.EditLayer(layerModel, _moduleModel.DataModel);
+            UpdateLayerList(layerModel);
         }
 
         public LayerModel AddLayer()
@@ -355,6 +369,7 @@ namespace Artemis.ViewModels
                 return;
 
             LoadProfiles();
+            _moduleModel.ChangeProfile(profile);
         }
 
         public async void RenameProfile()
@@ -362,8 +377,11 @@ namespace Artemis.ViewModels
             if (SelectedProfile == null)
                 return;
 
+            var renameProfile = SelectedProfile;
             await ProfileEditorModel.RenameProfile(SelectedProfile);
+
             LoadProfiles();
+            _moduleModel.ChangeProfile(renameProfile);
         }
 
         public async void DuplicateProfile()
@@ -371,8 +389,12 @@ namespace Artemis.ViewModels
             if (SelectedProfile == null)
                 return;
 
-            await ProfileEditorModel.DuplicateProfile(SelectedProfile);
+            var newProfle = await ProfileEditorModel.DuplicateProfile(SelectedProfile);
+            if (newProfle == null)
+                return;
+
             LoadProfiles();
+            _moduleModel.ChangeProfile(newProfle);
         }
 
         public async void DeleteProfile()
@@ -380,8 +402,12 @@ namespace Artemis.ViewModels
             if (SelectedProfile == null)
                 return;
 
-            await ProfileEditorModel.DeleteProfile(SelectedProfile, _moduleModel);
+            var confirmed = await ProfileEditorModel.DeleteProfile(SelectedProfile, _moduleModel);
+            if (!confirmed)
+                return;
+
             LoadProfiles();
+            ProfileEditorModel.ChangeProfileByName(_moduleModel, null);
         }
 
         public async void ImportProfile()
@@ -393,8 +419,12 @@ namespace Artemis.ViewModels
                 return;
             }
 
-            await ProfileEditorModel.ImportProfile(_moduleModel);
+            var importProfile = await ProfileEditorModel.ImportProfile(_moduleModel);
+            if (importProfile == null)
+                return;
+
             LoadProfiles();
+            _moduleModel.ChangeProfile(importProfile);
         }
 
         public void ExportProfile()

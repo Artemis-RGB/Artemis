@@ -153,50 +153,54 @@ namespace Artemis.Models
             ProfileProvider.RenameProfile(profileModel, profileModel.Name);
         }
 
-        public async Task DuplicateProfile(ProfileModel selectedProfile)
+        public async Task<ProfileModel> DuplicateProfile(ProfileModel selectedProfile)
         {
             var newProfile = GeneralHelpers.Clone(selectedProfile);
-            var name = await GetValidProfileName("Rename profile", "Please enter a unique new profile name");
+            var name = await GetValidProfileName("Duplicate profile", "Please enter a unique new profile name");
             // User cancelled
             if (name == null)
-                return;
+                return null;
             var doRename = await MakeProfileUnique(newProfile, name, newProfile.Name);
             if (!doRename)
-                return;
+                return null;
 
             // Make sure it's not default, in case of copying a default profile
             newProfile.IsDefault = false;
             ProfileProvider.AddOrUpdate(newProfile);
+
+            return newProfile;
         }
 
-        public async Task DeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
+        public async Task<bool> DeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
         {
             var confirm = await _dialogService.ShowQuestionMessageBox("Delete profile",
                 $"Are you sure you want to delete the profile named: {selectedProfile.Name}?\n\n" +
                 "This cannot be undone.");
             if (!confirm.Value)
-                return;
+                return false;
 
             var defaultProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, moduleModel, "Default");
             var deleteProfile = selectedProfile;
 
             moduleModel.ChangeProfile(defaultProfile);
             ProfileProvider.DeleteProfile(deleteProfile);
+
+            return true;
         }
 
-        public async Task ImportProfile(ModuleModel moduleModel)
+        public async Task<ProfileModel> ImportProfile(ModuleModel moduleModel)
         {
             var dialog = new OpenFileDialog {Filter = "Artemis profile (*.json)|*.json"};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
-                return;
+                return null;
 
             var profileModel = ProfileProvider.LoadProfileIfValid(dialog.FileName);
             if (profileModel == null)
             {
                 _dialogService.ShowErrorMessageBox("Oh noes, the profile you provided is invalid. " +
                                                    "If this keeps happening, please make an issue on GitHub and provide the profile.");
-                return;
+                return null;
             }
 
             // Verify the game
@@ -204,7 +208,7 @@ namespace Artemis.Models
             {
                 _dialogService.ShowErrorMessageBox(
                     $"Oh oops! This profile is ment for {profileModel.GameName}, not {moduleModel.Name} :c");
-                return;
+                return null;
             }
 
             // Verify the keyboard
@@ -216,7 +220,7 @@ namespace Artemis.Models
                     "You can still import it but you'll probably have to do some adjusting\n\n" +
                     "Continue?");
                 if (!adjustKeyboard.Value)
-                    return;
+                    return null;
 
                 // Resize layers that are on the full keyboard width
                 profileModel.ResizeLayers(deviceManager.ActiveKeyboard);
@@ -232,13 +236,22 @@ namespace Artemis.Models
             var name = await GetValidProfileName("Rename profile", "Please enter a unique new profile name");
             // User cancelled
             if (name == null)
-                return;
+                return null;
             var doRename = await MakeProfileUnique(profileModel, name, profileModel.Name);
             if (!doRename)
-                return;
+                return null;
 
             profileModel.IsDefault = false;
             ProfileProvider.AddOrUpdate(profileModel);
+            return profileModel;
+        }
+
+        public void ChangeProfileByName(ModuleModel moduleModel, string profileName)
+        {
+            if (string.IsNullOrEmpty(profileName))
+                profileName = "Default";
+
+            moduleModel.ChangeProfile(ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, moduleModel, profileName));
         }
 
         private async Task<string> GetValidProfileName(string title, string text)
