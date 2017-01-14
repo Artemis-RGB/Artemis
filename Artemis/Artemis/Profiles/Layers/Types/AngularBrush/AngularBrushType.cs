@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
@@ -51,7 +53,8 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
 
             Brush origBrush = layerModel.Brush;
 
-            _gradientDrawer.GradientStops = properties.GradientStops;
+            //TODO DarthAffe 14.01.2017: Check if an update is needed
+            _gradientDrawer.GradientStops = GetGradientStops(layerModel.Brush).Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
             _gradientDrawer.Update();
             layerModel.Brush = _gradientDrawer.Brush.Clone();
 
@@ -103,6 +106,23 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
         public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel, LayerPropertiesViewModel layerPropertiesViewModel)
         {
             return (layerPropertiesViewModel as AngularBrushPropertiesViewModel) ?? new AngularBrushPropertiesViewModel(layerEditorViewModel);
+        }
+
+        private GradientStopCollection GetGradientStops(Brush brush)
+        {
+            LinearGradientBrush linearBrush = brush as LinearGradientBrush;
+            if (linearBrush != null)
+                return linearBrush.GradientStops;
+
+            RadialGradientBrush radialBrush = brush as RadialGradientBrush;
+            if (radialBrush != null)
+                return radialBrush.GradientStops;
+
+            SolidColorBrush solidBrush = brush as SolidColorBrush;
+            if (solidBrush != null)
+                return new GradientStopCollection(new[] { new GradientStop(solidBrush.Color, 0), new GradientStop(solidBrush.Color, 1) });
+
+            return null;
         }
 
         #endregion

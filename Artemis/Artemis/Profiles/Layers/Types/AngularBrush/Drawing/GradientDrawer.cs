@@ -65,7 +65,7 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
 
         private void CreateBrush()
         {
-            _bitmap = new WriteableBitmap(10, 10, 96, 96, PixelFormats.Bgra32, null);
+            _bitmap = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null);
             Brush = new ImageBrush(_bitmap) { Stretch = Stretch.UniformToFill };
         }
 
