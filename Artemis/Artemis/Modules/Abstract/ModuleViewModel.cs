@@ -1,9 +1,9 @@
-﻿using Artemis.Events;
+﻿using Artemis.DAL;
+using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
 using Artemis.ViewModels;
-using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 using Ninject;
 using Ninject.Extensions.Logging;
@@ -13,23 +13,33 @@ namespace Artemis.Modules.Abstract
 {
     public abstract class ModuleViewModel : Screen
     {
-        private readonly ModuleManager _moduleManager;
         private readonly MainManager _mainManager;
-        private readonly IKernel _kernel;
+        private readonly ModuleManager _moduleManager;
+        private readonly GeneralSettings _generalSettings;
         private ModuleSettings _settings;
-        private GeneralSettings _generalSettings;
 
         public ModuleViewModel(MainManager mainManager, ModuleModel moduleModel, IKernel kernel)
         {
             _mainManager = mainManager;
-            _kernel = kernel;
             _moduleManager = mainManager.ModuleManager;
-            _generalSettings = DAL.SettingsProvider.Load<GeneralSettings>();
+            _generalSettings = SettingsProvider.Load<GeneralSettings>();
             ModuleModel = moduleModel;
             Settings = moduleModel.Settings;
 
             _mainManager.EnabledChanged += MainManagerOnEnabledChanged;
             _moduleManager.EffectChanged += ModuleManagerOnModuleChanged;
+            
+            // ReSharper disable once VirtualMemberCallInConstructor
+            if (!UsesProfileEditor)
+                return;
+
+            IParameter[] args =
+            {
+                new ConstructorArgument("mainManager", _mainManager),
+                new ConstructorArgument("moduleModel", ModuleModel),
+                new ConstructorArgument("lastProfile", Settings.LastProfile)
+            };
+            ProfileEditor = kernel.Get<ProfileEditorViewModel>(args);
         }
 
         public ProfileEditorViewModel ProfileEditor { get; set; }
@@ -142,24 +152,13 @@ namespace Artemis.Modules.Abstract
         protected override void OnActivate()
         {
             base.OnActivate();
-
-            if (!UsesProfileEditor)
-                return;
-
-            IParameter[] args =
-            {
-                new ConstructorArgument("mainManager", _mainManager),
-                new ConstructorArgument("moduleModel", ModuleModel),
-                new ConstructorArgument("lastProfile", Settings.LastProfile)
-            };
-            ProfileEditor = _kernel.Get<ProfileEditorViewModel>(args);
+            ProfileEditor?.OnActivate();
         }
 
         protected override void OnDeactivate(bool close)
         {
             base.OnDeactivate(close);
-            ProfileEditor?.Dispose();
-            ProfileEditor = null;
+            ProfileEditor?.OnDeactivate(close);
         }
     }
 }
