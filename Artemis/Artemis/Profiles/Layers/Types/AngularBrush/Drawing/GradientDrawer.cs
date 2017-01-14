@@ -43,7 +43,19 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
             }
         }
 
-        public PointF Center { get; set; } = new PointF(0.5f, 0.5f);
+        private PointF _center = new PointF(0.5f, 0.5f);
+        public PointF Center
+        {
+            get { return _center; }
+            set
+            {
+                if (_center != value)
+                {
+                    _center = value;
+                    _isDirty = true;
+                }
+            }
+        }
 
         public Brush Brush { get; private set; }
 
