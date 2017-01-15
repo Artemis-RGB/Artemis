@@ -25,7 +25,7 @@ namespace Artemis.Models
         private readonly DialogService _dialogService;
         private readonly WindowService _windowService;
         private FileSystemWatcher _watcher;
-        private ProfileModel _luaProfile;
+        private ModuleModel _luaModule;
 
         public ProfileEditorModel(WindowService windowService, MetroDialogService dialogService,
             DeviceManager deviceManager, LuaManager luaManager)
@@ -290,7 +290,7 @@ namespace Artemis.Models
 
         #region LUA
 
-        public void OpenLuaEditor(ProfileModel profileModel)
+        public void OpenLuaEditor(ModuleModel moduleModel)
         {
             // Clean up old environment
             DisposeLuaWatcher();
@@ -301,12 +301,12 @@ namespace Artemis.Models
             file.Dispose();
 
             // Add instructions to LUA script if it's a new file
-            if (string.IsNullOrEmpty(profileModel.LuaScript))
-                profileModel.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
-            File.WriteAllText(Path.GetTempPath() + fileName, profileModel.LuaScript);
+            if (string.IsNullOrEmpty(moduleModel.ProfileModel.LuaScript))
+                moduleModel.ProfileModel.LuaScript = Encoding.UTF8.GetString(Resources.lua_placeholder);
+            File.WriteAllText(Path.GetTempPath() + fileName, moduleModel.ProfileModel.LuaScript);
 
             // Watch the file for changes
-            _luaProfile = profileModel;
+            _luaModule = moduleModel;
             _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
             _watcher.Changed += LuaFileChanged;
             _watcher.EnableRaisingEvents = true;
@@ -319,7 +319,7 @@ namespace Artemis.Models
 
         private void LuaFileChanged(object sender, FileSystemEventArgs args)
         {
-            if (_luaProfile == null)
+            if (_luaModule == null)
             {
                 DisposeLuaWatcher();
                 return;
@@ -328,18 +328,18 @@ namespace Artemis.Models
             if (args.ChangeType != WatcherChangeTypes.Changed)
                 return;
 
-            lock (_luaProfile)
+            lock (_luaModule)
             {
                 using (var fs = new FileStream(args.FullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     using (var sr = new StreamReader(fs))
                     {
-                        _luaProfile.LuaScript = sr.ReadToEnd();
+                        _luaModule.ProfileModel.LuaScript = sr.ReadToEnd();
                     }
                 }
 
-                ProfileProvider.AddOrUpdate(_luaProfile);
-                _luaManager.SetupLua(_luaProfile);
+                ProfileProvider.AddOrUpdate(_luaModule.ProfileModel);
+                _luaManager.SetupLua(_luaModule.ProfileModel);
             }
         }
 

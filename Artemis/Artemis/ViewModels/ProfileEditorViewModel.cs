@@ -94,7 +94,7 @@ namespace Artemis.ViewModels
                 return;
             try
             {
-                ProfileEditorModel.OpenLuaEditor(SelectedProfile);
+                ProfileEditorModel.OpenLuaEditor(_moduleModel);
             }
             catch (Exception e)
             {

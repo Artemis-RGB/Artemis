@@ -192,8 +192,7 @@ namespace Artemis.Profiles
 
         public void Activate(LuaManager luaManager)
         {
-            if (!Equals(luaManager.ProfileModel, this) || luaManager.ProfileModel.LuaScript != LuaScript)
-                luaManager.SetupLua(this);
+            luaManager.SetupLua(this);
         }
 
         public void Deactivate(LuaManager luaManager)

@@ -15,6 +15,7 @@ namespace Artemis.Modules.General.GeneralProfile
             CurrentTime = new CurrentTime();
             Keyboard = new KbDataModel();
             ActiveWindow = new ActiveWindow();
+            Audio = new Audio();
         }
 
         public CpuDataModel Cpu { get; set; }
@@ -24,6 +25,30 @@ namespace Artemis.Modules.General.GeneralProfile
         public CurrentTime CurrentTime { get; set; }
         public KbDataModel Keyboard { get; set; }
         public ActiveWindow ActiveWindow { get; set; }
+        public Audio Audio { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Audio
+    {
+        public double Volume { get; set; }
+        public double Peak { get; set; }
+        public AudioDevice Recording { get; set; } = new AudioDevice();
+        public AudioDevice Playback { get; set; } = new AudioDevice();
+    }
+
+    [MoonSharpUserData]
+    public class AudioDevice
+    {
+        public float OverallPeak { get; set; }
+        public float Channel1Peak { get; set; }
+        public float Channel2Peak { get; set; }
+        public float Channel3Peak { get; set; }
+        public float Channel4Peak { get; set; }
+        public float Channel5Peak { get; set; }
+        public float Channel6Peak { get; set; }
+        public float Channel7Peak { get; set; }
+        public float Channel8Peak { get; set; }
     }
 
     [MoonSharpUserData]
