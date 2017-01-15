@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Windows.Media;
+﻿using System.Linq;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Utilities;
@@ -8,9 +6,9 @@ using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 
-namespace Artemis.Profiles.Layers.Types.AngularBrush
+namespace Artemis.Profiles.Layers.Types.ConicalBrush
 {
-    public class AngularBrushPropertiesViewModel : LayerPropertiesViewModel
+    public class ConicalBrushPropertiesViewModel : LayerPropertiesViewModel
     {
         #region Properties & Fields
 
@@ -38,7 +36,7 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
 
         #region Constructors
 
-        public AngularBrushPropertiesViewModel(LayerEditorViewModel editorVm)
+        public ConicalBrushPropertiesViewModel(LayerEditorViewModel editorVm)
             : base(editorVm)
         {
             LayerAnimations = new BindableCollection<ILayerAnimation>(editorVm.LayerAnimations);

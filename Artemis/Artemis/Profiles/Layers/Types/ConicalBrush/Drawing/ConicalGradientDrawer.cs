@@ -8,9 +8,9 @@ using System.Windows.Media.Imaging;
 using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 
-namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
+namespace Artemis.Profiles.Layers.Types.ConicalBrush.Drawing
 {
-    public class GradientDrawer
+    public class ConicalGradientDrawer
     {
         #region Constants
 
@@ -63,11 +63,11 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
 
         #region Constructors
 
-        public GradientDrawer()
+        public ConicalGradientDrawer()
             : this(100, 100)
         { }
 
-        public GradientDrawer(int width, int height)
+        public ConicalGradientDrawer(int width, int height)
         {
             this._width = width;
             this._height = height;
