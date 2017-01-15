@@ -7,9 +7,12 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.DAL;
+using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Utilities;
+using CSCore.CoreAudioAPI;
 using Newtonsoft.Json;
 using SpotifyAPI.Local;
 
@@ -17,19 +20,21 @@ namespace Artemis.Modules.General.GeneralProfile
 {
     public class GeneralProfileModel : ModuleModel
     {
-        private List<PerformanceCounter> _cores;
-        private int _cpuFrames;
+        private readonly AudioCaptureManager _audioCaptureManager;
         private DateTime _lastMusicUpdate;
-        private PerformanceCounter _overallCpu;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
 
-        public GeneralProfileModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
+        public GeneralProfileModel(DeviceManager deviceManager, LuaManager luaManager,
+            AudioCaptureManager audioCaptureManager) : base(deviceManager, luaManager)
         {
+            _audioCaptureManager = audioCaptureManager;
             _lastMusicUpdate = DateTime.Now;
 
             Settings = SettingsProvider.Load<GeneralProfileSettings>();
             DataModel = new GeneralProfileDataModel();
+
+            audioCaptureManager.AudioDeviceChanged += AudioDeviceChanged;
         }
 
         public override string Name => "GeneralProfile";
@@ -40,6 +45,7 @@ namespace Artemis.Modules.General.GeneralProfile
         {
             SetupCpu();
             SetupSpotify();
+            SetupAudio();
 
             base.Enable();
         }
@@ -52,6 +58,7 @@ namespace Artemis.Modules.General.GeneralProfile
             UpdateDay(dataModel);
             UpdateKeyStates(dataModel);
             UpdateActiveWindow(dataModel);
+            UpdateAudio(dataModel);
         }
 
         #region Current Time
@@ -67,7 +74,58 @@ namespace Artemis.Modules.General.GeneralProfile
 
         #endregion
 
+        #region Audio
+
+        private MMDevice _defaultRecording;
+        private MMDevice _defaultPlayback;
+
+        private void SetupAudio()
+        {
+            _defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            _defaultRecording = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+        }
+
+        private void AudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
+        {
+            _defaultRecording = e.DefaultRecording;
+            _defaultPlayback = e.DefaultPlayback;
+        }
+
+        private void UpdateAudio(GeneralProfileDataModel dataModel)
+        {
+            var recording = AudioMeterInformation.FromDevice(_defaultRecording);
+            var playback = AudioMeterInformation.FromDevice(_defaultPlayback);
+
+            dataModel.Audio.Recording.OverallPeak = recording.PeakValue;
+            for (var i = 0; i < recording.GetChannelsPeakValues(recording.MeteringChannelCount).Length; i++)
+            {
+                // Only support up to 8 channels until lists are supported natively
+                if (i > 7)
+                    break;
+
+                var peakValue = recording.GetChannelsPeakValues(recording.MeteringChannelCount)[i];
+                typeof(AudioDevice).GetProperty($"Channel{i + 1}Peak").SetValue(dataModel.Audio.Recording, peakValue);
+            }
+
+            dataModel.Audio.Playback.OverallPeak = playback.PeakValue;
+            for (var i = 0; i < playback.GetChannelsPeakValues(playback.MeteringChannelCount).Length; i++)
+            {
+                // Only support up to 8 channels until lists are supported natively
+                if (i > 7)
+                    break;
+
+                var peakValue = playback.GetChannelsPeakValues(playback.MeteringChannelCount)[i];
+                typeof(AudioDevice).GetProperty($"Channel{i + 1}Peak").SetValue(dataModel.Audio.Playback, peakValue);
+            }
+        }
+
+        #endregion
+
         #region CPU
+
+        private List<PerformanceCounter> _cores;
+        private int _cpuFrames;
+        private PerformanceCounter _overallCpu;
 
         private void SetupCpu()
         {
