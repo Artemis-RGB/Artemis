@@ -1,38 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Brush = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
 
-namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
+namespace Artemis.Profiles.Layers.Types.ConicalBrush.Drawing
 {
-    public class GradientDrawer
+    public class ConicalGradientDrawer
     {
         #region Constants
 
         private static readonly double ORIGIN = Math.Atan2(-1, 0);
 
-        #endregion  
+        #endregion
 
         #region Properties & Fields
+
+        private int _width;
+        private int _height;
+
+        private bool _isDirty = true;
+        private int _lastGradientHash;
 
         private WriteableBitmap _bitmap;
 
         private IList<Tuple<double, Color>> _gradientStops;
         public IList<Tuple<double, Color>> GradientStops
         {
-            set { _gradientStops = FixGradientStops(value); }
+            set
+            {
+                int hash = GetHash(value);
+                if (_lastGradientHash != hash)
+                {
+                    _gradientStops = FixGradientStops(value);
+                    _lastGradientHash = hash;
+                    _isDirty = true;
+                }
+            }
+        }
+
+        private PointF _center = new PointF(0.5f, 0.5f);
+        public PointF Center
+        {
+            get { return _center; }
+            set
+            {
+                if (_center != value)
+                {
+                    _center = value;
+                    _isDirty = true;
+                }
+            }
         }
 
         public Brush Brush { get; private set; }
 
         #endregion
 
+        #region Constructors
+
+        public ConicalGradientDrawer()
+            : this(100, 100)
+        { }
+
+        public ConicalGradientDrawer(int width, int height)
+        {
+            this._width = width;
+            this._height = height;
+        }
+
+        #endregion
+
         #region Methods
 
-        public void Update()
+        public void Update(bool force = false)
         {
+            if (!_isDirty && !force) return;
+
             if (_bitmap == null)
                 CreateBrush();
 
@@ -41,31 +89,27 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
                 _bitmap.Lock();
                 byte* buffer = (byte*)_bitmap.BackBuffer.ToPointer();
 
-                int width = _bitmap.PixelWidth;
-                double widthHalf = width / 2.0;
-
-                int height = _bitmap.PixelHeight;
-                double heightHalf = height / 2.0;
-
-                for (int y = 0; y < height; y++)
-                    for (int x = 0; x < width; x++)
+                for (int y = 0; y < _height; y++)
+                    for (int x = 0; x < _width; x++)
                     {
-                        int offset = (((y * width) + x) * 4);
+                        int offset = (((y * _width) + x) * 4);
 
-                        double gradientOffset = CalculateGradientOffset(x, y, widthHalf, heightHalf);
+                        double gradientOffset = CalculateGradientOffset(x, y, _width * Center.X, _height * Center.Y);
                         GetColor(_gradientStops, gradientOffset,
                             ref buffer[offset + 3], ref buffer[offset + 2],
                             ref buffer[offset + 1], ref buffer[offset]);
                     }
 
-                _bitmap.AddDirtyRect(new Int32Rect(0, 0, width, height));
+                _bitmap.AddDirtyRect(new Int32Rect(0, 0, _width, _height));
                 _bitmap.Unlock();
             }
+
+            _isDirty = false;
         }
 
         private void CreateBrush()
         {
-            _bitmap = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null);
+            _bitmap = new WriteableBitmap(_width, _height, 96, 96, PixelFormats.Bgra32, null);
             Brush = new ImageBrush(_bitmap) { Stretch = Stretch.UniformToFill };
         }
 
@@ -127,7 +171,7 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
             colB = (byte)((afterColor.B - beforeColor.B) * blendFactor + beforeColor.B);
         }
 
-        private IList<Tuple<double, Color>> FixGradientStops(IList<Tuple<double, Color>> gradientStops)
+        private static IList<Tuple<double, Color>> FixGradientStops(IList<Tuple<double, Color>> gradientStops)
         {
             if (gradientStops == null) return new List<Tuple<double, Color>>();
 
@@ -142,6 +186,14 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush.Drawing
                 stops.Add(new Tuple<double, Color>(1, lastStop.Item2));
 
             return stops;
+        }
+
+        private static int GetHash(IList<Tuple<double, Color>> sequence)
+        {
+            unchecked
+            {
+                return sequence.Aggregate(487, (current, item) => (((current * 31) + item.Item1.GetHashCode()) * 31) + item.Item2.GetHashCode());
+            }
         }
 
         #endregion
