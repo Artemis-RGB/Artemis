@@ -20,9 +20,5 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
         { }
 
         #endregion
-
-        #region Methods
-
-        #endregion
     }
 }
