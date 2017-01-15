@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using Artemis.Profiles.Layers.Models;
 
-namespace Artemis.Profiles.Layers.Types.AngularBrush
+namespace Artemis.Profiles.Layers.Types.ConicalBrush
 {
-    public class AngularBrushPropertiesModel : LayerPropertiesModel
+    public class ConicalBrushPropertiesModel : LayerPropertiesModel
     {
         #region Properties & Fields
 
@@ -15,13 +15,9 @@ namespace Artemis.Profiles.Layers.Types.AngularBrush
 
         #region Constructors
 
-        public AngularBrushPropertiesModel(LayerPropertiesModel properties = null)
+        public ConicalBrushPropertiesModel(LayerPropertiesModel properties = null)
             : base(properties)
         { }
-
-        #endregion
-
-        #region Methods
 
         #endregion
     }
