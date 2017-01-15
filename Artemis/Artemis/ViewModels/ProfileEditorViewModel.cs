@@ -64,6 +64,7 @@ namespace Artemis.ViewModels
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
             ProfileEditorModel = profileEditorModel;
+            ShowAll = true;
 
             PropertyChanged += EditorStateHandler;
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
