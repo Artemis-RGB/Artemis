@@ -32,10 +32,9 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             _volumeIndex = 0;
             _volumeTimer = new Timer(200);
             _volumeTimer.Elapsed += VolumeTimerOnElapsed;
-
             Start();
         }
-
+        
         public ILogger Logger { get; }
         public MMDevice Device { get; }
         public double DesiredAverage { get; set; }

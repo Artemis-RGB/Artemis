@@ -110,6 +110,11 @@ namespace Artemis.Managers
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
             LoopManager.StartAsync();
+            foreach (var overlayModule in ModuleManager.OverlayModules)
+            {
+                if (overlayModule.Settings.IsEnabled)
+                    overlayModule.Enable();
+            }
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 
@@ -119,6 +124,11 @@ namespace Artemis.Managers
         public void DisableProgram()
         {
             Logger.Debug("Disabling program");
+            foreach (var overlayModule in ModuleManager.OverlayModules)
+            {
+                if (overlayModule.Settings.IsEnabled)
+                    overlayModule.Dispose();
+            }
             LoopManager.Stop();
             ProgramEnabled = false;
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));

@@ -93,9 +93,10 @@ namespace Artemis.Modules.General.GeneralProfile
 
         private void UpdateAudio(GeneralProfileDataModel dataModel)
         {
+         
             var recording = AudioMeterInformation.FromDevice(_defaultRecording);
             var playback = AudioMeterInformation.FromDevice(_defaultPlayback);
-
+            dataModel.Audio.Volume = AudioEndpointVolume.FromDevice(_defaultPlayback).GetMasterVolumeLevelScalar();
             dataModel.Audio.Recording.OverallPeak = recording.PeakValue;
             for (var i = 0; i < recording.GetChannelsPeakValues(recording.MeteringChannelCount).Length; i++)
             {
