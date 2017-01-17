@@ -31,8 +31,7 @@ namespace Artemis.Modules.General.GeneralProfile
     [MoonSharpUserData]
     public class Audio
     {
-        public double Volume { get; set; }
-        public double Peak { get; set; }
+        public float Volume { get; set; }
         public AudioDevice Recording { get; set; } = new AudioDevice();
         public AudioDevice Playback { get; set; } = new AudioDevice();
     }

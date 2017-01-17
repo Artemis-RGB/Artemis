@@ -8,12 +8,12 @@ namespace Artemis.Modules.Overlays.OverlayProfile
 {
     public class OverlayProfileModel : ModuleModel
     {
-        private readonly GeneralProfileModel _generalProfileModel;
+        private readonly GeneralProfileModel _generalProfileModule;
 
         public OverlayProfileModel(DeviceManager deviceManager, LuaManager luaManager,
-            [Named(nameof(GeneralProfileModel))] ModuleModel generalProfileModel) : base(deviceManager, luaManager)
+            [Named(nameof(GeneralProfileModel))] ModuleModel generalProfileModule) : base(deviceManager, luaManager)
         {
-            _generalProfileModel = (GeneralProfileModel) generalProfileModel;
+            _generalProfileModule = (GeneralProfileModel) generalProfileModule;
             Settings = SettingsProvider.Load<OverlayProfileSettings>();
             DataModel = new OverlayProfileDataModel();
         }
@@ -24,9 +24,11 @@ namespace Artemis.Modules.Overlays.OverlayProfile
 
         public override void Update()
         {
-            // TODO: Find a clean way to update the parent profile model
-            ((OverlayProfileDataModel) DataModel).GeneralDataModel =
-                (GeneralProfileDataModel) _generalProfileModel.DataModel;
+            var dataModel = (OverlayProfileDataModel) DataModel;
+
+            if (!_generalProfileModule.IsInitialized)
+                _generalProfileModule.Update();
+            dataModel.GeneralDataModel = (GeneralProfileDataModel) _generalProfileModule.DataModel;
         }
     }
 }

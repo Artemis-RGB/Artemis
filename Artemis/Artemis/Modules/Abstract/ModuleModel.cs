@@ -98,7 +98,8 @@ namespace Artemis.Modules.Abstract
                 return;
 
             ProfileModel = profileModel;
-            ProfileModel?.Activate(_luaManager);
+            if (!IsOverlay)
+                ProfileModel?.Activate(_luaManager);
             if (ProfileModel != null)
             {
                 Settings.LastProfile = ProfileModel.Name;

@@ -31,9 +31,6 @@ namespace Artemis.Managers
             _debugViewModel = debugViewModel;
 
             // Setup timers
-            //_loopTimer = new Timer(40);
-            //_loopTimer.Elapsed += LoopTimerOnElapsed;
-            //_loopTimer.Start();
             _loopTask = Task.Factory.StartNew(ProcessLoop);
             _logger.Info("Intialized LoopManager");
         }
@@ -48,8 +45,6 @@ namespace Artemis.Managers
         public void Dispose()
         {
             _loopTask.Dispose();
-            //_loopTimer.Stop();
-            //_loopTimer.Dispose();
         }
 
         private void ProcessLoop()
@@ -72,19 +67,8 @@ namespace Artemis.Managers
                     _logger.Warn(e, "Exception in render loop");
                 }
             }
+            // ReSharper disable once FunctionNeverReturns
         }
-
-        //private void LoopTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        //{
-        //    try
-        //    {
-        //        Render();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _logger.Warn(e, "Exception in render loop");
-        //    }
-        //}
 
         public Task StartAsync()
         {
