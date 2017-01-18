@@ -52,8 +52,8 @@ namespace Artemis.Managers
             //TODO DarthAffe 14.01.2017: A stop-condition and a real cleanup instead of just aborting might be better
             while (true)
             {
-                try
-                {
+//                try
+//                {
                     long preUpdateTicks = DateTime.Now.Ticks;
 
                     Render();
@@ -61,11 +61,11 @@ namespace Artemis.Managers
                     int sleep = (int)(40f - ((DateTime.Now.Ticks - preUpdateTicks) / 10000f));
                     if (sleep > 0)
                         Thread.Sleep(sleep);
-                }
-                catch (Exception e)
-                {
-                    _logger.Warn(e, "Exception in render loop");
-                }
+//                }
+//                catch (Exception e)
+//                {
+//                    _logger.Warn(e, "Exception in render loop");
+//                }
             }
             // ReSharper disable once FunctionNeverReturns
         }
@@ -207,19 +207,19 @@ namespace Artemis.Managers
             if (keyboard == null)
                 return;
 
-            KeyboardBitmap = keyboard.KeyboardBitmap(4);
+            KeyboardBitmap = keyboard.KeyboardBitmap();
             KeyboardBitmap.SetResolution(96, 96);
 
-            MouseBitmap = new Bitmap(40, 40);
+            MouseBitmap = new Bitmap(10, 10);
             MouseBitmap.SetResolution(96, 96);
 
-            HeadsetBitmap = new Bitmap(40, 40);
+            HeadsetBitmap = new Bitmap(10, 10);
             HeadsetBitmap.SetResolution(96, 96);
 
-            GenericBitmap = new Bitmap(40, 40);
+            GenericBitmap = new Bitmap(10, 10);
             GenericBitmap.SetResolution(96, 96);
 
-            MousematBitmap = new Bitmap(40, 40);
+            MousematBitmap = new Bitmap(10, 10);
             MousematBitmap.SetResolution(96, 96);
 
             using (var g = Graphics.FromImage(KeyboardBitmap))

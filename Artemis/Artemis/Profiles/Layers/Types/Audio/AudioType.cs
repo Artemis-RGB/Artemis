@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Events;
+using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
@@ -122,6 +123,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
         public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             layerModel.ApplyProperties(true);
+            _audioCapture.Pulse();
 
             var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
 

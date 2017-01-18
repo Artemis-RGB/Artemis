@@ -1,4 +1,5 @@
 ﻿using Artemis.DeviceProviders;
+using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
@@ -103,9 +104,6 @@ namespace Artemis.InjectionModules
                     .SelectAllClasses()
                     .InheritedFrom<ILayerType>()
                     .BindToSelf());
-
-            // Type helpers
-            Bind<AudioCaptureManager>().ToSelf().InSingletonScope();
 
             #endregion
 

@@ -503,7 +503,7 @@
     <Compile Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushType.cs" />
     <Compile Include="Profiles\Layers\Types\ConicalBrush\Drawing\ConicalGradientDrawer.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCapture.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
+    <Compile Include="Managers\AudioCaptureManager.cs" />
     <Compile Include="Events\AudioDeviceChangedEventArgs.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\BaseSpectrumProvider.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\ISpectrumProvider.cs" />

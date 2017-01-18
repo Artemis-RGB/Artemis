@@ -4,11 +4,15 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using Point = System.Drawing.Point;
 
 namespace Artemis.Utilities
 {
     public class ImageUtilities
     {
+        private static RenderTargetBitmap _rBmp;
+
         /// <summary>
         ///     Resize the image to the specified width and height.
         /// </summary>
@@ -56,21 +60,26 @@ namespace Artemis.Utilities
 
         public static Bitmap DrawingVisualToBitmap(DrawingVisual visual, Rect rect)
         {
-            // TODO: Improve performance by dividing by 4 here
-            var bmp = new RenderTargetBitmap((int) rect.Width, (int) rect.Height, 96, 96, PixelFormats.Pbgra32);
-            bmp.Render(visual);
+            var width = (int) rect.Width;
+            var height = (int) rect.Height;
 
-            var encoder = new BmpBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bmp));
+            // RenderTargetBitmap construction is expensive, only do it when needed
+            if (_rBmp?.PixelHeight != height || _rBmp?.PixelWidth != width)
+                _rBmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
 
-            Bitmap bitmap;
-            using (var stream = new MemoryStream())
-            {
-                encoder.Save(stream);
-                bitmap = new Bitmap(stream);
-            }
+            _rBmp.Render(visual);
+            return GetBitmap(_rBmp);
+        }
 
-            return bitmap;
+        private static Bitmap GetBitmap(BitmapSource source)
+        {
+            var bmp = new Bitmap(source.PixelWidth, source.PixelHeight, PixelFormat.Format32bppPArgb);
+            bmp.SetResolution(96, 96);
+            var data = bmp.LockBits(new Rectangle(Point.Empty, bmp.Size), ImageLockMode.WriteOnly,
+                PixelFormat.Format32bppPArgb);
+            source.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
+            bmp.UnlockBits(data);
+            return bmp;
         }
 
         /// <summary>

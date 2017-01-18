@@ -13,6 +13,7 @@ namespace Artemis.InjectionModules
             Bind<ModuleManager>().ToSelf().InSingletonScope();
             Bind<PreviewManager>().ToSelf().InSingletonScope();
             Bind<LuaManager>().ToSelf().InSingletonScope();
+            Bind<AudioCaptureManager>().ToSelf().InSingletonScope();
         }
     }
 }

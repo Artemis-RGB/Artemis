@@ -12,9 +12,11 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 {
     public class AudioCapture
     {
-        private const FftSize FftSize = CSCore.DSP.FftSize.Fft4096;
+        private const FftSize FftSize = CSCore.DSP.FftSize.Fft1024;
         private readonly Timer _volumeTimer;
         private readonly double[] _volumeValues;
+        private readonly Timer _disableTimer;
+        private bool _mayStop;
         private SingleSpectrum _singleSpectrum;
         private WasapiLoopbackCapture _soundIn;
         private GainSource _source;
@@ -30,11 +32,12 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
             _volumeValues = new double[5];
             _volumeIndex = 0;
+            _disableTimer = new Timer(1000);
+            _disableTimer.Elapsed += CheckStop;
             _volumeTimer = new Timer(200);
             _volumeTimer.Elapsed += VolumeTimerOnElapsed;
-            Start();
         }
-        
+
         public ILogger Logger { get; }
         public MMDevice Device { get; }
         public double DesiredAverage { get; set; }
@@ -44,6 +47,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             get { return _volume.Volume; }
             set { _volume.Volume = value; }
         }
+
+        public bool Running { get; set; }
 
         private void VolumeTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
@@ -100,12 +105,36 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             };
         }
 
+        /// <summary>
+        ///     Keeps the audio capture active, when not called for longer than 1 sec the capture will
+        ///     stop capturing until Pulse is called again
+        /// </summary>
+        public void Pulse()
+        {
+            _mayStop = false;
+            if (!Running)
+                Start();
+        }
+
+        private void CheckStop(object sender, ElapsedEventArgs e)
+        {
+            if (_mayStop)
+            {
+                Logger.Debug("Stopping idle audio capture for device: {0}", Device?.FriendlyName ?? "default");
+                Stop();
+            }
+            else
+                _mayStop = true;
+        }
+
         private void Start()
         {
             Logger.Debug("Starting audio capture for device: {0}", Device?.FriendlyName ?? "default");
 
             try
             {
+                Stop();
+
                 _soundIn = new WasapiLoopbackCapture();
                 _soundIn.Initialize();
                 // Not sure if this null check is needed but doesnt hurt
@@ -135,14 +164,39 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
                 };
 
                 _singleSpectrum = new SingleSpectrum(FftSize, _spectrumProvider);
+                _mayStop = false;
 
+                _disableTimer.Start();
                 _volumeTimer.Start();
                 _soundIn.Start();
+
+                Running = true;
             }
             catch (Exception e)
             {
                 Logger.Warn(e, "Failed to start WASAPI audio capture");
             }
+        }
+
+        private void Stop()
+        {
+            Running = false;
+
+            
+            if (_soundIn != null)
+            {
+                _soundIn.Stop();
+                _soundIn.Dispose();
+                _soundIn = null;
+            }
+            if (_source != null)
+            {
+                _source.Dispose();
+                _source = null;
+            }
+
+            _disableTimer.Stop();
+            _volumeTimer.Stop();
         }
     }
 }

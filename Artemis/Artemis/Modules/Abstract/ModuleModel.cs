@@ -163,7 +163,7 @@ namespace Artemis.Modules.Abstract
                         ProfileModel?.DrawLayers(g, layers, DrawType.Keyboard, DataModel, keyboardRect, preview);
                     }
                     // Render mice layer-by-layer
-                    var devRec = new Rect(0, 0, 40, 40);
+                    var devRec = new Rect(0, 0, 10, 10);
                     using (var g = Graphics.FromImage(frame.MouseBitmap))
                     {
                         ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
@@ -183,7 +183,7 @@ namespace Artemis.Modules.Abstract
                     {
                         ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
                     }
-
+                    
                     // Trace debugging
                     if (DateTime.Now.AddSeconds(-2) <= _lastTrace || Logger == null)
                         return;
