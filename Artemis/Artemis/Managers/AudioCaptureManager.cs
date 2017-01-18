@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Artemis.Events;
+using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using CSCore.CoreAudioAPI;
 using Ninject.Extensions.Logging;
 
-namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
+namespace Artemis.Managers
 {
     public class AudioCaptureManager
     {

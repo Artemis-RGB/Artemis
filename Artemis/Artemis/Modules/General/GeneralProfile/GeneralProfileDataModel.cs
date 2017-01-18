@@ -40,14 +40,8 @@ namespace Artemis.Modules.General.GeneralProfile
     public class AudioDevice
     {
         public float OverallPeak { get; set; }
-        public float Channel1Peak { get; set; }
-        public float Channel2Peak { get; set; }
-        public float Channel3Peak { get; set; }
-        public float Channel4Peak { get; set; }
-        public float Channel5Peak { get; set; }
-        public float Channel6Peak { get; set; }
-        public float Channel7Peak { get; set; }
-        public float Channel8Peak { get; set; }
+        public float LeftPeak { get; set; }
+        public float RightPeak { get; set; }
     }
 
     [MoonSharpUserData]

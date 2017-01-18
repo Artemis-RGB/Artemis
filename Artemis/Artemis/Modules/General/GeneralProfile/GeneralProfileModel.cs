@@ -10,7 +10,6 @@ using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
-using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Utilities;
 using CSCore.CoreAudioAPI;
 using Newtonsoft.Json;
@@ -20,7 +19,6 @@ namespace Artemis.Modules.General.GeneralProfile
 {
     public class GeneralProfileModel : ModuleModel
     {
-        private readonly AudioCaptureManager _audioCaptureManager;
         private DateTime _lastMusicUpdate;
         private SpotifyLocalAPI _spotify;
         private bool _spotifySetupBusy;
@@ -28,7 +26,6 @@ namespace Artemis.Modules.General.GeneralProfile
         public GeneralProfileModel(DeviceManager deviceManager, LuaManager luaManager,
             AudioCaptureManager audioCaptureManager) : base(deviceManager, luaManager)
         {
-            _audioCaptureManager = audioCaptureManager;
             _lastMusicUpdate = DateTime.Now;
 
             Settings = SettingsProvider.Load<GeneralProfileSettings>();
@@ -93,31 +90,26 @@ namespace Artemis.Modules.General.GeneralProfile
 
         private void UpdateAudio(GeneralProfileDataModel dataModel)
         {
-         
-            var recording = AudioMeterInformation.FromDevice(_defaultRecording);
-            var playback = AudioMeterInformation.FromDevice(_defaultPlayback);
+            // Update microphone, only bother with OverallPeak
+            if (_defaultRecording != null)
+            {
+                var recording = AudioMeterInformation.FromDevice(_defaultRecording);
+                dataModel.Audio.Recording.OverallPeak = recording.PeakValue;
+            }
+
+            if (_defaultPlayback == null)
+                return;
+
+            // Update volume if a default device is found
             dataModel.Audio.Volume = AudioEndpointVolume.FromDevice(_defaultPlayback).GetMasterVolumeLevelScalar();
-            dataModel.Audio.Recording.OverallPeak = recording.PeakValue;
-            for (var i = 0; i < recording.GetChannelsPeakValues(recording.MeteringChannelCount).Length; i++)
-            {
-                // Only support up to 8 channels until lists are supported natively
-                if (i > 7)
-                    break;
 
-                var peakValue = recording.GetChannelsPeakValues(recording.MeteringChannelCount)[i];
-                typeof(AudioDevice).GetProperty($"Channel{i + 1}Peak").SetValue(dataModel.Audio.Recording, peakValue);
-            }
-
+            // Update speakers, only do overall, left and right for now
+            // TODO: When adding list support lets do all channels
+            var playback = AudioMeterInformation.FromDevice(_defaultPlayback);
+            var peakValues = playback.GetChannelsPeakValues();
             dataModel.Audio.Playback.OverallPeak = playback.PeakValue;
-            for (var i = 0; i < playback.GetChannelsPeakValues(playback.MeteringChannelCount).Length; i++)
-            {
-                // Only support up to 8 channels until lists are supported natively
-                if (i > 7)
-                    break;
-
-                var peakValue = playback.GetChannelsPeakValues(playback.MeteringChannelCount)[i];
-                typeof(AudioDevice).GetProperty($"Channel{i + 1}Peak").SetValue(dataModel.Audio.Playback, peakValue);
-            }
+            dataModel.Audio.Playback.LeftPeak = peakValues[0];
+            dataModel.Audio.Playback.LeftPeak = peakValues[1];
         }
 
         #endregion
