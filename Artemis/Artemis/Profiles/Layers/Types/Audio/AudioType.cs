@@ -75,41 +75,41 @@ namespace Artemis.Profiles.Layers.Types.Audio
             var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
 
             // Create a geometry that will be formed by all the bars
-            Geometry barGeometry = new RectangleGeometry();
+            GeometryGroup barGeometry = new GeometryGroup();
 
             switch (direction)
             {
                 case Direction.TopToBottom:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
-                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
                         var barRect = new RectangleGeometry(clipRect);
-                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                        barGeometry.Children.Add(barRect);
                     }
                     break;
                 case Direction.BottomToTop:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
-                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
-                        clipRect.Y = clipRect.Y + layerModel.Height*4 - clipRect.Height;
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
+                        clipRect.Y = clipRect.Y + layerModel.Height * 4 - clipRect.Height;
                         var barRect = new RectangleGeometry(clipRect);
-                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                        barGeometry.Children.Add(barRect);
                     }
                     break;
                 case Direction.LeftToRight:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
-                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
                         var barRect = new RectangleGeometry(clipRect);
-                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                        barGeometry.Children.Add(barRect);
                     }
                     break;
                 default:
                     for (var index = 0; index < _lineValues.Count; index++)
                     {
-                        var clipRect = new Rect((parentX + index)*4, parentY*4, 4, _lineValues[index]*4);
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
                         var barRect = new RectangleGeometry(clipRect);
-                        barGeometry = Geometry.Combine(barGeometry, barRect, CombineMode, Transform.Identity);
+                        barGeometry.Children.Add(barRect);
                     }
                     break;
             }
