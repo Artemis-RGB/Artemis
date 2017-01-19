@@ -164,26 +164,38 @@ namespace Artemis.Modules.Abstract
                     }
                     // Render mice layer-by-layer
                     var devRec = new Rect(0, 0, 10, 10);
-                    using (var g = Graphics.FromImage(frame.MouseBitmap))
+                    if (frame.MouseBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.MouseBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
+                        }
                     }
                     // Render headsets layer-by-layer
-                    using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                    if (frame.HeadsetBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
+                        }
                     }
                     // Render generic devices layer-by-layer
-                    using (var g = Graphics.FromImage(frame.GenericBitmap))
+                    if (frame.GenericBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.GenericBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
+                        }
                     }
                     // Render mousemats layer-by-layer
-                    using (var g = Graphics.FromImage(frame.MousematBitmap))
+                    if (frame.MousematBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.MousematBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
+                        }
                     }
-                    
+
                     // Trace debugging
                     if (DateTime.Now.AddSeconds(-2) <= _lastTrace || Logger == null)
                         return;

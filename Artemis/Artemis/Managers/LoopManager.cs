@@ -52,8 +52,8 @@ namespace Artemis.Managers
             //TODO DarthAffe 14.01.2017: A stop-condition and a real cleanup instead of just aborting might be better
             while (true)
             {
-//                try
-//                {
+                try
+                {
                     long preUpdateTicks = DateTime.Now.Ticks;
 
                     Render();
@@ -61,11 +61,11 @@ namespace Artemis.Managers
                     int sleep = (int)(40f - ((DateTime.Now.Ticks - preUpdateTicks) / 10000f));
                     if (sleep > 0)
                         Thread.Sleep(sleep);
-//                }
-//                catch (Exception e)
-//                {
-//                    _logger.Warn(e, "Exception in render loop");
-//                }
+                }
+                catch (Exception e)
+                {
+                    _logger.Warn(e, "Exception in render loop");
+                }
             }
             // ReSharper disable once FunctionNeverReturns
         }
@@ -157,10 +157,11 @@ namespace Artemis.Managers
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
                 var generics = _deviceManager.GenericProviders.Where(m => m.CanUse).ToList();
                 var mousemats = _deviceManager.MousematProviders.Where(m => m.CanUse).ToList();
+                   
                 var keyboardOnly = !mice.Any() && !headsets.Any() && !generics.Any() && !mousemats.Any();
 
                 // Setup the frame for this tick
-                using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard))
+                using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(), mousemats.Any()))
                 {
                     if (renderModule.IsInitialized)
                         renderModule.Render(frame, keyboardOnly);
@@ -202,45 +203,53 @@ namespace Artemis.Managers
 
     public class RenderFrame : IDisposable
     {
-        public RenderFrame(KeyboardProvider keyboard)
+        public RenderFrame(KeyboardProvider keyboard, bool renderMice, bool renderHeadsets, bool renderGenerics, bool renderMousemats)
         {
             if (keyboard == null)
                 return;
 
             KeyboardBitmap = keyboard.KeyboardBitmap();
             KeyboardBitmap.SetResolution(96, 96);
-
-            MouseBitmap = new Bitmap(10, 10);
-            MouseBitmap.SetResolution(96, 96);
-
-            HeadsetBitmap = new Bitmap(10, 10);
-            HeadsetBitmap.SetResolution(96, 96);
-
-            GenericBitmap = new Bitmap(10, 10);
-            GenericBitmap.SetResolution(96, 96);
-
-            MousematBitmap = new Bitmap(10, 10);
-            MousematBitmap.SetResolution(96, 96);
-
             using (var g = Graphics.FromImage(KeyboardBitmap))
             {
                 g.Clear(Color.Black);
             }
-            using (var g = Graphics.FromImage(MouseBitmap))
+
+            if (renderMice)
             {
-                g.Clear(Color.Black);
+                MouseBitmap = new Bitmap(10, 10);
+                MouseBitmap.SetResolution(96, 96);
+                using (var g = Graphics.FromImage(MouseBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
             }
-            using (var g = Graphics.FromImage(HeadsetBitmap))
+            if (renderHeadsets)
             {
-                g.Clear(Color.Black);
+                HeadsetBitmap = new Bitmap(10, 10);
+                HeadsetBitmap.SetResolution(96, 96);
+                using (var g = Graphics.FromImage(HeadsetBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
             }
-            using (var g = Graphics.FromImage(GenericBitmap))
+            if (renderGenerics)
             {
-                g.Clear(Color.Black);
+                GenericBitmap = new Bitmap(10, 10);
+                GenericBitmap.SetResolution(96, 96);
+                using (var g = Graphics.FromImage(GenericBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
             }
-            using (var g = Graphics.FromImage(MousematBitmap))
+            if (renderMousemats)
             {
-                g.Clear(Color.Black);
+                MousematBitmap = new Bitmap(10, 10);
+                MousematBitmap.SetResolution(96, 96);
+                using (var g = Graphics.FromImage(MousematBitmap))
+                {
+                    g.Clear(Color.Black);
+                }
             }
         }
 

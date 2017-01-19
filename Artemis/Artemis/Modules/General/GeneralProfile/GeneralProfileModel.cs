@@ -75,17 +75,23 @@ namespace Artemis.Modules.General.GeneralProfile
 
         private MMDevice _defaultRecording;
         private MMDevice _defaultPlayback;
+        private AudioMeterInformation _recordingInfo;
+        private AudioMeterInformation _playbackInfo;
 
         private void SetupAudio()
         {
-            _defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             _defaultRecording = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+            _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
+            _defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
         }
 
         private void AudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
         {
             _defaultRecording = e.DefaultRecording;
+            _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
             _defaultPlayback = e.DefaultPlayback;
+            _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
         }
 
         private void UpdateAudio(GeneralProfileDataModel dataModel)
@@ -93,8 +99,8 @@ namespace Artemis.Modules.General.GeneralProfile
             // Update microphone, only bother with OverallPeak
             if (_defaultRecording != null)
             {
-                var recording = AudioMeterInformation.FromDevice(_defaultRecording);
-                dataModel.Audio.Recording.OverallPeak = recording.PeakValue;
+    
+                dataModel.Audio.Recording.OverallPeak = _recordingInfo.PeakValue;
             }
 
             if (_defaultPlayback == null)
@@ -105,9 +111,8 @@ namespace Artemis.Modules.General.GeneralProfile
 
             // Update speakers, only do overall, left and right for now
             // TODO: When adding list support lets do all channels
-            var playback = AudioMeterInformation.FromDevice(_defaultPlayback);
-            var peakValues = playback.GetChannelsPeakValues();
-            dataModel.Audio.Playback.OverallPeak = playback.PeakValue;
+            var peakValues = _playbackInfo.GetChannelsPeakValues();
+            dataModel.Audio.Playback.OverallPeak = _playbackInfo.PeakValue;
             dataModel.Audio.Playback.LeftPeak = peakValues[0];
             dataModel.Audio.Playback.LeftPeak = peakValues[1];
         }
