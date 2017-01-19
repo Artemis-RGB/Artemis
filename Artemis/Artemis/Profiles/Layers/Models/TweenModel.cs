@@ -42,7 +42,7 @@ namespace Artemis.Profiles.Layers.Models
 
         private void UpdateWidth()
         {
-            if (Math.Abs(_layerModel.Properties.WidthEaseTime) < 0.001) 
+            if (_layerModel.Properties.WidthEaseTime < 0.001) 
                 return;
 
             // Width
@@ -67,7 +67,7 @@ namespace Artemis.Profiles.Layers.Models
 
         private void UpdateHeight()
         {
-            if (Math.Abs(_layerModel.Properties.HeightEaseTime) < 0.001)
+            if (_layerModel.Properties.HeightEaseTime < 0.001)
                 return;
 
             // Height
@@ -91,7 +91,7 @@ namespace Artemis.Profiles.Layers.Models
 
         private void UpdateOpacity()
         {
-            if (Math.Abs(_layerModel.Properties.OpacityEaseTime) < 0.001)
+            if (_layerModel.Properties.OpacityEaseTime < 0.001)
                 return;
 
             // Opacity
@@ -106,15 +106,6 @@ namespace Artemis.Profiles.Layers.Models
             _opacity = (float)_layerModel.Opacity;
 
             _layerModel.Opacity = _opacityTweener.Value;
-        }
-
-        private void StoreCurrentValues()
-        {
-            _x = (float) _layerModel.X;
-            _y = (float) _layerModel.Y;
-            _width = (float) _layerModel.Width;
-            _height = (float) _layerModel.Height;
-            _opacity = (float) _layerModel.Opacity;
         }
 
         private static EaseFunc GetEaseFunction(string functionName)
