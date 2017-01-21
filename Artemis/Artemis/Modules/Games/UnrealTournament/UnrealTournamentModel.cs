@@ -30,7 +30,7 @@ namespace Artemis.Modules.Games.UnrealTournament
 
             Settings = SettingsProvider.Load<UnrealTournamentSettings>();
             DataModel = new UnrealTournamentDataModel();
-            ProcessName = "UE4-Win64-Shipping";
+            ProcessNames.Add("UE4-Win64-Shipping");
 
             _killTimer = new Timer(3500);
             _killTimer.Elapsed += KillTimerOnElapsed;

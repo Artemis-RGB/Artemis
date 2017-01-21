@@ -17,6 +17,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -39,7 +40,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom"
                            TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
                            TextAlignment="Justify" Margin="5,0,0,10">
-                    The Euro Truck Simulator 2 module uses code from the
+                    The Truck Simulator module uses code from the
                     <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
                                NavigateUri="https://github.com/Funbit/ets2-telemetry-server">
                         ETS2 Telemetry Web Server
@@ -56,26 +57,41 @@
                 </StackPanel>
             </Grid>
 
-            <StackPanel Grid.Row="2"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2" Margin="0,0,1,0">
-
-                <Label FontSize="20" HorizontalAlignment="Left" Content="Euro Truck Simulator 2 directory" />
-                <Grid>
-                    <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                             Text="{Binding Path=Settings.GameDirectory, Mode=TwoWay}"
-                             cal:Message.Attach="[Event LostFocus] = [Action PlacePlugin]" />
-                    <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
-                            HorizontalAlignment="Right" Width="25"
-                            Style="{DynamicResource SquareButtonStyle}" Height="26" Margin="0,-2,0,0" />
-                </Grid>
-            </StackPanel>
-
+            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                <!-- ETS2 dir -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,1,0" Grid.Column="0">
+                    <Label FontSize="16" HorizontalAlignment="Left" Content="Euro Truck Simulator 2 directory" />
+                    <Grid>
+                        <TextBox x:Name="Ets2GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                                 Text="{Binding Path=Settings.Ets2GameDirectory, Mode=TwoWay}"
+                                 cal:Message.Attach="[Event LostFocus] = [Action PlacePlugins]" />
+                        <Button x:Name="Ets2BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                                HorizontalAlignment="Right" Width="25"
+                                Style="{DynamicResource SquareButtonStyle}" Height="26" />
+                    </Grid>
+                </StackPanel>
+                <!-- ATS dir -->
+                <StackPanel Margin="0,0,1,0" Grid.Column="1">
+                    <Label FontSize="16" HorizontalAlignment="Left" Content="American Truck Simulator directory" />
+                    <Grid>
+                        <TextBox x:Name="AtsGameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
+                                 Text="{Binding Path=Settings.AtsGameDirectory, Mode=TwoWay}"
+                                 cal:Message.Attach="[Event LostFocus] = [Action PlacePlugins]" />
+                        <Button x:Name="AtsBrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
+                                HorizontalAlignment="Right" Width="25"
+                                Style="{DynamicResource SquareButtonStyle}" Height="26" />
+                    </Grid>
+                </StackPanel>
+            </Grid>
             <!-- Profile editor -->
-            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
+            <ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
 
             <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
                         Style="{DynamicResource SquareButtonStyle}" />
                 <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"

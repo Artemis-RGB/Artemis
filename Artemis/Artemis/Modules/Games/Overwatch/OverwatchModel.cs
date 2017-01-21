@@ -38,7 +38,7 @@ namespace Artemis.Modules.Games.Overwatch
 
             Settings = SettingsProvider.Load<OverwatchSettings>();
             DataModel = new OverwatchDataModel();
-            ProcessName = "Overwatch";
+            ProcessNames.Add("Overwatch");
 
             LoadOverwatchCharacters();
             FindOverwatch();

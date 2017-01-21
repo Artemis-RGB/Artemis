@@ -22,9 +22,11 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
             Settings = SettingsProvider.Load<EurotruckSimulator2Settings>();
             DataModel = new EurotruckSimulator2DataModel();
-            ProcessName = "eurotrucks2";
+            ProcessNames.Add("eurotrucks2");
+            ProcessNames.Add("amtrucks");
 
-            FindGameDir();
+            FindEts2GameDir();
+            FindAtsGameDir();
         }
 
         public override string Name => "EurotruckSimulator2";
@@ -43,7 +45,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             dataModel.Truck = telemetryData.Truck;
         }
 
-        public void FindGameDir()
+        public void FindEts2GameDir()
         {
             // Demo is also supported but resides in a different directory, the full game can also be 64-bits
             var dir = GeneralHelpers.FindSteamGame(@"\Euro Truck Simulator 2\bin\win_x64\eurotrucks2.exe") ??
@@ -53,31 +55,58 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             if (string.IsNullOrEmpty(dir))
                 return;
 
-            ((EurotruckSimulator2Settings) Settings).GameDirectory = dir;
+            ((EurotruckSimulator2Settings) Settings).Ets2GameDirectory = dir;
             Settings.Save();
 
             if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))
-                PlacePlugin();
+                PlacePlugins();
         }
 
-        public void PlacePlugin()
+        public void FindAtsGameDir()
         {
-            if (((EurotruckSimulator2Settings) Settings).GameDirectory == string.Empty)
+            // Demo is also supported but resides in a different directory, the full game can also be 64-bits
+            var dir = GeneralHelpers.FindSteamGame(@"\American Truck Simulator\bin\win_x64\amtrucks.exe") ??
+                      GeneralHelpers.FindSteamGame(@"\American Truck Simulator\bin\win_x86\amtrucks.exe") ??
+                      GeneralHelpers.FindSteamGame(@"\American Truck Simulator Demo\bin\win_x86\amtrucks.exe");
+
+            if (string.IsNullOrEmpty(dir))
                 return;
 
-            var path = ((EurotruckSimulator2Settings) Settings).GameDirectory;
+            ((EurotruckSimulator2Settings) Settings).AtsGameDirectory = dir;
+            Settings.Save();
 
+            if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))
+                PlacePlugins();
+        }
+
+        public void PlacePlugins()
+        {
+            var ets2Path = ((EurotruckSimulator2Settings) Settings).Ets2GameDirectory;
+            if (!string.IsNullOrEmpty(ets2Path))
+                PlaceTruckSimulatorPlugin(ets2Path, "eurotrucks2.exe");
+
+            var atsPath = ((EurotruckSimulator2Settings) Settings).AtsGameDirectory;
+            if (!string.IsNullOrEmpty(atsPath))
+                PlaceTruckSimulatorPlugin(atsPath, "amtrucks.exe");
+        }
+
+        private void PlaceTruckSimulatorPlugin(string path, string game)
+        {
             // Ensure the selected directory exists
             if (!Directory.Exists(path))
             {
                 _dialogService.ShowErrorMessageBox($"Directory '{path}' not found.");
                 return;
             }
-            // Ensure it's the ETS2 directory by looking for the executable
-            if (!File.Exists(path + "/eurotrucks2.exe"))
+            // Ensure it's the proper directory by looking for the executable
+            if (!File.Exists(path + "/" + game))
             {
-                _dialogService.ShowErrorMessageBox("Please select a valid Eurotruck Simulator 2 directory\n\n" +
-                                                   @"By default ETS2 is in \SteamApps\common\Euro Truck Simulator 2\bin\win_x64");
+                if (game == "eurotrucks2.exe")
+                    _dialogService.ShowErrorMessageBox("Please select a valid Eurotruck Simulator 2 directory\n\n" +
+                                                       @"By default ETS2 is in \SteamApps\common\Euro Truck Simulator 2\bin\win_x64");
+                else
+                    _dialogService.ShowErrorMessageBox("Please select a valid American Truck Simulator directory\n\n" +
+                                                       @"By default ATS is in \SteamApps\common\American Truck Simulator\bin\win_x64");
                 return;
             }
 
@@ -92,11 +121,11 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
                 else
                     File.WriteAllBytes(path + "/plugins/ets2-telemetry-server.dll", Resources.ets2_telemetry_server_x86);
 
-                Logger?.Debug("Installed ETS2 plugin in {0}", path);
+                Logger?.Debug("Installed Truck Simulator plugin in {0}", path);
             }
             catch (Exception e)
             {
-                Logger?.Error(e, "Failed to install ETS2 plugin in {0}", path);
+                Logger?.Error(e, "Failed to install Truck Simulator plugin in {0}", path);
                 throw;
             }
         }
