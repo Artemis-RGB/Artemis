@@ -48,7 +48,7 @@
                              cal:Message.Attach="[Event LostFocus] = [Action PlaceConfigFile]" />
                     <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                             HorizontalAlignment="Right" Width="25"
-                            Style="{DynamicResource SquareButtonStyle}" Height="26" Margin="0,-2,0,0" />
+                            Style="{DynamicResource SquareButtonStyle}" Height="26" />
                 </Grid>
             </StackPanel>
 

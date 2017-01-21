@@ -79,9 +79,9 @@ namespace Artemis.Modules.Abstract
         public List<LayerModel> PreviewLayers { get; set; }
 
         /// <summary>
-        ///     The process the module is bound to
+        ///     The processes the module is bound to
         /// </summary>
-        public string ProcessName { get; protected set; }
+        public List<string> ProcessNames { get; protected set; } = new List<string>();
 
         /// <summary>
         ///     The currently active profile of the module

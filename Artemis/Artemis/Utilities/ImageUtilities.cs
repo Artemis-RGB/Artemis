@@ -67,6 +67,7 @@ namespace Artemis.Utilities
             if (_rBmp?.PixelHeight != height || _rBmp?.PixelWidth != width)
                 _rBmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
 
+            _rBmp.Clear();
             _rBmp.Render(visual);
             return GetBitmap(_rBmp);
         }

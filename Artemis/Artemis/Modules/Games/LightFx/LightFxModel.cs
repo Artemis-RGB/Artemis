@@ -15,7 +15,7 @@ namespace Artemis.Modules.Games.LightFx
         {
             Settings = SettingsProvider.Load<LightFxSettings>();
             DataModel = new LightFxDataModel();
-            ProcessName = "LoL";
+            ProcessNames.Add("LoL");
 
             // This model can enable itself by changing its process name to the currently running Light FX game.
             pipeServer.PipeMessage += PipeServerOnPipeMessage;
@@ -43,7 +43,9 @@ namespace Artemis.Modules.Games.LightFx
             }
 
             // Setup process name
-            ProcessName = Path.GetFileNameWithoutExtension(((LightFxDataModel) DataModel).LightFxState.game);
+            var processName = Path.GetFileNameWithoutExtension(((LightFxDataModel) DataModel).LightFxState.game);
+            if (!ProcessNames.Contains(processName))
+                ProcessNames.Add(processName);
         }
 
         public override void Update()

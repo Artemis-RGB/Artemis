@@ -144,7 +144,7 @@ namespace Artemis.Managers
             if (!ProgramEnabled)
                 return;
 
-            var processes = System.Diagnostics.Process.GetProcesses();
+            var processes = System.Diagnostics.Process.GetProcesses().Where(p => !p.HasExited).ToList();
             var module = ModuleManager.ActiveModule;
 
             // If the current active module is in preview-mode, leave it alone
@@ -158,7 +158,7 @@ namespace Artemis.Managers
                     ModuleManager.DisableProcessBoundModule();
 
                 // If the currently active effect is a no longer running game, get rid of it.
-                if (!processes.Any(p => p.ProcessName == module.ProcessName && p.HasExited == false))
+                if (!processes.Any(p => module.ProcessNames.Contains(p.ProcessName)))
                 {
                     Logger.Info("Disabling process bound module because process stopped: {0}", module.Name);
                     ModuleManager.DisableProcessBoundModule();
@@ -167,7 +167,7 @@ namespace Artemis.Managers
 
             // Look for running games, stopping on the first one that's found.
             var newModule = ModuleManager.ProcessModules.Where(g => g.Settings.IsEnabled && g.Settings.IsEnabled)
-                .FirstOrDefault(g => processes.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+                .FirstOrDefault(g => processes.Any(p => g.ProcessNames.Contains(p.ProcessName)));
 
             if (newModule == null || module == newModule)
                 return;

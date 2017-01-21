@@ -21,7 +21,7 @@ namespace Artemis.Modules.Games.WoW
         {
             Settings = SettingsProvider.Load<WoWSettings>();
             DataModel = new WoWDataModel();
-            ProcessName = "Wow-64";
+            ProcessNames.Add("Wow-64");
 
             // Currently WoW is locked behind a hidden trigger (obviously not that hidden since you're reading this)
             // It is using memory reading and lets first try to contact Blizzard
@@ -76,7 +76,7 @@ namespace Artemis.Modules.Games.WoW
         {
             if (_process == null)
             {
-                var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
+                var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessNames[0]);
                 if (tempProcess == null)
                     return;
 
