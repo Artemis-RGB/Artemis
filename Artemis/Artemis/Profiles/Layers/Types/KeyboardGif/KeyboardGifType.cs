@@ -19,6 +19,7 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
         public string Name => "Keyboard - GIF";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

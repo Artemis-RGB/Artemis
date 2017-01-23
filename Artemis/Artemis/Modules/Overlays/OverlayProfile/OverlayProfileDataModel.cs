@@ -1,5 +1,6 @@
 ﻿using Artemis.Modules.Abstract;
 using Artemis.Modules.General.GeneralProfile;
+using MoonSharp.Interpreter;
 
 namespace Artemis.Modules.Overlays.OverlayProfile
 {
@@ -7,9 +8,17 @@ namespace Artemis.Modules.Overlays.OverlayProfile
     {
         public OverlayProfileDataModel()
         {
-            GeneralDataModel = new GeneralProfileDataModel();
+            Keyboard = new KbDataModel();
+            Audio = new Audio();
         }
 
-        public GeneralProfileDataModel GeneralDataModel { get; set; }
+        public KbDataModel Keyboard { get; set; }
+        public Audio Audio { get; set; }
+    }
+
+    [MoonSharpUserData]
+    public class Audio
+    {
+        public float Volume { get; set; }
     }
 }

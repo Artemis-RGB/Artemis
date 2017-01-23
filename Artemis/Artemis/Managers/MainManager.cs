@@ -105,16 +105,12 @@ namespace Artemis.Managers
         /// <summary>
         ///     Loads the last active effect and starts the program
         /// </summary>
-        public void EnableProgram()
+        public async void EnableProgram()
         {
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
-            LoopManager.StartAsync();
-            foreach (var overlayModule in ModuleManager.OverlayModules)
-            {
-                if (overlayModule.Settings.IsEnabled)
-                    overlayModule.Enable();
-            }
+            await LoopManager.StartAsync();
+
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 

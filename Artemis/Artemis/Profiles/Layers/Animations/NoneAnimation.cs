@@ -12,7 +12,7 @@ namespace Artemis.Profiles.Layers.Animations
         {
         }
 
-        public void Draw(LayerModel layerModel, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c, int drawScale)
         {
         }
 

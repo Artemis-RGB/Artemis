@@ -68,7 +68,7 @@
                     <Grid>
                         <TextBox x:Name="Ets2GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                                  Text="{Binding Path=Settings.Ets2GameDirectory, Mode=TwoWay}"
-                                 cal:Message.Attach="[Event LostFocus] = [Action PlacePlugins]" />
+                                 cal:Message.Attach="[Event LostFocus] = [Action Ets2PlacePlugin]" />
                         <Button x:Name="Ets2BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                                 HorizontalAlignment="Right" Width="25"
                                 Style="{DynamicResource SquareButtonStyle}" Height="26" />
@@ -80,7 +80,7 @@
                     <Grid>
                         <TextBox x:Name="AtsGameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
                                  Text="{Binding Path=Settings.AtsGameDirectory, Mode=TwoWay}"
-                                 cal:Message.Attach="[Event LostFocus] = [Action PlacePlugins]" />
+                                 cal:Message.Attach="[Event LostFocus] = [Action AtsPlacePlugin]" />
                         <Button x:Name="AtsBrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
                                 HorizontalAlignment="Right" Width="25"
                                 Style="{DynamicResource SquareButtonStyle}" Height="26" />

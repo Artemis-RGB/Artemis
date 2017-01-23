@@ -156,7 +156,8 @@
             </Button>
             <Button x:Name="EditLua" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
                     Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Import profile"
-                    IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
+                    IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" 
+                    Visibility="{Binding Path=LuaButtonVisible, Converter={StaticResource BoolToVis} }">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Rectangle

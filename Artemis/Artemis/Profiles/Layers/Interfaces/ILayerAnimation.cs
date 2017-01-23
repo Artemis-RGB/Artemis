@@ -10,7 +10,7 @@ namespace Artemis.Profiles.Layers.Interfaces
         string Name { get; }
 
         void Update(LayerModel layerModel, bool updateAnimations);
-        void Draw(LayerModel layerModel, DrawingContext c);
+        void Draw(LayerModel layerModel, DrawingContext c, int drawScale);
         bool MustExpire(LayerModel layerModel);
     }
 }

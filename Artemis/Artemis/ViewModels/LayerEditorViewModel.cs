@@ -42,8 +42,8 @@ namespace Artemis.ViewModels
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            // Setup existing conditions           
-            var conditions = layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
+            // Setup existing conditions   
+            var conditions = ProposedLayer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(conditions);
 
             PropertyChanged += PropertiesViewModelHandler;
@@ -155,6 +155,10 @@ namespace Artemis.ViewModels
             EventPropertiesViewModel = ProposedLayer.IsEvent
                 ? new EventPropertiesViewModel(Layer.EventProperties)
                 : null;
+
+            // The form inside each condition VM changes upon event toggle
+            foreach (var layerConditionViewModel in LayerConditionVms)
+                layerConditionViewModel.SetupPropertyInput();
         }
 
         public void AddCondition()
@@ -171,7 +175,7 @@ namespace Artemis.ViewModels
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                Layer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
 
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
@@ -202,7 +206,7 @@ namespace Artemis.ViewModels
                 ProposedLayer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
             ProposedLayer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                ProposedLayer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
 
             // If not a keyboard, ignore size and position
             if ((ProposedLayer.LayerType.DrawType != DrawType.Keyboard) || !ProposedLayer.LayerType.ShowInEdtor)

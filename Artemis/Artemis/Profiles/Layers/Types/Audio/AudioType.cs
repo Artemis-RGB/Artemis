@@ -23,12 +23,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
     public class AudioType : ILayerType
     {
         private readonly AudioCaptureManager _audioCaptureManager;
-        private const GeometryCombineMode CombineMode = GeometryCombineMode.Union;
         private AudioCapture _audioCapture;
         private int _lines;
         private LineSpectrum _lineSpectrum;
         private List<double> _lineValues;
-        private int _drawCount;
 
         public AudioType(AudioCaptureManager audioCaptureManager)
         {
@@ -50,6 +48,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
         public string Name => "Keyboard - Audio visualization";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
@@ -66,7 +65,6 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            _drawCount++;
             if (_lineValues == null)
                 return;
 
@@ -178,7 +176,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             // If an animation is present, let it handle the drawing
             if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layerModel.LayerAnimation.Draw(layerModel, c);
+                layerModel.LayerAnimation.Draw(layerModel, c, DrawScale);
                 return;
             }
 
@@ -188,7 +186,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 : new Rect(layerModel.Properties.X*4, layerModel.Properties.Y*4,
                     layerModel.Properties.Width*4, layerModel.Properties.Height*4);
 
-            var clip = layerModel.LayerRect();
+            var clip = layerModel.LayerRect(DrawScale);
 
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();

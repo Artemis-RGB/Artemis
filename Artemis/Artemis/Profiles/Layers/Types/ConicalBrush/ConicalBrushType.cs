@@ -22,6 +22,7 @@ namespace Artemis.Profiles.Layers.Types.ConicalBrush
         public string Name => "Conical Brush";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         #endregion
 
@@ -62,15 +63,15 @@ namespace Artemis.Profiles.Layers.Types.ConicalBrush
             // If an animation is present, let it handle the drawing
             if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layerModel.LayerAnimation.Draw(layerModel, c);
+                layerModel.LayerAnimation.Draw(layerModel, c, DrawScale);
                 return;
             }
 
             // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
             Rect rect = layerModel.Properties.Contain
-                ? layerModel.LayerRect()
-                : new Rect(layerModel.Properties.X * 4, layerModel.Properties.Y * 4,
-                    layerModel.Properties.Width * 4, layerModel.Properties.Height * 4);
+                ? layerModel.LayerRect(DrawScale)
+                : new Rect(layerModel.Properties.X * DrawScale, layerModel.Properties.Y * DrawScale,
+                    layerModel.Properties.Width * DrawScale, layerModel.Properties.Height * DrawScale);
 
             Rect clip = layerModel.LayerRect();
 

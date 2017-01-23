@@ -59,7 +59,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             Settings.Save();
 
             if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))
-                PlacePlugins();
+                PlaceTruckSimulatorPlugin(dir, "eurotrucks2.exe");
         }
 
         public void FindAtsGameDir()
@@ -76,22 +76,14 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             Settings.Save();
 
             if (!File.Exists(dir + "/plugins/ets2-telemetry-server.dll"))
-                PlacePlugins();
+                PlaceTruckSimulatorPlugin(dir, "amtrucks.exe");
         }
 
-        public void PlacePlugins()
+        public void PlaceTruckSimulatorPlugin(string path, string game)
         {
-            var ets2Path = ((EurotruckSimulator2Settings) Settings).Ets2GameDirectory;
-            if (!string.IsNullOrEmpty(ets2Path))
-                PlaceTruckSimulatorPlugin(ets2Path, "eurotrucks2.exe");
+            if (string.IsNullOrEmpty(path))
+                return;
 
-            var atsPath = ((EurotruckSimulator2Settings) Settings).AtsGameDirectory;
-            if (!string.IsNullOrEmpty(atsPath))
-                PlaceTruckSimulatorPlugin(atsPath, "amtrucks.exe");
-        }
-
-        private void PlaceTruckSimulatorPlugin(string path, string game)
-        {
             // Ensure the selected directory exists
             if (!Directory.Exists(path))
             {
