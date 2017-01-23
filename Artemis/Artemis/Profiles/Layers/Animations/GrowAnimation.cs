@@ -27,17 +27,17 @@ namespace Artemis.Profiles.Layers.Animations
                 layerModel.AnimationProgress = progress;
         }
 
-        public void Draw(LayerModel layerModel, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c, int drawScale)
         {
             if (layerModel.Brush == null)
                 return;
 
             // Set up variables for this frame
             var rect = layerModel.Properties.Contain
-                ? layerModel.LayerRect()
-                : layerModel.Properties.PropertiesRect();
+                ? layerModel.LayerRect(drawScale)
+                : layerModel.Properties.PropertiesRect(drawScale);
 
-            var clip = layerModel.LayerRect();
+            var clip = layerModel.LayerRect(drawScale);
 
             // Take an offset of 4 to allow layers to slightly leave their bounds
             var progress = (6.0 - layerModel.AnimationProgress)*10.0;

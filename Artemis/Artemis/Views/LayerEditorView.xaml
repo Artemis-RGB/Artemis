@@ -7,7 +7,7 @@
                       xmlns:utilities="clr-namespace:Artemis.Utilities"
                       xmlns:sys="clr-namespace:System;assembly=mscorlib"
                       mc:Ignorable="d"
-                      Title="Artemis | Edit Layer" Height="820" Width="630"
+                      Title="Artemis | Edit Layer" Height="860" Width="630"
                       xmlns:cal="http://www.caliburnproject.org"
                       xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
                       xmlns:models="clr-namespace:Artemis.Profiles.Layers.Models"

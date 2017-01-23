@@ -193,6 +193,8 @@ namespace Artemis.ViewModels
         public bool EditorEnabled => SelectedProfile != null && !SelectedProfile.IsDefault &&
                                      _deviceManager.ActiveKeyboard != null;
 
+        public bool LuaButtonVisible => !_moduleModel.IsOverlay;
+
         #endregion
 
         #region Layers

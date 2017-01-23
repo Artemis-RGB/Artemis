@@ -17,6 +17,7 @@ namespace Artemis.Profiles.Layers.Types.Folder
         public bool ShowInEdtor => false;
         // FolderType pretents to be a keyboard so it's children get drawn
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 1;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

@@ -23,6 +23,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
         private readonly DeviceManager _deviceManager;
         private List<LayerModel> _keyPressLayers;
         private LayerModel _layerModel;
+        public int DrawScale => 4;
 
         public KeyPressType(DeviceManager deviceManager)
         {

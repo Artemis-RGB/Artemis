@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Ninject;
@@ -17,39 +16,48 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public override bool UsesProfileEditor => true;
 
-        public void PlacePlugins()
-        {
-            ((EurotruckSimulator2Model) ModuleModel).PlacePlugins();
-        }
-
         public void Ets2BrowseDirectory()
         {
             var settings = (EurotruckSimulator2Settings) Settings;
+            var model = (EurotruckSimulator2Model) ModuleModel;
+
             var dialog = new FolderBrowserDialog {SelectedPath = settings.Ets2GameDirectory};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
 
-            settings.Ets2GameDirectory = Path.GetDirectoryName(dialog.SelectedPath);
+            settings.Ets2GameDirectory = dialog.SelectedPath;
             NotifyOfPropertyChange(() => Settings);
             Settings.Save();
-
-            ((EurotruckSimulator2Model) ModuleModel).PlacePlugins();
+            model.PlaceTruckSimulatorPlugin(settings.Ets2GameDirectory, "eurotrucks2.exe");
         }
 
         public void AtsBrowseDirectory()
         {
             var settings = (EurotruckSimulator2Settings) Settings;
+            var model = (EurotruckSimulator2Model)ModuleModel;
+
             var dialog = new FolderBrowserDialog {SelectedPath = settings.AtsGameDirectory};
             var result = dialog.ShowDialog();
             if (result != DialogResult.OK)
                 return;
 
-            settings.AtsGameDirectory = Path.GetDirectoryName(dialog.SelectedPath);
+            settings.AtsGameDirectory = dialog.SelectedPath;
             NotifyOfPropertyChange(() => Settings);
             Settings.Save();
+            model.PlaceTruckSimulatorPlugin(settings.Ets2GameDirectory, "amtrucks.exe");
+        }
 
-            ((EurotruckSimulator2Model) ModuleModel).PlacePlugins();
+        public void Ets2PlacePlugin()
+        {
+            var ets2Path = ((EurotruckSimulator2Settings)Settings).Ets2GameDirectory;
+            ((EurotruckSimulator2Model)ModuleModel).PlaceTruckSimulatorPlugin(ets2Path, "eurotrucks2.exe");
+        }
+
+        public void AtsPlacePlugin()
+        {
+            var atsPath = ((EurotruckSimulator2Settings)Settings).AtsGameDirectory;
+            ((EurotruckSimulator2Model)ModuleModel).PlaceTruckSimulatorPlugin(atsPath, "amtrucks.exe");
         }
     }
 }

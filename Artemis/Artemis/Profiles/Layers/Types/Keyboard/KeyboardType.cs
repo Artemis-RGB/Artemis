@@ -15,6 +15,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
         public string Name => "Keyboard";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
@@ -39,7 +40,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
             // If an animation is present, let it handle the drawing
             if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layerModel.LayerAnimation.Draw(layerModel, c);
+                layerModel.LayerAnimation.Draw(layerModel, c, DrawScale);
                 return;
             }
 
@@ -49,7 +50,7 @@ namespace Artemis.Profiles.Layers.Types.Keyboard
                 : new Rect(layerModel.Properties.X*4, layerModel.Properties.Y*4,
                     layerModel.Properties.Width*4, layerModel.Properties.Height*4);
 
-            var clip = layerModel.LayerRect();
+            var clip = layerModel.LayerRect(DrawScale);
 
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();

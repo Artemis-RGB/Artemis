@@ -68,7 +68,7 @@ namespace Artemis.Modules.Abstract
         {
             get
             {
-                if (ModuleModel.IsBoundToProcess || ModuleModel.IsBoundToProcess)
+                if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
                     return Settings.IsEnabled;
                 return _generalSettings.LastModule == ModuleModel.Name;
             }
