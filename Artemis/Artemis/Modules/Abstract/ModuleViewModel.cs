@@ -28,7 +28,7 @@ namespace Artemis.Modules.Abstract
 
             _mainManager.EnabledChanged += MainManagerOnEnabledChanged;
             _moduleManager.EffectChanged += ModuleManagerOnModuleChanged;
-            
+
             // ReSharper disable once VirtualMemberCallInConstructor
             if (!UsesProfileEditor)
                 return;
@@ -68,7 +68,7 @@ namespace Artemis.Modules.Abstract
         {
             get
             {
-                if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
+                if (!ModuleModel.IsGeneral)
                     return Settings.IsEnabled;
                 return _generalSettings.LastModule == ModuleModel.Name;
             }
@@ -91,7 +91,7 @@ namespace Artemis.Modules.Abstract
 
         private void UpdatedEnabledSetting()
         {
-            if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
+            if (!ModuleModel.IsGeneral || !_moduleManager.ActiveModule.IsGeneral || Settings.IsEnabled == IsModuleActive)
                 return;
 
             Settings.IsEnabled = IsModuleActive;
@@ -106,7 +106,7 @@ namespace Artemis.Modules.Abstract
             NotifyOfPropertyChange(() => Settings);
 
             // On process-bound modules, only set the module model
-            if (ModuleModel.IsBoundToProcess || ModuleModel.IsOverlay)
+            if (!ModuleModel.IsGeneral)
             {
                 NotifyOfPropertyChange(() => IsModuleActive);
                 NotifyOfPropertyChange(() => IsModuleEnabled);

@@ -88,6 +88,8 @@ namespace Artemis.Modules.Abstract
         /// </summary>
         public ProfileModel ProfileModel { get; protected set; }
 
+        public bool IsGeneral => !IsOverlay && !IsBoundToProcess;
+
         #endregion
 
         #region Base methods
