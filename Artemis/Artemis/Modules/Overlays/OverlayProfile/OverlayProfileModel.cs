@@ -17,8 +17,10 @@ namespace Artemis.Modules.Overlays.OverlayProfile
             Settings = SettingsProvider.Load<OverlayProfileSettings>();
             DataModel = new OverlayProfileDataModel();
 
-            var defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            _endPointVolume = AudioEndpointVolume.FromDevice(defaultPlayback);
+            var defaultPlayback = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            if (defaultPlayback != null)
+                _endPointVolume = AudioEndpointVolume.FromDevice(defaultPlayback);
+
             audioCaptureManager.AudioDeviceChanged += OnAudioDeviceChanged;
 
             Enable();
@@ -30,7 +32,8 @@ namespace Artemis.Modules.Overlays.OverlayProfile
 
         private void OnAudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
         {
-            _endPointVolume = AudioEndpointVolume.FromDevice(e.DefaultPlayback);
+            if (e.DefaultPlayback != null)
+                _endPointVolume = AudioEndpointVolume.FromDevice(e.DefaultPlayback);
         }
 
         public override void Update()

@@ -91,7 +91,7 @@ namespace Artemis.Modules.Abstract
 
         private void UpdatedEnabledSetting()
         {
-            if (!ModuleModel.IsGeneral || !_moduleManager.ActiveModule.IsGeneral || Settings.IsEnabled == IsModuleActive)
+            if (!ModuleModel.IsGeneral || (_moduleManager.ActiveModule != null && !_moduleManager.ActiveModule.IsGeneral || Settings.IsEnabled == IsModuleActive))
                 return;
 
             Settings.IsEnabled = IsModuleActive;

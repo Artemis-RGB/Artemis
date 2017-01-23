@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Artemis.Events;
+using Artemis.Profiles.Layers.Types.Audio;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using CSCore.CoreAudioAPI;
 using Ninject.Extensions.Logging;
@@ -19,8 +20,8 @@ namespace Artemis.Managers
         {
             Logger = logger;
             _audioCaptures = new List<AudioCapture>();
-            _lastDefaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            _lastDefaultRecording = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+            _lastDefaultPlayback = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            _lastDefaultRecording = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
 
             var defaultDeviceTimer = new Timer(1000);
             defaultDeviceTimer.Elapsed += DefaultDeviceTimerOnElapsed;
@@ -31,11 +32,11 @@ namespace Artemis.Managers
 
         private void DefaultDeviceTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            var defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            var defaultRecording = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+            var defaultPlayback = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+            var defaultRecording = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
 
-            if (defaultPlayback.DeviceID == _lastDefaultPlayback.DeviceID &&
-                defaultRecording.DeviceID == _lastDefaultRecording.DeviceID)
+            if (defaultPlayback?.DeviceID == _lastDefaultPlayback?.DeviceID &&
+                defaultRecording?.DeviceID == _lastDefaultRecording?.DeviceID)
                 return;
 
             _lastDefaultPlayback = defaultPlayback;
@@ -43,7 +44,7 @@ namespace Artemis.Managers
             OnAudioDeviceChanged(new AudioDeviceChangedEventArgs(_lastDefaultPlayback, _lastDefaultRecording));
         }
 
-        public AudioCapture GetAudioCapture(MMDevice device)
+        public AudioCapture GetAudioCapture(MMDevice device, MmDeviceType type)
         {
             // Return existing audio capture if found
             var audioCapture = _audioCaptures.FirstOrDefault(a => a.Device.DeviceID == device.DeviceID);
@@ -51,7 +52,7 @@ namespace Artemis.Managers
                 return audioCapture;
 
             // Else create a new one and return that
-            var newAudioCapture = new AudioCapture(Logger, device);
+            var newAudioCapture = new AudioCapture(Logger, device, type);
             _audioCaptures.Add(newAudioCapture);
             return newAudioCapture;
         }

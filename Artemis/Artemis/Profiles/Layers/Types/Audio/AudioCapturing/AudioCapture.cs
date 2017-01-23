@@ -5,6 +5,7 @@ using CSCore;
 using CSCore.CoreAudioAPI;
 using CSCore.DSP;
 using CSCore.SoundIn;
+using CSCore.SoundOut;
 using CSCore.Streams;
 using Ninject.Extensions.Logging;
 
@@ -18,16 +19,17 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
         private readonly Timer _disableTimer;
         private bool _mayStop;
         private SingleSpectrum _singleSpectrum;
-        private WasapiLoopbackCapture _soundIn;
+        private ISoundIn _soundIn;
         private GainSource _source;
         private BasicSpectrumProvider _spectrumProvider;
         private GainSource _volume;
         private int _volumeIndex;
 
-        public AudioCapture(ILogger logger, MMDevice device)
+        public AudioCapture(ILogger logger, MMDevice device, MmDeviceType type)
         {
             Logger = logger;
             Device = device;
+            Type = type;
             DesiredAverage = 0.75;
 
             _volumeValues = new double[5];
@@ -40,6 +42,7 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
         public ILogger Logger { get; }
         public MMDevice Device { get; }
+        public MmDeviceType Type { get; }
         public double DesiredAverage { get; set; }
 
         public float Volume
@@ -95,6 +98,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
         public LineSpectrum GetLineSpectrum(int barCount, ScalingStrategy scalingStrategy)
         {
+            if (_spectrumProvider == null)
+                return null;
             return new LineSpectrum(FftSize)
             {
                 SpectrumProvider = _spectrumProvider,
@@ -135,11 +140,20 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             {
                 Stop();
 
-                _soundIn = new WasapiLoopbackCapture();
+                if (Type == MmDeviceType.Input)
+                {
+                    _soundIn = Device != null
+                        ? new WasapiCapture {Device = Device}
+                        : new WasapiCapture();
+                }
+                else
+                {
+                    _soundIn = Device != null
+                        ? new WasapiLoopbackCapture {Device = Device}
+                        : new WasapiLoopbackCapture();
+                }
+
                 _soundIn.Initialize();
-                // Not sure if this null check is needed but doesnt hurt
-                if (Device != null)
-                    _soundIn.Device = Device;
 
                 var soundInSource = new SoundInSource(_soundIn);
                 _source = soundInSource.ToSampleSource().AppendSource(x => new GainSource(x), out _volume);
@@ -182,7 +196,7 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
         {
             Running = false;
 
-            
+
             if (_soundIn != null)
             {
                 _soundIn.Stop();
