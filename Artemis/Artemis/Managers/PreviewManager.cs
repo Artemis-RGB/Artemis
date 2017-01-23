@@ -82,7 +82,7 @@ namespace Artemis.Managers
             activePreview?.ProfileEditor?.SaveSelectedProfile();
 
             var lastModule = _moduleManager.GetLastModule();
-            if (lastModule != null)
+            if (lastModule != null && lastModule.Settings.IsEnabled)
                 _moduleManager.ChangeActiveModule(lastModule);
             else
                 _moduleManager.ClearActiveModule();

@@ -98,7 +98,7 @@ namespace Artemis.Managers
             if (_moduleManager.ActiveModule == null)
             {
                 var lastModule = _moduleManager.GetLastModule();
-                if (lastModule == null)
+                if (lastModule == null || !lastModule.Settings.IsEnabled)
                 {
                     _logger.Debug("Cancel LoopManager start, no module");
                     return;
