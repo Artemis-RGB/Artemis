@@ -80,29 +80,32 @@ namespace Artemis.Modules.General.GeneralProfile
 
         private void SetupAudio()
         {
-            _defaultRecording = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
-            _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
-            _defaultPlayback = MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-            _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
+            _defaultRecording = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+            _defaultPlayback = MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+
+            if (_defaultRecording != null)
+                _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
+            if (_defaultPlayback != null)
+                _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
         }
 
         private void AudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
         {
             _defaultRecording = e.DefaultRecording;
-            _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
             _defaultPlayback = e.DefaultPlayback;
-            _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
+
+            if (_defaultRecording != null)
+                _recordingInfo = AudioMeterInformation.FromDevice(_defaultRecording);
+            if (_defaultPlayback != null)
+                _playbackInfo = AudioMeterInformation.FromDevice(_defaultPlayback);
         }
 
         private void UpdateAudio(GeneralProfileDataModel dataModel)
         {
             // Update microphone, only bother with OverallPeak
             if (_defaultRecording != null)
-            {
-    
                 dataModel.Audio.Recording.OverallPeak = _recordingInfo.PeakValue;
-            }
-
+            
             if (_defaultPlayback == null)
                 return;
 

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Events;
@@ -15,7 +13,6 @@ using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels;
-using Artemis.ViewModels.Profiles;
 using CSCore.CoreAudioAPI;
 
 namespace Artemis.Profiles.Layers.Types.Audio
@@ -27,22 +24,21 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private int _lines;
         private LineSpectrum _lineSpectrum;
         private List<double> _lineValues;
+        private AudioPropertiesModel _properties;
+        private bool _subscribed;
 
         public AudioType(AudioCaptureManager audioCaptureManager)
         {
             _audioCaptureManager = audioCaptureManager;
-
-            // TODO: Setup according to settings
-            _audioCapture = _audioCaptureManager.GetAudioCapture(MMDeviceEnumerator.DefaultAudioEndpoint(DataFlow.Render, Role.Multimedia));
-            _audioCaptureManager.AudioDeviceChanged += OnAudioDeviceChanged;
         }
 
-        private void OnAudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
+        private void SubscribeToAudioChange()
         {
-            // TODO: Check if layer must use default
-            // TODO: Check recording type
-            _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultPlayback);
-            _lines = 0;
+            if (_subscribed)
+                return;
+
+            _audioCaptureManager.AudioDeviceChanged += OnAudioDeviceChanged;
+            _subscribed = true;
         }
 
         public string Name => "Keyboard - Audio visualization";
@@ -73,7 +69,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
             var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
 
             // Create a geometry that will be formed by all the bars
-            GeometryGroup barGeometry = new GeometryGroup();
+            var barGeometry = new GeometryGroup();
 
             switch (direction)
             {
@@ -121,6 +117,25 @@ namespace Artemis.Profiles.Layers.Types.Audio
         public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             layerModel.ApplyProperties(true);
+            var newProperties = (AudioPropertiesModel) layerModel.Properties;
+            if (_properties == null)
+                _properties = newProperties;
+
+            SubscribeToAudioChange();
+
+            if (_audioCapture == null || newProperties.Device != _properties.Device ||
+                newProperties.DeviceType != _properties.DeviceType)
+            {
+                var device = GetMmDevice();
+                if (device != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(device, newProperties.DeviceType);
+            }
+
+            _properties = newProperties;
+
+            if (_audioCapture == null)
+                return;
+
             _audioCapture.Pulse();
 
             var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
@@ -142,6 +157,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
             {
                 _lines = currentLines;
                 _lineSpectrum = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel);
+                if (_lineSpectrum == null)
+                    return;
             }
 
             var newLineValues = _lineSpectrum?.GetLineValues(currentHeight);
@@ -183,8 +200,8 @@ namespace Artemis.Profiles.Layers.Types.Audio
             // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
             var rect = layerModel.Properties.Contain
                 ? layerModel.LayerRect()
-                : new Rect(layerModel.Properties.X*4, layerModel.Properties.Y*4,
-                    layerModel.Properties.Width*4, layerModel.Properties.Height*4);
+                : new Rect(layerModel.Properties.X * 4, layerModel.Properties.Y * 4,
+                    layerModel.Properties.Width * 4, layerModel.Properties.Height * 4);
 
             var clip = layerModel.LayerRect(DrawScale);
 
@@ -195,6 +212,41 @@ namespace Artemis.Profiles.Layers.Types.Audio
             c.PushClip(new RectangleGeometry(clip));
             c.DrawRectangle(brush, null, rect);
             c.Pop();
+        }
+
+        private void OnAudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
+        {
+            if (_properties == null || _properties.Device != "Default")
+                return;
+
+            if (_properties.DeviceType == MmDeviceType.Input)
+            {
+                if (e.DefaultRecording != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultRecording, MmDeviceType.Input);
+            }
+            else
+            {
+                if (e.DefaultPlayback != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultPlayback, MmDeviceType.Ouput);
+            }
+
+            _lines = 0;
+        }
+
+        private MMDevice GetMmDevice()
+        {
+            if (_properties == null)
+                return null;
+
+            if (_properties.DeviceType == MmDeviceType.Input)
+                return _properties.Device == "Default"
+                    ? MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia)
+                    : MMDeviceEnumerator.EnumerateDevices(DataFlow.Capture)
+                        .FirstOrDefault(d => d.FriendlyName == _properties.Device);
+            return _properties.Device == "Default"
+                ? MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
+                : MMDeviceEnumerator.EnumerateDevices(DataFlow.Render)
+                    .FirstOrDefault(d => d.FriendlyName == _properties.Device);
         }
     }
 }
