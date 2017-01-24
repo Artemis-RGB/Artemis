@@ -7,6 +7,8 @@ using Artemis.Modules.Games.EurotruckSimulator2.Data;
 using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Utilities;
+using Artemis.Utilities.Memory;
+using static Artemis.Modules.Games.EurotruckSimulator2.EurotruckSimulator2DataModel;
 
 namespace Artemis.Modules.Games.EurotruckSimulator2
 {
@@ -35,8 +37,17 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public override void Update()
         {
+            var etsProcess = MemoryHelpers.GetProcessIfRunning("eurotrucks2");
+            var atsProcess = MemoryHelpers.GetProcessIfRunning("amtrucks");
+            if (etsProcess == null && atsProcess == null)
+                return;
+
             var dataModel = (EurotruckSimulator2DataModel) DataModel;
             var telemetryData = Ets2TelemetryDataReader.Instance.Read();
+
+            dataModel.GameName = etsProcess != null
+                ? TruckSimulatorGameName.EuroTruckSimulator2
+                : TruckSimulatorGameName.AmericanTruckSimulator;
 
             dataModel.Game = telemetryData.Game;
             dataModel.Job = telemetryData.Job;
@@ -64,10 +75,10 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
 
         public void FindAtsGameDir()
         {
-            // Demo is also supported but resides in a different directory, the full game can also be 64-bits
+            // Demo is also supported but resides in a different directory, the full game can also be 32-bits (I think)
             var dir = GeneralHelpers.FindSteamGame(@"\American Truck Simulator\bin\win_x64\amtrucks.exe") ??
                       GeneralHelpers.FindSteamGame(@"\American Truck Simulator\bin\win_x86\amtrucks.exe") ??
-                      GeneralHelpers.FindSteamGame(@"\American Truck Simulator Demo\bin\win_x86\amtrucks.exe");
+                      GeneralHelpers.FindSteamGame(@"\American Truck Simulator Demo\bin\win_x64\amtrucks.exe");
 
             if (string.IsNullOrEmpty(dir))
                 return;
