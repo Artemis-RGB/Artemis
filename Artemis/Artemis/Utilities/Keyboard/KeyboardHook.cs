@@ -6,13 +6,15 @@ namespace Artemis.Utilities.Keyboard
 {
     public static class KeyboardHook
     {
+        private static KeyboardInterceptor _interceptor;
+
         public delegate void KeyDownCallbackHandler(KeyEventArgs e);
 
-        static KeyboardHook()
+        public static void SetupKeyboardHook()
         {
-            var interceptor = new KeyboardInterceptor();
-            interceptor.KeyDown += VirtualKeyboardOnKeyDown;
-            interceptor.StartCapturing();
+            _interceptor = new KeyboardInterceptor();
+            _interceptor.KeyDown += VirtualKeyboardOnKeyDown;
+            _interceptor.StartCapturing();
         }
 
         private static async void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
