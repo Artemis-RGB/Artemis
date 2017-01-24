@@ -8,8 +8,8 @@ using Artemis.Properties;
 using Artemis.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
+using CUE.NET.Devices.Generic;
 using CUE.NET.Devices.Generic.Enums;
-using CUE.NET.Devices.Keyboard.Keys;
 using CUE.NET.Exceptions;
 using CUE.NET.Helper;
 using Ninject.Extensions.Logging;
@@ -47,7 +47,7 @@ namespace Artemis.DeviceProviders.Corsair
             if (!CueSDK.IsInitialized)
                 CueSDK.Initialize();
 
-            CueSDK.KeyboardSDK.UpdateMode = UpdateMode.Manual;
+            CueSDK.UpdateMode = UpdateMode.Manual;
             _keyboard = CueSDK.KeyboardSDK;
             switch (_keyboard.DeviceInfo.Model)
             {
@@ -136,25 +136,25 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            var widthMultiplier = Width / _keyboard.KeyboardRectangle.Width;
-            var heightMultiplier = Height / _keyboard.KeyboardRectangle.Height;
+            var widthMultiplier = Width / _keyboard.Brush.RenderedRectangle.Width;
+            var heightMultiplier = Height / _keyboard.Brush.RenderedRectangle.Height;
 
-            CorsairKey cueKey = null;
+            CorsairLed cueLed = null;
             try
             {
-                cueKey = _keyboard.Keys.FirstOrDefault(k => k.KeyId.ToString() == keyCode.ToString()) ??
-                         _keyboard.Keys.FirstOrDefault(k => k.KeyId == KeyMap.FormsKeys[keyCode]);
+                cueLed = _keyboard.Leds.FirstOrDefault(k => k.Id.ToString() == keyCode.ToString()) ??
+                         _keyboard.Leds.FirstOrDefault(k => k.Id == KeyMap.FormsKeys[keyCode]);
             }
             catch (Exception)
             {
                 // ignored
             }
 
-            if (cueKey == null)
+            if (cueLed == null)
                 return null;
 
-            var center = cueKey.KeyRectangle.GetCenter();
-            return new KeyMatch(keyCode, (int) (center.X * widthMultiplier), (int) (center.Y * heightMultiplier));
+            var center = cueLed.LedRectangle.GetCenter();
+            return new KeyMatch(keyCode, (int)(center.X * widthMultiplier), (int)(center.Y * heightMultiplier));
         }
     }
 }

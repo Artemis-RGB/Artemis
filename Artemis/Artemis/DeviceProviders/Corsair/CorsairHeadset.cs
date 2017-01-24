@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.HeadsetSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }
@@ -45,7 +45,7 @@ namespace Artemis.DeviceProviders.Corsair
                 throw new ArgumentException("Bitmap must be a perfect square");
 
             var leds = CueSDK.HeadsetSDK.Leds.Count();
-            var step = (double) bitmap.Width/leds;
+            var step = (double)bitmap.Width / leds;
 
             var ledIndex = 0;
             // Color each LED according to one of the pixels
@@ -53,7 +53,7 @@ namespace Artemis.DeviceProviders.Corsair
             {
                 var col = ledIndex == 0
                     ? bitmap.GetPixel(0, 0)
-                    : bitmap.GetPixel((int) ((ledIndex + 1)*step - 1), (int) ((ledIndex + 1)*step - 1));
+                    : bitmap.GetPixel((int)((ledIndex + 1) * step - 1), (int)((ledIndex + 1) * step - 1));
 
                 corsairLed.Color = col;
                 ledIndex++;
