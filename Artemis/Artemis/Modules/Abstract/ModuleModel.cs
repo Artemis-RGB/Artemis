@@ -205,6 +205,10 @@ namespace Artemis.Modules.Abstract
                     _lastTrace = DateTime.Now;
                     var dmJson = JsonConvert.SerializeObject(DataModel, Formatting.Indented);
                     Logger.Trace("Effect datamodel as JSON: \r\n{0}", dmJson);
+
+                    if (layers == null)
+                        return;
+
                     Logger.Trace("Effect {0} has to render {1} layers", Name, layers.Count);
                     foreach (var renderLayer in layers)
                         Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name, renderLayer.LayerType);

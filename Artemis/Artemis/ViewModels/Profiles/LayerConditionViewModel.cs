@@ -226,6 +226,7 @@ namespace Artemis.ViewModels.Profiles
             }
             else if (SelectedDataModelProp.EnumValues != null)
             {
+                Enums.Clear();
                 Enums.AddRange(SelectedDataModelProp.EnumValues);
                 EnumValueIsVisible = true;
             }

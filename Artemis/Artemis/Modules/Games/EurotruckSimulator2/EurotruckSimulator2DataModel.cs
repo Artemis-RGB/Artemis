@@ -17,10 +17,17 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             UserData.RegisterType<IEts2Truck>();
         }
 
+        public TruckSimulatorGameName GameName { get; set; }
         public IEts2Game Game { get; set; }
         public IEts2Job Job { get; set; }
         public IEts2Navigation Navigation { get; set; }
         public IEts2Trailer Trailer { get; set; }
         public IEts2Truck Truck { get; set; }
+
+        public enum TruckSimulatorGameName
+        {
+            EuroTruckSimulator2,
+            AmericanTruckSimulator
+        }
     }
 }
