@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair mousemat. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.MousematSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }
@@ -44,8 +44,8 @@ namespace Artemis.DeviceProviders.Corsair
             if (bitmap.Width != bitmap.Height)
                 throw new ArgumentException("Bitmap must be a perfect square");
 
-            var yStep = (double) bitmap.Width/4;
-            var xStep = (double) bitmap.Width/6;
+            var yStep = (double)bitmap.Width / 4;
+            var xStep = (double)bitmap.Width / 6;
 
             // This approach will break if any mousemats with different LED amounts are released, for now it will do.
             var ledIndex = 0;
@@ -57,23 +57,23 @@ namespace Artemis.DeviceProviders.Corsair
                 if (ledIndex < 5)
                 {
                     col = ledIndex == 0
-                        ? bitmap.GetPixel(0, (int) (ledIndex*yStep))
-                        : bitmap.GetPixel(0, (int) (ledIndex*yStep) - 1);
+                        ? bitmap.GetPixel(0, (int)(ledIndex * yStep))
+                        : bitmap.GetPixel(0, (int)(ledIndex * yStep) - 1);
                 }
                 // Bottom
                 else if (ledIndex < 10)
                 {
                     // Start at index 1 because the corner belongs to the left side
                     var zoneIndex = ledIndex - 4;
-                    col = bitmap.GetPixel((int) (zoneIndex*xStep), bitmap.Height - 1);
+                    col = bitmap.GetPixel((int)(zoneIndex * xStep), bitmap.Height - 1);
                 }
                 // Right side
                 else
                 {
                     var zoneIndex = ledIndex - 10;
                     col = zoneIndex == 4
-                        ? bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - (int) (zoneIndex*yStep))
-                        : bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - 1 - (int) (zoneIndex*yStep));
+                        ? bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - (int)(zoneIndex * yStep))
+                        : bitmap.GetPixel(bitmap.Height - 1, bitmap.Height - 1 - (int)(zoneIndex * yStep));
                 }
 
                 corsairLed.Color = col;

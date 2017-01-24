@@ -160,7 +160,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="CUE.NET, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\CUE.NET.1.1.1\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
