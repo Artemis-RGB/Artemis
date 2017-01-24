@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair mousemat. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.MousematSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }

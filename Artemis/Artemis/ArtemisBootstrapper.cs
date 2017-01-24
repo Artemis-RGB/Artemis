@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,6 +10,7 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Converters;
 using Artemis.Utilities.DataReaders;
+using Artemis.Utilities.Keyboard;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -29,6 +31,7 @@ namespace Artemis
 
             Initialize();
             BindSpecialValues();
+            KeyboardHook.SetupKeyboardHook();
         }
 
         private void BindSpecialValues()

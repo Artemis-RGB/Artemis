@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
 
             if (CanUse)
-                CueSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.HeadsetSDK.UpdateMode = UpdateMode.Manual;
 
             return CanUse;
         }
