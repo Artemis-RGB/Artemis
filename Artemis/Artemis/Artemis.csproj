@@ -247,6 +247,10 @@
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Open.WinKeyboardHook, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Open.WinKeyboardHook.1.0.11\lib\net45\Open.WinKeyboardHook.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Process.NET.1.0.5\lib\Process.NET.dll</HintPath>
       <Private>True</Private>
@@ -296,10 +300,6 @@
     </Reference>
     <Reference Include="VioletTape.WpfExceptionViewer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd09609f6784d58, processorArchitecture=MSIL">
       <HintPath>..\packages\WpfExceptionViewer.1.0.0.0\lib\VioletTape.WpfExceptionViewer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="VirtualInput, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtualInput.1.0.1\lib\net20\VirtualInput.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -354,6 +354,7 @@
     <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
     <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="Managers\MigrationManager.cs" />
     <Compile Include="Managers\ModuleManager.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />

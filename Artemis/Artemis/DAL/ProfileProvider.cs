@@ -21,7 +21,7 @@ namespace Artemis.DAL
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly string ProfileFolder =
+        public static readonly string ProfileFolder =
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
 
         private static bool _installedDefaults;
@@ -33,7 +33,7 @@ namespace Artemis.DAL
             CheckProfiles();
             InstallDefaults();
         }
-
+        
         public static List<string> GetProfileNames(KeyboardProvider keyboard, ModuleModel module)
         {
             if (keyboard == null || module == null)
@@ -177,7 +177,7 @@ namespace Artemis.DAL
             }
         }
 
-        private static List<ProfileModel> ReadProfiles(string subDirectory)
+        public static List<ProfileModel> ReadProfiles(string subDirectory)
         {
             var profiles = new List<ProfileModel>();
             var directory = ProfileFolder + "/" + subDirectory;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Forms;
-using VirtualInput;
+using Open.WinKeyboardHook;
 
 namespace Artemis.Utilities.Keyboard
 {
@@ -10,13 +10,14 @@ namespace Artemis.Utilities.Keyboard
 
         static KeyboardHook()
         {
-            VirtualKeyboard.StartInterceptor();
-            VirtualKeyboard.KeyDown += VirtualKeyboardOnKeyDown;
+            var interceptor = new KeyboardInterceptor();
+            interceptor.KeyDown += VirtualKeyboardOnKeyDown;
+            interceptor.StartCapturing();
         }
 
-        private static void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        private static async void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
-            Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
+            await Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
 
         public static event KeyDownCallbackHandler KeyDownCallback;

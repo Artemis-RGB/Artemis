@@ -19,12 +19,14 @@ namespace Artemis.Managers
     /// </summary>
     public class MainManager : IDisposable
     {
+        private readonly MigrationManager _migrationManager;
         private readonly Timer _processTimer;
 
         public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
-            ModuleManager moduleManager, PreviewManager previewManager, PipeServer pipeServer,
-            GameStateWebServer gameStateWebServer)
+            ModuleManager moduleManager, PreviewManager previewManager, MigrationManager migrationManager,
+            PipeServer pipeServer, GameStateWebServer gameStateWebServer)
         {
+            _migrationManager = migrationManager;
             Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
@@ -111,6 +113,7 @@ namespace Artemis.Managers
             ProgramEnabled = true;
             await LoopManager.StartAsync();
 
+            _migrationManager.MigrateProfiles();
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 
@@ -121,10 +124,8 @@ namespace Artemis.Managers
         {
             Logger.Debug("Disabling program");
             foreach (var overlayModule in ModuleManager.OverlayModules)
-            {
                 if (overlayModule.Settings.IsEnabled)
                     overlayModule.Dispose();
-            }
             LoopManager.Stop();
             ProgramEnabled = false;
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
