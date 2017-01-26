@@ -72,7 +72,11 @@ namespace Artemis.ViewModels.Flyouts
         {
             get
             {
-                return new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders.Select(k => k.Name));
+                return new BindableCollection<string>(MainManager.DeviceManager.KeyboardProviders
+                    .OrderBy(k => k.Name != "None")
+                    .ThenBy(k => k.Name != "Corsair RGB Keyboard")
+                    .ThenBy(k => k.Name)
+                    .Select(k => k.Name));
             }
         }
 

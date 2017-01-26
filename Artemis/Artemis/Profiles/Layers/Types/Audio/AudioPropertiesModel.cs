@@ -9,9 +9,23 @@ namespace Artemis.Profiles.Layers.Types.Audio
         {
         }
 
-        public int Sensitivity { get; set; }
-        public double FadeSpeed { get; set; }
+        [DefaultValue(MmDeviceType.Ouput)]
+        public MmDeviceType DeviceType { get; set; }
+
+        [DefaultValue("Default")]
+        public string Device { get; set; }
+
+        [DefaultValue(Direction.BottomToTop)]
         public Direction Direction { get; set; }
+
+        [DefaultValue(ScalingStrategy.Decibel)]
+        public ScalingStrategy ScalingStrategy { get; set; }
+    }
+
+    public enum MmDeviceType
+    {
+        [Description("Ouput")] Ouput,
+        [Description("Input")] Input
     }
 
     public enum Direction
@@ -20,5 +34,12 @@ namespace Artemis.Profiles.Layers.Types.Audio
         [Description("Bottom to top")] BottomToTop,
         [Description("Left to right")] LeftToRight,
         [Description("Right to left")] RightToLeft
+    }
+
+    public enum ScalingStrategy
+    {
+        [Description("Decibel")] Decibel,
+        [Description("Linear")] Linear,
+        [Description("Square root")] Sqrt
     }
 }

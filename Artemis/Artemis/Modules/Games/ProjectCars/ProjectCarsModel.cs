@@ -11,7 +11,7 @@ namespace Artemis.Modules.Games.ProjectCars
         {
             Settings = SettingsProvider.Load<ProjectCarsSettings>();
             DataModel = new ProjectCarsDataModel();
-            ProcessName = "pCARS64";
+            ProcessNames.Add("pCARS64");
         }
 
         public override string Name => "ProjectCars";

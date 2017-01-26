@@ -9,6 +9,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyboardGif
@@ -18,6 +19,7 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
         public string Name => "Keyboard - GIF";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

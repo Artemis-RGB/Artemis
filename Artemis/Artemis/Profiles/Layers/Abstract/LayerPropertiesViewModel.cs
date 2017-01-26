@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using Artemis.Profiles.Layers.Models;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 

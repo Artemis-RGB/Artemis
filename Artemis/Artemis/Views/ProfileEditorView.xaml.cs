@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Artemis.Views.Profiles
+namespace Artemis.Views
 {
     /// <summary>
     ///     Interaction logic for ProfileEditorView.xaml

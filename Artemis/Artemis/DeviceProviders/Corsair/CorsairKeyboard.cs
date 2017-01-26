@@ -136,8 +136,8 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
         {
-            var widthMultiplier = Width/_keyboard.Brush.RenderedRectangle.Width;
-            var heightMultiplier = Height/_keyboard.Brush.RenderedRectangle.Height;
+            var widthMultiplier = Width / _keyboard.Brush.RenderedRectangle.Width;
+            var heightMultiplier = Height / _keyboard.Brush.RenderedRectangle.Height;
 
             CorsairLed cueLed = null;
             try
@@ -154,7 +154,7 @@ namespace Artemis.DeviceProviders.Corsair
                 return null;
 
             var center = cueLed.LedRectangle.GetCenter();
-            return new KeyMatch(keyCode, (int) (center.X*widthMultiplier), (int) (center.Y*heightMultiplier));
+            return new KeyMatch(keyCode, (int)(center.X * widthMultiplier), (int)(center.Y * heightMultiplier));
         }
     }
 }

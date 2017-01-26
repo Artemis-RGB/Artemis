@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 

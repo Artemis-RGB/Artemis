@@ -13,7 +13,7 @@ namespace Artemis.ViewModels.Profiles
             new NamedOperator("Equal to", "==")
         };
 
-        private readonly LayerEditorViewModel _conditionModel;
+        private readonly LayerEditorViewModel _editorViewModel;
 
         private readonly NamedOperator[] _int32Operators =
         {
@@ -41,30 +41,26 @@ namespace Artemis.ViewModels.Profiles
         };
 
         private bool _enumValueIsVisible;
-        private bool _preselecting;
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
         private string _selectedEnum;
         private NamedOperator _selectedOperator;
         private string _userValue;
         private bool _userValueIsVisible;
 
-        public LayerConditionViewModel(LayerEditorViewModel conditionModel, LayerConditionModel layerConditionModel)
+        public LayerConditionViewModel(LayerEditorViewModel editorViewModel, LayerConditionModel conditionModel)
         {
-            _conditionModel = conditionModel;
-            _preselecting = false;
+            _editorViewModel = editorViewModel;
 
-            LayerConditionModel = layerConditionModel;
-            DataModelProps = conditionModel.DataModelProps;
+            ConditionModel = conditionModel;
+            DataModelProps = editorViewModel.DataModelProps;
             Operators = new BindableCollection<NamedOperator>();
             Enums = new BindableCollection<string>();
 
-            PropertyChanged += UpdateModel;
-            PropertyChanged += UpdateForm;
-
-            PreSelect();
+            PropertyChanged += MapViewToModel;
+            MapModelToView();
         }
 
-        public LayerConditionModel LayerConditionModel { get; set; }
+        public LayerConditionModel ConditionModel { get; set; }
 
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
 
@@ -89,10 +85,10 @@ namespace Artemis.ViewModels.Profiles
             {
                 if (value.Equals(_selectedDataModelProp)) return;
                 _selectedDataModelProp = value;
+                SetupPropertyInput();
                 NotifyOfPropertyChange(() => SelectedDataModelProp);
             }
         }
-
 
         public bool UserValueIsVisible
         {
@@ -122,6 +118,7 @@ namespace Artemis.ViewModels.Profiles
             set
             {
                 _selectedOperator = value;
+                SetupUserValueInput();
                 NotifyOfPropertyChange(() => SelectedOperator);
             }
         }
@@ -137,20 +134,44 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        /// <summary>
-        ///     Handles updating the form to match the selected data model property
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UpdateForm(object sender, PropertyChangedEventArgs e)
+        public void MapModelToView()
         {
-            if (e.PropertyName != "SelectedDataModelProp")
-                return;
+            PropertyChanged -= MapViewToModel;
 
+            // Select the right property
+            SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == ConditionModel.Field);
+            // Select the operator
+            SelectedOperator = Operators.FirstOrDefault(o => o.Value == ConditionModel.Operator);
+
+            if (ConditionModel.Type == "Enum" || ConditionModel.Type == "Boolean")
+                SelectedEnum = ConditionModel.Value;
+            else
+                UserValue = ConditionModel.Value;
+
+            PropertyChanged += MapViewToModel;
+        }
+
+        public void MapViewToModel()
+        {
+            ConditionModel.Field = SelectedDataModelProp.Path;
+            ConditionModel.Operator = SelectedOperator.Value;
+            ConditionModel.Type = SelectedDataModelProp.Type;
+
+            if (ConditionModel.Type == "Enum" || ConditionModel.Type == "Boolean")
+                ConditionModel.Value = SelectedEnum;
+            else
+                ConditionModel.Value = UserValue;
+        }
+
+        private void MapViewToModel(object sender, PropertyChangedEventArgs e)
+        {
+            MapViewToModel();
+        }
+
+        public void SetupPropertyInput()
+        {
             Operators.Clear();
             Enums.Clear();
-            UserValueIsVisible = false;
-            EnumValueIsVisible = false;
 
             switch (SelectedDataModelProp.Type)
             {
@@ -175,63 +196,40 @@ namespace Artemis.ViewModels.Profiles
                     break;
             }
 
-            // Setup Enum selection if needed
-            if (SelectedDataModelProp.EnumValues != null)
+            // Add Changed operator is the type is event
+            if (_editorViewModel.ProposedLayer.IsEvent)
             {
+                Operators.Add(new NamedOperator("Changed", "changed"));
+                // Also add decreased and increased operator on numbers
+                if (SelectedDataModelProp.Type == "Int32" || SelectedDataModelProp.Type == "Single")
+                {
+                    Operators.Add(new NamedOperator("Decreased", "decreased"));
+                    Operators.Add(new NamedOperator("Increased", "increased"));
+                }
+            }
+
+            SetupUserValueInput();
+        }
+
+        private void SetupUserValueInput()
+        {
+            UserValueIsVisible = false;
+            EnumValueIsVisible = false;
+
+            if (SelectedOperator.Value == "changed" || SelectedOperator.Value == "decreased" ||
+                SelectedOperator.Value == "increased")
+                return;
+
+            if (SelectedDataModelProp.Type == "Boolean")
+            {
+                EnumValueIsVisible = true;
+            }
+            else if (SelectedDataModelProp.EnumValues != null)
+            {
+                Enums.Clear();
                 Enums.AddRange(SelectedDataModelProp.EnumValues);
                 EnumValueIsVisible = true;
             }
-
-            SelectedOperator = Operators.First();
-        }
-
-
-        /// <summary>
-        ///     Handles saving user input to the model
-        ///     TODO: Data validation?
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UpdateModel(object sender, PropertyChangedEventArgs e)
-        {
-            // Don't mess with model during preselect
-            if (_preselecting)
-                return;
-
-            // Only care about these fields
-            if (e.PropertyName != "UserValue" &&
-                e.PropertyName != "SelectedOperator" &&
-                e.PropertyName != "SelectedDataModelProp" &&
-                e.PropertyName != "SelectedEnum")
-                return;
-
-            LayerConditionModel.Field = SelectedDataModelProp.Path;
-            LayerConditionModel.Operator = SelectedOperator.Value;
-            LayerConditionModel.Type = SelectedDataModelProp.Type;
-
-            if (SelectedDataModelProp.Type == "Enum" || SelectedDataModelProp.Type == "Boolean")
-                LayerConditionModel.Value = SelectedEnum;
-            else
-                LayerConditionModel.Value = UserValue;
-
-            UpdateForm(sender, e);
-        }
-
-        /// <summary>
-        ///     Setup the current UI elements to show the backing model
-        /// </summary>
-        private void PreSelect()
-        {
-            _preselecting = true;
-            SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == LayerConditionModel.Field);
-            SelectedOperator = Operators.FirstOrDefault(o => o.Value == LayerConditionModel.Operator);
-            LayerConditionModel.Type = SelectedDataModelProp.Type;
-            if (LayerConditionModel.Type == "Enum" || LayerConditionModel.Type == "Boolean")
-                SelectedEnum = LayerConditionModel.Value;
-            else
-                UserValue = LayerConditionModel.Value;
-
-            _preselecting = false;
         }
 
         /// <summary>
@@ -239,7 +237,7 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void Delete()
         {
-            _conditionModel.DeleteCondition(this, LayerConditionModel);
+            _editorViewModel.DeleteCondition(this, ConditionModel);
         }
 
         public struct NamedOperator

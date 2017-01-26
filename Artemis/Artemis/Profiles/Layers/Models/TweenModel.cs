@@ -26,59 +26,86 @@ namespace Artemis.Profiles.Layers.Models
             _heightTweener = new Tweener<float>((float) layerModel.Height, (float) layerModel.Height, 0);
             _opacityTweener = new Tweener<float>((float) layerModel.Opacity, (float) layerModel.Opacity, 0);
 
-            StoreCurrentValues();
+            _x = (float)_layerModel.X;
+            _y = (float)_layerModel.Y;
+            _width = (float)_layerModel.Width;
+            _height = (float)_layerModel.Height;
+            _opacity = (float)_layerModel.Opacity;
         }
 
         public void Update()
         {
+            UpdateWidth();
+            UpdateHeight();
+            UpdateOpacity();
+        }
+
+        private void UpdateWidth()
+        {
+            if (_layerModel.Properties.WidthEaseTime < 0.001) 
+                return;
+
             // Width
             if (Math.Abs(_layerModel.Width - _width) > 0.001)
             {
                 var widthFunc = GetEaseFunction(_layerModel.Properties.WidthEase);
                 var widthSpeed = _layerModel.Properties.WidthEaseTime;
 
-                _xTweener = new Tweener<float>(_xTweener.Value, (float) _layerModel.X, widthSpeed, widthFunc);
-                _widthTweener = new Tweener<float>(_widthTweener.Value, (float) _layerModel.Width, widthSpeed, widthFunc);
+                _xTweener = new Tweener<float>(_xTweener.Value, (float)_layerModel.X, widthSpeed, widthFunc);
+                _widthTweener = new Tweener<float>(_widthTweener.Value, (float)_layerModel.Width, widthSpeed, widthFunc);
             }
+
+            _xTweener.Update(40);
+            _widthTweener.Update(40);
+
+            _x = (float) _layerModel.X;
+            _width = (float)_layerModel.Width;
+
+            _layerModel.X = _xTweener.Value;
+            _layerModel.Width = _widthTweener.Value;
+        }
+
+        private void UpdateHeight()
+        {
+            if (_layerModel.Properties.HeightEaseTime < 0.001)
+                return;
 
             // Height
             if (Math.Abs(_layerModel.Height - _height) > 0.001)
             {
                 var heightFunc = GetEaseFunction(_layerModel.Properties.HeightEase);
                 var heightSpeed = _layerModel.Properties.HeightEaseTime;
-                _yTweener = new Tweener<float>(_y, (float) _layerModel.Y, heightSpeed, heightFunc);
-                _heightTweener = new Tweener<float>(_height, (float) _layerModel.Height, heightSpeed, heightFunc);
+                _yTweener = new Tweener<float>(_y, (float)_layerModel.Y, heightSpeed, heightFunc);
+                _heightTweener = new Tweener<float>(_height, (float)_layerModel.Height, heightSpeed, heightFunc);
             }
+
+            _yTweener.Update(40);
+            _heightTweener.Update(40);
+
+            _y = (float)_layerModel.Y;
+            _height = (float)_layerModel.Height;
+
+            _layerModel.Y = _yTweener.Value;
+            _layerModel.Height = _heightTweener.Value;
+        }
+
+        private void UpdateOpacity()
+        {
+            if (_layerModel.Properties.OpacityEaseTime < 0.001)
+                return;
 
             // Opacity
             if (Math.Abs(_layerModel.Opacity - _opacity) > 0.001)
             {
-                _opacityTweener = new Tweener<float>(_opacity, (float) _layerModel.Opacity,
+                _opacityTweener = new Tweener<float>(_opacity, (float)_layerModel.Opacity,
                     _layerModel.Properties.OpacityEaseTime, GetEaseFunction(_layerModel.Properties.OpacityEase));
             }
 
-            _xTweener.Update(40);
-            _yTweener.Update(40);
-            _widthTweener.Update(40);
-            _heightTweener.Update(40);
             _opacityTweener.Update(40);
 
-            StoreCurrentValues();
+            _opacity = (float)_layerModel.Opacity;
 
-            _layerModel.X = _xTweener.Value;
-            _layerModel.Y = _yTweener.Value;
-            _layerModel.Width = _widthTweener.Value;
-            _layerModel.Height = _heightTweener.Value;
             _layerModel.Opacity = _opacityTweener.Value;
-        }
-
-        private void StoreCurrentValues()
-        {
-            _x = (float) _layerModel.X;
-            _y = (float) _layerModel.Y;
-            _width = (float) _layerModel.Width;
-            _height = (float) _layerModel.Height;
-            _opacity = (float) _layerModel.Opacity;
         }
 
         private static EaseFunc GetEaseFunction(string functionName)

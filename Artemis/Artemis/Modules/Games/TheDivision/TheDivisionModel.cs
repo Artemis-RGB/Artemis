@@ -22,7 +22,7 @@ namespace Artemis.Modules.Games.TheDivision
 
             Settings = SettingsProvider.Load<TheDivisionSettings>();
             DataModel = new TheDivisionDataModel();
-            ProcessName = "TheDivision";
+            ProcessNames.Add("TheDivision");
         }
 
         public override string Name => "TheDivision";

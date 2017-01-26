@@ -13,6 +13,7 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.Keyboard;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.KeyPress
@@ -22,6 +23,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
         private readonly DeviceManager _deviceManager;
         private List<LayerModel> _keyPressLayers;
         private LayerModel _layerModel;
+        public int DrawScale => 4;
 
         public KeyPressType(DeviceManager deviceManager)
         {

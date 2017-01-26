@@ -1,42 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Artemis.Events;
+using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
+using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles;
-using Newtonsoft.Json;
-using Ninject;
+using Artemis.ViewModels;
+using CSCore.CoreAudioAPI;
 
 namespace Artemis.Profiles.Layers.Types.Audio
 {
     public class AudioType : ILayerType
     {
-        private readonly List<LayerModel> _audioLayers = new List<LayerModel>();
-        private readonly IKernel _kernel;
-
-        private DateTime _lastUpdate;
+        private readonly AudioCaptureManager _audioCaptureManager;
+        private AudioCapture _audioCapture;
         private int _lines;
-        private string _previousSettings;
+        private LineSpectrum _lineSpectrum;
+        private List<double> _lineValues;
+        private AudioPropertiesModel _properties;
+        private bool _subscribed;
 
-        public AudioType(IKernel kernel, AudioCaptureManager audioCaptureManager)
+        public AudioType(AudioCaptureManager audioCaptureManager)
         {
-            _kernel = kernel;
-            AudioCaptureManager = audioCaptureManager;
+            _audioCaptureManager = audioCaptureManager;
         }
 
-        [JsonIgnore]
-        public AudioCaptureManager AudioCaptureManager { get; set; }
+        private void SubscribeToAudioChange()
+        {
+            if (_subscribed)
+                return;
+
+            _audioCaptureManager.AudioDeviceChanged += OnAudioDeviceChanged;
+            _subscribed = true;
+        }
 
         public string Name => "Keyboard - Audio visualization";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
@@ -53,56 +61,109 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            lock (_audioLayers)
+            if (_lineValues == null)
+                return;
+
+            var parentX = layerModel.X;
+            var parentY = layerModel.Y;
+            var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
+
+            // Create a geometry that will be formed by all the bars
+            var barGeometry = new GeometryGroup();
+
+            switch (direction)
             {
-                foreach (var audioLayer in _audioLayers)
-                {
-                    // This is cheating but it ensures that the brush is drawn across the entire main-layer
-                    var oldWidth = audioLayer.Properties.Width;
-                    var oldHeight = audioLayer.Properties.Height;
-                    var oldX = audioLayer.Properties.X;
-                    var oldY = audioLayer.Properties.Y;
-
-                    audioLayer.Properties.Width = layerModel.Properties.Width;
-                    audioLayer.Properties.Height = layerModel.Properties.Height;
-                    audioLayer.Properties.X = layerModel.Properties.X;
-                    audioLayer.Properties.Y = layerModel.Properties.Y;
-                    audioLayer.LayerType.Draw(audioLayer, c);
-
-                    audioLayer.Properties.Width = oldWidth;
-                    audioLayer.Properties.Height = oldHeight;
-                    audioLayer.Properties.X = oldX;
-                    audioLayer.Properties.Y = oldY;
-                }
+                case Direction.TopToBottom:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry.Children.Add(barRect);
+                    }
+                    break;
+                case Direction.BottomToTop:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
+                        clipRect.Y = clipRect.Y + layerModel.Height * 4 - clipRect.Height;
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry.Children.Add(barRect);
+                    }
+                    break;
+                case Direction.LeftToRight:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry.Children.Add(barRect);
+                    }
+                    break;
+                default:
+                    for (var index = 0; index < _lineValues.Count; index++)
+                    {
+                        var clipRect = new Rect((parentX + index) * 4, parentY * 4, 4, _lineValues[index] * 4);
+                        var barRect = new RectangleGeometry(clipRect);
+                        barGeometry.Children.Add(barRect);
+                    }
+                    break;
             }
+
+            // Push the created geometry
+            c.PushClip(barGeometry);
+            BrushDraw(layerModel, c);
+            c.Pop();
         }
 
         public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             layerModel.ApplyProperties(true);
-            if (isPreview)
+            var newProperties = (AudioPropertiesModel) layerModel.Properties;
+            if (_properties == null)
+                _properties = newProperties;
+
+            SubscribeToAudioChange();
+
+            if (_audioCapture == null || newProperties.Device != _properties.Device ||
+                newProperties.DeviceType != _properties.DeviceType)
+            {
+                var device = GetMmDevice();
+                if (device != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(device, newProperties.DeviceType);
+            }
+
+            _properties = newProperties;
+
+            if (_audioCapture == null)
                 return;
 
-            lock (_audioLayers)
-            {
-                SetupLayers(layerModel);
-                var spectrumData = AudioCaptureManager.GetSpectrumData(_lines);
-                if (!spectrumData.Any())
-                    return;
+            _audioCapture.Pulse();
 
-                var settings = (AudioPropertiesModel) layerModel.Properties;
-                switch (settings.Direction)
-                {
-                    case Direction.TopToBottom:
-                    case Direction.BottomToTop:
-                        ApplyVertical(spectrumData, settings);
-                        break;
-                    case Direction.LeftToRight:
-                    case Direction.RightToLeft:
-                        ApplyHorizontal(spectrumData, settings);
-                        break;
-                }
+            var direction = ((AudioPropertiesModel) layerModel.Properties).Direction;
+
+            int currentLines;
+            double currentHeight;
+            if (direction == Direction.BottomToTop || direction == Direction.TopToBottom)
+            {
+                currentLines = (int) layerModel.Width;
+                currentHeight = layerModel.Height;
             }
+            else
+            {
+                currentLines = (int) layerModel.Height;
+                currentHeight = layerModel.Width;
+            }
+
+            if (_lines != currentLines || _lineSpectrum == null)
+            {
+                _lines = currentLines;
+                _lineSpectrum = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel);
+                if (_lineSpectrum == null)
+                    return;
+            }
+
+            var newLineValues = _lineSpectrum?.GetLineValues(currentHeight);
+            if (newLineValues != null)
+                _lineValues = newLineValues;
         }
 
         public void SetupProperties(LayerModel layerModel)
@@ -112,8 +173,10 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             layerModel.Properties = new AudioPropertiesModel(layerModel.Properties)
             {
-                FadeSpeed = 0.2,
-                Sensitivity = 2
+                DeviceType = MmDeviceType.Ouput,
+                Device = "Default",
+                Direction = Direction.BottomToTop,
+                ScalingStrategy = ScalingStrategy.Decibel
             };
         }
 
@@ -125,170 +188,65 @@ namespace Artemis.Profiles.Layers.Types.Audio
             return new AudioPropertiesViewModel(layerEditorViewModel);
         }
 
-        private void ApplyVertical(List<byte> spectrumData, AudioPropertiesModel settings)
+        public void BrushDraw(LayerModel layerModel, DrawingContext c)
         {
-            var index = 0;
-            foreach (var audioLayer in _audioLayers)
+            // If an animation is present, let it handle the drawing
+            if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                int height;
-                if (spectrumData.Count > index)
-                    height = (int) Math.Round(spectrumData[index]/2.55);
-                else
-                    height = 0;
-
-                // Apply Sensitivity setting
-                height = height*settings.Sensitivity;
-
-                var newHeight = settings.Height/100.0*height;
-                if (newHeight >= audioLayer.Properties.Height)
-                    audioLayer.Properties.Height = newHeight;
-                else
-                    audioLayer.Properties.Height = audioLayer.Properties.Height - settings.FadeSpeed;
-                if (audioLayer.Properties.Height < 0)
-                    audioLayer.Properties.Height = 0;
-
-                // Reverse the direction if settings require it
-                if (settings.Direction == Direction.BottomToTop)
-                    audioLayer.Properties.Y = settings.Y + (settings.Height - audioLayer.Properties.Height);
-
-                FakeUpdate(settings, audioLayer);
-                index++;
-            }
-        }
-
-        private void ApplyHorizontal(List<byte> spectrumData, AudioPropertiesModel settings)
-        {
-            var index = 0;
-            foreach (var audioLayer in _audioLayers)
-            {
-                int width;
-                if (spectrumData.Count > index)
-                    width = (int) Math.Round(spectrumData[index]/2.55);
-                else
-                    width = 0;
-
-                // Apply Sensitivity setting
-                width = width*settings.Sensitivity;
-
-                var newWidth = settings.Width/100.0*width;
-                if (newWidth >= audioLayer.Properties.Width)
-                    audioLayer.Properties.Width = newWidth;
-                else
-                    audioLayer.Properties.Width = audioLayer.Properties.Width - settings.FadeSpeed;
-                if (audioLayer.Properties.Width < 0)
-                    audioLayer.Properties.Width = 0;
-
-                audioLayer.Properties.Brush = settings.Brush;
-                audioLayer.Properties.Contain = false;
-
-                // Reverse the direction if settings require it
-                if (settings.Direction == Direction.RightToLeft)
-                    audioLayer.Properties.X = settings.X + (settings.Width - audioLayer.Properties.Width);
-
-                FakeUpdate(settings, audioLayer);
-                index++;
-            }
-        }
-
-        /// <summary>
-        ///     Updates the layer manually faking the width and height for a properly working animation
-        /// </summary>
-        /// <param name="settings"></param>
-        /// <param name="audioLayer"></param>
-        private static void FakeUpdate(LayerPropertiesModel settings, LayerModel audioLayer)
-        {
-            // Call the regular update
-            audioLayer.LayerType?.Update(audioLayer, null);
-
-            // Store the original height and width
-            var oldHeight = audioLayer.Properties.Height;
-            var oldWidth = audioLayer.Properties.Width;
-
-            // Fake the height and width and update the animation
-            audioLayer.Properties.Width = settings.Width;
-            audioLayer.Properties.Height = settings.Height;
-            audioLayer.LastRender = DateTime.Now;
-            audioLayer.LayerAnimation?.Update(audioLayer, true);
-
-            // Restore the height and width
-            audioLayer.Properties.Height = oldHeight;
-            audioLayer.Properties.Width = oldWidth;
-        }
-
-        /// <summary>
-        ///     Sets up the inner layers when the settings have changed
-        /// </summary>
-        /// <param name="layerModel"></param>
-        private void SetupLayers(LayerModel layerModel)
-        {
-            // Checking on settings update is expensive, only do it every second
-            if (DateTime.Now - _lastUpdate < TimeSpan.FromSeconds(1))
+                layerModel.LayerAnimation.Draw(layerModel, c, DrawScale);
                 return;
-            _lastUpdate = DateTime.Now;
+            }
 
-            var settings = (AudioPropertiesModel) layerModel.Properties;
-            var currentSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            var currentType = _audioLayers.FirstOrDefault()?.LayerAnimation?.GetType();
+            // Otherwise draw the rectangle with its layer.AppliedProperties dimensions and brush
+            var rect = layerModel.Properties.Contain
+                ? layerModel.LayerRect()
+                : new Rect(layerModel.Properties.X * 4, layerModel.Properties.Y * 4,
+                    layerModel.Properties.Width * 4, layerModel.Properties.Height * 4);
 
-            if (currentSettings == _previousSettings && (layerModel.LayerAnimation.GetType() == currentType))
+            var clip = layerModel.LayerRect(DrawScale);
+
+            // Can't meddle with the original brush because it's frozen.
+            var brush = layerModel.Brush.Clone();
+            brush.Opacity = layerModel.Opacity;
+
+            c.PushClip(new RectangleGeometry(clip));
+            c.DrawRectangle(brush, null, rect);
+            c.Pop();
+        }
+
+        private void OnAudioDeviceChanged(object sender, AudioDeviceChangedEventArgs e)
+        {
+            if (_properties == null || _properties.Device != "Default")
                 return;
 
-            _previousSettings = JsonConvert.SerializeObject(settings, Formatting.Indented);
-
-            _audioLayers.Clear();
-            switch (settings.Direction)
+            if (_properties.DeviceType == MmDeviceType.Input)
             {
-                case Direction.TopToBottom:
-                case Direction.BottomToTop:
-                    SetupVertical(layerModel);
-                    break;
-                case Direction.LeftToRight:
-                case Direction.RightToLeft:
-                    SetupHorizontal(layerModel);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                if (e.DefaultRecording != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultRecording, MmDeviceType.Input);
             }
+            else
+            {
+                if (e.DefaultPlayback != null)
+                    _audioCapture = _audioCaptureManager.GetAudioCapture(e.DefaultPlayback, MmDeviceType.Ouput);
+            }
+
+            _lines = 0;
         }
 
-        private void SetupVertical(LayerModel layerModel)
+        private MMDevice GetMmDevice()
         {
-            _lines = (int) layerModel.Properties.Width;
-            for (var i = 0; i < _lines; i++)
-            {
-                var layer = LayerModel.CreateLayer();
-                layer.Properties.X = layerModel.Properties.X + i;
-                layer.Properties.Y = layerModel.Properties.Y;
-                layer.Properties.Width = 1;
-                layer.Properties.Height = 0;
-                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
-                layer.Properties.Brush = layerModel.Properties.Brush;
-                layer.Properties.Contain = false;
-                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
+            if (_properties == null)
+                return null;
 
-                _audioLayers.Add(layer);
-                layer.Update(null, false, true);
-            }
-        }
-
-        private void SetupHorizontal(LayerModel layerModel)
-        {
-            _lines = (int) layerModel.Properties.Height;
-            for (var i = 0; i < _lines; i++)
-            {
-                var layer = LayerModel.CreateLayer();
-                layer.Properties.X = layerModel.Properties.X;
-                layer.Properties.Y = layerModel.Properties.Y + i;
-                layer.Properties.Width = 0;
-                layer.Properties.Height = 1;
-                layer.Properties.AnimationSpeed = layerModel.Properties.AnimationSpeed;
-                layer.Properties.Brush = layerModel.Properties.Brush;
-                layer.Properties.Contain = false;
-                layer.LayerAnimation = (ILayerAnimation) _kernel.Get(layerModel.LayerAnimation.GetType());
-
-                _audioLayers.Add(layer);
-                layer.Update(null, false, true);
-            }
+            if (_properties.DeviceType == MmDeviceType.Input)
+                return _properties.Device == "Default"
+                    ? MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia)
+                    : MMDeviceEnumerator.EnumerateDevices(DataFlow.Capture)
+                        .FirstOrDefault(d => d.FriendlyName == _properties.Device);
+            return _properties.Device == "Default"
+                ? MMDeviceEnumerator.TryGetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
+                : MMDeviceEnumerator.EnumerateDevices(DataFlow.Render)
+                    .FirstOrDefault(d => d.FriendlyName == _properties.Device);
         }
     }
 }

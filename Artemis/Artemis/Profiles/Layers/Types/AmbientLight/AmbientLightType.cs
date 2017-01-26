@@ -13,7 +13,7 @@ using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.ViewModels.Profiles;
+using Artemis.ViewModels;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Types.AmbientLight
@@ -25,6 +25,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
         public string Name => "Keyboard - Ambient Light";
         public bool ShowInEdtor => true;
         public DrawType DrawType => DrawType.Keyboard;
+        public int DrawScale => 4;
 
         [JsonIgnore] private AmbienceCreatorType? _lastAmbienceCreatorType;
 
@@ -76,11 +77,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight
 
         public void Draw(LayerModel layerModel, DrawingContext c)
         {
-            var rect = new Rect(layerModel.Properties.X*4,
-                layerModel.Properties.Y*4,
-                layerModel.Properties.Width*4,
-                layerModel.Properties.Height*4);
-
+            var rect = layerModel.LayerRect(DrawScale);
             c.DrawRectangle(((AmbientLightPropertiesModel) layerModel.Properties).AmbientLightBrush, null, rect);
         }
 

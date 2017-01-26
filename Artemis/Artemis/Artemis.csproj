@@ -56,6 +56,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -65,6 +66,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>EAC088BE27A2DE790AE6F37A020409F4A1B5EC0E</ManifestCertificateThumbprint>
@@ -108,6 +110,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -118,6 +121,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -131,16 +135,16 @@
       <HintPath>..\packages\Betwixt.1.4.1\lib\net35\Betwixt.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.0.2\lib\net45\Caliburn.Micro.dll</HintPath>
+    <Reference Include="Caliburn.Micro, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.0.3\lib\net45\Caliburn.Micro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Platform, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.2\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.2\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -151,8 +155,12 @@
       <HintPath>..\packages\Colore.5.1.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CUE.NET, Version=1.1.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CUE.NET.1.1.0.2\lib\net45\CUE.NET.dll</HintPath>
+    <Reference Include="CSCore, Version=1.1.5992.18249, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSCore.1.1.0\lib\net35-client\CSCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CUE.NET, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CUE.NET.1.1.1\lib\net45\CUE.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DeltaCompressionDotNet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
@@ -168,7 +176,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DynamicExpresso.Core, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicExpresso.Core.1.3.3.4\lib\net40\DynamicExpresso.Core.dll</HintPath>
+      <HintPath>..\packages\DynamicExpresso.Core.1.3.3.5\lib\net40\DynamicExpresso.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=0.1.4.3, Culture=neutral, PublicKeyToken=d19974ea350ccea1, processorArchitecture=MSIL">
@@ -180,15 +188,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\packages\squirrel.windows.1.5.1\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=1.3.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.3.0\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.4.1.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.4.1\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -209,10 +217,6 @@
     </Reference>
     <Reference Include="MoonSharp.Interpreter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=921e73ce94aa17f8, processorArchitecture=MSIL">
       <HintPath>..\packages\MoonSharp.2.0.0.0\lib\net40-client\MoonSharp.Interpreter.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -240,11 +244,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
+      <HintPath>..\packages\squirrel.windows.1.5.1\lib\Net45\NuGet.Squirrel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Open.WinKeyboardHook, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Open.WinKeyboardHook.1.0.11\lib\net45\Open.WinKeyboardHook.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Process.NET.1.0.5\lib\Process.NET.dll</HintPath>
+      <HintPath>..\packages\Process.NET.1.0.8\lib\Process.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
@@ -263,8 +271,8 @@
       <HintPath>..\packages\SpotifyAPI-NET.2.12.0\lib\SpotifyAPI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Squirrel, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\Squirrel.dll</HintPath>
+    <Reference Include="Squirrel, Version=1.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.5.1\lib\Net45\Squirrel.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -278,7 +286,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.3.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.4.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -292,10 +300,6 @@
     </Reference>
     <Reference Include="VioletTape.WpfExceptionViewer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bfd09609f6784d58, processorArchitecture=MSIL">
       <HintPath>..\packages\WpfExceptionViewer.1.0.0.0\lib\VioletTape.WpfExceptionViewer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="VirtualInput, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtualInput.1.0.1\lib\net20\VirtualInput.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
@@ -350,12 +354,15 @@
     <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
     <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="Managers\MigrationManager.cs" />
     <Compile Include="Managers\ModuleManager.cs" />
     <Compile Include="Managers\DeviceManager.cs" />
     <Compile Include="Managers\LoopManager.cs" />
     <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
-    <Compile Include="Managers\ProfileManager.cs" />
+    <Compile Include="Managers\PreviewManager.cs" />
+    <Compile Include="Models\LayerEditorModel.cs" />
+    <Compile Include="Models\ProfileEditorModel.cs" />
     <Compile Include="Modules\Abstract\ModuleDataModel.cs" />
     <Compile Include="Modules\Abstract\ModuleModel.cs" />
     <Compile Include="Modules\Abstract\ModuleSettings.cs" />
@@ -489,9 +496,21 @@
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\DX9ScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\IScreenCapture.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\ScreenCapturing\ScreenCaptureManager.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCaptureManager.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\FftEventArgs.cs" />
-    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SampleAggregator.cs" />
+    <Compile Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushPropertiesView.xaml.cs">
+      <DependentUpon>ConicalBrushPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushPropertiesViewModel.cs" />
+    <Compile Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushType.cs" />
+    <Compile Include="Profiles\Layers\Types\ConicalBrush\Drawing\ConicalGradientDrawer.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\AudioCapture.cs" />
+    <Compile Include="Managers\AudioCaptureManager.cs" />
+    <Compile Include="Events\AudioDeviceChangedEventArgs.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\BaseSpectrumProvider.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\ISpectrumProvider.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\LineSpectrum.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SingleSpectrum.cs" />
+    <Compile Include="Profiles\Layers\Types\Audio\AudioCapturing\SpectrumBase.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml.cs">
       <DependentUpon>AudioPropertiesView.xaml</DependentUpon>
@@ -618,6 +637,7 @@
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
     <Compile Include="Utilities\Converters\ValueConverters.cs" />
     <Compile Include="Utilities\DataReaders\DllManager.cs" />
+    <Compile Include="Utilities\EditorHelper.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />
@@ -649,17 +669,16 @@
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerTweenViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\ProfileViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerConditionViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerDynamicPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\LayerEditorViewModel.cs" />
+    <Compile Include="ViewModels\LayerEditorViewModel.cs" />
     <Compile Include="Profiles\Layers\Abstract\LayerPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Headset\HeadsetPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Folder\FolderPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesViewModel.cs" />
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
-    <Compile Include="ViewModels\Profiles\ProfileEditorViewModel.cs" />
+    <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Views\DebugView.xaml.cs">
@@ -704,7 +723,7 @@
     <Compile Include="Views\Profiles\LayerDynamicPropertiesView.xaml.cs">
       <DependentUpon>LayerDynamicPropertiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\LayerEditorView.xaml.cs">
+    <Compile Include="Views\LayerEditorView.xaml.cs">
       <DependentUpon>LayerEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Profiles\Layers\Types\Mouse\MousePropertiesView.xaml.cs">
@@ -716,7 +735,7 @@
     <Compile Include="Views\Profiles\LayerTweenView.xaml.cs">
       <DependentUpon>LayerTweenView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Profiles\ProfileEditorView.xaml.cs">
+    <Compile Include="Views\ProfileEditorView.xaml.cs">
       <DependentUpon>ProfileEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellView.xaml.cs">
@@ -855,6 +874,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Profiles\Layers\Types\ConicalBrush\ConicalBrushPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Profiles\Layers\Types\Audio\AudioPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -947,7 +970,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\LayerEditorView.xaml">
+    <Page Include="Views\LayerEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -963,7 +986,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Profiles\ProfileEditorView.xaml">
+    <Page Include="Views\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -1010,12 +1033,12 @@
     <Folder Include="Resources\Lua\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets')" />
+  <Import Project="..\packages\CUE.NET.1.1.1\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.1.1\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.1.0.2\build\net45\CUE.NET.targets'))" />
+    <Error Condition="!Exists('..\packages\CUE.NET.1.1.1\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.1.1\build\net45\CUE.NET.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

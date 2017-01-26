@@ -1,22 +1,25 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Forms;
-using VirtualInput;
+using Open.WinKeyboardHook;
 
 namespace Artemis.Utilities.Keyboard
 {
     public static class KeyboardHook
     {
+        private static KeyboardInterceptor _interceptor;
+
         public delegate void KeyDownCallbackHandler(KeyEventArgs e);
 
-        static KeyboardHook()
+        public static void SetupKeyboardHook()
         {
-            VirtualKeyboard.StartInterceptor();
-            VirtualKeyboard.KeyDown += VirtualKeyboardOnKeyDown;
+            _interceptor = new KeyboardInterceptor();
+            _interceptor.KeyDown += VirtualKeyboardOnKeyDown;
+            _interceptor.StartCapturing();
         }
 
-        private static void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
+        private static async void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
-            Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
+            await Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
 
         public static event KeyDownCallbackHandler KeyDownCallback;

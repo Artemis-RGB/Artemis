@@ -28,7 +28,7 @@ namespace Artemis.Modules.Games.CounterStrike
 
             Settings = SettingsProvider.Load<CounterStrikeSettings>();
             DataModel = new CounterStrikeDataModel();
-            ProcessName = "csgo";
+            ProcessNames.Add("csgo");
 
             FindGameDir();
             PlaceConfigFile();

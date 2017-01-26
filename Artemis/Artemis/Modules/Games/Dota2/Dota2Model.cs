@@ -24,7 +24,7 @@ namespace Artemis.Modules.Games.Dota2
 
             Settings = SettingsProvider.Load<Dota2Settings>();
             DataModel = new Dota2DataModel();
-            ProcessName = "dota2";
+            ProcessNames.Add("dota2");
 
             FindGameDir();
             PlaceConfigFile();

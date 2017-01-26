@@ -27,17 +27,17 @@ namespace Artemis.Profiles.Layers.Animations
                 layerModel.AnimationProgress = progress;
         }
 
-        public void Draw(LayerModel layerModel, DrawingContext c)
+        public void Draw(LayerModel layerModel, DrawingContext c, int drawScale)
         {
             if (layerModel.Brush == null)
                 return;
 
             // Set up variables for this frame
             var rect = layerModel.Properties.Contain
-                ? layerModel.LayerRect()
-                : layerModel.Properties.PropertiesRect();
+                ? layerModel.LayerRect(drawScale)
+                : layerModel.Properties.PropertiesRect(drawScale);
 
-            var clip = layerModel.LayerRect();
+            var clip = layerModel.LayerRect(drawScale);
 
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();

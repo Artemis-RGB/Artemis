@@ -22,7 +22,7 @@ namespace Artemis.Modules.Games.Witcher3
 
             Settings = SettingsProvider.Load<Witcher3Settings>();
             DataModel = new Witcher3DataModel();
-            ProcessName = "witcher3";
+            ProcessNames.Add("witcher3");
         }
 
         public override string Name => "Witcher3";

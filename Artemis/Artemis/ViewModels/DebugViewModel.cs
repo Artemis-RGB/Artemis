@@ -6,20 +6,19 @@ using System.Windows.Media;
 using Artemis.Managers;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using Action = System.Action;
 
 namespace Artemis.ViewModels
 {
     public class DebugViewModel : Screen
     {
         private readonly DeviceManager _deviceManager;
-
-        private DrawingImage _razerDisplay;
+        private DrawingImage _generic;
+        private DrawingImage _headset;
         private DrawingImage _keyboard;
         private DrawingImage _mouse;
-        private DrawingImage _headset;
         private DrawingImage _mousemat;
-        private DrawingImage _generic;
+
+        private DrawingImage _razerDisplay;
 
         public DebugViewModel(DeviceManager deviceManager)
         {
@@ -116,8 +115,8 @@ namespace Artemis.ViewModels
             {
                 dc.PushClip(new RectangleGeometry(new Rect(0, 0, 22, 6)));
                 for (var y = 0; y < 6; y++)
-                    for (var x = 0; x < 22; x++)
-                        dc.DrawRectangle(new SolidColorBrush(colors[y, x]), null, new Rect(x, y, 1, 1));
+                for (var x = 0; x < 22; x++)
+                    dc.DrawRectangle(new SolidColorBrush(colors[y, x]), null, new Rect(x, y, 1, 1));
             }
             var drawnDisplay = new DrawingImage(visual.Drawing);
             drawnDisplay.Freeze();
@@ -137,10 +136,14 @@ namespace Artemis.ViewModels
                 Keyboard = ImageUtilities.BitmapToDrawingImage(frame.KeyboardBitmap, rect);
             }
 
-            Mouse = ImageUtilities.BitmapToDrawingImage(frame.MouseBitmap, new Rect(0, 0, 10, 10));
-            Headset = ImageUtilities.BitmapToDrawingImage(frame.HeadsetBitmap, new Rect(0, 0, 10, 10));
-            Mousemat = ImageUtilities.BitmapToDrawingImage(frame.MousematBitmap, new Rect(0, 0, 10, 10));
-            Generic = ImageUtilities.BitmapToDrawingImage(frame.GenericBitmap, new Rect(0, 0, 10, 10));
+            if (frame.MouseBitmap != null)
+                Mouse = ImageUtilities.BitmapToDrawingImage(frame.MouseBitmap, new Rect(0, 0, 10, 10));
+            if (frame.HeadsetBitmap != null)
+                Headset = ImageUtilities.BitmapToDrawingImage(frame.HeadsetBitmap, new Rect(0, 0, 10, 10));
+            if (frame.MousematBitmap != null)
+                Mousemat = ImageUtilities.BitmapToDrawingImage(frame.MousematBitmap, new Rect(0, 0, 10, 10));
+            if (frame.GenericBitmap != null)
+                Generic = ImageUtilities.BitmapToDrawingImage(frame.GenericBitmap, new Rect(0, 0, 10, 10));
         }
     }
 }
