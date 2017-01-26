@@ -36,9 +36,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             if (!SpectrumProvider.GetFftData(fftBuffer, this))
                 return null;
 
-            var spectrumPoints = CalculateSpectrumPoints(height, fftBuffer);
+            var spectrumPoints = CalculateSpectrumPoints(height, fftBuffer);            
             return spectrumPoints?.Select(s => s.Value).ToList();
-
         }
     }
 }
