@@ -45,7 +45,7 @@ namespace Artemis.Modules.Games.EurotruckSimulator2
             settings.AtsGameDirectory = dialog.SelectedPath;
             NotifyOfPropertyChange(() => Settings);
             Settings.Save();
-            model.PlaceTruckSimulatorPlugin(settings.Ets2GameDirectory, "amtrucks.exe");
+            model.PlaceTruckSimulatorPlugin(settings.AtsGameDirectory, "amtrucks.exe");
         }
 
         public void Ets2PlacePlugin()
