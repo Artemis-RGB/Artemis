@@ -24,6 +24,7 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
         private BasicSpectrumProvider _spectrumProvider;
         private GainSource _volume;
         private int _volumeIndex;
+        private bool _starting;
 
         public AudioCapture(ILogger logger, MMDevice device, MmDeviceType type)
         {
@@ -134,7 +135,11 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
         private void Start()
         {
+            if (_starting)
+                return;
+
             Logger.Debug("Starting audio capture for device: {0}", Device?.FriendlyName ?? "default");
+            _starting = true;
 
             try
             {
@@ -190,6 +195,7 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
             {
                 Logger.Warn(e, "Failed to start WASAPI audio capture");
             }
+            _starting = false;
         }
 
         private void Stop()
@@ -211,6 +217,8 @@ namespace Artemis.Profiles.Layers.Types.Audio.AudioCapturing
 
             _disableTimer.Stop();
             _volumeTimer.Stop();
+
+            _mayStop = false;
         }
     }
 }
