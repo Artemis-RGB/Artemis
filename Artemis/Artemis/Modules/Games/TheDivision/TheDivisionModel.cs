@@ -64,12 +64,15 @@ namespace Artemis.Modules.Games.TheDivision
 
             // Convert the given string to a list of ints
             var stringParts = reply.Split(' ');
+            if (stringParts[0] != "1")
+                return;
+
+            // Parse into a list of ints and interpertrate
             var parts = new int[stringParts.Length];
             for (var i = 0; i < stringParts.Length; i++)
                 parts[i] = int.Parse(stringParts[i]);
 
-            if (parts[0] == 1)
-                InterpertrateDivisionKey(parts);
+            InterpertrateDivisionKey(parts);
         }
 
         // Parses Division key data to game data
