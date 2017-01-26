@@ -221,15 +221,15 @@ namespace Artemis.ViewModels.Profiles
                 return;
 
             if (SelectedDataModelProp.Type == "Boolean")
-            {
                 EnumValueIsVisible = true;
-            }
             else if (SelectedDataModelProp.EnumValues != null)
             {
                 Enums.Clear();
                 Enums.AddRange(SelectedDataModelProp.EnumValues);
                 EnumValueIsVisible = true;
             }
+            else
+                UserValueIsVisible = true;
         }
 
         /// <summary>
