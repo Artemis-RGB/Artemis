@@ -10,13 +10,14 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Profiles.Layers.Types.KeyboardGif;
 using Artemis.Services;
+using Artemis.Utilities;
+using Artemis.ViewModels.Profiles;
 using Artemis.ViewModels.Profiles.Events;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using static Artemis.Utilities.GeneralHelpers;
 
-namespace Artemis.ViewModels.Profiles
+namespace Artemis.ViewModels
 {
     public sealed class LayerEditorViewModel : Screen
     {
@@ -30,19 +31,19 @@ namespace Artemis.ViewModels.Profiles
             IEnumerable<ILayerAnimation> layerAnimations)
         {
             Layer = layer;
-            ProposedLayer = Clone(layer);
+            ProposedLayer = GeneralHelpers.Clone(layer);
             ProposedLayer.Children.Clear();
             DataModel = DataModel;
             LayerTypes = new BindableCollection<ILayerType>(types.OrderBy(t => t.Name));
             LayerAnimations = layerAnimations.OrderBy(l => l.Name).ToList();
 
-            DataModelProps = new BindableCollection<PropertyCollection>(GenerateTypeMap(dataModel));
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(GeneralHelpers.GenerateTypeMap(dataModel));
 
             if (Layer.Properties == null)
                 Layer.SetupProperties();
 
-            // Setup existing conditions           
-            var conditions = layer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
+            // Setup existing conditions   
+            var conditions = ProposedLayer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(conditions);
 
             PropertyChanged += PropertiesViewModelHandler;
@@ -57,7 +58,7 @@ namespace Artemis.ViewModels.Profiles
         public MetroDialogService DialogService { get; set; }
 
         public BindableCollection<ILayerType> LayerTypes { get; set; }
-        public BindableCollection<PropertyCollection> DataModelProps { get; set; }
+        public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
         public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
@@ -154,6 +155,10 @@ namespace Artemis.ViewModels.Profiles
             EventPropertiesViewModel = ProposedLayer.IsEvent
                 ? new EventPropertiesViewModel(Layer.EventProperties)
                 : null;
+
+            // The form inside each condition VM changes upon event toggle
+            foreach (var layerConditionViewModel in LayerConditionVms)
+                layerConditionViewModel.SetupPropertyInput();
         }
 
         public void AddCondition()
@@ -170,7 +175,7 @@ namespace Artemis.ViewModels.Profiles
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                Layer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                Layer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
 
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
@@ -201,7 +206,7 @@ namespace Artemis.ViewModels.Profiles
                 ProposedLayer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
             ProposedLayer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
-                ProposedLayer.Properties.Conditions.Add(conditionViewModel.LayerConditionModel);
+                ProposedLayer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
 
             // If not a keyboard, ignore size and position
             if ((ProposedLayer.LayerType.DrawType != DrawType.Keyboard) || !ProposedLayer.LayerType.ShowInEdtor)
@@ -215,7 +220,7 @@ namespace Artemis.ViewModels.Profiles
 
             // Ignore the children, can't just temporarily add them to the proposed layer because
             // that would upset the child layers' relations (sounds like Dr. Phil amirite?)
-            var currentObj = Clone(Layer);
+            var currentObj = GeneralHelpers.Clone(Layer);
             currentObj.Children.Clear();
 
             // Apply the IsEvent boolean

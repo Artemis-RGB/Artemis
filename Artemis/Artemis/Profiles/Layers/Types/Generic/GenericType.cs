@@ -8,6 +8,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Generic
@@ -17,6 +18,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
         public string Name => "Generic (Logitech)";
         public bool ShowInEdtor => false;
         public DrawType DrawType => DrawType.Generic;
+        public int DrawScale => 1;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
@@ -34,12 +36,12 @@ namespace Artemis.Profiles.Layers.Types.Generic
             // If an animation is present, let it handle the drawing
             if (layerModel.LayerAnimation != null && !(layerModel.LayerAnimation is NoneAnimation))
             {
-                layerModel.LayerAnimation.Draw(layerModel, c);
+                layerModel.LayerAnimation.Draw(layerModel, c, DrawScale);
                 return;
             }
 
             // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = layerModel.LayerRect();
+            var rect = layerModel.LayerRect(DrawScale);
 
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();

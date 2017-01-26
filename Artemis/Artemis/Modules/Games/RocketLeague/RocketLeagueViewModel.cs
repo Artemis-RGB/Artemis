@@ -32,8 +32,6 @@ namespace Artemis.Modules.Games.RocketLeague
             }
         }
 
-        public RocketLeagueModel RocketLeagueModel { get; set; }
-
         private void SetVersionText()
         {
             if (!SettingsProvider.Load<GeneralSettings>().EnablePointersUpdate)

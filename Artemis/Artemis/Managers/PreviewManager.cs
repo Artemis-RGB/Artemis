@@ -9,7 +9,7 @@ using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
 {
-    public class ProfileManager
+    public class PreviewManager
     {
         private readonly DeviceManager _deviceManager;
         private readonly GeneralSettings _generalSettings;
@@ -17,7 +17,7 @@ namespace Artemis.Managers
         private readonly LoopManager _loopManager;
         private readonly ModuleManager _moduleManager;
 
-        public ProfileManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
+        public PreviewManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
             LoopManager loopManager)
         {
             _logger = logger;
@@ -32,7 +32,7 @@ namespace Artemis.Managers
             profilePreviewTimer.Elapsed += SetupProfilePreview;
             profilePreviewTimer.Start();
 
-            _logger.Info("Intialized ProfileManager");
+            _logger.Info("Intialized PreviewManager");
         }
 
         public List<ModuleViewModel> PreviewViewModules { get; set; }
@@ -76,8 +76,13 @@ namespace Artemis.Managers
                 return;
 
             _logger.Debug("Deactivate profile preview");
+
+            // Save the profile the editor was using
+            var activePreview = PreviewViewModules.FirstOrDefault(p => p.IsModuleActive);
+            activePreview?.ProfileEditor?.SaveSelectedProfile();
+
             var lastModule = _moduleManager.GetLastModule();
-            if (lastModule != null)
+            if (lastModule != null && lastModule.Settings.IsEnabled)
                 _moduleManager.ChangeActiveModule(lastModule);
             else
                 _moduleManager.ClearActiveModule();

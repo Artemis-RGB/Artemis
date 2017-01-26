@@ -28,16 +28,10 @@ namespace Artemis.DeviceProviders
         public abstract void DrawBitmap(Bitmap bitmap);
 
         /// <summary>
-        ///     Returns a bitmap matching the keyboard's dimensions
-        /// </summary>
-        /// <returns></returns>
-        public Bitmap KeyboardBitmap() => new Bitmap(Width, Height);
-
-        /// <summary>
         ///     Returns a bitmap matching the keyboard's dimensions using the provided scale
         /// </summary>
         /// <returns></returns>
-        public Bitmap KeyboardBitmap(int scale) => new Bitmap(Width*scale, Height*scale);
+        public Bitmap KeyboardBitmap(int scale = 4) => new Bitmap(Width*scale, Height*scale);
 
         public Rect KeyboardRectangle(int scale = 4) => new Rect(new Size(Width*scale, Height*scale));
 
@@ -89,13 +83,12 @@ namespace Artemis.DeviceProviders
 
         public override void UpdateDevice(Bitmap bitmap)
         {
-            throw new NotImplementedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
+            throw new NotSupportedException("KeyboardProvider doesn't implement UpdateDevice, use DrawBitmap instead.");
         }
 
         public override bool TryEnable()
         {
-            throw new NotImplementedException(
-                "KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
+            throw new NotSupportedException("KeyboardProvider doesn't implement TryEnable, use CanEnableAsync instead.");
         }
 
         /// <summary>

@@ -2,7 +2,7 @@
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
-using Artemis.ViewModels.Profiles;
+using Artemis.ViewModels;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Interfaces
@@ -27,6 +27,12 @@ namespace Artemis.Profiles.Layers.Interfaces
         /// </summary>
         [JsonIgnore]
         DrawType DrawType { get; }
+
+        /// <summary>
+        ///     Gets the scale on which the layer should be drawn
+        /// </summary>
+        [JsonIgnore]
+        int DrawScale { get; }
 
         /// <summary>
         ///     The the thumbnail for this layer type

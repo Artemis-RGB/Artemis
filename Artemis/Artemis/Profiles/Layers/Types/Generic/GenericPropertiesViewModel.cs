@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
+using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 using Caliburn.Micro;
 

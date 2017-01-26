@@ -19,17 +19,19 @@ namespace Artemis.Managers
     /// </summary>
     public class MainManager : IDisposable
     {
+        private readonly MigrationManager _migrationManager;
         private readonly Timer _processTimer;
 
         public MainManager(ILogger logger, LoopManager loopManager, DeviceManager deviceManager,
-            ModuleManager moduleManager, ProfileManager profileManager, PipeServer pipeServer,
-            GameStateWebServer gameStateWebServer)
+            ModuleManager moduleManager, PreviewManager previewManager, MigrationManager migrationManager,
+            PipeServer pipeServer, GameStateWebServer gameStateWebServer)
         {
+            _migrationManager = migrationManager;
             Logger = logger;
             LoopManager = loopManager;
             DeviceManager = deviceManager;
             ModuleManager = moduleManager;
-            ProfileManager = profileManager;
+            PreviewManager = previewManager;
             PipeServer = pipeServer;
 
             _processTimer = new Timer(1000);
@@ -64,7 +66,7 @@ namespace Artemis.Managers
         public LoopManager LoopManager { get; }
         public DeviceManager DeviceManager { get; set; }
         public ModuleManager ModuleManager { get; set; }
-        public ProfileManager ProfileManager { get; set; }
+        public PreviewManager PreviewManager { get; set; }
 
         public PipeServer PipeServer { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
@@ -105,11 +107,13 @@ namespace Artemis.Managers
         /// <summary>
         ///     Loads the last active effect and starts the program
         /// </summary>
-        public void EnableProgram()
+        public async void EnableProgram()
         {
             Logger.Debug("Enabling program");
             ProgramEnabled = true;
-            LoopManager.StartAsync();
+            await LoopManager.StartAsync();
+
+            _migrationManager.MigrateProfiles();
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
         }
 
@@ -119,6 +123,9 @@ namespace Artemis.Managers
         public void DisableProgram()
         {
             Logger.Debug("Disabling program");
+            foreach (var overlayModule in ModuleManager.OverlayModules)
+                if (overlayModule.Settings.IsEnabled)
+                    overlayModule.Dispose();
             LoopManager.Stop();
             ProgramEnabled = false;
             RaiseEnabledChangedEvent(new EnabledChangedEventArgs(ProgramEnabled));
@@ -148,7 +155,7 @@ namespace Artemis.Managers
                     ModuleManager.DisableProcessBoundModule();
 
                 // If the currently active effect is a no longer running game, get rid of it.
-                if (!processes.Any(p => p.ProcessName == module.ProcessName && p.HasExited == false))
+                if (!processes.Any(p => module.ProcessNames.Contains(p.ProcessName) && !p.HasExited))
                 {
                     Logger.Info("Disabling process bound module because process stopped: {0}", module.Name);
                     ModuleManager.DisableProcessBoundModule();
@@ -157,7 +164,7 @@ namespace Artemis.Managers
 
             // Look for running games, stopping on the first one that's found.
             var newModule = ModuleManager.ProcessModules.Where(g => g.Settings.IsEnabled && g.Settings.IsEnabled)
-                .FirstOrDefault(g => processes.Any(p => p.ProcessName == g.ProcessName && p.HasExited == false));
+                .FirstOrDefault(g => processes.Any(p => g.ProcessNames.Contains(p.ProcessName) && !p.HasExited));
 
             if (newModule == null || module == newModule)
                 return;

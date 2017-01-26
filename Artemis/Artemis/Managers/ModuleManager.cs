@@ -169,6 +169,8 @@ namespace Artemis.Managers
         /// </summary>
         public void DisableProcessBoundModule()
         {
+            if (ActiveModule == null)
+                return;
             if (!ActiveModule.IsBoundToProcess)
             {
                 _logger.Warn("Active module {0} is not process bound but is being disabled as if it is.",
@@ -176,10 +178,11 @@ namespace Artemis.Managers
                 return;
             }
 
-            if (GetLastModule() == null)
+            var lastModule = GetLastModule();
+            if (lastModule == null || !lastModule.Settings.IsEnabled)
                 ClearActiveModule();
             else
-                ChangeActiveModule(GetLastModule());
+                ChangeActiveModule(lastModule);
         }
 
         protected virtual void RaiseEffectChangedEvent(ModuleChangedEventArgs e)

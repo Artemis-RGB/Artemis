@@ -18,7 +18,7 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Settings = SettingsProvider.Load<RocketLeagueSettings>();
             DataModel = new RocketLeagueDataModel();
-            ProcessName = "RocketLeague";
+            ProcessNames.Add("RocketLeague");
 
             // Generate a new offset when the game is updated
             //var offset = new GamePointersCollection
@@ -54,18 +54,21 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Updater.GetPointers();
             _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
-
-            var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessName);
-            if (tempProcess == null)
-                return;
-
-            _memory = new Memory(tempProcess);
-
+            
             base.Enable();
         }
 
         public override void Update()
         {
+            if (_memory == null)
+            {
+                var tempProcess = MemoryHelpers.GetProcessIfRunning(ProcessNames[0]);
+                if (tempProcess == null)
+                    return;
+
+                _memory = new Memory(tempProcess);
+            }
+            
             if (ProfileModel == null || DataModel == null || _memory == null)
                 return;
 

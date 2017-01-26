@@ -79,14 +79,16 @@ namespace Artemis.Modules.Abstract
         public List<LayerModel> PreviewLayers { get; set; }
 
         /// <summary>
-        ///     The process the module is bound to
+        ///     The processes the module is bound to
         /// </summary>
-        public string ProcessName { get; protected set; }
+        public List<string> ProcessNames { get; protected set; } = new List<string>();
 
         /// <summary>
         ///     The currently active profile of the module
         /// </summary>
         public ProfileModel ProfileModel { get; protected set; }
+
+        public bool IsGeneral => !IsOverlay && !IsBoundToProcess;
 
         #endregion
 
@@ -98,7 +100,13 @@ namespace Artemis.Modules.Abstract
                 return;
 
             ProfileModel = profileModel;
-            ProfileModel?.Activate(_luaManager);
+            if (!IsOverlay)
+                ProfileModel?.Activate(_luaManager);
+            if (ProfileModel != null)
+            {
+                Settings.LastProfile = ProfileModel.Name;
+                Settings.Save();
+            }
 
             RaiseProfileChangedEvent(new ProfileChangedEventArgs(ProfileModel));
         }
@@ -157,25 +165,37 @@ namespace Artemis.Modules.Abstract
                         ProfileModel?.DrawLayers(g, layers, DrawType.Keyboard, DataModel, keyboardRect, preview);
                     }
                     // Render mice layer-by-layer
-                    var devRec = new Rect(0, 0, 40, 40);
-                    using (var g = Graphics.FromImage(frame.MouseBitmap))
+                    var devRec = new Rect(0, 0, 10, 10);
+                    if (frame.MouseBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.MouseBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
+                        }
                     }
                     // Render headsets layer-by-layer
-                    using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                    if (frame.HeadsetBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.HeadsetBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
+                        }
                     }
                     // Render generic devices layer-by-layer
-                    using (var g = Graphics.FromImage(frame.GenericBitmap))
+                    if (frame.GenericBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.GenericBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
+                        }
                     }
                     // Render mousemats layer-by-layer
-                    using (var g = Graphics.FromImage(frame.MousematBitmap))
+                    if (frame.MousematBitmap != null)
                     {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
+                        using (var g = Graphics.FromImage(frame.MousematBitmap))
+                        {
+                            ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
+                        }
                     }
 
                     // Trace debugging
@@ -185,6 +205,10 @@ namespace Artemis.Modules.Abstract
                     _lastTrace = DateTime.Now;
                     var dmJson = JsonConvert.SerializeObject(DataModel, Formatting.Indented);
                     Logger.Trace("Effect datamodel as JSON: \r\n{0}", dmJson);
+
+                    if (layers == null)
+                        return;
+
                     Logger.Trace("Effect {0} has to render {1} layers", Name, layers.Count);
                     foreach (var renderLayer in layers)
                         Logger.Trace("- Layer name: {0}, layer type: {1}", renderLayer.Name, renderLayer.LayerType);

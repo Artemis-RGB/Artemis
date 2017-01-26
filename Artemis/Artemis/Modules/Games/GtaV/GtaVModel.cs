@@ -20,7 +20,7 @@ namespace Artemis.Modules.Games.GtaV
 
             Settings = SettingsProvider.Load<GtaVSettings>();
             DataModel = new GtaVDataModel();
-            ProcessName = "GTA5";
+            ProcessNames.Add("GTA5");
         }
 
         public override string Name => "GTAV";
