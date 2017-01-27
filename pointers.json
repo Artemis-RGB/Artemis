@@ -3,12 +3,12 @@
 [
    {
      "Game": "RocketLeague",
-     "GameVersion": "1.26",
+     "GameVersion": "1.27",
      "GameAddresses": [
        {
          "Description": "Boost",
          "BasePointer": {
-           "value": 23945060
+           "value": 23941252
          },
          "Offsets": [
            196,
