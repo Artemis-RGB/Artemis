@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 using CUE.NET;
+using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
 using Ninject.Extensions.Logging;
 
@@ -10,10 +10,13 @@ namespace Artemis.DeviceProviders.Corsair
 {
     public class CorsairHeadset : DeviceProvider
     {
+        private readonly ImageBrush _headsetBrush;
+
         public CorsairHeadset(ILogger logger)
         {
             Logger = logger;
             Type = DeviceType.Headset;
+            _headsetBrush = new ImageBrush();
         }
 
         public ILogger Logger { get; set; }
@@ -27,7 +30,10 @@ namespace Artemis.DeviceProviders.Corsair
             Logger.Debug("Attempted to enable Corsair headset. CanUse: {0}", CanUse);
 
             if (CanUse)
+            {
                 CueSDK.UpdateMode = UpdateMode.Manual;
+                CueSDK.HeadsetSDK.Brush = _headsetBrush;
+            }
 
             return CanUse;
         }
@@ -44,21 +50,7 @@ namespace Artemis.DeviceProviders.Corsair
             if (bitmap.Width != bitmap.Height)
                 throw new ArgumentException("Bitmap must be a perfect square");
 
-            var leds = CueSDK.HeadsetSDK.Leds.Count();
-            var step = (double)bitmap.Width / leds;
-
-            var ledIndex = 0;
-            // Color each LED according to one of the pixels
-            foreach (var corsairLed in CueSDK.HeadsetSDK.Leds)
-            {
-                var col = ledIndex == 0
-                    ? bitmap.GetPixel(0, 0)
-                    : bitmap.GetPixel((int)((ledIndex + 1) * step - 1), (int)((ledIndex + 1) * step - 1));
-
-                corsairLed.Color = col;
-                ledIndex++;
-            }
-
+            _headsetBrush.Image = bitmap;
             CueSDK.HeadsetSDK.Update();
         }
 

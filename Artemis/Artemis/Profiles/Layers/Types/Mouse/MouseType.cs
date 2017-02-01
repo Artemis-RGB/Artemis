@@ -9,7 +9,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels;
-using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Mouse
 {
@@ -18,7 +17,7 @@ namespace Artemis.Profiles.Layers.Types.Mouse
         public string Name => "Mouse";
         public bool ShowInEdtor => false;
         public DrawType DrawType => DrawType.Mouse;
-        public int DrawScale => 1;
+        public int DrawScale => 2;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

@@ -9,7 +9,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels;
-using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Mousemat
 {
@@ -18,7 +17,7 @@ namespace Artemis.Profiles.Layers.Types.Mousemat
         public string Name => "Mousemat";
         public bool ShowInEdtor => false;
         public DrawType DrawType => DrawType.Mousemat;
-        public int DrawScale => 1;
+        public int DrawScale => 2;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
@@ -41,7 +40,7 @@ namespace Artemis.Profiles.Layers.Types.Mousemat
             }
 
             // Otherwise draw the rectangle with its applied dimensions and brush
-            var rect = layerModel.LayerRect(1);
+            var rect = layerModel.LayerRect(DrawScale);
 
             // Can't meddle with the original brush because it's frozen.
             var brush = layerModel.Brush.Clone();

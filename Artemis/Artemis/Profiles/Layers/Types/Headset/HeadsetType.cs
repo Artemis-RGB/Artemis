@@ -9,7 +9,6 @@ using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.ViewModels;
-using Artemis.ViewModels.Profiles;
 
 namespace Artemis.Profiles.Layers.Types.Headset
 {
@@ -18,7 +17,7 @@ namespace Artemis.Profiles.Layers.Types.Headset
         public string Name => "Headset";
         public bool ShowInEdtor => false;
         public DrawType DrawType => DrawType.Headset;
-        public int DrawScale => 1;
+        public int DrawScale => 2;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

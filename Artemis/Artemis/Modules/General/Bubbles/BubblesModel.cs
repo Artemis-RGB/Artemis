@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using Point = System.Windows.Point;
@@ -90,9 +91,9 @@ namespace Artemis.Modules.General.Bubbles
             }
         }
 
-        public override void Render(RenderFrame frame, bool keyboardOnly)
+        public override void Render(FrameModel frameModel, bool keyboardOnly)
         {
-            using (var g = Graphics.FromImage(frame.KeyboardBitmap))
+            using (var g = Graphics.FromImage(frameModel.KeyboardBitmap))
             {
                 foreach (var bubble in _bubbles)
                     bubble.Draw(g);
