@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -145,7 +145,7 @@ namespace Artemis.Modules.Abstract
 
         public abstract void Update();
 
-        public virtual void Render(RenderFrame frame, bool keyboardOnly)
+        public virtual void Render(FrameModel frameModel, bool keyboardOnly)
         {
             if (ProfileModel == null || DataModel == null || DeviceManager.ActiveKeyboard == null)
                 return;
@@ -159,44 +159,19 @@ namespace Artemis.Modules.Abstract
                     var preview = PreviewLayers != null;
 
                     // Render the keyboard layer-by-layer
-                    var keyboardRect = DeviceManager.ActiveKeyboard.KeyboardRectangle();
-                    using (var g = Graphics.FromImage(frame.KeyboardBitmap))
-                    {
-                        ProfileModel?.DrawLayers(g, layers, DrawType.Keyboard, DataModel, keyboardRect, preview);
-                    }
+                    ProfileModel?.DrawLayers(frameModel.KeyboardModel, layers, DataModel, preview);
                     // Render mice layer-by-layer
-                    var devRec = new Rect(0, 0, 10, 10);
-                    if (frame.MouseBitmap != null)
-                    {
-                        using (var g = Graphics.FromImage(frame.MouseBitmap))
-                        {
-                            ProfileModel?.DrawLayers(g, layers, DrawType.Mouse, DataModel, devRec, preview);
-                        }
-                    }
+                    if (frameModel.MouseModel != null)
+                        ProfileModel?.DrawLayers(frameModel.MouseModel, layers, DataModel, preview);
                     // Render headsets layer-by-layer
-                    if (frame.HeadsetBitmap != null)
-                    {
-                        using (var g = Graphics.FromImage(frame.HeadsetBitmap))
-                        {
-                            ProfileModel?.DrawLayers(g, layers, DrawType.Headset, DataModel, devRec, preview);
-                        }
-                    }
+                    if (frameModel.HeadsetModel != null)
+                        ProfileModel?.DrawLayers(frameModel.HeadsetModel, layers, DataModel, preview);
                     // Render generic devices layer-by-layer
-                    if (frame.GenericBitmap != null)
-                    {
-                        using (var g = Graphics.FromImage(frame.GenericBitmap))
-                        {
-                            ProfileModel?.DrawLayers(g, layers, DrawType.Generic, DataModel, devRec, preview);
-                        }
-                    }
+                    if (frameModel.GenericModel != null)
+                        ProfileModel?.DrawLayers(frameModel.GenericModel, layers, DataModel, preview);
                     // Render mousemats layer-by-layer
-                    if (frame.MousematBitmap != null)
-                    {
-                        using (var g = Graphics.FromImage(frame.MousematBitmap))
-                        {
-                            ProfileModel?.DrawLayers(g, layers, DrawType.Mousemat, DataModel, devRec, preview);
-                        }
-                    }
+                    if (frameModel.MousematModel != null)
+                        ProfileModel?.DrawLayers(frameModel.MousematModel, layers, DataModel, preview);
 
                     // Trace debugging
                     if (DateTime.Now.AddSeconds(-2) <= _lastTrace || Logger == null)

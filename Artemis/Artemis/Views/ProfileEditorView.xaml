@@ -14,15 +14,15 @@
         <converters:LayerOrderConverter x:Key="LayerOrderConverter" />
         <Storyboard x:Key="Pulse" RepeatBehavior="Forever">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="BlurRadius" Storyboard.TargetName="ShadowEffect">
-                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="25"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:2" Value="10"/>
-                <EasingDoubleKeyFrame KeyTime="0:0:4" Value="25"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="25" />
+                <EasingDoubleKeyFrame KeyTime="0:0:2" Value="10" />
+                <EasingDoubleKeyFrame KeyTime="0:0:4" Value="25" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>
     <UserControl.Triggers>
         <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource Pulse}"/>
+            <BeginStoryboard Storyboard="{StaticResource Pulse}" />
         </EventTrigger>
     </UserControl.Triggers>
     <Grid Width="Auto" Height="Auto">
@@ -43,7 +43,8 @@
                 BorderThickness="3" Width="800" Height="400">
             <Border>
                 <Border.Effect>
-                    <DropShadowEffect x:Name="ShadowEffect" ShadowDepth="0" Color="{DynamicResource HighlightColor}" Opacity="1" />
+                    <DropShadowEffect x:Name="ShadowEffect" ShadowDepth="0" Color="{DynamicResource HighlightColor}"
+                                      Opacity="1" />
                 </Border.Effect>
                 <Grid>
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}"
@@ -125,7 +126,7 @@
 
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
             <Button x:Name="ImportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Height="26" HorizontalAlignment="Right" ToolTip="Import profile">
+                    Height="26" HorizontalAlignment="Right">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Rectangle
@@ -154,9 +155,8 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button x:Name="EditLua" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Import profile"
-                    IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" 
+            <Button x:Name="EditLua" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}" Height="26"
+                    HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
                     Visibility="{Binding Path=LuaButtonVisible, Converter={StaticResource BoolToVis} }">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows;
@@ -66,8 +67,9 @@ namespace Artemis.Utilities
             // RenderTargetBitmap construction is expensive, only do it when needed
             if (_rBmp?.PixelHeight != height || _rBmp?.PixelWidth != width)
                 _rBmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            else
+                _rBmp.Clear();
 
-            _rBmp.Clear();
             _rBmp.Render(visual);
             return GetBitmap(_rBmp);
         }

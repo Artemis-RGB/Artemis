@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
 
@@ -123,7 +124,7 @@ namespace Artemis.ViewModels
             RazerDisplay = drawnDisplay;
         }
 
-        public void DrawFrame(RenderFrame frame)
+        public void DrawFrame(FrameModel frameModel)
         {
             // No point updating the display if the view isn't visible
             if (!IsActive)
@@ -133,17 +134,17 @@ namespace Artemis.ViewModels
             if (_deviceManager.ActiveKeyboard != null)
             {
                 var rect = _deviceManager.ActiveKeyboard.KeyboardRectangle(1);
-                Keyboard = ImageUtilities.BitmapToDrawingImage(frame.KeyboardBitmap, rect);
+                Keyboard = ImageUtilities.BitmapToDrawingImage(frameModel.KeyboardBitmap, rect);
             }
 
-            if (frame.MouseBitmap != null)
-                Mouse = ImageUtilities.BitmapToDrawingImage(frame.MouseBitmap, new Rect(0, 0, 10, 10));
-            if (frame.HeadsetBitmap != null)
-                Headset = ImageUtilities.BitmapToDrawingImage(frame.HeadsetBitmap, new Rect(0, 0, 10, 10));
-            if (frame.MousematBitmap != null)
-                Mousemat = ImageUtilities.BitmapToDrawingImage(frame.MousematBitmap, new Rect(0, 0, 10, 10));
-            if (frame.GenericBitmap != null)
-                Generic = ImageUtilities.BitmapToDrawingImage(frame.GenericBitmap, new Rect(0, 0, 10, 10));
+            if (frameModel.MouseBitmap != null)
+                Mouse = ImageUtilities.BitmapToDrawingImage(frameModel.MouseBitmap, new Rect(0, 0, 10, 10));
+            if (frameModel.HeadsetBitmap != null)
+                Headset = ImageUtilities.BitmapToDrawingImage(frameModel.HeadsetBitmap, new Rect(0, 0, 10, 10));
+            if (frameModel.MousematBitmap != null)
+                Mousemat = ImageUtilities.BitmapToDrawingImage(frameModel.MousematBitmap, new Rect(0, 0, 10, 10));
+            if (frameModel.GenericBitmap != null)
+                Generic = ImageUtilities.BitmapToDrawingImage(frameModel.GenericBitmap, new Rect(0, 0, 10, 10));
         }
     }
 }
