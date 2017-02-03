@@ -18,7 +18,7 @@ namespace Artemis.Profiles.Layers.Types.Generic
         public string Name => "Generic (Logitech)";
         public bool ShowInEdtor => false;
         public DrawType DrawType => DrawType.Generic;
-        public int DrawScale => 1;
+        public int DrawScale => 2;
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {

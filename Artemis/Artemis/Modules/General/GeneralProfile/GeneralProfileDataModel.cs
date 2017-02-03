@@ -70,7 +70,9 @@ namespace Artemis.Modules.General.GeneralProfile
     [MoonSharpUserData]
     public class PerformanceDataModel
     {
-        public int RAMUsage { get; set; }
+        public float RamTotal { get; set; }
+        public float RamUsed { get; set; }
+        public float RamFree { get; set; }
     }
 
     [MoonSharpUserData]

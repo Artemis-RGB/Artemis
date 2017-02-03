@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +17,8 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
+using NLog;
+using LogManager = NLog.LogManager;
 
 namespace Artemis
 {
@@ -80,6 +84,13 @@ namespace Artemis
 
         protected override void Configure()
         {
+            // Sleep for a while if ran from autorun to allow full system boot
+            if (Environment.GetCommandLineArgs().Contains("--autorun"))
+            {
+                var logger = LogManager.GetCurrentClassLogger();
+                logger.Info("Artemis was run using the autorun shortcut, sleeping for 15 sec.");
+                Thread.Sleep(15000);
+            }
             _kernel = new StandardKernel(new BaseModules(), new ManagerModules());
 
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();

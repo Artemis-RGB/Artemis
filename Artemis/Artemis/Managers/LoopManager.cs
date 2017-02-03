@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Artemis.DeviceProviders;
+using Artemis.Models;
 using Artemis.ViewModels;
 using Ninject.Extensions.Logging;
-using Color = System.Drawing.Color;
 
 namespace Artemis.Managers
 {
@@ -58,7 +56,7 @@ namespace Artemis.Managers
 
                     Render();
 
-                    int sleep = (int)(40f - ((DateTime.Now.Ticks - preUpdateTicks) / 10000f));
+                    int sleep = (int)(40f - (DateTime.Now.Ticks - preUpdateTicks) / 10000f);
                     if (sleep > 0)
                         Thread.Sleep(sleep);
                 }
@@ -161,7 +159,7 @@ namespace Artemis.Managers
                 var keyboardOnly = !mice.Any() && !headsets.Any() && !generics.Any() && !mousemats.Any();
 
                 // Setup the frame for this tick
-                using (var frame = new RenderFrame(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(), mousemats.Any()))
+                using (var frame = new FrameModel(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(), mousemats.Any()))
                 {
                     if (renderModule.IsInitialized)
                         renderModule.Render(frame, keyboardOnly);
@@ -172,6 +170,9 @@ namespace Artemis.Managers
                         overlayModel.Update();
                         overlayModel.Render(frame, keyboardOnly);
                     }
+
+                    // Render the frame's drawing context to bitmaps
+                    frame.RenderBitmaps();
 
                     // Update the keyboard
                     _deviceManager.ActiveKeyboard?.DrawBitmap(frame.KeyboardBitmap);
@@ -198,74 +199,6 @@ namespace Artemis.Managers
         protected virtual void OnRenderCompleted()
         {
             RenderCompleted?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    public class RenderFrame : IDisposable
-    {
-        public RenderFrame(KeyboardProvider keyboard, bool renderMice, bool renderHeadsets, bool renderGenerics, bool renderMousemats)
-        {
-            if (keyboard == null)
-                return;
-
-            KeyboardBitmap = keyboard.KeyboardBitmap();
-            KeyboardBitmap.SetResolution(96, 96);
-            using (var g = Graphics.FromImage(KeyboardBitmap))
-            {
-                g.Clear(Color.Black);
-            }
-
-            if (renderMice)
-            {
-                MouseBitmap = new Bitmap(10, 10);
-                MouseBitmap.SetResolution(96, 96);
-                using (var g = Graphics.FromImage(MouseBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-            }
-            if (renderHeadsets)
-            {
-                HeadsetBitmap = new Bitmap(10, 10);
-                HeadsetBitmap.SetResolution(96, 96);
-                using (var g = Graphics.FromImage(HeadsetBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-            }
-            if (renderGenerics)
-            {
-                GenericBitmap = new Bitmap(10, 10);
-                GenericBitmap.SetResolution(96, 96);
-                using (var g = Graphics.FromImage(GenericBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-            }
-            if (renderMousemats)
-            {
-                MousematBitmap = new Bitmap(10, 10);
-                MousematBitmap.SetResolution(96, 96);
-                using (var g = Graphics.FromImage(MousematBitmap))
-                {
-                    g.Clear(Color.Black);
-                }
-            }
-        }
-
-        public Bitmap KeyboardBitmap { get; set; }
-        public Bitmap MouseBitmap { get; set; }
-        public Bitmap HeadsetBitmap { get; set; }
-        public Bitmap GenericBitmap { get; set; }
-        public Bitmap MousematBitmap { get; set; }
-
-        public void Dispose()
-        {
-            KeyboardBitmap?.Dispose();
-            MouseBitmap?.Dispose();
-            HeadsetBitmap?.Dispose();
-            GenericBitmap?.Dispose();
-            MousematBitmap?.Dispose();
         }
     }
 }

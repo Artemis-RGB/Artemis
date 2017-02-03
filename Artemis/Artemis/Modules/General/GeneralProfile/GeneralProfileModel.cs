@@ -63,10 +63,12 @@ namespace Artemis.Modules.General.GeneralProfile
         private void UpdateDay(GeneralProfileDataModel dataModel)
         {
             var now = DateTime.Now;
-            dataModel.CurrentTime.Hours24 = int.Parse(now.ToString("HH"));
-            dataModel.CurrentTime.Hours12 = int.Parse(now.ToString("hh"));
-            dataModel.CurrentTime.Minutes = int.Parse(now.ToString("mm"));
-            dataModel.CurrentTime.Seconds = int.Parse(now.ToString("ss"));
+            dataModel.CurrentTime.Hours24 = now.Hour;
+            dataModel.CurrentTime.Minutes = now.Minute;
+            dataModel.CurrentTime.Seconds = now.Second;
+            dataModel.CurrentTime.Hours12 = now.Hour >= 13
+                ? now.Hour - 12
+                : now.Hour;
         }
 
         #endregion
@@ -105,7 +107,7 @@ namespace Artemis.Modules.General.GeneralProfile
             // Update microphone, only bother with OverallPeak
             if (_defaultRecording != null)
                 dataModel.Audio.Recording.OverallPeak = _recordingInfo.PeakValue;
-            
+
             if (_defaultPlayback == null)
                 return;
 
@@ -117,7 +119,7 @@ namespace Artemis.Modules.General.GeneralProfile
             var peakValues = _playbackInfo.GetChannelsPeakValues();
             dataModel.Audio.Playback.OverallPeak = _playbackInfo.PeakValue;
             dataModel.Audio.Playback.LeftPeak = peakValues[0];
-            dataModel.Audio.Playback.LeftPeak = peakValues[1];
+            dataModel.Audio.Playback.RightPeak = peakValues[1];
         }
 
         #endregion
@@ -176,16 +178,16 @@ namespace Artemis.Modules.General.GeneralProfile
                 dataModel.Cpu.Core7Usage = (int) _cores[6].NextValue();
             if (_cores[7] != null)
                 dataModel.Cpu.Core8Usage = (int) _cores[7].NextValue();
-
-            //From Ted - Let's get overall RAM and CPU usage here           
             dataModel.Cpu.TotalUsage = (int) _overallCpu.NextValue();
 
-            var phav = PerformanceInfo.GetPhysicalAvailableMemoryInMiB();
-            var tot = PerformanceInfo.GetTotalMemoryInMiB();
-            var percentFree = phav / (decimal) tot * 100;
-            var percentOccupied = 100 - percentFree;
-
-            dataModel.Performance.RAMUsage = (int) percentOccupied;
+            // Get RAM usage
+            var memoryStatus = new PerformanceInfo.MEMORYSTATUSEX();
+            var gotMemoryStatus = PerformanceInfo.GlobalMemoryStatusEx(memoryStatus);
+            if (!gotMemoryStatus)
+                return;
+            dataModel.Performance.RamTotal = (memoryStatus.ullTotalPhys / 1024f) / 1024f;
+            dataModel.Performance.RamFree = (memoryStatus.ullAvailPhys / 1024f) / 1024f;
+            dataModel.Performance.RamUsed = dataModel.Performance.RamTotal - dataModel.Performance.RamFree;
         }
 
         public static PerformanceCounter GetOverallPerformanceCounter()
