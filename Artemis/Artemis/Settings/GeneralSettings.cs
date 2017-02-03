@@ -103,7 +103,7 @@ namespace Artemis.Settings
                 try
                 {
                     if (Autorun)
-                        mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false);
+                        mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false, "--autorun");
                     else
                         mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
                 }

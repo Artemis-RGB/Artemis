@@ -11,6 +11,7 @@ namespace Artemis.Models
     {
         private readonly int _x;
         private readonly KeyboardProvider _keyboard;
+        private DrawingContext _ctx;
 
         public DeviceVisualModel(DrawType drawType, int x)
         {
@@ -58,6 +59,17 @@ namespace Artemis.Models
             }
 
             return bitmap;
+        }
+
+        public DrawingContext GetDrawingContext()
+        {
+            return _ctx ?? (_ctx = RenderOpen());
+        }
+
+        public void CloseDrawingContext()
+        {
+            _ctx?.Close();
+            _ctx = null;
         }
     }
 }

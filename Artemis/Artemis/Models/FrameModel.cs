@@ -82,13 +82,26 @@ namespace Artemis.Models
                 c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, _rect);
 
                 if (MouseModel != null)
+                {
+                    MouseModel.CloseDrawingContext();
                     c.DrawRectangle(new VisualBrush(MouseModel), new Pen(), MouseModel.RelativeRect);
+                }
                 if (HeadsetModel != null)
+                {
+                    HeadsetModel.CloseDrawingContext();
                     c.DrawRectangle(new VisualBrush(HeadsetModel), new Pen(), HeadsetModel.RelativeRect);
+                }
                 if (GenericModel != null)
+                {
+                    GenericModel.CloseDrawingContext();
                     c.DrawRectangle(new VisualBrush(GenericModel), new Pen(), GenericModel.RelativeRect);
+                }
                 if (MousematModel != null)
+                {
+                    MousematModel.CloseDrawingContext();
                     c.DrawRectangle(new VisualBrush(MousematModel), new Pen(), MousematModel.RelativeRect);
+                }
+                KeyboardModel.CloseDrawingContext();
                 c.DrawRectangle(new VisualBrush(KeyboardModel), new Pen(), KeyboardModel.RelativeRect);
 
                 c.Pop();
