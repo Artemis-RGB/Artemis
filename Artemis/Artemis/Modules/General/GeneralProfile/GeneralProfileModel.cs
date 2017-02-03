@@ -119,7 +119,7 @@ namespace Artemis.Modules.General.GeneralProfile
             var peakValues = _playbackInfo.GetChannelsPeakValues();
             dataModel.Audio.Playback.OverallPeak = _playbackInfo.PeakValue;
             dataModel.Audio.Playback.LeftPeak = peakValues[0];
-            dataModel.Audio.Playback.LeftPeak = peakValues[1];
+            dataModel.Audio.Playback.RightPeak = peakValues[1];
         }
 
         #endregion

@@ -111,24 +111,23 @@ namespace Artemis.Profiles
                 return;
 
             // Setup the DrawingVisual's size
-            using (var c = deviceVisualModel.RenderOpen())
-            {
-                c.PushClip(new RectangleGeometry(deviceVisualModel.Rect));
-                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, deviceVisualModel.Rect);
+            var c = deviceVisualModel.GetDrawingContext();
 
-                // Update the layers
-                foreach (var layerModel in renderLayers)
-                    layerModel.Update(dataModel, preview, true);
-                RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, null));
+            c.PushClip(new RectangleGeometry(deviceVisualModel.Rect));
+            c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, deviceVisualModel.Rect);
 
-                // Draw the layers
-                foreach (var layerModel in renderLayers)
-                    layerModel.Draw(dataModel, c, preview, true);
-                RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, c));
+            // Update the layers
+            foreach (var layerModel in renderLayers)
+                layerModel.Update(dataModel, preview, true);
+            RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, null));
 
-                // Remove the clip
-                c.Pop();
-            }
+            // Draw the layers
+            foreach (var layerModel in renderLayers)
+                layerModel.Draw(dataModel, c, preview, true);
+            RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, c));
+
+            // Remove the clip
+            c.Pop();
         }
 
         private void RaiseDeviceUpdatedEvent(ProfileDeviceEventsArg e)

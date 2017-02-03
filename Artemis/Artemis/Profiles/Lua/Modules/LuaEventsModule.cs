@@ -63,7 +63,7 @@ namespace Artemis.Profiles.Lua.Modules
         {
             try
             {
-                var wrapper = new LuaDrawWrapper(e.DrawingContext);
+                var wrapper = new LuaDrawWrapper(e.DrawingContext, e.UpdateType);
                 var args = new LuaDeviceDrawingEventArgs(e.UpdateType, e.DataModel, e.Preview, wrapper);
                 LuaInvoke(_profileModel, () => OnDeviceDrawing(LuaManager.ProfileModule, args));
             }
