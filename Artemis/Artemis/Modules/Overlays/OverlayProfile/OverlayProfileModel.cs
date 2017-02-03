@@ -1,6 +1,7 @@
 ﻿using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Modules.General.GeneralProfile;
 using CSCore.CoreAudioAPI;
@@ -51,10 +52,10 @@ namespace Artemis.Modules.Overlays.OverlayProfile
                 dataModel.Audio.Volume = _endPointVolume.GetMasterVolumeLevelScalar();
         }
 
-        public override void Render(RenderFrame frame, bool keyboardOnly)
+        public override void Render(FrameModel frameModel, bool keyboardOnly)
         {
             if (Settings.IsEnabled)
-                base.Render(frame, keyboardOnly);
+                base.Render(frameModel, keyboardOnly);
         }
 
         public override void Dispose()

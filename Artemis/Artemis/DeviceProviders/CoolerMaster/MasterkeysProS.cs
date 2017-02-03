@@ -34,13 +34,14 @@ namespace Artemis.DeviceProviders.CoolerMaster
 
         public override void Disable()
         {
+            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_S);
             CmSdk.EnableLedControl(false);
             Thread.Sleep(500);
         }
 
         public override bool CanEnable()
         {
-            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
+            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_S);
 
             // Doesn't seem reliable but better than nothing I suppose
             return CmSdk.IsDevicePlug();

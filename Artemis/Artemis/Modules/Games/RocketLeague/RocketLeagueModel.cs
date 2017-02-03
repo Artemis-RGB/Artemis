@@ -13,7 +13,6 @@ namespace Artemis.Modules.Games.RocketLeague
         private Memory _memory;
         private GamePointersCollection _pointer;
 
-
         public RocketLeagueModel(DeviceManager deviceManager, LuaManager luaManager) : base(deviceManager, luaManager)
         {
             Settings = SettingsProvider.Load<RocketLeagueSettings>();
@@ -24,14 +23,14 @@ namespace Artemis.Modules.Games.RocketLeague
             //var offset = new GamePointersCollection
             //{
             //    Game = "RocketLeague",
-            //    GameVersion = "1.26",
+            //    GameVersion = "1.27",
             //    GameAddresses = new List<GamePointer>
             //    {
             //        new GamePointer
             //        {
             //            Description = "Boost",
-            //            BasePointer = new IntPtr(0x01666C38),
-            //            Offsets = new[] { 0x58, 0x668, 0x73C, 0x224}
+            //            BasePointer = new IntPtr(0x016D5084),
+            //            Offsets = new[] {0xC4, 0x214, 0x320, 0x73C, 0x224}
             //        }
             //    }
             //};
@@ -54,7 +53,7 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             Updater.GetPointers();
             _pointer = SettingsProvider.Load<OffsetSettings>().RocketLeague;
-            
+
             base.Enable();
         }
 
@@ -68,7 +67,7 @@ namespace Artemis.Modules.Games.RocketLeague
 
                 _memory = new Memory(tempProcess);
             }
-            
+
             if (ProfileModel == null || DataModel == null || _memory == null)
                 return;
 

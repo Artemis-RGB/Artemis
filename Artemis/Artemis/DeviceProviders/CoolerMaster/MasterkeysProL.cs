@@ -34,6 +34,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
 
         public override void Disable()
         {
+            CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
             CmSdk.EnableLedControl(false);
             Thread.Sleep(500);
         }

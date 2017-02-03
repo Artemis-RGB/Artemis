@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
@@ -98,44 +99,35 @@ namespace Artemis.Profiles
         /// <summary>
         ///     Draw all the given layers on the given rect
         /// </summary>
-        /// <param name="g">The graphics to draw on</param>
+        /// <param name="deviceVisualModel"></param>
         /// <param name="renderLayers">The layers to render</param>
-        /// <param name="drawType">The type of device to draw for</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
-        /// <param name="rect">A rectangle matching the current keyboard's size on a scale of 4, used for clipping</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
-        internal void DrawLayers(Graphics g, List<LayerModel> renderLayers, DrawType drawType, ModuleDataModel dataModel,
-            Rect rect, bool preview)
+        internal void DrawLayers(DeviceVisualModel deviceVisualModel, List<LayerModel> renderLayers,
+            ModuleDataModel dataModel, bool preview)
         {
-            renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == drawType).ToList();
+            renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == deviceVisualModel.DrawType).ToList();
             if (!renderLayers.Any())
                 return;
 
-            var visual = new DrawingVisual();
-            using (var c = visual.RenderOpen())
-            {
-                // Setup the DrawingVisual's size
-                c.PushClip(new RectangleGeometry(rect));
-                c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, rect);
+            // Setup the DrawingVisual's size
+            var c = deviceVisualModel.GetDrawingContext();
 
-                // Update the layers
-                foreach (var layerModel in renderLayers)
-                    layerModel.Update(dataModel, preview, true);
-                RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, null));
+            c.PushClip(new RectangleGeometry(deviceVisualModel.Rect));
+            c.DrawRectangle(new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)), null, deviceVisualModel.Rect);
 
-                // Draw the layers
-                foreach (var layerModel in renderLayers)
-                    layerModel.Draw(dataModel, c, preview, true);
-                RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(drawType, dataModel, preview, c));
+            // Update the layers
+            foreach (var layerModel in renderLayers)
+                layerModel.Update(dataModel, preview, true);
+            RaiseDeviceUpdatedEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, null));
 
-                // Remove the clip
-                c.Pop();
-            }
+            // Draw the layers
+            foreach (var layerModel in renderLayers)
+                layerModel.Draw(dataModel, c, preview, true);
+            RaiseDeviceDrawnEvent(new ProfileDeviceEventsArg(deviceVisualModel.DrawType, dataModel, preview, c));
 
-            using (var bmp = ImageUtilities.DrawingVisualToBitmap(visual, rect))
-            {
-                g.DrawImage(bmp, new PointF(0, 0));
-            }
+            // Remove the clip
+            c.Pop();
         }
 
         private void RaiseDeviceUpdatedEvent(ProfileDeviceEventsArg e)
