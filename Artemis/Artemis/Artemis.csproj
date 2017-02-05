@@ -354,6 +354,7 @@
     <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />
     <Compile Include="DeviceProviders\Razer\BlackWidow.cs" />
     <Compile Include="DeviceProviders\Razer\Utilities\RazerUtilities.cs" />
+    <Compile Include="Managers\KeybindManager.cs" />
     <Compile Include="Models\DeviceVisualModel.cs" />
     <Compile Include="Models\FrameModel.cs" />
     <Compile Include="Managers\MigrationManager.cs" />

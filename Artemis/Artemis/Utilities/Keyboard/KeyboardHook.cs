@@ -18,10 +18,10 @@ namespace Artemis.Utilities.Keyboard
         }
 
         private static async void VirtualKeyboardOnKeyDown(object sender, KeyEventArgs keyEventArgs)
-        {
+        {                                                                             
             await Task.Factory.StartNew(() => { KeyDownCallback?.Invoke(keyEventArgs); });
         }
-
+                                                                                 
         public static event KeyDownCallbackHandler KeyDownCallback;
     }
 }

@@ -15,6 +15,19 @@ namespace Artemis.ViewModels.Profiles
 
         private readonly LayerEditorViewModel _editorViewModel;
 
+        private readonly NamedOperator[] _hotkeyOperators =
+        {
+            new NamedOperator("Pressed", "enable"),
+            new NamedOperator("Held down", "disable")
+        };
+
+        private readonly GeneralHelpers.PropertyCollection[] _hotkeyProperties =
+        {
+            new GeneralHelpers.PropertyCollection {Display = "Enable when hotkey", Type = "hotkeyEnable"},
+            new GeneralHelpers.PropertyCollection {Display = "Disable when hotkey", Type = "hotkeyDisable"},
+            new GeneralHelpers.PropertyCollection {Display = "Toggle when hotkey", Type = "hotkeyToggle"}
+        };
+
         private readonly NamedOperator[] _int32Operators =
         {
             new NamedOperator("Lower than", "<"),
@@ -41,6 +54,7 @@ namespace Artemis.ViewModels.Profiles
         };
 
         private bool _enumValueIsVisible;
+        private bool _keybindIsVisible;
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
         private string _selectedEnum;
         private NamedOperator _selectedOperator;
@@ -52,9 +66,10 @@ namespace Artemis.ViewModels.Profiles
             _editorViewModel = editorViewModel;
 
             ConditionModel = conditionModel;
-            DataModelProps = editorViewModel.DataModelProps;
             Operators = new BindableCollection<NamedOperator>();
             Enums = new BindableCollection<string>();
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(_hotkeyProperties);
+            DataModelProps.AddRange(editorViewModel.DataModelProps);
 
             PropertyChanged += MapViewToModel;
             MapModelToView();
@@ -109,6 +124,17 @@ namespace Artemis.ViewModels.Profiles
                 if (value == _enumValueIsVisible) return;
                 _enumValueIsVisible = value;
                 NotifyOfPropertyChange(() => EnumValueIsVisible);
+            }
+        }
+
+        public bool KeybindIsVisible
+        {
+            get { return _keybindIsVisible; }
+            set
+            {
+                if (value == _keybindIsVisible) return;
+                _keybindIsVisible = value;
+                NotifyOfPropertyChange();
             }
         }
 
@@ -190,6 +216,15 @@ namespace Artemis.ViewModels.Profiles
                     Operators.AddRange(_stringOperators);
                     UserValueIsVisible = true;
                     break;
+                case "hotkeyEnable":
+                case "hotkeyDisable":
+                    Operators.AddRange(_hotkeyOperators);
+                    KeybindIsVisible = true;
+                    break;
+                case "hotkeyToggle":
+                    Operators.Add(_hotkeyOperators[0]);
+                    KeybindIsVisible = true;
+                    break;
                 default:
                     Operators.AddRange(_operators);
                     UserValueIsVisible = true;
@@ -207,7 +242,7 @@ namespace Artemis.ViewModels.Profiles
                     Operators.Add(new NamedOperator("Increased", "increased"));
                 }
             }
-
+            
             SetupUserValueInput();
         }
 
@@ -215,13 +250,21 @@ namespace Artemis.ViewModels.Profiles
         {
             UserValueIsVisible = false;
             EnumValueIsVisible = false;
+            KeybindIsVisible = false;
 
+            // Event operators don't have any form of input
             if (SelectedOperator.Value == "changed" || SelectedOperator.Value == "decreased" ||
                 SelectedOperator.Value == "increased")
                 return;
 
-            if (SelectedDataModelProp.Type == "Boolean")
+            if (SelectedDataModelProp.Type.Contains("hotkey"))
+            {
+                KeybindIsVisible = true;
+            }
+            else if (SelectedDataModelProp.Type == "Boolean")
+            {
                 EnumValueIsVisible = true;
+            }
             else if (SelectedDataModelProp.EnumValues != null)
             {
                 Enums.Clear();
@@ -229,7 +272,9 @@ namespace Artemis.ViewModels.Profiles
                 EnumValueIsVisible = true;
             }
             else
+            {
                 UserValueIsVisible = true;
+            }
         }
 
         /// <summary>
