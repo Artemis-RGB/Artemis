@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using System.Dynamic;
+using Caliburn.Micro;
 using Ninject;
 using Ninject.Parameters;
 
@@ -13,21 +14,25 @@ namespace Artemis.Services
             _kernel = kernel;
         }
 
-        public T ShowWindow<T>(params IParameter[] param) where T : class
+        public T ShowWindow<T>(string windowName, params IParameter[] param) where T : class
         {
             var windowManager = new WindowManager();
             var viewModel = _kernel.Get<T>(param);
 
-            windowManager.ShowWindow(viewModel);
+            dynamic settings = new ExpandoObject();
+            settings.Title = windowName;
+            windowManager.ShowWindow(viewModel, null, settings);
             return viewModel;
         }
 
-        public T ShowDialog<T>(params IParameter[] param) where T : class
+        public T ShowDialog<T>(string dialogName, params IParameter[] param) where T : class
         {
             var windowManager = new WindowManager();
             var viewModel = _kernel.Get<T>(param);
 
-            windowManager.ShowDialog(viewModel);
+            dynamic settings = new ExpandoObject();
+            settings.Title = dialogName;
+            windowManager.ShowDialog(viewModel, null, settings);
             return viewModel;
         }
     }
