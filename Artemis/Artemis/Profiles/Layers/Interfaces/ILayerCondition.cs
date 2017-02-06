@@ -6,5 +6,6 @@ namespace Artemis.Profiles.Layers.Interfaces
     public interface ILayerCondition
     {
         bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel);
+        void KeybindTask(LayerConditionModel condition);
     }
 }
