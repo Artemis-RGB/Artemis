@@ -1,35 +1,33 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
+using Artemis.Services;
 using Artemis.Settings;
-using Artemis.Utilities;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
 using ILogger = Ninject.Extensions.Logging.ILogger;
-using Process = System.Diagnostics.Process;
 
 namespace Artemis.ViewModels.Flyouts
 {
     public sealed class FlyoutSettingsViewModel : FlyoutBaseViewModel
     {
-        private readonly DebugViewModel _debugViewModel;
         private readonly ILogger _logger;
+        private readonly WindowService _windowService;
         private string _activeEffectName;
         private bool _enableDebug;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager, ILogger logger, DebugViewModel debugViewModel)
+        public FlyoutSettingsViewModel(MainManager mainManager, ILogger logger, WindowService windowService)
         {
             _logger = logger;
-            _debugViewModel = debugViewModel;
+            _windowService = windowService;
 
             MainManager = mainManager;
             Header = "Settings";
@@ -196,7 +194,9 @@ namespace Artemis.ViewModels.Flyouts
                 MainManager.LoopManager.StartAsync();
             }
             else
+            {
                 MainManager.DeviceManager.ReleaseActiveKeyboard(true);
+            }
         }
 
         public void ToggleEnabled()
@@ -215,14 +215,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void ShowDebug()
         {
-            IWindowManager manager = new WindowManager();
-            dynamic settings = new ExpandoObject();
-            var icon = ImageUtilities.GenerateWindowIcon();
-
-            settings.Title = "Artemis | Debugger";
-            settings.Icon = icon;
-
-            manager.ShowWindow(_debugViewModel, null, settings);
+            _windowService.ShowWindow<DebugViewModel>("Artemis | Debugger");
         }
 
         public void ResetSettings()

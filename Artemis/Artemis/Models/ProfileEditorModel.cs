@@ -50,7 +50,7 @@ namespace Artemis.Models
                 new ConstructorArgument("dataModel", dataModel),
                 new ConstructorArgument("layer", layer)
             };
-            _windowService.ShowDialog<LayerEditorViewModel>(args);
+            _windowService.ShowDialog<LayerEditorViewModel>("Artemis | Edit layer", args);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (layer.LayerType is FolderType || !layer.Children.Any())
