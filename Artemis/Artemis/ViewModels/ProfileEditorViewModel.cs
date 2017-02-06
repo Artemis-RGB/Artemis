@@ -319,6 +319,9 @@ namespace Artemis.ViewModels
             {
                 Thread.Sleep(100);
                 SelectedLayer = selectModel;
+
+                // Let the profile reapply keybinds after messing with layers
+                SelectedProfile.ApplyKeybinds();
             });
         }
 

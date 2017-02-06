@@ -3,6 +3,7 @@ using System.Linq;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
+using MahApps.Metro.Controls;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -18,14 +19,14 @@ namespace Artemis.ViewModels.Profiles
         private readonly NamedOperator[] _hotkeyOperators =
         {
             new NamedOperator("Pressed", "enable"),
-            new NamedOperator("Held down", "disable")
+            new NamedOperator("Held down", "held")
         };
 
         private readonly GeneralHelpers.PropertyCollection[] _hotkeyProperties =
         {
-            new GeneralHelpers.PropertyCollection {Display = "Enable when hotkey", Type = "hotkeyEnable"},
-            new GeneralHelpers.PropertyCollection {Display = "Disable when hotkey", Type = "hotkeyDisable"},
-            new GeneralHelpers.PropertyCollection {Display = "Toggle when hotkey", Type = "hotkeyToggle"}
+            new GeneralHelpers.PropertyCollection {Display = "Enable when hotkey", Type = "hotkeyEnable", Path = "hotkeyEnable"},
+            new GeneralHelpers.PropertyCollection {Display = "Disable when hotkey", Type = "hotkeyDisable", Path = "hotkeyDisable"},
+            new GeneralHelpers.PropertyCollection {Display = "Toggle when hotkey", Type = "hotkeyToggle", Path = "hotkeyToggle"}
         };
 
         private readonly NamedOperator[] _int32Operators =
@@ -53,11 +54,14 @@ namespace Artemis.ViewModels.Profiles
             new NamedOperator("Ends with", ".EndsWith")
         };
 
-        private bool _enumValueIsVisible;
+        private HotKey _hotKey;
+
         private bool _keybindIsVisible;
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
-        private string _selectedEnum;
+        private string _selectedDropdownValue;
         private NamedOperator _selectedOperator;
+
+        private bool _userDropdownValueIsVisible;
         private string _userValue;
         private bool _userValueIsVisible;
 
@@ -67,7 +71,7 @@ namespace Artemis.ViewModels.Profiles
 
             ConditionModel = conditionModel;
             Operators = new BindableCollection<NamedOperator>();
-            Enums = new BindableCollection<string>();
+            DropdownValues = new BindableCollection<string>();
             DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(_hotkeyProperties);
             DataModelProps.AddRange(editorViewModel.DataModelProps);
 
@@ -80,7 +84,7 @@ namespace Artemis.ViewModels.Profiles
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
 
         public BindableCollection<NamedOperator> Operators { get; set; }
-        public BindableCollection<string> Enums { get; set; }
+        public BindableCollection<string> DropdownValues { get; set; }
 
         public string UserValue
         {
@@ -90,6 +94,17 @@ namespace Artemis.ViewModels.Profiles
                 if (value == _userValue) return;
                 _userValue = value;
                 NotifyOfPropertyChange(() => UserValue);
+            }
+        }
+
+        public HotKey HotKey
+        {
+            get { return _hotKey; }
+            set
+            {
+                if (Equals(value, _hotKey)) return;
+                _hotKey = value;
+                NotifyOfPropertyChange(() => HotKey);
             }
         }
 
@@ -116,14 +131,14 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public bool EnumValueIsVisible
+        public bool UserDropdownValueIsVisible
         {
-            get { return _enumValueIsVisible; }
+            get { return _userDropdownValueIsVisible; }
             set
             {
-                if (value == _enumValueIsVisible) return;
-                _enumValueIsVisible = value;
-                NotifyOfPropertyChange(() => EnumValueIsVisible);
+                if (value == _userDropdownValueIsVisible) return;
+                _userDropdownValueIsVisible = value;
+                NotifyOfPropertyChange(() => UserDropdownValueIsVisible);
             }
         }
 
@@ -149,14 +164,14 @@ namespace Artemis.ViewModels.Profiles
             }
         }
 
-        public string SelectedEnum
+        public string SelectedDropdownValue
         {
-            get { return _selectedEnum; }
+            get { return _selectedDropdownValue; }
             set
             {
-                if (value == _selectedEnum) return;
-                _selectedEnum = value;
-                NotifyOfPropertyChange(() => SelectedEnum);
+                if (value == _selectedDropdownValue) return;
+                _selectedDropdownValue = value;
+                NotifyOfPropertyChange(() => SelectedDropdownValue);
             }
         }
 
@@ -168,9 +183,10 @@ namespace Artemis.ViewModels.Profiles
             SelectedDataModelProp = DataModelProps.FirstOrDefault(m => m.Path == ConditionModel.Field);
             // Select the operator
             SelectedOperator = Operators.FirstOrDefault(o => o.Value == ConditionModel.Operator);
+            HotKey = ConditionModel.HotKey;
 
             if (ConditionModel.Type == "Enum" || ConditionModel.Type == "Boolean")
-                SelectedEnum = ConditionModel.Value;
+                SelectedDropdownValue = ConditionModel.Value;
             else
                 UserValue = ConditionModel.Value;
 
@@ -182,9 +198,10 @@ namespace Artemis.ViewModels.Profiles
             ConditionModel.Field = SelectedDataModelProp.Path;
             ConditionModel.Operator = SelectedOperator.Value;
             ConditionModel.Type = SelectedDataModelProp.Type;
+            ConditionModel.HotKey = HotKey;
 
             if (ConditionModel.Type == "Enum" || ConditionModel.Type == "Boolean")
-                ConditionModel.Value = SelectedEnum;
+                ConditionModel.Value = SelectedDropdownValue;
             else
                 ConditionModel.Value = UserValue;
         }
@@ -197,7 +214,7 @@ namespace Artemis.ViewModels.Profiles
         public void SetupPropertyInput()
         {
             Operators.Clear();
-            Enums.Clear();
+            DropdownValues.Clear();
 
             switch (SelectedDataModelProp.Type)
             {
@@ -208,9 +225,9 @@ namespace Artemis.ViewModels.Profiles
                     break;
                 case "Boolean":
                     Operators.AddRange(_boolOperators);
-                    Enums.Add("True");
-                    Enums.Add("False");
-                    EnumValueIsVisible = true;
+                    DropdownValues.Add("True");
+                    DropdownValues.Add("False");
+                    UserDropdownValueIsVisible = true;
                     break;
                 case "String":
                     Operators.AddRange(_stringOperators);
@@ -242,14 +259,14 @@ namespace Artemis.ViewModels.Profiles
                     Operators.Add(new NamedOperator("Increased", "increased"));
                 }
             }
-            
+
             SetupUserValueInput();
         }
 
         private void SetupUserValueInput()
         {
             UserValueIsVisible = false;
-            EnumValueIsVisible = false;
+            UserDropdownValueIsVisible = false;
             KeybindIsVisible = false;
 
             // Event operators don't have any form of input
@@ -257,19 +274,19 @@ namespace Artemis.ViewModels.Profiles
                 SelectedOperator.Value == "increased")
                 return;
 
-            if (SelectedDataModelProp.Type.Contains("hotkey"))
+            if (SelectedDataModelProp.Type != null && SelectedDataModelProp.Type.Contains("hotkey"))
             {
                 KeybindIsVisible = true;
             }
             else if (SelectedDataModelProp.Type == "Boolean")
             {
-                EnumValueIsVisible = true;
+                UserDropdownValueIsVisible = true;
             }
             else if (SelectedDataModelProp.EnumValues != null)
             {
-                Enums.Clear();
-                Enums.AddRange(SelectedDataModelProp.EnumValues);
-                EnumValueIsVisible = true;
+                DropdownValues.Clear();
+                DropdownValues.AddRange(SelectedDataModelProp.EnumValues);
+                UserDropdownValueIsVisible = true;
             }
             else
             {

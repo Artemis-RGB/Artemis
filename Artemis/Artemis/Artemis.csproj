@@ -364,6 +364,7 @@
     <Compile Include="Managers\LuaManager.cs" />
     <Compile Include="Managers\MainManager.cs" />
     <Compile Include="Managers\PreviewManager.cs" />
+    <Compile Include="Models\KeybindModel.cs" />
     <Compile Include="Models\LayerEditorModel.cs" />
     <Compile Include="Models\ProfileEditorModel.cs" />
     <Compile Include="Modules\Abstract\ModuleDataModel.cs" />

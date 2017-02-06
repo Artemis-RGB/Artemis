@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -184,11 +185,13 @@ namespace Artemis.Profiles
 
         public void Activate(LuaManager luaManager)
         {
+            ApplyKeybinds();
             luaManager.SetupLua(this);
         }
 
         public void Deactivate(LuaManager luaManager)
         {
+            KeybindManager.Clear();
             luaManager.ClearLua();
         }
 
@@ -208,6 +211,24 @@ namespace Artemis.Profiles
             }
 
             return layer;
+        }
+
+        public void ApplyKeybinds()
+        {
+            foreach (var layerModel in Layers)
+            {
+                for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
+                {
+                    var condition = layerModel.Properties.Conditions[index];
+                    if (condition.Field == null || !condition.Field.Contains("hotkey"))
+                        continue;
+
+                    // Create an action for the layer, the layer's specific condition type handles activation
+                    var action = new Action(() => layerModel.LayerCondition.KeybindTask(condition));
+                    var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, action);
+                    KeybindManager.AddOrUpdate(kb);
+                }
+            }
         }
 
         #region Compare

@@ -52,13 +52,13 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" x:Name="KeybindIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <controls:HotKeyBox x:Name="Keybind" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110" Watermark="Enter keybind" AreModifierKeysRequired="True" />
+                <controls:HotKeyBox HotKey="{Binding Path=HotKey}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110" Watermark="Enter keybind" />
             </StackPanel>
             <StackPanel Grid.Column="0" x:Name="UserValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <TextBox x:Name="UserValue" VerticalAlignment="Center" HorizontalAlignment="Left" Width="110" controls:TextBoxHelper.Watermark="Enter value" />
             </StackPanel>
-            <StackPanel Grid.Column="0" x:Name="EnumValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <ComboBox x:Name="Enums" Width="110" MaxDropDownHeight="125" HorizontalAlignment="Center"
+            <StackPanel Grid.Column="0" x:Name="UserDropdownValueIsVisible" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <ComboBox x:Name="DropdownValues" Width="110" MaxDropDownHeight="125" HorizontalAlignment="Center"
                           VerticalAlignment="Top" />
             </StackPanel>
             <Button Grid.Column="1" x:Name="Delete" Width="26" Height="26" Style="{DynamicResource SquareButtonStyle}"
