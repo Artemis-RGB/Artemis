@@ -548,6 +548,7 @@
     <Compile Include="Profiles\Lua\Modules\LuaBrushesModule.cs" />
     <Compile Include="Profiles\Lua\LuaModule.cs" />
     <Compile Include="Profiles\Lua\Modules\Brushes\LuaSolidColorBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaKeybindModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaKeyboardModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaLayerModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaMouseModule.cs" />

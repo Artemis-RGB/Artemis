@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -13,12 +11,8 @@ using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
-using Color = System.Windows.Media.Color;
-using Point = System.Windows.Point;
-using Size = System.Windows.Size;
 
 namespace Artemis.Profiles
 {
@@ -30,6 +24,7 @@ namespace Artemis.Profiles
         {
             _invalidFileNameChars = Path.GetInvalidFileNameChars();
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
+            OnProfileUpdatedEvent += OnOnProfileUpdatedEvent;
         }
 
         public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
@@ -44,8 +39,14 @@ namespace Artemis.Profiles
         [JsonIgnore]
         public string Slug => new string(Name.Where(ch => !_invalidFileNameChars.Contains(ch)).ToArray());
 
+        private void OnOnProfileUpdatedEvent(object sender, EventArgs e)
+        {
+            ApplyKeybinds();
+        }
+
         public event EventHandler<ProfileDeviceEventsArg> OnDeviceUpdatedEvent;
         public event EventHandler<ProfileDeviceEventsArg> OnDeviceDrawnEvent;
+        public event EventHandler<EventArgs> OnProfileUpdatedEvent;
 
         public void FixOrder()
         {
@@ -133,14 +134,17 @@ namespace Artemis.Profiles
 
         private void RaiseDeviceUpdatedEvent(ProfileDeviceEventsArg e)
         {
-            var handler = OnDeviceUpdatedEvent;
-            handler?.Invoke(this, e);
+            OnDeviceUpdatedEvent?.Invoke(this, e);
         }
 
         public void RaiseDeviceDrawnEvent(ProfileDeviceEventsArg e)
         {
-            var handler = OnDeviceDrawnEvent;
-            handler?.Invoke(this, e);
+            OnDeviceDrawnEvent?.Invoke(this, e);
+        }
+
+        public virtual void OnOnProfileUpdatedEvent()
+        {
+            OnProfileUpdatedEvent?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -216,7 +220,6 @@ namespace Artemis.Profiles
         public void ApplyKeybinds()
         {
             foreach (var layerModel in Layers)
-            {
                 for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
                 {
                     var condition = layerModel.Properties.Conditions[index];
@@ -228,7 +231,6 @@ namespace Artemis.Profiles
                     var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, action);
                     KeybindManager.AddOrUpdate(kb);
                 }
-            }
         }
 
         #region Compare
