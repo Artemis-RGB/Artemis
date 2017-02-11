@@ -195,7 +195,12 @@ namespace Artemis.Profiles
 
         public void Deactivate(LuaManager luaManager)
         {
-            KeybindManager.Clear();
+            foreach (var layerModel in Layers)
+            {
+                for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
+                    KeybindManager.Remove($"{GameName}-{Name}-{layerModel.Name}-{index}");
+            }
+
             luaManager.ClearLua();
         }
 
@@ -220,6 +225,7 @@ namespace Artemis.Profiles
         public void ApplyKeybinds()
         {
             foreach (var layerModel in Layers)
+            {
                 for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
                 {
                     var condition = layerModel.Properties.Conditions[index];
@@ -231,6 +237,7 @@ namespace Artemis.Profiles
                     var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, action);
                     KeybindManager.AddOrUpdate(kb);
                 }
+            }
         }
 
         #region Compare

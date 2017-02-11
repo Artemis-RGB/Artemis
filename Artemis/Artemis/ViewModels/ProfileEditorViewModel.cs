@@ -28,9 +28,12 @@ using Caliburn.Micro;
 using Castle.Components.DictionaryAdapter;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro;
+using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using Newtonsoft.Json;
 using NuGet;
 using Application = System.Windows.Application;
+using Clipboard = System.Windows.Clipboard;
 using Cursor = System.Windows.Input.Cursor;
 using Cursors = System.Windows.Input.Cursors;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -44,6 +47,8 @@ namespace Artemis.ViewModels
     {
         private readonly DeviceManager _deviceManager;
         private readonly MetroDialogService _dialogService;
+        private KeybindModel _copyKeybind;
+        private KeybindModel _pasteKeybind;
         private readonly LoopManager _loopManager;
         private readonly ModuleModel _moduleModel;
         private ImageSource _keyboardPreview;
@@ -60,6 +65,8 @@ namespace Artemis.ViewModels
             _loopManager = loopManager;
             _moduleModel = moduleModel;
             _dialogService = dialogService;
+            _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), LayerToClipboard);
+            _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), ClipboardToLayer);
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
@@ -69,6 +76,7 @@ namespace Artemis.ViewModels
             PropertyChanged += EditorStateHandler;
             _deviceManager.OnKeyboardChanged += DeviceManagerOnOnKeyboardChanged;
             _moduleModel.ProfileChanged += ModuleModelOnProfileChanged;
+
             LoadProfiles();
         }
 
@@ -77,6 +85,8 @@ namespace Artemis.ViewModels
             base.OnActivate();
 
             _loopManager.RenderCompleted += LoopManagerOnRenderCompleted;
+            KeybindManager.AddOrUpdate(_copyKeybind);
+            KeybindManager.AddOrUpdate(_pasteKeybind);
         }
 
         public new void OnDeactivate(bool close)
@@ -85,6 +95,8 @@ namespace Artemis.ViewModels
 
             SaveSelectedProfile();
             _loopManager.RenderCompleted -= LoopManagerOnRenderCompleted;
+            KeybindManager.Remove(_copyKeybind);
+            KeybindManager.Remove(_pasteKeybind);
         }
 
         #region LUA
@@ -300,6 +312,38 @@ namespace Artemis.ViewModels
             layer.InsertAfter(clone);
 
             UpdateLayerList(clone);
+        }
+
+        public void LayerToClipboard()
+        {
+            if (SelectedLayer == null)
+                return;
+
+            // Probably not how the cool kids do it but leveraging on JsonConvert gives flawless serialization
+            GeneralHelpers.ExecuteSta(() => Clipboard.SetData("layer", JsonConvert.SerializeObject(SelectedLayer)));
+        }
+
+        public void ClipboardToLayer()
+        {
+            GeneralHelpers.ExecuteSta(() =>
+            {
+                var data = (string) Clipboard.GetData("layer");
+                if (data == null)
+                    return;
+
+                var layerModel = JsonConvert.DeserializeObject<LayerModel>(data);
+                if (layerModel == null)
+                    return;
+
+                if (SelectedLayer != null)
+                    SelectedLayer.InsertAfter(layerModel);
+                else
+                {
+                    SelectedProfile.Layers.Add(layerModel);
+                    SelectedProfile.FixOrder();
+                }
+                Execute.OnUIThread(() => UpdateLayerList(layerModel));
+            });
         }
 
         private void UpdateLayerList(LayerModel selectModel)

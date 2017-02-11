@@ -59,7 +59,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             using (var b = ImageUtilities.ResizeImage(bitmap, Width, Height))
             {
                 // Create an empty matrix
-                var matrix = new COLOR_MATRIX { KeyColor = new KEY_COLOR[6, 22] };
+                var matrix = new COLOR_MATRIX {KeyColor = new KEY_COLOR[6, 22]};
 
                 // Map the bytes to the matix
                 for (var x = 0; x < Width; x++)
