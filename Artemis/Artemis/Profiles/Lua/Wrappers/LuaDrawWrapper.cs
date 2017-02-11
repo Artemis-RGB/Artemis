@@ -22,7 +22,7 @@ namespace Artemis.Profiles.Lua.Wrappers
         public LuaDrawWrapper(DrawingContext ctx, string updateType)
         {
             _ctx = ctx;
-            _scale = updateType == "keyboard" ? 4 : 2;
+            _scale = updateType == "keyboard" || updateType == "preview" ? 4 : 2;
         }
 
         public void DrawEllipse(LuaBrush luaBrush, double x, double y, double height, double width)

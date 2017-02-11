@@ -131,6 +131,10 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssettoCorsaSharedMemory, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\AssettoCorsaSharedMemory.dll</HintPath>
+    </Reference>
     <Reference Include="Betwixt, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Betwixt.1.4.1\lib\net35\Betwixt.dll</HintPath>
       <Private>True</Private>
@@ -371,6 +375,13 @@
     <Compile Include="Modules\Abstract\ModuleModel.cs" />
     <Compile Include="Modules\Abstract\ModuleSettings.cs" />
     <Compile Include="Modules\Abstract\ModuleViewModel.cs" />
+    <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaDataModel.cs" />
+    <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaModel.cs" />
+    <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaSettings.cs" />
+    <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaView.xaml.cs">
+      <DependentUpon>AssettoCorsaView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaViewModel.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
@@ -784,7 +795,7 @@
     <AppDesigner Include="Properties\" />
     <Resource Include="Resources\slkscr.ttf" />
     <Resource Include="Resources\bow.png" />
-    <Content Include="lib\CUE.NET.dll" />
+    <Content Include="lib\AssettoCorsaSharedMemory.dll" />
     <Content Include="lib\Ets2SdkClient.dll" />
     <Content Include="lib\SDKDLL.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -830,6 +841,10 @@
     <Page Include="Dialogs\MarkdownDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Games\AssettoCorsa\AssettoCorsaView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Modules\General\Bubbles\BubblesView.xaml">
       <SubType>Designer</SubType>
