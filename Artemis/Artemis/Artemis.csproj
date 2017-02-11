@@ -653,7 +653,6 @@
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
     <Compile Include="Utilities\Converters\ValueConverters.cs" />
     <Compile Include="Utilities\DataReaders\DllManager.cs" />
-    <Compile Include="Utilities\EditorHelper.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\GameState\GameDataReceivedEventArgs.cs" />
     <Compile Include="Utilities\GameState\GameStateWebServer.cs" />

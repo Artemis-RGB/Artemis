@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using static System.String;
@@ -125,6 +127,14 @@ namespace Artemis.Utilities
 
             public List<PropertyCollection> Children { get; set; }
             public string DisplayType { get; set; }
+        }
+
+        public static void ExecuteSta(Action action)
+        {
+            var thread = new Thread(action.Invoke);
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join();
         }
     }
 }
