@@ -183,6 +183,10 @@
       <HintPath>..\packages\DynamicExpresso.Core.1.3.3.5\lib\net40\DynamicExpresso.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GongSolutions.Wpf.DragDrop, Version=0.1.4.3, Culture=neutral, PublicKeyToken=d19974ea350ccea1, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
       <Private>True</Private>
@@ -249,10 +253,6 @@
     </Reference>
     <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Open.WinKeyboardHook, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Open.WinKeyboardHook.1.0.11\lib\net45\Open.WinKeyboardHook.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -485,6 +485,9 @@
       <DependentUpon>OverlayProfileView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileViewModel.cs" />
+    <Compile Include="Profiles\Layers\Animations\RotateCounterclockwiseAnimation.cs" />
+    <Compile Include="Profiles\Layers\Animations\RotateClockwiseAnimation.cs" />
+    <Compile Include="Profiles\Layers\Animations\ShrinkAnimation.cs" />
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
@@ -622,7 +625,7 @@
     <Compile Include="Profiles\Layers\Conditions\DataModelCondition.cs" />
     <Compile Include="Profiles\Layers\Conditions\EventCondition.cs" />
     <Compile Include="Profiles\Layers\Interfaces\ILayerAnimation.cs" />
-    <Compile Include="Profiles\Layers\Interfaces\ILayerCondition.cs" />
+    <Compile Include="Profiles\Layers\Abstract\LayerCondition.cs" />
     <Compile Include="Profiles\Layers\Interfaces\ILayerType.cs" />
     <Compile Include="Profiles\Layers\Models\DynamicPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\LayerConditionModel.cs" />

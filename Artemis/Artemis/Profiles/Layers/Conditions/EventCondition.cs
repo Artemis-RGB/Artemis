@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Conditions
 {
-    public class EventCondition : ILayerCondition
+    public class EventCondition : LayerCondition
     {
         [JsonIgnore]
         public bool HotKeyMet { get; set; }
 
-        public bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel)
+        public override bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel)
         {
             lock (layerModel.Properties.Conditions)
             {
-                var checkConditions = layerModel.Properties.Conditions.Where(c => !c.Field.Contains("hotkey")).ToList();
+                var checkConditions = layerModel.Properties.Conditions
+                    .Where(c => c.Field != null && !c.Field.Contains("hotkey")).ToList();
+
                 if (checkConditions.Count == layerModel.Properties.Conditions.Count)
                     return SimpleConditionsMet(layerModel, dataModel, checkConditions);
 
@@ -45,7 +48,7 @@ namespace Artemis.Profiles.Layers.Conditions
             }
         }
 
-        public void KeybindTask(LayerConditionModel condition)
+        public override void KeybindTask(LayerConditionModel condition)
         {
             switch (condition.Field)
             {

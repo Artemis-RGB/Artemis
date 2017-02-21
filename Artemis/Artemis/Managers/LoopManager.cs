@@ -56,12 +56,15 @@ namespace Artemis.Managers
 
                     Render();
 
-                    int sleep = (int)(40f - (DateTime.Now.Ticks - preUpdateTicks) / 10000f);
+                    int sleep = (int) (40f - (DateTime.Now.Ticks - preUpdateTicks) / 10000f);
                     if (sleep > 0)
                         Thread.Sleep(sleep);
                 }
                 catch (Exception e)
                 {
+#if DEBUG
+                    throw e;
+#endif
                     _logger.Warn(e, "Exception in render loop");
                 }
             }
@@ -155,11 +158,13 @@ namespace Artemis.Managers
                 var headsets = _deviceManager.HeadsetProviders.Where(m => m.CanUse).ToList();
                 var generics = _deviceManager.GenericProviders.Where(m => m.CanUse).ToList();
                 var mousemats = _deviceManager.MousematProviders.Where(m => m.CanUse).ToList();
-                   
+
                 var keyboardOnly = !mice.Any() && !headsets.Any() && !generics.Any() && !mousemats.Any();
 
                 // Setup the frame for this tick
-                using (var frame = new FrameModel(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(), mousemats.Any()))
+                using (
+                    var frame = new FrameModel(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(),
+                        mousemats.Any()))
                 {
                     if (renderModule.IsInitialized)
                         renderModule.Render(frame, keyboardOnly);

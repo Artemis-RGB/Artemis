@@ -6,6 +6,7 @@ using Artemis.Models;
 using Artemis.Utilities.Keyboard;
 using MahApps.Metro.Controls;
 using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
+using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
 
 namespace Artemis.Managers
 {
@@ -15,25 +16,34 @@ namespace Artemis.Managers
 
         static KeybindManager()
         {
-            KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
+            KeyboardHook.KeyDownCallback += args => ProcessKey(args, KeyType.KeyDown);
+            KeyboardHook.KeyUpCallback += args => ProcessKey(args, KeyType.KeyUp);
+            KeyboardHook.MouseDownCallback += args => ProcessMouse(args, KeyType.MouseDown);
+            KeyboardHook.MouseUpCallback += args => ProcessMouse(args, KeyType.MouseUp);
         }
-
-        private static void KeyboardHookOnKeyDownCallback(KeyEventArgs e)
+        
+        private static void ProcessKey(KeyEventArgs keyEventArgs, KeyType keyType)
         {
             // Don't trigger if the key itself is a modifier
-            if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey ||
-                e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey ||
-                e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu)
+            if (keyEventArgs.KeyCode == Keys.LShiftKey || keyEventArgs.KeyCode == Keys.RShiftKey ||
+                keyEventArgs.KeyCode == Keys.LControlKey || keyEventArgs.KeyCode == Keys.RControlKey ||
+                keyEventArgs.KeyCode == Keys.LMenu || keyEventArgs.KeyCode == Keys.RMenu)
                 return;
 
             // Create a WPF ModifierKeys enum
-            var modifiers = ModifierKeysFromBooleans(e.Alt, e.Control, e.Shift);
+            var modifiers = ModifierKeysFromBooleans(keyEventArgs.Alt, keyEventArgs.Control, keyEventArgs.Shift);
 
             // Create a HotKey object for comparison
-            var hotKey = new HotKey(KeyInterop.KeyFromVirtualKey(e.KeyValue), modifiers);
+            var hotKey = new HotKey(KeyInterop.KeyFromVirtualKey(keyEventArgs.KeyValue), modifiers);
 
             foreach (var keybindModel in KeybindModels)
-                keybindModel.InvokeIfMatched(hotKey);
+                keybindModel.InvokeIfMatched(hotKey, keyType);
+        }
+
+        private static void ProcessMouse(MouseEventArgs mouseEventArgs, KeyType keyType)
+        {
+            foreach (var keybindModel in KeybindModels)
+                keybindModel.InvokeIfMatched(mouseEventArgs.Button, keyType);
         }
 
         public static void AddOrUpdate(KeybindModel keybindModel)
@@ -56,12 +66,6 @@ namespace Artemis.Managers
             var existing = KeybindModels.FirstOrDefault(k => k.Name == name);
             if (existing != null)
                 KeybindModels.Remove(existing);
-        }
-
-        public static void Clear()
-        {
-            // TODO: Re-add future global keybinds here or just exclude them from the clear
-            KeybindModels.Clear();
         }
 
         public static ModifierKeys ModifierKeysFromBooleans(bool alt, bool control, bool shift)

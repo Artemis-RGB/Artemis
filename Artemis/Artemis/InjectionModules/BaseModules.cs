@@ -2,6 +2,7 @@
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Profiles.Lua;
@@ -92,7 +93,7 @@ namespace Artemis.InjectionModules
             Kernel.Bind(x =>
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<ILayerCondition>()
+                    .InheritedFrom<LayerCondition>()
                     .BindAllInterfaces());
             Kernel.Bind(x =>
                 x.FromThisAssembly()

@@ -36,7 +36,7 @@ namespace Artemis.Profiles.Layers.Types.ConicalBrush
 
         public ImageSource DrawThumbnail(LayerModel layer)
         {
-            _conicalGradientDrawerThumbnail.GradientStops = GetGradientStops(layer.Brush).Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
+            _conicalGradientDrawerThumbnail.GradientStops = GetGradientStops(layer.Properties.Brush).Select(x => new Tuple<double, Color>(x.Offset, x.Color)).ToList();
             _conicalGradientDrawerThumbnail.Update();
 
             Rect thumbnailRect = new Rect(0, 0, 18, 18);
