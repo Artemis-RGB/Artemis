@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
@@ -291,7 +292,7 @@ namespace Artemis.Profiles.Layers.Models
         #region Layer type properties
 
         public ILayerType LayerType { get; set; }
-        public ILayerCondition LayerCondition { get; set; }
+        public LayerCondition LayerCondition { get; set; }
         public ILayerAnimation LayerAnimation { get; set; }
 
         #endregion

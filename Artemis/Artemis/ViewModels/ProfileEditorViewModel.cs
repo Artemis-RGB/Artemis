@@ -65,8 +65,8 @@ namespace Artemis.ViewModels
             _loopManager = loopManager;
             _moduleModel = moduleModel;
             _dialogService = dialogService;
-            _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), LayerToClipboard);
-            _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), ClipboardToLayer);
+            _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), KeyType.KeyDown, LayerToClipboard);
+            _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), KeyType.KeyDown, ClipboardToLayer);
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();

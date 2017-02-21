@@ -41,6 +41,7 @@ namespace Artemis.Profiles
 
         private void OnOnProfileUpdatedEvent(object sender, EventArgs e)
         {
+            ClearKeybinds();
             ApplyKeybinds();
         }
 
@@ -195,12 +196,7 @@ namespace Artemis.Profiles
 
         public void Deactivate(LuaManager luaManager)
         {
-            foreach (var layerModel in Layers)
-            {
-                for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
-                    KeybindManager.Remove($"{GameName}-{Name}-{layerModel.Name}-{index}");
-            }
-
+            ClearKeybinds();
             luaManager.ClearLua();
         }
 
@@ -224,7 +220,7 @@ namespace Artemis.Profiles
 
         public void ApplyKeybinds()
         {
-            foreach (var layerModel in Layers)
+            foreach (var layerModel in GetLayers())
             {
                 for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
                 {
@@ -233,10 +229,31 @@ namespace Artemis.Profiles
                         continue;
 
                     // Create an action for the layer, the layer's specific condition type handles activation
-                    var action = new Action(() => layerModel.LayerCondition.KeybindTask(condition));
-                    var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, action);
-                    KeybindManager.AddOrUpdate(kb);
+                    if (condition.Operator == "held")
+                    {
+                        var downAction = new Action(() => layerModel.LayerCondition.KeybindTask(condition));
+                        var downKb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, KeyType.KeyDown, downAction);
+                        var upAction = new Action(() => layerModel.LayerCondition.KeybindTask(condition));
+                        var upKb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, KeyType.KeyUp, upAction);
+                        KeybindManager.AddOrUpdate(downKb);
+                        KeybindManager.AddOrUpdate(upKb);
+                    }
+                    else
+                    {
+                        var action = new Action(() => layerModel.LayerCondition.KeybindTask(condition));
+                        var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, KeyType.KeyDown, action);
+                        KeybindManager.AddOrUpdate(kb);
+                    }
                 }
+            }
+        }
+
+        public void ClearKeybinds()
+        {
+            foreach (var layerModel in GetLayers())
+            {
+                for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
+                    KeybindManager.Remove($"{GameName}-{Name}-{layerModel.Name}-{index}");
             }
         }
 
