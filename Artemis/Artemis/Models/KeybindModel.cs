@@ -34,7 +34,7 @@ namespace Artemis.Models
                 return;
 
             if (hotKey.Equals(HotKey))
-                Action?.Invoke();
+                 Action?.Invoke();
         }
 
         public void InvokeIfMatched(MouseButtons mouseButtons, KeyType keyType)

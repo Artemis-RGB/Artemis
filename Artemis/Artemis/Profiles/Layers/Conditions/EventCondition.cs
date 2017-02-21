@@ -2,23 +2,17 @@
 using System.Linq;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Abstract;
-using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Conditions
 {
     public class EventCondition : LayerCondition
     {
-        [JsonIgnore]
-        public bool HotKeyMet { get; set; }
-
         public override bool ConditionsMet(LayerModel layerModel, ModuleDataModel dataModel)
         {
             lock (layerModel.Properties.Conditions)
             {
-                var checkConditions = layerModel.Properties.Conditions
-                    .Where(c => c.Field != null && !c.Field.Contains("hotkey")).ToList();
+                var checkConditions = layerModel.Properties.Conditions.Where(c => c.Field != null && !c.Field.Contains("hotkey")).ToList();
 
                 if (checkConditions.Count == layerModel.Properties.Conditions.Count)
                     return SimpleConditionsMet(layerModel, dataModel, checkConditions);
@@ -48,24 +42,8 @@ namespace Artemis.Profiles.Layers.Conditions
             }
         }
 
-        public override void KeybindTask(LayerConditionModel condition)
-        {
-            switch (condition.Field)
-            {
-                case "hotkeyEnable":
-                    HotKeyMet = true;
-                    break;
-                case "hotkeyDisable":
-                    HotKeyMet = false;
-                    break;
-                case "hotkeyToggle":
-                    HotKeyMet = !HotKeyMet;
-                    break;
-            }
-        }
 
-        private static bool SimpleConditionsMet(LayerModel layerModel, ModuleDataModel dataModel,
-            IEnumerable<LayerConditionModel> checkConditions)
+        private static bool SimpleConditionsMet(LayerModel layerModel, ModuleDataModel dataModel, IEnumerable<LayerConditionModel> checkConditions)
         {
             switch (layerModel.Properties.ConditionType)
             {

@@ -37,7 +37,7 @@ namespace Artemis.Managers
             var hotKey = new HotKey(KeyInterop.KeyFromVirtualKey(keyEventArgs.KeyValue), modifiers);
 
             foreach (var keybindModel in KeybindModels)
-                keybindModel.InvokeIfMatched(hotKey, keyType);
+                 keybindModel.InvokeIfMatched(hotKey, keyType);
         }
 
         private static void ProcessMouse(MouseEventArgs mouseEventArgs, KeyType keyType)
