@@ -93,7 +93,7 @@ namespace Artemis.InjectionModules
             Kernel.Bind(x =>
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<LayerCondition>()
+                    .InheritedFrom<ILayerCondition>()
                     .BindAllInterfaces());
             Kernel.Bind(x =>
                 x.FromThisAssembly()

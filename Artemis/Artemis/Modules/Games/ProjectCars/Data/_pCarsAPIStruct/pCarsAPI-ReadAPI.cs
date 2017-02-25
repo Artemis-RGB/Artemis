@@ -37,6 +37,10 @@ namespace Artemis.Modules.Games.ProjectCars.Data
                 if (memoryMappedFile == null)
                     InitialiseSharedMemory();
 
+                // If it's still null here the game isn't running
+                if (memoryMappedFile == null)
+                    return new Tuple<bool, pCarsAPIStruct>(true, _pcarsapistruct);
+
                 using (var sharedMemoryStreamView = memoryMappedFile.CreateViewStream())
                 {
                     var sharedMemoryStream = new BinaryReader(sharedMemoryStreamView);

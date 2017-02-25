@@ -9,9 +9,12 @@ namespace Artemis.Modules.Games.ProjectCars.Data
     {
         public pCarsDataClass MapStructToClass(pCarsAPIStruct pcarsDataStruct, pCarsDataClass pCarsData)
         {
-            //pCarsDataClass pCarsData = new pCarsDataClass();
             pCarsData.mVersion = pcarsDataStruct.mVersion;
             pCarsData.mBuildVersion = pcarsDataStruct.mBuildVersion;
+
+            // The game isn't running if these are 0
+            if (pcarsDataStruct.mVersion == 0 && pcarsDataStruct.mBuildVersion == 0)
+                return pCarsData;
 
             // Session type
             pCarsData.mGameState = (eGameState) pcarsDataStruct.mGameState;

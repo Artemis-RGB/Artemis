@@ -292,7 +292,7 @@ namespace Artemis.Profiles.Layers.Models
         #region Layer type properties
 
         public ILayerType LayerType { get; set; }
-        public LayerCondition LayerCondition { get; set; }
+        public ILayerCondition LayerCondition { get; set; }
         public ILayerAnimation LayerAnimation { get; set; }
 
         #endregion

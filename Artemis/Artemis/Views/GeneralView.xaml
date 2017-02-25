@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <TabControl Margin="0,10" x:Name="Items" controls:TabControlHelper.IsUnderlined="True">
+    <TabControl x:Name="Items" TabStripPlacement="Left">
         <TabControl.ItemTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal">
