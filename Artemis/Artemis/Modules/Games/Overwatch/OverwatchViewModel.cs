@@ -15,6 +15,11 @@ namespace Artemis.Modules.Games.Overwatch
 
         public override bool UsesProfileEditor => true;
 
+        public void PlaceDll()
+        {
+            ((OverwatchModel)ModuleModel).PlaceDll();
+        }
+
         public void BrowseDirectory()
         {
             var dialog = new FolderBrowserDialog {SelectedPath = ((OverwatchSettings) Settings).GameDirectory};

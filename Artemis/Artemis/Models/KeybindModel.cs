@@ -23,10 +23,10 @@ namespace Artemis.Models
         }
 
         public string Name { get; set; }
-        public MouseButtons MouseButtons { get; }
         public HotKey HotKey { get; set; }
-        public Action Action { get; set; }
+        public MouseButtons MouseButtons { get; }
         public KeyType KeyType { get; set; }
+        public Action Action { get; set; }
 
         public void InvokeIfMatched(HotKey hotKey, KeyType keyType)
         {
@@ -34,7 +34,7 @@ namespace Artemis.Models
                 return;
 
             if (hotKey.Equals(HotKey))
-                 Action?.Invoke();
+                Action?.Invoke();
         }
 
         public void InvokeIfMatched(MouseButtons mouseButtons, KeyType keyType)

@@ -147,7 +147,11 @@ namespace Artemis.ViewModels
 
         private void ActivateViews()
         {
-            var vms = _kernel.GetAll<BaseViewModel>().ToList();
+            var vms = _kernel.GetAll<BaseViewModel>()
+                .OrderBy(v => v.DisplayName != "Welcome")
+                .ThenBy(v => v.DisplayName)
+                .ToList();
+
             Items.Clear();
             Items.AddRange(vms);
             ActivateItem(vms.FirstOrDefault());

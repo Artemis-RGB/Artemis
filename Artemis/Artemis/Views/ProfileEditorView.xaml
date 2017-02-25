@@ -1,64 +1,41 @@
 ﻿<UserControl x:Class="Artemis.Views.ProfileEditorView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:cal="http://www.caliburnproject.org"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
-             xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
-             xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
-             mc:Ignorable="d"
-             d:DesignHeight="510" Width="1055">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:itemBehaviours="clr-namespace:Artemis.ItemBehaviours"
+    xmlns:dragDrop="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+    xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="400" d:DesignWidth="1060">
     <UserControl.Resources>
         <converters:LayerOrderConverter x:Key="LayerOrderConverter" />
-        <Storyboard x:Key="Pulse" RepeatBehavior="Forever">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="BlurRadius" Storyboard.TargetName="ShadowEffect">
-                <EasingDoubleKeyFrame KeyTime="0:0:0" Value="25" />
-                <EasingDoubleKeyFrame KeyTime="0:0:2" Value="10" />
-                <EasingDoubleKeyFrame KeyTime="0:0:4" Value="25" />
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
     </UserControl.Resources>
-    <UserControl.Triggers>
-        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource Pulse}" />
-        </EventTrigger>
-    </UserControl.Triggers>
-    <Grid Width="Auto" Height="Auto">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="245" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
-            <RowDefinition />
+            <RowDefinition Height="60" />
         </Grid.RowDefinitions>
 
-        <!-- Preview  Background="#FF232323" -->
+        <!-- Preview -->
         <Label Grid.Column="0" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Preview" />
-        <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
-                BorderThickness="3" Width="800" Height="400">
-            <Border>
+        <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="3">
+            <Border Padding="50">
                 <Border.Effect>
-                    <DropShadowEffect x:Name="ShadowEffect" ShadowDepth="0" Color="{DynamicResource HighlightColor}"
-                                      Opacity="1" />
+                    <DropShadowEffect x:Name="ShadowEffect" ShadowDepth="0" Color="{DynamicResource HighlightColor}" Opacity="1" BlurRadius="25" />
                 </Border.Effect>
                 <Grid>
-                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}"
-                           Margin="50" />
-                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}"
-                           Opacity="0.8"
-                           Width="{Binding Path=PreviewSettings.Width}"
-                           Height="{Binding Path=PreviewSettings.Height}"
-                           Margin="{Binding Path=PreviewSettings.Margin}"
-                           Stretch="Fill" Cursor="{Binding Path=KeyboardPreviewCursor}"
-                           cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)];
-                           [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)];
-                           [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]"
-                           IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" />
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" MinHeight="10" MinWidth="10" Stretch="Uniform" />
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8" Stretch="Uniform" Cursor="{Binding Path=KeyboardPreviewCursor}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                        cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]; [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)]; [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
                 </Grid>
             </Border>
         </Border>
@@ -68,11 +45,9 @@
                 <Label Content="Active profile" />
                 <ComboBox Width="220" VerticalAlignment="Top" x:Name="ProfileNames" Margin="5,0,0,0" />
                 <Button x:Name="AddProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                        Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Add profile">
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Add profile">
                     <Button.Content>
-                        <Rectangle
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                            Width="12" Height="12">
+                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
                             </Rectangle.OpacityMask>
@@ -80,39 +55,29 @@
                     </Button.Content>
                 </Button>
                 <Button x:Name="RenameProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                        Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename profile"
-                        IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
+                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Rename profile"
+                    IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
                     <Button.Content>
-                        <Rectangle
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                            Width="12" Height="12">
+                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Visual="{StaticResource appbar_edit}" Stretch="Fill" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button.Content>
                 </Button>
-                <Button x:Name="DuplicateProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                        Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0"
-                        ToolTip="Duplicate profile"
-                        IsEnabled="{Binding Path=ProfileSelected, Mode=OneWay}">
+                <Button x:Name="DuplicateProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}" Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0"
+                    ToolTip="Duplicate profile" IsEnabled="{Binding Path=ProfileSelected, Mode=OneWay}">
                     <Button.Content>
-                        <Rectangle
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                            Width="12" Height="12">
+                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
                             </Rectangle.OpacityMask>
                         </Rectangle>
                     </Button.Content>
                 </Button>
-                <Button x:Name="DeleteProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                        Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete profile"
-                        IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
+                <Button x:Name="DeleteProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}" Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete profile" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}">
                     <Button.Content>
-                        <Rectangle
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                            Width="12" Height="12">
+                        <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                             <Rectangle.OpacityMask>
                                 <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
                             </Rectangle.OpacityMask>
@@ -120,13 +85,12 @@
                     </Button.Content>
                 </Button>
             </StackPanel>
-            <TextBlock VerticalAlignment="Top" Foreground="{DynamicResource HighlightBrush}" HorizontalAlignment="Left"
-                       Margin="5,5,0,0" Text="Note: To edit a default profile, duplicate it first." FontWeight="Bold" />
+            <TextBlock VerticalAlignment="Top" Foreground="{DynamicResource HighlightBrush}" HorizontalAlignment="Left" Margin="5,5,0,0" Text="Note: To edit a default profile, duplicate it first." FontWeight="Bold" />
         </StackPanel>
 
         <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
             <Button x:Name="ImportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Height="26" HorizontalAlignment="Right">
+                Height="26" HorizontalAlignment="Right">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Rectangle
@@ -141,7 +105,7 @@
                 </Button.Content>
             </Button>
             <Button x:Name="ExportProfile" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding ProfileSelected}">
+                Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding ProfileSelected}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Rectangle
@@ -156,8 +120,8 @@
                 </Button.Content>
             </Button>
             <Button x:Name="EditLua" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}" Height="26"
-                    HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                    Visibility="{Binding Path=LuaButtonVisible, Converter={StaticResource BoolToVis} }">
+                HorizontalAlignment="Right" Margin="10,0,0,0" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                Visibility="{Binding Path=LuaButtonVisible, Converter={StaticResource BoolToVis} }">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Rectangle
@@ -174,40 +138,34 @@
         </StackPanel>
 
         <!-- Layer list -->
-        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
-            <Label FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" />
-            <Label HorizontalAlignment="Right" ToolTip="Show all layers instead of just the one you have selected"
-                   Content="Show all" Margin="88,0,0,0" VerticalAlignment="Center" />
-            <ToggleButton x:Name="ShowAll" ToolTip="Show all layers instead of just the one you have selected"
-                          Margin="0 3 0 0" Width="25" Height="25"
-                          IsChecked="{Binding Path=ShowAll, Mode=TwoWay}"
-                          Style="{DynamicResource MetroCircleToggleButtonStyle}" HorizontalAlignment="Right" />
-        </StackPanel>
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" FontSize="20" HorizontalAlignment="Left" Content="Layers" Margin="10,0,0,0" VerticalAlignment="Center" />
+            <Label Grid.Column="1" Content="Show all layers" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <controls:ToggleSwitchButton Grid.Column="2" IsChecked="{Binding Path=ShowAll, Mode=TwoWay}" HorizontalAlignment="Right"
+                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Show all layers instead of just the one you have selected" VerticalAlignment="Center" />
+        </Grid>
 
-        <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}"
-                BorderThickness="3" Margin="10,0,0,0" Height="400" Width="233">
-            <TreeView x:Name="ProfileTree"
-                      dragDrop:DragDrop.IsDragSource="True"
-                      dragDrop:DragDrop.IsDropTarget="True"
-                      dragDrop:DragDrop.DropHandler="{Binding}"
-                      ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}"
-                      IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                      cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]">
+        <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="3" Margin="5,0,-5,0" Width="235">
+            <TreeView x:Name="ProfileTree" dragDrop:DragDrop.IsDragSource="True" dragDrop:DragDrop.IsDropTarget="True" dragDrop:DragDrop.DropHandler="{Binding}"
+                ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]"> 
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior
                         SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>
                 <TreeView.Resources>
-                    <ResourceDictionary
-                        Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+                    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
                 </TreeView.Resources>
                 <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate
-                        ItemsSource="{Binding Children, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}">
                         <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, ElementName=ProfileTree}">
                             <StackPanel.ContextMenu>
-                                <ContextMenu
-                                    cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                <ContextMenu cal:Action.TargetWithoutContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                                     <MenuItem Header="Rename" cal:Message.Attach="RenameLayer($datacontext)" />
                                     <MenuItem Header="Duplicate" cal:Message.Attach="CloneLayer($datacontext)" />
                                     <MenuItem Header="Delete" cal:Message.Attach="RemoveLayer($datacontext)" />
@@ -227,14 +185,12 @@
                 </TreeView.ItemContainerStyle>
             </TreeView>
         </Border>
-        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="10,5,0,0" HorizontalAlignment="Right">
+        <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Horizontal" Margin="0,5,0,0" HorizontalAlignment="Right">
             <Button x:Name="AddLayer" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                    Width="26" Height="26" ToolTip="Add layer" HorizontalAlignment="Left">
+                Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                Width="26" Height="26" ToolTip="Add layer" HorizontalAlignment="Left">
                 <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
+                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_add}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
@@ -242,12 +198,10 @@
                 </Button.Content>
             </Button>
             <Button x:Name="AddFolder" VerticalAlignment="Top"
-                    Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                    Width="26" Height="26" ToolTip="Add folder" HorizontalAlignment="Left" Margin="10,0,0,0">
+                Style="{DynamicResource SquareButtonStyle}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
+                Width="26" Height="26" ToolTip="Add folder" HorizontalAlignment="Left" Margin="10,0,0,0">
                 <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
+                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_folder}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
@@ -255,12 +209,10 @@
                 </Button.Content>
             </Button>
             <Button x:Name="EditLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Edit layer"
-                    IsEnabled="{Binding Path=LayerSelected}">
+                Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Edit layer"
+                IsEnabled="{Binding Path=LayerSelected}">
                 <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
+                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_edit}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
@@ -268,12 +220,10 @@
                 </Button.Content>
             </Button>
             <Button x:Name="CloneLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate layer"
-                    IsEnabled="{Binding Path=LayerSelected}">
+                Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Duplicate layer"
+                IsEnabled="{Binding Path=LayerSelected}">
                 <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
+                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_clipboard_paste}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
@@ -281,12 +231,10 @@
                 </Button.Content>
             </Button>
             <Button x:Name="RemoveLayer" VerticalAlignment="Top" Style="{DynamicResource SquareButtonStyle}"
-                    Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete layer"
-                    IsEnabled="{Binding Path=LayerSelected}">
+                Width="26" Height="26" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete layer"
+                IsEnabled="{Binding Path=LayerSelected}">
                 <Button.Content>
-                    <Rectangle
-                        Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"
-                        Width="12" Height="12">
+                    <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                         <Rectangle.OpacityMask>
                             <VisualBrush Visual="{StaticResource appbar_delete}" Stretch="Fill" />
                         </Rectangle.OpacityMask>
