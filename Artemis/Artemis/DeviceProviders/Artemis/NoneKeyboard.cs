@@ -14,7 +14,7 @@ namespace Artemis.DeviceProviders.Artemis
             CantEnableText = "Waaaaah, this should not be happening!";
             Height = 1;
             Width = 1;
-            PreviewSettings = new PreviewSettings(984, 375, new Thickness(0, 0, 0, 0), Resources.none);
+            PreviewSettings = new PreviewSettings(new Thickness(0, 0, 0, 0), Resources.none);
         }
 
         public override void Disable()

@@ -45,5 +45,18 @@ namespace Artemis.Utilities.Keyboard
         public static event KeyCallbackHandler KeyUpCallback;
         public static event MouseCallbackHandler MouseDownCallback;
         public static event MouseCallbackHandler MouseUpCallback;
+
+        public static void Dispose()
+        {
+            if (_globalHook == null)
+                return;
+
+            _globalHook.KeyDown -= GlobalHookOnKeyDown;
+            _globalHook.KeyUp -= GlobalHookOnKeyUp;
+            _globalHook.MouseDown -= GlobalHookOnMouseDown;
+            _globalHook.MouseUp -= GlobalHookOnMouseUp;
+            _globalHook.Dispose();
+            _globalHook = null;
+        }
     }
 }
