@@ -28,7 +28,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             Height = 6;
             Width = 22;
 
-            PreviewSettings = new PreviewSettings(670, 189, new Thickness(-2, -5, 0, 0), Resources.masterkeys_pro_l);
+            PreviewSettings = new PreviewSettings(new Thickness(-2, -5, 0, 0), Resources.masterkeys_pro_l);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 

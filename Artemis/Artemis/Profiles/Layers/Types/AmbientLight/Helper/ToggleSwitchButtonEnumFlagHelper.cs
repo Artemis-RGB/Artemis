@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using Artemis.Profiles.Layers.Types.AmbientLight.Model.Extensions;
+using MahApps.Metro.Controls;
 
 namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
 {
-    public class CheckboxEnumFlagHelper
+    public class ToggleSwitchButtonEnumFlagHelper
     {
         #region DependencyProperties
 
         // ReSharper disable InconsistentNaming
 
         public static readonly DependencyProperty FlagsProperty = DependencyProperty.RegisterAttached(
-            "Flags", typeof(Enum), typeof(CheckboxEnumFlagHelper),
+            "Flags", typeof(Enum), typeof(ToggleSwitchButtonEnumFlagHelper),
             new FrameworkPropertyMetadata(default(Enum), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 FlagsChanged));
 
@@ -27,7 +27,7 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
         }
 
         public static readonly DependencyProperty ValueProperty = DependencyProperty.RegisterAttached(
-            "Value", typeof(Enum), typeof(CheckboxEnumFlagHelper), new PropertyMetadata(default(Enum), ValueChanged));
+            "Value", typeof(Enum), typeof(ToggleSwitchButtonEnumFlagHelper), new PropertyMetadata(default(Enum), ValueChanged));
 
         public static void SetValue(DependencyObject element, Enum value)
         {
@@ -48,48 +48,52 @@ namespace Artemis.Profiles.Layers.Types.AmbientLight.Helper
         private static void FlagsChanged(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            UpdateTarget(dependencyObject as CheckBox, dependencyPropertyChangedEventArgs.NewValue as Enum);
+            UpdateTarget(dependencyObject as ToggleSwitchButton, dependencyPropertyChangedEventArgs.NewValue as Enum);
         }
 
         private static void ValueChanged(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            var checkbox = dependencyObject as CheckBox;
-            if (checkbox == null) return;
+            var toggleSwitchButton = dependencyObject as ToggleSwitchButton;
+            if (toggleSwitchButton == null)
+                return;
 
-            checkbox.Checked -= UpdateSource;
-            checkbox.Unchecked -= UpdateSource;
+            toggleSwitchButton.Checked -= UpdateSource;
+            toggleSwitchButton.Unchecked -= UpdateSource;
 
             if (dependencyPropertyChangedEventArgs.NewValue != null)
             {
-                checkbox.Checked += UpdateSource;
-                checkbox.Unchecked += UpdateSource;
+                toggleSwitchButton.Checked += UpdateSource;
+                toggleSwitchButton.Unchecked += UpdateSource;
             }
 
-            UpdateTarget(checkbox, GetFlags(checkbox));
+            UpdateTarget(toggleSwitchButton, GetFlags(toggleSwitchButton));
         }
 
-        private static void UpdateTarget(CheckBox checkbox, Enum flags)
+        private static void UpdateTarget(ToggleSwitchButton toggleSwitchButton, Enum flags)
         {
-            if (checkbox == null) return;
+            if (toggleSwitchButton == null)
+                return;
 
-            var value = GetValue(checkbox);
-            checkbox.IsChecked = value != null && (flags?.HasFlag(value) ?? false);
+            var value = GetValue(toggleSwitchButton);
+            toggleSwitchButton.IsChecked = value != null && (flags?.HasFlag(value) ?? false);
         }
 
         private static void UpdateSource(object sender, RoutedEventArgs routedEventArgs)
         {
-            var checkbox = sender as CheckBox;
-            if (checkbox == null) return;
+            var toggleSwitchButton = sender as ToggleSwitchButton;
+            if (toggleSwitchButton == null)
+                return;
 
-            var flags = GetFlags(checkbox);
-            var value = GetValue(checkbox);
-            if (value == null) return;
+            var flags = GetFlags(toggleSwitchButton);
+            var value = GetValue(toggleSwitchButton);
+            if (value == null)
+                return;
 
-            if (checkbox.IsChecked ?? false)
-                SetFlags(checkbox, flags == null ? value : flags.SetFlag(value, true, flags.GetType()));
+            if (toggleSwitchButton.IsChecked ?? false)
+                SetFlags(toggleSwitchButton, flags == null ? value : flags.SetFlag(value, true, flags.GetType()));
             else
-                SetFlags(checkbox, flags?.SetFlag(value, false, flags.GetType()));
+                SetFlags(toggleSwitchButton, flags?.SetFlag(value, false, flags.GetType()));
         }
 
         #endregion

@@ -128,7 +128,8 @@ namespace Artemis.ViewModels
             get { return _profileNames; }
             set
             {
-                if (Equals(value, _profileNames)) return;
+                if (Equals(value, _profileNames))
+                    return;
                 _profileNames = value;
                 NotifyOfPropertyChange(() => ProfileNames);
             }
@@ -139,7 +140,8 @@ namespace Artemis.ViewModels
             get { return _layers; }
             set
             {
-                if (Equals(value, _layers)) return;
+                if (Equals(value, _layers))
+                    return;
                 _layers = value;
                 NotifyOfPropertyChange(() => Layers);
             }
@@ -151,7 +153,8 @@ namespace Artemis.ViewModels
             get { return _keyboardPreview; }
             set
             {
-                if (Equals(value, _keyboardPreview)) return;
+                if (Equals(value, _keyboardPreview))
+                    return;
                 _keyboardPreview = value;
                 NotifyOfPropertyChange(() => KeyboardPreview);
             }
@@ -162,7 +165,8 @@ namespace Artemis.ViewModels
             get { return _showAll; }
             set
             {
-                if (value == _showAll) return;
+                if (value == _showAll)
+                    return;
                 _showAll = value;
                 NotifyOfPropertyChange();
             }
@@ -626,13 +630,8 @@ namespace Artemis.ViewModels
             if (_draggingLayer != null)
                 return;
 
-            var keyboard = _deviceManager.ActiveKeyboard;
             var pos = e.GetPosition((Image) e.OriginalSource);
-            var x = pos.X / ((double) keyboard.PreviewSettings.Width / keyboard.Width);
-            var y = pos.Y / ((double) keyboard.PreviewSettings.Height / keyboard.Height);
-
-            var hoverLayer = GetLayers().Where(l => l.MustDraw())
-                .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
+            var hoverLayer = GetLayers().Where(l => l.MustDraw()).FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(pos.X, pos.Y));
 
             if (hoverLayer != null)
                 SelectedLayer = hoverLayer;
@@ -648,13 +647,9 @@ namespace Artemis.ViewModels
                 return;
 
             var pos = e.GetPosition((Image) e.OriginalSource);
-            var keyboard = _deviceManager.ActiveKeyboard;
-            var x = pos.X / ((double) keyboard.PreviewSettings.Width / keyboard.Width);
-            var y = pos.Y / ((double) keyboard.PreviewSettings.Height / keyboard.Height);
-            var hoverLayer = GetLayers().Where(l => l.MustDraw())
-                .FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
+            var hoverLayer = GetLayers().Where(l => l.MustDraw()).FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(pos.X, pos.Y));
 
-            HandleDragging(e, x, y, hoverLayer);
+            HandleDragging(e, pos.X, pos.Y, hoverLayer);
 
             if (hoverLayer == null)
             {
@@ -666,10 +661,9 @@ namespace Artemis.ViewModels
             if (hoverLayer == SelectedLayer)
             {
                 var rect = hoverLayer.Properties.PropertiesRect(1);
-                KeyboardPreviewCursor =
-                    Math.Sqrt(Math.Pow(x - rect.BottomRight.X, 2) + Math.Pow(y - rect.BottomRight.Y, 2)) < 0.6
-                        ? Cursors.SizeNWSE
-                        : Cursors.SizeAll;
+                KeyboardPreviewCursor = Math.Sqrt(Math.Pow(pos.X - rect.BottomRight.X, 2) + Math.Pow(pos.Y - rect.BottomRight.Y, 2)) < 0.6
+                    ? Cursors.SizeNWSE
+                    : Cursors.SizeAll;
             }
             else
             {
@@ -682,7 +676,8 @@ namespace Artemis.ViewModels
             get { return _keyboardPreviewCursor; }
             set
             {
-                if (Equals(value, _keyboardPreviewCursor)) return;
+                if (Equals(value, _keyboardPreviewCursor))
+                    return;
                 _keyboardPreviewCursor = value;
                 NotifyOfPropertyChange(() => KeyboardPreviewCursor);
             }

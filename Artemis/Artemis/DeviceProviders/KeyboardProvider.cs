@@ -115,15 +115,11 @@ namespace Artemis.DeviceProviders
 
     public struct PreviewSettings
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
         public Thickness Margin { get; set; }
         public Bitmap Image { get; set; }
 
-        public PreviewSettings(int width, int height, Thickness margin, Bitmap image)
+        public PreviewSettings(Thickness margin, Bitmap image)
         {
-            Width = width;
-            Height = height;
             Margin = margin;
             Image = image;
         }

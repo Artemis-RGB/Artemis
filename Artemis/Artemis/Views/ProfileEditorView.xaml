@@ -34,8 +34,10 @@
                 </Border.Effect>
                 <Grid>
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" MinHeight="10" MinWidth="10" Stretch="Uniform" />
-                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8" Stretch="Uniform" Cursor="{Binding Path=KeyboardPreviewCursor}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                        cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]; [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)]; [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
+                    <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8" Stretch="Uniform" Cursor="{Binding Path=KeyboardPreviewCursor}"
+                        IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" Margin="{Binding Path=PreviewSettings.Margin}"
+                        cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]; [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)]; 
+                           [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
                 </Grid>
             </Border>
         </Border>
@@ -153,7 +155,7 @@
         <Border Grid.Column="1" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="3" Margin="5,0,-5,0" Width="235">
             <TreeView x:Name="ProfileTree" dragDrop:DragDrop.IsDragSource="True" dragDrop:DragDrop.IsDropTarget="True" dragDrop:DragDrop.DropHandler="{Binding}"
                 ItemsSource="{Binding Path=Layers, Converter={StaticResource LayerOrderConverter}, ConverterParameter=Order}" IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}"
-                cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]"> 
+                cal:Message.Attach="[Event MouseDoubleClick] = [Action EditLayerFromDoubleClick]">
                 <i:Interaction.Behaviors>
                     <itemBehaviours:BindableSelectedItemBehavior
                         SelectedItem="{Binding SelectedLayer, Mode=TwoWay}" />
