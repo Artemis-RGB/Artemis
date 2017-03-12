@@ -55,7 +55,7 @@ namespace Artemis.DeviceProviders.Corsair
                     Height = 7;
                     Width = 25;
                     Slug = "corsair-k95-rgb";
-                    PreviewSettings = new PreviewSettings(new Thickness(0, -15, 0, 0), Resources.k95);
+                    PreviewSettings = new PreviewSettings(new Thickness(12, -12, 12, 5), Resources.k95);
                     break;
                 case "K70 RGB":
                 case "K70 RGB RAPIDFIRE":
@@ -63,7 +63,7 @@ namespace Artemis.DeviceProviders.Corsair
                     Height = 7;
                     Width = 21;
                     Slug = "corsair-k70-rgb";
-                    PreviewSettings = new PreviewSettings(new Thickness(0, -25, 0, 0), Resources.k70);
+                    PreviewSettings = new PreviewSettings(new Thickness(12, -12, 12, 5), Resources.k70);
                     break;
                 case "K65 RGB":
                 case "CGK65 RGB":
@@ -72,13 +72,13 @@ namespace Artemis.DeviceProviders.Corsair
                     Height = 7;
                     Width = 18;
                     Slug = "corsair-k65-rgb";
-                    PreviewSettings = new PreviewSettings(new Thickness(0, -30, 0, 0), Resources.k65);
+                    PreviewSettings = new PreviewSettings(new Thickness(12, -12, 12, 5), Resources.k65);
                     break;
                 case "STRAFE RGB":
                     Height = 7;
                     Width = 22;
                     Slug = "corsair-strafe-rgb";
-                    PreviewSettings = new PreviewSettings(new Thickness(0, -5, 0, 0), Resources.strafe);
+                    PreviewSettings = new PreviewSettings(new Thickness(12, -12, 12, 5), Resources.strafe);
                     break;
             }
 
