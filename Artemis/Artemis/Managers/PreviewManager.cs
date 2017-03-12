@@ -47,10 +47,9 @@ namespace Artemis.Managers
             if (string.IsNullOrEmpty(_generalSettings.LastKeyboard) || _deviceManager.ChangingKeyboard)
                 return;
 
-            // If Artemis doesn't have focus, don't preview
-            var activePreview = PreviewViewModules.FirstOrDefault(
-                vm => vm.IsActive && vm.UsesProfileEditor && vm.ModuleModel.Settings.IsEnabled);
-            if (activePreview != null && ActiveWindowHelper.MainWindowActive)
+            // If Artemis doesn't have focus, don't preview unless overwritten by KeepActive
+            var activePreview = PreviewViewModules.FirstOrDefault(vm => (vm.IsActive || vm.ProfileEditor.KeepActive) && vm.UsesProfileEditor && vm.ModuleModel.Settings.IsEnabled);
+            if (activePreview != null && (activePreview.ProfileEditor.KeepActive || ActiveWindowHelper.MainWindowActive))
                 EnsurePreviewActive(activePreview);
             else
                 EnsurePreviewInactive();

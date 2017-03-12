@@ -35,7 +35,7 @@ namespace Artemis
 
             Initialize();
             BindSpecialValues();
-            KeyboardHook.SetupKeyboardHook();
+            KeyboardHook.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
@@ -43,7 +43,7 @@ namespace Artemis
         private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
             // Get rid of the keyboard hook in case of a crash, otherwise input freezes up system wide until Artemis is gone
-            KeyboardHook.Dispose();
+            KeyboardHook.Stop();
         }
 
         private void BindSpecialValues()

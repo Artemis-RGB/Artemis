@@ -28,7 +28,7 @@ namespace Artemis
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Get rid of the keyboard hook in case of a crash, otherwise input freezes up system wide until Artemis is gone
-            KeyboardHook.Dispose();
+            KeyboardHook.Stop();
 
             if (DoHandle)
             {

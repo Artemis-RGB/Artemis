@@ -35,8 +35,9 @@
                 <Grid>
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardImage}" MinHeight="10" MinWidth="10" Stretch="Uniform" />
                     <Image Grid.Column="0" Grid.Row="0" Source="{Binding Path=KeyboardPreview}" Opacity="0.8" Stretch="Uniform" Cursor="{Binding Path=KeyboardPreviewCursor}"
-                        IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" Margin="{Binding Path=PreviewSettings.Margin}"
-                        cal:Message.Attach="[Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]; [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)]; 
+                        IsEnabled="{Binding Path=EditorEnabled, Mode=OneWay}" Margin="{Binding Path=PreviewSettings.Margin}" cal:Message.Attach="
+                           [Event MouseMove] = [Action MouseMoveKeyboardPreview($eventArgs)]; 
+                           [Event MouseDown] = [Action MouseDownKeyboardPreview($eventArgs)]; 
                            [Event MouseUp] = [Action MouseUpKeyboardPreview($eventArgs)]" />
                 </Grid>
             </Border>

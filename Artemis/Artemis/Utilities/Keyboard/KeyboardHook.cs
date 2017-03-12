@@ -12,13 +12,26 @@ namespace Artemis.Utilities.Keyboard
 
         private static IKeyboardMouseEvents _globalHook;
 
-        public static void SetupKeyboardHook()
+        public static void Start()
         {
             _globalHook = Hook.GlobalEvents();
             _globalHook.KeyDown += GlobalHookOnKeyDown;
             _globalHook.KeyUp += GlobalHookOnKeyUp;
             _globalHook.MouseDown += GlobalHookOnMouseDown;
             _globalHook.MouseUp += GlobalHookOnMouseUp;
+        }
+
+        public static void Stop()
+        {
+            if (_globalHook == null)
+                return;
+
+            _globalHook.KeyDown -= GlobalHookOnKeyDown;
+            _globalHook.KeyUp -= GlobalHookOnKeyUp;
+            _globalHook.MouseDown -= GlobalHookOnMouseDown;
+            _globalHook.MouseUp -= GlobalHookOnMouseUp;
+            _globalHook.Dispose();
+            _globalHook = null;
         }
 
         private static async void GlobalHookOnMouseDown(object sender, MouseEventArgs e)
@@ -45,18 +58,5 @@ namespace Artemis.Utilities.Keyboard
         public static event KeyCallbackHandler KeyUpCallback;
         public static event MouseCallbackHandler MouseDownCallback;
         public static event MouseCallbackHandler MouseUpCallback;
-
-        public static void Dispose()
-        {
-            if (_globalHook == null)
-                return;
-
-            _globalHook.KeyDown -= GlobalHookOnKeyDown;
-            _globalHook.KeyUp -= GlobalHookOnKeyUp;
-            _globalHook.MouseDown -= GlobalHookOnMouseDown;
-            _globalHook.MouseUp -= GlobalHookOnMouseUp;
-            _globalHook.Dispose();
-            _globalHook = null;
-        }
     }
 }
