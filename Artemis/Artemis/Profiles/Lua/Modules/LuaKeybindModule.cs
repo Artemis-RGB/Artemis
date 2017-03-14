@@ -33,13 +33,13 @@ namespace Artemis.Profiles.Lua.Modules
         /// </summary>
         /// <param name="name">Name of the keybind</param>
         /// <param name="hotKey">Hotkey in string format, per example: ALT+CTRL+SHIFT+D</param>
-        /// <param name="keyType">The key type, either key up or key down</param>
+        /// <param name="pressType">The key type, either key up or key down</param>
         /// <param name="function">LUA function to call</param>
         /// <param name="args">Optional arguments for the passed function</param>
-        public void SetKeybind(string name, string hotKey, KeyType keyType, DynValue function, params DynValue[] args)
+        public void SetKeybind(string name, string hotKey, PressType pressType, DynValue function, params DynValue[] args)
         {
-            if (keyType != KeyType.KeyDown && keyType != KeyType.KeyUp)
-                throw new ScriptRuntimeException("Key type must either be KeyDown or KeyUp.");
+            if (pressType != PressType.Down && pressType != PressType.Up)
+                throw new ScriptRuntimeException("Key type must either be Down or Up.");
 
             var modifierKeys = ModifierKeys.None;
             var key = Key.System;
@@ -59,8 +59,8 @@ namespace Artemis.Profiles.Lua.Modules
 
             var hk = new HotKey(key, modifierKeys);
             var model = args != null
-                ? new KeybindModel("LUA-" + name, hk, keyType, () => LuaManager.Call(function, args))
-                : new KeybindModel("LUA-" + name, hk, keyType, () => LuaManager.Call(function));
+                ? new KeybindModel("LUA-" + name, hk, pressType, () => LuaManager.Call(function, args))
+                : new KeybindModel("LUA-" + name, hk, pressType, () => LuaManager.Call(function));
 
             KeybindManager.AddOrUpdate(model);
 

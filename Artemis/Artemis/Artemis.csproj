@@ -491,6 +491,7 @@
     <Compile Include="Profiles\Layers\Animations\NoneAnimation.cs" />
     <Compile Include="Profiles\Layers\Models\EventPropertiesModel.cs" />
     <Compile Include="Profiles\Layers\Models\KeyboardEventPropertiesModel.cs" />
+    <Compile Include="Profiles\Layers\Models\LayerKeybindModel.cs" />
     <Compile Include="Profiles\Layers\Models\TweenModel.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorExtend.cs" />
     <Compile Include="Profiles\Layers\Types\AmbientLight\AmbienceCreator\AmbienceCreatorMirror.cs" />
@@ -685,6 +686,7 @@
     <Compile Include="Modules\Games\Dota2\Dota2ViewModel.cs" />
     <Compile Include="Modules\Games\RocketLeague\RocketLeagueViewModel.cs" />
     <Compile Include="Modules\Games\Witcher3\Witcher3ViewModel.cs" />
+    <Compile Include="ViewModels\Profiles\LayerKeybindViewModel.cs" />
     <Compile Include="ViewModels\Profiles\LayerTweenViewModel.cs" />
     <Compile Include="ViewModels\Profiles\Events\EventPropertiesViewModel.cs" />
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesViewModel.cs" />
@@ -734,6 +736,9 @@
     </Compile>
     <Compile Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesView.xaml.cs">
       <DependentUpon>KeyboardPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Profiles\LayerKeybindView.xaml.cs">
+      <DependentUpon>LayerKeybindView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Profiles\LayerConditionView.xaml.cs">
       <DependentUpon>LayerConditionView.xaml</DependentUpon>
@@ -983,6 +988,10 @@
     <Page Include="Profiles\Layers\Types\Keyboard\KeyboardPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Profiles\LayerKeybindView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Profiles\LayerConditionView.xaml">
       <SubType>Designer</SubType>

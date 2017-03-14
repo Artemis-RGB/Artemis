@@ -46,7 +46,7 @@
 
         <!-- Colors -->
         <Label Grid.Row="1" Grid.Column="2" Content="Color(s):" VerticalAlignment="Center" Margin="5,0" />
-        <Border Grid.Row="1" Grid.Column="3" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit" Height="26">
+        <Border Grid.Row="1" Grid.Column="3" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" SnapsToDevicePixels="True" ToolTip="Click to edit" Height="26" Margin="0,5">
             <ncore:ColorBox Brush="{Binding Path=Brush, Mode=TwoWay}" ShowNone="False" VerticalAlignment="Stretch" />
         </Border>
 

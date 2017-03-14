@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
+using Artemis.Utilities;
 using MahApps.Metro.Controls.Dialogs;
 using Size = System.Windows.Size;
 
@@ -31,9 +33,9 @@ namespace Artemis.DeviceProviders
         ///     Returns a bitmap matching the keyboard's dimensions using the provided scale
         /// </summary>
         /// <returns></returns>
-        public Bitmap KeyboardBitmap(int scale = 4) => new Bitmap(Width*scale, Height*scale);
+        public Bitmap KeyboardBitmap(int scale = 4) => new Bitmap(Width * scale, Height * scale);
 
-        public Rect KeyboardRectangle(int scale = 4) => new Rect(new Size(Width*scale, Height*scale));
+        public Rect KeyboardRectangle(int scale = 4) => new Rect(new Size(Width * scale, Height * scale));
 
         /// <summary>
         ///     Runs CanEnable asynchronously multiple times until successful, cancelled or max tries reached
@@ -56,7 +58,7 @@ namespace Artemis.DeviceProviders
                             return false;
                         }
                         // Updated progress to indicate how much tries are left
-                        dialog.SetProgress(0.1*tries);
+                        dialog.SetProgress(0.1 * tries);
                     }
 
                     if (CanEnable())
@@ -115,13 +117,16 @@ namespace Artemis.DeviceProviders
 
     public struct PreviewSettings
     {
-        public Thickness Margin { get; set; }
-        public Bitmap Image { get; set; }
+        public Rect OverlayRectangle { get; set; }
+        public Rect BackgroundRectangle { get; set; }
+        public BitmapImage Image { get; set; }
 
-        public PreviewSettings(Thickness margin, Bitmap image)
+        public PreviewSettings(Rect overlayRectangle, Bitmap bitmap)
         {
-            Margin = margin;
-            Image = image;
+            OverlayRectangle = overlayRectangle;
+            BackgroundRectangle = new Rect(0, 0, bitmap.Width, bitmap.Height);
+            Image = ImageUtilities.BitmapToBitmapImage(bitmap);
+            Image.Freeze();
         }
     }
 }

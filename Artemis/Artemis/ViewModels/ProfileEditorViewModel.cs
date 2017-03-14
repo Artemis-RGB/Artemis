@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,8 +66,8 @@ namespace Artemis.ViewModels
             _loopManager = loopManager;
             _moduleModel = moduleModel;
             _dialogService = dialogService;
-            _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), KeyType.KeyDown, LayerToClipboard);
-            _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), KeyType.KeyDown, ClipboardToLayer);
+            _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), PressType.Down, LayerToClipboard);
+            _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), PressType.Up, ClipboardToLayer);
 
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
@@ -197,10 +198,8 @@ namespace Artemis.ViewModels
                 NotifyOfPropertyChange(() => LayerSelected);
             }
         }
-
-        public ImageSource KeyboardImage => ImageUtilities.BitmapToBitmapImage(_deviceManager.ActiveKeyboard?.PreviewSettings.Image ?? Resources.none);
+        
         public ProfileModel SelectedProfile => _moduleModel?.ProfileModel;
-        public PreviewSettings? PreviewSettings => _deviceManager.ActiveKeyboard?.PreviewSettings;
         public bool ProfileSelected => SelectedProfile != null;
         public bool LayerSelected => SelectedProfile != null && SelectedLayer != null;
         public bool EditorEnabled => SelectedProfile != null && !SelectedProfile.IsDefault && _deviceManager.ActiveKeyboard != null;
@@ -507,8 +506,7 @@ namespace Artemis.ViewModels
         private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
         {
             // Besides the usual checks, also check if the ActiveKeyboard isn't the NoneKeyboard
-            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null ||
-                _deviceManager.ActiveKeyboard.Slug == "none")
+            if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || _deviceManager.ActiveKeyboard.Slug == "none")
             {
                 KeyboardPreview = null;
 
@@ -519,6 +517,28 @@ namespace Artemis.ViewModels
                 return;
             }
 
+            var renderedLayers = RenderLayers();
+            var visual = new DrawingVisual();
+            var previewSettings = _deviceManager.ActiveKeyboard.PreviewSettings;
+            using (var drawingContext = visual.RenderOpen())
+            {
+                var baseRect = new Rect(0, 0, previewSettings.BackgroundRectangle.Width, previewSettings.BackgroundRectangle.Height);
+                drawingContext.PushClip(new RectangleGeometry(baseRect));
+                // Draw the keyboard image
+                drawingContext.DrawImage(previewSettings.Image, baseRect);
+                // Draw the layers semi-transparent
+                drawingContext.PushOpacity(0.8);
+                drawingContext.DrawImage(renderedLayers, previewSettings.OverlayRectangle);
+                drawingContext.Pop();
+                drawingContext.Pop();
+            }
+            var drawnPreview = new DrawingImage(visual.Drawing);
+            drawnPreview.Freeze();
+            KeyboardPreview = drawnPreview;
+        }
+
+        private DrawingImage RenderLayers()
+        {
             var renderLayers = GetRenderLayers();
             // Draw the current frame to the preview
             var keyboardRect = _deviceManager.ActiveKeyboard.KeyboardRectangle();
@@ -544,7 +564,7 @@ namespace Artemis.ViewModels
                     var preview = new DrawingImage();
                     preview.Freeze();
                     KeyboardPreview = preview;
-                    return;
+                    return new DrawingImage();
                 }
 
                 var pen = new Pen(new SolidColorBrush((Color) accentColor), 0.4);
@@ -578,11 +598,12 @@ namespace Artemis.ViewModels
             }
             var drawnPreview = new DrawingImage(visual.Drawing);
             drawnPreview.Freeze();
-            KeyboardPreview = drawnPreview;
 
             // Setup layers for the next frame
             if (_moduleModel.IsInitialized && ActiveWindowHelper.MainWindowActive)
                 _moduleModel.PreviewLayers = renderLayers;
+
+            return drawnPreview;
         }
 
         public List<LayerModel> GetRenderLayers()
@@ -681,13 +702,21 @@ namespace Artemis.ViewModels
 
         private Point GetScaledPosition(MouseEventArgs e)
         {
+            var previewSettings = _deviceManager.ActiveKeyboard.PreviewSettings;
+
             var sourceImage = (Image) e.OriginalSource;
             var pos = e.GetPosition(sourceImage);
+            var widthScale = sourceImage.ActualWidth / _deviceManager.ActiveKeyboard.PreviewSettings.BackgroundRectangle.Width;
+            var heightScale = sourceImage.ActualHeight / _deviceManager.ActiveKeyboard.PreviewSettings.BackgroundRectangle.Height;
+
+            // Remove the preview settings' offset from the cursor postion
+            pos.X = pos.X - (previewSettings.OverlayRectangle.X * widthScale);
+            pos.Y = pos.Y - (previewSettings.OverlayRectangle.Y * heightScale);
 
             // Scale the X and Y position down to match the keyboard's physical size and thus the layer positions
-            pos.X = pos.X * (SelectedProfile.Width / sourceImage.ActualWidth);
-            pos.Y = pos.Y * (SelectedProfile.Height / sourceImage.ActualHeight);
-
+            pos.X = pos.X * (SelectedProfile.Width / (previewSettings.OverlayRectangle.Width*widthScale));
+            pos.Y = pos.Y * (SelectedProfile.Height / (previewSettings.OverlayRectangle.Height * heightScale));
+            
             return pos;
         }
 
@@ -866,12 +895,10 @@ namespace Artemis.ViewModels
         }
 
         /// <summary>
-        ///     Handles chaning the active keyboard, updating the preview image and profiles collection
+        ///     Handles chaning the active keyboard, updating the profiles collection
         /// </summary>
         private void DeviceManagerOnOnKeyboardChanged(object sender, KeyboardChangedEventArgs e)
         {
-            NotifyOfPropertyChange(() => PreviewSettings);
-            NotifyOfPropertyChange(() => KeyboardImage);
             LoadProfiles();
         }
 

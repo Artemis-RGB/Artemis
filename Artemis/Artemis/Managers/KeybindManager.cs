@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -16,13 +17,13 @@ namespace Artemis.Managers
 
         static KeybindManager()
         {
-            KeyboardHook.KeyDownCallback += args => ProcessKey(args, KeyType.KeyDown);
-            KeyboardHook.KeyUpCallback += args => ProcessKey(args, KeyType.KeyUp);
-            KeyboardHook.MouseDownCallback += args => ProcessMouse(args, KeyType.MouseDown);
-            KeyboardHook.MouseUpCallback += args => ProcessMouse(args, KeyType.MouseUp);
+            KeyboardHook.KeyDownCallback += args => ProcessKey(args, PressType.Down);
+            KeyboardHook.KeyUpCallback += args => ProcessKey(args, PressType.Up);
+            KeyboardHook.MouseDownCallback += args => ProcessMouse(args, PressType.Down);
+            KeyboardHook.MouseUpCallback += args => ProcessMouse(args, PressType.Up);
         }
         
-        private static void ProcessKey(KeyEventArgs keyEventArgs, KeyType keyType)
+        private static void ProcessKey(KeyEventArgs keyEventArgs, PressType pressType)
         {
             // Don't trigger if the key itself is a modifier
             if (keyEventArgs.KeyCode == Keys.LShiftKey || keyEventArgs.KeyCode == Keys.RShiftKey ||
@@ -37,17 +38,20 @@ namespace Artemis.Managers
             var hotKey = new HotKey(KeyInterop.KeyFromVirtualKey(keyEventArgs.KeyValue), modifiers);
 
             foreach (var keybindModel in KeybindModels)
-                 keybindModel.InvokeIfMatched(hotKey, keyType);
+                 keybindModel.InvokeIfMatched(hotKey, pressType);
         }
 
-        private static void ProcessMouse(MouseEventArgs mouseEventArgs, KeyType keyType)
+        private static void ProcessMouse(MouseEventArgs mouseEventArgs, PressType pressType)
         {
             foreach (var keybindModel in KeybindModels)
-                keybindModel.InvokeIfMatched(mouseEventArgs.Button, keyType);
+                keybindModel.InvokeIfMatched(mouseEventArgs.Button, pressType);
         }
 
         public static void AddOrUpdate(KeybindModel keybindModel)
         {
+            if (keybindModel == null)
+                return;
+
             var existing = KeybindModels.FirstOrDefault(k => k.Name == keybindModel.Name);
             if (existing != null)
                 KeybindModels.Remove(existing);
