@@ -299,7 +299,7 @@ namespace Artemis.ViewModels.Profiles
         /// </summary>
         public void Delete()
         {
-            _editorViewModel.DeleteCondition(this, ConditionModel);
+            _editorViewModel.LayerConditionVms.Remove(this);
         }
 
         public struct NamedOperator

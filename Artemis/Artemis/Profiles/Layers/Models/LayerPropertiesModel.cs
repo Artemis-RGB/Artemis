@@ -25,6 +25,7 @@ namespace Artemis.Profiles.Layers.Models
             Opacity = source.Opacity;
             AnimationSpeed = source.AnimationSpeed;
             Conditions = source.Conditions;
+            LayerKeybindModels = source.LayerKeybindModels;
             ConditionType = source.ConditionType;
             DynamicProperties = source.DynamicProperties;
             Brush = source.Brush;
@@ -51,6 +52,7 @@ namespace Artemis.Profiles.Layers.Models
         public string OpacityEase { get; set; }
         public ConditionType ConditionType { get; set; }
         public List<LayerConditionModel> Conditions { get; set; } = new List<LayerConditionModel>();
+        public List<LayerKeybindModel> LayerKeybindModels { get; set; } = new List<LayerKeybindModel>();
         public List<DynamicPropertiesModel> DynamicProperties { get; set; } = new List<DynamicPropertiesModel>();
 
         [JsonConverter(typeof(BrushJsonConverter))]

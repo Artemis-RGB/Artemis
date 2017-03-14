@@ -10,7 +10,7 @@
     xmlns:tb="http://www.hardcodet.net/taskbar"
     dialogs:DialogParticipation.Register="{Binding RelativeSource={RelativeSource Self}, Path=DataContext}"
     mc:Ignorable="d" d:DataContext="{d:DesignInstance viewModels:ShellViewModel}"
-    Title="Artemis" Height="800" Width="1210" ResizeMode="NoResize" GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
+    Title="Artemis" Height="800" Width="1210" MinHeight="600" MinWidth="1000" GlowBrush="{DynamicResource AccentColorBrush}" Icon="../logo.ico">
     <!-- Bit of extra code to use a different icon than in the taskbar -->
     <Controls:MetroWindow.Resources>
         <DrawingImage x:Key="BowIcon">

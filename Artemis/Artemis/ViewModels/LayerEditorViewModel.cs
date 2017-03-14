@@ -44,7 +44,9 @@ namespace Artemis.ViewModels
 
             // Setup existing conditions   
             var conditions = ProposedLayer.Properties.Conditions.Select(c => new LayerConditionViewModel(this, c));
+            var keyBinds = ProposedLayer.Properties.LayerKeybindModels.Select(c => new LayerKeybindViewModel(this, c));
             LayerConditionVms = new BindableCollection<LayerConditionViewModel>(conditions);
+            LayerKeybindVms = new BindableCollection<LayerKeybindViewModel>(keyBinds);
 
             PropertyChanged += PropertiesViewModelHandler;
 
@@ -60,6 +62,7 @@ namespace Artemis.ViewModels
         public BindableCollection<ILayerType> LayerTypes { get; set; }
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
         public BindableCollection<LayerConditionViewModel> LayerConditionVms { get; set; }
+        public BindableCollection<LayerKeybindViewModel> LayerKeybindVms { get; set; }
         public bool KeyboardGridIsVisible => ProposedLayer.LayerType is KeyboardType;
         public bool GifGridIsVisible => ProposedLayer.LayerType is KeyboardGifType;
 
@@ -68,7 +71,8 @@ namespace Artemis.ViewModels
             get { return _layer; }
             set
             {
-                if (Equals(value, _layer)) return;
+                if (Equals(value, _layer))
+                    return;
                 _layer = value;
                 NotifyOfPropertyChange(() => Layer);
             }
@@ -81,7 +85,8 @@ namespace Artemis.ViewModels
             get { return _proposedLayer; }
             set
             {
-                if (Equals(value, _proposedLayer)) return;
+                if (Equals(value, _proposedLayer))
+                    return;
                 _proposedLayer = value;
                 NotifyOfPropertyChange(() => ProposedLayer);
             }
@@ -92,7 +97,8 @@ namespace Artemis.ViewModels
             get { return _layerPropertiesViewModel; }
             set
             {
-                if (Equals(value, _layerPropertiesViewModel)) return;
+                if (Equals(value, _layerPropertiesViewModel))
+                    return;
                 _layerPropertiesViewModel = value;
                 NotifyOfPropertyChange(() => LayerPropertiesViewModel);
             }
@@ -103,7 +109,8 @@ namespace Artemis.ViewModels
             get { return _eventPropertiesViewModel; }
             set
             {
-                if (Equals(value, _eventPropertiesViewModel)) return;
+                if (Equals(value, _eventPropertiesViewModel))
+                    return;
                 _eventPropertiesViewModel = value;
                 NotifyOfPropertyChange(() => EventPropertiesViewModel);
             }
@@ -114,7 +121,8 @@ namespace Artemis.ViewModels
             get { return _selectedLayerType; }
             set
             {
-                if (Equals(value, _selectedLayerType)) return;
+                if (Equals(value, _selectedLayerType))
+                    return;
                 _selectedLayerType = value;
                 NotifyOfPropertyChange(() => SelectedLayerType);
             }
@@ -167,15 +175,27 @@ namespace Artemis.ViewModels
             LayerConditionVms.Add(new LayerConditionViewModel(this, condition));
         }
 
+        public void AddKeybind()
+        {
+            var keybind = new LayerKeybindModel();
+            LayerKeybindVms.Add(new LayerKeybindViewModel(this, keybind));
+        }
+
         public void Apply()
         {
             LayerPropertiesViewModel?.ApplyProperties();
 
             Layer.Properties.DynamicProperties.Clear();
             JsonConvert.PopulateObject(JsonConvert.SerializeObject(ProposedLayer), Layer);
+
             Layer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
                 Layer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
+
+            Layer.Properties.LayerKeybindModels.Clear();
+            foreach (var layerKeybindViewModel in LayerKeybindVms)
+                Layer.Properties.LayerKeybindModels.Add(layerKeybindViewModel.LayerKeybindModel);
+            
 
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
@@ -190,13 +210,6 @@ namespace Artemis.ViewModels
                 DialogService.ShowErrorMessageBox("Couldn't find or access the provided GIF file.");
         }
 
-        public void DeleteCondition(LayerConditionViewModel layerConditionViewModel,
-            LayerConditionModel layerConditionModel)
-        {
-            LayerConditionVms.Remove(layerConditionViewModel);
-            Layer.Properties.Conditions.Remove(layerConditionModel);
-        }
-
         public override async void CanClose(Action<bool> callback)
         {
             // Create a fake layer and apply the properties to it
@@ -204,9 +217,17 @@ namespace Artemis.ViewModels
             // TODO: EventPropVM must have layer too
             if (EventPropertiesViewModel != null)
                 ProposedLayer.EventProperties = EventPropertiesViewModel.GetAppliedProperties();
+
             ProposedLayer.Properties.Conditions.Clear();
             foreach (var conditionViewModel in LayerConditionVms)
                 ProposedLayer.Properties.Conditions.Add(conditionViewModel.ConditionModel);
+
+            ProposedLayer.Properties.LayerKeybindModels.Clear();
+            foreach (var layerKeybindViewModel in LayerKeybindVms)
+                ProposedLayer.Properties.LayerKeybindModels.Add(layerKeybindViewModel.LayerKeybindModel);
+
+            // Ignore this property as it isn't user input
+            ProposedLayer.RenderAllowed = Layer.RenderAllowed;
 
             // If not a keyboard, ignore size and position
             if ((ProposedLayer.LayerType.DrawType != DrawType.Keyboard) || !ProposedLayer.LayerType.ShowInEdtor)
@@ -236,8 +257,7 @@ namespace Artemis.ViewModels
                 return;
             }
 
-            var close = await DialogService
-                .ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
+            var close = await DialogService.ShowQuestionMessageBox("Unsaved changes", "Do you want to discard your changes?");
             callback(close.Value);
         }
     }

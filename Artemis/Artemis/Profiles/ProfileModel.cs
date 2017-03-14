@@ -92,7 +92,7 @@ namespace Artemis.Profiles
                     continue;
 
                 if (!ignoreConditions)
-                    if (!layerModel.ConditionsMet(dataModel))
+                    if (!layerModel.AreConditionsMet(dataModel))
                         continue;
 
                 layers.Add(layerModel);
@@ -223,45 +223,14 @@ namespace Artemis.Profiles
 
         public void ApplyKeybinds()
         {
-//            _profileBinds.Clear();
-//            foreach (var layerModel in GetLayers())
-//            {
-//                for (var index = 0; index < layerModel.Properties.Conditions.Count; index++)
-//                {
-//                    var condition = layerModel.Properties.Conditions[index];
-//                    if (condition.Field == null || !condition.Field.Contains("hotkey"))
-//                        continue;
-//
-//                    // Create an action for the layer, the layer's specific condition type handles activation
-//                    if (condition.Operator == "held")
-//                    {
-//                        var downAction = new Action(() => layerModel.LayerCondition.KeyDownTask(condition));
-//                        var downKb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-down-{index}", condition.HotKey, KeyType.KeyDown, downAction);
-//                        var upAction = new Action(() => layerModel.LayerCondition.KeyUpTask(condition));
-//                        var upKb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-up-{index}", condition.HotKey, KeyType.KeyUp, upAction);
-//
-//                        KeybindManager.AddOrUpdate(downKb);
-//                        KeybindManager.AddOrUpdate(upKb);
-//                        _profileBinds.Add(downKb);
-//                        _profileBinds.Add(upKb);
-//                    }
-//                    else
-//                    {
-//                        var action = new Action(() => layerModel.LayerCondition.KeyDownTask(condition));
-//                        var kb = new KeybindModel($"{GameName}-{Name}-{layerModel.Name}-{index}", condition.HotKey, KeyType.KeyDown, action);
-//
-//                        KeybindManager.AddOrUpdate(kb);
-//                        _profileBinds.Add(kb);
-//                    }
-//                }
-//            }
+            foreach (var layerModel in GetLayers())
+                layerModel.SetupKeybinds();
         }
 
         public void ClearKeybinds()
         {
-//            foreach (var keybindModel in _profileBinds)
-//                KeybindManager.Remove(keybindModel);
-//            _profileBinds.Clear();
+            foreach (var layerModel in GetLayers())
+                layerModel.RemoveKeybinds();
         }
 
         #region Compare
@@ -275,9 +244,12 @@ namespace Artemis.Profiles
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
             return Equals((ProfileModel) obj);
         }
 

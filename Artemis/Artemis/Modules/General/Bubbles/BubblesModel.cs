@@ -93,11 +93,9 @@ namespace Artemis.Modules.General.Bubbles
 
         public override void Render(FrameModel frameModel, bool keyboardOnly)
         {
-            using (var g = Graphics.FromImage(frameModel.KeyboardBitmap))
-            {
-                foreach (var bubble in _bubbles)
-                    bubble.Draw(g);
-            }
+            var c = frameModel.KeyboardModel.GetDrawingContext();
+            foreach (var bubble in _bubbles)
+                bubble.Draw(c);
         }
 
         #endregion
