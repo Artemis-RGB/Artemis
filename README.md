@@ -10,7 +10,7 @@ Artemis adds highly configurable support for several games to a range of RGB key
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
 ### Current Features
- - Support for Corsair, Logitech and Razer keyboards.
+ - Support for Corsair, Logitech, Razer and Cooler Master keyboards.
  - Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
  - Non-gaming effects such as type waves and audio visualization.
  - A layer-based profile system allowing an immense amount of customization.
@@ -21,12 +21,15 @@ Artemis adds highly configurable support for several games to a range of RGB key
  - Counter-Strike Global Offensive (uses native gamestate intergration)
  - Dota 2
  - Euro Truck Simulator 2
+ - American Truck Simulator
  - Overwatch
  - Rocket League
- - The Division (beta)
+ - The Division
  - The Witcher 3
  - Unreal Tournament
-
+ - GTA V
+ - Project CARS
+ - Assetto Corsa 
 
 ##### The following keyboards are supported
  - All Corsair RGB keyboards
@@ -34,7 +37,8 @@ Artemis adds highly configurable support for several games to a range of RGB key
  - Logitech G810
  - Logitech G410 (untested)
  - Razer BlackWidow Chroma
-
+ - Cooler Master Masterkeys Pro L
+ - Cooler Master Masterkeys Pro S
 ##### Other peripherals
  - All Corsair RGB mice
  - All Corsair RGB headsets
