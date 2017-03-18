@@ -52,18 +52,18 @@
         </ComboBox>
 
         <!-- Mouse/keyboard button -->
-        <Button Grid.Column="3" x:Name="ToggleBindType" Width="22" Height="22" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,0,0,0">
+        <Button Grid.Column="3" x:Name="ToggleBindType" Width="22" Height="22" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Toggle between mousebind and keybind">
             <Button.Content>
                 <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">
                     <Rectangle.OpacityMask>
-                        <VisualBrush Visual="{StaticResource appbar_hardware_mouse}" Stretch="Fill" />
+                        <VisualBrush Visual="{StaticResource appbar_swap}" Stretch="Fill" />
                     </Rectangle.OpacityMask>
                 </Rectangle>
             </Button.Content>
         </Button>
 
         <!-- Delete button -->
-        <Button Grid.Column="4" x:Name="Delete" Width="22" Height="22" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,0,0,0">
+        <Button Grid.Column="4" x:Name="Delete" Width="22" Height="22" Style="{DynamicResource SquareButtonStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,0,0,0" ToolTip="Delete">
             <Button.Content>
                 <Rectangle
                     Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" Width="12" Height="12">

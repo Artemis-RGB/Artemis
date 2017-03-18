@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using NLog;
 
 namespace Artemis.Utilities.Keyboard
 {
@@ -15,6 +17,15 @@ namespace Artemis.Utilities.Keyboard
         public static void Start()
         {
             _globalHook = Hook.GlobalEvents();
+
+            // When hitting breakpoints all user input freezes for ~10 seconds due to Windows waiting on the hooks to time out.
+            // By simply not hooking when the debugger is attached this no longer happens but keybinds obviously wont work.
+            if (Debugger.IsAttached)
+            {
+                LogManager.GetCurrentClassLogger().Fatal("Debugger attached so not enabling any global hooks, keybinds won't work!");
+                return;
+            }
+
             _globalHook.KeyDown += GlobalHookOnKeyDown;
             _globalHook.KeyUp += GlobalHookOnKeyUp;
             _globalHook.MouseDown += GlobalHookOnMouseDown;

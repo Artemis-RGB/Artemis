@@ -1,47 +1,45 @@
 ﻿<UserControl x:Class="Artemis.Modules.Games.LightFx.LightFxView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:cal="http://www.caliburnproject.org" 
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             mc:Ignorable="d"
-             d:DesignHeight="559.725" d:DesignWidth="882.696">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="30" />
-            </Grid.RowDefinitions>
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="559.725" d:DesignWidth="882.696">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
 
-            <!-- Header -->
-            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
-                <Label.Content>
-                    <AccessText TextWrapping="Wrap" Text="Mirrors Light FX lighting to your RGB devices." />
-                </Label.Content>
-            </Label>
+        <!-- Header -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
+            <Label.Content>
+                <AccessText TextWrapping="Wrap" Text="Mirrors Light FX lighting to your RGB devices." />
+            </Label.Content>
+        </Label>
 
-            <!-- Enable -->
-            <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <Label Content="Enable module" HorizontalAlignment="Right" Margin="0,0,0,3" />
-                <controls:ToggleSwitchButton IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}" cal:Message.Attach="[Event Click] = [Action ToggleModule]"
-                    Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Note: You can't enable an module when Artemis is disabled" />
-            </StackPanel>
+        <!-- Enable -->
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Label Content="Enable module" HorizontalAlignment="Right" Margin="0,0,0,3" />
+            <controls:ToggleSwitchButton IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}" cal:Message.Attach="[Event Click] = [Action ToggleModule]"
+                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Note: You can't enable an module when Artemis is disabled" />
+        </StackPanel>
 
-            <!-- Profile editor -->
-            <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
+        <!-- Profile editor -->
+        <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
 
-            <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
-                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100" Style="{DynamicResource SquareButtonStyle}" />
-                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0" Style="{DynamicResource SquareButtonStyle}" />
-            </StackPanel>
-        </Grid>
-    </ScrollViewer>
+        <!-- Buttons -->
+        <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100" Style="{DynamicResource SquareButtonStyle}" />
+            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0" Style="{DynamicResource SquareButtonStyle}" />
+        </StackPanel>
+    </Grid>
 </UserControl>

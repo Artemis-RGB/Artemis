@@ -42,12 +42,32 @@
     </xs:attribute>
     <xs:attribute name="throwExceptions" type="xs:boolean">
       <xs:annotation>
-        <xs:documentation>Pass NLog internal exceptions to the application. Default value is: false.</xs:documentation>
+        <xs:documentation>Throw an exception when there is an internal error. Default value is: false.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="throwConfigExceptions" type="xs:boolean">
+      <xs:annotation>
+        <xs:documentation>Throw an exception when there is a configuration error. If not set, determined by throwExceptions.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="keepVariablesOnReload" type="xs:boolean">
+      <xs:annotation>
+        <xs:documentation>Gets or sets a value indicating whether Variables should be kept on configuration reload. Default value is: false.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="internalLogToTrace" type="xs:boolean">
       <xs:annotation>
-        <xs:documentation>Write internal NLog messages to the the System.Diagnostics.Trace. Default value is: false</xs:documentation>
+        <xs:documentation>Write internal NLog messages to the System.Diagnostics.Trace. Default value is: false.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="internalLogIncludeTimestamp" type="xs:boolean">
+      <xs:annotation>
+        <xs:documentation>Write timestamps for internal NLog messages. Default value is: true.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="useInvariantCulture" type="xs:boolean">
+      <xs:annotation>
+        <xs:documentation>Use InvariantCulture as default culture instead of CurrentCulture.  Default value is: false.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
@@ -174,7 +194,7 @@
   <xs:complexType name="NLogInclude">
     <xs:attribute name="file" type="SimpleLayoutAttribute" use="required">
       <xs:annotation>
-        <xs:documentation>Name of the file to be included. The name is relative to the name of the current config file.</xs:documentation>
+        <xs:documentation>Name of the file to be included. You could use * wildcard. The name is relative to the name of the current config file.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="ignoreErrors" type="xs:boolean" use="optional" default="false">
@@ -1327,6 +1347,13 @@
       <xs:enumeration value="Day" />
       <xs:enumeration value="Hour" />
       <xs:enumeration value="Minute" />
+      <xs:enumeration value="Sunday" />
+      <xs:enumeration value="Monday" />
+      <xs:enumeration value="Tuesday" />
+      <xs:enumeration value="Wednesday" />
+      <xs:enumeration value="Thursday" />
+      <xs:enumeration value="Friday" />
+      <xs:enumeration value="Saturday" />
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="NLog.Targets.FilePathKind">
