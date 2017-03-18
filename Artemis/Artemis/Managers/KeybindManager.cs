@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Artemis.Models;
-using Artemis.Utilities.Keyboard;
+using Artemis.Utilities;
 using MahApps.Metro.Controls;
 using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
 using MouseEventArgs = System.Windows.Forms.MouseEventArgs;
@@ -17,12 +16,12 @@ namespace Artemis.Managers
 
         static KeybindManager()
         {
-            KeyboardHook.KeyDownCallback += args => ProcessKey(args, PressType.Down);
-            KeyboardHook.KeyUpCallback += args => ProcessKey(args, PressType.Up);
-            KeyboardHook.MouseDownCallback += args => ProcessMouse(args, PressType.Down);
-            KeyboardHook.MouseUpCallback += args => ProcessMouse(args, PressType.Up);
+            InputHook.KeyDownCallback += args => ProcessKey(args, PressType.Down);
+            InputHook.KeyUpCallback += args => ProcessKey(args, PressType.Up);
+            InputHook.MouseDownCallback += args => ProcessMouse(args, PressType.Down);
+            InputHook.MouseUpCallback += args => ProcessMouse(args, PressType.Up);
         }
-        
+
         private static void ProcessKey(KeyEventArgs keyEventArgs, PressType pressType)
         {
             // Don't trigger if the key itself is a modifier
@@ -38,7 +37,7 @@ namespace Artemis.Managers
             var hotKey = new HotKey(KeyInterop.KeyFromVirtualKey(keyEventArgs.KeyValue), modifiers);
 
             foreach (var keybindModel in KeybindModels)
-                 keybindModel.InvokeIfMatched(hotKey, pressType);
+                keybindModel.InvokeIfMatched(hotKey, pressType);
         }
 
         private static void ProcessMouse(MouseEventArgs mouseEventArgs, PressType pressType)
@@ -79,15 +78,19 @@ namespace Artemis.Managers
             if (alt)
                 modifiers = ModifierKeys.Alt;
             if (control)
+            {
                 if (modifiers == ModifierKeys.None)
                     modifiers = ModifierKeys.Control;
                 else
                     modifiers |= ModifierKeys.Control;
+            }
             if (shift)
+            {
                 if (modifiers == ModifierKeys.None)
                     modifiers = ModifierKeys.Shift;
                 else
                     modifiers |= ModifierKeys.Shift;
+            }
 
             return modifiers;
         }

@@ -6,7 +6,7 @@
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
-    Title="Artemis | Edit Layer" Height="600" Width="1100"
+    Title="Artemis | Edit Layer" Height="640" Width="1100"
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:converters="clr-namespace:Artemis.Utilities.Converters"
     xmlns:models="clr-namespace:Artemis.Profiles.Layers.Models"
@@ -96,7 +96,7 @@
                     <ListBox Height="138" x:Name="LayerConditionVms" ScrollViewer.VerticalScrollBarVisibility="Visible">
                         <ListBox.Template>
                             <ControlTemplate>
-                                <ScrollViewer>
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                                     <ItemsPresenter />
                                 </ScrollViewer>
                             </ControlTemplate>

@@ -4,9 +4,9 @@ using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 using NLog;
 
-namespace Artemis.Utilities.Keyboard
+namespace Artemis.Utilities
 {
-    public static class KeyboardHook
+    public static class InputHook
     {
         public delegate void KeyCallbackHandler(KeyEventArgs e);
 

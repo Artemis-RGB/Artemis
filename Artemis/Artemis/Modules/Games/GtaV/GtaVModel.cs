@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Artemis.DAL;
@@ -13,8 +14,7 @@ namespace Artemis.Modules.Games.GtaV
     {
         private readonly PipeServer _pipeServer;
 
-        public GtaVModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer)
-            : base(deviceManager, luaManager)
+        public GtaVModel(DeviceManager deviceManager, LuaManager luaManager, PipeServer pipeServer) : base(deviceManager, luaManager)
         {
             _pipeServer = pipeServer;
 
@@ -29,6 +29,7 @@ namespace Artemis.Modules.Games.GtaV
 
         public override void Enable()
         {
+            var process = System.Diagnostics.Process.GetProcessesByName("GTA5").First();
             DllManager.PlaceLogitechDll();
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             base.Enable();
