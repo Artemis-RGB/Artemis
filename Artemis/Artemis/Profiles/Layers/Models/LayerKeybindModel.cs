@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using Artemis.Managers;
 using Artemis.Models;
+using Artemis.Profiles.Layers.Conditions;
 using MahApps.Metro.Controls;
 
 namespace Artemis.Profiles.Layers.Models
@@ -33,39 +34,30 @@ namespace Artemis.Profiles.Layers.Models
         {
             Unregister();
 
-            // Bind EnableHeldDown or DisableHeldDOwn
-            if (ToggleType == ToggleType.EnableHeldDown || ToggleType == ToggleType.DisableHeldDown)
+            if (layerModel.IsEvent)
+                RegisterEvent(layerModel, index);
+            else if (ToggleType == ToggleType.EnableHeldDown || ToggleType == ToggleType.DisableHeldDown)
+                RegisterToggle(layerModel, index);
+            else
+                RegisterRegular(layerModel, index);
+        }
+
+        private void RegisterEvent(LayerModel layerModel, int index)
+        {
+            Action action = () =>
             {
-                Action downAction = null;
-                Action upAction = null;
-                switch (ToggleType)
-                {
-                    case ToggleType.EnableHeldDown:
-                        downAction = () => layerModel.RenderAllowed = true;
-                        upAction = () => layerModel.RenderAllowed = false;
-                        break;
-                    case ToggleType.DisableHeldDown:
-                        downAction = () => layerModel.RenderAllowed = false;
-                        upAction = () => layerModel.RenderAllowed = true;
-                        break;
-                }
+                layerModel.EventProperties.TriggerEvent(layerModel);
+            };
+            // Either bind HotKey or mouse buttons depending on what isn't null
+            if (HotKey != null)
+                _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", HotKey, PressType.Down, action);
+            else if (MouseButtons != null)
+                _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", MouseButtons.Value, PressType.Down, action);
+            KeybindManager.AddOrUpdate(_downKeybind);
+        }
 
-                // Either bind HotKey or mouse buttons depending on what isn't null
-                if (HotKey != null)
-                {
-                    _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", HotKey, PressType.Down, downAction);
-                    _upKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-up", HotKey, PressType.Up, upAction);
-                }
-                else if (MouseButtons != null)
-                {
-                    _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", MouseButtons.Value, PressType.Down, downAction);
-                    _upKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-up", MouseButtons.Value, PressType.Up, upAction);
-                }
-                KeybindManager.AddOrUpdate(_downKeybind);
-                KeybindManager.AddOrUpdate(_upKeybind);
-                return;
-            }
-
+        private void RegisterRegular(LayerModel layerModel, int index)
+        {
             // Bind Enable, Disable or Toggle
             Action action = null;
             switch (ToggleType)
@@ -87,6 +79,38 @@ namespace Artemis.Profiles.Layers.Models
             else if (MouseButtons != null)
                 _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", MouseButtons.Value, PressType.Down, action);
             KeybindManager.AddOrUpdate(_downKeybind);
+        }
+
+        private void RegisterToggle(LayerModel layerModel, int index)
+        {
+            Action downAction = null;
+            Action upAction = null;
+            switch (ToggleType)
+            {
+                case ToggleType.EnableHeldDown:
+                    downAction = () => layerModel.RenderAllowed = true;
+                    upAction = () => layerModel.RenderAllowed = false;
+                    break;
+                case ToggleType.DisableHeldDown:
+                    downAction = () => layerModel.RenderAllowed = false;
+                    upAction = () => layerModel.RenderAllowed = true;
+                    break;
+            }
+
+            // Either bind HotKey or mouse buttons depending on what isn't null
+            if (HotKey != null)
+            {
+                _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", HotKey, PressType.Down, downAction);
+                _upKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-up", HotKey, PressType.Up, upAction);
+            }
+            else if (MouseButtons != null)
+            {
+                _downKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-down", MouseButtons.Value, PressType.Down, downAction);
+                _upKeybind = new KeybindModel($"{layerModel.GetHashCode()}-{layerModel.Name}-{index}-up", MouseButtons.Value, PressType.Up, upAction);
+            }
+            KeybindManager.AddOrUpdate(_downKeybind);
+            KeybindManager.AddOrUpdate(_upKeybind);
+            return;
         }
     }
 

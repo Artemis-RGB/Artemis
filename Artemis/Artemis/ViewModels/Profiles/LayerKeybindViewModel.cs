@@ -9,6 +9,7 @@ namespace Artemis.ViewModels.Profiles
     public sealed class LayerKeybindViewModel : Screen
     {
         private readonly LayerEditorViewModel _editorViewModel;
+        private bool _canToggleType;
 
         private HotKey _hotKey;
         private MouseButtons _mouseButtons;
@@ -20,30 +21,20 @@ namespace Artemis.ViewModels.Profiles
             LayerKeybindModel = layerKeybindModel;
 
             PropertyChanged += MapViewToModel;
+            editorViewModel.PropertyChanged += EditorViewModelOnPropertyChanged;
             MapModelToView();
         }
 
-        private void MapViewToModel(object sender, PropertyChangedEventArgs e)
+        public bool CanToggleType
         {
-            if (e.PropertyName == "MouseButtonsVisible" || e.PropertyName == "HotkeyVisible")
-                return;
-
-            if (MouseButtonsVisible)
-                SetMouseBind();
-            else
-                SetKeyBind();
-        }
-
-        private void MapModelToView()
-        {
-            PropertyChanged -= MapViewToModel;
-
-            if (LayerKeybindModel.MouseButtons != null)
-                MouseButtons = LayerKeybindModel.MouseButtons.Value;
-            HotKey = LayerKeybindModel.HotKey;
-            ToggleType = LayerKeybindModel.ToggleType;
-
-            PropertyChanged += MapViewToModel;
+            get { return _canToggleType; }
+            set
+            {
+                if (value == _canToggleType)
+                    return;
+                _canToggleType = value;
+                NotifyOfPropertyChange(() => CanToggleType);
+            }
         }
 
         public LayerKeybindModel LayerKeybindModel { get; set; }
@@ -86,6 +77,48 @@ namespace Artemis.ViewModels.Profiles
                 _toggleType = value;
                 NotifyOfPropertyChange(() => ToggleType);
             }
+        }
+
+        /// <summary>
+        ///     Responds to the EventPropertiesViewModel being changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditorViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "EventPropertiesViewModel")
+                return;
+
+            if (_editorViewModel.ProposedLayer.IsEvent)
+            {
+                CanToggleType = false;
+                ToggleType = ToggleType.Enable;
+            }
+            else
+                CanToggleType = true;
+        }
+
+        private void MapViewToModel(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "MouseButtonsVisible" || e.PropertyName == "HotkeyVisible")
+                return;
+
+            if (MouseButtonsVisible)
+                SetMouseBind();
+            else
+                SetKeyBind();
+        }
+
+        private void MapModelToView()
+        {
+            PropertyChanged -= MapViewToModel;
+
+            if (LayerKeybindModel.MouseButtons != null)
+                MouseButtons = LayerKeybindModel.MouseButtons.Value;
+            HotKey = LayerKeybindModel.HotKey;
+            ToggleType = LayerKeybindModel.ToggleType;
+
+            PropertyChanged += MapViewToModel;
         }
 
         public void ToggleBindType()

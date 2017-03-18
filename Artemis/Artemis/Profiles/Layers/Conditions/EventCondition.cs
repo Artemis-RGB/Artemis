@@ -12,6 +12,15 @@ namespace Artemis.Profiles.Layers.Conditions
             lock (layerModel.Properties.Conditions)
             {
                 var checkConditions = layerModel.Properties.Conditions.Where(c => c.Field != null).ToList();
+
+                // Don't trigger constantly when there are no conditions
+                if (!checkConditions.Any())
+                {
+                    layerModel.EventProperties.Update(layerModel, false);
+                    return layerModel.EventProperties.MustDraw;
+                }
+
+                // Determine whether conditions are met
                 var conditionsMet = false;
                 switch (layerModel.Properties.ConditionType)
                 {
@@ -26,11 +35,14 @@ namespace Artemis.Profiles.Layers.Conditions
                         break;
                 }
 
+                // Update the event properties
                 layerModel.EventProperties.Update(layerModel, conditionsMet);
-
+                
+                // If conditions are met trigger the event, this won't do anything if the event isn't ready to be triggered yet
                 if (conditionsMet)
                     layerModel.EventProperties.TriggerEvent(layerModel);
 
+                // Return the event's MustDraw
                 return layerModel.EventProperties.MustDraw;
             }
         }

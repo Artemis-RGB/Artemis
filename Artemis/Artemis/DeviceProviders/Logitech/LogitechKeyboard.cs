@@ -10,6 +10,9 @@ namespace Artemis.DeviceProviders.Logitech
     {
         public override bool CanEnable()
         {
+            // Just to be sure, restore the Logitech DLL registry key
+            DllManager.RestoreLogitechDll();
+
             // Check to see if VC++ 2012 x64 is installed.
             if (Registry.LocalMachine.OpenSubKey(
                     @"SOFTWARE\Classes\Installer\Dependencies\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}") == null)
@@ -18,17 +21,6 @@ namespace Artemis.DeviceProviders.Logitech
                                  "The Visual C++ 2012 Redistributable v11.0.61030.0 could not be found, which is required.\n" +
                                  "Please download it by going to the following URL (link also in wiki):\n\n" +
                                  "https://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x64.exe";
-
-                return false;
-            }
-
-            if (DllManager.DllPlaced())
-            {
-                CantEnableText =
-                    "Artemis couldn't enable your Logitech keyboard, because the required files are not in place.\n\n" +
-                    "This happens when you run The Division or GTA and shut down Artemis before shutting down The Division\n" +
-                    "Artemis tries to fix this automatically on startup but because the files may have been in use it failed.\n\n" +
-                    "To try again, restart Artemis or check out the FAQ.";
 
                 return false;
             }

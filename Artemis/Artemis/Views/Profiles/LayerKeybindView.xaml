@@ -32,7 +32,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <!-- Type -->
-        <ComboBox Grid.Column="0" ItemsSource="{Binding Source={StaticResource ToggleTypeEnumValues}}" SelectedItem="{Binding Path=ToggleType}">
+        <ComboBox Grid.Column="0" ItemsSource="{Binding Source={StaticResource ToggleTypeEnumValues}}" SelectedItem="{Binding Path=ToggleType}" IsEnabled="{Binding Path=CanToggleType}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Converter={StaticResource HEnumDescriptionConverter}}" />

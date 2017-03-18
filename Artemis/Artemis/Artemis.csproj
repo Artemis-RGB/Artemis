@@ -663,7 +663,7 @@
     <Compile Include="Utilities\GeneralHelpers.cs" />
     <Compile Include="Utilities\GifImage.cs" />
     <Compile Include="Utilities\ImageUtilities.cs" />
-    <Compile Include="Utilities\Keyboard\KeyboardHook.cs" />
+    <Compile Include="Utilities\InputHook.cs" />
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\DataReaders\PipeServer.cs" />
     <Compile Include="Utilities\Markdown\Markdown.cs" />
