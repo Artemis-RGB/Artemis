@@ -2,6 +2,7 @@
 {
  "uri" "http://localhost:{{port}}/csgo_game_event"
  "timeout" "0.1"
+ "heartbeat" "0.1"
  "data"
  {
    "provider"            "1"

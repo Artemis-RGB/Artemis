@@ -57,6 +57,12 @@ namespace Artemis.DeviceProviders.Corsair
                     Slug = "corsair-k95-rgb";
                     PreviewSettings = new PreviewSettings(new Rect(20, 26, 1066, 282), Resources.k95);
                     break;
+                case "K95 RGB PLATINUM":
+                    Height = 9;
+                    Width = 22;
+                    Slug = "corsair-k95-rgb-platinum";
+                    PreviewSettings = new PreviewSettings(new Rect(12, 1, 1075, 346), Resources.k95_platinum);
+                    break;
                 case "K70 RGB":
                 case "K70 RGB RAPIDFIRE":
                 case "K70 LUX RGB":
@@ -72,13 +78,13 @@ namespace Artemis.DeviceProviders.Corsair
                     Height = 7;
                     Width = 18;
                     Slug = "corsair-k65-rgb";
-                    PreviewSettings = new PreviewSettings(new Rect(15, 30, 747, 363), Resources.k65);
+                    PreviewSettings = new PreviewSettings(new Rect(15, 30, 751, 284), Resources.k65);
                     break;
                 case "STRAFE RGB":
                     Height = 7;
                     Width = 22;
                     Slug = "corsair-strafe-rgb";
-                    PreviewSettings = new PreviewSettings(new Rect(23, 30, 984, 375), Resources.strafe);
+                    PreviewSettings = new PreviewSettings(new Rect(23, 30, 940, 303), Resources.strafe);
                     break;
             }
 
@@ -108,8 +114,7 @@ namespace Artemis.DeviceProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            using (var image = ImageUtilities.ResizeImage(bitmap, Width, Height))
-            {
+
                 // For STRAFE, stretch the image on row 2.
                 if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
                 {
@@ -117,8 +122,8 @@ namespace Artemis.DeviceProviders.Corsair
                     {
                         using (var g = Graphics.FromImage(strafeBitmap))
                         {
-                            g.DrawImage(image, new Point(0, 0));
-                            g.DrawImage(image, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7),
+                            g.DrawImage(bitmap, new Point(0, 0));
+                            g.DrawImage(bitmap, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7),
                                 GraphicsUnit.Pixel);
 
                             _keyboardBrush.Image = strafeBitmap;
@@ -128,10 +133,10 @@ namespace Artemis.DeviceProviders.Corsair
                 }
                 else
                 {
-                    _keyboardBrush.Image = image;
+                    _keyboardBrush.Image = bitmap;
                     _keyboard.Update();
                 }
-            }
+            
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)

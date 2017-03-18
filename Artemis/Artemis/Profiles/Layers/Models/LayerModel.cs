@@ -244,6 +244,7 @@ namespace Artemis.Profiles.Layers.Models
             return new Rect(X * scale, Y * scale, width * scale, height * scale);
         }
 
+        // TODO: Make this and ProfileModel's GetRenderLayers the same through inheritance
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -261,8 +262,10 @@ namespace Artemis.Profiles.Layers.Models
                     continue;
 
                 if (!ignoreConditions)
-                    if (!layerModel.AreConditionsMet(dataModel))
+                {
+                    if (!layerModel.AreConditionsMet(dataModel) || !layerModel.RenderAllowed)
                         continue;
+                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -312,7 +315,7 @@ namespace Artemis.Profiles.Layers.Models
         public string Name { get; set; }
         public int Order { get; set; }
         public bool Enabled { get; set; }
-        public bool RenderAllowed { get; set; }
+        public bool RenderAllowed { get; set; } = true;
         public bool Expanded { get; set; }
         public bool IsEvent { get; set; }
         public LayerPropertiesModel Properties { get; set; }
@@ -404,5 +407,11 @@ namespace Artemis.Profiles.Layers.Models
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(Order)}: {Order}, {nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
+        }
     }
 }

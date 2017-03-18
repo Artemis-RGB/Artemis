@@ -74,6 +74,7 @@ namespace Artemis.Profiles
             return layers;
         }
 
+        // TODO: Make this and LayerModel's GetRenderLayers the same through inheritance
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -82,8 +83,7 @@ namespace Artemis.Profiles
         /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly,
-            bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
@@ -92,8 +92,10 @@ namespace Artemis.Profiles
                     continue;
 
                 if (!ignoreConditions)
-                    if (!layerModel.AreConditionsMet(dataModel))
+                {
+                    if (!layerModel.AreConditionsMet(dataModel) || !layerModel.RenderAllowed)
                         continue;
+                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -109,8 +111,7 @@ namespace Artemis.Profiles
         /// <param name="renderLayers">The layers to render</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
-        internal void DrawLayers(DeviceVisualModel deviceVisualModel, List<LayerModel> renderLayers,
-            ModuleDataModel dataModel, bool preview)
+        internal void DrawLayers(DeviceVisualModel deviceVisualModel, List<LayerModel> renderLayers, ModuleDataModel dataModel, bool preview)
         {
             renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == deviceVisualModel.DrawType).ToList();
             if (!renderLayers.Any())
@@ -209,9 +210,7 @@ namespace Artemis.Profiles
             var layer = LayerModel.CreateLayer();
 
             if (afterLayer != null)
-            {
                 afterLayer.InsertAfter(layer);
-            }
             else
             {
                 Layers.Add(layer);
@@ -231,6 +230,12 @@ namespace Artemis.Profiles
         {
             foreach (var layerModel in GetLayers())
                 layerModel.RemoveKeybinds();
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(KeyboardSlug)}: {KeyboardSlug}, {nameof(GameName)}: {GameName}";
         }
 
         #region Compare

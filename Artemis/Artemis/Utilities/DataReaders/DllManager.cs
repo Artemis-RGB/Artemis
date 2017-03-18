@@ -59,29 +59,34 @@ namespace Artemis.Utilities.DataReaders
         {
             if (DllPlaced())
                 return;
-
-            // Create directory structure, just in case
-            Directory.CreateDirectory(LogitechPath + @"");
-
-            // Backup the existing DLL
-            if (File.Exists(LogitechPath + @"\LogitechLed.dll"))
+            
+            try
             {
-                if (File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
-                    File.Delete(LogitechPath + @"\LogitechLed.dll.bak");
-                File.Move(LogitechPath + @"\LogitechLed.dll", LogitechPath + @"\LogitechLed.dll.bak");
+                // Create directory structure, just in case
+                Directory.CreateDirectory(LogitechPath + @"");
+
+                // Backup the existing DLL
+                if (File.Exists(LogitechPath + @"\LogitechLed.dll"))
+                {
+                    if (!File.Exists(LogitechPath + @"\LogitechLed.dll.bak"))
+                        File.Move(LogitechPath + @"\LogitechLed.dll", LogitechPath + @"\LogitechLed.dll.bak");
+                }
+
+                // Copy our own DLL in place
+                File.WriteAllBytes(LogitechPath + @"\LogitechLED.dll", Resources.LogitechLED);
+
+                // A token to show the file is placed
+                File.Create(LogitechPath + @"\artemis.txt");
+
+                // If the user doesn't have a Logitech device, the CLSID will be missing
+                // and we should create it ourselves.
+                if (!RegistryKeyPlaced())
+                    PlaceRegistryKey();
             }
-
-            // Copy our own DLL in place
-            File.WriteAllBytes(LogitechPath + @"\LogitechLED.dll",
-                Resources.LogitechLED);
-
-            // A token to show the file is placed
-            File.Create(LogitechPath + @"\artemis.txt");
-
-            // If the user doesn't have a Logitech device, the CLSID will be missing
-            // and we should create it ourselves.
-            if (!RegistryKeyPlaced())
-                PlaceRegistryKey();
+            catch (Exception e)
+            {
+                Logger.Error(e, "Failed to place Logitech DLL");
+            }
         }
 
         public static bool DllPlaced()

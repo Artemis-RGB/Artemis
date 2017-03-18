@@ -68,7 +68,7 @@ namespace Artemis.ViewModels
             _dialogService = dialogService;
             _copyKeybind = new KeybindModel("copy", new HotKey(Key.C, ModifierKeys.Control), PressType.Down, LayerToClipboard);
             _pasteKeybind = new KeybindModel("paste", new HotKey(Key.V, ModifierKeys.Control), PressType.Up, ClipboardToLayer);
-
+            _placeholderKeyboard = KeyboardPreview = ImageUtilities.BitmapToBitmapImage(Resources.none);
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
             ProfileEditorModel = profileEditorModel;
@@ -325,7 +325,7 @@ namespace Artemis.ViewModels
 
         public void LayerToClipboard()
         {
-            if (SelectedLayer == null)
+            if (SelectedLayer == null || !ActiveWindowHelper.MainWindowActive)
                 return;
 
             // Probably not how the cool kids do it but leveraging on JsonConvert gives flawless serialization
@@ -334,6 +334,9 @@ namespace Artemis.ViewModels
 
         public void ClipboardToLayer()
         {
+            if (!ActiveWindowHelper.MainWindowActive)
+                return;
+
             GeneralHelpers.ExecuteSta(() =>
             {
                 var data = (string) Clipboard.GetData("layer");
@@ -503,16 +506,19 @@ namespace Artemis.ViewModels
 
         #region Rendering
 
+        private readonly ImageSource _placeholderKeyboard;
+
         private void LoopManagerOnRenderCompleted(object sender, EventArgs eventArgs)
         {
             // Besides the usual checks, also check if the ActiveKeyboard isn't the NoneKeyboard
             if (SelectedProfile == null || _deviceManager.ActiveKeyboard == null || _deviceManager.ActiveKeyboard.Slug == "none")
             {
-                KeyboardPreview = null;
-
                 // Setup layers for the next frame
                 if (_moduleModel.IsInitialized && ActiveWindowHelper.MainWindowActive)
                     _moduleModel.PreviewLayers = new List<LayerModel>();
+
+                if (!Equals(KeyboardPreview, _placeholderKeyboard))
+                    KeyboardPreview = _placeholderKeyboard;
 
                 return;
             }

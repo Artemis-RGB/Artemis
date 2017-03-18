@@ -16,19 +16,6 @@ namespace Artemis.ViewModels.Profiles
 
         private readonly LayerEditorViewModel _editorViewModel;
 
-        private readonly NamedOperator[] _hotkeyOperators =
-        {
-            new NamedOperator("Pressed", "enable"),
-            new NamedOperator("Held down", "held")
-        };
-
-        private readonly GeneralHelpers.PropertyCollection[] _hotkeyProperties =
-        {
-            new GeneralHelpers.PropertyCollection {Display = "Enable when hotkey", Type = "hotkeyEnable", Path = "hotkeyEnable"},
-            new GeneralHelpers.PropertyCollection {Display = "Disable when hotkey", Type = "hotkeyDisable", Path = "hotkeyDisable"},
-            new GeneralHelpers.PropertyCollection {Display = "Toggle when hotkey", Type = "hotkeyToggle", Path = "hotkeyToggle"}
-        };
-
         private readonly NamedOperator[] _int32Operators =
         {
             new NamedOperator("Lower than", "<"),
@@ -55,12 +42,10 @@ namespace Artemis.ViewModels.Profiles
         };
 
         private HotKey _hotKey;
-
         private bool _keybindIsVisible;
         private GeneralHelpers.PropertyCollection _selectedDataModelProp;
         private string _selectedDropdownValue;
         private NamedOperator _selectedOperator;
-
         private bool _userDropdownValueIsVisible;
         private string _userValue;
         private bool _userValueIsVisible;
@@ -72,7 +57,7 @@ namespace Artemis.ViewModels.Profiles
             ConditionModel = conditionModel;
             Operators = new BindableCollection<NamedOperator>();
             DropdownValues = new BindableCollection<string>();
-            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>(_hotkeyProperties);
+            DataModelProps = new BindableCollection<GeneralHelpers.PropertyCollection>();
             DataModelProps.AddRange(editorViewModel.DataModelProps);
 
             PropertyChanged += MapViewToModel;
@@ -80,9 +65,7 @@ namespace Artemis.ViewModels.Profiles
         }
 
         public LayerConditionModel ConditionModel { get; set; }
-
         public BindableCollection<GeneralHelpers.PropertyCollection> DataModelProps { get; set; }
-
         public BindableCollection<NamedOperator> Operators { get; set; }
         public BindableCollection<string> DropdownValues { get; set; }
 
@@ -91,7 +74,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _userValue; }
             set
             {
-                if (value == _userValue) return;
+                if (value == _userValue)
+                    return;
                 _userValue = value;
                 NotifyOfPropertyChange(() => UserValue);
             }
@@ -102,7 +86,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _hotKey; }
             set
             {
-                if (Equals(value, _hotKey)) return;
+                if (Equals(value, _hotKey))
+                    return;
                 _hotKey = value;
                 NotifyOfPropertyChange(() => HotKey);
             }
@@ -113,7 +98,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _selectedDataModelProp; }
             set
             {
-                if (value.Equals(_selectedDataModelProp)) return;
+                if (value.Equals(_selectedDataModelProp))
+                    return;
                 _selectedDataModelProp = value;
                 SetupPropertyInput();
                 NotifyOfPropertyChange(() => SelectedDataModelProp);
@@ -125,7 +111,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _userValueIsVisible; }
             set
             {
-                if (value == _userValueIsVisible) return;
+                if (value == _userValueIsVisible)
+                    return;
                 _userValueIsVisible = value;
                 NotifyOfPropertyChange(() => UserValueIsVisible);
             }
@@ -136,7 +123,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _userDropdownValueIsVisible; }
             set
             {
-                if (value == _userDropdownValueIsVisible) return;
+                if (value == _userDropdownValueIsVisible)
+                    return;
                 _userDropdownValueIsVisible = value;
                 NotifyOfPropertyChange(() => UserDropdownValueIsVisible);
             }
@@ -147,7 +135,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _keybindIsVisible; }
             set
             {
-                if (value == _keybindIsVisible) return;
+                if (value == _keybindIsVisible)
+                    return;
                 _keybindIsVisible = value;
                 NotifyOfPropertyChange();
             }
@@ -169,7 +158,8 @@ namespace Artemis.ViewModels.Profiles
             get { return _selectedDropdownValue; }
             set
             {
-                if (value == _selectedDropdownValue) return;
+                if (value == _selectedDropdownValue)
+                    return;
                 _selectedDropdownValue = value;
                 NotifyOfPropertyChange(() => SelectedDropdownValue);
             }
@@ -233,15 +223,6 @@ namespace Artemis.ViewModels.Profiles
                     Operators.AddRange(_stringOperators);
                     UserValueIsVisible = true;
                     break;
-                case "hotkeyEnable":
-                case "hotkeyDisable":
-                    Operators.AddRange(_hotkeyOperators);
-                    KeybindIsVisible = true;
-                    break;
-                case "hotkeyToggle":
-                    Operators.Add(_hotkeyOperators[0]);
-                    KeybindIsVisible = true;
-                    break;
                 default:
                     Operators.AddRange(_operators);
                     UserValueIsVisible = true;
@@ -270,8 +251,7 @@ namespace Artemis.ViewModels.Profiles
             KeybindIsVisible = false;
 
             // Event operators don't have any form of input
-            if (SelectedOperator.Value == "changed" || SelectedOperator.Value == "decreased" ||
-                SelectedOperator.Value == "increased")
+            if (SelectedOperator.Value == "changed" || SelectedOperator.Value == "decreased" || SelectedOperator.Value == "increased")
                 return;
 
             if (SelectedDataModelProp.Type != null && SelectedDataModelProp.Type.Contains("hotkey"))

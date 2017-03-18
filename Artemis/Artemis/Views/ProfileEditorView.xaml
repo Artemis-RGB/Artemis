@@ -28,7 +28,7 @@
         <!-- Preview -->
         <Label Grid.Column="0" Grid.Row="0" FontSize="20" HorizontalAlignment="Left" Content="Preview" />
         <Border Grid.Column="0" Grid.Row="1" Background="#FF232323" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="3">
-            <Border Padding="50">
+            <Border Padding="50" x:Name="PreviewBorder">
                 <Border.Effect>
                     <DropShadowEffect x:Name="ShadowEffect" ShadowDepth="0" Color="{DynamicResource HighlightColor}" Opacity="1" BlurRadius="25" />
                 </Border.Effect>

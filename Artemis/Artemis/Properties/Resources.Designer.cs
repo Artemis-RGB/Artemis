@@ -22,7 +22,7 @@ namespace Artemis.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -274,6 +274,16 @@ namespace Artemis.Properties {
         internal static System.Drawing.Bitmap k95 {
             get {
                 object obj = ResourceManager.GetObject("k95", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap k95_platinum {
+            get {
+                object obj = ResourceManager.GetObject("k95_platinum", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
