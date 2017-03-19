@@ -15,11 +15,12 @@ namespace Artemis.Profiles.Layers.Animations
 
         public void Update(LayerModel layerModel, bool updateAnimations)
         {
+            var animationSpeed = 3.1 - layerModel.Properties.AnimationSpeed;
             // TODO: Generic implementation
             // Reset animation progress if layer wasn't drawn for 100ms
             if (new TimeSpan(0, 0, 0, 0, 100) < DateTime.Now - layerModel.LastRender && updateAnimations || MustExpire(layerModel))
             {
-                _opacityTweener = new Tweener<float>(0, 1000, 1000, Ease.Quad.InOut, LerpFuncFloat);
+                _opacityTweener = new Tweener<float>(0, 1000, animationSpeed * 1000, Ease.Quad.InOut, LerpFuncFloat);
                 _increase = true;
             }
 
@@ -29,7 +30,7 @@ namespace Artemis.Profiles.Layers.Animations
 
             if (!_opacityTweener.Running && _increase)
             {
-                _opacityTweener = new Tweener<float>(1000, 0, 1000, Ease.Quad.InOut, LerpFuncFloat);
+                _opacityTweener = new Tweener<float>(1000, 0, animationSpeed * 1000, Ease.Quad.InOut, LerpFuncFloat);
                 _increase = false;
             }
 

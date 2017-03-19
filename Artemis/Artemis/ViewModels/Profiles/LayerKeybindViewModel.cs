@@ -19,6 +19,7 @@ namespace Artemis.ViewModels.Profiles
         {
             _editorViewModel = editorViewModel;
             LayerKeybindModel = layerKeybindModel;
+            CanToggleType = !editorViewModel.ProposedLayer.IsEvent;
 
             PropertyChanged += MapViewToModel;
             editorViewModel.PropertyChanged += EditorViewModelOnPropertyChanged;

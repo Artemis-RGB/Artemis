@@ -329,6 +329,8 @@
     <Compile Include="DeviceProviders\Artemis\NoneKeyboard.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProS.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MastermouseProL.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MastermouseProS.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\Utilities\CmSdk.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMouse.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadset.cs" />
