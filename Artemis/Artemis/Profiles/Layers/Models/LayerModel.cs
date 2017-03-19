@@ -21,6 +21,7 @@ namespace Artemis.Profiles.Layers.Models
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
             TweenModel = new TweenModel(this);
+            RenderAllowed = true;
 
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
@@ -284,6 +285,8 @@ namespace Artemis.Profiles.Layers.Models
 
         public void SetupKeybinds()
         {
+            RenderAllowed = true;
+
             // Clean up old keybinds
             RemoveKeybinds();
 
@@ -315,7 +318,7 @@ namespace Artemis.Profiles.Layers.Models
         public string Name { get; set; }
         public int Order { get; set; }
         public bool Enabled { get; set; }
-        public bool RenderAllowed { get; set; } = true;
+        public bool RenderAllowed { get; set; }
         public bool Expanded { get; set; }
         public bool IsEvent { get; set; }
         public LayerPropertiesModel Properties { get; set; }

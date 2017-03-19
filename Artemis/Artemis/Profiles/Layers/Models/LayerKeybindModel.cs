@@ -88,6 +88,7 @@ namespace Artemis.Profiles.Layers.Models
             switch (ToggleType)
             {
                 case ToggleType.EnableHeldDown:
+                    layerModel.RenderAllowed = false;
                     downAction = () => layerModel.RenderAllowed = true;
                     upAction = () => layerModel.RenderAllowed = false;
                     break;

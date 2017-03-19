@@ -14,7 +14,8 @@ namespace Artemis.ViewModels
         {
             DisplayName = "General";
             _vms = moduleViewModels.Where(m => !m.ModuleModel.IsOverlay && !m.ModuleModel.IsBoundToProcess)
-                .OrderBy(m => m.DisplayName).ToList();
+                .OrderByDescending(m => m.DisplayName == "General profile")
+                .ThenBy(m => m.DisplayName).ToList();
 
             previewManager.PreviewViewModules.Clear();
             previewManager.PreviewViewModules.AddRange(moduleViewModels.Where(m => m.UsesProfileEditor));

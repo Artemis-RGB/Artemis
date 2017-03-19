@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,9 +63,9 @@ namespace Artemis.Managers
                 }
                 catch (Exception e)
                 {
-#if DEBUG
-                    throw e;
-#endif
+                    if (Debugger.IsAttached)
+                        throw;
+
                     _logger.Warn(e, "Exception in render loop");
                 }
             }

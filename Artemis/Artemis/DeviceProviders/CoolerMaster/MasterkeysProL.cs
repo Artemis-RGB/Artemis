@@ -72,6 +72,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
                 }
 
                 // Send the matrix to the keyboard
+                CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
                 CmSdk.SetAllLedColor(matrix);
             }
         }
