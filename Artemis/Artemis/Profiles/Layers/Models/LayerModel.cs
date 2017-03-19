@@ -25,7 +25,7 @@ namespace Artemis.Profiles.Layers.Models
 
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
-                GifImage = new GifImage(model.GifFile);
+                GifImage = new GifImage(model.GifFile, Properties.AnimationSpeed);
         }
 
         [JsonIgnore]
