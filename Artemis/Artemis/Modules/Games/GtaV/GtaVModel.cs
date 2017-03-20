@@ -29,7 +29,6 @@ namespace Artemis.Modules.Games.GtaV
 
         public override void Enable()
         {
-            var process = System.Diagnostics.Process.GetProcessesByName("GTA5").First();
             DllManager.PlaceLogitechDll();
             _pipeServer.PipeMessage += PipeServerOnPipeMessage;
             base.Enable();

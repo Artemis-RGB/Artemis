@@ -81,12 +81,17 @@ namespace Artemis.DeviceProviders.Corsair
                     PreviewSettings = new PreviewSettings(new Rect(15, 30, 751, 284), Resources.k65);
                     break;
                 case "STRAFE RGB":
-                    Height = 7;
+                    Height = 8;
                     Width = 22;
                     Slug = "corsair-strafe-rgb";
-                    PreviewSettings = new PreviewSettings(new Rect(23, 30, 940, 303), Resources.strafe);
+                    PreviewSettings = new PreviewSettings(new Rect(23, 12, 937, 324), Resources.strafe);
                     break;
             }
+
+            Height = 8;
+            Width = 22;
+            Slug = "corsair-strafe-rgb";
+            PreviewSettings = new PreviewSettings(new Rect(23, 12, 937, 324), Resources.strafe);
 
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
@@ -114,29 +119,8 @@ namespace Artemis.DeviceProviders.Corsair
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-
-                // For STRAFE, stretch the image on row 2.
-                if (_keyboard.DeviceInfo.Model == "STRAFE RGB")
-                {
-                    using (var strafeBitmap = new Bitmap(22, 8))
-                    {
-                        using (var g = Graphics.FromImage(strafeBitmap))
-                        {
-                            g.DrawImage(bitmap, new Point(0, 0));
-                            g.DrawImage(bitmap, new Rectangle(0, 3, 22, 7), new Rectangle(0, 2, 22, 7),
-                                GraphicsUnit.Pixel);
-
-                            _keyboardBrush.Image = strafeBitmap;
-                            _keyboard.Update();
-                        }
-                    }
-                }
-                else
-                {
-                    _keyboardBrush.Image = bitmap;
-                    _keyboard.Update();
-                }
-            
+            _keyboardBrush.Image = bitmap;
+            _keyboard.Update();
         }
 
         public override KeyMatch? GetKeyPosition(Keys keyCode)
