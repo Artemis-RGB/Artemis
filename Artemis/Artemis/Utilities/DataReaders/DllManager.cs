@@ -37,8 +37,11 @@ namespace Artemis.Utilities.DataReaders
             try
             {
                 // Change the registry key to point to the fake DLL
-                var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
-                key?.SetValue(null, DllPath + @"\LogitechLed.dll");
+                // Key doesn't exist yet on systems without LGS installed
+                var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true) ??
+                          Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
+                
+                key.SetValue(null, DllPath + @"\LogitechLed.dll");
 
                 // Make sure the fake DLL is in place
                 if (!Directory.Exists(DllPath))
