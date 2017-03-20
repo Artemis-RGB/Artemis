@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Memory;
+using Newtonsoft.Json;
 
 namespace Artemis.Modules.Games.RocketLeague
 {
@@ -20,21 +23,21 @@ namespace Artemis.Modules.Games.RocketLeague
             ProcessNames.Add("RocketLeague");
 
             // Generate a new offset when the game is updated
-            //var offset = new GamePointersCollection
-            //{
-            //    Game = "RocketLeague",
-            //    GameVersion = "1.27",
-            //    GameAddresses = new List<GamePointer>
-            //    {
-            //        new GamePointer
-            //        {
-            //            Description = "Boost",
-            //            BasePointer = new IntPtr(0x016D5084),
-            //            Offsets = new[] {0xC4, 0x214, 0x320, 0x73C, 0x224}
-            //        }
-            //    }
-            //};
-            //var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
+            var offset = new GamePointersCollection
+            {
+                Game = "RocketLeague",
+                GameVersion = "1.30",
+                GameAddresses = new List<GamePointer>
+                {
+                    new GamePointer
+                    {
+                        Description = "Boost",
+                        BasePointer = new IntPtr(0x016E00B4),
+                        Offsets = new[] {0xC4, 0x18, 0x388, 0x73C, 0x224}
+                    }
+                }
+            };
+            var res = JsonConvert.SerializeObject(offset, Formatting.Indented);
         }
 
         public override string Name => "RocketLeague";

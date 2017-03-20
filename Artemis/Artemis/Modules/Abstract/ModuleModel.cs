@@ -134,7 +134,12 @@ namespace Artemis.Modules.Abstract
         private void ChangeToLastProfile()
         {
             var profileName = !string.IsNullOrEmpty(Settings?.LastProfile) ? Settings.LastProfile : "Default";
-            ChangeProfile(ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, profileName));
+
+            var profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, profileName);
+            if (profile == null)
+                profile = ProfileProvider.GetProfile(DeviceManager.ActiveKeyboard, this, "Default");
+
+            ChangeProfile(profile);
         }
 
         protected virtual void RaiseProfileChangedEvent(ProfileChangedEventArgs e)

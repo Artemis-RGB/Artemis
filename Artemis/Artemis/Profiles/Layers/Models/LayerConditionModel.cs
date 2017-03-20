@@ -3,6 +3,7 @@ using System.Globalization;
 using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using DynamicExpresso;
+using MahApps.Metro.Controls;
 
 namespace Artemis.Profiles.Layers.Models
 {
@@ -20,6 +21,7 @@ namespace Artemis.Profiles.Layers.Models
         public string Value { get; set; }
         public string Operator { get; set; }
         public string Type { get; set; }
+        public HotKey HotKey { get; set; }
 
         public bool ConditionMet(ModuleDataModel subject)
         {

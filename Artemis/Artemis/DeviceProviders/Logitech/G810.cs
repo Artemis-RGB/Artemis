@@ -22,7 +22,7 @@ namespace Artemis.DeviceProviders.Logitech
                              "If needed, you can select a different keyboard in Artemis under settings.";
             Height = 6;
             Width = 21;
-            PreviewSettings = new PreviewSettings(675, 185, new Thickness(0, 35, 0, 0), Resources.g810);
+            PreviewSettings = new PreviewSettings(new Rect(19, 70, 1010, 269), Resources.g810);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 

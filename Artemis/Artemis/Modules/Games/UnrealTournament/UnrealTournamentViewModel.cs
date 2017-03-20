@@ -32,6 +32,13 @@ namespace Artemis.Modules.Games.UnrealTournament
             NotifyOfPropertyChange(() => Settings);
         }
 
+        public void PlaceFiles()
+        {
+            ((UnrealTournamentModel)ModuleModel).PlaceFiles();
+            Settings.Save();
+            NotifyOfPropertyChange(() => Settings);
+        }
+
         // Installing GIF on editor open to make sure the proper profiles are loaded
         private void InstallGif()
         {

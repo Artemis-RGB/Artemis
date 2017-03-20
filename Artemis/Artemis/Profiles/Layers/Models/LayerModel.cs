@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Animations;
 using Artemis.Profiles.Layers.Conditions;
 using Artemis.Profiles.Layers.Interfaces;
@@ -20,10 +21,11 @@ namespace Artemis.Profiles.Layers.Models
         {
             Children = new ChildItemCollection<LayerModel, LayerModel>(this);
             TweenModel = new TweenModel(this);
+            RenderAllowed = true;
 
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
-                GifImage = new GifImage(model.GifFile);
+                GifImage = new GifImage(model.GifFile, Properties.AnimationSpeed);
         }
 
         [JsonIgnore]
@@ -38,7 +40,7 @@ namespace Artemis.Profiles.Layers.Models
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public bool ConditionsMet(ModuleDataModel dataModel)
+        public bool AreConditionsMet(ModuleDataModel dataModel)
         {
             // Conditions are not even checked if the layer isn't enabled
             return Enabled && LayerCondition.ConditionsMet(this, dataModel);
@@ -91,7 +93,7 @@ namespace Artemis.Profiles.Layers.Models
         /// <param name="updateAnimations"></param>
         public void Draw(ModuleDataModel dataModel, DrawingContext c, bool preview, bool updateAnimations)
         {
-            if (Brush == null)
+            if (Brush == null || !preview && !RenderAllowed)
                 return;
 
             LayerType.Draw(this, c);
@@ -106,14 +108,12 @@ namespace Artemis.Profiles.Layers.Models
 
             // If the type is an event, set it up 
             if (IsEvent && EventProperties == null)
-            {
                 EventProperties = new KeyboardEventPropertiesModel
                 {
                     ExpirationType = ExpirationType.Time,
                     Length = new TimeSpan(0, 0, 1),
                     TriggerDelay = new TimeSpan(0)
                 };
-            }
         }
 
         /// <summary>
@@ -220,19 +220,15 @@ namespace Artemis.Profiles.Layers.Models
             if (Parent != null)
             {
                 foreach (var child in Parent.Children.OrderBy(c => c.Order))
-                {
                     if (child.Order >= source.Order)
                         child.Order++;
-                }
                 Parent.Children.Add(source);
             }
             else if (Profile != null)
             {
                 foreach (var layer in Profile.Layers.OrderBy(l => l.Order))
-                {
                     if (layer.Order >= source.Order)
                         layer.Order++;
-                }
                 Profile.Layers.Add(source);
             }
         }
@@ -246,9 +242,10 @@ namespace Artemis.Profiles.Layers.Models
             if (height < 0)
                 height = 0;
 
-            return new Rect(X*scale, Y*scale, width*scale, height*scale);
+            return new Rect(X * scale, Y * scale, width * scale, height * scale);
         }
 
+        // TODO: Make this and ProfileModel's GetRenderLayers the same through inheritance
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -267,7 +264,7 @@ namespace Artemis.Profiles.Layers.Models
 
                 if (!ignoreConditions)
                 {
-                    if (!layerModel.ConditionsMet(dataModel))
+                    if (!layerModel.AreConditionsMet(dataModel) || !layerModel.RenderAllowed)
                         continue;
                 }
 
@@ -286,6 +283,26 @@ namespace Artemis.Profiles.Layers.Models
                 LayerCondition = new DataModelCondition();
         }
 
+        public void SetupKeybinds()
+        {
+            RenderAllowed = true;
+
+            // Clean up old keybinds
+            RemoveKeybinds();
+
+            for (var index = 0; index < Properties.LayerKeybindModels.Count; index++)
+            {
+                var keybindModel = Properties.LayerKeybindModels[index];
+                keybindModel.Register(this, index);
+            }
+        }
+
+        public void RemoveKeybinds()
+        {
+            foreach (var keybindModel in Properties.LayerKeybindModels)
+                keybindModel.Unregister();
+        }
+
         #region Properties
 
         #region Layer type properties
@@ -301,6 +318,7 @@ namespace Artemis.Profiles.Layers.Models
         public string Name { get; set; }
         public int Order { get; set; }
         public bool Enabled { get; set; }
+        public bool RenderAllowed { get; set; }
         public bool Expanded { get; set; }
         public bool IsEvent { get; set; }
         public LayerPropertiesModel Properties { get; set; }
@@ -390,7 +408,13 @@ namespace Artemis.Profiles.Layers.Models
             get { return Profile; }
             set { Profile = value; }
         }
-        
+
         #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(Order)}: {Order}, {nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
+        }
     }
 }

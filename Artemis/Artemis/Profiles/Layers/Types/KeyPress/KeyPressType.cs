@@ -12,7 +12,6 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Properties;
 using Artemis.Utilities;
-using Artemis.Utilities.Keyboard;
 using Artemis.ViewModels;
 using Artemis.ViewModels.Profiles;
 
@@ -30,7 +29,7 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
             _deviceManager = deviceManager;
             _keyPressLayers = new List<LayerModel>();
 
-            KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
+            InputHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
         }
 
         public RadialGradientBrush TempBrush { get; set; }
@@ -140,6 +139,9 @@ namespace Artemis.Profiles.Layers.Types.KeyPress
 
             lock (_keyPressLayers)
             {
+                // Ensure the layer has keypress properties
+                SetupProperties(_layerModel);
+
                 var properties = (KeyPressPropertiesModel) _layerModel.Properties;
                 var layer = LayerModel.CreateLayer();
                 layer.Properties.X = keyMatch.Value.X - properties.Scale/2;

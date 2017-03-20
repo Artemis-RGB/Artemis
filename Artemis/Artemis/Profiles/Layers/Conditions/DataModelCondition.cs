@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Modules.Abstract;
-using Artemis.Profiles.Layers.Interfaces;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Models;
 
 namespace Artemis.Profiles.Layers.Conditions
@@ -12,17 +11,17 @@ namespace Artemis.Profiles.Layers.Conditions
         {
             lock (layerModel.Properties.Conditions)
             {
+                var checkConditions = layerModel.Properties.Conditions.Where(c => c.Field != null).ToList();
                 switch (layerModel.Properties.ConditionType)
                 {
                     case ConditionType.AnyMet:
-                        return layerModel.Properties.Conditions.Any(cm => cm.ConditionMet(dataModel));
+                        return checkConditions.Any(cm => cm.ConditionMet(dataModel));
                     case ConditionType.AllMet:
-                        return layerModel.Properties.Conditions.All(cm => cm.ConditionMet(dataModel));
+                        return checkConditions.All(cm => cm.ConditionMet(dataModel));
                     case ConditionType.NoneMet:
-                        return !layerModel.Properties.Conditions.Any(cm => cm.ConditionMet(dataModel));
-                    default:
-                        return false;
+                        return !checkConditions.Any(cm => cm.ConditionMet(dataModel));
                 }
+                return false;
             }
         }
     }

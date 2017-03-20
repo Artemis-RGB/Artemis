@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Razer
 
             Height = Constants.MaxRows;
             Width = Constants.MaxColumns;
-            PreviewSettings = new PreviewSettings(665, 175, new Thickness(0, -15, 0, 0), Resources.blackwidow);
+            PreviewSettings = new PreviewSettings(new Rect(26, 56, 906, 234), Resources.blackwidow);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 

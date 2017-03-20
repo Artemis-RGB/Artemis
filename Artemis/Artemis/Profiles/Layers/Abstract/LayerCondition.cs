@@ -1,7 +1,7 @@
 ﻿using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Models;
 
-namespace Artemis.Profiles.Layers.Interfaces
+namespace Artemis.Profiles.Layers.Abstract
 {
     public interface ILayerCondition
     {

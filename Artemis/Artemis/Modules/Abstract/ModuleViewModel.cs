@@ -13,9 +13,9 @@ namespace Artemis.Modules.Abstract
 {
     public abstract class ModuleViewModel : Screen
     {
+        private readonly GeneralSettings _generalSettings;
         private readonly MainManager _mainManager;
         private readonly ModuleManager _moduleManager;
-        private readonly GeneralSettings _generalSettings;
         private ModuleSettings _settings;
 
         public ModuleViewModel(MainManager mainManager, ModuleModel moduleModel, IKernel kernel)
@@ -56,7 +56,8 @@ namespace Artemis.Modules.Abstract
             get { return _settings; }
             set
             {
-                if (Equals(value, _settings)) return;
+                if (Equals(value, _settings))
+                    return;
                 _settings = value;
                 NotifyOfPropertyChange(() => Settings);
             }
@@ -74,6 +75,9 @@ namespace Artemis.Modules.Abstract
             }
         }
 
+        /// <summary>
+        ///     Indicates whether or not this module uses the profile editor
+        /// </summary>
         public abstract bool UsesProfileEditor { get; }
 
         private void MainManagerOnEnabledChanged(object sender, EnabledChangedEventArgs e)
@@ -91,7 +95,7 @@ namespace Artemis.Modules.Abstract
 
         private void UpdatedEnabledSetting()
         {
-            if (!ModuleModel.IsGeneral || (_moduleManager.ActiveModule != null && !_moduleManager.ActiveModule.IsGeneral || Settings.IsEnabled == IsModuleActive))
+            if (!ModuleModel.IsGeneral || _moduleManager.ActiveModule != null && !_moduleManager.ActiveModule.IsGeneral || Settings.IsEnabled == IsModuleActive)
                 return;
 
             Settings.IsEnabled = IsModuleActive;

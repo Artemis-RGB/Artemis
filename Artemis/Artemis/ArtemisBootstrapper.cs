@@ -12,7 +12,6 @@ using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.Converters;
 using Artemis.Utilities.DataReaders;
-using Artemis.Utilities.Keyboard;
 using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -35,7 +34,15 @@ namespace Artemis
 
             Initialize();
             BindSpecialValues();
-            KeyboardHook.SetupKeyboardHook();
+            InputHook.Start();
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+        }
+        
+        private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            // Get rid of the keyboard hook in case of a crash, otherwise input freezes up system wide until Artemis is gone
+            InputHook.Stop();
         }
 
         private void BindSpecialValues()

@@ -1,57 +1,48 @@
 ﻿<UserControl x:Class="Artemis.Modules.Games.RocketLeague.RocketLeagueView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:cal="http://www.caliburnproject.org"
-             mc:Ignorable="d"
-             d:DesignHeight="476.986" d:DesignWidth="538.772">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Margin="15, 5, 15, 5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="476.986" d:DesignWidth="538.772">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
 
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Label FontSize="20" HorizontalAlignment="Left">
-                    <Label.Content>
-                        <AccessText TextWrapping="Wrap"
-                                    Text="By default fills up the keyboard and colors all devices according to the amount boost." />
-                    </Label.Content>
-                </Label>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="Enable module" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                    <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  ToolTip="Note: You can't enable an module when Artemis is disabled"
-                                  IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleModule]" />
-                </StackPanel>
-            </StackPanel>
+        <!-- Header -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
+            <Label.Content>
+                <AccessText TextWrapping="Wrap" Text="By default fills up the keyboard and colors all devices according to the amount boost." />
+            </Label.Content>
+        </Label>
 
-            <!-- Profile editor -->
-            <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-30,0" />
+        <!-- Sub header -->
+        <TextBlock x:Name="VersionText" Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" TextAlignment="Justify" Margin="5,0,0,10" />
 
-            <TextBlock x:Name="VersionText" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center"
-                       Margin="0,8" TextWrapping="Wrap" HorizontalAlignment="Left"
-                       Foreground="{DynamicResource HighlightBrush}" />
+        <!-- Enable -->
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Label Content="Enable module" HorizontalAlignment="Right" Margin="0,0,0,3" />
+            <controls:ToggleSwitchButton IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}" cal:Message.Attach="[Event Click] = [Action ToggleModule]"
+                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Note: You can't enable an module when Artemis is disabled" />
+        </StackPanel>
 
-            <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom">
-                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
-                        Style="{DynamicResource SquareButtonStyle}" />
-                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
-                        Margin="10,0,0,0"
-                        Style="{DynamicResource SquareButtonStyle}" />
-            </StackPanel>
-        </Grid>
-    </ScrollViewer>
+        <!-- Profile editor -->
+        <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
+
+        <!-- Buttons -->
+        <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100" Style="{DynamicResource SquareButtonStyle}" />
+            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0" Style="{DynamicResource SquareButtonStyle}" />
+        </StackPanel>
+    </Grid>
 </UserControl>

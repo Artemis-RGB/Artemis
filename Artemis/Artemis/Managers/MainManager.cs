@@ -39,7 +39,6 @@ namespace Artemis.Managers
             _processTimer.Start();
 
             ProgramEnabled = false;
-            Running = false;
 
             // Create and start the web server
             GameStateWebServer = gameStateWebServer;
@@ -71,7 +70,6 @@ namespace Artemis.Managers
         public PipeServer PipeServer { get; set; }
         public GameStateWebServer GameStateWebServer { get; set; }
         public bool ProgramEnabled { get; private set; }
-        public bool Running { get; private set; }
 
         public void Dispose()
         {

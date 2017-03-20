@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -12,23 +11,23 @@ using Artemis.Models;
 using Artemis.Modules.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
-using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
 using Newtonsoft.Json;
-using Color = System.Windows.Media.Color;
-using Point = System.Windows.Point;
-using Size = System.Windows.Size;
 
 namespace Artemis.Profiles
 {
     public class ProfileModel
     {
         private readonly char[] _invalidFileNameChars;
+        private List<KeybindModel> _profileBinds;
 
         public ProfileModel()
         {
             _invalidFileNameChars = Path.GetInvalidFileNameChars();
+            _profileBinds = new List<KeybindModel>();
+
             Layers = new ChildItemCollection<ProfileModel, LayerModel>(this);
+            OnProfileUpdatedEvent += OnOnProfileUpdatedEvent;
         }
 
         public ChildItemCollection<ProfileModel, LayerModel> Layers { get; }
@@ -43,8 +42,15 @@ namespace Artemis.Profiles
         [JsonIgnore]
         public string Slug => new string(Name.Where(ch => !_invalidFileNameChars.Contains(ch)).ToArray());
 
+        private void OnOnProfileUpdatedEvent(object sender, EventArgs e)
+        {
+            ClearKeybinds();
+            ApplyKeybinds();
+        }
+
         public event EventHandler<ProfileDeviceEventsArg> OnDeviceUpdatedEvent;
         public event EventHandler<ProfileDeviceEventsArg> OnDeviceDrawnEvent;
+        public event EventHandler<EventArgs> OnProfileUpdatedEvent;
 
         public void FixOrder()
         {
@@ -68,6 +74,7 @@ namespace Artemis.Profiles
             return layers;
         }
 
+        // TODO: Make this and LayerModel's GetRenderLayers the same through inheritance
         /// <summary>
         ///     Generates a flat list containing all layers that must be rendered on the keyboard,
         ///     the first mouse layer to be rendered and the first headset layer to be rendered
@@ -76,8 +83,7 @@ namespace Artemis.Profiles
         /// <param name="keyboardOnly">Whether or not to ignore anything but keyboards</param>
         /// <param name="ignoreConditions"></param>
         /// <returns>A flat list containing all layers that must be rendered</returns>
-        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly,
-            bool ignoreConditions = false)
+        public List<LayerModel> GetRenderLayers(ModuleDataModel dataModel, bool keyboardOnly, bool ignoreConditions = false)
         {
             var layers = new List<LayerModel>();
             foreach (var layerModel in Layers.OrderByDescending(l => l.Order))
@@ -86,8 +92,10 @@ namespace Artemis.Profiles
                     continue;
 
                 if (!ignoreConditions)
-                    if (!layerModel.ConditionsMet(dataModel))
+                {
+                    if (!layerModel.AreConditionsMet(dataModel) || !layerModel.RenderAllowed)
                         continue;
+                }
 
                 layers.Add(layerModel);
                 layers.AddRange(layerModel.GetRenderLayers(dataModel, keyboardOnly, ignoreConditions));
@@ -103,8 +111,7 @@ namespace Artemis.Profiles
         /// <param name="renderLayers">The layers to render</param>
         /// <param name="dataModel">The data model to base the layer's properties on</param>
         /// <param name="preview">Indicates wheter the layer is drawn as a preview, ignoring dynamic properties</param>
-        internal void DrawLayers(DeviceVisualModel deviceVisualModel, List<LayerModel> renderLayers,
-            ModuleDataModel dataModel, bool preview)
+        internal void DrawLayers(DeviceVisualModel deviceVisualModel, List<LayerModel> renderLayers, ModuleDataModel dataModel, bool preview)
         {
             renderLayers = renderLayers.Where(rl => rl.LayerType.DrawType == deviceVisualModel.DrawType).ToList();
             if (!renderLayers.Any())
@@ -132,14 +139,17 @@ namespace Artemis.Profiles
 
         private void RaiseDeviceUpdatedEvent(ProfileDeviceEventsArg e)
         {
-            var handler = OnDeviceUpdatedEvent;
-            handler?.Invoke(this, e);
+            OnDeviceUpdatedEvent?.Invoke(this, e);
         }
 
         public void RaiseDeviceDrawnEvent(ProfileDeviceEventsArg e)
         {
-            var handler = OnDeviceDrawnEvent;
-            handler?.Invoke(this, e);
+            OnDeviceDrawnEvent?.Invoke(this, e);
+        }
+
+        public virtual void OnOnProfileUpdatedEvent()
+        {
+            OnProfileUpdatedEvent?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -184,11 +194,13 @@ namespace Artemis.Profiles
 
         public void Activate(LuaManager luaManager)
         {
+            ApplyKeybinds();
             luaManager.SetupLua(this);
         }
 
         public void Deactivate(LuaManager luaManager)
         {
+            ClearKeybinds();
             luaManager.ClearLua();
         }
 
@@ -198,9 +210,7 @@ namespace Artemis.Profiles
             var layer = LayerModel.CreateLayer();
 
             if (afterLayer != null)
-            {
                 afterLayer.InsertAfter(layer);
-            }
             else
             {
                 Layers.Add(layer);
@@ -208,6 +218,24 @@ namespace Artemis.Profiles
             }
 
             return layer;
+        }
+
+        public void ApplyKeybinds()
+        {
+            foreach (var layerModel in GetLayers())
+                layerModel.SetupKeybinds();
+        }
+
+        public void ClearKeybinds()
+        {
+            foreach (var layerModel in GetLayers())
+                layerModel.RemoveKeybinds();
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(KeyboardSlug)}: {KeyboardSlug}, {nameof(GameName)}: {GameName}";
         }
 
         #region Compare
@@ -221,9 +249,12 @@ namespace Artemis.Profiles
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
             return Equals((ProfileModel) obj);
         }
 

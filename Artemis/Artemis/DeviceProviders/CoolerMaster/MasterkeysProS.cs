@@ -28,7 +28,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             Height = 6;
             Width = 18;
 
-            PreviewSettings = new PreviewSettings(683, 242, new Thickness(0, 0, 0, 0), Resources.masterkeys_pro_s);
+            PreviewSettings = new PreviewSettings(new Rect(13, 12, 657, 219), Resources.masterkeys_pro_s);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
@@ -59,7 +59,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             using (var b = ImageUtilities.ResizeImage(bitmap, Width, Height))
             {
                 // Create an empty matrix
-                var matrix = new COLOR_MATRIX { KeyColor = new KEY_COLOR[6, 22] };
+                var matrix = new COLOR_MATRIX {KeyColor = new KEY_COLOR[6, 22]};
 
                 // Map the bytes to the matix
                 for (var x = 0; x < Width; x++)
@@ -72,6 +72,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
                 }
 
                 // Send the matrix to the keyboard
+                CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_S);
                 CmSdk.SetAllLedColor(matrix);
             }
         }

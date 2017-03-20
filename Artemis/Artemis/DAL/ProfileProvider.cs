@@ -21,8 +21,7 @@ namespace Artemis.DAL
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static readonly string ProfileFolder =
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
+        public static readonly string ProfileFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
 
         private static bool _installedDefaults;
 

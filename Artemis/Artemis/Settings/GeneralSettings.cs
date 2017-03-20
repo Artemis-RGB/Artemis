@@ -73,11 +73,12 @@ namespace Artemis.Settings
         public void Save()
         {
             SettingsProvider.Save(this);
+
+            Logging.SetupLogging(LogLevel);
             ApplyAutorun();
             ApplyTheme();
             ApplyGamestatePort();
             ApplyScreenCaptureFPS();
-            Logging.SetupLogging(LogLevel);
         }
 
         public void Reset(bool save = false)
