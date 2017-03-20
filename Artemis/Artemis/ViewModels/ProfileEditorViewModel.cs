@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.DAL;
-using Artemis.DeviceProviders;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
@@ -46,14 +44,14 @@ namespace Artemis.ViewModels
 {
     public sealed class ProfileEditorViewModel : Screen, IDropTarget
     {
+        private readonly KeybindModel _copyKeybind;
         private readonly DeviceManager _deviceManager;
         private readonly MetroDialogService _dialogService;
         private readonly LoopManager _loopManager;
         private readonly ModuleModel _moduleModel;
-        private readonly KeybindModel _copyKeybind;
+        private readonly KeybindModel _pasteKeybind;
         private ImageSource _keyboardPreview;
         private ObservableCollection<LayerModel> _layers;
-        private readonly KeybindModel _pasteKeybind;
         private ObservableCollection<string> _profileNames;
         private bool _saving;
         private LayerModel _selectedLayer;
@@ -198,7 +196,7 @@ namespace Artemis.ViewModels
                 NotifyOfPropertyChange(() => LayerSelected);
             }
         }
-        
+
         public ProfileModel SelectedProfile => _moduleModel?.ProfileModel;
         public bool ProfileSelected => SelectedProfile != null;
         public bool LayerSelected => SelectedProfile != null && SelectedLayer != null;
@@ -348,9 +346,7 @@ namespace Artemis.ViewModels
                     return;
 
                 if (SelectedLayer != null)
-                {
                     SelectedLayer.InsertAfter(layerModel);
-                }
                 else
                 {
                     SelectedProfile.Layers.Add(layerModel);
@@ -405,6 +401,9 @@ namespace Artemis.ViewModels
             if (_saving || SelectedProfile == null || _deviceManager.ChangingKeyboard)
                 return;
 
+            SelectedProfile.Width = _deviceManager.ActiveKeyboard.Width;
+            SelectedProfile.Height = _deviceManager.ActiveKeyboard.Height;
+
             _saving = true;
             try
             {
@@ -421,8 +420,7 @@ namespace Artemis.ViewModels
         {
             if (_deviceManager.ActiveKeyboard == null)
             {
-                _dialogService.ShowMessageBox("Cannot add profile.",
-                    "To add a profile, please select a keyboard in the options menu first.");
+                _dialogService.ShowMessageBox("Cannot add profile.", "To add a profile, please select a keyboard in the options menu first.");
                 return;
             }
 
@@ -701,9 +699,7 @@ namespace Artemis.ViewModels
                     : Cursors.SizeAll;
             }
             else
-            {
                 KeyboardPreviewCursor = Cursors.Hand;
-            }
         }
 
         private Point GetScaledPosition(MouseEventArgs e)
@@ -716,13 +712,13 @@ namespace Artemis.ViewModels
             var heightScale = sourceImage.ActualHeight / _deviceManager.ActiveKeyboard.PreviewSettings.BackgroundRectangle.Height;
 
             // Remove the preview settings' offset from the cursor postion
-            pos.X = pos.X - (previewSettings.OverlayRectangle.X * widthScale);
-            pos.Y = pos.Y - (previewSettings.OverlayRectangle.Y * heightScale);
+            pos.X = pos.X - previewSettings.OverlayRectangle.X * widthScale;
+            pos.Y = pos.Y - previewSettings.OverlayRectangle.Y * heightScale;
 
             // Scale the X and Y position down to match the keyboard's physical size and thus the layer positions
-            pos.X = pos.X * (SelectedProfile.Width / (previewSettings.OverlayRectangle.Width*widthScale));
+            pos.X = pos.X * (SelectedProfile.Width / (previewSettings.OverlayRectangle.Width * widthScale));
             pos.Y = pos.Y * (SelectedProfile.Height / (previewSettings.OverlayRectangle.Height * heightScale));
-            
+
             return pos;
         }
 
