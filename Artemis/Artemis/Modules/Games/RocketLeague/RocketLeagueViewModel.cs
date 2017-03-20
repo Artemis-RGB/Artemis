@@ -36,15 +36,13 @@ namespace Artemis.Modules.Games.RocketLeague
         {
             if (!SettingsProvider.Load<GeneralSettings>().EnablePointersUpdate)
             {
-                VersionText = "Note: You disabled pointer updates, this could result in the " +
-                              "Rocket League effect not working after a game update.";
+                VersionText = "You disabled pointer updates, this could result in the Rocket League effect not working after a game update.";
                 return;
             }
 
             Updater.GetPointers();
             var version = SettingsProvider.Load<OffsetSettings>().RocketLeague.GameVersion;
-            VersionText = $"Note: Requires patch {version}. When a new patch is released Artemis downloads " +
-                          "new pointers for the latest version (unless disabled in settings).";
+            VersionText = $"Requires patch {version}. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).";
         }
     }
 }

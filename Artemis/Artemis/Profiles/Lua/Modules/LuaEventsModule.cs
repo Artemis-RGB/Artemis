@@ -5,7 +5,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Profiles.Lua.Modules.Events;
 using Artemis.Profiles.Lua.Wrappers;
-using Artemis.Utilities.Keyboard;
+using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using NLog;
 
@@ -23,7 +23,7 @@ namespace Artemis.Profiles.Lua.Modules
             _profileModel = luaManager.ProfileModel;
             _profileModel.OnDeviceUpdatedEvent += OnDeviceUpdatedEvent;
             _profileModel.OnDeviceDrawnEvent += OnDeviceDrawnEvent;
-            KeyboardHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
+            InputHook.KeyDownCallback += KeyboardHookOnKeyDownCallback;
         }
 
         public override string ModuleName => "Events";
@@ -118,7 +118,7 @@ namespace Artemis.Profiles.Lua.Modules
         {
             _profileModel.OnDeviceUpdatedEvent -= OnDeviceUpdatedEvent;
             _profileModel.OnDeviceDrawnEvent -= OnDeviceDrawnEvent;
-            KeyboardHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
+            InputHook.KeyDownCallback -= KeyboardHookOnKeyDownCallback;
         }
 
         #endregion

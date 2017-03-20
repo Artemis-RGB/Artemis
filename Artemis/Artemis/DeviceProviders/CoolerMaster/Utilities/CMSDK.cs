@@ -28,7 +28,10 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         DEV_MKeys_S = 1,
         DEV_MKeys_L_White = 2,
         DEV_MKeys_M_White = 3,
-        DEV_MMouse_L = 4
+        DEV_MMouse_L = 4,
+        DEV_MMouse_S = 5,
+        DEV_MKeys_M = 6,
+        DEV_MKeys_S_White = 7
     }
 
     //Enumeration of device layout
@@ -53,6 +56,7 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         /// </summary>
         /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern LAYOUT_KEYBOARD GetDeviceLayout();
 
         /// <summary>
@@ -60,6 +64,7 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         /// </summary>
         /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool IsDevicePlug();
 
         /// <summary>
@@ -68,6 +73,7 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         /// <param name="bEnable"></param>
         /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool EnableLedControl(bool bEnable);
 
         /// <summary>
@@ -80,6 +86,7 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         /// <param name="b"></param>
         /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool SetLedColor(int iRow, int iColumn, byte r, byte g, byte b);
 
         /// <summary>
@@ -88,6 +95,7 @@ namespace Artemis.DeviceProviders.CoolerMaster.Utilities
         /// <param name="colorMatrix"></param>
         /// <returns></returns>
         [DllImport("lib\\SDKDLL ", CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool SetAllLedColor(COLOR_MATRIX colorMatrix);
     }
 }

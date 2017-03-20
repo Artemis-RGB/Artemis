@@ -28,7 +28,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
             Height = 6;
             Width = 22;
 
-            PreviewSettings = new PreviewSettings(670, 189, new Thickness(-2, -5, 0, 0), Resources.masterkeys_pro_l);
+            PreviewSettings = new PreviewSettings(new Rect(17, 13, 812, 219), Resources.masterkeys_pro_l);
             _generalSettings = SettingsProvider.Load<GeneralSettings>();
         }
 
@@ -72,6 +72,7 @@ namespace Artemis.DeviceProviders.CoolerMaster
                 }
 
                 // Send the matrix to the keyboard
+                CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MKeys_L);
                 CmSdk.SetAllLedColor(matrix);
             }
         }

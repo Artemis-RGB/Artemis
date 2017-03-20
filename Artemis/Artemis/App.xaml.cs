@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using Artemis.Utilities;
 using NLog;
 using WpfExceptionViewer;
 
@@ -26,6 +27,9 @@ namespace Artemis
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            // Get rid of the keyboard hook in case of a crash, otherwise input freezes up system wide until Artemis is gone
+            InputHook.Stop();
+
             if (DoHandle)
             {
                 GetArtemisExceptionViewer(e.Exception).ShowDialog();

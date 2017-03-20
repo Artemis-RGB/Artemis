@@ -1,5 +1,7 @@
-﻿using System.Drawing;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Media;
+using Artemis.Utilities;
+using Color = System.Drawing.Color;
 using Point = System.Windows.Point;
 
 namespace Artemis.Modules.General.Bubbles
@@ -20,7 +22,7 @@ namespace Artemis.Modules.General.Bubbles
 
         #region Properties & Fields
 
-        private Brush _brush;
+        private SolidColorBrush _brush;
 
         private Color _color;
 
@@ -30,7 +32,7 @@ namespace Artemis.Modules.General.Bubbles
             set
             {
                 _color = value;
-                _brush = new SolidBrush(_color);
+                _brush = new SolidColorBrush(ColorHelpers.ToMediaColor(_color));
             }
         }
 
@@ -45,10 +47,10 @@ namespace Artemis.Modules.General.Bubbles
         public void CheckCollision(Rect border)
         {
             if (Position.X - Radius < border.X || Position.X + Radius > border.X + border.Width)
-                Direction = new Vector(Direction.X*-1, Direction.Y);
+                Direction = new Vector(Direction.X * -1, Direction.Y);
 
             if (Position.Y - Radius < border.Y || Position.Y + Radius > border.Y + border.Height)
-                Direction = new Vector(Direction.X, Direction.Y*-1);
+                Direction = new Vector(Direction.X, Direction.Y * -1);
         }
 
         public void Move()
@@ -56,9 +58,9 @@ namespace Artemis.Modules.General.Bubbles
             Position += Direction;
         }
 
-        public void Draw(Graphics g)
+        public void Draw(DrawingContext drawingContext)
         {
-            g.FillEllipse(_brush, (float) Position.X - Radius, (float) Position.Y - Radius, Radius*2, Radius*2);
+            drawingContext.DrawEllipse(_brush, new Pen(_brush, 1), new Point((float) Position.X - Radius, (float) Position.Y - Radius), Radius * 2, Radius * 2);
         }
 
         #endregion

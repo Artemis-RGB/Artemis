@@ -1,103 +1,75 @@
 ﻿<UserControl x:Class="Artemis.Modules.Games.EurotruckSimulator2.EurotruckSimulator2View"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:cal="http://www.caliburnproject.org"
-             mc:Ignorable="d"
-             d:DesignHeight="559.725" d:DesignWidth="882.696">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Margin="15,5,5,5">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:cal="http://www.caliburnproject.org"
+    xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    mc:Ignorable="d"
+    d:DesignHeight="559.725" d:DesignWidth="882.696">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
+            <Label.Content>
+                <AccessText TextWrapping="Wrap" Text="By default shows indicator lights, speed and engine RPM on the keyboard." />
+            </Label.Content>
+        </Label>
+
+        <!-- Sub header -->
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" TextAlignment="Justify" Margin="5,0,0,10">
+            The Truck Simulator module uses code from the <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://github.com/Funbit/ets2-telemetry-server">ETS2 Telemetry Web Server</Hyperlink> project by Funbit.
+        </TextBlock>
+
+        <!-- Enable -->
+        <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Label Content="Enable module" HorizontalAlignment="Right" Margin="0,0,0,3" />
+            <controls:ToggleSwitchButton IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}" cal:Message.Attach="[Event Click] = [Action ToggleModule]"
+                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Note: You can't enable an module when Artemis is disabled" />
+        </StackPanel>
+
+        <!-- Directories -->
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <!-- ETS2 dir -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
-                    <Label.Content>
-                        <AccessText TextWrapping="Wrap"
-                                    Text="By default shows indicator lights, speed and engine RPM on the keyboard" />
-                    </Label.Content>
-                </Label>
-
-                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom"
-                           TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold"
-                           TextAlignment="Justify" Margin="5,0,0,10">
-                    The Truck Simulator module uses code from the
-                    <Hyperlink RequestNavigate="Hyperlink_RequestNavigate"
-                               NavigateUri="https://github.com/Funbit/ets2-telemetry-server">
-                        ETS2 Telemetry Web Server
-                    </Hyperlink>
-                    project by Funbit
-                </TextBlock>
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right">
-                    <Label Content="Enable module" Margin="0 3 0 0" HorizontalAlignment="Right" />
-                    <ToggleButton Margin="0 3 0 0" Width="25" Height="25"
-                                  Style="{DynamicResource MetroCircleToggleButtonStyle}"
-                                  ToolTip="Note: You can't enable an module when Artemis is disabled"
-                                  IsChecked="{Binding Path=IsModuleEnabled, Mode=OneWay}"
-                                  cal:Message.Attach="[Event Click] = [Action ToggleModule]" />
-                </StackPanel>
-            </Grid>
-
-            <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                <!-- ETS2 dir -->
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <StackPanel Margin="0,0,1,0" Grid.Column="0">
-                    <Label FontSize="16" HorizontalAlignment="Left" Content="Euro Truck Simulator 2 directory" />
-                    <Grid>
-                        <TextBox x:Name="Ets2GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                                 Text="{Binding Path=Settings.Ets2GameDirectory, Mode=TwoWay}"
-                                 cal:Message.Attach="[Event LostFocus] = [Action Ets2PlacePlugin]" />
-                        <Button x:Name="Ets2BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
-                                HorizontalAlignment="Right" Width="25"
-                                Style="{DynamicResource SquareButtonStyle}" Height="26" />
-                    </Grid>
-                </StackPanel>
-                <!-- ATS dir -->
-                <StackPanel Margin="0,0,1,0" Grid.Column="1">
-                    <Label FontSize="16" HorizontalAlignment="Left" Content="American Truck Simulator directory" />
-                    <Grid>
-                        <TextBox x:Name="AtsGameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0"
-                                 Text="{Binding Path=Settings.AtsGameDirectory, Mode=TwoWay}"
-                                 cal:Message.Attach="[Event LostFocus] = [Action AtsPlacePlugin]" />
-                        <Button x:Name="AtsBrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944"
-                                HorizontalAlignment="Right" Width="25"
-                                Style="{DynamicResource SquareButtonStyle}" Height="26" />
-                    </Grid>
-                </StackPanel>
-            </Grid>
-            <!-- Profile editor -->
-            <ContentControl Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" Margin="0,0,-20,0" />
-
-            <!-- Buttons -->
-            <StackPanel Grid.Column="0" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom">
-                <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100"
-                        Style="{DynamicResource SquareButtonStyle}" />
-                <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100"
-                        Margin="10,0,0,0"
-                        Style="{DynamicResource SquareButtonStyle}" />
+            <StackPanel Margin="0,0,1,0" Grid.Column="0">
+                <Label FontSize="16" HorizontalAlignment="Left" Content="Euro Truck Simulator 2 directory" />
+                <Grid>
+                    <TextBox x:Name="Ets2GameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=Settings.Ets2GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action Ets2PlacePlugin]" />
+                    <Button x:Name="Ets2BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="26" />
+                </Grid>
+            </StackPanel>
+            <!-- ATS dir -->
+            <StackPanel Margin="0,0,1,0" Grid.Column="1">
+                <Label FontSize="16" HorizontalAlignment="Left" Content="American Truck Simulator directory" />
+                <Grid>
+                    <TextBox x:Name="AtsGameDirectory" Height="23" TextWrapping="Wrap" Margin="5,0,30,0" Text="{Binding Path=Settings.AtsGameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action AtsPlacePlugin]" />
+                    <Button x:Name="AtsBrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="26" />
+                </Grid>
             </StackPanel>
         </Grid>
-    </ScrollViewer>
+
+        <!-- Profile editor -->
+        <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
+
+        <!-- Buttons -->
+        <StackPanel Grid.Column="0" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Bottom">
+            <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100" Style="{DynamicResource SquareButtonStyle}" />
+            <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0" Style="{DynamicResource SquareButtonStyle}" />
+        </StackPanel>
+    </Grid>
 </UserControl>

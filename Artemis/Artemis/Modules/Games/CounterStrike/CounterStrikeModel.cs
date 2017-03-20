@@ -8,6 +8,7 @@ using Artemis.Services;
 using Artemis.Utilities;
 using Artemis.Utilities.GameState;
 using Newtonsoft.Json;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Artemis.Modules.Games.CounterStrike
 {
@@ -56,7 +57,7 @@ namespace Artemis.Modules.Games.CounterStrike
                 return;
 
             var dm = (CounterStrikeDataModel) DataModel;
-            if (dm.player != null)
+            if (dm.player != null && dm.player.weapons != null)
             {
                 // Detect active weapon
                 if (dm.player.weapons.weapon_0?.state == "active")
@@ -147,13 +148,19 @@ namespace Artemis.Modules.Games.CounterStrike
             {
                 if (DataModel == null)
                     DataModel = new CounterStrikeDataModel();
-                JsonConvert.PopulateObject(jsonString, DataModel);
+                JsonConvert.PopulateObject(jsonString, DataModel, new JsonSerializerSettings {Error = HandleGameDataError});
             }
             catch (Exception ex)
             {
                 Logger?.Error(ex, "Failed to deserialize CS:GO JSON");
                 throw;
             }
+        }
+
+        private void HandleGameDataError(object sender, ErrorEventArgs e)
+        {
+            // Ignore errors and leave them null
+            e.ErrorContext.Handled = true;
         }
     }
 }

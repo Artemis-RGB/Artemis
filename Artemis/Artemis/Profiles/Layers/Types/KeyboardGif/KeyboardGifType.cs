@@ -42,9 +42,9 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
 
             // Only reconstruct GifImage if the underlying source has changed
             if (layerModel.GifImage == null)
-                layerModel.GifImage = new GifImage(props.GifFile);
+                layerModel.GifImage = new GifImage(props.GifFile, props.AnimationSpeed);
             if (layerModel.GifImage.Source != props.GifFile)
-                layerModel.GifImage = new GifImage(props.GifFile);
+                layerModel.GifImage = new GifImage(props.GifFile, props.AnimationSpeed);
 
             var rect = new Rect(layerModel.X*4, layerModel.Y*4, layerModel.Width*4, layerModel.Height*4);
 
@@ -61,6 +61,9 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
         public void Update(LayerModel layerModel, ModuleDataModel dataModel, bool isPreview = false)
         {
             layerModel.ApplyProperties(true);
+            if (layerModel.GifImage != null)
+                layerModel.GifImage.AnimationSpeed = layerModel.Properties.AnimationSpeed;
+
             if (isPreview || dataModel == null)
                 return;
 
@@ -74,7 +77,8 @@ namespace Artemis.Profiles.Layers.Types.KeyboardGif
             if (layerModel.Properties is KeyboardPropertiesModel)
                 return;
 
-            layerModel.Properties = new KeyboardPropertiesModel(layerModel.Properties);
+            // Set animation speed to 1.5, this translates back to a GIF playback rate of x1
+            layerModel.Properties = new KeyboardPropertiesModel(layerModel.Properties) {AnimationSpeed = 1.5};
         }
 
         public LayerPropertiesViewModel SetupViewModel(LayerEditorViewModel layerEditorViewModel,

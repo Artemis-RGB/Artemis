@@ -2,6 +2,7 @@
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Abstract;
+using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Profiles.Lua;

@@ -54,7 +54,7 @@ namespace Artemis.Utilities
                 bitmapImage.StreamSource = memory;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
-
+                
                 return bitmapImage;
             }
         }

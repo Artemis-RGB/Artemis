@@ -7,7 +7,7 @@ namespace Artemis.Profiles.Layers.Models
     {
         public override void TriggerEvent(LayerModel layer)
         {
-            if (CanTrigger && DelayExpired())
+            if (CanTrigger)
             {
                 if (layer.GifImage != null)
                     layer.GifImage.CurrentFrame = 0;
@@ -18,12 +18,10 @@ namespace Artemis.Profiles.Layers.Models
 
         public override bool MustStop(LayerModel layer)
         {
-            if (ExpirationType != ExpirationType.Animation)
-                return base.MustStop(layer);
-
-            if (layer.LayerType is KeyboardGifType)
+            if (layer.LayerType is KeyboardGifType && ExpirationType == ExpirationType.Animation)
                 return layer.GifImage?.CurrentFrame >= layer.GifImage?.FrameCount - 1;
-            return (layer.LayerAnimation == null) || layer.LayerAnimation.MustExpire(layer);
+
+            return base.MustStop(layer);
         }
     }
 }
