@@ -384,6 +384,13 @@
       <DependentUpon>AssettoCorsaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaViewModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaDataModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaSettings.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaView.xaml.cs">
+      <DependentUpon>TerrariaView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\Terraria\TerrariaViewModel.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
@@ -855,6 +862,10 @@
     <Page Include="Modules\Games\AssettoCorsa\AssettoCorsaView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Games\Terraria\TerrariaView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\General\Bubbles\BubblesView.xaml">
       <SubType>Designer</SubType>

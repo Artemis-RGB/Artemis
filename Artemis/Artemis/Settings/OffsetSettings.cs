@@ -8,6 +8,7 @@ namespace Artemis.Settings
     {
         public GamePointersCollection RocketLeague { get; set; }
         public GamePointersCollection WorldOfWarcraft { get; set; }
+        public GamePointersCollection Terraria { get; set; }
 
         public void Save()
         {
