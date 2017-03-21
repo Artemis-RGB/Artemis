@@ -88,11 +88,6 @@ namespace Artemis.DeviceProviders.Corsair
                     break;
             }
 
-            Height = 8;
-            Width = 22;
-            Slug = "corsair-strafe-rgb";
-            PreviewSettings = new PreviewSettings(new Rect(23, 12, 937, 324), Resources.strafe);
-
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
