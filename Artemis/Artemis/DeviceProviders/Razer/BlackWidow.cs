@@ -37,8 +37,11 @@ namespace Artemis.DeviceProviders.Razer
                 return false;
 
             // Some people have Synapse installed, but not a Chroma keyboard, deal with this
+            Chroma.Instance.Initialize();
             var blackWidowFound = Chroma.Instance.Query(Devices.Blackwidow).Connected;
             var blackWidowTeFound = Chroma.Instance.Query(Devices.BlackwidowTe).Connected;
+            Chroma.Instance.Uninitialize();
+
             return blackWidowFound || blackWidowTeFound;
         }
 

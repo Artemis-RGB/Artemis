@@ -34,7 +34,6 @@ namespace Artemis
 
             Initialize();
             BindSpecialValues();
-            InputHook.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
@@ -98,6 +97,7 @@ namespace Artemis
                 logger.Info("Artemis was run using the autorun shortcut, sleeping for 15 sec.");
                 Thread.Sleep(15000);
             }
+            InputHook.Start();
             _kernel = new StandardKernel(new BaseModules(), new ManagerModules());
 
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
