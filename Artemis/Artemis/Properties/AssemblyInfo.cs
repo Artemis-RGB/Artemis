@@ -53,7 +53,7 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.9.0.1")]
-[assembly: AssemblyFileVersion("1.9.0.1")]
+[assembly: AssemblyVersion("1.9.0.2")]
+[assembly: AssemblyFileVersion("1.9.0.2")]
 [assembly: InternalsVisibleTo("Artemis.Explorables")]
 
