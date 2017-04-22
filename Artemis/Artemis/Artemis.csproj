@@ -568,10 +568,20 @@
     <Compile Include="Profiles\Lua\Modules\Events\LuaKeyPressEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceUpdatingEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaButton.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaCheckBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaComboBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaLabel.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaTextBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml.cs">
+      <DependentUpon>LuaWindowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowViewModel.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaEventsModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaBrushesModule.cs" />
     <Compile Include="Profiles\Lua\LuaModule.cs" />
     <Compile Include="Profiles\Lua\Modules\Brushes\LuaSolidColorBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaGuiModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaKeybindModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaKeyboardModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaLayerModule.cs" />
@@ -934,6 +944,10 @@
     <Page Include="Profiles\Layers\Types\Mousemat\MousematPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
