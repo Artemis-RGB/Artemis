@@ -10,6 +10,7 @@ using Artemis.DAL;
 using Artemis.InjectionModules;
 using Artemis.Settings;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using Artemis.Utilities.Converters;
 using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels;
@@ -113,7 +114,7 @@ namespace Artemis
 
             //TODO DarthAffe 17.12.2016: Is this the right location for this?
             //TODO Move to Mainmanager and make disposable
-            ActiveWindowHelper.Initialize();
+            ActiveWindowHelper.SetActiveWindowDetectionType(SettingsProvider.Load<GeneralSettings>().ActiveWindowDetection);
         }
 
         protected override void OnExit(object sender, EventArgs e)
