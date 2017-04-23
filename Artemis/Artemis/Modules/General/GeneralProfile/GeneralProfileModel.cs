@@ -11,6 +11,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using CSCore.CoreAudioAPI;
 using Newtonsoft.Json;
 using SpotifyAPI.Local;
