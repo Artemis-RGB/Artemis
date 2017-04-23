@@ -8,6 +8,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
+using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
 using NLog;
@@ -36,6 +37,8 @@ namespace Artemis.ViewModels.Flyouts
 
             LogLevels = new BindableCollection<string>();
             LogLevels.AddRange(LogLevel.AllLoggingLevels.Select(l => l.Name));
+
+            ActiveWindowDetections = new BindableCollection<ActiveWindowDetectionType>(Enum.GetValues(typeof(ActiveWindowDetectionType)).Cast<ActiveWindowDetectionType>());
 
             PropertyChanged += KeyboardUpdater;
             mainManager.EnabledChanged += MainManagerEnabledChanged;
@@ -96,6 +99,7 @@ namespace Artemis.ViewModels.Flyouts
         public string VersionText => "Artemis " + Assembly.GetExecutingAssembly().GetName().Version;
 
         public BindableCollection<string> LogLevels { get; set; }
+        public BindableCollection<ActiveWindowDetectionType> ActiveWindowDetections { get; set; }
 
         public string SelectedTheme
         {
@@ -127,6 +131,17 @@ namespace Artemis.ViewModels.Flyouts
                 if (value == GeneralSettings.LogLevel) return;
                 GeneralSettings.LogLevel = value;
                 NotifyOfPropertyChange(() => SelectedLogLevel);
+            }
+        }
+
+        public ActiveWindowDetectionType SelectedActiveWindowDetection
+        {
+            get { return GeneralSettings.ActiveWindowDetection; }
+            set
+            {
+                if (value == GeneralSettings.ActiveWindowDetection) return;
+                GeneralSettings.ActiveWindowDetection = value;
+                NotifyOfPropertyChange(() => SelectedActiveWindowDetection);
             }
         }
 
