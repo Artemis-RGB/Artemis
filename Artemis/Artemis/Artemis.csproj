@@ -587,6 +587,7 @@
     <Compile Include="Profiles\Lua\Modules\LuaLayerModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaMouseModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaProfileModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaStorageModule.cs" />
     <Compile Include="Profiles\Lua\Modules\Timer\LuaTimer.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaTimerModule.cs" />
     <Compile Include="Profiles\Lua\Wrappers\LuaDrawWrapper.cs" />

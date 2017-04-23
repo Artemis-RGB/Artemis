@@ -17,7 +17,6 @@ namespace Artemis.Managers
         private readonly DeviceManager _deviceManager;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
-        private readonly Script _luaScript;
         private List<LuaModule> _luaModules;
 
         public LuaManager(IKernel kernel, ILogger logger, DeviceManager deviceManager)
@@ -25,13 +24,14 @@ namespace Artemis.Managers
             _kernel = kernel;
             _logger = logger;
             _deviceManager = deviceManager;
-            _luaScript = new Script(CoreModules.Preset_SoftSandbox);
+            LuaScript = new Script(CoreModules.Preset_SoftSandbox);
         }
 
         public ProfileModel ProfileModel { get; private set; }
         public KeyboardProvider KeyboardProvider { get; private set; }
         public LuaProfileModule ProfileModule { get; private set; }
         public LuaEventsModule EventsModule { get; private set; }
+        public Script LuaScript { get; }
 
         public void SetupLua(ProfileModel profileModel)
         {
@@ -52,11 +52,11 @@ namespace Artemis.Managers
             EventsModule = (LuaEventsModule) _luaModules.First(m => m.ModuleName == "Events");
 
             // Setup new state
-            _luaScript.Options.DebugPrint = LuaPrint;
+            LuaScript.Options.DebugPrint = LuaPrint;
 
-            // Insert each module into the script's globals
-            foreach (var luaModule in _luaModules)
-                _luaScript.Globals[luaModule.ModuleName] = luaModule;
+            // Insert each module with a ModuleName into the script's globals
+            foreach (var luaModule in _luaModules.Where(m => m.ModuleName != null))
+                LuaScript.Globals[luaModule.ModuleName] = luaModule;
 
             // If there is no LUA script, don't bother executing the string
             if (ProfileModel.LuaScript.IsNullOrEmpty())
@@ -66,9 +66,9 @@ namespace Artemis.Managers
             {
                 lock (EventsModule.InvokeLock)
                 {
-                    lock (_luaScript)
+                    lock (LuaScript)
                     {
-                        _luaScript.DoString(ProfileModel.LuaScript);
+                        LuaScript.DoString(ProfileModel.LuaScript);
                     }
                 }
             }
@@ -97,12 +97,12 @@ namespace Artemis.Managers
 
             try
             {
-                _luaScript.Globals.Clear();
-                _luaScript.Registry.Clear();
-                _luaScript.Registry.RegisterConstants();
-                _luaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
-                _luaScript.Globals.RegisterConstants();
-                _luaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                LuaScript.Globals.Clear();
+                LuaScript.Registry.Clear();
+                LuaScript.Registry.RegisterConstants();
+                LuaScript.Registry.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
+                LuaScript.Globals.RegisterConstants();
+                LuaScript.Globals.RegisterCoreModules(CoreModules.Preset_SoftSandbox);
             }
             catch (NullReferenceException)
             {
@@ -112,15 +112,15 @@ namespace Artemis.Managers
             if (EventsModule != null)
                 lock (EventsModule.InvokeLock)
                 {
-                    lock (_luaScript)
+                    lock (LuaScript)
                     {
-                        _luaScript.DoString("");
+                        LuaScript.DoString("");
                     }
                 }
             else
-                lock (_luaScript)
+                lock (LuaScript)
                 {
-                    _luaScript.DoString("");
+                    LuaScript.DoString("");
                 }
         }
 
@@ -138,12 +138,12 @@ namespace Artemis.Managers
             {
                 lock (EventsModule.InvokeLock)
                 {
-                    lock (_luaScript)
+                    lock (LuaScript)
                     {
                         if (args != null)
-                            _luaScript.Call(function, args);
+                            LuaScript.Call(function, args);
                         else
-                            _luaScript.Call(function);
+                            LuaScript.Call(function);
                     }
                 }
             }

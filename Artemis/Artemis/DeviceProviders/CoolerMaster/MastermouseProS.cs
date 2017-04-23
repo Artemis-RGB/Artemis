@@ -38,10 +38,17 @@ namespace Artemis.DeviceProviders.CoolerMaster
             CmSdk.SetControlDevice(DEVICE_INDEX.DEV_MMouse_S);
 
             // Doesn't seem reliable but better than nothing I suppose
-            CanUse = CmSdk.IsDevicePlug();
-            if (CanUse)
-                CmSdk.EnableLedControl(true);
-
+            try
+            {
+                CanUse = CmSdk.IsDevicePlug();
+                if (CanUse)
+                    CmSdk.EnableLedControl(true);
+            }
+            catch (Exception)
+            {
+                CanUse = false;
+            }
+            
             Logger.Debug("Attempted to enable Mastermouse Pro S. CanUse: {0}", CanUse);
             return CanUse;
         }

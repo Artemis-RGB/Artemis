@@ -134,7 +134,7 @@ namespace Artemis.DAL
                     return null;
                 return prof;
             }
-            catch (JsonSerializationException)
+            catch (JsonException)
             {
                 return null;
             }
