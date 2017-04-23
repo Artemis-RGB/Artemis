@@ -23,6 +23,7 @@ using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using Castle.Components.DictionaryAdapter;
 using GongSolutions.Wpf.DragDrop;

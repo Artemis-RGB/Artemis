@@ -5,6 +5,7 @@ using Artemis.DAL;
 using Artemis.Modules.Abstract;
 using Artemis.Settings;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using Ninject.Extensions.Logging;
 
 namespace Artemis.Managers
