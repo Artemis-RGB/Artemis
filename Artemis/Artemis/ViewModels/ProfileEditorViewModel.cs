@@ -324,7 +324,7 @@ namespace Artemis.ViewModels
 
         public void LayerToClipboard()
         {
-            if (SelectedLayer == null || !ActiveWindowHelper.MainWindowActive)
+            if (SelectedLayer == null || !ActiveWindowHelper.MainWindowActive || !IsActive)
                 return;
 
             // Probably not how the cool kids do it but leveraging on JsonConvert gives flawless serialization
@@ -333,28 +333,35 @@ namespace Artemis.ViewModels
 
         public void ClipboardToLayer()
         {
-            if (!ActiveWindowHelper.MainWindowActive)
+            if (!ActiveWindowHelper.MainWindowActive || !IsActive)
                 return;
 
-            GeneralHelpers.ExecuteSta(() =>
+            try
             {
-                var data = (string) Clipboard.GetData("layer");
-                if (data == null)
-                    return;
-
-                var layerModel = JsonConvert.DeserializeObject<LayerModel>(data);
-                if (layerModel == null)
-                    return;
-
-                if (SelectedLayer != null)
-                    SelectedLayer.InsertAfter(layerModel);
-                else
+                GeneralHelpers.ExecuteSta(() =>
                 {
-                    SelectedProfile.Layers.Add(layerModel);
-                    SelectedProfile.FixOrder();
-                }
-                Execute.OnUIThread(() => UpdateLayerList(layerModel));
-            });
+                    var data = (string) Clipboard.GetData("layer");
+                    if (data == null)
+                        return;
+
+                    var layerModel = JsonConvert.DeserializeObject<LayerModel>(data);
+                    if (layerModel == null)
+                        return;
+
+                    if (SelectedLayer != null)
+                        SelectedLayer.InsertAfter(layerModel);
+                    else
+                    {
+                        SelectedProfile.Layers.Add(layerModel);
+                        SelectedProfile.FixOrder();
+                    }
+                    Execute.OnUIThread(() => UpdateLayerList(layerModel));
+                });
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         private void UpdateLayerList(LayerModel selectModel)
@@ -665,7 +672,7 @@ namespace Artemis.ViewModels
                 return;
 
             var pos = GetScaledPosition(e);
-            var hoverLayer = GetLayers().Where(l => l.MustDraw()).FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(pos.X, pos.Y));
+            var hoverLayer = GetHoverLayer(pos.X, pos.Y);
 
             if (hoverLayer != null)
                 SelectedLayer = hoverLayer;
@@ -681,7 +688,7 @@ namespace Artemis.ViewModels
                 return;
 
             var pos = GetScaledPosition(e);
-            var hoverLayer = GetLayers().Where(l => l.MustDraw()).FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(pos.X, pos.Y));
+            var hoverLayer = GetHoverLayer(pos.X, pos.Y);
 
             HandleDragging(e, pos.X, pos.Y, hoverLayer);
 
@@ -703,6 +710,8 @@ namespace Artemis.ViewModels
                 KeyboardPreviewCursor = Cursors.Hand;
         }
 
+
+
         private Point GetScaledPosition(MouseEventArgs e)
         {
             var previewSettings = _deviceManager.ActiveKeyboard.PreviewSettings;
@@ -721,6 +730,15 @@ namespace Artemis.ViewModels
             pos.Y = pos.Y * (SelectedProfile.Height / (previewSettings.OverlayRectangle.Height * heightScale));
 
             return pos;
+        }
+
+        private LayerModel GetHoverLayer(double x, double y)
+        {
+            // Prefer the selected layer as the hover layer even if it's underneath something else
+            if (SelectedLayer != null && SelectedLayer.Properties.PropertiesRect(1).Contains(x, y))
+                return SelectedLayer;
+
+            return GetLayers().Where(l => l.MustDraw()).FirstOrDefault(l => l.Properties.PropertiesRect(1).Contains(x, y));
         }
 
         public Cursor KeyboardPreviewCursor
