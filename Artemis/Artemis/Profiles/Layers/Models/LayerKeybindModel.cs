@@ -63,9 +63,15 @@ namespace Artemis.Profiles.Layers.Models
             switch (ToggleType)
             {
                 case ToggleType.Enable:
+                    // Apply RenderAllowed only if this is the first keybind
+                    if (index == 0)
+                        layerModel.RenderAllowed = false;
                     action = () => layerModel.RenderAllowed = true;
                     break;
                 case ToggleType.Disable:
+                    // Apply RenderAllowed only if this is the first keybind
+                    if (index == 0)
+                        layerModel.RenderAllowed = false;
                     action = () => layerModel.RenderAllowed = false;
                     break;
                 case ToggleType.Toggle:
