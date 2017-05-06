@@ -41,10 +41,24 @@ namespace Artemis.Profiles.Lua.Modules
             }
         }
 
+        public void AddEditorButton(string name, DynValue action)
+        {
+            Execute.OnUIThread(() => LuaManager.EditorButtons.Add(new EditorButton(LuaManager, name, action)));
+        }
+
+        public void RemoveEditorButton(string name)
+        {
+            var button = LuaManager.EditorButtons.FirstOrDefault(b => b.Text == name);
+            if (button != null)
+                Execute.OnUIThread(() => LuaManager.EditorButtons.Remove(button));
+        }
+
         public override void Dispose()
         {
             foreach (var window in _windows)
                 window.TryClose();
+
+            Execute.OnUIThread(() => LuaManager.EditorButtons.Clear());
         }
     }
 }

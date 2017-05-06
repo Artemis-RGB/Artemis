@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.DeviceProviders;
 using Artemis.Profiles;
 using Artemis.Profiles.Lua;
 using Artemis.Profiles.Lua.Modules;
+using Artemis.Profiles.Lua.Modules.Gui;
 using Castle.Core.Internal;
 using MoonSharp.Interpreter;
 using Ninject;
@@ -24,6 +26,8 @@ namespace Artemis.Managers
             _kernel = kernel;
             _logger = logger;
             _deviceManager = deviceManager;
+
+            EditorButtons = new ObservableCollection<EditorButton>();
             LuaScript = new Script(CoreModules.Preset_SoftSandbox);
         }
 
@@ -32,6 +36,7 @@ namespace Artemis.Managers
         public LuaProfileModule ProfileModule { get; private set; }
         public LuaEventsModule EventsModule { get; private set; }
         public Script LuaScript { get; }
+        public ObservableCollection<EditorButton> EditorButtons { get; set; }
 
         public void SetupLua(ProfileModel profileModel)
         {
