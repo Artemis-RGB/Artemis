@@ -568,6 +568,7 @@
     <Compile Include="Profiles\Lua\Modules\Events\LuaKeyPressEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceUpdatingEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\EditorButton.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaButton.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaCheckBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaComboBox.cs" />

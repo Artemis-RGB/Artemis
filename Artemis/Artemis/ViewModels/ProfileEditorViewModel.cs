@@ -19,6 +19,7 @@ using Artemis.Profiles;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Profiles.Layers.Types.Folder;
+using Artemis.Profiles.Lua.Modules.Gui;
 using Artemis.Properties;
 using Artemis.Services;
 using Artemis.Styles.DropTargetAdorners;
@@ -58,8 +59,7 @@ namespace Artemis.ViewModels
         private LayerModel _selectedLayer;
         private bool _showAll;
 
-        public ProfileEditorViewModel(ProfileEditorModel profileEditorModel, DeviceManager deviceManager,
-            LoopManager loopManager, ModuleModel moduleModel, MetroDialogService dialogService)
+        public ProfileEditorViewModel(ProfileEditorModel profileEditorModel, DeviceManager deviceManager, LoopManager loopManager, LuaManager luaManager, ModuleModel moduleModel, MetroDialogService dialogService)
         {
             _deviceManager = deviceManager;
             _loopManager = loopManager;
@@ -71,6 +71,7 @@ namespace Artemis.ViewModels
             ProfileNames = new ObservableCollection<string>();
             Layers = new ObservableCollection<LayerModel>();
             ProfileEditorModel = profileEditorModel;
+            LuaManager = luaManager;
             ShowAll = true;
 
             PropertyChanged += EditorStateHandler;
@@ -101,6 +102,11 @@ namespace Artemis.ViewModels
 
         #region LUA
 
+        public void ClickedLuaButton(EditorButton button)
+        {
+            button.Invoke();
+        }
+
         public void EditLua()
         {
             if (SelectedProfile == null)
@@ -122,6 +128,7 @@ namespace Artemis.ViewModels
         #region Properties
 
         public ProfileEditorModel ProfileEditorModel { get; }
+        public LuaManager LuaManager { get; }
 
         public ObservableCollection<string> ProfileNames
         {
@@ -709,7 +716,6 @@ namespace Artemis.ViewModels
             else
                 KeyboardPreviewCursor = Cursors.Hand;
         }
-
 
 
         private Point GetScaledPosition(MouseEventArgs e)
