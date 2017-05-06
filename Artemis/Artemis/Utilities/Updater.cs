@@ -148,6 +148,8 @@ namespace Artemis.Utilities
                     offsetSettings.RocketLeague = pointers.FirstOrDefault(p => p.Game == "RocketLeague");
                 if (pointers.FirstOrDefault(p => p.Game == "WorldOfWarcraft") != null)
                     offsetSettings.WorldOfWarcraft = pointers.FirstOrDefault(p => p.Game == "WorldOfWarcraft");
+                if (pointers.FirstOrDefault(p => p.Game == "Terraria") != null)
+                    offsetSettings.Terraria = pointers.FirstOrDefault(p => p.Game == "Terraria");
 
                 offsetSettings.Save();
             }

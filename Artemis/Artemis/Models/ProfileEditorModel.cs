@@ -27,8 +27,7 @@ namespace Artemis.Models
         private FileSystemWatcher _watcher;
         private ModuleModel _luaModule;
 
-        public ProfileEditorModel(WindowService windowService, MetroDialogService dialogService,
-            DeviceManager deviceManager, LuaManager luaManager)
+        public ProfileEditorModel(WindowService windowService, MetroDialogService dialogService, DeviceManager deviceManager, LuaManager luaManager)
         {
             _windowService = windowService;
             _dialogService = dialogService;
@@ -50,7 +49,7 @@ namespace Artemis.Models
                 new ConstructorArgument("dataModel", dataModel),
                 new ConstructorArgument("layer", layer)
             };
-            _windowService.ShowDialog<LayerEditorViewModel>("Artemis | Edit layer", args);
+            _windowService.ShowDialog<LayerEditorViewModel>("Artemis | Edit layer", null, args);
 
             // If the layer was a folder, but isn't anymore, assign it's children to it's parent.
             if (layer.LayerType is FolderType || !layer.Children.Any())
@@ -345,7 +344,8 @@ namespace Artemis.Models
 
         private void DisposeLuaWatcher()
         {
-            if (_watcher == null) return;
+            if (_watcher == null)
+                return;
             _watcher.Changed -= LuaFileChanged;
             _watcher.Dispose();
             _watcher = null;
@@ -359,8 +359,6 @@ namespace Artemis.Models
         #endregion
 
         #region Rendering
-
-        
 
         #endregion
     }

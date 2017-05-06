@@ -384,6 +384,13 @@
       <DependentUpon>AssettoCorsaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaViewModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaDataModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaSettings.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaModel.cs" />
+    <Compile Include="Modules\Games\Terraria\TerrariaView.xaml.cs">
+      <DependentUpon>TerrariaView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\Terraria\TerrariaViewModel.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
@@ -561,15 +568,27 @@
     <Compile Include="Profiles\Lua\Modules\Events\LuaKeyPressEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceDrawingEventArgs.cs" />
     <Compile Include="Profiles\Lua\Modules\Events\LuaDeviceUpdatingEventArgs.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\EditorButton.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaButton.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaCheckBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaComboBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaLabel.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaTextBox.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml.cs">
+      <DependentUpon>LuaWindowView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowViewModel.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaEventsModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaBrushesModule.cs" />
     <Compile Include="Profiles\Lua\LuaModule.cs" />
     <Compile Include="Profiles\Lua\Modules\Brushes\LuaSolidColorBrush.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaGuiModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaKeybindModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaKeyboardModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaLayerModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaMouseModule.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaProfileModule.cs" />
+    <Compile Include="Profiles\Lua\Modules\LuaStorageModule.cs" />
     <Compile Include="Profiles\Lua\Modules\Timer\LuaTimer.cs" />
     <Compile Include="Profiles\Lua\Modules\LuaTimerModule.cs" />
     <Compile Include="Profiles\Lua\Wrappers\LuaDrawWrapper.cs" />
@@ -645,6 +664,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\CompatibilityService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\MetroDialogService.cs" />
     <Compile Include="Services\WindowService.cs" />
@@ -653,7 +673,11 @@
     <Compile Include="Settings\OffsetSettings.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroHighlightAdorner.cs" />
     <Compile Include="Styles\DropTargetAdorners\DropTargetMetroInsertionAdorner.cs" />
-    <Compile Include="Utilities\ActiveWindowHelper.cs" />
+    <Compile Include="Utilities\ActiveWindowDetection\ActiveWindowDetectionType.cs" />
+    <Compile Include="Utilities\ActiveWindowDetection\ActiveWindowHelper.cs" />
+    <Compile Include="Utilities\ActiveWindowDetection\EventActiveWindowDetector.cs" />
+    <Compile Include="Utilities\ActiveWindowDetection\IActiveWindowDetector.cs" />
+    <Compile Include="Utilities\ActiveWindowDetection\TimerActiveWindowDetector.cs" />
     <Compile Include="Utilities\ColorHelpers.cs" />
     <Compile Include="Utilities\Converters\JsonConverters.cs" />
     <Compile Include="Utilities\Converters\NinjectCustomConverter.cs" />
@@ -856,6 +880,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Modules\Games\Terraria\TerrariaView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Modules\General\Bubbles\BubblesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -923,6 +951,10 @@
     <Page Include="Profiles\Layers\Types\Mousemat\MousematPropertiesView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>

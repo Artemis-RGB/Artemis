@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -67,6 +68,8 @@ namespace Artemis.DeviceProviders.CoolerMaster
                     for (var y = 0; y < Height; y++)
                     {
                         var c = b.GetPixel(x, y);
+                        if (c.R != 0)
+                            Console.WriteLine();
                         matrix.KeyColor[y, x] = new KEY_COLOR(c.R, c.G, c.B);
                     }
                 }

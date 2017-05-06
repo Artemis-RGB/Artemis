@@ -73,7 +73,7 @@ namespace Artemis.Profiles.Lua.Modules
             }
         }
 
-        private void LuaInvoke(ProfileModel profileModel, Action action)
+        public void LuaInvoke(ProfileModel profileModel, Action action)
         {
             lock (InvokeLock)
             {
