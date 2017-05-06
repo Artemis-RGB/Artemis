@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.DAL;
 using Artemis.InjectionModules;
+using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
@@ -32,6 +33,8 @@ namespace Artemis
             Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>().LogLevel);
             // Restore DDLs before interacting with any SDKs
             DllManager.RestoreLogitechDll();
+            // Check compatibility before trying to boot further
+            CompatibilityService.CheckRivaTuner();
 
             Initialize();
             BindSpecialValues();
