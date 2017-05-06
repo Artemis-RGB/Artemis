@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -26,6 +27,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
         private List<double> _lineValues;
         private AudioPropertiesModel _properties;
         private bool _subscribed;
+        private DateTime _lastRender;
 
         public AudioType(AudioCaptureManager audioCaptureManager)
         {
@@ -123,8 +125,7 @@ namespace Artemis.Profiles.Layers.Types.Audio
 
             SubscribeToAudioChange();
 
-            if (_audioCapture == null || newProperties.Device != _properties.Device ||
-                newProperties.DeviceType != _properties.DeviceType)
+            if (_audioCapture == null || newProperties.Device != _properties.Device || newProperties.DeviceType != _properties.DeviceType)
             {
                 var device = GetMmDevice();
                 if (device != null)
@@ -153,17 +154,19 @@ namespace Artemis.Profiles.Layers.Types.Audio
                 currentHeight = layerModel.Width;
             }
 
-            if (_lines != currentLines || _lineSpectrum == null)
+            // Get a new line spectrum if the lines changed, it is null or the layer hasn't rendered for a few frames
+            if (_lines != currentLines || _lineSpectrum == null || DateTime.Now - _lastRender > TimeSpan.FromMilliseconds(100))
             {
                 _lines = currentLines;
                 _lineSpectrum = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel);
-                if (_lineSpectrum == null)
-                    return;
             }
-
-            var newLineValues = _lineSpectrum?.GetLineValues(currentHeight);
+            
+            var newLineValues = _audioCapture.GetLineSpectrum(_lines, ScalingStrategy.Decibel)?.GetLineValues(currentHeight);
             if (newLineValues != null)
+            {
                 _lineValues = newLineValues;
+                _lastRender = DateTime.Now;
+            }
         }
 
         public void SetupProperties(LayerModel layerModel)

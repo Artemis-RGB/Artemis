@@ -38,6 +38,7 @@ namespace Artemis.Profiles
         public int Width { get; set; }
         public int Height { get; set; }
         public string LuaScript { get; set; }
+        public string LuaStorage { get; set; }
 
         [JsonIgnore]
         public string Slug => new string(Name.Where(ch => !_invalidFileNameChars.Contains(ch)).ToArray());

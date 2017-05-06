@@ -22,7 +22,7 @@
         <!-- Header -->
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
             <Label.Content>
-                <AccessText TextWrapping="Wrap" Text="By default shows RPM on the F-keys, gear on the other keys and track flags on the numpad." />
+                <AccessText TextWrapping="Wrap" Text="By default shows RPM on bottom half of the keyboard, engine stats on the top half and DRS on the numpad" />
             </Label.Content>
         </Label>
 

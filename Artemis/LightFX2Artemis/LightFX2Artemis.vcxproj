@@ -22,7 +22,7 @@
     <ProjectGuid>{1A349CF5-2008-41E8-AC13-874CBBCDFA0A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>LightFX2Artemis</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

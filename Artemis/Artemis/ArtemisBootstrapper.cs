@@ -8,8 +8,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.DAL;
 using Artemis.InjectionModules;
+using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using Artemis.Utilities.Converters;
 using Artemis.Utilities.DataReaders;
 using Artemis.ViewModels;
@@ -31,10 +33,11 @@ namespace Artemis
             Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>().LogLevel);
             // Restore DDLs before interacting with any SDKs
             DllManager.RestoreLogitechDll();
+            // Check compatibility before trying to boot further
+            CompatibilityService.CheckRivaTuner();
 
             Initialize();
             BindSpecialValues();
-            InputHook.Start();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
@@ -61,7 +64,7 @@ namespace Artemis
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
-                if ((e != null) && (input != null))
+                if (e != null && input != null)
                     return e.GetPosition(input).X;
 
                 // Return 0 if no processing could be done
@@ -98,6 +101,7 @@ namespace Artemis
                 logger.Info("Artemis was run using the autorun shortcut, sleeping for 15 sec.");
                 Thread.Sleep(15000);
             }
+            
             _kernel = new StandardKernel(new BaseModules(), new ManagerModules());
 
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();
@@ -113,7 +117,7 @@ namespace Artemis
 
             //TODO DarthAffe 17.12.2016: Is this the right location for this?
             //TODO Move to Mainmanager and make disposable
-            ActiveWindowHelper.Initialize();
+            ActiveWindowHelper.SetActiveWindowDetectionType(SettingsProvider.Load<GeneralSettings>().ActiveWindowDetection);
         }
 
         protected override void OnExit(object sender, EventArgs e)
@@ -144,6 +148,7 @@ namespace Artemis
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             DisplayRootViewFor<ShellViewModel>();
+            InputHook.Start();
         }
     }
 }

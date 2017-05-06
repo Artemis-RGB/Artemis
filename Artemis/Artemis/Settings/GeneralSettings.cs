@@ -5,9 +5,11 @@ using System.Windows;
 using Artemis.DAL;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
 using Artemis.Utilities;
+using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using MahApps.Metro;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Squirrel;
 
 namespace Artemis.Settings
@@ -68,6 +70,11 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string LogLevel { get; set; }
 
+        [DefaultValue(ActiveWindowDetectionType.Events)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public ActiveWindowDetectionType ActiveWindowDetection { get; set; }
+
         public Version LastRanVersion { get; set; }
 
         public void Save()
@@ -75,6 +82,7 @@ namespace Artemis.Settings
             SettingsProvider.Save(this);
 
             Logging.SetupLogging(LogLevel);
+            ActiveWindowHelper.SetActiveWindowDetectionType(ActiveWindowDetection);
             ApplyAutorun();
             ApplyTheme();
             ApplyGamestatePort();

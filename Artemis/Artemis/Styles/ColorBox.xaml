@@ -210,7 +210,7 @@
                                                  ItemsSource="{Binding AvailableBrushTypes, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Center">
                                             <ListBox.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <UniformGrid Rows="1" Columns="4" />
+                                                    <UniformGrid Rows="1" />
                                                 </ItemsPanelTemplate>
                                             </ListBox.ItemsPanel>
                                             <ListBox.ItemContainerStyle>

@@ -6,6 +6,7 @@ using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
 using Artemis.Profiles.Lua;
+using Artemis.Profiles.Lua.Modules.Gui;
 using Artemis.Services;
 using Artemis.Utilities.DataReaders;
 using Artemis.Utilities.GameState;
@@ -115,6 +116,8 @@ namespace Artemis.InjectionModules
                     .SelectAllClasses()
                     .InheritedFrom<LuaModule>()
                     .BindAllBaseClasses());
+
+            Bind<LuaWindowViewModel>().ToSelf();
 
             #endregion
         }
