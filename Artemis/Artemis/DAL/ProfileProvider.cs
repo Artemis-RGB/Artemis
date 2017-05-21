@@ -102,12 +102,16 @@ namespace Artemis.DAL
             if (string.IsNullOrEmpty(name))
                 return;
 
-            // Remove the old profile
-            DeleteProfile(profile);
+            // Store the profile path before it is renamed
+            var oldPath = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Slug}.json";
 
             // Update the profile, creating a new file
             profile.Name = name;
             AddOrUpdate(profile);
+
+            // Remove the file with the old name
+            if (File.Exists(oldPath))
+                File.Delete(oldPath);
         }
 
         public static void DeleteProfile(ProfileModel prof)

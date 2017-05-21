@@ -96,10 +96,12 @@ namespace Artemis.Modules.Abstract
 
         public void ChangeProfile(ProfileModel profileModel)
         {
-            if (!IsInitialized || Equals(profileModel, ProfileModel))
+            if (!IsInitialized)
                 return;
 
+            ProfileModel?.Deactivate(_luaManager);
             ProfileModel = profileModel;
+
             if (!IsOverlay)
                 ProfileModel?.Activate(_luaManager);
             if (ProfileModel != null)

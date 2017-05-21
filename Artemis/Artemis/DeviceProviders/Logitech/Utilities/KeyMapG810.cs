@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace Artemis.DeviceProviders.Logitech.Utilities
 {
-    public static class KeyMap
+    public static class KeyMapG810
     {
-        static KeyMap()
+        static KeyMapG810()
         {
             // There are several keyboard layouts
 

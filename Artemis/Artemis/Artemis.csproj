@@ -340,6 +340,7 @@
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\KeyMapG810.cs" />
     <Compile Include="Dialogs\MarkdownDialog.xaml.cs">
       <DependentUpon>MarkdownDialog.xaml</DependentUpon>
     </Compile>

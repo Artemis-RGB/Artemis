@@ -141,15 +141,22 @@ namespace Artemis.Models
 
         public async Task RenameProfile(ProfileModel profileModel)
         {
+            // Store the old name
+            var oldName = profileModel.Name;
             var name = await GetValidProfileName("Rename profile", "Please enter a unique new profile name");
             // User cancelled
             if (name == null)
                 return;
+
+            // MakeProfileUnique does a check but also modifies the profile, set the old name back
             var doRename = await MakeProfileUnique(profileModel, name, profileModel.Name);
+            var newName = profileModel.Name;
+            profileModel.Name = oldName;
+
             if (!doRename)
                 return;
 
-            ProfileProvider.RenameProfile(profileModel, profileModel.Name);
+            ProfileProvider.RenameProfile(profileModel, newName);
         }
 
         public async Task<ProfileModel> DuplicateProfile(ProfileModel selectedProfile)
