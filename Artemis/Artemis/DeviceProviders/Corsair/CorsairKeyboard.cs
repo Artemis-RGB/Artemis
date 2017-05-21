@@ -128,6 +128,8 @@ namespace Artemis.DeviceProviders.Corsair
             {
                 cueLed = _keyboard.Leds.FirstOrDefault(k => k.Id.ToString() == keyCode.ToString()) ??
                          _keyboard.Leds.FirstOrDefault(k => k.Id == KeyMap.FormsKeys[keyCode]);
+
+                Logger.Trace("Keycode: {0} resolved to CUE LED: {1}", keyCode, cueLed);
             }
             catch (Exception)
             {
