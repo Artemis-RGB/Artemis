@@ -177,21 +177,13 @@ namespace Artemis.Models
             return newProfile;
         }
 
-        public async Task<bool> DeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
+        public async Task<bool> ConfirmDeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
         {
             var confirm = await _dialogService.ShowQuestionMessageBox("Delete profile",
                 $"Are you sure you want to delete the profile named: {selectedProfile.Name}?\n\n" +
                 "This cannot be undone.");
-            if (!confirm.Value)
-                return false;
 
-            var defaultProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, moduleModel, "Default");
-            var deleteProfile = selectedProfile;
-
-            moduleModel.ChangeProfile(defaultProfile);
-            ProfileProvider.DeleteProfile(deleteProfile);
-
-            return true;
+            return confirm.Value;
         }
 
         public async Task<ProfileModel> ImportProfile(ModuleModel moduleModel)
