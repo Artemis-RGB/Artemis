@@ -167,7 +167,8 @@ namespace Artemis.DAL
             var gifDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\gifs";
             Directory.CreateDirectory(gifDir);
             var gifPath = gifDir + $"\\{fileName}.gif";
-            gifFile.Save(gifPath);
+            if (!File.Exists(gifPath))
+                gifFile.Save(gifPath);
 
             foreach (var profile in profiles)
             {
