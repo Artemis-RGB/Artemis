@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using Artemis.DAL;
 using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Profiles;
-using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Models;
 using Newtonsoft.Json;
 using Ninject;
@@ -96,7 +94,7 @@ namespace Artemis.Modules.Abstract
 
         public void ChangeProfile(ProfileModel profileModel)
         {
-            if (!IsInitialized)
+            if (!IsInitialized || Equals(ProfileModel, profileModel))
                 return;
 
             ProfileModel?.Deactivate(_luaManager);
@@ -133,7 +131,7 @@ namespace Artemis.Modules.Abstract
             ChangeToLastProfile();
         }
 
-        private void ChangeToLastProfile()
+        public void ChangeToLastProfile()
         {
             var profileName = !string.IsNullOrEmpty(Settings?.LastProfile) ? Settings.LastProfile : "Default";
 
