@@ -48,6 +48,8 @@ namespace Artemis.Modules.Games.Overwatch
         Symmetra,
         Zenyatta,
         Ana,
-        Sombra
+        Sombra,
+        Orisa,
+        Doomfist
     }
 }
