@@ -573,6 +573,7 @@
     <Compile Include="Profiles\Lua\Modules\Gui\LuaCheckBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaComboBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaLabel.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaSlider.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaTextBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml.cs">
       <DependentUpon>LuaWindowView.xaml</DependentUpon>
