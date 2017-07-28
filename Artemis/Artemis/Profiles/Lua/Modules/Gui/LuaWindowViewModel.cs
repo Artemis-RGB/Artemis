@@ -83,6 +83,18 @@ namespace Artemis.Profiles.Lua.Modules.Gui
             return element;
         }
 
+        public LuaSlider CreateSlider(int interval, double initialValue, double minimum, double maximum, double x, double y, double? width = 200.0, double? height = 20.0)
+        {
+            LuaSlider element = null;
+            Execute.OnUIThread(() =>
+            {
+                element = new LuaSlider(_luaManager, interval, initialValue, minimum, maximum, x, y, width, height);
+                AddControl(element.Slider, x, y);
+            });
+
+            return element;
+        }
+
         private void AddControl(UIElement uiElement, double x, double y)
         {
             Canvas.Children.Add(uiElement);
