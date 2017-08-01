@@ -76,7 +76,9 @@ namespace Artemis.Modules.Games.Overwatch
                 new CharacterColor {Character = OverwatchCharacter.Symmetra, Color = Color.FromRgb(46, 116, 148)},
                 new CharacterColor {Character = OverwatchCharacter.Zenyatta, Color = Color.FromRgb(248, 218, 26)},
                 new CharacterColor {Character = OverwatchCharacter.Ana, Color = Color.FromRgb(16, 36, 87)},
-                new CharacterColor {Character = OverwatchCharacter.Sombra, Color = Color.FromRgb(20, 5, 101)}
+                new CharacterColor {Character = OverwatchCharacter.Sombra, Color = Color.FromRgb(20, 5, 101)},
+                new CharacterColor {Character = OverwatchCharacter.Orisa, Color = Color.FromRgb(1,40,0)},
+                new CharacterColor {Character = OverwatchCharacter.Doomfist, Color = Color.FromRgb(33, 3, 1)}
             };
         }
 
