@@ -255,6 +255,18 @@
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PcapDotNet.Base, Version=1.0.4.25027, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Core, Version=1.0.4.25149, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Core.Extensions, Version=1.0.4.25151, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Core.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Packets, Version=1.0.4.25028, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Packets.dll</HintPath>
+    </Reference>
     <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Process.NET.1.0.8\lib\Process.NET.dll</HintPath>
       <Private>True</Private>
@@ -471,15 +483,6 @@
       <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
-    <Compile Include="Modules\Games\WoW\Data\Int128.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWEnums.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWOffsets.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWStructs.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWNameCache.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWObjectManager.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWObject.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWPlayer.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWUnit.cs" />
     <Compile Include="Modules\Games\WoW\WoWView.xaml.cs">
       <DependentUpon>WoWView.xaml</DependentUpon>
     </Compile>
@@ -487,7 +490,6 @@
     <Compile Include="Modules\Games\WoW\WoWModel.cs" />
     <Compile Include="Modules\Games\WoW\WoWSettings.cs" />
     <Compile Include="Modules\Games\WoW\WoWViewModel.cs" />
-    <Compile Include="Modules\Games\WoW\WoWAddresses.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileDataModel.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileModel.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileSettings.cs" />
@@ -1098,6 +1100,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Modules\General\GeneralProfile\Discord\" />
     <Folder Include="Resources\Lua\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
