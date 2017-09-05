@@ -97,19 +97,37 @@ namespace Artemis.Modules.Games.WoW
 
         private void HandleGameData(string command, string data)
         {
-            var json = JObject.Parse(data);
-            var dataModel = (WoWDataModel) DataModel;
-            switch (command)
+            JObject json = null;
+            if (!data.StartsWith("\"") && !data.EndsWith("\""))
+                json = JObject.Parse(data);
+            
+            lock (DataModel)
             {
-                case "player":
-                    ParsePlayer(json, dataModel);
-                    break;
-                case "target":
-                    ParseTarget(json, dataModel);
-                    break;
-                case "playerState":
-                    ParsePlayerState(json, dataModel);
-                    break;
+                var dataModel = (WoWDataModel) DataModel;
+                switch (command)
+                {
+                    case "player":
+                        ParsePlayer(json, dataModel);
+                        break;
+                    case "target":
+                        ParseTarget(json, dataModel);
+                        break;
+                    case "playerState":
+                        ParsePlayerState(json, dataModel);
+                        break;
+                    case "targetState":
+                        ParseTargetState(json, dataModel);
+                        break;
+                    case "spellCast":
+                        ParseSpellCast(json, dataModel);
+                        break;
+                    case "spellCastFailed":
+                        ParseSpellCastFailed(data, dataModel);
+                        break;
+                    case "spellCastInterrupted":
+                        ParseSpellCastInterrupted(data, dataModel);
+                        break;
+                }
             }
         }
 
@@ -128,6 +146,40 @@ namespace Artemis.Modules.Games.WoW
             dataModel.Player.ApplyStateJson(json);
         }
 
+        private void ParseTargetState(JObject json, WoWDataModel dataModel)
+        {
+            dataModel.Target.ApplyStateJson(json);
+        }
+
+        private void ParseSpellCast(JObject json, WoWDataModel dataModel)
+        {
+            if (json["unitID"].Value<string>() == "player")
+                dataModel.Player.CastBar.ApplyJson(json);
+            else if (json["unitID"].Value<string>() == "target")
+                dataModel.Target.CastBar.ApplyJson(json);
+        }
+
+        private void ParseInstantSpellCast(JObject json, WoWDataModel dataModel)
+        {
+            
+        }
+
+        private void ParseSpellCastFailed(string data, WoWDataModel dataModel)
+        {
+            if (data == "\"player\"")
+                dataModel.Player.CastBar.Clear();
+            else if (data == "\"target\"")
+                dataModel.Target.CastBar.Clear();
+        }
+
+        private void ParseSpellCastInterrupted(string data, WoWDataModel dataModel)
+        {
+            if (data == "\"player\"")
+                dataModel.Player.CastBar.Clear();
+            else if (data == "\"target\"")
+                dataModel.Target.CastBar.Clear();
+        }
+
         public override void Dispose()
         {
             _communicator.Break();
@@ -137,6 +189,10 @@ namespace Artemis.Modules.Games.WoW
 
         public override void Update()
         {
+            var dataModel = (WoWDataModel)DataModel;
+
+            dataModel.Player.CastBar.UpdateProgress();
+            dataModel.Target.CastBar.UpdateProgress();
         }
     }
 }

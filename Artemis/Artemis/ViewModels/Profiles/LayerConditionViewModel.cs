@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
@@ -39,6 +40,13 @@ namespace Artemis.ViewModels.Profiles
             new NamedOperator("Contains", ".Contains"),
             new NamedOperator("Starts with", ".StartsWith"),
             new NamedOperator("Ends with", ".EndsWith")
+        };
+
+        private readonly NamedOperator[] _listOperatorsPrefixes =
+        {
+            new NamedOperator("Any", "any"),
+            new NamedOperator("All", "all"),
+            new NamedOperator("None", "none")
         };
 
         private HotKey _hotKey;
@@ -205,7 +213,6 @@ namespace Artemis.ViewModels.Profiles
         {
             Operators.Clear();
             DropdownValues.Clear();
-
             switch (SelectedDataModelProp.Type)
             {
                 case "Int32":
@@ -228,7 +235,16 @@ namespace Artemis.ViewModels.Profiles
                     UserValueIsVisible = true;
                     break;
             }
-
+            // If the selected value is in a list, prefix all choices with list choices
+            if (SelectedDataModelProp.Path != null && SelectedDataModelProp.Path.Contains("("))
+            {
+                var listOperators = new List<NamedOperator>();
+                foreach (var o in Operators)
+                    listOperators.AddRange(_listOperatorsPrefixes.Select(p => new NamedOperator(p.Display + " " + o.Display.ToLower(), p.Value + "|" + o.Value)));
+                
+                Operators.Clear();
+                Operators.AddRange(listOperators);
+            }
             // Add Changed operator is the type is event
             if (_editorViewModel.ProposedLayer.IsEvent)
             {
