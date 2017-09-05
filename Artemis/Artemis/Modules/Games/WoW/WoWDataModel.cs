@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Artemis.Modules.Abstract;
-using Castle.Components.DictionaryAdapter;
+using Artemis.Utilities;
 using Newtonsoft.Json.Linq;
 
 namespace Artemis.Modules.Games.WoW
@@ -16,6 +17,7 @@ namespace Artemis.Modules.Games.WoW
 
         public WoWUnit Player { get; set; }
         public WoWUnit Target { get; set; }
+
         public string Realm { get; set; }
         public string Zone { get; set; }
         public string SubZone { get; set; }
@@ -26,7 +28,8 @@ namespace Artemis.Modules.Games.WoW
         public WoWUnit()
         {
             Buffs = new List<WoWAura>();
-            Debuffs = new EditableList<WoWAura>();
+            Debuffs = new List<WoWAura>();
+            CastBar = new WoWCastBar();
         }
 
         public string Name { get; set; }
@@ -36,11 +39,12 @@ namespace Artemis.Modules.Games.WoW
         public int Power { get; set; }
         public int MaxPower { get; set; }
         public WoWPowerType PowerType { get; set; }
-        public WoWClass Class { get; set; }
+        public string Class { get; set; }
         public WoWRace Race { get; set; }
         public WoWGender Gender { get; set; }
         public List<WoWAura> Buffs { get; set; }
         public List<WoWAura> Debuffs { get; set; }
+        public WoWCastBar CastBar { get; set; }
 
         public void ApplyJson(JObject json)
         {
@@ -49,32 +53,40 @@ namespace Artemis.Modules.Games.WoW
 
             Name = json["name"].Value<string>();
             Level = json["level"].Value<int>();
-            Class = (WoWClass) Enum.Parse(typeof(WoWClass), json["class"].Value<string>().Replace(" ", ""));
-            Race = (WoWRace) Enum.Parse(typeof(WoWRace), json["race"].Value<string>().Replace(" ", ""));
+            Class = json["class"].Value<string>();
             Gender = json["gender"].Value<int>() == 3 ? WoWGender.Female : WoWGender.Male;
+
+            if (json["race"] != null)
+                Race = GeneralHelpers.ParseEnum<WoWRace>(json["race"].Value<string>());
         }
 
         public void ApplyStateJson(JObject json)
         {
             Health = json["health"].Value<int>();
             MaxHealth = json["maxHealth"].Value<int>();
-            PowerType = (WoWPowerType) Enum.Parse(typeof(WoWPowerType), json["powerType"].Value<int>().ToString(), true);
+            PowerType = GeneralHelpers.ParseEnum<WoWPowerType>(json["powerType"].Value<int>().ToString());
             Power = json["power"].Value<int>();
             MaxPower = json["maxPower"].Value<int>();
 
             Buffs.Clear();
-            foreach (var auraJson in json["buffs"].Children())
+            if (json["buffs"] != null)
             {
-                var aura = new WoWAura();
-                aura.ApplyJson(auraJson);
-                Buffs.Add(aura);
+                foreach (var auraJson in json["buffs"].Children())
+                {
+                    var aura = new WoWAura();
+                    aura.ApplyJson(auraJson);
+                    Buffs.Add(aura);
+                }
             }
             Debuffs.Clear();
-            foreach (var auraJson in json["debuffs"].Children())
+            if (json["debuffs"] != null)
             {
-                var aura = new WoWAura();
-                aura.ApplyJson(auraJson);
-                Debuffs.Add(aura);
+                foreach (var auraJson in json["debuffs"].Children())
+                {
+                    var aura = new WoWAura();
+                    aura.ApplyJson(auraJson);
+                    Debuffs.Add(aura);
+                }
             }
         }
     }
@@ -85,8 +97,8 @@ namespace Artemis.Modules.Games.WoW
         public int Id { get; set; }
         public string Caster { get; set; }
         public int Stacks { get; set; }
-        public TimeSpan Duration { get; set; }
-        public TimeSpan Expires { get; set; }
+        public DateTime StartTime { set; get; }
+        public DateTime EndTime { get; set; }
 
         public void ApplyJson(JToken buffJson)
         {
@@ -97,6 +109,59 @@ namespace Artemis.Modules.Games.WoW
 
             // TODO: Duration
         }
+    }
+
+    public class WoWCastBar
+    {
+        public void ApplyJson(JToken spellJson)
+        {
+            var castMs = spellJson["endTime"].Value<int>() - spellJson["startTime"].Value<int>();
+            var tickCount = Environment.TickCount;
+            var difference = tickCount - spellJson["startTime"].Value<int>();
+
+            SpellName = spellJson["name"].Value<string>();
+            SpellId = spellJson["spellID"].Value<int>();
+            StartTime = new DateTime(DateTime.Now.Ticks + difference);
+            EndTime = StartTime.AddMilliseconds(castMs);
+            NonInterruptible = spellJson["notInterruptible"].Value<bool>();
+
+
+//            SpellName = spellJson["name"].Value<string>();
+//            SpellId = spellJson["spellID"].Value<int>();
+//            StartTime = DateTime.Now.AddMilliseconds(spellJson["startTime"].Value<long>()/1000.0);
+//            EndTime = StartTime.AddMilliseconds(spellJson["endTime"].Value<long>()/1000.0);
+//            NonInterruptible = spellJson["notInterruptible"].Value<bool>();
+        }
+
+        public void UpdateProgress()
+        {
+            if (SpellName == null)
+                return;
+
+            var elapsed = DateTime.Now - StartTime;
+            var total = EndTime - StartTime;
+            Progress = (float) (elapsed.TotalMilliseconds / total.TotalMilliseconds);
+            Debug.WriteLine(Progress);
+            if (Progress > 1)
+                Clear();
+        }
+
+        public void Clear()
+        {
+            SpellName = null;
+            SpellId = 0;
+            StartTime = DateTime.MinValue;
+            EndTime = DateTime.MinValue;
+            NonInterruptible = false;
+            Progress = 0;
+        }
+
+        public string SpellName { get; set; }
+        public int SpellId { get; set; }
+        public DateTime StartTime { set; get; }
+        public DateTime EndTime { get; set; }
+        public bool NonInterruptible { get; set; }
+        public float Progress { get; set; }
     }
 
     public enum WoWPowerType
