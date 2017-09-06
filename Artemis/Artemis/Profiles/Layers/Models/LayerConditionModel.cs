@@ -44,6 +44,8 @@ namespace Artemis.Profiles.Layers.Models
                     var collectionField = _rgx.Match(Field).Groups[1].Value;
                     var collectionInspect = (IEnumerable) GeneralHelpers.GetPropertyValue(subject, collectionField);
                     var operatorParts = Operator.Split('|');
+                    var field = Field.Split(')').Last().Substring(1);
+
                     _lastValue = collectionInspect;
 
                     if (operatorParts[0] == "any")
@@ -51,7 +53,6 @@ namespace Artemis.Profiles.Layers.Models
                         var anyMatch = false;
                         foreach (var collectionValue in collectionInspect)
                         {
-                            var field = Field.Split(')').Last().Substring(1);
                             anyMatch = EvaluateOperator(collectionValue, field, operatorParts[1]);
                             if (anyMatch)
                                 break;
@@ -63,7 +64,6 @@ namespace Artemis.Profiles.Layers.Models
                         var allMatch = true;
                         foreach (var collectionValue in collectionInspect)
                         {
-                            var field = Field.Split(')').Last().Substring(1);
                             allMatch = EvaluateOperator(collectionValue, field, operatorParts[1]);
                             if (!allMatch)
                                 break;
@@ -75,7 +75,6 @@ namespace Artemis.Profiles.Layers.Models
                         var noneMatch = true;
                         foreach (var collectionValue in collectionInspect)
                         {
-                            var field = Field.Split(')').Last().Substring(1);
                             noneMatch = !EvaluateOperator(collectionValue, field, operatorParts[1]);
                             if (!noneMatch)
                                 break;
