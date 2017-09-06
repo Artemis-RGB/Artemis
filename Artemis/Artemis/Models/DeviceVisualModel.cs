@@ -54,8 +54,7 @@ namespace Artemis.Models
             using (var g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Black);
-                g.DrawImage(frame, new Rectangle(0, 0, bitmap.Width, bitmap.Height), RelativeRectangle,
-                    GraphicsUnit.Pixel);
+                g.DrawImage(frame, new Rectangle(0, 0, bitmap.Width, bitmap.Height), RelativeRectangle, GraphicsUnit.Pixel);
             }
 
             return bitmap;

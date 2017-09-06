@@ -404,6 +404,12 @@
       <DependentUpon>TerrariaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\Terraria\TerrariaViewModel.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWAura.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWCastBar.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWEnums.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWSpecialization.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWSpell.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWUnit.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />

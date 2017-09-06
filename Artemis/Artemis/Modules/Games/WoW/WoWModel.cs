@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
+using Artemis.Modules.Games.WoW.Models;
 using Newtonsoft.Json.Linq;
 using PcapDotNet.Core;
 using PcapDotNet.Packets;
@@ -48,7 +49,7 @@ namespace Artemis.Modules.Games.WoW
             PacketDevice selectedDevice = allDevices.First();
 
             // Open the device
-            _communicator = selectedDevice.Open(65536, PacketDeviceOpenAttributes.Promiscuous, 100);
+            _communicator = selectedDevice.Open(65536, PacketDeviceOpenAttributes.Promiscuous, 40);
             Logger.Debug("Listening on " + selectedDevice.Description + " for WoW packets");
 
             // Compile the filter
@@ -88,7 +89,7 @@ namespace Artemis.Modules.Games.WoW
                 if (match.Groups.Count != 3)
                     return;
 
-                Logger.Debug("[{0}] {1}", packet.Ethernet.IpV4.Udp.SourcePort, match.Groups[2].Value);
+                Logger.Trace("[{0}] {1}", packet.Ethernet.IpV4.Udp.SourcePort, match.Groups[2].Value);
                 // Get the command and argument
                 var parts = match.Groups[2].Value.Split('|');
                 HandleGameData(parts[0], parts[1]);
@@ -100,7 +101,7 @@ namespace Artemis.Modules.Games.WoW
             JObject json = null;
             if (!data.StartsWith("\"") && !data.EndsWith("\""))
                 json = JObject.Parse(data);
-            
+
             lock (DataModel)
             {
                 var dataModel = (WoWDataModel) DataModel;
@@ -118,14 +119,23 @@ namespace Artemis.Modules.Games.WoW
                     case "targetState":
                         ParseTargetState(json, dataModel);
                         break;
+                    case "auras":
+                        ParseAuras(json, dataModel);
+                        break;
                     case "spellCast":
                         ParseSpellCast(json, dataModel);
+                        break;
+                    case "instantSpellCast":
+                        ParseInstantSpellCast(json, dataModel);
                         break;
                     case "spellCastFailed":
                         ParseSpellCastFailed(data, dataModel);
                         break;
                     case "spellCastInterrupted":
                         ParseSpellCastInterrupted(data, dataModel);
+                        break;
+                    default:
+                        Logger.Warn("The WoW addon sent an unknown command: {0}", command);
                         break;
                 }
             }
@@ -151,6 +161,11 @@ namespace Artemis.Modules.Games.WoW
             dataModel.Target.ApplyStateJson(json);
         }
 
+        private void ParseAuras(JObject json, WoWDataModel dataModel)
+        {
+            dataModel.Player.ApplyAuraJson(json);
+        }
+
         private void ParseSpellCast(JObject json, WoWDataModel dataModel)
         {
             if (json["unitID"].Value<string>() == "player")
@@ -161,7 +176,16 @@ namespace Artemis.Modules.Games.WoW
 
         private void ParseInstantSpellCast(JObject json, WoWDataModel dataModel)
         {
-            
+            var spell = new WoWSpell
+            {
+                Name = json["name"].Value<string>(),
+                Id = json["spellID"].Value<int>()
+            };
+
+            if (json["unitID"].Value<string>() == "player")
+                dataModel.Player.AddInstantCast(spell);
+            else if (json["unitID"].Value<string>() == "target")
+                dataModel.Target.AddInstantCast(spell);
         }
 
         private void ParseSpellCastFailed(string data, WoWDataModel dataModel)
@@ -189,10 +213,10 @@ namespace Artemis.Modules.Games.WoW
 
         public override void Update()
         {
-            var dataModel = (WoWDataModel)DataModel;
+            var dataModel = (WoWDataModel) DataModel;
 
-            dataModel.Player.CastBar.UpdateProgress();
-            dataModel.Target.CastBar.UpdateProgress();
+            dataModel.Player.Update();
+            dataModel.Target.Update();
         }
     }
 }
