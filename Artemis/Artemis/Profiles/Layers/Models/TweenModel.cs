@@ -136,7 +136,7 @@ namespace Artemis.Profiles.Layers.Models
             }
         }
 
-        private static float LerpFuncFloat(float start, float end, float percent)
+        public static float LerpFuncFloat(float start, float end, float percent)
         {
             return start + (end - start) * percent;
         }
