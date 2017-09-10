@@ -84,6 +84,8 @@ namespace Artemis.Modules.Games.WoW
 
             // Split the string at the prefix
             var parts = str.Split(new[] {"(artemis)"}, StringSplitOptions.None);
+            if (parts.Length < 2)
+                return;
             var msg = parts[1];
             // Start escape char
             if (msg.StartsWith(MsgStart))

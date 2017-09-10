@@ -75,7 +75,7 @@ namespace Artemis.Modules.Games.WoW
                         ParseAuras(json, dataModel, false);
                         break;
                     case "spellCast":
-                        ParseSpellCast(json, dataModel);
+                        ParseSpellCast(json, dataModel, false);
                         break;
                     case "instantSpellCast":
                         ParseInstantSpellCast(json, dataModel);
@@ -84,6 +84,12 @@ namespace Artemis.Modules.Games.WoW
                         ParseSpellCastFailed(data, dataModel);
                         break;
                     case "spellCastInterrupted":
+                        ParseSpellCastInterrupted(data, dataModel);
+                        break;
+                    case "spellChannel":
+                        ParseSpellCast(json, dataModel, true);
+                        break;
+                    case "spellChannelInterrupted":
                         ParseSpellCastInterrupted(data, dataModel);
                         break;
                     default:
@@ -118,12 +124,12 @@ namespace Artemis.Modules.Games.WoW
             dataModel.Player.ApplyAuraJson(json, buffs);
         }
 
-        private void ParseSpellCast(JToken json, WoWDataModel dataModel)
+        private void ParseSpellCast(JToken json, WoWDataModel dataModel, bool isChannel)
         {
             if (json["uid"].Value<string>() == "player")
-                dataModel.Player.CastBar.ApplyJson(json);
+                dataModel.Player.CastBar.ApplyJson(json, isChannel);
             else if (json["uid"].Value<string>() == "target")
-                dataModel.Target.CastBar.ApplyJson(json);
+                dataModel.Target.CastBar.ApplyJson(json, isChannel);
         }
 
         private void ParseInstantSpellCast(JToken json, WoWDataModel dataModel)
