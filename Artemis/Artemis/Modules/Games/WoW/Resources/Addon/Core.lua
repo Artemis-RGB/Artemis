@@ -13,7 +13,7 @@ function Artemis:OnEnable()
     Artemis:RegisterEvent("PLAYER_ENTERING_WORLD")
     Artemis:RegisterEvent("PLAYER_LEVEL_UP")
     Artemis:RegisterEvent("ACHIEVEMENT_EARNED")
-	Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+    Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
     Artemis:RegisterEvent("UNIT_TARGET")
     Artemis:RegisterEvent("UNIT_HEALTH")
     Artemis:RegisterEvent("UNIT_POWER")
@@ -63,10 +63,10 @@ function Artemis:Transmit(prefix, data, prio)
     lastTransmitTime = GetTime()
 
     if debugging == true then
-		if prefixCounts[prefix] == nill then
-			prefixCounts[prefix] = 0
-		end
-		prefixCounts[prefix] = prefixCounts[prefix] + 1
+        if prefixCounts[prefix] == nill then
+            prefixCounts[prefix] = 0
+        end
+        prefixCounts[prefix] = prefixCounts[prefix] + 1
     end
     
     if debugging == true then
@@ -110,14 +110,14 @@ function Artemis:GetUnitDetails(unit)
 end
 
 function Artemis:GetPlayerDetails()
-	local details = Artemis:GetUnitDetails("player")
+    local details = Artemis:GetUnitDetails("player")
     local id, name, _, _, role = GetSpecializationInfo(GetSpecialization())
-	
-	details.realm = GetRealmName()
+    
+    details.realm = GetRealmName()
     details.achievementPoints = GetTotalAchievementPoints(false)
-	details.s = {id = id, n = name, r = role}	
-	
-	return details
+    details.s = {id = id, n = name, r = role}    
+    
+    return details
 end
 
 function Artemis:GetUnitAuras(unit, filter)
@@ -142,7 +142,7 @@ function Artemis:GetUnitAuras(unit, filter)
     return auras
 end
 
-function Artemis:PLAYER_ENTERING_WORLD(...)	
+function Artemis:PLAYER_ENTERING_WORLD(...)    
     Artemis:Transmit("player", Artemis:GetPlayerDetails())
     Artemis:TransmitUnitState("player", true);
 end
@@ -197,18 +197,18 @@ function Artemis:UNIT_AURA(...)
     
     local buffs = Artemis:GetUnitAuras(source, "PLAYER|HELPFUL")
     local debuffs = Artemis:GetUnitAuras(source, "PLAYER|HARMFUL")    
-	
-	local newBuffs = json.encode(buffs)
-	local newDebuffs = json.encode(debuffs)
-	
+    
+    local newBuffs = json.encode(buffs)
+    local newDebuffs = json.encode(debuffs)
+    
     if not (lastBuffs == newBuffs) then
-		Artemis:Transmit("buffs", buffs)    
-	end
-	if not (lastDebuffs == newDebuffs) then
-		Artemis:Transmit("debuffs", debuffs)    
-	end
+        Artemis:Transmit("buffs", buffs)    
+    end
+    if not (lastDebuffs == newDebuffs) then
+        Artemis:Transmit("debuffs", debuffs)    
+    end
 
-	lastBuffs = newBuffs
+    lastBuffs = newBuffs
     lastDebuffs = newDebuffs
 end
 
