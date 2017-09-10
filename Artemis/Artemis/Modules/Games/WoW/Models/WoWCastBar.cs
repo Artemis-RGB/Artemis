@@ -20,15 +20,15 @@ namespace Artemis.Modules.Games.WoW.Models
 
         public void ApplyJson(JToken spellJson)
         {
-            var castMs = spellJson["endTime"].Value<int>() - spellJson["startTime"].Value<int>();
+            var castMs = spellJson["e"].Value<int>() - spellJson["s"].Value<int>();
             var tickCount = Environment.TickCount;
-            var difference = tickCount - spellJson["startTime"].Value<int>();
+            var difference = tickCount - spellJson["s"].Value<int>();
 
-            Spell.Name = spellJson["name"].Value<string>();
-            Spell.Id = spellJson["spellID"].Value<int>();
+            Spell.Name = spellJson["n"].Value<string>();
+            Spell.Id = spellJson["sid"].Value<int>();
             StartTime = new DateTime(DateTime.Now.Ticks + difference);
             EndTime = StartTime.AddMilliseconds(castMs);
-            NonInterruptible = spellJson["notInterruptible"].Value<bool>();
+            NonInterruptible = spellJson["ni"].Value<bool>();
         }
 
         public void UpdateProgress()

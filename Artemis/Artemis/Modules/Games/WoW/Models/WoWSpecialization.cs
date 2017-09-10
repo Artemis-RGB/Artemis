@@ -12,9 +12,9 @@ namespace Artemis.Modules.Games.WoW.Models
 
         public void ApplyJson(JToken specJson)
         {
-            Name = specJson["name"].Value<string>();
+            Name = specJson["n"].Value<string>();
             Id = specJson["id"].Value<int>();
-            Role = specJson["role"].Value<string>();
+            Role = specJson["r"].Value<string>();
         }
     }
 }

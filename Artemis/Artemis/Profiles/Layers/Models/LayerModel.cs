@@ -11,6 +11,7 @@ using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Keyboard;
 using Artemis.Utilities;
 using Artemis.Utilities.ParentChild;
+using Betwixt;
 using Newtonsoft.Json;
 
 namespace Artemis.Profiles.Layers.Models
@@ -26,7 +27,13 @@ namespace Artemis.Profiles.Layers.Models
             var model = Properties as KeyboardPropertiesModel;
             if (model != null)
                 GifImage = new GifImage(model.GifFile, Properties.AnimationSpeed);
+
+            LayerConditionsMet += OnLayerConditionsMet;
+            LayerConditionsUnmet += OnLayerConditionsUnmet;
         }
+
+        public event EventHandler<EventArgs> LayerConditionsMet;
+        public event EventHandler<EventArgs> LayerConditionsUnmet;
 
         [JsonIgnore]
         public ImageSource LayerImage => LayerType.DrawThumbnail(this);
@@ -43,7 +50,18 @@ namespace Artemis.Profiles.Layers.Models
         public bool AreConditionsMet(ModuleDataModel dataModel)
         {
             // Conditions are not even checked if the layer isn't enabled
-            return Enabled && LayerCondition.ConditionsMet(this, dataModel);
+            if (!Enabled)
+                return false;
+
+            _fadeTweener?.Update(40);
+            var conditionsMet = LayerCondition.ConditionsMet(this, dataModel);
+            if (conditionsMet && !_conditionsMetLastFrame)
+                OnLayerConditionsMet();
+            if (!conditionsMet && _conditionsMetLastFrame)
+                OnLayerConditionsUnmet();
+
+            _conditionsMetLastFrame = conditionsMet;
+            return _fadeTweener != null && _fadeTweener.Running || conditionsMet;
         }
 
         /// <summary>
@@ -56,7 +74,7 @@ namespace Artemis.Profiles.Layers.Models
         {
             if (LayerType == null)
                 return;
-
+            
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
@@ -96,7 +114,12 @@ namespace Artemis.Profiles.Layers.Models
             if (Brush == null || !preview && !RenderAllowed)
                 return;
 
+            // If fading in/out, push transparency on the entire context
+            if (_fadeTweener != null && _fadeTweener.Running)
+                c.PushOpacity(_fadeTweener.Value);
             LayerType.Draw(this, c);
+            if (_fadeTweener != null && _fadeTweener.Running)
+                c.Pop();
         }
 
         /// <summary>
@@ -105,7 +128,7 @@ namespace Artemis.Profiles.Layers.Models
         public void SetupProperties()
         {
             LayerType.SetupProperties(this);
-
+            
             // If the type is an event, set it up 
             if (IsEvent && EventProperties == null)
                 EventProperties = new KeyboardEventPropertiesModel
@@ -303,6 +326,29 @@ namespace Artemis.Profiles.Layers.Models
                 keybindModel.Unregister();
         }
 
+        private void OnLayerConditionsMet(object sender, EventArgs eventArgs)
+        {
+            if (FadeInTime <= 0)
+                return;
+            if (_fadeTweener != null && _fadeTweener.Running)
+                _fadeTweener = new Tweener<float>(_fadeTweener.Value, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
+            else
+                _fadeTweener = new Tweener<float>(0, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
+            _fadeTweener.Start();
+        }
+
+        private void OnLayerConditionsUnmet(object sender, EventArgs eventArgs)
+        {
+            if (FadeOutTime <= 0)
+                return;
+
+            if (_fadeTweener != null && _fadeTweener.Running)
+                _fadeTweener = new Tweener<float>(_fadeTweener.Value, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
+            else
+                _fadeTweener = new Tweener<float>(1, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
+            _fadeTweener.Start();
+        }
+
         #region Properties
 
         #region Layer type properties
@@ -321,6 +367,8 @@ namespace Artemis.Profiles.Layers.Models
         public bool RenderAllowed { get; set; }
         public bool Expanded { get; set; }
         public bool IsEvent { get; set; }
+        public double FadeInTime { get; set; }
+        public double FadeOutTime { get; set; }
         public LayerPropertiesModel Properties { get; set; }
         public EventPropertiesModel EventProperties { get; set; }
 
@@ -341,6 +389,8 @@ namespace Artemis.Profiles.Layers.Models
         #region Render properties
 
         [JsonIgnore] private Brush _brush;
+        [JsonIgnore] private bool _conditionsMetLastFrame;
+        [JsonIgnore] private Tweener<float> _fadeTweener;
 
         [JsonIgnore]
         public double X { get; set; }
@@ -390,7 +440,7 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore]
         public DateTime LastRender { get; set; }
-
+        
         #endregion
 
         #endregion
@@ -415,6 +465,16 @@ namespace Artemis.Profiles.Layers.Models
         public override string ToString()
         {
             return $"{nameof(Name)}: {Name}, {nameof(Order)}: {Order}, {nameof(X)}: {X}, {nameof(Y)}: {Y}, {nameof(Width)}: {Width}, {nameof(Height)}: {Height}";
+        }
+
+        protected virtual void OnLayerConditionsMet()
+        {
+            LayerConditionsMet?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnLayerConditionsUnmet()
+        {
+            LayerConditionsUnmet?.Invoke(this, EventArgs.Empty);
         }
     }
 }

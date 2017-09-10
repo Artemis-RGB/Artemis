@@ -39,47 +39,47 @@ namespace Artemis.Modules.Games.WoW.Models
         public List<WoWAura> Debuffs { get; }
         public List<WoWSpell> RecentIntantCasts { get; private set; }
 
-        public void ApplyJson(JObject json)
+        public void ApplyJson(JToken json)
         {
-            if (json["name"] == null)
+            if (json["n"] == null)
                 return;
 
-            Name = json["name"].Value<string>();
-            Level = json["level"].Value<int>();
-            Class = json["class"].Value<string>();
-            Gender = json["gender"].Value<int>() == 3 ? WoWGender.Female : WoWGender.Male;
+            Name = json["n"].Value<string>();
+            Level = json["l"].Value<int>();
+            Class = json["c"].Value<string>();
+            Gender = json["g"].Value<int>() == 3 ? WoWGender.Female : WoWGender.Male;
 
-            if (json["race"] != null)
-                Race = GeneralHelpers.ParseEnum<WoWRace>(json["race"].Value<string>());
-            if (json["specialization"] != null)
-                Specialization.ApplyJson(json["specialization"]);
+            if (json["r"] != null)
+                Race = GeneralHelpers.ParseEnum<WoWRace>(json["r"].Value<string>());
+            if (json["s"] != null)
+                Specialization.ApplyJson(json["s"]);
         }
 
-        public void ApplyStateJson(JObject json)
+        public void ApplyStateJson(JToken json)
         {
-            Health = json["health"].Value<int>();
-            MaxHealth = json["maxHealth"].Value<int>();
-            PowerType = GeneralHelpers.ParseEnum<WoWPowerType>(json["powerType"].Value<int>().ToString());
-            Power = json["power"].Value<int>();
-            MaxPower = json["maxPower"].Value<int>();
+            Health = json["h"].Value<int>();
+            MaxHealth = json["mh"].Value<int>();
+            PowerType = GeneralHelpers.ParseEnum<WoWPowerType>(json["t"].Value<int>().ToString());
+            Power = json["p"].Value<int>();
+            MaxPower = json["mp"].Value<int>();
         }
 
-        public void ApplyAuraJson(JObject json)
+        public void ApplyAuraJson(JToken json, bool buffs)
         {
-            Buffs.Clear();
-            if (json["buffs"] != null)
+            if (buffs)
             {
-                foreach (var auraJson in json["buffs"].Children())
+                Buffs.Clear();
+                foreach (var auraJson in json.Children())
                 {
                     var aura = new WoWAura();
                     aura.ApplyJson(auraJson);
                     Buffs.Add(aura);
                 }
             }
-            Debuffs.Clear();
-            if (json["debuffs"] != null)
+            else
             {
-                foreach (var auraJson in json["debuffs"].Children())
+                Debuffs.Clear();
+                foreach (var auraJson in json.Children())
                 {
                     var aura = new WoWAura();
                     aura.ApplyJson(auraJson);
@@ -103,7 +103,7 @@ namespace Artemis.Modules.Games.WoW.Models
                 // Remove all casts that weren't cast in the after the last frame
                 RecentIntantCasts.Clear();
                 RecentIntantCasts.AddRange(_currentFrameCasts);
-                
+
                 // Clear the that were after the last frame so that they are removed next frame when this method is called again
                 _currentFrameCasts.Clear();
             }

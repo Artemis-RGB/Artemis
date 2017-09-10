@@ -410,6 +410,7 @@
     <Compile Include="Modules\Games\WoW\Models\WoWSpecialization.cs" />
     <Compile Include="Modules\Games\WoW\Models\WoWSpell.cs" />
     <Compile Include="Modules\Games\WoW\Models\WoWUnit.cs" />
+    <Compile Include="Modules\Games\WoW\WoWPacketScanner.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
@@ -811,6 +812,16 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Modules\Games\WoW\Resources\Addon\Artemis.toc" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Core.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceAddon-3.0\AceAddon-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\AceComm-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\ChatThrottleLib.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceConsole-3.0\AceConsole-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceEvent-3.0\AceEvent-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceTimer-3.0\AceTimer-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\json.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon\Libs\LibStub\LibStub.lua" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -1085,6 +1096,12 @@
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <None Include="Resources\audio.png" />
     <None Include="Resources\ambilight.png" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\embeds.xml" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceAddon-3.0\AceAddon-3.0.xml" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\AceComm-3.0.xml" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceConsole-3.0\AceConsole-3.0.xml" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceEvent-3.0\AceEvent-3.0.xml" />
+    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceTimer-3.0\AceTimer-3.0.xml" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>

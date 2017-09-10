@@ -9,17 +9,16 @@ namespace Artemis.Modules.Games.WoW.Models
     {
         public string Name { get; set; }
         public int Id { get; set; }
-        public string Caster { get; set; }
         public int Stacks { get; set; }
         public DateTime StartTime { set; get; }
         public DateTime EndTime { get; set; }
 
         public void ApplyJson(JToken buffJson)
         {
-            Name = buffJson["name"].Value<string>();
-            Id = buffJson["spellID"].Value<int>();
-            Stacks = buffJson["count"].Value<int>();
-            Caster = buffJson["caster"]?.Value<string>();
+            Name = buffJson["n"].Value<string>();
+            Id = buffJson["id"].Value<int>();
+            if (buffJson["c"] != null)
+                Stacks = buffJson["c"].Value<int>();
 
             // TODO: Duration
         }
