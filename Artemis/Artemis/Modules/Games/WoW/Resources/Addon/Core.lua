@@ -2,6 +2,7 @@ Artemis = LibStub("AceAddon-3.0"):NewAddon("Artemis", "AceConsole-3.0", "AceEven
 json = LibStub("json")
 local debugging = false
 local lastLine = {}
+local channeling = {}
 local unitUpdates = {}
 local lastTransmitMessage
 local lastTransmitTime
@@ -9,18 +10,25 @@ local lastBuffs = "";
 local lastDebuffs = "";
 local prefixCounts = {}
 
+channeling["player"] = false
+channeling["target"] = false
+
 function Artemis:OnEnable()
     Artemis:RegisterEvent("PLAYER_ENTERING_WORLD")
     Artemis:RegisterEvent("PLAYER_LEVEL_UP")
     Artemis:RegisterEvent("ACHIEVEMENT_EARNED")
-    Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
     Artemis:RegisterEvent("UNIT_TARGET")
     Artemis:RegisterEvent("UNIT_HEALTH")
     Artemis:RegisterEvent("UNIT_POWER")
     Artemis:RegisterEvent("UNIT_AURA")
-    Artemis:RegisterEvent("UNIT_SPELLCAST_START")
+    Artemis:RegisterEvent("UNIT_SPELLCAST_START")    
     Artemis:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     Artemis:RegisterEvent("UNIT_SPELLCAST_FAILED")
+    Artemis:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+    Artemis:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+    Artemis:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+    Artemis:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
     Artemis:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     Artemis:RegisterEvent("ZONE_CHANGED")
     Artemis:RegisterEvent("ZONE_CHANGED_NEW_AREA")
@@ -63,10 +71,10 @@ function Artemis:Transmit(prefix, data, prio)
     lastTransmitTime = GetTime()
 
     if debugging == true then
-        if prefixCounts[prefix] == nill then
-            prefixCounts[prefix] = 0
-        end
-        prefixCounts[prefix] = prefixCounts[prefix] + 1
+		if prefixCounts[prefix] == nill then
+			prefixCounts[prefix] = 0
+		end
+		prefixCounts[prefix] = prefixCounts[prefix] + 1
     end
     
     if debugging == true then
@@ -110,14 +118,14 @@ function Artemis:GetUnitDetails(unit)
 end
 
 function Artemis:GetPlayerDetails()
-    local details = Artemis:GetUnitDetails("player")
+	local details = Artemis:GetUnitDetails("player")
     local id, name, _, _, role = GetSpecializationInfo(GetSpecialization())
-    
-    details.realm = GetRealmName()
+	
+	details.realm = GetRealmName()
     details.achievementPoints = GetTotalAchievementPoints(false)
-    details.s = {id = id, n = name, r = role}    
-    
-    return details
+	details.s = {id = id, n = name, r = role}	
+	
+	return details
 end
 
 function Artemis:GetUnitAuras(unit, filter)
@@ -142,7 +150,7 @@ function Artemis:GetUnitAuras(unit, filter)
     return auras
 end
 
-function Artemis:PLAYER_ENTERING_WORLD(...)    
+function Artemis:PLAYER_ENTERING_WORLD(...)	
     Artemis:Transmit("player", Artemis:GetPlayerDetails())
     Artemis:TransmitUnitState("player", true);
 end
@@ -166,6 +174,7 @@ function Artemis:UNIT_TARGET(...)
     end
 
     local details = Artemis:GetUnitDetails("target")
+    channeling["target"] = false
 
     Artemis:Transmit("target", details)
     Artemis:TransmitUnitState("target", true);
@@ -197,18 +206,18 @@ function Artemis:UNIT_AURA(...)
     
     local buffs = Artemis:GetUnitAuras(source, "PLAYER|HELPFUL")
     local debuffs = Artemis:GetUnitAuras(source, "PLAYER|HARMFUL")    
-    
-    local newBuffs = json.encode(buffs)
-    local newDebuffs = json.encode(debuffs)
-    
+	
+	local newBuffs = json.encode(buffs)
+	local newDebuffs = json.encode(debuffs)
+	
     if not (lastBuffs == newBuffs) then
-        Artemis:Transmit("buffs", buffs)    
-    end
-    if not (lastDebuffs == newDebuffs) then
-        Artemis:Transmit("debuffs", debuffs)    
-    end
+		Artemis:Transmit("buffs", buffs)    
+	end
+	if not (lastDebuffs == newDebuffs) then
+		Artemis:Transmit("debuffs", debuffs)    
+	end
 
-    lastBuffs = newBuffs
+	lastBuffs = newBuffs
     lastDebuffs = newDebuffs
 end
 
@@ -221,7 +230,7 @@ function Artemis:UNIT_SPELLCAST_START(...)
     
     local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(unitID)
     local table = {uid = unitID, n = name, sid = spellID, s = startTime, e = endTime, ni = notInterruptible}
-    lastLine[unitID] = lineID    
+    lastLine[unitID] = lineID
 
     Artemis:Transmit("spellCast", table, "ALERT")
 end
@@ -230,6 +239,9 @@ end
 function Artemis:UNIT_SPELLCAST_SUCCEEDED (...)       
     local _, unitID, spell, rank, lineID, spellID = ...
     if not (unitID == "player") and not (unitID == "target") then
+        return
+    end    
+    if channeling[unitID] == true then
         return
     end
     -- Many spells are irrelevant system spells, don't transmit these
@@ -270,6 +282,18 @@ function Artemis:UNIT_SPELLCAST_FAILED (...)
     Artemis:Transmit("spellCastFailed", unitID, "ALERT")     
 end
 
+-- Detect falure of non instant casts
+function Artemis:UNIT_SPELLCAST_DELAYED (...)
+    local _, unitID, spell, rank, lineID, spellID = ...
+    if not (unitID == "player") and not (unitID == "target") then
+        return
+    end
+    local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(unitID)
+    local table = {uid = unitID, n = name, sid = spellID, s = startTime, e = endTime, ni = notInterruptible}
+
+     Artemis:Transmit("spellCast", table, "ALERT")
+end
+
 -- Detect cancellation of non instant casts
 function Artemis:UNIT_SPELLCAST_INTERRUPTED (...)
     local source, unitID, _, _, lineID = ...
@@ -283,6 +307,43 @@ function Artemis:UNIT_SPELLCAST_INTERRUPTED (...)
     lastLine[unitID] = nil
 
     Artemis:Transmit("spellCastInterrupted", unitID, "ALERT")             
+end
+
+-- Detect spell channels
+function Artemis:UNIT_SPELLCAST_CHANNEL_START(...)
+    local _, unitID, spell, rank, lineID, spellID = ...
+    if not (unitID == "player") and not (unitID == "target") then
+        return
+    end
+    channeling[unitID] = true
+    
+    local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(unitID)
+    local table = {uid = unitID, n = name, sid = spellID, s = startTime, e = endTime, ni = notInterruptible}
+
+    Artemis:Transmit("spellChannel", table, "ALERT")
+end
+
+function Artemis:UNIT_SPELLCAST_CHANNEL_UPDATE (...)
+    local _, unitID, spell, rank, lineID, spellID = ...
+    if not (unitID == "player") and not (unitID == "target") then
+        return
+    end
+    local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(unitID)
+    local table = {uid = unitID, n = name, sid = spellID, s = startTime, e = endTime, ni = notInterruptible}
+
+     Artemis:Transmit("spellChannel", table, "ALERT")
+end
+
+-- Detect cancellation of channels
+function Artemis:UNIT_SPELLCAST_CHANNEL_STOP (...)
+    local source, unitID, _, _, lineID = ...
+    if not (unitID == "player") and not (unitID == "target") then
+        return
+    end
+
+    channeling[unitID] = false
+    
+    Artemis:Transmit("spellChannelInterrupted", unitID, "ALERT")             
 end
 
 function Artemis:ZONE_CHANGED_NEW_AREA (...)

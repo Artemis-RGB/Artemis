@@ -17,8 +17,9 @@ namespace Artemis.Modules.Games.WoW.Models
         public DateTime EndTime { get; set; }
         public bool NonInterruptible { get; set; }
         public float Progress { get; set; }
+        public bool IsChannel { get; set; }
 
-        public void ApplyJson(JToken spellJson)
+        public void ApplyJson(JToken spellJson, bool isChannel)
         {
             var castMs = spellJson["e"].Value<int>() - spellJson["s"].Value<int>();
             var tickCount = Environment.TickCount;
@@ -29,6 +30,7 @@ namespace Artemis.Modules.Games.WoW.Models
             StartTime = new DateTime(DateTime.Now.Ticks + difference);
             EndTime = StartTime.AddMilliseconds(castMs);
             NonInterruptible = spellJson["ni"].Value<bool>();
+            IsChannel = isChannel;
         }
 
         public void UpdateProgress()
@@ -39,8 +41,12 @@ namespace Artemis.Modules.Games.WoW.Models
             var elapsed = DateTime.Now - StartTime;
             var total = EndTime - StartTime;
 
-            Progress = (float) (elapsed.TotalMilliseconds / total.TotalMilliseconds);
-            if (Progress > 1)
+            if (IsChannel)
+                Progress = 1 - (float) (elapsed.TotalMilliseconds / total.TotalMilliseconds);
+            else
+                Progress = (float) (elapsed.TotalMilliseconds / total.TotalMilliseconds);
+
+            if (Progress > 1 || Progress < 0)
                 Clear();
         }
 
@@ -52,6 +58,7 @@ namespace Artemis.Modules.Games.WoW.Models
             EndTime = DateTime.MinValue;
             NonInterruptible = false;
             Progress = 0;
+            IsChannel = false;
         }
     }
 }
