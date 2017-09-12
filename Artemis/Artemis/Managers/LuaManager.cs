@@ -7,7 +7,6 @@ using Artemis.Profiles;
 using Artemis.Profiles.Lua;
 using Artemis.Profiles.Lua.Modules;
 using Artemis.Profiles.Lua.Modules.Gui;
-using Castle.Core.Internal;
 using MoonSharp.Interpreter;
 using Ninject;
 using Ninject.Extensions.Logging;
@@ -64,7 +63,7 @@ namespace Artemis.Managers
                 LuaScript.Globals[luaModule.ModuleName] = luaModule;
 
             // If there is no LUA script, don't bother executing the string
-            if (ProfileModel.LuaScript.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(ProfileModel.LuaScript))
                 return;
 
             try

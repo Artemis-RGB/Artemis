@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Artemis.Utilities;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json.Linq;
@@ -37,7 +36,7 @@ namespace Artemis.Modules.Games.WoW.Models
 
         public List<WoWAura> Buffs { get; }
         public List<WoWAura> Debuffs { get; }
-        public List<WoWSpell> RecentIntantCasts { get; private set; }
+        public List<WoWSpell> RecentIntantCasts { get; }
 
         public void ApplyJson(JToken json)
         {
@@ -68,22 +67,28 @@ namespace Artemis.Modules.Games.WoW.Models
         {
             if (buffs)
             {
-                Buffs.Clear();
-                foreach (var auraJson in json.Children())
+                lock (Buffs)
                 {
-                    var aura = new WoWAura();
-                    aura.ApplyJson(auraJson);
-                    Buffs.Add(aura);
+                    Buffs.Clear();
+                    foreach (var auraJson in json.Children())
+                    {
+                        var aura = new WoWAura();
+                        aura.ApplyJson(auraJson);
+                        Buffs.Add(aura);
+                    }
                 }
             }
             else
             {
-                Debuffs.Clear();
-                foreach (var auraJson in json.Children())
+                lock (Debuffs)
                 {
-                    var aura = new WoWAura();
-                    aura.ApplyJson(auraJson);
-                    Debuffs.Add(aura);
+                    Debuffs.Clear();
+                    foreach (var auraJson in json.Children())
+                    {
+                        var aura = new WoWAura();
+                        aura.ApplyJson(auraJson);
+                        Debuffs.Add(aura);
+                    }
                 }
             }
         }
@@ -113,6 +118,17 @@ namespace Artemis.Modules.Games.WoW.Models
         {
             CastBar.UpdateProgress();
             ClearInstantCasts();
+
+            lock (Buffs)
+            {
+                foreach (var buff in Buffs)
+                    buff.UpdateProgress();
+            }
+            lock (Debuffs)
+            {
+                foreach (var debuff in Debuffs)
+                    debuff.UpdateProgress();
+            }
         }
     }
 }

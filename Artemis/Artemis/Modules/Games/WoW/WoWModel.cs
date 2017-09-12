@@ -3,7 +3,6 @@ using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.WoW.Models;
 using Newtonsoft.Json.Linq;
-using static Artemis.Modules.Games.WoW.WowPacketScanner;
 
 namespace Artemis.Modules.Games.WoW
 {
@@ -56,6 +55,9 @@ namespace Artemis.Modules.Games.WoW
                 var dataModel = (WoWDataModel) DataModel;
                 switch (command)
                 {
+                    case "gameState":
+                        ParseGameState(data, dataModel);
+                        break;
                     case "player":
                         ParsePlayer(json, dataModel);
                         break;
@@ -99,9 +101,25 @@ namespace Artemis.Modules.Games.WoW
             }
         }
 
+        private void ParseGameState(string data, WoWDataModel dataModel)
+        {
+            if (data == "\"ingame\"")
+                dataModel.State = WoWState.Ingame;
+            else if (data == "\"afk\"")
+                dataModel.State = WoWState.Afk;
+            else if (data == "\"dnd\"")
+                dataModel.State = WoWState.Dnd;
+            else if (data == "\"loggedOut\"")
+                dataModel.State = WoWState.LoggedOut;
+        }
+
         private void ParsePlayer(JToken json, WoWDataModel dataModel)
         {
             dataModel.Player.ApplyJson(json);
+
+            // At this point class/race data is available so no point pretending to be logged out
+            if (dataModel.State == WoWState.LoggedOut)
+                dataModel.State = WoWState.Ingame;
         }
 
         private void ParseTarget(JToken json, WoWDataModel dataModel)

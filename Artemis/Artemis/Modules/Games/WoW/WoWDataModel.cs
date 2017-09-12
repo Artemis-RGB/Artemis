@@ -19,5 +19,15 @@ namespace Artemis.Modules.Games.WoW
         public string Realm { get; set; }
         public string Zone { get; set; }
         public string SubZone { get; set; }
+
+        public WoWState State { get; set; }
+    }
+
+    public enum WoWState
+    {
+        LoggedOut,
+        Ingame,
+        Afk,
+        Dnd
     }
 }

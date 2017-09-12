@@ -1,5 +1,9 @@
 Artemis = LibStub("AceAddon-3.0"):NewAddon("Artemis", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceComm-3.0")
 json = LibStub("json")
+
+-- Hook onto logout because it seems PLAYER_LOGOUT fires on reload as well
+local _Logout = Logout
+
 local debugging = false
 local lastLine = {}
 local channeling = {}
@@ -14,10 +18,12 @@ channeling["player"] = false
 channeling["target"] = false
 
 function Artemis:OnEnable()
+    -- Register all the various events that Artemis will want to know about
     Artemis:RegisterEvent("PLAYER_ENTERING_WORLD")
     Artemis:RegisterEvent("PLAYER_LEVEL_UP")
+    Artemis:RegisterEvent("PLAYER_FLAGS_CHANGED")
     Artemis:RegisterEvent("ACHIEVEMENT_EARNED")
-	Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+    Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
     Artemis:RegisterEvent("UNIT_TARGET")
     Artemis:RegisterEvent("UNIT_HEALTH")
     Artemis:RegisterEvent("UNIT_POWER")
@@ -33,7 +39,11 @@ function Artemis:OnEnable()
     Artemis:RegisterEvent("ZONE_CHANGED")
     Artemis:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
+    -- Register the chat command /artemis <something>
     Artemis:RegisterChatCommand("artemis", "HandleChatCommand")
+
+    -- Create a loop that'll periodically send character data in case of an Artemis restart/late start
+    Artemis:ScheduleRepeatingTimer("PeriodicUpdate", 30)
 end
 
 function Artemis:HandleChatCommand(input)
@@ -71,10 +81,10 @@ function Artemis:Transmit(prefix, data, prio)
     lastTransmitTime = GetTime()
 
     if debugging == true then
-		if prefixCounts[prefix] == nill then
-			prefixCounts[prefix] = 0
-		end
-		prefixCounts[prefix] = prefixCounts[prefix] + 1
+        if prefixCounts[prefix] == nill then
+            prefixCounts[prefix] = 0
+        end
+        prefixCounts[prefix] = prefixCounts[prefix] + 1
     end
     
     if debugging == true then
@@ -118,14 +128,14 @@ function Artemis:GetUnitDetails(unit)
 end
 
 function Artemis:GetPlayerDetails()
-	local details = Artemis:GetUnitDetails("player")
+    local details = Artemis:GetUnitDetails("player")
     local id, name, _, _, role = GetSpecializationInfo(GetSpecialization())
-	
-	details.realm = GetRealmName()
+    
+    details.realm = GetRealmName()
     details.achievementPoints = GetTotalAchievementPoints(false)
-	details.s = {id = id, n = name, r = role}	
-	
-	return details
+    details.s = {id = id, n = name, r = role}    
+    
+    return details
 end
 
 function Artemis:GetUnitAuras(unit, filter)
@@ -150,13 +160,43 @@ function Artemis:GetUnitAuras(unit, filter)
     return auras
 end
 
-function Artemis:PLAYER_ENTERING_WORLD(...)	
+function Artemis:PeriodicUpdate()
+    -- Don't do this in combat, enough data going out at that time already
+    if InCombatLockdown() then
+        return
+    end
     Artemis:Transmit("player", Artemis:GetPlayerDetails())
     Artemis:TransmitUnitState("player", true);
 end
 
+function Artemis:PLAYER_ENTERING_WORLD(...)    
+    Artemis:Transmit("player", Artemis:GetPlayerDetails())
+    Artemis:TransmitUnitState("player", true);
+end
+
+function Logout()
+    Artemis:Transmit("gameState", "loggedOut")
+    return _Logout()
+end
+
 function Artemis:PLAYER_LEVEL_UP(...)
     Artemis:Transmit("player", Artemis:GetPlayerDetails())
+end
+
+function Artemis:PLAYER_FLAGS_CHANGED(...)
+    local _, unitID = ...
+    if unitID == "player" then
+        -- AFK overwrites DND
+        if UnitIsAFK("player") then
+            Artemis:Transmit("gameState", "afk")
+            return
+        end
+        if UnitIsDND("player") then
+            Artemis:Transmit("gameState", "dnd")
+            return
+        end
+        Artemis:Transmit("gameState", "ingame")
+    end
 end
 
 function Artemis:ACHIEVEMENT_EARNED(...)
@@ -206,18 +246,18 @@ function Artemis:UNIT_AURA(...)
     
     local buffs = Artemis:GetUnitAuras(source, "PLAYER|HELPFUL")
     local debuffs = Artemis:GetUnitAuras(source, "PLAYER|HARMFUL")    
-	
-	local newBuffs = json.encode(buffs)
-	local newDebuffs = json.encode(debuffs)
-	
+    
+    local newBuffs = json.encode(buffs)
+    local newDebuffs = json.encode(debuffs)
+    
     if not (lastBuffs == newBuffs) then
-		Artemis:Transmit("buffs", buffs)    
-	end
-	if not (lastDebuffs == newDebuffs) then
-		Artemis:Transmit("debuffs", debuffs)    
-	end
+        Artemis:Transmit("buffs", buffs)    
+    end
+    if not (lastDebuffs == newDebuffs) then
+        Artemis:Transmit("debuffs", debuffs)    
+    end
 
-	lastBuffs = newBuffs
+    lastBuffs = newBuffs
     lastDebuffs = newDebuffs
 end
 

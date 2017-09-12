@@ -26,7 +26,6 @@ using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
-using Castle.Components.DictionaryAdapter;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
@@ -637,7 +636,7 @@ namespace Artemis.ViewModels
                 return SelectedProfile.GetRenderLayers(null, false, true);
 
             if (SelectedLayer == null || !SelectedLayer.Enabled)
-                return new EditableList<LayerModel>();
+                return new List<LayerModel>();
 
             if (SelectedLayer.LayerType is FolderType)
                 drawLayers = SelectedLayer.GetRenderLayers(null, false, true);
