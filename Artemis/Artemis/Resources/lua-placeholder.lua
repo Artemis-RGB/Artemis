@@ -15,39 +15,39 @@
 
 -- This event is raised after every profile update, before drawing.
 function updateHandler(profile, eventArgs)
-	-- Don't do anything when previewing (this means the editor is open)
-	if eventArgs.Preview then 
-		return 
-	end
+    -- Don't do anything when previewing (this means the editor is open)
+    if eventArgs.Preview then 
+        return 
+    end
 
-	-- In this example we only want to update once per frame when the keyboard is 
-	-- updated. If you don't do this the updateHandler will trigger on every
-	-- device's update.
-    if eventArgs.DeviceType != "keyboard" then
+    -- In this example we only want to update once per frame when the keyboard is 
+    -- updated. If you don't do this the updateHandler will trigger on every
+    -- device's update.
+    if not (eventArgs.DeviceType == "keyboard") then
         return
     end
-	
-	-- Custom update code here
+    
+    -- Custom update code here
 end
 
 -- This event is raised after every profile draw, after updating.
 function drawHandler(profile, eventArgs)
-	-- Don't do anything when previewing (this means the editor is open)
-	if eventArgs.Preview then 
-		return 
-	end
+    -- Don't do anything when previewing (this means the editor is open)
+    if eventArgs.Preview then 
+        return 
+    end
 
-	-- In this example we only want to draw to the keyboard. Each device has it's
-	-- own drawing event
-    if eventArgs.DeviceType != "keyboard" then
+    -- In this example we only want to draw to the keyboard. Each device has it's
+    -- own drawing event
+    if not (eventArgs.DeviceType == "keyboard") then
         return
     end
-	
-	-- Custom draw code here
+    
+    -- Custom draw code here
 end
 
 
 -- Register the default events, you can rename/remove these if you so desire.
 -- These events are raised every 40 ms (25 times a second).
-Events.DeviceUpdating.add(updateHandler);
-Events.DeviceDrawing.add(drawHandler);
+Events.DeviceUpdating.add(updateHandler)
+Events.DeviceDrawing.add(drawHandler)
