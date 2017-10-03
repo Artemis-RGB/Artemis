@@ -1,3 +1,12 @@
+# State of the project
+Currently I'm in an extremely busy period of my student life (final year) and even when I have some spare time it's hard for me to spend it on Artemis. I'll try to put out releases for app-breaking bugs but new features are very hard for me to implement right now.
+
+I do not consider Artemis done, I don't think I'll ever do so because it is something that can always use new features and improvements. If I have the time again I'd love to make a 2.0 with the same features but implemented in a much neater way.
+
+If anyone with sufficient skill in C# would like to be a maintainer alongside me, drop me a message at ```spoinky.nl@gmail.com```. It could be that at some point in the near future I'll put out a bunch of updates again but any help is appreciated :).
+
+PS: There are some device issues currently that I'll try to get fixed soon, I already have a few few fixes in the dev branch and a great WoW module
+
 # Artemis
 [![GitHub release](https://img.shields.io/github/release/spoinkynl/Artemis.svg)]()
 [![Github All Releases](https://img.shields.io/github/downloads/spoinkynl/artemis/setup.exe.svg)]()
