@@ -377,6 +377,13 @@
       <DependentUpon>AssettoCorsaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaViewModel.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017Model.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017Settings.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017View.xaml.cs">
+      <DependentUpon>FormulaOne2017View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017ViewModel.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017DataModel.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaDataModel.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaSettings.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaModel.cs" />
@@ -878,6 +885,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Games\AssettoCorsa\AssettoCorsaView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Games\FormulaOne2017\FormulaOne2017View.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
