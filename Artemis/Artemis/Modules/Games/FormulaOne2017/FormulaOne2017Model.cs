@@ -55,9 +55,9 @@ namespace Artemis.Modules.Games.FormulaOne2017
             var msg = (FormulaOne2017DataModel.UdpPacketData) Marshal.PtrToStructure(pinnedPacket.AddrOfPinnedObject(), typeof(FormulaOne2017DataModel.UdpPacketData));
             pinnedPacket.Free();
 
-            dataModel.Rpm = msg.m_engineRate;
-            dataModel.MaxRpm = msg.m_max_rpm;
-            dataModel.IdleRpm = msg.m_idle_rpm;
+//            dataModel.Rpm = msg.m_engineRate;
+//            dataModel.MaxRpm = msg.m_max_rpm;
+//            dataModel.IdleRpm = msg.m_idle_rpm;
         }
 
         public override void Dispose()
