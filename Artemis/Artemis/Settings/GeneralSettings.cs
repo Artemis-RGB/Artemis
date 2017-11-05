@@ -38,6 +38,14 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public bool EnablePointersUpdate { get; set; }
 
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool EnableGameWindow { get; set; }
+
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool EnableWelcomeWindow { get; set; }
+
         [DefaultValue(51364)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public int GamestatePort { get; set; }
