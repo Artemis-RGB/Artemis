@@ -12,7 +12,7 @@ namespace Artemis.ViewModels
 
         public GeneralViewModel(List<ModuleViewModel> moduleViewModels, PreviewManager previewManager)
         {
-            DisplayName = "General";
+            DisplayName = "General Lighting";
             _vms = moduleViewModels.Where(m => !m.ModuleModel.IsOverlay && !m.ModuleModel.IsBoundToProcess)
                 .OrderByDescending(m => m.DisplayName == "General profile")
                 .ThenBy(m => m.DisplayName).ToList();
