@@ -26,6 +26,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -52,79 +54,96 @@
                                      IsChecked="{Binding Path=GeneralSettings.ShowOnStartup, Mode=TwoWay}"
                                      Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
                                      HorizontalAlignment="Right" />
+        <!-- Show on Welcome -->
+        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Show on Welcome Screen:" />
+        <controls:ToggleSwitchButton Grid.Row="3" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=GeneralSettings.EnableWelcomeWindow, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
+
+        <!-- Show on Games -->
+        <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+               Content="Show on Games Settings:" />
+        <controls:ToggleSwitchButton Grid.Row="4" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+                                     IsChecked="{Binding Path=GeneralSettings.EnableGameWindow, Mode=TwoWay}"
+                                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
+                                     HorizontalAlignment="Right" />
+
 
         <!-- Theme selection -->
-        <Label Grid.Row="3" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="5" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Theme:" />
-        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Themes" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="Themes" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
 
         <!-- Keyboard selection -->
-        <Label Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="6" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Keyboard:" />
-        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="6" Grid.Column="1" x:Name="KeyboardProviders" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
 
         <!-- Layout selection -->
-        <Label Grid.Row="5" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="7" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Layout:" />
-        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="Layouts" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="7" Grid.Column="1" x:Name="Layouts" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
 
         <!-- Gamestate port -->
-        <Label Grid.Row="6" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="8" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Gamestate port:" />
-        <controls:NumericUpDown Grid.Row="6" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+        <controls:NumericUpDown Grid.Row="8" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="140"
                                 Value="{Binding Path=GeneralSettings.GamestatePort, Mode=TwoWay}" />
 
         <!-- Updates check -->
-        <Label Grid.Row="7" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="9" Grid.Column="0" Margin="0,5,65,5" VerticalAlignment="Center" HorizontalAlignment="Right"
                Content="Auto-update:" />
-        <controls:ToggleSwitchButton Grid.Row="7" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
+        <controls:ToggleSwitchButton Grid.Row="9" Grid.Column="1" Margin="5,5,10,5" VerticalAlignment="Center"
                                      IsChecked="{Binding Path=GeneralSettings.AutoUpdate, Mode=TwoWay}"
                                      Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}"
                                      HorizontalAlignment="Right" />
 
         <!-- Screen capturing -->
-        <Label Grid.Row="8" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="10" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Screen-Capture FPS:" />
-        <controls:NumericUpDown Grid.Row="8" Grid.Column="1" Margin="10" VerticalAlignment="Center"
+        <controls:NumericUpDown Grid.Row="10" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="140" Minimum="1" Maximum="60"
                                 Value="{Binding Path=GeneralSettings.ScreenCaptureFPS, Mode=TwoWay}" />
-        
-        <Label Grid.Row="9" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+
+        <Label Grid.Row="11" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Active window detection" />
-        <ComboBox Grid.Row="9" Grid.Column="1" x:Name="ActiveWindowDetections" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="11" Grid.Column="1" x:Name="ActiveWindowDetections" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
 
         <!-- Logging -->
-        <Label Grid.Row="10" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
+        <Label Grid.Row="12" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Log level:" />
-        <ComboBox Grid.Row="10" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
+        <ComboBox Grid.Row="12" Grid.Column="1" x:Name="LogLevels" Margin="10" VerticalAlignment="Center"
                   HorizontalAlignment="Right"
                   Width="140" />
-        <Button Grid.Row="11" Grid.Column="0" Margin="10" x:Name="ShowLogs" Content="Show logs"
+
+        <Button Grid.Row="13" Grid.Column="0" Margin="10" x:Name="ShowLogs" Content="Show logs"
                 VerticalAlignment="Center" Width="100" HorizontalAlignment="Left"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="11" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
+        <Button Grid.Row="13" Grid.Column="1" Margin="10" x:Name="ShowDebug" Content="Show debugger"
                 VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Buttons -->
-        <Button Grid.Row="12" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
+        <Button Grid.Row="14" Grid.Column="0" Margin="10" x:Name="ResetSettings" Content="Reset settings"
                 VerticalAlignment="Center" HorizontalAlignment="Left" Width="100"
                 Style="{DynamicResource SquareButtonStyle}" />
-        <Button Grid.Row="12" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
+        <Button Grid.Row="14" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="100"
                 Style="{DynamicResource SquareButtonStyle}" />
 
         <!-- Version -->
-        <Grid Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

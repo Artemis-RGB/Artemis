@@ -11,7 +11,7 @@ namespace Artemis.ViewModels
 
         public OverlaysViewModel(IEnumerable<ModuleViewModel> moduleViewModels)
         {
-            DisplayName = "Overlays";
+            DisplayName = "Lighting Overlays";
             _vms = moduleViewModels.Where(m => m.ModuleModel.IsOverlay).OrderBy(m => m.DisplayName).ToList();
         }
 

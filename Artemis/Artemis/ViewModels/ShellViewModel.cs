@@ -31,7 +31,7 @@ namespace Artemis.ViewModels
             FlyoutSettingsViewModel flyoutSettings)
         {
             _kernel = kernel;
-
+           
             MainManager = mainManager;
             MetroDialogService = metroDialogService;
 
@@ -151,7 +151,10 @@ namespace Artemis.ViewModels
                 .OrderBy(v => v.DisplayName != "Welcome")
                 .ThenBy(v => v.DisplayName)
                 .ToList();
-
+            if (!GeneralSettings.EnableGameWindow)
+                vms.Remove(vms.Find(x => x.DisplayName == "Games"));
+            if (!GeneralSettings.EnableWelcomeWindow)
+                vms.Remove(vms.Find(x => x.DisplayName == "Welcome"));
             Items.Clear();
             Items.AddRange(vms);
             ActivateItem(vms.FirstOrDefault());

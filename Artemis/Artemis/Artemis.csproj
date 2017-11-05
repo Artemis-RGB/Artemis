@@ -340,6 +340,8 @@
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
+    <Compile Include="DeviceProviders\Razer\Firefly.cs" />
+    <Compile Include="DeviceProviders\Razer\Mamba.cs" />
     <Compile Include="Dialogs\MarkdownDialog.xaml.cs">
       <DependentUpon>MarkdownDialog.xaml</DependentUpon>
     </Compile>
@@ -726,6 +728,7 @@
     <Compile Include="ViewModels\OverlaysViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\MacroViewModel.cs" />
     <Compile Include="ViewModels\WelcomeViewModel.cs" />
     <Compile Include="Views\DebugView.xaml.cs">
       <DependentUpon>DebugView.xaml</DependentUpon>
@@ -792,6 +795,9 @@
     </Compile>
     <Compile Include="Views\SystemTrayView.xaml.cs">
       <DependentUpon>SystemTrayView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MacrosView.xaml.cs">
+      <DependentUpon>MacrosView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WelcomeView.xaml.cs">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -1063,6 +1069,10 @@
     <Page Include="Views\SystemTrayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MacrosView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\WelcomeView.xaml">
       <SubType>Designer</SubType>
