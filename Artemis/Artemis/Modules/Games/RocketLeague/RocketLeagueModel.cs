@@ -26,14 +26,14 @@ namespace Artemis.Modules.Games.RocketLeague
             var offset = new GamePointersCollection
             {
                 Game = "RocketLeague",
-                GameVersion = "1.30",
+                GameVersion = "1.38",
                 GameAddresses = new List<GamePointer>
                 {
                     new GamePointer
                     {
                         Description = "Boost",
-                        BasePointer = new IntPtr(0x016E00B4),
-                        Offsets = new[] {0xC4, 0x18, 0x388, 0x73C, 0x224}
+                        BasePointer = new IntPtr(0x0193E31C),
+                        Offsets = new[] {0x504, 0x738, 0x14, 0x14, 0x240}
                     }
                 }
             };
