@@ -9,6 +9,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
@@ -32,11 +33,20 @@
                 Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" ToolTip="Note: You can't enable an module when Artemis is disabled" />
         </StackPanel>
 
+        <!-- Game directory -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
+            <Label FontSize="20" HorizontalAlignment="Left" Content="World of Warcraft directory" />
+            <Grid>
+                <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="0,0,30,0" Text="{Binding Path=Settings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action PlaceAddon]" />
+                <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="26" />
+            </Grid>
+        </StackPanel>
+
         <!-- Profile editor -->
-        <ContentControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
+        <ContentControl Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ProfileEditor" />
 
         <!-- Buttons -->
-        <StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Bottom">
             <Button x:Name="ResetSettings" Content="Reset effect" VerticalAlignment="Top" Width="100" Style="{DynamicResource SquareButtonStyle}" />
             <Button x:Name="SaveSettings" Content="Save changes" VerticalAlignment="Top" Width="100" Margin="10,0,0,0" Style="{DynamicResource SquareButtonStyle}" />
         </StackPanel>
