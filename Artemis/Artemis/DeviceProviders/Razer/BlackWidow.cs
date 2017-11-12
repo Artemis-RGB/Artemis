@@ -57,7 +57,7 @@ namespace Artemis.DeviceProviders.Razer
 
         public override void DrawBitmap(Bitmap bitmap)
         {
-            var razerArray = RazerUtilities.BitmapColorArray(bitmap, Height, Width);
+            var razerArray = RazerUtilities.BitmaptoKeyboardEffect(bitmap, Height, Width);
             Chroma.Instance.Keyboard.SetCustom(razerArray);
         }
 
