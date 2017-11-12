@@ -2,22 +2,37 @@
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.WoW.Models;
+using Artemis.Properties;
+using Artemis.Services;
+using Artemis.Utilities;
+using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.IO.Compression;
 
 namespace Artemis.Modules.Games.WoW
 {
     public class WoWModel : ModuleModel
     {
+        private readonly MetroDialogService _dialogService;
         private readonly WowPacketScanner _packetScanner;
 
-        public WoWModel(DeviceManager deviceManager, LuaManager luaManager, WowPacketScanner packetScanner) : base(deviceManager, luaManager)
+        public WoWModel(DeviceManager deviceManager, LuaManager luaManager, WowPacketScanner packetScanner, MetroDialogService dialogService) : base(deviceManager, luaManager)
         {
             Settings = SettingsProvider.Load<WoWSettings>();
             DataModel = new WoWDataModel();
             ProcessNames.Add("Wow-64");
 
             _packetScanner = packetScanner;
+            _dialogService = dialogService;
             _packetScanner.RaiseDataReceived += (sender, args) => HandleGameData(args.Command, args.Data);
+
+            FindWoW();
+
+            // I simply cannot be sure wether this addon will bring people's accounts in trouble so
+            // lets remove it whenever Artemis isn't running the WoW module.
+            // (This also means the addon isnt left behind should the user uninstall Artemis.)
+            RemoveAddon();
         }
 
         public override string Name => "WoW";
@@ -26,12 +41,14 @@ namespace Artemis.Modules.Games.WoW
 
         public override void Enable()
         {
+            PlaceAddon();
             _packetScanner.Start();
             base.Enable();
         }
 
         public override void Dispose()
         {
+            RemoveAddon();
             _packetScanner.Stop();
             base.Dispose();
         }
@@ -42,6 +59,67 @@ namespace Artemis.Modules.Games.WoW
 
             dataModel.Player.Update();
             dataModel.Target.Update();
+        }
+
+        public void FindWoW()
+        {
+            var gameSettings = Settings as WoWSettings;
+            if (gameSettings == null)
+                return;
+
+            // If already propertly set up, don't do anything
+            if (gameSettings.GameDirectory != null && File.Exists(gameSettings.GameDirectory + @"\Wow.exe"))
+                return;
+
+            var key = Registry.LocalMachine.OpenSubKey(
+                @"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\World of Warcraft");
+            var path = key?.GetValue("DisplayIcon")?.ToString();
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                return;
+
+            gameSettings.GameDirectory = path.Substring(0, path.Length - 8);
+            gameSettings.Save();
+        }
+
+        public void ChangeDirectory(string directory, bool checkExe)
+        {
+            var settings = (WoWSettings) Settings;
+            if (checkExe && !File.Exists(directory + @"\Wow.exe"))
+            {
+                _dialogService.ShowErrorMessageBox("Please select a valid WoW directory\n\n" +
+                                                   @"By default WoW is in C:\Program Files (x86)\World of Warcraft");
+
+                settings.GameDirectory = string.Empty;
+                settings.Save();
+                return;
+            }
+            settings.GameDirectory = directory;
+            settings.Save();
+        }
+
+        public void PlaceAddon()
+        {
+            var settings = (WoWSettings) Settings;
+            var path = settings.GameDirectory;
+
+            if (!File.Exists(path + @"\Wow.exe"))
+                return;
+
+            // Load the ZIP from resources
+            using (var stream = new MemoryStream(Resources.wow_addon))
+            {
+                using (var archive = new ZipArchive(stream))
+                {
+                    archive.ExtractToDirectory(settings.GameDirectory + @"\Interface\Addons\Artemis", true);
+                }
+            }
+        }
+
+        public void RemoveAddon()
+        {
+            var settings = (WoWSettings) Settings;
+            if (Directory.Exists(settings.GameDirectory + @"\Interface\Addons\Artemis"))
+                Directory.Delete(settings.GameDirectory + @"\Interface\Addons\Artemis", true);
         }
 
         private void HandleGameData(string command, string data)
