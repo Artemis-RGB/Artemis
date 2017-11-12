@@ -4,10 +4,12 @@ using System.IO;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
+using Artemis.Properties;
 using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using MahApps.Metro;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Squirrel;
@@ -111,10 +113,8 @@ namespace Artemis.Settings
             {
                 try
                 {
-                    if (Autorun)
-                        mgr.CreateShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup, false, "--autorun");
-                    else
-                        mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
+                    // Clean up the shortcut used by the old method
+                    mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
                 }
                 catch (FileNotFoundException)
                 {
@@ -125,6 +125,25 @@ namespace Artemis.Settings
                     // Ignored, only happens when running from VS
                 }
 
+                using (var ts = new TaskService())
+                {
+                    var existing = ts.FindTask("Artemis autorun");
+                    if (Autorun)
+                    {
+                        // Overwrite any existing tasks in case the installation folder changed
+                        var path = Path.GetTempFileName();
+                        var xml = Resources.Artemis_autorun.Replace("{{executablePath}}", mgr.RootAppDirectory + "\\Update.exe");
+
+                        File.WriteAllText(path, xml);
+                        ts.RootFolder.ImportTask(null, path);
+                        File.Delete(path);
+                    }
+                    else if (existing != null)
+                    {
+                        // Remove the task if it is present
+                        ts.RootFolder.DeleteTask("Artemis autorun");
+                    }
+                }
             }
         }
 

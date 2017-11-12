@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,8 +15,6 @@ using Artemis.ViewModels;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Ninject;
-using NLog;
-using LogManager = NLog.LogManager;
 
 namespace Artemis
 {
@@ -41,7 +36,7 @@ namespace Artemis
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
-        
+
         private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
             // Get rid of the keyboard hook in case of a crash, otherwise input freezes up system wide until Artemis is gone
@@ -57,10 +52,10 @@ namespace Artemis
                 var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
-                if ((img != null) && (e != null))
+                if (img != null && e != null)
                 {
                     var position = e.GetPosition(img);
-                    return (int) (img.Source.Width*(position.X/img.ActualWidth));
+                    return (int) (img.Source.Width * (position.X / img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
@@ -77,14 +72,14 @@ namespace Artemis
                 var e = ctx.EventArgs as MouseEventArgs;
 
                 // If there is an image control, get the scaled position
-                if ((img != null) && (e != null))
+                if (img != null && e != null)
                 {
                     var position = e.GetPosition(img);
-                    return (int) (img.Source.Width*(position.Y/img.ActualWidth));
+                    return (int) (img.Source.Width * (position.Y / img.ActualWidth));
                 }
 
                 // If there is another type of of IInputControl get the non-scaled position - or do some processing to get a scaled position, whatever needs to happen
-                if ((e != null) && (input != null))
+                if (e != null && input != null)
                     return e.GetPosition(input).Y;
 
                 // Return 0 if no processing could be done
@@ -94,14 +89,6 @@ namespace Artemis
 
         protected override void Configure()
         {
-            // Sleep for a while if ran from autorun to allow full system boot
-            if (Environment.GetCommandLineArgs().Contains("--autorun"))
-            {
-                var logger = LogManager.GetCurrentClassLogger();
-                logger.Info("Artemis was run using the autorun shortcut, sleeping for 15 sec.");
-                Thread.Sleep(15000);
-            }
-            
             _kernel = new StandardKernel(new BaseModules(), new ManagerModules());
 
             _kernel.Bind<IWindowManager>().To<WindowManager>().InSingletonScope();

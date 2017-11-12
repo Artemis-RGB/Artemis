@@ -226,4 +226,7 @@
   <data name="wow_addon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Modules\Games\WoW\Resources\wow-addon.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Artemis_autorun" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Artemis autorun.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
+  </data>
 </root>
