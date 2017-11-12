@@ -26,6 +26,7 @@ namespace Artemis.Models
         private readonly WindowService _windowService;
         private FileSystemWatcher _watcher;
         private ModuleModel _luaModule;
+        private ProfileModel _luaEditorProfile;
 
         public ProfileEditorModel(WindowService windowService, MetroDialogService dialogService, DeviceManager deviceManager, LuaManager luaManager)
         {
@@ -290,6 +291,9 @@ namespace Artemis.Models
 
         public void OpenLuaEditor(ModuleModel moduleModel)
         {
+            if (moduleModel.ProfileModel == null)
+                return;
+
             // Clean up old environment
             DisposeLuaWatcher();
 
@@ -305,6 +309,7 @@ namespace Artemis.Models
 
             // Watch the file for changes
             _luaModule = moduleModel;
+            _luaEditorProfile = moduleModel.ProfileModel;
             _watcher = new FileSystemWatcher(Path.GetTempPath(), fileName);
             _watcher.Changed += LuaFileChanged;
             _watcher.EnableRaisingEvents = true;
@@ -332,12 +337,13 @@ namespace Artemis.Models
                 {
                     using (var sr = new StreamReader(fs))
                     {
-                        _luaModule.ProfileModel.LuaScript = sr.ReadToEnd();
+                        _luaEditorProfile.LuaScript = sr.ReadToEnd();
                     }
                 }
 
-                ProfileProvider.AddOrUpdate(_luaModule.ProfileModel);
-                _luaManager.SetupLua(_luaModule.ProfileModel);
+                ProfileProvider.AddOrUpdate(_luaEditorProfile);
+                if (_luaManager.ProfileModel == _luaEditorProfile)
+                    _luaManager.SetupLua(_luaModule.ProfileModel);
             }
         }
 

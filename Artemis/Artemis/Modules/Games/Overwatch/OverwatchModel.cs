@@ -223,6 +223,7 @@ namespace Artemis.Modules.Games.Overwatch
 
             // Update the datamodel
             gameDataModel.Character = characterMatch.Character;
+            gameDataModel.CharacterColor = colors[0, 20].ToHex();
             return characterMatch;
         }
 

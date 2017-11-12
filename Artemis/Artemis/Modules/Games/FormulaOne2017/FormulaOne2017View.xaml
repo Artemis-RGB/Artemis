@@ -22,13 +22,16 @@
         <!-- Header -->
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
             <Label.Content>
-                <AccessText TextWrapping="Wrap" Text="There is currently no default profile available for F1 2017." />
+                <AccessText TextWrapping="Wrap" Text="Turns your keyboard into F1 steering wheel, 'nuff said!" />
             </Label.Content>
         </Label>
 
         <!-- Sub header -->
         <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" TextAlignment="Justify" Margin="5,0,0,10">
-            The F1 2017 module requires UDP Telemetry to be enabled in the ingame settings menu.
+            
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" TextAlignment="Justify" Margin="5,0,0,10">
+            The F1 2017 module requires UDP Telemetry to be enabled in the ingame settings menu. For help with this see <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://github.com/SpoinkyNL/Artemis/wiki/F1-2017">the wiki</Hyperlink>.
         </TextBlock>
 
         <!-- Enable -->
