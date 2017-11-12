@@ -12,6 +12,7 @@ using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
+using Betwixt;
 using CSCore.CoreAudioAPI;
 using Newtonsoft.Json;
 using SpotifyAPI.Local;
@@ -28,7 +29,7 @@ namespace Artemis.Modules.General.GeneralProfile
             AudioCaptureManager audioCaptureManager) : base(deviceManager, luaManager)
         {
             _lastMusicUpdate = DateTime.Now;
-
+            
             Settings = SettingsProvider.Load<GeneralProfileSettings>();
             DataModel = new GeneralProfileDataModel();
 

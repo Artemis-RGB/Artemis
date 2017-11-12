@@ -23,9 +23,16 @@ namespace Artemis.DeviceProviders.Corsair
 
         public override bool TryEnable()
         {
-            CanUse = CanInitializeSdk();
-            if (CanUse && !CueSDK.IsInitialized)
-                CueSDK.Initialize();
+            try
+            {
+                CanUse = CanInitializeSdk();
+                if (CanUse && !CueSDK.IsInitialized)
+                    CueSDK.Initialize();
+            }
+            catch (Exception)
+            {
+                CanUse = false;
+            }
 
             Logger.Debug("Attempted to enable Corsair mousemat. CanUse: {0}", CanUse);
 

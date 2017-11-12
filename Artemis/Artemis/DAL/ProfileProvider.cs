@@ -102,12 +102,16 @@ namespace Artemis.DAL
             if (string.IsNullOrEmpty(name))
                 return;
 
-            // Remove the old profile
-            DeleteProfile(profile);
+            // Store the profile path before it is renamed
+            var oldPath = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Slug}.json";
 
             // Update the profile, creating a new file
             profile.Name = name;
             AddOrUpdate(profile);
+
+            // Remove the file with the old name
+            if (File.Exists(oldPath))
+                File.Delete(oldPath);
         }
 
         public static void DeleteProfile(ProfileModel prof)
@@ -163,7 +167,8 @@ namespace Artemis.DAL
             var gifDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\gifs";
             Directory.CreateDirectory(gifDir);
             var gifPath = gifDir + $"\\{fileName}.gif";
-            gifFile.Save(gifPath);
+            if (!File.Exists(gifPath))
+                gifFile.Save(gifPath);
 
             foreach (var profile in profiles)
             {

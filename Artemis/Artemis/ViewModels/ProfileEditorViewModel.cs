@@ -26,7 +26,6 @@ using Artemis.Styles.DropTargetAdorners;
 using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
-using Castle.Components.DictionaryAdapter;
 using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
@@ -406,8 +405,6 @@ namespace Artemis.ViewModels
                 ProfileNames.Clear();
                 if (_moduleModel != null && _deviceManager.ActiveKeyboard != null)
                     ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _moduleModel));
-
-                NotifyOfPropertyChange(() => SelectedProfile);
             });
         }
 
@@ -444,7 +441,7 @@ namespace Artemis.ViewModels
                 return;
 
             LoadProfiles();
-            _moduleModel.ChangeProfile(profile);
+            SelectedProfileName = profile.Name;
         }
 
         public async void RenameProfile()
@@ -456,7 +453,8 @@ namespace Artemis.ViewModels
             await ProfileEditorModel.RenameProfile(SelectedProfile);
 
             LoadProfiles();
-            _moduleModel.ChangeProfile(renameProfile);
+            SelectedProfileName = "Default";
+            SelectedProfileName = renameProfile.Name;
         }
 
         public async void DuplicateProfile()
@@ -469,7 +467,7 @@ namespace Artemis.ViewModels
                 return;
 
             LoadProfiles();
-            _moduleModel.ChangeProfile(newProfle);
+            SelectedProfileName = newProfle.Name;
         }
 
         public async void DeleteProfile()
@@ -477,12 +475,17 @@ namespace Artemis.ViewModels
             if (SelectedProfile == null)
                 return;
 
-            var confirmed = await ProfileEditorModel.DeleteProfile(SelectedProfile, _moduleModel);
+            var confirmed = await ProfileEditorModel.ConfirmDeleteProfile(SelectedProfile, _moduleModel);
             if (!confirmed)
                 return;
 
+            var deleteProfile = SelectedProfile;
+
+            _moduleModel.ChangeProfile(null);
+            ProfileProvider.DeleteProfile(deleteProfile);
+
             LoadProfiles();
-            ProfileEditorModel.ChangeProfileByName(_moduleModel, null);
+            SelectedProfileName = "Default";
         }
 
         public async void ImportProfile()
@@ -499,7 +502,7 @@ namespace Artemis.ViewModels
                 return;
 
             LoadProfiles();
-            _moduleModel.ChangeProfile(importProfile);
+            SelectedProfileName = importProfile.Name;
         }
 
         public void ExportProfile()
@@ -633,7 +636,7 @@ namespace Artemis.ViewModels
                 return SelectedProfile.GetRenderLayers(null, false, true);
 
             if (SelectedLayer == null || !SelectedLayer.Enabled)
-                return new EditableList<LayerModel>();
+                return new List<LayerModel>();
 
             if (SelectedLayer.LayerType is FolderType)
                 drawLayers = SelectedLayer.GetRenderLayers(null, false, true);

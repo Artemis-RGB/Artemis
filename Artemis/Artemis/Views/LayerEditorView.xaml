@@ -46,6 +46,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
                     <!-- Layer name -->
@@ -66,6 +67,14 @@
                     <Label Grid.Row="0" Grid.Column="4" Content="Is event: " VerticalAlignment="Center" />
                     <controls:ToggleSwitchButton Grid.Row="0" Grid.Column="5" VerticalAlignment="Center" IsChecked="{Binding Path=ProposedLayer.IsEvent, Mode=TwoWay}" cal:Message.Attach="[Event Click] = [Action ToggleIsEvent]"
                         Style="{StaticResource MahApps.Metro.Styles.ToggleSwitchButton.Win10}" HorizontalAlignment="Left" Margin="10" />
+
+                    <!-- Fade in -->
+                    <Label Grid.Row="1" Grid.Column="0" Content="Fade in:" VerticalAlignment="Center" />
+                    <controls:NumericUpDown Grid.Row="1" Grid.Column="1" Margin="10" Height="22" Value="{Binding Path=ProposedLayer.FadeInTime}" VerticalAlignment="Center" />
+                    
+                    <!-- Fade out -->
+                    <Label Grid.Row="1" Grid.Column="2" Content="Fade out:" VerticalAlignment="Center" />
+                    <controls:NumericUpDown Grid.Row="1" Grid.Column="3" Margin="10" Height="22" Value="{Binding Path=ProposedLayer.FadeOutTime}" VerticalAlignment="Center" />
                 </Grid>
 
                 <!-- Advanced -->

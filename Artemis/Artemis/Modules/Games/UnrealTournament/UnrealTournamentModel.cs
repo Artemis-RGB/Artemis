@@ -47,7 +47,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             var gameSettings = (UnrealTournamentSettings) Settings;
             // If already propertly set up, don't do anything
             if (gameSettings.GameDirectory != null &&
-                File.Exists(gameSettings.GameDirectory + "UE4-Win64-Shipping.exe"))
+                File.Exists(gameSettings.GameDirectory + @"\Engine\Binaries\Win64\UE4-Win64-Shipping.exe"))
                 return;
 
             // Attempt to read the file
@@ -65,7 +65,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             // Use backslash in path for consistency
             utDir = utDir.Replace('/', '\\');
 
-            if (!File.Exists(utDir + @"\UE4-Win64-Shipping.exe"))
+            if (!File.Exists(utDir + @"\Engine\Binaries\Win64\UE4-Win64-Shipping.exe"))
                 return;
 
             gameSettings.GameDirectory = utDir;
@@ -78,7 +78,7 @@ namespace Artemis.Modules.Games.UnrealTournament
             var gameSettings = (UnrealTournamentSettings) Settings;
             var path = gameSettings.GameDirectory;
 
-            if (!File.Exists(path + @"\UE4-Win64-Shipping.exe"))
+            if (!File.Exists(path + @"\Engine\Binaries\Win64\UE4-Win64-Shipping.exe"))
             {
                 _dialogService.ShowErrorMessageBox("Please select a valid Unreal Tournament directory\n\n" +
                                                    @"By default Unreal Tournament is in C:\Program Files\Epic Games\UnrealTournament");

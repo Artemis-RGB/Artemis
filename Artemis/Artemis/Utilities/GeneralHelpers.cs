@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using static System.String;
@@ -42,10 +41,12 @@ namespace Artemis.Utilities
             return GetPropertyValue(value, path.Replace(propertyNames[0] + ".", ""));
         }
 
-        public static List<PropertyCollection> GenerateTypeMap(object o) => GenerateTypeMap(o.GetType().GetProperties());
+        public static List<PropertyCollection> GenerateTypeMap(object o)
+        {
+            return GenerateTypeMap(o.GetType().GetProperties());
+        }
 
-        private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties,
-            string path = "")
+        private static List<PropertyCollection> GenerateTypeMap(IEnumerable<PropertyInfo> getProperties, string path = "", bool inList = false)
         {
             var list = new List<PropertyCollection>();
             foreach (var propInfo in getProperties)
@@ -62,13 +63,28 @@ namespace Artemis.Utilities
                 if (propInfo.PropertyType.BaseType?.Name == "Enum")
                     friendlyName = "(Choice)";
 
-                var parent = new PropertyCollection
+                // At this point the loop is in the item type contained in the list
+                PropertyCollection parent;
+                if (path.Contains("Item") && inList)
                 {
-                    Type = propInfo.PropertyType.Name,
-                    DisplayType = friendlyName,
-                    Display = $"{path.Replace(".", " → ")}{propInfo.Name}",
-                    Path = $"{path}{propInfo.Name}"
-                };
+                    parent = new PropertyCollection
+                    {
+                        Type = propInfo.PropertyType.Name,
+                        DisplayType = friendlyName,
+                        Display = $"{path.Replace("Item.", "").Replace(".", " → ")}{propInfo.Name}",
+                        Path = $"{path.Replace("Item.", "")}{propInfo.Name}"
+                    };
+                }
+                else
+                {
+                    parent = new PropertyCollection
+                    {
+                        Type = propInfo.PropertyType.Name,
+                        DisplayType = friendlyName,
+                        Display = $"{path.Replace(".", " → ")}{propInfo.Name}",
+                        Path = $"{path}{propInfo.Name}"
+                    };
+                }
 
                 if (propInfo.PropertyType.BaseType?.Name == "Enum")
                 {
@@ -80,10 +96,19 @@ namespace Artemis.Utilities
                     list.Add(parent);
 
                 // Don't go into Strings, DateTimes or anything with JsonIgnore on it
-                if (propInfo.PropertyType.Name != "String" && 
+                if (propInfo.PropertyType.Name != "String" &&
                     propInfo.PropertyType.Name != "DateTime" &&
                     propInfo.CustomAttributes.All(a => a.AttributeType != typeof(JsonIgnoreAttribute)))
-                    list.AddRange(GenerateTypeMap(propInfo.PropertyType.GetProperties(), path + $"{propInfo.Name}."));
+                {
+                    var newPath = $"{path}{propInfo.Name}.";
+                    var toInList = propInfo.PropertyType.Name == "List`1";
+                    if (toInList)
+                    {
+                        inList = true;
+                        newPath = $"({path}{propInfo.Name}).";
+                    }
+                    list.AddRange(GenerateTypeMap(propInfo.PropertyType.GetProperties(), newPath, inList));
+                }
             }
             return list;
         }
@@ -114,6 +139,21 @@ namespace Artemis.Utilities
             return null;
         }
 
+        public static void ExecuteSta(Action action)
+        {
+            var thread = new Thread(action.Invoke);
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join();
+        }
+
+        public static T ParseEnum<T>(string value, bool ignoreCase = true, bool stripWhitespaces = true)
+        {
+            if (stripWhitespaces)
+                value = value.Replace(" ", "");
+            return (T) Enum.Parse(typeof(T), value, true);
+        }
+
         public struct PropertyCollection
         {
             public string Display { get; set; }
@@ -127,14 +167,6 @@ namespace Artemis.Utilities
 
             public List<PropertyCollection> Children { get; set; }
             public string DisplayType { get; set; }
-        }
-
-        public static void ExecuteSta(Action action)
-        {
-            var thread = new Thread(action.Invoke);
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-            thread.Start();
-            thread.Join();
         }
     }
 }

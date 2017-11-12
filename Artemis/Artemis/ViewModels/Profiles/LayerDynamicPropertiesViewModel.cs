@@ -3,7 +3,6 @@ using System.Linq;
 using Artemis.Profiles.Layers.Models;
 using Artemis.Utilities;
 using Caliburn.Micro;
-using Castle.Core.Internal;
 
 namespace Artemis.ViewModels.Profiles
 {
@@ -219,7 +218,7 @@ namespace Artemis.ViewModels.Profiles
                 .DynamicProperties
                 .Where(p => p.LayerProperty != _property).ToList();
 
-            if (!Proposed.GameProperty.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(Proposed.GameProperty))
                 proposedProperties.DynamicProperties.Add(Proposed);
         }
     }

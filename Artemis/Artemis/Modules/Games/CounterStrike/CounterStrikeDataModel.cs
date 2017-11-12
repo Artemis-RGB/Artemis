@@ -51,6 +51,8 @@ namespace Artemis.Modules.Games.CounterStrike
     public class Round
     {
         public string phase { get; set; }
+        public string bomb { get; set; }
+        public string win_team { get; set; }
     }
 
     [MoonSharpUserData]

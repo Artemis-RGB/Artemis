@@ -24,10 +24,7 @@ namespace Artemis.Managers
 
             Modules = new List<ModuleModel>(moduleModels.Where(m => !m.IsOverlay && !m.IsBoundToProcess));
             OverlayModules = new List<ModuleModel>(moduleModels.Where(m => m.IsOverlay));
-            // Exclude WoW if needed
-            ProcessModules = _generalSettings.GamestatePort == 62575
-                ? new List<ModuleModel>(moduleModels.Where(m => m.IsBoundToProcess))
-                : new List<ModuleModel>(moduleModels.Where(m => m.IsBoundToProcess && m.Name != "WoW"));
+            ProcessModules = new List<ModuleModel>(moduleModels.Where(m => m.IsBoundToProcess));
 
             _logger.Info("Intialized ModuleManager");
         }
