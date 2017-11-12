@@ -13,7 +13,6 @@ namespace Artemis.Modules.Games.FormulaOne2017
     {
         private bool _mustListen;
         private UdpClient _udpClient;
-        private UdpClient _udpListener;
         private DateTime _lastUpdate;
         private int _revAtZeroFrames;
 
@@ -104,11 +103,6 @@ namespace Artemis.Modules.Games.FormulaOne2017
 
             dataModel.Car.Details.LateralG = msg.m_gforce_lat;
             dataModel.Car.Details.LongitudinalG = msg.m_gforce_lon;
-
-//            dataModel.Car.Details.WheelSpeedFrontLeft = msg.m_wheel_speed_fl;
-//            dataModel.Car.Details.WheelSpeedFrontRight = msg.m_wheel_speed_fr;
-//            dataModel.Car.Details.WheelSpeedRearLeft = msg.m_wheel_speed_bl;
-//            dataModel.Car.Details.WheelSpeedRearRight = msg.m_wheel_speed_br;
 
             dataModel.Session.SessionType = (SessionType) msg.m_sessionType;
             // It's unknown in time trial but lets overwrite that to race

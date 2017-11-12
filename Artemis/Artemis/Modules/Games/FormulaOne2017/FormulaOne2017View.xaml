@@ -22,9 +22,14 @@
         <!-- Header -->
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
             <Label.Content>
-                <AccessText TextWrapping="Wrap" Text="By default shows RPM on the F-keys, gear on the other keys and track flags on the numpad." />
+                <AccessText TextWrapping="Wrap" Text="There is currently no default profile available for F1 2017." />
             </Label.Content>
         </Label>
+
+        <!-- Sub header -->
+        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" TextWrapping="Wrap" HorizontalAlignment="Left" FontFamily="Segoe UI Semibold" TextAlignment="Justify" Margin="5,0,0,10">
+            The F1 2017 module requires UDP Telemetry to be enabled in the ingame settings menu.
+        </TextBlock>
 
         <!-- Enable -->
         <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">

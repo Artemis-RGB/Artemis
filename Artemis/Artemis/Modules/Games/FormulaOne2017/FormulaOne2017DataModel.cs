@@ -196,11 +196,6 @@ namespace Artemis.Modules.Games.FormulaOne2017
 
         public float LateralG { get; set; }
         public float LongitudinalG { get; set; }
-
-        public float WheelSpeedFrontLeft { get; set; }
-        public float WheelSpeedFrontRight { get; set; }
-        public float WheelSpeedRearLeft { get; set; }
-        public float WheelSpeedRearRight { get; set; }
     }
 
     [MoonSharpUserData]

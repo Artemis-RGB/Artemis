@@ -16,7 +16,7 @@
         <!-- Header -->
         <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" FontSize="20" HorizontalAlignment="Left">
             <Label.Content>
-                <AccessText TextWrapping="Wrap" Text="Fight the Legion in style with reactive lighting." />
+                <AccessText TextWrapping="Wrap" Text="There is currently no default profile available for World of Warcraft." />
             </Label.Content>
         </Label>
 

@@ -53,7 +53,7 @@ namespace Artemis.Profiles.Layers.Models
             if (!Enabled)
                 return false;
 
-            _fadeTweener?.Update(40);
+            FadeTweener?.Update(40);
             var conditionsMet = LayerCondition.ConditionsMet(this, dataModel);
             if (conditionsMet && !_conditionsMetLastFrame)
                 OnLayerConditionsMet();
@@ -61,7 +61,7 @@ namespace Artemis.Profiles.Layers.Models
                 OnLayerConditionsUnmet();
 
             _conditionsMetLastFrame = conditionsMet;
-            return _fadeTweener != null && _fadeTweener.Running || conditionsMet;
+            return FadeTweener != null && FadeTweener.Running || conditionsMet;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Artemis.Profiles.Layers.Models
         {
             if (LayerType == null)
                 return;
-            
+
             LayerType.Update(this, dataModel, preview);
             LayerAnimation?.Update(this, updateAnimations);
 
@@ -114,12 +114,37 @@ namespace Artemis.Profiles.Layers.Models
             if (Brush == null || !preview && !RenderAllowed)
                 return;
 
-            // If fading in/out, push transparency on the entire context
-            if (_fadeTweener != null && _fadeTweener.Running)
-                c.PushOpacity(_fadeTweener.Value);
+            ApplyHierarchyOpacity(c);
             LayerType.Draw(this, c);
-            if (_fadeTweener != null && _fadeTweener.Running)
+            PopHierarchyOpacity(c);
+        }
+
+        private void ApplyHierarchyOpacity(DrawingContext c)
+        {
+            if (FadeTweener != null && FadeTweener.Running)
+                c.PushOpacity(FadeTweener.Value);
+
+            var current = this;
+            while (current.Parent != null)
+            {
+                current = current.Parent;
+                if (current.FadeTweener != null && current.FadeTweener.Running)
+                    c.PushOpacity(current.FadeTweener.Value);
+            }
+        }
+        
+        private void PopHierarchyOpacity(DrawingContext c)
+        {
+            if (FadeTweener != null && FadeTweener.Running)
                 c.Pop();
+
+            var current = this;
+            while (current.Parent != null)
+            {
+                current = current.Parent;
+                if (current.FadeTweener != null && current.FadeTweener.Running)
+                    c.Pop();
+            }
         }
 
         /// <summary>
@@ -128,7 +153,7 @@ namespace Artemis.Profiles.Layers.Models
         public void SetupProperties()
         {
             LayerType.SetupProperties(this);
-            
+
             // If the type is an event, set it up 
             if (IsEvent && EventProperties == null)
                 EventProperties = new KeyboardEventPropertiesModel
@@ -330,11 +355,11 @@ namespace Artemis.Profiles.Layers.Models
         {
             if (FadeInTime <= 0)
                 return;
-            if (_fadeTweener != null && _fadeTweener.Running)
-                _fadeTweener = new Tweener<float>(_fadeTweener.Value, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
+            if (FadeTweener != null && FadeTweener.Running)
+                FadeTweener = new Tweener<float>(FadeTweener.Value, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
             else
-                _fadeTweener = new Tweener<float>(0, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
-            _fadeTweener.Start();
+                FadeTweener = new Tweener<float>(0, 1, FadeInTime, Ease.Quint.Out, TweenModel.LerpFuncFloat);
+            FadeTweener.Start();
         }
 
         private void OnLayerConditionsUnmet(object sender, EventArgs eventArgs)
@@ -342,11 +367,11 @@ namespace Artemis.Profiles.Layers.Models
             if (FadeOutTime <= 0)
                 return;
 
-            if (_fadeTweener != null && _fadeTweener.Running)
-                _fadeTweener = new Tweener<float>(_fadeTweener.Value, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
+            if (FadeTweener != null && FadeTweener.Running)
+                FadeTweener = new Tweener<float>(FadeTweener.Value, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
             else
-                _fadeTweener = new Tweener<float>(1, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
-            _fadeTweener.Start();
+                FadeTweener = new Tweener<float>(1, 0, FadeOutTime, Ease.Quint.In, TweenModel.LerpFuncFloat);
+            FadeTweener.Start();
         }
 
         #region Properties
@@ -390,7 +415,9 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore] private Brush _brush;
         [JsonIgnore] private bool _conditionsMetLastFrame;
-        [JsonIgnore] private Tweener<float> _fadeTweener;
+
+        [JsonIgnore]
+        public Tweener<float> FadeTweener { get; set; }
 
         [JsonIgnore]
         public double X { get; set; }
@@ -440,7 +467,7 @@ namespace Artemis.Profiles.Layers.Models
 
         [JsonIgnore]
         public DateTime LastRender { get; set; }
-        
+
         #endregion
 
         #endregion

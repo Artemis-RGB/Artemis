@@ -41,7 +41,7 @@ namespace Artemis.Modules.Games.RocketLeague
             }
 
             Updater.GetPointers();
-            var version = SettingsProvider.Load<OffsetSettings>().RocketLeague.GameVersion;
+            var version = SettingsProvider.Load<OffsetSettings>().RocketLeague?.GameVersion;
             VersionText = $"Requires patch {version}. When a new patch is released Artemis downloads new pointers for the latest version (unless disabled in settings).";
         }
     }
