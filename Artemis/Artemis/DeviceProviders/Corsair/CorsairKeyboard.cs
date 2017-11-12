@@ -89,6 +89,7 @@ namespace Artemis.DeviceProviders.Corsair
             }
 
             Logger.Debug("Corsair SDK reported device as: {0}", _keyboard.DeviceInfo.Model);
+
             _keyboard.Brush = _keyboardBrush ?? (_keyboardBrush = new ImageBrush());
         }
 
