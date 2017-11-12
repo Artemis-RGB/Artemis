@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Web.Security;
 using System.Windows;
 using Artemis.DAL;
 using Artemis.Profiles.Layers.Types.AmbientLight.ScreenCapturing;
@@ -132,10 +133,17 @@ namespace Artemis.Settings
                     {
                         // Overwrite any existing tasks in case the installation folder changed
                         var path = Path.GetTempFileName();
-                        var xml = Resources.Artemis_autorun.Replace("{{executablePath}}", mgr.RootAppDirectory + "\\Update.exe");
-
+                        var xml = Resources.Artemis_autorun
+                            .Replace("{{executablePath}}", mgr.RootAppDirectory + "\\Update.exe")
+                            .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                         File.WriteAllText(path, xml);
-                        ts.RootFolder.ImportTask(null, path);
+
+                        var task = ts.RootFolder.ImportTask(null, path);
+                        task.Definition.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                        task.Definition.Principal.LogonType = TaskLogonType.InteractiveToken;
+                        task.Definition.Principal.RunLevel = TaskRunLevel.Highest;
+                        task.RegisterChanges();
+
                         File.Delete(path);
                     }
                     else if (existing != null)
