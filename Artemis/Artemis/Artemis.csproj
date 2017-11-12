@@ -152,8 +152,8 @@
       <HintPath>..\packages\Colore.5.1.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CSCore, Version=1.2.1.1, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSCore.1.2.1.1\lib\net35-client\CSCore.dll</HintPath>
+    <Reference Include="CSCore, Version=1.2.1.2, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSCore.1.2.1.2\lib\net35-client\CSCore.dll</HintPath>
     </Reference>
     <Reference Include="CUE.NET, Version=1.1.3.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CUE.NET.1.1.3.1\lib\net45\CUE.NET.dll</HintPath>
@@ -170,8 +170,8 @@
       <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.PatchApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DynamicExpresso.Core, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicExpresso.Core.1.3.3.6\lib\net40\DynamicExpresso.Core.dll</HintPath>
+    <Reference Include="DynamicExpresso.Core, Version=1.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicExpresso.Core.1.3.4.7\lib\net40\DynamicExpresso.Core.dll</HintPath>
     </Reference>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
@@ -267,7 +267,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SpotifyAPI-NET.2.16.0\lib\SpotifyAPI.dll</HintPath>
+      <HintPath>..\packages\SpotifyAPI-NET.2.16.1\lib\SpotifyAPI.dll</HintPath>
     </Reference>
     <Reference Include="Squirrel, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\Squirrel.dll</HintPath>
@@ -799,16 +799,17 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <None Include="Modules\Games\WoW\Resources\Addon\Artemis.toc" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Core.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceAddon-3.0\AceAddon-3.0.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\AceComm-3.0.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\ChatThrottleLib.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceConsole-3.0\AceConsole-3.0.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceEvent-3.0\AceEvent-3.0.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\AceTimer-3.0\AceTimer-3.0.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\json.lua" />
-    <None Include="Modules\Games\WoW\Resources\Addon\Libs\LibStub\LibStub.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Artemis.toc" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Core.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceAddon-3.0\AceAddon-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\AceComm-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\ChatThrottleLib.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceConsole-3.0\AceConsole-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceEvent-3.0\AceEvent-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceTimer-3.0\AceTimer-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\json.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\LibStub\LibStub.lua" />
+    <None Include="Modules\Games\WoW\Resources\wow-addon.zip" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -1087,12 +1088,12 @@
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <None Include="Resources\audio.png" />
     <None Include="Resources\ambilight.png" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\embeds.xml" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceAddon-3.0\AceAddon-3.0.xml" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceComm-3.0\AceComm-3.0.xml" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceConsole-3.0\AceConsole-3.0.xml" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceEvent-3.0\AceEvent-3.0.xml" />
-    <Resource Include="Modules\Games\WoW\Resources\Addon\Libs\AceTimer-3.0\AceTimer-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\embeds.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceAddon-3.0\AceAddon-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\AceComm-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceConsole-3.0\AceConsole-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceEvent-3.0\AceEvent-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceTimer-3.0\AceTimer-3.0.xml" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>

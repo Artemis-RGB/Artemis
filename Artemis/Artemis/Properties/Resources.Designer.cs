@@ -19,7 +19,7 @@ namespace Artemis.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -105,6 +105,7 @@ namespace Artemis.Properties {
         ///{
         /// &quot;uri&quot; &quot;http://localhost:{{port}}/csgo_game_event&quot;
         /// &quot;timeout&quot; &quot;0.1&quot;
+        /// &quot;heartbeat&quot; &quot;0.1&quot;
         /// &quot;data&quot;
         /// {
         ///   &quot;provider&quot;            &quot;1&quot;
@@ -434,6 +435,16 @@ namespace Artemis.Properties {
         internal static byte[] witcher3_mod {
             get {
                 object obj = ResourceManager.GetObject("witcher3_mod", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] wow_addon {
+            get {
+                object obj = ResourceManager.GetObject("wow_addon", resourceCulture);
                 return ((byte[])(obj));
             }
         }
