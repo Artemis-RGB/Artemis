@@ -45,6 +45,7 @@
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <HockeyAppResourceId>38ead84566f241de8f334abe173b1038</HockeyAppResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -140,32 +141,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Caliburn.Micro, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.Core.3.0.3\lib\net45\Caliburn.Micro.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Caliburn.Micro.Core.3.1.0\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Caliburn.Micro.3.1.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.0.0\lib\net45\Castle.Core.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Caliburn.Micro.3.1.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="Corale.Colore, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Colore.5.1.0\lib\net35\Corale.Colore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CSCore, Version=1.1.6245.30570, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSCore.1.2.0\lib\net35-client\CSCore.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CSCore, Version=1.2.1.2, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSCore.1.2.1.2\lib\net35-client\CSCore.dll</HintPath>
     </Reference>
-    <Reference Include="CUE.NET, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CUE.NET.1.1.3.0\lib\net45\CUE.NET.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="CUE.NET, Version=1.1.3.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CUE.NET.1.1.3.1\lib\net45\CUE.NET.dll</HintPath>
     </Reference>
     <Reference Include="DeltaCompressionDotNet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
       <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.dll</HintPath>
@@ -179,9 +171,8 @@
       <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.PatchApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DynamicExpresso.Core, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicExpresso.Core.1.3.3.5\lib\net40\DynamicExpresso.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="DynamicExpresso.Core, Version=1.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicExpresso.Core.1.3.4.7\lib\net40\DynamicExpresso.Core.dll</HintPath>
     </Reference>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MouseKeyHook.5.4.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
@@ -197,7 +188,6 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -205,7 +195,9 @@
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.4.3.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.4.3\lib\net45\MahApps.Metro.dll</HintPath>
-      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Win32.TaskScheduler, Version=2.6.5.0, Culture=neutral, PublicKeyToken=c416bc1b32d97233, processorArchitecture=MSIL">
+      <HintPath>..\packages\TaskScheduler.2.6.5\lib\net452\Microsoft.Win32.TaskScheduler.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll</HintPath>
@@ -227,9 +219,8 @@
       <HintPath>..\packages\MoonSharp.2.0.0.0\lib\net40-client\MoonSharp.Interpreter.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
@@ -248,36 +239,42 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.4\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\NuGet.Squirrel.dll</HintPath>
-      <Private>True</Private>
+    </Reference>
+    <Reference Include="PcapDotNet.Base, Version=1.0.4.25027, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Core, Version=1.0.4.25149, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Core.Extensions, Version=1.0.4.25151, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=AMD64">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Core.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="PcapDotNet.Packets, Version=1.0.4.25028, Culture=neutral, PublicKeyToken=06a20bc2fabb1931, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pcap.Net.x64.1.0.4.1\lib\net45\PcapDotNet.Packets.dll</HintPath>
     </Reference>
     <Reference Include="Process.NET, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Process.NET.1.0.8\lib\Process.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharpDX, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.3.1.1\lib\net45\SharpDX.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.0.1\lib\net45\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D9, Version=3.1.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D9.3.1.1\lib\net45\SharpDX.Direct3D9.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SharpDX.Direct3D9, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D9.4.0.1\lib\net45\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Splat.2.0.0\lib\Net45\Splat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SpotifyAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SpotifyAPI-NET.2.13.1\lib\SpotifyAPI.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\SpotifyAPI-NET.2.16.1\lib\SpotifyAPI.dll</HintPath>
     </Reference>
     <Reference Include="Squirrel, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.4.4\lib\Net45\Squirrel.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -291,7 +288,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.4.3\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -340,6 +336,7 @@
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechKeyboard.cs" />
+    <Compile Include="DeviceProviders\Logitech\Utilities\KeyMapG810.cs" />
     <Compile Include="Dialogs\MarkdownDialog.xaml.cs">
       <DependentUpon>MarkdownDialog.xaml</DependentUpon>
     </Compile>
@@ -384,6 +381,13 @@
       <DependentUpon>AssettoCorsaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\AssettoCorsa\AssettoCorsaViewModel.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017Model.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017Settings.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017View.xaml.cs">
+      <DependentUpon>FormulaOne2017View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017ViewModel.cs" />
+    <Compile Include="Modules\Games\FormulaOne2017\FormulaOne2017DataModel.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaDataModel.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaSettings.cs" />
     <Compile Include="Modules\Games\Terraria\TerrariaModel.cs" />
@@ -391,6 +395,13 @@
       <DependentUpon>TerrariaView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\Terraria\TerrariaViewModel.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWAura.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWCastBar.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWEnums.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWSpecialization.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWSpell.cs" />
+    <Compile Include="Modules\Games\WoW\Models\WoWUnit.cs" />
+    <Compile Include="Modules\Games\WoW\WoWPacketScanner.cs" />
     <Compile Include="Modules\General\GeneralProfile\PerformanceInfo.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryData.cs" />
     <Compile Include="Modules\Games\EurotruckSimulator2\Data\Ets2TelemetryDataReader.cs" />
@@ -470,15 +481,6 @@
       <DependentUpon>UnrealTournamentView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Games\UnrealTournament\UnrealTournamentViewModel.cs" />
-    <Compile Include="Modules\Games\WoW\Data\Int128.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWEnums.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWOffsets.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWStructs.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWNameCache.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWObjectManager.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWObject.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWPlayer.cs" />
-    <Compile Include="Modules\Games\WoW\Data\WoWUnit.cs" />
     <Compile Include="Modules\Games\WoW\WoWView.xaml.cs">
       <DependentUpon>WoWView.xaml</DependentUpon>
     </Compile>
@@ -486,7 +488,6 @@
     <Compile Include="Modules\Games\WoW\WoWModel.cs" />
     <Compile Include="Modules\Games\WoW\WoWSettings.cs" />
     <Compile Include="Modules\Games\WoW\WoWViewModel.cs" />
-    <Compile Include="Modules\Games\WoW\WoWAddresses.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileDataModel.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileModel.cs" />
     <Compile Include="Modules\Overlays\OverlayProfile\OverlayProfileSettings.cs" />
@@ -573,6 +574,7 @@
     <Compile Include="Profiles\Lua\Modules\Gui\LuaCheckBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaComboBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaLabel.cs" />
+    <Compile Include="Profiles\Lua\Modules\Gui\LuaSlider.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaTextBox.cs" />
     <Compile Include="Profiles\Lua\Modules\Gui\LuaWindowView.xaml.cs">
       <DependentUpon>LuaWindowView.xaml</DependentUpon>
@@ -801,6 +803,17 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Modules\Games\WoW\Resources\Addon source\Artemis.toc" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Core.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceAddon-3.0\AceAddon-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\AceComm-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\ChatThrottleLib.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceConsole-3.0\AceConsole-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceEvent-3.0\AceEvent-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceTimer-3.0\AceTimer-3.0.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\json.lua" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\LibStub\LibStub.lua" />
+    <None Include="Modules\Games\WoW\Resources\wow-addon.zip" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -877,6 +890,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Games\AssettoCorsa\AssettoCorsaView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Modules\Games\FormulaOne2017\FormulaOne2017View.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -1075,6 +1092,13 @@
     <None Include="Modules\Games\EurotruckSimulator2\Resources\Win64\ets2-telemetry-server.dll" />
     <None Include="Resources\audio.png" />
     <None Include="Resources\ambilight.png" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\embeds.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceAddon-3.0\AceAddon-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceComm-3.0\AceComm-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceConsole-3.0\AceConsole-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceEvent-3.0\AceEvent-3.0.xml" />
+    <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceTimer-3.0\AceTimer-3.0.xml" />
+    <Resource Include="Resources\Artemis autorun.xml" />
     <Content Include="Resources\CounterStrike\csgoGamestateConfiguration.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -1096,15 +1120,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Modules\General\GeneralProfile\Discord\" />
     <Folder Include="Resources\Lua\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\CUE.NET.1.1.3.0\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.1.3.0\build\net45\CUE.NET.targets')" />
+  <Import Project="..\packages\CUE.NET.1.1.3.1\build\net45\CUE.NET.targets" Condition="Exists('..\packages\CUE.NET.1.1.3.1\build\net45\CUE.NET.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\CUE.NET.1.1.3.0\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.1.3.0\build\net45\CUE.NET.targets'))" />
+    <Error Condition="!Exists('..\packages\CUE.NET.1.1.3.1\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.1.3.1\build\net45\CUE.NET.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

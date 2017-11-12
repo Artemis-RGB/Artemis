@@ -132,7 +132,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
                 new KeyMatch(Keys.Decimal, 19, 5)
             };
 
-                #endregion
+            #endregion
 
             #region Qwertz
 
@@ -257,7 +257,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
                 new KeyMatch(Keys.Decimal, 19, 5)
             };
 
-                #endregion
+            #endregion
 
             #region Azerty
 
@@ -384,7 +384,7 @@ namespace Artemis.DeviceProviders.Logitech.Utilities
 
             #endregion
         }
-        
+
         public static List<KeyMatch> QwertyLayout { get; set; }
         public static List<KeyMatch> QwertzLayout { get; set; }
         public static List<KeyMatch> AzertyLayout { get; set; }

@@ -41,7 +41,7 @@
 
         <!-- Game directory -->
         <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,1,0">
-            <Label FontSize="20" HorizontalAlignment="Left" Content="Overwatch Directory" />
+            <Label FontSize="20" HorizontalAlignment="Left" Content="Overwatch directory" />
             <Grid>
                 <TextBox x:Name="GameDirectory" Height="23" TextWrapping="Wrap" Margin="0,0,30,0" Text="{Binding Path=Settings.GameDirectory, Mode=TwoWay}" cal:Message.Attach="[Event LostFocus] = [Action PlaceDll]" />
                 <Button x:Name="BrowseDirectory" Content="..." RenderTransformOrigin="-0.039,-0.944" HorizontalAlignment="Right" Width="25" Style="{DynamicResource SquareButtonStyle}" Height="26" />

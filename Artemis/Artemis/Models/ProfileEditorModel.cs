@@ -141,15 +141,22 @@ namespace Artemis.Models
 
         public async Task RenameProfile(ProfileModel profileModel)
         {
+            // Store the old name
+            var oldName = profileModel.Name;
             var name = await GetValidProfileName("Rename profile", "Please enter a unique new profile name");
             // User cancelled
             if (name == null)
                 return;
+
+            // MakeProfileUnique does a check but also modifies the profile, set the old name back
             var doRename = await MakeProfileUnique(profileModel, name, profileModel.Name);
+            var newName = profileModel.Name;
+            profileModel.Name = oldName;
+
             if (!doRename)
                 return;
 
-            ProfileProvider.RenameProfile(profileModel, profileModel.Name);
+            ProfileProvider.RenameProfile(profileModel, newName);
         }
 
         public async Task<ProfileModel> DuplicateProfile(ProfileModel selectedProfile)
@@ -170,21 +177,13 @@ namespace Artemis.Models
             return newProfile;
         }
 
-        public async Task<bool> DeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
+        public async Task<bool> ConfirmDeleteProfile(ProfileModel selectedProfile, ModuleModel moduleModel)
         {
             var confirm = await _dialogService.ShowQuestionMessageBox("Delete profile",
                 $"Are you sure you want to delete the profile named: {selectedProfile.Name}?\n\n" +
                 "This cannot be undone.");
-            if (!confirm.Value)
-                return false;
 
-            var defaultProfile = ProfileProvider.GetProfile(_deviceManager.ActiveKeyboard, moduleModel, "Default");
-            var deleteProfile = selectedProfile;
-
-            moduleModel.ChangeProfile(defaultProfile);
-            ProfileProvider.DeleteProfile(deleteProfile);
-
-            return true;
+            return confirm.Value;
         }
 
         public async Task<ProfileModel> ImportProfile(ModuleModel moduleModel)

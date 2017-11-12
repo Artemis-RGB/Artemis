@@ -2,6 +2,7 @@
 using Artemis.Managers;
 using Artemis.Models;
 using Artemis.Modules.Abstract;
+using Artemis.Modules.Games.WoW;
 using Artemis.Profiles.Layers.Abstract;
 using Artemis.Profiles.Layers.Interfaces;
 using Artemis.Profiles.Layers.Types.Audio.AudioCapturing;
@@ -65,7 +66,7 @@ namespace Artemis.InjectionModules
 
             #endregion
 
-            #region Effects
+            #region Modules
 
             Kernel.Bind(x =>
                 x.FromThisAssembly()
@@ -81,6 +82,7 @@ namespace Artemis.InjectionModules
                     .BindAllBaseClasses()
                     .Configure(b => b.InSingletonScope())
             );
+            Bind<WowPacketScanner>().ToSelf();
 
             #endregion
 

@@ -16,9 +16,12 @@ namespace Artemis.Managers
     {
         private readonly DebugViewModel _debugViewModel;
         private readonly DeviceManager _deviceManager;
+
         private readonly ILogger _logger;
+
         //private readonly Timer _loopTimer;
         private readonly Task _loopTask;
+
         private readonly ModuleManager _moduleManager;
 
         public LoopManager(ILogger logger, ModuleManager moduleManager, DeviceManager deviceManager,
@@ -163,9 +166,7 @@ namespace Artemis.Managers
                 var keyboardOnly = !mice.Any() && !headsets.Any() && !generics.Any() && !mousemats.Any();
 
                 // Setup the frame for this tick
-                using (
-                    var frame = new FrameModel(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(),
-                        mousemats.Any()))
+                using (var frame = new FrameModel(_deviceManager.ActiveKeyboard, mice.Any(), headsets.Any(), generics.Any(), mousemats.Any()))
                 {
                     if (renderModule.IsInitialized)
                         renderModule.Render(frame, keyboardOnly);

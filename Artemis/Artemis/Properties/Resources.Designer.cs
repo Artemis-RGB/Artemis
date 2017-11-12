@@ -19,7 +19,7 @@ namespace Artemis.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -71,6 +71,29 @@ namespace Artemis.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
+        ///&lt;Task version=&quot;1.4&quot; xmlns=&quot;http://schemas.microsoft.com/windows/2004/02/mit/task&quot;&gt;
+        ///  &lt;RegistrationInfo&gt;
+        ///    &lt;Date&gt;2017-11-12T17:45:45.4993602&lt;/Date&gt;
+        ///    &lt;Author&gt;SpoinkyNL&lt;/Author&gt;
+        ///    &lt;Description&gt;Task to run Artemis on PC startup without showing a UAC dialog&lt;/Description&gt;
+        ///    &lt;URI&gt;\Artemis autorun&lt;/URI&gt;
+        ///  &lt;/RegistrationInfo&gt;
+        ///  &lt;Triggers&gt;
+        ///    &lt;LogonTrigger&gt;
+        ///      &lt;Enabled&gt;true&lt;/Enabled&gt;
+        ///      &lt;Delay&gt;PT30S&lt;/Delay&gt;
+        ///    &lt;/LogonTrigger&gt;
+        ///  &lt;/Triggers&gt; 
+        ///  &lt;Set [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Artemis_autorun {
+            get {
+                return ResourceManager.GetString("Artemis_autorun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap audio {
@@ -105,6 +128,7 @@ namespace Artemis.Properties {
         ///{
         /// &quot;uri&quot; &quot;http://localhost:{{port}}/csgo_game_event&quot;
         /// &quot;timeout&quot; &quot;0.1&quot;
+        /// &quot;heartbeat&quot; &quot;0.1&quot;
         /// &quot;data&quot;
         /// {
         ///   &quot;provider&quot;            &quot;1&quot;
@@ -434,6 +458,16 @@ namespace Artemis.Properties {
         internal static byte[] witcher3_mod {
             get {
                 object obj = ResourceManager.GetObject("witcher3_mod", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] wow_addon {
+            get {
+                object obj = ResourceManager.GetObject("wow_addon", resourceCulture);
                 return ((byte[])(obj));
             }
         }

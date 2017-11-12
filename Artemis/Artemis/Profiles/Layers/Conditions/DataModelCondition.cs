@@ -12,6 +12,8 @@ namespace Artemis.Profiles.Layers.Conditions
             lock (layerModel.Properties.Conditions)
             {
                 var checkConditions = layerModel.Properties.Conditions.Where(c => c.Field != null).ToList();
+                if (!checkConditions.Any())
+                    return true;
                 switch (layerModel.Properties.ConditionType)
                 {
                     case ConditionType.AnyMet:

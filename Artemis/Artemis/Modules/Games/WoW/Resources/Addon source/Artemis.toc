@@ -1,0 +1,9 @@
+## Interface: 70300
+## Title: Artemis
+## Notes: Transmits ingame data to Artemis
+## Author: SpoinkyNL
+## Version: 1.0.0
+
+embeds.xml
+
+Core.lua

@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Documents;
 using Artemis.Modules.Abstract;
 using Artemis.Utilities;
 using DynamicExpresso;
@@ -11,10 +16,12 @@ namespace Artemis.Profiles.Layers.Models
     {
         private readonly Interpreter _interpreter;
         private object _lastValue;
+        private Regex _rgx;
 
         public LayerConditionModel()
         {
             _interpreter = new Interpreter();
+            _rgx = new Regex("\\((.*?)\\)");
         }
 
         public string Field { get; set; }
@@ -30,6 +37,52 @@ namespace Artemis.Profiles.Layers.Models
                 if (string.IsNullOrEmpty(Field) || string.IsNullOrEmpty(Type))
                     return false;
 
+                // If the path points to a collection, look inside this collection
+                if (Field.Contains("("))
+                {
+                    // Find the collection in the field path
+                    var collectionField = _rgx.Match(Field).Groups[1].Value;
+                    var collectionInspect = (IEnumerable) GeneralHelpers.GetPropertyValue(subject, collectionField);
+                    var operatorParts = Operator.Split('|');
+                    var field = Field.Split(')').Last().Substring(1);
+
+                    _lastValue = collectionInspect;
+
+                    if (operatorParts[0] == "any")
+                    {
+                        var anyMatch = false;
+                        foreach (var collectionValue in collectionInspect)
+                        {
+                            anyMatch = EvaluateOperator(collectionValue, field, operatorParts[1]);
+                            if (anyMatch)
+                                break;
+                        }
+                        return anyMatch;
+                    }
+                    if (operatorParts[0] == "all")
+                    {
+                        var allMatch = true;
+                        foreach (var collectionValue in collectionInspect)
+                        {
+                            allMatch = EvaluateOperator(collectionValue, field, operatorParts[1]);
+                            if (!allMatch)
+                                break;
+                        }
+                        return allMatch;
+                    }
+                    if (operatorParts[0] == "none")
+                    {
+                        var noneMatch = true;
+                        foreach (var collectionValue in collectionInspect)
+                        {
+                            noneMatch = !EvaluateOperator(collectionValue, field, operatorParts[1]);
+                            if (!noneMatch)
+                                break;
+                        }
+                        return noneMatch;
+                    }
+                }
+
                 var inspect = GeneralHelpers.GetPropertyValue(subject, Field);
                 if (inspect == null)
                 {
@@ -41,7 +94,7 @@ namespace Artemis.Profiles.Layers.Models
                 if (Operator == "changed" || Operator == "decreased" || Operator == "increased")
                     returnValue = EvaluateEventOperator(subject, inspect);
                 else
-                    returnValue = EvaluateOperator(subject);
+                    returnValue = EvaluateOperator(subject, Field);
 
                 _lastValue = inspect;
                 return returnValue;
@@ -68,8 +121,7 @@ namespace Artemis.Profiles.Layers.Models
                 changeOperator = ">";
 
             // Evaluate the result and store it
-            var returnValue = _interpreter.Eval<bool>($"subject.{Field} {changeOperator} value",
-                new Parameter("subject", subject.GetType(), subject), rightParam);
+            var returnValue = _interpreter.Eval<bool>($"subject.{Field} {changeOperator} value", new Parameter("subject", subject.GetType(), subject), rightParam);
 
             // Set the last value to the new value
             _lastValue = inspect;
@@ -77,25 +129,26 @@ namespace Artemis.Profiles.Layers.Models
             return returnValue;
         }
 
-        private bool EvaluateOperator(ModuleDataModel subject)
+        private bool EvaluateOperator(object subject, string field, string operatorOverwrite = null)
         {
             // Since _lastValue won't be used, rely on Value to not be null
             if (string.IsNullOrEmpty(Value))
                 return false;
 
-            // Put the subject in a list, allowing Dynamic Linq to be used.
             if (Type == "String")
             {
-                return _interpreter.Eval<bool>($"subject.{Field}.ToLower(){Operator}(value)",
-                    new Parameter("subject", subject.GetType(), subject),
-                    new Parameter("value", Value.ToLower()));
+                var stringExpressionText = operatorOverwrite == null
+                    ? $"subject.{field}.ToLower(){Operator}(value)"
+                    : $"subject.{field}.ToLower(){operatorOverwrite}(value)";
+
+                return _interpreter.Eval<bool>(stringExpressionText, new Parameter("subject", subject.GetType(), subject), new Parameter("value", Value.ToLower()));
             }
 
             Parameter rightParam = null;
             switch (Type)
             {
                 case "Enum":
-                    var enumType = GeneralHelpers.GetPropertyValue(subject, Field).GetType();
+                    var enumType = GeneralHelpers.GetPropertyValue(subject, field).GetType();
                     rightParam = new Parameter("value", Enum.Parse(enumType, Value));
                     break;
                 case "Boolean":
@@ -111,8 +164,11 @@ namespace Artemis.Profiles.Layers.Models
                     break;
             }
 
-            return _interpreter.Eval<bool>($"subject.{Field} {Operator} value",
-                new Parameter("subject", subject.GetType(), subject), rightParam);
+            var expressionText = operatorOverwrite == null
+                ? $"subject.{field} {Operator} value"
+                : $"subject.{field} {operatorOverwrite} value";
+
+            return _interpreter.Eval<bool>(expressionText, new Parameter("subject", subject.GetType(), subject), rightParam);
         }
     }
 }
