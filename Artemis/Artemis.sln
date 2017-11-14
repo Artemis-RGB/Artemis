@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis", "Artemis\Artemis.csproj", "{ED9997A2-E54C-4E9F-9350-62BE672C3ABE}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis86Wrapper", "Artemis86Wrapper\Artemis86Wrapper.csproj", "{47A9BBFD-4BEA-4D7D-8AB7-896E760B2CF2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightFX2Artemis", "LightFX2Artemis\LightFX2Artemis.vcxproj", "{1A349CF5-2008-41E8-AC13-874CBBCDFA0A}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Artemis.Installer", "Artemis.Installer\Artemis.Installer.wixproj", "{A34F9047-8464-4423-89EF-A2F43E089E93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,8 +210,37 @@ Global
 		{1A349CF5-2008-41E8-AC13-874CBBCDFA0A}.SingleImage|x64.Build.0 = Release|x64
 		{1A349CF5-2008-41E8-AC13-874CBBCDFA0A}.SingleImage|x86.ActiveCfg = Release|Win32
 		{1A349CF5-2008-41E8-AC13-874CBBCDFA0A}.SingleImage|x86.Build.0 = Release|Win32
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|Any CPU.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|Any CPU.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|x64.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|x64.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|x86.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.CD_ROM|x86.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Debug|x64.ActiveCfg = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Debug|x86.ActiveCfg = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Debug|x86.Build.0 = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|Any CPU.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|Any CPU.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|x64.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|x64.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|x86.ActiveCfg = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.DVD-5|x86.Build.0 = Debug|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Release|Any CPU.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Release|x64.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Release|x86.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.Release|x86.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|Any CPU.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|Any CPU.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|x64.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|x64.Build.0 = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|x86.ActiveCfg = Release|x86
+		{A34F9047-8464-4423-89EF-A2F43E089E93}.SingleImage|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7F70A235-016F-4E1A-85B7-B66102F15535}
 	EndGlobalSection
 EndGlobal

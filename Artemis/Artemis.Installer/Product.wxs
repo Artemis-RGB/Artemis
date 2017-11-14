@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  
+  <Product Id="7a2ac6d5-70dd-41af-a5ba-e7b56a2464f5" Name="Artemis" Language="1033" Version="1.11.0.0" Manufacturer="SpoinkyNL" UpgradeCode="ebc7bc50-0473-4729-8de8-32ddb99bb986">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <MediaTemplate EmbedCab="yes" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <Feature Id="ProductFeature" Title="Artemis" Level="1">
+      <ComponentGroupRef Id="HeatGenerated" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="Artemis" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+    </ComponentGroup>
+  </Fragment>
+  
+</Wix>

@@ -11,45 +11,13 @@ using Artemis.Utilities.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
-using Squirrel;
 
 namespace Artemis.Utilities
 {
     public static class Updater
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        ///     Uses Squirrel to update the application through GitHub
-        /// </summary>
-        public static async void UpdateApp()
-        {
-            var settings = SettingsProvider.Load<GeneralSettings>();
-            Logger.Info("Update check enabled: {0}", settings.AutoUpdate);
-
-            // Only update if the user allows it
-            if (!SettingsProvider.Load<GeneralSettings>().AutoUpdate)
-                return;
-            
-            // Pre-release
-            // using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis", null, null, null, true))
-            // Release
-            using (var mgr = UpdateManager.GitHubUpdateManager("https://github.com/SpoinkyNL/Artemis"))
-            {
-                try
-                {
-                    await mgr.Result.UpdateApp();
-                    Logger.Info("Update check complete");
-                    mgr.Result.Dispose(); // This seems odd but if it's not disposed and exception is thrown
-                }
-                catch (Exception e)
-                {
-                    // These exceptions should only really occur when running from VS
-                    Logger.Error(e, "Update check failed");
-                }
-            }
-        }
-
+        
         /// <summary>
         ///     Checks to see if the program has updated and shows a dialog if so.
         /// </summary>
@@ -59,18 +27,17 @@ namespace Artemis.Utilities
         {
             var settings = SettingsProvider.Load<GeneralSettings>();
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if ((settings.LastRanVersion != null) && (currentVersion > settings.LastRanVersion))
+            if (settings.LastRanVersion != null && currentVersion > settings.LastRanVersion)
             {
                 Logger.Info("Updated from {0} to {1}, showing changelog.", settings.LastRanVersion, currentVersion);
 
                 // Ask the user whether he/she wants to see what's new
-                var showChanges = await dialogService.
-                    ShowQuestionMessageBox("New version installed",
-                        $"Artemis has recently updated from version {settings.LastRanVersion} to {currentVersion}. \n" +
-                        "Would you like to see what's new?");
+                var showChanges = await dialogService.ShowQuestionMessageBox("New version installed",
+                    $"Artemis has recently updated from version {settings.LastRanVersion} to {currentVersion}. \n" +
+                    "Would you like to see what's new?");
 
                 // If user wants to see changelog, show it to them
-                if ((showChanges != null) && showChanges.Value)
+                if (showChanges != null && showChanges.Value)
                     await ShowChanges(dialogService, currentVersion);
             }
 
@@ -115,9 +82,11 @@ namespace Artemis.Utilities
             if (release != null)
                 dialogService.ShowMarkdownDialog(release["name"].Value<string>(), release["body"].Value<string>());
             else
+            {
                 dialogService.ShowMessageBox("Couldn't fetch release",
                     "Sorry, Artemis was unable to fetch the release data off of GitHub.\n" +
                     "If you'd like, you can always find out the latest changes on the GitHub page accessible from the options menu");
+            }
         }
 
         /// <summary>
@@ -167,6 +136,7 @@ namespace Artemis.Utilities
         {
             var offsetSettings = SettingsProvider.Load<OffsetSettings>();
             if (offsetSettings.RocketLeague == null)
+            {
                 offsetSettings.RocketLeague = new GamePointersCollection
                 {
                     Game = "RocketLeague",
@@ -181,6 +151,7 @@ namespace Artemis.Utilities
                         }
                     }
                 };
+            }
 
             offsetSettings.Save();
         }

@@ -47,10 +47,6 @@ namespace Artemis.Managers
             // Start the named pipe
             PipeServer.Start("artemis");
 
-            // Start the update task
-            var updateTask = new Task(Updater.UpdateApp);
-            updateTask.Start();
-
             // Listen for power mode changes
             SystemEvents.PowerModeChanged += OnPowerChange;
 
