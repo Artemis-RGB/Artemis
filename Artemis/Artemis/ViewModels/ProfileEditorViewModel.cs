@@ -31,7 +31,6 @@ using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
-using NuGet;
 using Application = System.Windows.Application;
 using Clipboard = System.Windows.Clipboard;
 using Cursor = System.Windows.Input.Cursor;
@@ -377,7 +376,10 @@ namespace Artemis.ViewModels
             SelectedLayer = null;
 
             if (SelectedProfile != null)
-                Layers.AddRange(SelectedProfile.Layers);
+            {
+                foreach (var selectedProfileLayer in SelectedProfile.Layers)
+                    Layers.Add(selectedProfileLayer);
+            }
 
             if (selectModel == null)
                 return;
@@ -404,7 +406,10 @@ namespace Artemis.ViewModels
             {
                 ProfileNames.Clear();
                 if (_moduleModel != null && _deviceManager.ActiveKeyboard != null)
-                    ProfileNames.AddRange(ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _moduleModel));
+                {
+                    foreach (var profileName in ProfileProvider.GetProfileNames(_deviceManager.ActiveKeyboard, _moduleModel))
+                        ProfileNames.Add(profileName);
+                }
             });
         }
 
@@ -943,7 +948,10 @@ namespace Artemis.ViewModels
             Layers.Clear();
 
             if (SelectedProfile != null)
-                Layers.AddRange(SelectedProfile.Layers);
+            {
+                foreach (var selectedProfileLayer in SelectedProfile.Layers)
+                    Layers.Add(selectedProfileLayer);
+            }
 
             NotifyOfPropertyChange(() => ProfileSelected);
         }

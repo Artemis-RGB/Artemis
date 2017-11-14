@@ -13,7 +13,6 @@ using MahApps.Metro;
 using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Squirrel;
 
 namespace Artemis.Settings
 {
@@ -110,47 +109,30 @@ namespace Artemis.Settings
 
         public void ApplyAutorun()
         {
-            using (var mgr = new UpdateManager(""))
+            using (var ts = new TaskService())
             {
-                try
+                var existing = ts.FindTask("Artemis autorun");
+                if (Autorun)
                 {
-                    // Clean up the shortcut used by the old method
-                    mgr.RemoveShortcutsForExecutable("Artemis.exe", ShortcutLocation.Startup);
-                }
-                catch (FileNotFoundException)
-                {
-                    // Ignored, only happens when running from VS
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    // Ignored, only happens when running from VS
-                }
+                    // Overwrite any existing tasks in case the installation folder changed
+                    var path = Path.GetTempFileName();
+                    var xml = Resources.Artemis_autorun
+                        .Replace("{{executablePath}}", AppDomain.CurrentDomain.BaseDirectory + "Artemis.exe")
+                        .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+                    File.WriteAllText(path, xml);
 
-                using (var ts = new TaskService())
+                    var task = ts.RootFolder.ImportTask(null, path);
+                    task.Definition.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                    task.Definition.Principal.LogonType = TaskLogonType.InteractiveToken;
+                    task.Definition.Principal.RunLevel = TaskRunLevel.Highest;
+                    task.RegisterChanges();
+
+                    File.Delete(path);
+                }
+                else if (existing != null)
                 {
-                    var existing = ts.FindTask("Artemis autorun");
-                    if (Autorun)
-                    {
-                        // Overwrite any existing tasks in case the installation folder changed
-                        var path = Path.GetTempFileName();
-                        var xml = Resources.Artemis_autorun
-                            .Replace("{{executablePath}}", mgr.RootAppDirectory + "\\Update.exe")
-                            .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-                        File.WriteAllText(path, xml);
-
-                        var task = ts.RootFolder.ImportTask(null, path);
-                        task.Definition.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                        task.Definition.Principal.LogonType = TaskLogonType.InteractiveToken;
-                        task.Definition.Principal.RunLevel = TaskRunLevel.Highest;
-                        task.RegisterChanges();
-
-                        File.Delete(path);
-                    }
-                    else if (existing != null)
-                    {
-                        // Remove the task if it is present
-                        ts.RootFolder.DeleteTask("Artemis autorun");
-                    }
+                    // Remove the task if it is present
+                    ts.RootFolder.DeleteTask("Artemis autorun");
                 }
             }
         }
