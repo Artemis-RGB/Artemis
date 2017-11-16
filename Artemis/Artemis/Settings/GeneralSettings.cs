@@ -116,8 +116,9 @@ namespace Artemis.Settings
                 {
                     // Overwrite any existing tasks in case the installation folder changed
                     var path = Path.GetTempFileName();
+                    var artemisPath = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.Length - 1);
                     var xml = Resources.Artemis_autorun
-                        .Replace("{{executablePath}}", AppDomain.CurrentDomain.BaseDirectory + "Artemis.exe")
+                        .Replace("{{artemisPath}}", AppDomain.CurrentDomain.BaseDirectory)
                         .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                     File.WriteAllText(path, xml);
 

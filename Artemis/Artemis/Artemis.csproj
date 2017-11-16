@@ -807,7 +807,7 @@
     <Content Include="lib\AssettoCorsaSharedMemory.dll" />
     <Content Include="lib\Ets2SdkClient.dll" />
     <Content Include="lib\SDKDLL.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="LogitechLedEnginesWrapper.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
