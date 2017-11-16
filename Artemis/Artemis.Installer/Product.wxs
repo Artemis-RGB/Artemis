@@ -2,16 +2,17 @@
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-  <Product Id="7a2ac6d5-70dd-41af-a5ba-e7b56a2464f5" Name="Artemis" Language="1033" Version="1.11.0.0" Manufacturer="SpoinkyNL" UpgradeCode="ebc7bc50-0473-4729-8de8-32ddb99bb986">
+  <Product Id="*" Name="Artemis" Language="1033" Version="1.12.0.0"
+           Manufacturer="SpoinkyNL" UpgradeCode="ebc7bc50-0473-4729-8de8-32ddb99bb986">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
-    
+
     <!-- Images -->
     <Icon Id="ProductIcon" SourceFile="logo.ico" />
     <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="dialog.bmp" />
-      
+
     <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
     <Property Id="ARPHELPLINK" Value="https://github.com/SpoinkyNL/Artemis/wiki" />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/SpoinkyNL/Artemis" />
@@ -23,16 +24,26 @@
       <ComponentRef Id="ApplicationShortcuts" />
     </Feature>
     <UI Id='Mondo'>
-      <UIRef Id="WixUI_ErrorProgressText" />
+      <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Artemis" />
       <UIRef Id="WixUI_InstallDir" />
-      
+
+      <Publish Dialog="ExitDialog"
+               Control="Finish"
+               Event="DoAction"
+               Value="LaunchApplication">
+        WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed
+      </Publish>
+
+      <!-- Skip the license agreement don't have one anyway -->
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="3">1</Publish>
-      <!-- skip the page on the way back too -->
       <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="3">1</Publish>
     </UI>
   </Product>
 
   <Fragment>
+    <CustomAction Id="TaskDelete" Return="ignore" Execute="deferred" Directory="TARGETDIR" Impersonate="no"
+                  ExeCommand="SCHTASKS.EXE /DELETE /TN &quot;Artemis autorun&quot; /F" />
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLFOLDER" Name="Artemis" />
@@ -40,13 +51,24 @@
       <Directory Id="ProgramMenuFolder">
         <Directory Id="ProgramMenuSubfolder" Name="Artemis">
           <Component Id="ApplicationShortcuts" Guid="b7465bd9-c8d7-4999-9695-8bbfd9306986">
-            <Shortcut Id="ApplicationShortcut1" Name="Artemis" Description="Artemis" Target="[INSTALLFOLDER]Artemis.exe" WorkingDirectory="INSTALLFOLDER" />
-            <RegistryValue Root="HKCU" Key="Software\SpoinkyNL\Artemis" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+            <Shortcut Id="ApplicationShortcut1" Name="Artemis" Description="Artemis"
+                      Target="[INSTALLFOLDER]Artemis.exe" WorkingDirectory="INSTALLFOLDER" />
+            <RegistryValue Root="HKCU" Key="Software\SpoinkyNL\Artemis" Name="installed" Type="integer" Value="1"
+                           KeyPath="yes" />
             <RemoveFolder Id="ProgramMenuSubfolder" On="uninstall" />
           </Component>
         </Directory>
       </Directory>
     </Directory>
+
+    <!-- Optionally run Artemis after intallation -->
+    <Property Id="WixShellExecTarget" Value="[INSTALLFOLDER]Artemis.exe" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <InstallExecuteSequence>
+      <!--Remove task on Uninstall or Upgrade-->
+      <Custom Action='TaskDelete' Before="InstallFinalize">REMOVE="ALL"</Custom>
+    </InstallExecuteSequence>
   </Fragment>
 
   <Fragment>
