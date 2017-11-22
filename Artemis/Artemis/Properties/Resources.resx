@@ -220,6 +220,9 @@
   <data name="masterkeys_pro_s" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Keyboards\masterkeys-pro-s.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="masterkeys_pro_m" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Keyboards\masterkeys-pro-s.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="k95_platinum" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Keyboards\k95-platinum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
