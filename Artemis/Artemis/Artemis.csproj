@@ -284,6 +284,7 @@
     <Compile Include="DAL\SettingsProvider.cs" />
     <Compile Include="DeviceProviders\Artemis\NoneKeyboard.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProL.cs" />
+    <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProM.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MasterkeysProS.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MastermouseProL.cs" />
     <Compile Include="DeviceProviders\CoolerMaster\MastermouseProS.cs" />
