@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Artemis.DAL;
-using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
@@ -24,8 +22,8 @@ namespace Artemis.ViewModels
         private string _activeIcon;
         private bool _checked;
         private bool _enabled;
-        private string _toggleText;
         private bool _exiting;
+        private string _toggleText;
 
         public ShellViewModel(IKernel kernel, MainManager mainManager, MetroDialogService metroDialogService,
             FlyoutSettingsViewModel flyoutSettings)
@@ -36,6 +34,7 @@ namespace Artemis.ViewModels
             MetroDialogService = metroDialogService;
 
             DisplayName = "Artemis";
+            ActiveIcon = "../Resources/logo-disabled.ico";
             GeneralSettings = SettingsProvider.Load<GeneralSettings>();
             Flyouts = new BindableCollection<FlyoutBaseViewModel>
             {
@@ -47,7 +46,54 @@ namespace Artemis.ViewModels
             // This gets updated automatically but during startup lets quickly preset it
             Enabled = GeneralSettings.Suspended;
         }
-        
+
+        public Mutex Mutex { get; set; }
+        public MainManager MainManager { get; set; }
+        public MetroDialogService MetroDialogService { get; set; }
+        public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; }
+        public GeneralSettings GeneralSettings { get; set; }
+        private MetroWindow Window => (MetroWindow) GetView();
+
+        public bool CanShowWindow => Window != null && (Window != null || !Window.IsVisible);
+        public bool CanHideWindow => Window != null && Window.IsVisible;
+
+        public bool Enabled
+        {
+            get => _enabled;
+            set
+            {
+                if (value == _enabled)
+                    return;
+                _enabled = value;
+
+                ToggleText = _enabled ? "Disable Artemis" : "Enable Artemis";
+                ActiveIcon = _enabled ? "../Resources/logo.ico" : "../Resources/logo-disabled.ico";
+                NotifyOfPropertyChange(() => Enabled);
+            }
+        }
+
+        public string ActiveIcon
+        {
+            get => _activeIcon;
+            set
+            {
+                _activeIcon = value;
+                NotifyOfPropertyChange();
+            }
+        }
+
+        public string ToggleText
+        {
+            get => _toggleText;
+            set
+            {
+                if (value == _toggleText)
+                    return;
+                _toggleText = value;
+                NotifyOfPropertyChange(() => ToggleText);
+            }
+        }
+
         protected override void OnViewReady(object view)
         {
             base.OnViewReady(view);
@@ -69,51 +115,6 @@ namespace Artemis.ViewModels
                 MainManager.EnableProgram();
         }
 
-        public Mutex Mutex { get; set; }
-        public MainManager MainManager { get; set; }
-        public MetroDialogService MetroDialogService { get; set; }
-        public IObservableCollection<FlyoutBaseViewModel> Flyouts { get; set; }
-        public GeneralSettings GeneralSettings { get; set; }
-        private MetroWindow Window => (MetroWindow) GetView();
-
-        public bool CanShowWindow => Window != null && (Window != null || !Window.IsVisible);
-        public bool CanHideWindow => Window != null && Window.IsVisible;
-
-        public bool Enabled
-        {
-            get { return _enabled; }
-            set
-            {
-                if (value == _enabled) return;
-                _enabled = value;
-
-                ToggleText = _enabled ? "Disable Artemis" : "Enable Artemis";
-                ActiveIcon = _enabled ? "../Resources/logo.ico" : "../Resources/logo-disabled.ico";
-                NotifyOfPropertyChange(() => Enabled);
-            }
-        }
-
-        public string ActiveIcon
-        {
-            get { return _activeIcon; }
-            set
-            {
-                _activeIcon = value;
-                NotifyOfPropertyChange();
-            }
-        }
-
-        public string ToggleText
-        {
-            get { return _toggleText; }
-            set
-            {
-                if (value == _toggleText) return;
-                _toggleText = value;
-                NotifyOfPropertyChange(() => ToggleText);
-            }
-        }
-
         public override void CanClose(Action<bool> callback)
         {
             if (CanHideWindow)
@@ -128,11 +129,13 @@ namespace Artemis.ViewModels
         public void ShowWindow()
         {
             if (CanShowWindow)
+            {
                 Window?.Dispatcher.Invoke(() =>
                 {
                     Window.Show();
                     Window.Activate();
                 });
+            }
 
             GeneralSettings.ApplyTheme();
 
