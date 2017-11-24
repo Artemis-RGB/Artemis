@@ -10,7 +10,7 @@ using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using MahApps.Metro;
-using Microsoft.Win32.TaskScheduler;
+//using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -21,7 +21,6 @@ namespace Artemis.Settings
         public GeneralSettings()
         {
             ThemeManager.AddAccent("CorsairYellow", new Uri("pack://application:,,,/Styles/Accents/CorsairYellow.xaml"));
-            ApplyAutorun();
         }
 
         [DefaultValue("GeneralProfile")]
@@ -109,32 +108,24 @@ namespace Artemis.Settings
 
         public void ApplyAutorun()
         {
-            using (var ts = new TaskService())
+            if (Autorun)
             {
-                var existing = ts.FindTask("Artemis autorun");
-                if (Autorun)
-                {
-                    // Overwrite any existing tasks in case the installation folder changed
-                    var path = Path.GetTempFileName();
-                    var artemisPath = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.Length - 1);
-                    var xml = Resources.Artemis_autorun
-                        .Replace("{{artemisPath}}", AppDomain.CurrentDomain.BaseDirectory)
-                        .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
-                    File.WriteAllText(path, xml);
+                // Overwrite any existing tasks in case the installation folder changed
+                var path = Path.GetTempFileName();
+                var artemisPath = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.Length - 1);
+                var xml = Resources.Artemis_autorun
+                    .Replace("{{artemisPath}}", artemisPath)
+                    .Replace("{{userId}}", System.Security.Principal.WindowsIdentity.GetCurrent().User?.Value)
+                    .Replace("{{author}}", System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
-                    var task = ts.RootFolder.ImportTask(null, path);
-                    task.Definition.Principal.UserId = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-                    task.Definition.Principal.LogonType = TaskLogonType.InteractiveToken;
-                    task.Definition.Principal.RunLevel = TaskRunLevel.Highest;
-                    task.RegisterChanges();
-
-                    File.Delete(path);
-                }
-                else if (existing != null)
-                {
-                    // Remove the task if it is present
-                    ts.RootFolder.DeleteTask("Artemis autorun");
-                }
+                File.WriteAllText(path, xml);
+                RunWithoutWindow(Environment.SystemDirectory + "\\schtasks.exe", $"/Create /XML \"{path}\" /tn \"Artemis\"");
+                File.Delete(path);
+            }
+            else
+            {
+                // Remove the task if it is present
+                RunWithoutWindow(Environment.SystemDirectory + "\\schtasks.exe", "/Delete /TN Artemis /f");
             }
         }
 
@@ -167,6 +158,26 @@ namespace Artemis.Settings
         public void ApplyScreenCaptureFPS()
         {
             ScreenCaptureManager.UpdateRate = 1.0 / ScreenCaptureFPS;
+        }
+
+        private void RunWithoutWindow(string fileName, string arguments)
+        {
+            var process = new System.Diagnostics.Process
+            {
+                StartInfo =
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true, 
+                    Verb = "runas",
+                    FileName = fileName,
+                    Arguments = arguments
+                }
+            };
+
+            // Go
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Artemis.DeviceProviders.Corsair
         public override void Enable()
         {
             if (!CueSDK.IsInitialized)
-                CueSDK.Initialize();
+                CueSDK.Initialize(true);
 
             CueSDK.UpdateMode = UpdateMode.Manual;
             _keyboard = CueSDK.KeyboardSDK;
@@ -97,8 +97,7 @@ namespace Artemis.DeviceProviders.Corsair
         {
             try
             {
-                if (CueSDK.IsInitialized)
-                    CueSDK.Reinitialize();
+                CueSDK.Reset();
             }
             catch (WrapperException e)
             {
