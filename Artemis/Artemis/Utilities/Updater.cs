@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -8,6 +9,7 @@ using Artemis.DAL;
 using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
+using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -17,76 +19,99 @@ namespace Artemis.Utilities
     public static class Updater
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        
+
         /// <summary>
-        ///     Checks to see if the program has updated and shows a dialog if so.
+        ///     Checks to see if a new version is available on GitHub asks the user to see changes and download
         /// </summary>
         /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
         /// <returns></returns>
-        public static async void CheckChangelog(MetroDialogService dialogService)
+        public static async void CheckForUpdate(MetroDialogService dialogService)
         {
             var settings = SettingsProvider.Load<GeneralSettings>();
-            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            if (settings.LastRanVersion != null && currentVersion > settings.LastRanVersion)
-            {
-                Logger.Info("Updated from {0} to {1}, showing changelog.", settings.LastRanVersion, currentVersion);
+            if (!settings.AutoUpdate)
+                return;
 
-                // Ask the user whether he/she wants to see what's new
-                var showChanges = await dialogService.ShowQuestionMessageBox("New version installed",
-                    $"Artemis has recently updated from version {settings.LastRanVersion} to {currentVersion}. \n" +
-                    "Would you like to see what's new?");
-
-                // If user wants to see changelog, show it to them
-                if (showChanges != null && showChanges.Value)
-                    await ShowChanges(dialogService, currentVersion);
-            }
-
-            settings.LastRanVersion = currentVersion;
-            settings.Save();
-        }
-
-        /// <summary>
-        ///     Fetches all releases from GitHub, looks up the current release and shows the changelog
-        /// </summary>
-        /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
-        /// <param name="version">The version to fetch the changelog for</param>
-        /// <returns></returns>
-        private static async Task ShowChanges(MetroDialogService dialogService, Version version)
-        {
-            var progressDialog = await dialogService.ShowProgressDialog("Changelog", "Fetching release data from GitHub..");
-            progressDialog.SetIndeterminate();
-
+            // Check GitHub for a new version
             var jsonClient = new WebClient();
 
             // GitHub trips if we don't add a user agent
-            jsonClient.Headers.Add("user-agent",
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            jsonClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 
             // Random number to get around cache issues
             var rand = new Random(DateTime.Now.Millisecond);
-            var json = await jsonClient.DownloadStringTaskAsync(
-                "https://api.github.com/repos/SpoinkyNL/Artemis/releases?random=" + rand.Next());
+            var json = await jsonClient.DownloadStringTaskAsync("https://api.github.com/repos/SpoinkyNL/Artemis/releases/latest?random=" + rand.Next());
 
-            // Get a list of releases
-            var releases = JsonConvert.DeserializeObject<JArray>(json);
-            var release = releases.FirstOrDefault(r => r["tag_name"].Value<string>() == version.ToString());
-            try
+            var release = JObject.Parse(json);
+            var releaseVersion = Version.Parse(release["tag_name"].Value<string>());
+            var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+//            if (releaseVersion > currentVersion)
+            await ShowChanges(dialogService, release);
+        }
+
+        /// <summary>
+        ///     Shows the changes for the given release and offers to download it
+        /// </summary>
+        /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
+        /// <param name="release">The release to show and offer the download for</param>
+        /// <returns></returns>
+        private static async Task ShowChanges(MetroDialogService dialogService, JObject release)
+        {
+            var settings = new MetroDialogSettings
             {
-                await progressDialog.CloseAsync();
-            }
-            catch (InvalidOperationException)
+                AffirmativeButtonText = "Download & install",
+                NegativeButtonText = "Ask again later"
+            };
+
+            var update = await dialogService.ShowMarkdownDialog(release["name"].Value<string>(), release["body"].Value<string>(), settings);
+            if (update == null || (bool) !update)
+                return;
+
+            // Show a process dialog 
+            var dialog = await dialogService.ShowProgressDialog("Applying update", "The new update is being downloaded right now...");
+            // Download the release file, it's the one starting with "artemis-setup"
+            // var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("artemis-setup"));
+            var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("Artemis-1.9.0.1-delta"));
+
+            // If there's no matching release it means whoever published the new version fucked up, can't do much about that
+            if (releaseFile == null)
             {
-                // Occurs when main window is closed before finished
+                dialogService.ShowMessageBox("Applying update failed", "Couldn't find the update file. Please install the latest version manually, sorry!");
+                return;
             }
 
-            if (release != null)
-                dialogService.ShowMarkdownDialog(release["name"].Value<string>(), release["body"].Value<string>());
-            else
+            var downloadClient = new WebClient();
+            downloadClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+            var download = downloadClient.DownloadDataTaskAsync(releaseFile["browser_download_url"].Value<string>());
+            downloadClient.DownloadProgressChanged += (sender, args) =>
             {
-                dialogService.ShowMessageBox("Couldn't fetch release",
-                    "Sorry, Artemis was unable to fetch the release data off of GitHub.\n" +
-                    "If you'd like, you can always find out the latest changes on the GitHub page accessible from the options menu");
-            }
+                dialog.SetMessage("The new update is being downloaded right now...\n\n" +
+                                  $"Progress: {ConvertBytesToMegabytes(args.BytesReceived)} MB/{ConvertBytesToMegabytes(args.TotalBytesToReceive)} MB");
+                dialog.SetProgress(args.ProgressPercentage / 100.0);
+            };
+            var setupBytes = await download;
+            dialog.SetMessage("Installing the new update...");
+            dialog.SetIndeterminate();
+            
+            // Ensure the update folder exists
+            var updateFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Artemis\\updates";
+            if (!Directory.Exists(updateFolder))
+                Directory.CreateDirectory(updateFolder);
+
+            // Store the bytes
+            File.WriteAllBytes(updateFolder + "\\" + releaseFile["name"].Value<string>(), setupBytes);
+            // Create a bat file that'll take care of the installation (Artemis gets shut down during install) the bat file will
+            // carry forth our legacy (read that in an heroic tone)
+            //ECHO OFF
+            //CLS
+            //"C:\Repos\Artemis\Artemis\Artemis.Installer\bin\Release\Artemis.msi" / passive
+            //cd "C:\Program Files\Artemis"
+            //start Artemis.exe
+        }
+
+        private static object ConvertBytesToMegabytes(long bytes)
+        {
+            return Math.Round((bytes / 1024f) / 1024f, 2);
         }
 
         /// <summary>

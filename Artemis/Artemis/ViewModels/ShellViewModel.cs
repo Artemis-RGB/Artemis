@@ -142,7 +142,7 @@ namespace Artemis.ViewModels
             // Show certain dialogs if needed
             CheckKeyboardState();
             CheckDuplicateInstances();
-            Updater.CheckChangelog(MetroDialogService);
+            Updater.CheckForUpdate(MetroDialogService);
 
             // Run this on the UI thread to avoid having to use dispatchers in VMs
             Execute.OnUIThread(ActivateViews);

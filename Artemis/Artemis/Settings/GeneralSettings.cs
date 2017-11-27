@@ -76,8 +76,6 @@ namespace Artemis.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public ActiveWindowDetectionType ActiveWindowDetection { get; set; }
 
-        public Version LastRanVersion { get; set; }
-
         public void Save()
         {
             SettingsProvider.Save(this);

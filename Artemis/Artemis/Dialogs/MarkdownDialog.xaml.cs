@@ -11,33 +11,44 @@ namespace Artemis.Dialogs
     /// </summary>
     public partial class MarkdownDialog : CustomDialog
     {
-        public MetroWindow ParentWindow { get; set; }
+        public static readonly DependencyProperty MarkdownProperty = DependencyProperty.Register("Markdown", typeof(string), typeof(MarkdownDialog), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty AffirmativeButtonTextProperty = DependencyProperty.Register("AffirmativeButtonText", typeof(string), typeof(MarkdownDialog), new PropertyMetadata("OK"));
+        public static readonly DependencyProperty NegativeButtonTextProperty = DependencyProperty.Register("NegativeButtonText", typeof(string), typeof(MarkdownDialog), new PropertyMetadata("Cancel"));
 
-        public static readonly DependencyProperty MarkdownProperty = DependencyProperty.Register("Markdown",
-            typeof(string), typeof(MarkdownDialog), new PropertyMetadata(default(string)));
-
-        public MarkdownDialog(MetroWindow parentWindow)
+        public MarkdownDialog(MetroWindow parentWindow, MetroDialogSettings settings = null) : base(parentWindow, settings)
         {
             ParentWindow = parentWindow;
             InitializeComponent();
 
-            Tcs = new TaskCompletionSource<MessageDialogResult>();
+            CommandBindings.Add(new CommandBinding(NavigationCommands.GoToPage, (sender, e) => System.Diagnostics.Process.Start((string) e.Parameter)));
+            
+            PART_AffirmativeButton.Click += (sender, args) => ParentWindow.HideMetroDialogAsync(this);
+            PART_NegativeButton.Click += (sender, args) => ParentWindow.HideMetroDialogAsync(this);
 
-            CommandBindings.Add(new CommandBinding(NavigationCommands.GoToPage,
-                (sender, e) => System.Diagnostics.Process.Start((string) e.Parameter)));
+            if (settings == null)
+                return;
+            AffirmativeButtonText = settings.AffirmativeButtonText;
+            NegativeButtonText = settings.NegativeButtonText;
         }
 
-        public TaskCompletionSource<MessageDialogResult> Tcs { get; set; }
+        public MetroWindow ParentWindow { get; set; }
 
         public string Markdown
         {
-            get { return (string) GetValue(MarkdownProperty); }
-            set { SetValue(MarkdownProperty, value); }
+            get => (string) GetValue(MarkdownProperty);
+            set => SetValue(MarkdownProperty, value);
         }
 
-        private void PART_AffirmativeButton_Click(object sender, RoutedEventArgs e)
+        public string AffirmativeButtonText
         {
-            ParentWindow.HideMetroDialogAsync(this);
+            get => (string) GetValue(AffirmativeButtonTextProperty);
+            set => SetValue(AffirmativeButtonTextProperty, value);
+        }
+
+        public string NegativeButtonText
+        {
+            get => (string) GetValue(NegativeButtonTextProperty);
+            set => SetValue(NegativeButtonTextProperty, value);
         }
     }
 }

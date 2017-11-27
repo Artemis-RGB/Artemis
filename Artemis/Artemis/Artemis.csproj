@@ -762,6 +762,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Resource Include="Resources\Keyboards\masterkeys-pro-m.png" />
     <None Include="Modules\Games\WoW\Resources\Addon source\Artemis.toc" />
     <None Include="Modules\Games\WoW\Resources\Addon source\Core.lua" />
     <None Include="Modules\Games\WoW\Resources\Addon source\Libs\AceAddon-3.0\AceAddon-3.0.lua" />
