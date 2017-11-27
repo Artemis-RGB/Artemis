@@ -43,11 +43,15 @@
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
             <Button x:Name="PART_AffirmativeButton"
-                    Height="35"
-                    MinWidth="80"
-                    Margin="0 0 5 0"
-                    Content="Alrighty, let's go!"
-                    Style="{DynamicResource AccentedDialogSquareButton}" Click="PART_AffirmativeButton_Click" />
+                Height="35"
+                MinWidth="80"
+                Margin="0 0 5 0"
+                Content="{Binding AffirmativeButtonText, RelativeSource={RelativeSource AncestorType=dialogs1:MarkdownDialog, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}" />
+            <Button x:Name="PART_NegativeButton"
+                Height="35"
+                MinWidth="80"
+                Margin="5 0 5 0"
+                Content="{Binding NegativeButtonText, RelativeSource={RelativeSource AncestorType=dialogs1:MarkdownDialog, Mode=FindAncestor}, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
     </Grid>
 </dialogs:CustomDialog>

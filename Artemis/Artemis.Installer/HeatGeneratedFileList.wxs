@@ -110,12 +110,6 @@
             <Component Id="cmp43D899344ED173B0DAFCD84946D02788" Guid="*">
                 <File Id="fil7FCB3B29476FFB610381CD77013296AD" KeyPath="yes" Source="$(var.HarvestPath)\MahApps.Metro.xml" />
             </Component>
-            <Component Id="cmp43984E66F2A9DD89F93CF7035D8989A0" Guid="*">
-                <File Id="filD88CABA6D1DF77999CB7D426C4B617A4" KeyPath="yes" Source="$(var.HarvestPath)\Microsoft.Win32.TaskScheduler.dll" />
-            </Component>
-            <Component Id="cmp08AF6F09151836641FA7AB5776CEF105" Guid="*">
-                <File Id="fil95DD99F610362C6190FF14BB3C403053" KeyPath="yes" Source="$(var.HarvestPath)\Microsoft.Win32.TaskScheduler.xml" />
-            </Component>
             <Component Id="cmp2FCEBC7A99564B55654E85ED28E48600" Guid="*">
                 <File Id="fil4EAD90E131DF96A66C4D6F6426CE480B" KeyPath="yes" Source="$(var.HarvestPath)\MoonSharp.Interpreter.dll" />
             </Component>
@@ -230,26 +224,6 @@
             <Component Id="cmp8E352492AA4EFD741D361DB10D9CDE54" Guid="*">
                 <File Id="fil4A56C6D02CE99309F98F2DC52BD44FB0" KeyPath="yes" Source="$(var.HarvestPath)\VioletTape.WpfExceptionViewer.dll" />
             </Component>
-            <Directory Id="dir242DC17B8DFC53C13CAF172FC08B730A" Name="de">
-                <Component Id="cmp899508076A55BF753F74CB0DFA5743E3" Guid="*">
-                    <File Id="filD54B0D32E6618AD0E9082F3C7288DF3B" KeyPath="yes" Source="$(var.HarvestPath)\de\Microsoft.Win32.TaskScheduler.resources.dll" />
-                </Component>
-            </Directory>
-            <Directory Id="dir9AE38F4F5CB5E565E774521E138F44FD" Name="es">
-                <Component Id="cmp5A7026E0896D194B82895F7742EE8E12" Guid="*">
-                    <File Id="filD9A4BF39D17EB61C5211DDC46DB00008" KeyPath="yes" Source="$(var.HarvestPath)\es\Microsoft.Win32.TaskScheduler.resources.dll" />
-                </Component>
-            </Directory>
-            <Directory Id="dirB55DFDA91FEE7CCCBC65CA7493B75748" Name="fr">
-                <Component Id="cmpB448414C7B3963A581067103B898A290" Guid="*">
-                    <File Id="filA5C066B28245C75C64533E4E70637BFD" KeyPath="yes" Source="$(var.HarvestPath)\fr\Microsoft.Win32.TaskScheduler.resources.dll" />
-                </Component>
-            </Directory>
-            <Directory Id="dir45DE18DD71F3E8DD6BE4A0E2B48778C8" Name="it">
-                <Component Id="cmpA2349B128022FD9468B4B0472DF8814A" Guid="*">
-                    <File Id="filA9D742E425F8D28208EA368E72789A62" KeyPath="yes" Source="$(var.HarvestPath)\it\Microsoft.Win32.TaskScheduler.resources.dll" />
-                </Component>
-            </Directory>
             <Directory Id="dir6D8C24E0E6B175D1F4DFF0EAC196DDF2" Name="lib">
                 <Component Id="cmp97A41A22042DE905D0A5799554A3C4DB" Guid="*">
                     <File Id="fil3BC1E3A3EF0D5982FD254F6A5A9D4549" KeyPath="yes" Source="$(var.HarvestPath)\lib\SDKDLL.dll" />
@@ -263,11 +237,6 @@
             <Directory Id="dir97F42FF68945B97AAE670945C4FDAE93" Name="x86">
                 <Component Id="cmp0A1EF8C9603FD314A6357DDC62FAABEC" Guid="*">
                     <File Id="fil51DCB5DC79C1956F92047AD679E8AB55" KeyPath="yes" Source="$(var.HarvestPath)\x86\CUESDK_2015.dll" />
-                </Component>
-            </Directory>
-            <Directory Id="dir8C5E37FA87D1897FFB78337F53EB198C" Name="zh-CN">
-                <Component Id="cmpFA6D9FD1AAA2046A7577475784CE8BCC" Guid="*">
-                    <File Id="fil9AE873A7FEB47AAC64F449F1E25BB97F" KeyPath="yes" Source="$(var.HarvestPath)\zh-CN\Microsoft.Win32.TaskScheduler.resources.dll" />
                 </Component>
             </Directory>
         </DirectoryRef>
@@ -310,8 +279,6 @@
             <ComponentRef Id="cmp223D4754378C01052DA8253A843FD297" />
             <ComponentRef Id="cmp31541C871E68AFBC70137561BF857C7B" />
             <ComponentRef Id="cmp43D899344ED173B0DAFCD84946D02788" />
-            <ComponentRef Id="cmp43984E66F2A9DD89F93CF7035D8989A0" />
-            <ComponentRef Id="cmp08AF6F09151836641FA7AB5776CEF105" />
             <ComponentRef Id="cmp2FCEBC7A99564B55654E85ED28E48600" />
             <ComponentRef Id="cmp10359C02FE64062C8403FF433E774083" />
             <ComponentRef Id="cmpF3259CFFC7B5247438581E9B04AB35D8" />
@@ -350,14 +317,9 @@
             <ComponentRef Id="cmp4C89FD380B87BABF2C2EC0B905FC716A" />
             <ComponentRef Id="cmp017BFB3832A5B110A2B3A350E13F2A5C" />
             <ComponentRef Id="cmp8E352492AA4EFD741D361DB10D9CDE54" />
-            <ComponentRef Id="cmp899508076A55BF753F74CB0DFA5743E3" />
-            <ComponentRef Id="cmp5A7026E0896D194B82895F7742EE8E12" />
-            <ComponentRef Id="cmpB448414C7B3963A581067103B898A290" />
-            <ComponentRef Id="cmpA2349B128022FD9468B4B0472DF8814A" />
             <ComponentRef Id="cmp97A41A22042DE905D0A5799554A3C4DB" />
             <ComponentRef Id="cmpECD409B8EBFA879EA008219F73249A40" />
             <ComponentRef Id="cmp0A1EF8C9603FD314A6357DDC62FAABEC" />
-            <ComponentRef Id="cmpFA6D9FD1AAA2046A7577475784CE8BCC" />
         </ComponentGroup>
     </Fragment>
 </Wix>

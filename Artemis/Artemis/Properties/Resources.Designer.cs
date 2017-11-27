@@ -75,17 +75,17 @@ namespace Artemis.Properties {
         ///&lt;Task version=&quot;1.4&quot; xmlns=&quot;http://schemas.microsoft.com/windows/2004/02/mit/task&quot;&gt;
         ///  &lt;RegistrationInfo&gt;
         ///    &lt;Date&gt;2017-11-12T17:45:45.4993602&lt;/Date&gt;
-        ///    &lt;Author&gt;SpoinkyNL&lt;/Author&gt;
+        ///    &lt;Author&gt;{{author}}&lt;/Author&gt;
         ///    &lt;Description&gt;Task to run Artemis on PC startup without showing a UAC dialog&lt;/Description&gt;
-        ///    &lt;URI&gt;\Artemis autorun&lt;/URI&gt;
+        ///    &lt;URI&gt;\Artemis&lt;/URI&gt;
         ///  &lt;/RegistrationInfo&gt;
         ///  &lt;Triggers&gt;
         ///    &lt;LogonTrigger&gt;
         ///      &lt;Enabled&gt;true&lt;/Enabled&gt;
         ///      &lt;Delay&gt;PT30S&lt;/Delay&gt;
         ///    &lt;/LogonTrigger&gt;
-        ///  &lt;/Triggers&gt; 
-        ///  &lt;Set [rest of string was truncated]&quot;;.
+        ///  &lt;/Triggers&gt;
+        ///  &lt;Principals&gt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Artemis_autorun {
             get {
@@ -368,6 +368,26 @@ namespace Artemis.Properties {
         internal static System.Drawing.Bitmap masterkeys_pro_l {
             get {
                 object obj = ResourceManager.GetObject("masterkeys_pro_l", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap masterkeys_pro_m {
+            get {
+                object obj = ResourceManager.GetObject("masterkeys_pro_m", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap masterkeys_pro_m1 {
+            get {
+                object obj = ResourceManager.GetObject("masterkeys_pro_m1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

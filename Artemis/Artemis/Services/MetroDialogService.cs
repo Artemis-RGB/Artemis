@@ -36,12 +36,7 @@ namespace Artemis.Services
         public MetroWindow GetActiveWindow()
         {
             MetroWindow window = null;
-
-            Execute.OnUIThread(() =>
-            {
-                window = Application.Current.Windows.OfType<MetroWindow>()
-                    .FirstOrDefault(w => w.IsActive && w.IsVisible);
-            });
+            Execute.OnUIThread(() => window = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault(w => w.IsActive && w.IsVisible));
 
             return window;
         }
@@ -54,21 +49,24 @@ namespace Artemis.Services
             Execute.OnUIThread(() => GetActiveWindow().ShowMessageAsync(title, message));
         }
 
-        public void ShowMarkdownDialog(string title, string markdown)
+        public async Task<bool?> ShowMarkdownDialog(string title, string markdown, MetroDialogSettings settings = null)
         {
+            var result = false;
             var window = GetActiveWindow();
             if (window == null)
-                return;
+                return null;
 
-            window.Dispatcher.Invoke(() =>
+            var dialog = new MarkdownDialog(window, settings)
             {
-                var dialog = new MarkdownDialog(window)
-                {
-                    Markdown = markdown,
-                    Title = title
-                };
-                return window.ShowMetroDialogAsync(dialog);
-            });
+                Markdown = markdown,
+                Title = title
+            };
+            dialog.PART_AffirmativeButton.Click += (sender, args) => result = true;
+
+            await Execute.OnUIThreadAsync(() => GetActiveWindow().ShowMetroDialogAsync(dialog));
+            await dialog.WaitUntilUnloadedAsync();
+
+            return result;
         }
 
         public override async Task<bool?> ShowQuestionMessageBox(string title, string message)
@@ -79,8 +77,7 @@ namespace Artemis.Services
 
             var metroDialogSettings = new MetroDialogSettings {AffirmativeButtonText = "Yes", NegativeButtonText = "No"};
             var result = await window.Dispatcher.Invoke(() =>
-                window.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative,
-                    metroDialogSettings));
+                window.ShowMessageAsync(title, message, MessageDialogStyle.AffirmativeAndNegative, metroDialogSettings));
 
             switch (result)
             {
@@ -136,8 +133,7 @@ namespace Artemis.Services
             return res != null && res.Value;
         }
 
-        public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false,
-            MetroDialogSettings settings = null)
+        public Task<ProgressDialogController> ShowProgressDialog(string title, string message, bool isCancelable = false, MetroDialogSettings settings = null)
         {
             var window = GetActiveWindow();
             return window?.Dispatcher.Invoke(() => window.ShowProgressAsync(title, message, isCancelable, settings));
