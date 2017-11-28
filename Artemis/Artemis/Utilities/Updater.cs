@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,10 +10,12 @@ using Artemis.DAL;
 using Artemis.Services;
 using Artemis.Settings;
 using Artemis.Utilities.Memory;
+using Caliburn.Micro;
 using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
+using LogManager = NLog.LogManager;
 
 namespace Artemis.Utilities
 {
@@ -25,12 +28,8 @@ namespace Artemis.Utilities
         /// </summary>
         /// <param name="dialogService">The dialog service to use for progress and result dialogs</param>
         /// <returns></returns>
-        public static async void CheckForUpdate(MetroDialogService dialogService)
+        public static async Task<bool?> CheckForUpdate(MetroDialogService dialogService)
         {
-            var settings = SettingsProvider.Load<GeneralSettings>();
-            if (!settings.AutoUpdate)
-                return;
-
             // Check GitHub for a new version
             var jsonClient = new WebClient();
 
@@ -39,14 +38,28 @@ namespace Artemis.Utilities
 
             // Random number to get around cache issues
             var rand = new Random(DateTime.Now.Millisecond);
-            var json = await jsonClient.DownloadStringTaskAsync("https://api.github.com/repos/SpoinkyNL/Artemis/releases/latest?random=" + rand.Next());
+            string json;
+            try
+            {
+                json = await jsonClient.DownloadStringTaskAsync("https://api.github.com/repos/SpoinkyNL/Artemis/releases/latest?random=" + rand.Next());
+            }
+            catch (Exception e)
+            {
+                Logger.Warn(e, "Update check failed.");
+                return null;
+            }
 
             var release = JObject.Parse(json);
             var releaseVersion = Version.Parse(release["tag_name"].Value<string>());
             var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-//            if (releaseVersion > currentVersion)
-            await ShowChanges(dialogService, release);
+            if (releaseVersion > currentVersion)
+            {
+                await Execute.OnUIThreadAsync(async () => await ShowChanges(dialogService, release));
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -69,20 +82,31 @@ namespace Artemis.Utilities
 
             // Show a process dialog 
             var dialog = await dialogService.ShowProgressDialog("Applying update", "The new update is being downloaded right now...");
+            dialog.SetIndeterminate();
             // Download the release file, it's the one starting with "artemis-setup"
-            // var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("artemis-setup"));
-            var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("Artemis-1.9.0.1-delta"));
-
+            var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("artemis-setup") &&
+                                                                               c["name"].Value<string>().EndsWith(".exe"));
             // If there's no matching release it means whoever published the new version fucked up, can't do much about that
             if (releaseFile == null)
             {
+                await dialog.CloseAsync();
                 dialogService.ShowMessageBox("Applying update failed", "Couldn't find the update file. Please install the latest version manually, sorry!");
                 return;
             }
 
             var downloadClient = new WebClient();
             downloadClient.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-            var download = downloadClient.DownloadDataTaskAsync(releaseFile["browser_download_url"].Value<string>());
+            Task<byte[]> download;
+            try
+            {
+                download = downloadClient.DownloadDataTaskAsync(releaseFile["browser_download_url"].Value<string>());
+            }
+            catch (Exception e)
+            {
+                dialogService.ShowMessageBox("Applying update failed", "We ran into an issue downloaidng the update: \n\n" + e.Message);
+                Logger.Warn(e, "Update check failed.");
+                return;
+            }
             downloadClient.DownloadProgressChanged += (sender, args) =>
             {
                 dialog.SetMessage("The new update is being downloaded right now...\n\n" +
@@ -92,21 +116,33 @@ namespace Artemis.Utilities
             var setupBytes = await download;
             dialog.SetMessage("Installing the new update...");
             dialog.SetIndeterminate();
-            
+
             // Ensure the update folder exists
+            var artemisFolder = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.Length - 1);
             var updateFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Artemis\\updates";
+            var updatePath = updateFolder + "\\" + releaseFile["name"].Value<string>();
             if (!Directory.Exists(updateFolder))
                 Directory.CreateDirectory(updateFolder);
 
             // Store the bytes
-            File.WriteAllBytes(updateFolder + "\\" + releaseFile["name"].Value<string>(), setupBytes);
+            File.WriteAllBytes(updatePath, setupBytes);
             // Create a bat file that'll take care of the installation (Artemis gets shut down during install) the bat file will
             // carry forth our legacy (read that in an heroic tone)
-            //ECHO OFF
-            //CLS
-            //"C:\Repos\Artemis\Artemis\Artemis.Installer\bin\Release\Artemis.msi" / passive
-            //cd "C:\Program Files\Artemis"
-            //start Artemis.exe
+            var updateScript = "ECHO OFF\r\n" +
+                               "CLS\r\n" +
+                               $"\"{updatePath}\" /passive\r\n" +
+                               $"cd \"{artemisFolder}\"\r\n" +
+                               "start Artemis.exe --show";
+            File.WriteAllText(updateFolder + "\\updateScript.bat", updateScript);
+            var psi = new ProcessStartInfo
+            {
+                FileName = updateFolder + "\\updateScript.bat",
+                Verb = "runas"
+            };
+
+            var process = new System.Diagnostics.Process {StartInfo = psi};
+            process.Start();
+            process.WaitForExit();
         }
 
         private static object ConvertBytesToMegabytes(long bytes)

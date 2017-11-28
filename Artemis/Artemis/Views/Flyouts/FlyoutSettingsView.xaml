@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -95,7 +96,7 @@
         <controls:NumericUpDown Grid.Row="8" Grid.Column="1" Margin="10" VerticalAlignment="Center"
                                 HorizontalAlignment="Right" Width="140" Minimum="1" Maximum="60"
                                 Value="{Binding Path=GeneralSettings.ScreenCaptureFPS, Mode=TwoWay}" />
-        
+
         <Label Grid.Row="9" Grid.Column="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"
                Content="Active window detection" />
         <ComboBox Grid.Row="9" Grid.Column="1" x:Name="ActiveWindowDetections" Margin="10" VerticalAlignment="Center"
@@ -122,9 +123,12 @@
         <Button Grid.Row="12" Grid.Column="1" Margin="11" x:Name="SaveSettings" Content="Save changes"
                 VerticalAlignment="Center" HorizontalAlignment="Right" Width="100"
                 Style="{DynamicResource SquareButtonStyle}" />
-
+        <Button Grid.Row="13" Grid.Column="0" Margin="10" x:Name="CheckForUpdate" Content="Check for update"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Width="100"
+                Style="{DynamicResource SquareButtonStyle}" />
+        
         <!-- Version -->
-        <Grid Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
+        <Grid Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
