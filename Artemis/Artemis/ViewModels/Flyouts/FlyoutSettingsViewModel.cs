@@ -8,6 +8,7 @@ using Artemis.Events;
 using Artemis.Managers;
 using Artemis.Services;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Artemis.Utilities.ActiveWindowDetection;
 using Caliburn.Micro;
 using MahApps.Metro.Controls;
@@ -20,15 +21,17 @@ namespace Artemis.ViewModels.Flyouts
     {
         private readonly ILogger _logger;
         private readonly WindowService _windowService;
+        private readonly MetroDialogService _metroDialogService;
         private string _activeEffectName;
         private bool _enableDebug;
         private GeneralSettings _generalSettings;
         private string _selectedKeyboardProvider;
 
-        public FlyoutSettingsViewModel(MainManager mainManager, ILogger logger, WindowService windowService)
+        public FlyoutSettingsViewModel(MainManager mainManager, ILogger logger, WindowService windowService, MetroDialogService metroDialogService)
         {
             _logger = logger;
             _windowService = windowService;
+            _metroDialogService = metroDialogService;
 
             MainManager = mainManager;
             Header = "Settings";
@@ -242,6 +245,21 @@ namespace Artemis.ViewModels.Flyouts
         public void SaveSettings()
         {
             GeneralSettings.Save();
+        }
+
+        public async void CheckForUpdate()
+        {
+            var update = await Updater.CheckForUpdate(_metroDialogService);
+            if (update == null)
+            {
+                _metroDialogService.ShowMessageBox("Update check failed",
+                    "Couldn't perform the update check, please check your internet connection and try again." +
+                    "You can also perform a manual update by downloading and installing the latest version from GitHub");
+            }
+            else if (!update.Value)
+            {
+                _metroDialogService.ShowMessageBox("No update available", "You're running the latest version of Artemis.");
+            }
         }
 
         public void NavigateTo(string url)

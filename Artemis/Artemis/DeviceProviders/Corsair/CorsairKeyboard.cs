@@ -44,8 +44,11 @@ namespace Artemis.DeviceProviders.Corsair
         /// </summary>
         public override void Enable()
         {
-            if (!CueSDK.IsInitialized)
-                CueSDK.Initialize(true);
+            lock (CorsairUtilities.SDKLock)
+            {
+                if (!CueSDK.IsInitialized)
+                    CueSDK.Initialize(true);
+            }
 
             CueSDK.UpdateMode = UpdateMode.Manual;
             _keyboard = CueSDK.KeyboardSDK;
@@ -127,7 +130,7 @@ namespace Artemis.DeviceProviders.Corsair
             try
             {
                 cueLed = _keyboard.Leds.FirstOrDefault(k => k.Id.ToString() == keyCode.ToString()) ??
-                         _keyboard.Leds.FirstOrDefault(k => k.Id == KeyMap.FormsKeys[keyCode]);
+                         _keyboard.Leds.FirstOrDefault(k => k.Id == CorsairUtilities.FormsKeys[keyCode]);
 
                 Logger.Trace("Keycode: {0} resolved to CUE LED: {1}", keyCode, cueLed);
             }

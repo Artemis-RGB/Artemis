@@ -288,7 +288,7 @@
     <Compile Include="DeviceProviders\Corsair\CorsairMouse.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairHeadset.cs" />
     <Compile Include="DeviceProviders\Corsair\CorsairMousemat.cs" />
-    <Compile Include="DeviceProviders\Corsair\Utilities\KeyMap.cs" />
+    <Compile Include="DeviceProviders\Corsair\Utilities\CorsairUtilities.cs" />
     <Compile Include="DeviceProviders\DeviceProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G810.cs" />
     <Compile Include="DeviceProviders\Logitech\LogitechGeneric.cs" />
@@ -1093,6 +1093,14 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\CUE.NET.1.2.0\build\net45\CUE.NET.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CUE.NET.1.2.0\build\net45\CUE.NET.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+  attrib +r Artemis.pdb
+  del *.pdb
+  attrib -r Artemis.pdb
+  echo Access denied is intended, see post build event
+)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

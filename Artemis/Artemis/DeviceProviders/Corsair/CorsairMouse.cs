@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
+using Artemis.DeviceProviders.Corsair.Utilities;
 using CUE.NET;
 using CUE.NET.Brushes;
 using CUE.NET.Devices.Generic.Enums;
@@ -25,9 +26,12 @@ namespace Artemis.DeviceProviders.Corsair
         {
             try
             {
-                CanUse = CanInitializeSdk();
-                if (CanUse && !CueSDK.IsInitialized)
-                    CueSDK.Initialize(true);
+                lock (CorsairUtilities.SDKLock)
+                {
+                    CanUse = CanInitializeSdk();
+                    if (CanUse && !CueSDK.IsInitialized)
+                        CueSDK.Initialize(true);
+                }
             }
             catch (Exception)
             {

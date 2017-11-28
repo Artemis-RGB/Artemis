@@ -20,15 +20,15 @@ namespace Artemis.ViewModels
     {
         private readonly IKernel _kernel;
         private string _activeIcon;
-        private bool _checked;
+        private bool _checkedForDuplicate;
         private bool _enabled;
         private bool _exiting;
         private string _toggleText;
 
-        public ShellViewModel(IKernel kernel, MainManager mainManager, MetroDialogService metroDialogService,
-            FlyoutSettingsViewModel flyoutSettings)
+        public ShellViewModel(IKernel kernel, MainManager mainManager, MetroDialogService metroDialogService, FlyoutSettingsViewModel flyoutSettings)
         {
             _kernel = kernel;
+            var checkedForUpdate = false;
 
             MainManager = mainManager;
             MetroDialogService = metroDialogService;
@@ -41,7 +41,17 @@ namespace Artemis.ViewModels
                 flyoutSettings
             };
 
-            MainManager.EnabledChanged += (sender, args) => Enabled = args.Enabled;
+            MainManager.EnabledChanged += (sender, args) =>
+            {
+                Enabled = args.Enabled;
+                // Check for updates once if auto update is enabled and the window is shown
+                if (GeneralSettings.AutoUpdate && !checkedForUpdate && CanHideWindow)
+                {
+                    checkedForUpdate = true;
+                    Updater.CheckForUpdate(MetroDialogService);
+                }
+            };
+
 
             // This gets updated automatically but during startup lets quickly preset it
             Enabled = GeneralSettings.Suspended;
@@ -106,7 +116,7 @@ namespace Artemis.ViewModels
             // TODO: This is probably an awful idea. I can't reliably hook into the view being ready to be hidden
             Thread.Sleep(500);
 
-            if (GeneralSettings.ShowOnStartup)
+            if (GeneralSettings.ShowOnStartup || Environment.GetCommandLineArgs().Contains("--show"))
                 ShowWindow();
             else
                 HideWindow();
@@ -129,20 +139,17 @@ namespace Artemis.ViewModels
         public void ShowWindow()
         {
             if (CanShowWindow)
-            {
                 Window?.Dispatcher.Invoke(() =>
                 {
                     Window.Show();
                     Window.Activate();
                 });
-            }
 
             GeneralSettings.ApplyTheme();
 
             // Show certain dialogs if needed
             CheckKeyboardState();
             CheckDuplicateInstances();
-            Updater.CheckForUpdate(MetroDialogService);
 
             // Run this on the UI thread to avoid having to use dispatchers in VMs
             Execute.OnUIThread(ActivateViews);
@@ -237,12 +244,11 @@ namespace Artemis.ViewModels
 
         private void CheckDuplicateInstances()
         {
-            if (_checked)
+            if (_checkedForDuplicate)
                 return;
-            _checked = true;
+            _checkedForDuplicate = true;
 
-            bool aIsNewInstance;
-            Mutex = new Mutex(true, "ArtemisMutex", out aIsNewInstance);
+            Mutex = new Mutex(true, "ArtemisMutex", out var aIsNewInstance);
             if (aIsNewInstance)
                 return;
 
