@@ -147,7 +147,7 @@ namespace Artemis.Utilities
 
         private static object ConvertBytesToMegabytes(long bytes)
         {
-            return Math.Round((bytes / 1024f) / 1024f, 2);
+            return Math.Round(bytes / 1024f / 1024f, 2);
         }
 
         /// <summary>
@@ -187,6 +187,29 @@ namespace Artemis.Utilities
             {
                 // ignored
             }
+        }
+
+        /// <summary>
+        ///     Removes the old Squirrel-based version of Artemis if present
+        /// </summary>
+        public static void CleanSquirrel()
+        {
+            var squirrelPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Artemis";
+            if (!Directory.Exists(squirrelPath))
+                return;
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = squirrelPath + "\\Update.exe",
+                Arguments = "--uninstall",
+                Verb = "runas"
+            };
+
+            var process = new System.Diagnostics.Process {StartInfo = psi};
+            process.Start();
+            process.WaitForExit();
+
+            Directory.Delete(squirrelPath, true);
         }
 
         /// <summary>
