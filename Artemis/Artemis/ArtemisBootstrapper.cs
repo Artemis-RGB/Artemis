@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,6 +25,9 @@ namespace Artemis
 
         public ArtemisBootstrapper()
         {
+            // Make sure the data folder exists
+            GeneralHelpers.SetupDataFolder();
+
             // Start logging before anything else
             Logging.SetupLogging(SettingsProvider.Load<GeneralSettings>().LogLevel);
             // Restore DDLs before interacting with any SDKs
