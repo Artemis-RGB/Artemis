@@ -227,7 +227,7 @@ namespace Artemis.ViewModels.Flyouts
 
         public void ShowLogs()
         {
-            var logPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\logs";
+            var logPath = GeneralHelpers.DataFolder + "logs";
             System.Diagnostics.Process.Start(logPath);
         }
 

@@ -96,8 +96,7 @@ namespace Artemis.ViewModels
         public void OpenLog()
         {
             // Get the logging directory
-            var logDir = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-                                           + @"\Artemis\logs");
+            var logDir = new DirectoryInfo(GeneralHelpers.DataFolder + "logs");
             // Get the newest log file
             var currentLog = logDir.GetFiles().OrderByDescending(f => f.LastWriteTime).FirstOrDefault();
             // Open the file with the user's default program

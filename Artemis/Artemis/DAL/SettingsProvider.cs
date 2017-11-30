@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Artemis.Settings;
+using Artemis.Utilities;
 using Newtonsoft.Json;
 using NLog;
 
@@ -11,10 +12,7 @@ namespace Artemis.DAL
     public static class SettingsProvider
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private static readonly string SettingsFolder =
-            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\settings";
-
+        private static readonly string SettingsFolder = GeneralHelpers.DataFolder + "settings";
         private static readonly List<IArtemisSettings> Settings = new List<IArtemisSettings>();
 
         /// <summary>
@@ -35,9 +33,7 @@ namespace Artemis.DAL
 
             try
             {
-                var loadSettings = (IArtemisSettings) JsonConvert
-                    .DeserializeObject<T>(File.ReadAllText(SettingsFolder + $@"\{typeof(T)}.json"));
-
+                var loadSettings = (IArtemisSettings) JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsFolder + $"{typeof(T)}.json"));
                 if (loadSettings == null)
                 {
                     loadSettings = (IArtemisSettings) new T();
@@ -80,7 +76,7 @@ namespace Artemis.DAL
                 return;
             }
 
-            File.WriteAllText(SettingsFolder + $@"\{artemisSettings.GetType()}.json", json);
+            File.WriteAllText(SettingsFolder + $"{artemisSettings.GetType()}.json", json);
         }
 
         /// <summary>

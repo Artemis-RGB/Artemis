@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -14,8 +13,7 @@ namespace Artemis.Modules.Games.Witcher3
 {
     public sealed class Witcher3ViewModel : ModuleViewModel
     {
-        public Witcher3ViewModel(MainManager mainManager, [Named(nameof(Witcher3Model))] ModuleModel moduleModel,
-            IKernel kernel) : base(mainManager, moduleModel, kernel)
+        public Witcher3ViewModel(MainManager mainManager, [Named(nameof(Witcher3Model))] ModuleModel moduleModel, IKernel kernel) : base(mainManager, moduleModel, kernel)
         {
             DisplayName = "The Witcher 3";
         }
@@ -54,11 +52,9 @@ namespace Artemis.Modules.Games.Witcher3
                 using (var archive = new ZipArchive(stream))
                 {
                     // Look for any conflicting mods
-                    if (Directory.Exists(dialog.SelectedPath + @"\mods"))
+                    if (Directory.Exists(dialog.SelectedPath + "\\mods"))
                     {
-                        var file = Directory.GetFiles(dialog.SelectedPath + @"\mods", "playerWitcher.ws",
-                                SearchOption.AllDirectories)
-                            .FirstOrDefault();
+                        var file = Directory.GetFiles(dialog.SelectedPath + "\\mods", "playerWitcher.ws", SearchOption.AllDirectories).FirstOrDefault();
                         if (file != null)
                             if (!file.Contains("modArtemis"))
                             {
@@ -70,15 +66,9 @@ namespace Artemis.Modules.Games.Witcher3
                                 if (!viewHelp.Value)
                                     return;
 
-                                // Put the mod in the documents folder instead
-                                // Create the directory structure
-                                var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                             @"\Artemis";
-
-                                archive.ExtractToDirectory(folder + @"witcher3-mod", true);
-
-                                System.Diagnostics.Process.Start(
-                                    new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
+                                // Put the mod in the data folder instead, not user friendly but access to documents is unsure
+                                archive.ExtractToDirectory(GeneralHelpers.DataFolder + "witcher3-mod", true);
+                                System.Diagnostics.Process.Start(new ProcessStartInfo("https://github.com/SpoinkyNL/Artemis/wiki/The-Witcher-3"));
                                 return;
                             }
                     }
