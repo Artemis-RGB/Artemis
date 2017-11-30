@@ -12,7 +12,7 @@ namespace Artemis.DAL
     public static class SettingsProvider
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly string SettingsFolder = GeneralHelpers.DataFolder + "settings";
+        private static readonly string SettingsFolder = GeneralHelpers.DataFolder + "settings\\";
         private static readonly List<IArtemisSettings> Settings = new List<IArtemisSettings>();
 
         /// <summary>
