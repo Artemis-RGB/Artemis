@@ -34,6 +34,7 @@ namespace Artemis
             DllManager.RestoreLogitechDll();
             // Check compatibility before trying to boot further
             CompatibilityService.CheckRivaTuner();
+            Updater.CleanSquirrel();
 
             Initialize();
             BindSpecialValues();
