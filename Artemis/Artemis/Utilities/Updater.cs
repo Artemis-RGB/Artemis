@@ -85,7 +85,7 @@ namespace Artemis.Utilities
             dialog.SetIndeterminate();
             // Download the release file, it's the one starting with "artemis-setup"
             var releaseFile = release["assets"].Children().FirstOrDefault(c => c["name"].Value<string>().StartsWith("artemis-setup") &&
-                                                                               c["name"].Value<string>().EndsWith(".exe"));
+                                                                               c["name"].Value<string>().EndsWith(".msi"));
             // If there's no matching release it means whoever published the new version fucked up, can't do much about that
             if (releaseFile == null)
             {

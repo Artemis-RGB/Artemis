@@ -27,7 +27,7 @@ namespace Artemis.DeviceProviders.Corsair
             Logger = logger;
             Name = "Corsair RGB Keyboard";
             CantEnableText = "Couldn't connect to your Corsair keyboard.\n" +
-                             "Please check your cables and/or drivers (could be outdated) and that Corsair Utility Engine is running.\n" +
+                             "Please check your cables and/or drivers (could be outdated, you need the latest CUE 2.x) and that Corsair Utility Engine is running.\n" +
                              "In CUE, make sure \"Enable SDK\" is checked under Global Settings.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
         }

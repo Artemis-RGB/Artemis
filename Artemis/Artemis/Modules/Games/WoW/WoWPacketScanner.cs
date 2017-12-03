@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Artemis.Services;
 using Ninject.Extensions.Logging;
 using PcapDotNet.Core;
 using PcapDotNet.Packets;
@@ -14,11 +15,13 @@ namespace Artemis.Modules.Games.WoW
         private const string MsgStart = "\u0001";
         private const string MsgNext = "\u0002";
         private const string MsgLast = "\u0003";
+        private readonly MetroDialogService _dialogService;
         private PacketCommunicator _communicator;
         private string _dataParts;
 
-        public WowPacketScanner(ILogger logger)
+        public WowPacketScanner(ILogger logger, MetroDialogService dialogService)
         {
+            _dialogService = dialogService;
             Logger = logger;
         }
 
@@ -42,24 +45,45 @@ namespace Artemis.Modules.Games.WoW
             PacketDevice selectedDevice = allDevices.First();
 
             // Open the device
-            _communicator = selectedDevice.Open(65536, PacketDeviceOpenAttributes.Promiscuous, 40);
-            Logger.Debug("Listening on " + selectedDevice.Description + " for WoW packets");
-
-            // Compile the filter
-            using (var filter = _communicator.CreateFilter("tcp"))
+            try
             {
-                // Set the filter
-                _communicator.SetFilter(filter);
+                _communicator = selectedDevice.Open(65536, PacketDeviceOpenAttributes.Promiscuous, 40);
+                Logger.Debug("Listening on " + selectedDevice.Description + " for WoW packets");
+
+                // Compile the filter
+                using (var filter = _communicator.CreateFilter("tcp"))
+                {
+                    // Set the filter
+                    _communicator.SetFilter(filter);
+                }
             }
+            catch (Exception e)
+            {
+                _dialogService.ShowErrorMessageBox("Cannot start the WoW module, maybe an antivirus is interfering.\n\n" +
+                                                   $"Try whitelisting '{AppDomain.CurrentDomain.BaseDirectory}' in your virus " +
+                                                   "scanner and reinstalling Artemis.");
+                Logger.Warn(e, "Cannot start the WoW module, maybe an antivirus is interfering.");
+            }
+
 
             Task.Run(() => ReceivePackets());
         }
 
         public void Stop()
         {
-            _communicator?.Break();
-            _communicator?.Dispose();
-            _communicator = null;
+            try
+            {
+                _communicator?.Break();
+                _communicator?.Dispose();
+                _communicator = null;
+            }
+            catch (Exception e)
+            {
+                _dialogService.ShowErrorMessageBox("Cannot start the WoW module, maybe an antivirus is interfering.\n\n" +
+                                                   $"Try whitelisting '{AppDomain.CurrentDomain.BaseDirectory}' in your virus scanner " +
+                                                   "and reinstalling Artemis.");
+                Logger.Warn(e, "Cannot start the WoW module, maybe an antivirus is interfering.");
+            }
         }
 
         private void ReceivePackets()
