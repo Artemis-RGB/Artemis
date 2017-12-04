@@ -29,8 +29,8 @@ namespace Artemis.Utilities.DataReaders
 
         #region Logitech
 
-        private static readonly string LogitechPath = @"C:\Program Files\Logitech Gaming Software\SDK\LED\x64\";
-        private static readonly string DllPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\dll";
+        private static readonly string LogitechPath = "C:\\Program Files\\Logitech Gaming Software\\SDK\\LED\\x64\\";
+        private static readonly string DllPath = GeneralHelpers.DataFolder + "dll\\";
 
         public static void PlaceLogitechDll()
         {
@@ -40,14 +40,14 @@ namespace Artemis.Utilities.DataReaders
                 // Key doesn't exist yet on systems without LGS installed
                 var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true) ??
                           Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
-                
-                key.SetValue(null, DllPath + @"\LogitechLed.dll");
+
+                key.SetValue(null, DllPath + "LogitechLed.dll");
 
                 // Make sure the fake DLL is in place
                 if (!Directory.Exists(DllPath))
                     Directory.CreateDirectory(DllPath);
-                if (!File.Exists(DllPath + @"\LogitechLed.dll"))
-                    File.WriteAllBytes(DllPath + @"\LogitechLED.dll", Resources.LogitechLED);
+                if (!File.Exists(DllPath + "LogitechLed.dll"))
+                    File.WriteAllBytes(DllPath + "LogitechLED.dll", Resources.LogitechLED);
             }
             catch (Exception e)
             {
@@ -59,7 +59,7 @@ namespace Artemis.Utilities.DataReaders
         {
             // Change the registry key to point to the real DLL
             var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\CLSID\{a6519e67-7632-4375-afdf-caa889744403}\ServerBinary", true);
-            key?.SetValue(null, LogitechPath + @"\LogitechLed.dll");
+            key?.SetValue(null, LogitechPath + "LogitechLed.dll");
         }
 
         #endregion

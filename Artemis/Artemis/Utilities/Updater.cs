@@ -119,7 +119,7 @@ namespace Artemis.Utilities
 
             // Ensure the update folder exists
             var artemisFolder = AppDomain.CurrentDomain.BaseDirectory.Substring(0, AppDomain.CurrentDomain.BaseDirectory.Length - 1);
-            var updateFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Artemis\\updates";
+            var updateFolder = GeneralHelpers.DataFolder + "updates";
             var updatePath = updateFolder + "\\" + releaseFile["name"].Value<string>();
             if (!Directory.Exists(updateFolder))
                 Directory.CreateDirectory(updateFolder);

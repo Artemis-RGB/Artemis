@@ -37,8 +37,8 @@ namespace Artemis.Utilities
             // Step 3. Set target properties 
             debuggerTarget.Layout = @"${logger:shortName=True} - ${uppercase:${level}}: ${message}";
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=tostring}";
-            fileTarget.FileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/log.txt";
-            fileTarget.ArchiveFileName = "${specialfolder:folder=MyDocuments}/Artemis/logs/log-{#}.txt";
+            fileTarget.FileName = "${specialfolder:folder=CommonApplicationData}/Artemis/logs/log.txt";
+            fileTarget.ArchiveFileName = "${specialfolder:folder=CommonApplicationData}/Artemis/logs/log-{#}.txt";
             fileTarget.ArchiveEvery = FileArchivePeriod.Day;
             fileTarget.ArchiveNumbering = ArchiveNumberingMode.Date;
             fileTarget.ArchiveOldFileOnStartup = true;

@@ -40,8 +40,7 @@ namespace Artemis.Modules.Games.Witcher3
         public override void Enable()
         {
             // Ensure the config file is found
-            var witcherSettings = Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
-                                  @"\The Witcher 3\user.settings";
+            var witcherSettings = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "\\The Witcher 3\\user.settings";
             if (File.Exists(witcherSettings))
                 _witcherSettings = witcherSettings;
 

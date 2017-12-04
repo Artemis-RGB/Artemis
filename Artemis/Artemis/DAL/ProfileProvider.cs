@@ -19,10 +19,8 @@ namespace Artemis.DAL
 {
     public static class ProfileProvider
     {
+        public static readonly string ProfileFolder = GeneralHelpers.DataFolder + "profiles\\";
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        public static readonly string ProfileFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\profiles";
-
         private static bool _installedDefaults;
 
         static ProfileProvider()
@@ -32,7 +30,7 @@ namespace Artemis.DAL
             CheckProfiles();
             InstallDefaults();
         }
-        
+
         public static List<string> GetProfileNames(KeyboardProvider keyboard, ModuleModel module)
         {
             if (keyboard == null || module == null)
@@ -69,7 +67,7 @@ namespace Artemis.DAL
                 if (!(prof.GameName?.Length > 1) || !(prof.KeyboardSlug?.Length > 1) || !(prof.Slug?.Length > 1))
                     throw new ArgumentException("Profile is invalid. Name, GameName and KeyboardSlug are required");
 
-                var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}";
+                var path = ProfileFolder + $"{prof.KeyboardSlug}\\{prof.GameName}";
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
 
@@ -87,7 +85,7 @@ namespace Artemis.DAL
                     return;
                 }
 
-                File.WriteAllText(path + $@"\{prof.Slug}.json", json);
+                File.WriteAllText(path + $"\\{prof.Slug}.json", json);
                 Logger.Debug("Saved profile {0}/{1}/{2}", prof.KeyboardSlug, prof.GameName, prof.Name);
             }
         }
@@ -103,7 +101,7 @@ namespace Artemis.DAL
                 return;
 
             // Store the profile path before it is renamed
-            var oldPath = ProfileFolder + $@"\{profile.KeyboardSlug}\{profile.GameName}\{profile.Slug}.json";
+            var oldPath = ProfileFolder + $"{profile.KeyboardSlug}\\{profile.GameName}\\{profile.Slug}.json";
 
             // Update the profile, creating a new file
             profile.Name = name;
@@ -117,7 +115,7 @@ namespace Artemis.DAL
         public static void DeleteProfile(ProfileModel prof)
         {
             // Remove the file
-            var path = ProfileFolder + $@"\{prof.KeyboardSlug}\{prof.GameName}\{prof.Slug}.json";
+            var path = ProfileFolder + $"{prof.KeyboardSlug}\\{prof.GameName}\\{prof.Slug}.json";
             if (File.Exists(path))
                 File.Delete(path);
         }
@@ -145,7 +143,7 @@ namespace Artemis.DAL
         }
 
         /// <summary>
-        ///     Exports the given profile to the provided path in JSON 
+        ///     Exports the given profile to the provided path in JSON
         /// </summary>
         /// <param name="prof">The profile to export</param>
         /// <param name="path">The path to save the profile to</param>
@@ -155,16 +153,15 @@ namespace Artemis.DAL
             File.WriteAllText(path, json);
         }
 
-        public static void InsertGif(string effectName, string profileName, string layerName, Bitmap gifFile,
-            string fileName)
+        public static void InsertGif(string moduleName, string profileName, string layerName, Bitmap gifFile, string fileName)
         {
             var directories = new DirectoryInfo(ProfileFolder).GetDirectories();
             var profiles = new List<ProfileModel>();
             foreach (var directoryInfo in directories)
-                profiles.AddRange(ReadProfiles(directoryInfo.Name + "/effectName").Where(d => d.Name == profileName));
+                profiles.AddRange(ReadProfiles(directoryInfo.Name + "\\" + moduleName).Where(d => d.Name == profileName));
 
             // Extract the GIF file
-            var gifDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Artemis\gifs";
+            var gifDir = GeneralHelpers.DataFolder + "gifs";
             Directory.CreateDirectory(gifDir);
             var gifPath = gifDir + $"\\{fileName}.gif";
             if (!File.Exists(gifPath))
@@ -184,7 +181,7 @@ namespace Artemis.DAL
         public static List<ProfileModel> ReadProfiles(string subDirectory)
         {
             var profiles = new List<ProfileModel>();
-            var directory = ProfileFolder + "/" + subDirectory;
+            var directory = ProfileFolder + subDirectory;
             if (!Directory.Exists(directory))
                 return profiles;
 
@@ -193,7 +190,6 @@ namespace Artemis.DAL
 
             // Parse the JSON files into objects and add them if they are valid
             foreach (var path in profilePaths)
-            {
                 try
                 {
                     var prof = LoadProfileIfValid(path);
@@ -201,21 +197,15 @@ namespace Artemis.DAL
                         continue;
 
                     // Only add unique profiles
-                    if (profiles.Any(p => p.GameName == prof.GameName && p.Name == prof.Name &&
-                                          p.KeyboardSlug == prof.KeyboardSlug))
-                    {
+                    if (profiles.Any(p => p.GameName == prof.GameName && p.Name == prof.Name && p.KeyboardSlug == prof.KeyboardSlug))
                         Logger.Info("Didn't load duplicate profile: {0}", path);
-                    }
                     else
-                    {
                         profiles.Add(prof);
-                    }
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Failed to load profile: {0} - {1}", path, e);
                 }
-            }
             return profiles;
         }
 
@@ -232,15 +222,13 @@ namespace Artemis.DAL
                 _installedDefaults = true;
 
                 // Load the ZIP from resources
-                var stream = Assembly.GetExecutingAssembly()
-                    .GetManifestResourceStream("Artemis.Resources.Keyboards.default-profiles.zip");
+                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Artemis.Resources.Keyboards.default-profiles.zip");
 
                 // Extract it over the old defaults in case one was updated
                 if (stream == null)
                     return;
                 var archive = new ZipArchive(stream);
                 archive.ExtractToDirectory(ProfileFolder, true);
-
 
                 InsertGif("GeneralProfile", "Demo (duplicate to keep changes)", "GIF", Resources.demo_gif, "demo-gif");
             }
