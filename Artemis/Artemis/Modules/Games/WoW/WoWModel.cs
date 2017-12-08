@@ -1,4 +1,6 @@
-﻿using Artemis.DAL;
+﻿using System.IO;
+using System.IO.Compression;
+using Artemis.DAL;
 using Artemis.Managers;
 using Artemis.Modules.Abstract;
 using Artemis.Modules.Games.WoW.Models;
@@ -7,8 +9,6 @@ using Artemis.Services;
 using Artemis.Utilities;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.IO.Compression;
 
 namespace Artemis.Modules.Games.WoW
 {
@@ -42,7 +42,7 @@ namespace Artemis.Modules.Games.WoW
         public override void Enable()
         {
             PlaceAddon();
-            _packetScanner.Start();
+            _packetScanner.Start(((WoWSettings) Settings).NetworkAdapter);
             base.Enable();
         }
 

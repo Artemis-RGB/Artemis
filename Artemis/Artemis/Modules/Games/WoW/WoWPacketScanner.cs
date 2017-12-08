@@ -29,7 +29,7 @@ namespace Artemis.Modules.Games.WoW
 
         public event EventHandler<WowDataReceivedEventArgs> RaiseDataReceived;
 
-        public void Start()
+        public void Start(string networkAdapter)
         {
             // Start scanning WoW packets
             // Retrieve the device list from the local machine
@@ -41,8 +41,14 @@ namespace Artemis.Modules.Games.WoW
                 return;
             }
 
-            // Take the selected adapter
-            PacketDevice selectedDevice = allDevices.First();
+            // Take the configured network adapter
+            // TODO: Create UI with available network adapters dropdown
+            PacketDevice selectedDevice = null;
+            if (!string.IsNullOrEmpty(networkAdapter))
+                selectedDevice = allDevices.FirstOrDefault(d => d.Name.Contains(networkAdapter));
+            // If not found take the first active network adapter
+            if (selectedDevice == null)
+                selectedDevice = allDevices.First(d => d.Addresses.Any());
 
             // Open the device
             try

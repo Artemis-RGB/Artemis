@@ -78,7 +78,8 @@ namespace Artemis.Modules.Games.Overwatch
                 new CharacterColor {Character = OverwatchCharacter.Ana, Color = Color.FromRgb(16, 36, 87)},
                 new CharacterColor {Character = OverwatchCharacter.Sombra, Color = Color.FromRgb(20, 5, 101)},
                 new CharacterColor {Character = OverwatchCharacter.Orisa, Color = Color.FromRgb(1,40,0)},
-                new CharacterColor {Character = OverwatchCharacter.Doomfist, Color = Color.FromRgb(33, 3, 1)}
+                new CharacterColor {Character = OverwatchCharacter.Doomfist, Color = Color.FromRgb(33, 3, 1)},
+                new CharacterColor {Character = OverwatchCharacter.Moira, Color = Color.FromRgb(28, 0, 2)}, // Same as Reaper
             };
         }
 
@@ -213,6 +214,10 @@ namespace Artemis.Modules.Games.Overwatch
             // If a new character was chosen, let the other methods know
             if (characterMatch.Character != gameDataModel.Character)
                 _characterChange = DateTime.Now;
+            
+            // Update the datamodel
+            gameDataModel.Character = characterMatch.Character;
+            gameDataModel.CharacterColor = colors[0, 20].ToHex();
 
             // If no character was found, this method shouldn't continue
             if (characterMatch.Character == OverwatchCharacter.None)
@@ -220,10 +225,6 @@ namespace Artemis.Modules.Games.Overwatch
 
             // If WASD isn't orange (any of them will do), player is in character select
             _stickyStatus.Value = ControlsShown(colors) ? OverwatchStatus.InGame : OverwatchStatus.InCharacterSelect;
-
-            // Update the datamodel
-            gameDataModel.Character = characterMatch.Character;
-            gameDataModel.CharacterColor = colors[0, 20].ToHex();
             return characterMatch;
         }
 

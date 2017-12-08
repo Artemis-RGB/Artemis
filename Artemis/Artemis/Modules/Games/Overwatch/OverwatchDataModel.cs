@@ -51,6 +51,7 @@ namespace Artemis.Modules.Games.Overwatch
         Ana,
         Sombra,
         Orisa,
-        Doomfist
+        Doomfist,
+        Moira
     }
 }
