@@ -9,6 +9,9 @@ Artemis adds highly configurable support for several games to a range of RGB key
 **Download**: https://github.com/SpoinkyNL/Artemis/releases  
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
+### Join us on Discord
+Click the following invite to join the Artemis Discord server: https://discordapp.com/invite/S3MVaC9
+
 ### Current Features
  - Support for Corsair, Logitech, Razer and Cooler Master keyboards.
  - Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
