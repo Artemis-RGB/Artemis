@@ -1,20 +1,30 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Artemis.UI.ViewModels;
+using ReactiveUI;
 
 namespace Artemis.UI.Views
 {
     /// <summary>
     ///     Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainView : UserControl
+    public partial class MainView : UserControl, IViewFor<IMainViewModel>
     {
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(IMainViewModel), typeof(MainView), new PropertyMetadata(null));
+
         public MainView()
         {
-            ViewModel = new MainViewModel();
             InitializeComponent();
-            DataContext = ViewModel;
+            this.WhenAnyValue(x => x.ViewModel).BindTo(this, x => x.DataContext);
         }
 
-        public MainViewModel ViewModel { get; set; }
+        object IViewFor.ViewModel
+        {
+            get => ViewModel;
+            set => ViewModel = (IMainViewModel) value;
+        }
+
+        public IMainViewModel ViewModel { get; set; }
     }
 }
