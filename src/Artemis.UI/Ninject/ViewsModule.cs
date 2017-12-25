@@ -8,6 +8,7 @@ namespace Artemis.UI.Ninject
         public override void Load()
         {
             Bind<IMainViewModel>().To<MainViewModel>();
+            Bind<ISidebarViewModel>().To<SidebarViewModel>().InSingletonScope();
         }
     }
 }
