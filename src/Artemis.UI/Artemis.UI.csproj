@@ -172,7 +172,11 @@
   <ItemGroup>
     <None Include="Resources\bow.svg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Controls\ColorPicker\" />
+    <Folder Include="Controls\GradientPicker\" />
+    <Folder Include="Controls\RgbDevice\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
