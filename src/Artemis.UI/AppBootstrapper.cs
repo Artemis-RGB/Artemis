@@ -23,16 +23,18 @@ namespace Artemis.UI
             this.WhenAnyValue(x => x.Router.CurrentViewModel)
                 .Subscribe(o => o.Subscribe(vm => { ViewTitle = vm != null ? vm.UrlPathSegment : ""; }));
 
+            // Setup the sidebar that lives throughout the app
+            SidebarViewModel = Kernel.Get<ISidebarViewModel>();
             // Navigate to the opening page of the application
             Router.Navigate.Execute(Kernel.Get<IMainViewModel>());
         }
 
         public IKernel Kernel { get; set; }
+        public ISidebarViewModel SidebarViewModel { get; }
+        public RoutingState Router { get; }
 
         [Reactive]
         public string ViewTitle { get; set; }
-
-        public RoutingState Router { get; }
 
         private void SetupNinject(IKernel kernel)
         {
