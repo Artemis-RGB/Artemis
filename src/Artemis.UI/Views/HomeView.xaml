@@ -1,23 +1,27 @@
-﻿<UserControl x:Class="Artemis.UI.Views.MainView"
+﻿<UserControl x:Class="Artemis.UI.Views.HomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewModels="clr-namespace:Artemis.UI.ViewModels"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d" 
-             d:DesignHeight="574.026" 
-             d:DesignWidth="1029.87" 
-             d:DataContext="{d:DesignInstance viewModels:MainViewModel,
-             IsDesignTimeCreatable=True}">
+             mc:Ignorable="d"
+             d:DesignHeight="574.026"
+             d:DesignWidth="1029.87"
+             d:DataContext="{d:DesignInstance vms:HomeViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
                 <!-- throw in some extra colour for our floating action button -->
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/MaterialDesignColor.Green.Named.Primary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -59,42 +63,57 @@
                                 <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <materialDesign:PackIcon Kind="Discord" Width="140" Height="140" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <materialDesign:PackIcon Kind="Discord" Width="140" Height="140"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1">
                                 <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}" Margin="16 16 16 8">Have a chat</TextBlock>
-                                <TextBlock TextWrapping="Wrap" Margin="16 0 16 8" Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                           VerticalAlignment="Top"><Run Text="If you need help, have some feedback or have any other questions feel free to contact us through any of the following channels"/><Run Text=". "/></TextBlock>
+                                <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
+                                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                           VerticalAlignment="Top">
+                                    <Run
+                                        Text="If you need help, have some feedback or have any other questions feel free to contact us through any of the following channels" />
+                                    <Run Text=". " />
+                                </TextBlock>
                             </StackPanel>
-                            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
+                            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0 1 0 0"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
                                 <DockPanel>
                                     <Grid Margin="8">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
                                             <RowDefinition />
                                         </Grid.RowDefinitions>
-                                        <Button Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
-                                            x:Name="GitHubButton" Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
+                                        <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left"
+                                                x:Name="GitHubButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://github.com/SpoinkyNL/Artemis">
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon Kind="GithubCircle" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Right"
-                                            x:Name="TwitterButton" Command="{Binding OpenUrl}" CommandParameter="https://twitter.com/spoinkynl">
+                                        <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Right"
+                                                x:Name="TwitterButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://twitter.com/spoinkynl">
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon Kind="Twitter" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Twitter</TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
-                                            x:Name="DiscordButton" Command="{Binding OpenUrl}" CommandParameter="https://discordapp.com/invite/S3MVaC9">
+                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left"
+                                                x:Name="DiscordButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://discordapp.com/invite/S3MVaC9">
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon Kind="Discord" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
                                             </StackPanel>
                                         </Button>
-                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}" HorizontalAlignment="Right"
-                                            x:Name="MailButton" Command="{Binding OpenUrl}" CommandParameter="mailto:spoinky.nl@gmail.com">
+                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Right"
+                                                x:Name="MailButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="mailto:spoinky.nl@gmail.com">
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon Kind="Email" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
@@ -115,23 +134,36 @@
                                 <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <materialDesign:PackIcon Kind="GithubCircle" Width="160" Height="160" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <materialDesign:PackIcon Kind="GithubCircle" Width="160" Height="160"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1">
                                 <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}" Margin="16 16 16 8">Open Source</TextBlock>
-                                <TextBlock TextWrapping="Wrap" Margin="16 0 16 8" Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                           VerticalAlignment="Top"><Run Text="This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button, tweet or post about it"/><Run Text=". You can also make your own modules!"/></TextBlock>
+                                <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
+                                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                           VerticalAlignment="Top">
+                                    <Run
+                                        Text="This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button, tweet or post about it" />
+                                    <Run Text=". You can also make your own modules!" />
+                                </TextBlock>
                             </StackPanel>
-                            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
+                            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="0 1 0 0"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
                                 <DockPanel>
-                                    <Button Style="{DynamicResource MaterialDesignFlatButton}" 
+                                    <Button Style="{DynamicResource MaterialDesignFlatButton}"
                                             DockPanel.Dock="Right"
-                                            x:Name="DonateButton" Command="{Binding OpenUrl}" CommandParameter="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
+                                            x:Name="DonateButton" Command="{s:Action OpenUrl}"
+                                            CommandParameter="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Gift" />
                                             <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
                                         </StackPanel>
                                     </Button>
-                                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" TextWrapping="Wrap" Margin="16" VerticalAlignment="Center"><Run Text="Feel like you want to make a donation? It would be gratefully received. Click the button to donate via "/><Run Text="Paypal"/><Run Text="."/></TextBlock>
+                                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               TextWrapping="Wrap" Margin="16" VerticalAlignment="Center">
+                                        <Run
+                                            Text="Feel like you want to make a donation? It would be gratefully received. Click the button to donate via " />
+                                        <Run Text="Paypal" /><Run Text="." />
+                                    </TextBlock>
                                 </DockPanel>
                             </Border>
                         </Grid>
@@ -145,15 +177,15 @@
                                  Margin="32" Grid.Row="1">
             --><!-- add the visibility binding https://github.com/ButchersBoy/MaterialDesignInXamlToolkit/issues/723 --><!--
             <StackPanel Visibility="{Binding Path=IsPopupOpen, ElementName=MyPopupBox, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button ToolTip="GitHub" Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
+                <Button ToolTip="GitHub" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
                     <materialDesign:PackIcon Kind="GithubCircle" Height="20" Width="20" />
                 </Button>
-                <Button ToolTip="Twitter" Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
+                <Button ToolTip="Twitter" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
                         Background="{DynamicResource PrimaryHueMidBrush}"
                         Foreground="{DynamicResource PrimaryHueMidForegroundBrush}">
                     <materialDesign:PackIcon Kind="Twitter" />
                 </Button>
-                <Button ToolTip="Chat" Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
+                <Button ToolTip="Chat" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
                     --><!-- mix up the colours by brinking in a named palette (see merged dictionaries at top) --><!--
                     <Button.Background>
                         <SolidColorBrush Color="{StaticResource GreenPrimary500}" />
@@ -163,14 +195,14 @@
                     </Button.Foreground>
                     <materialDesign:PackIcon Kind="Message" />
                 </Button>
-                <Button ToolTip="Email" Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
+                <Button ToolTip="Email" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
                         Background="{DynamicResource SecondaryAccentBrush}"
                         Foreground="{DynamicResource SecondaryAccentForegroundBrush}"
                         >
                     <materialDesign:PackIcon Kind="Email" />
                 </Button>
                 <Button ToolTip="Feel like you want to make a donation?  It would be gratefully received.  Click the button to donate via Pledgie." 
-                    Command="{Binding OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
+                    Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
                     <Button.Background>
                         <SolidColorBrush Color="{StaticResource GreenPrimary200}" />
                     </Button.Background>

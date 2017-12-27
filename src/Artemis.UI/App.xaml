@@ -1,12 +1,18 @@
 ﻿<Application x:Class="Artemis.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow.xaml">
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:local="clr-namespace:Artemis.UI">
 
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
 
+            <ResourceDictionary.MergedDictionaries>
+                <s:ApplicationLoader>
+                    <s:ApplicationLoader.Bootstrapper>
+                        <local:Bootstrapper />
+                    </s:ApplicationLoader.Bootstrapper>
+                </s:ApplicationLoader>
                 <!-- MahApps -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />

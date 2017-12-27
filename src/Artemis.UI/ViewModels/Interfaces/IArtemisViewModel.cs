@@ -1,10 +1,7 @@
-﻿using ReactiveUI;
-
-namespace Artemis.UI.ViewModels.Interfaces
+﻿namespace Artemis.UI.ViewModels.Interfaces
 {
-    public interface IArtemisViewModel : IRoutableViewModel
+    public interface IArtemisViewModel
     {
         string Title { get; }
-        string Icon { get; }
     }
 }
