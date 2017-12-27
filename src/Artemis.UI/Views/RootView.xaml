@@ -1,18 +1,19 @@
-﻿<metro:MetroWindow x:Class="Artemis.UI.MainWindow"
+﻿<metro:MetroWindow x:Class="Artemis.UI.Views.RootView"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                   xmlns:views="clr-namespace:Artemis.UI.Views"
-                   xmlns:reactiveUi="http://reactiveui.net"
+                   xmlns:s="https://github.com/canton7/Stylet"
+                   xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
                    mc:Ignorable="d"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
                    Title="Artemis"
                    d:DesignHeight="639.411"
-                   d:DesignWidth="1113.251">
+                   d:DesignWidth="1113.251"
+                   d:DataContext="{d:DesignInstance vms:RootViewModel}">
     <metro:MetroWindow.Resources>
         <DrawingImage x:Key="BowIcon">
             <DrawingImage.Drawing>
@@ -71,33 +72,42 @@
                 <DockPanel MinWidth="212">
                     <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
                                   DockPanel.Dock="Top"
-                                  HorizontalAlignment="Right" Margin="16"
+                                  HorizontalAlignment="Right"
+                                  Margin="16"
                                   IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
-                    <views:SidebarView DataContext="{Binding SidebarViewModel}"></views:SidebarView>
+                    <ListBox Margin="0 16 0 16" SelectedIndex="0">
+                        
+                    </ListBox>
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
-                <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                                          Mode="PrimaryMid" DockPanel.Dock="Top">
+                <materialDesign:ColorZone Padding="16"
+                                          materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                          Mode="PrimaryMid"
+                                          DockPanel.Dock="Top">
                     <DockPanel>
-                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
+                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
+                                      IsChecked="False"
                                       x:Name="MenuToggleButton" />
-                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges"
+                        <materialDesign:PopupBox DockPanel.Dock="Right"
+                                                 PlacementMode="BottomAndAlignRightEdges"
                                                  StaysOpen="False">
                             <StackPanel>
                                 <Button Content="Hello World" />
                                 <Button Content="Nice Popup" />
-                                <Button Content="Can't Touch This" IsEnabled="False" />
+                                <Button Content="Can't Touch This"
+                                        IsEnabled="False" />
                                 <Separator />
                                 <Button Content="Goodbye" />
                             </StackPanel>
                         </materialDesign:PopupBox>
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="{Binding ViewTitle}" />
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="22"
+                                   Text="{Binding ActiveItem.Title}" />
                     </DockPanel>
                 </materialDesign:ColorZone>
-                <reactiveUi:RoutedViewHost Router="{Binding Router}"
-                                           HorizontalContentAlignment="Stretch"
-                                           VerticalContentAlignment="Stretch" />
+                <ContentControl s:View.Model="{Binding ActiveItem}" />
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
