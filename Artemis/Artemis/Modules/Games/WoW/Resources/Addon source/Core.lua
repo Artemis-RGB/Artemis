@@ -1,9 +1,6 @@
 Artemis = LibStub("AceAddon-3.0"):NewAddon("Artemis", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceComm-3.0")
 json = LibStub("json")
 
--- Hook onto logout because it seems PLAYER_LOGOUT fires on reload as well
-local _Logout = Logout
-
 local debugging = false
 local lastLine = {}
 local channeling = {}
@@ -22,6 +19,7 @@ function Artemis:OnEnable()
     Artemis:RegisterEvent("PLAYER_ENTERING_WORLD")
     Artemis:RegisterEvent("PLAYER_LEVEL_UP")
     Artemis:RegisterEvent("PLAYER_FLAGS_CHANGED")
+    Artemis:RegisterEvent("PLAYER_LOGOUT")
     Artemis:RegisterEvent("ACHIEVEMENT_EARNED")
     Artemis:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
     Artemis:RegisterEvent("UNIT_TARGET")
@@ -174,11 +172,6 @@ function Artemis:PLAYER_ENTERING_WORLD(...)
     Artemis:TransmitUnitState("player", true);
 end
 
-function Logout()
-    Artemis:Transmit("gameState", "loggedOut")
-    return _Logout()
-end
-
 function Artemis:PLAYER_LEVEL_UP(...)
     Artemis:Transmit("player", Artemis:GetPlayerDetails())
 end
@@ -197,6 +190,10 @@ function Artemis:PLAYER_FLAGS_CHANGED(...)
         end
         Artemis:Transmit("gameState", "ingame")
     end
+end
+
+function Artemis:PLAYER_LOGOUT(...)
+    Artemis:Transmit("gameState", "loggedOut")
 end
 
 function Artemis:ACHIEVEMENT_EARNED(...)
