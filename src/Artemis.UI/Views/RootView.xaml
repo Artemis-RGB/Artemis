@@ -13,7 +13,8 @@
                    Title="Artemis"
                    d:DesignHeight="639.411"
                    d:DesignWidth="1113.251"
-                   d:DataContext="{d:DesignInstance vms:RootViewModel}">
+                   d:DataContext="{d:DesignInstance vms:RootViewModel}"
+                   Icon="/Artemis.UI;component/Resources/logo-512.png">
     <metro:MetroWindow.Resources>
         <DrawingImage x:Key="BowIcon">
             <DrawingImage.Drawing>
@@ -75,9 +76,82 @@
                                   HorizontalAlignment="Right"
                                   Margin="16"
                                   IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
-                    <ListBox Margin="0 16 0 16" SelectedIndex="0">
-                        
+
+                    <!-- Built-in pages -->
+                    <ListBox Margin="0 16 0 16"
+                             SelectedIndex="0"
+                             DockPanel.Dock="Top">
+                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToHome}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Home"
+                                                         Margin="0,0,8,0" />
+                                <TextBlock>Home</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToNews}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Newspaper"
+                                                         Margin="0,0,8,0" />
+                                <TextBlock>News</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToWorkshop}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="TestTube"
+                                                         Margin="0,0,8,0" />
+                                <TextBlock>Workshop</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToSettings}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Settings"
+                                                         Margin="0,0,8,0" />
+                                <TextBlock>Settings</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
                     </ListBox>
+
+                    <!-- Modules -->
+                    <TextBlock Margin="8,8,0,8"
+                               DockPanel.Dock="Top">
+                        Modules
+                    </TextBlock>
+                    <Border BorderThickness="0 1 0 0"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}">
+                        <ScrollViewer DockPanel.Dock="Top">
+                            <ListBox Margin="0 0 0 16"
+                                     SelectedIndex="0">
+                                <ListBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Home"
+                                                                 Margin="0,0,8,0" />
+                                        <TextBlock>Home</TextBlock>
+                                    </StackPanel>
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Newspaper"
+                                                                 Margin="0,0,8,0" />
+                                        <TextBlock>News</TextBlock>
+                                    </StackPanel>
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="TestTube"
+                                                                 Margin="0,0,8,0" />
+                                        <TextBlock>Workshop</TextBlock>
+                                    </StackPanel>
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Settings"
+                                                                 Margin="0,0,8,0" />
+                                        <TextBlock>Settings</TextBlock>
+                                    </StackPanel>
+                                </ListBoxItem>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Border>
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
@@ -87,7 +161,7 @@
                                           DockPanel.Dock="Top">
                     <DockPanel>
                         <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                                      IsChecked="False"
+                                      IsChecked="{Binding MenuOpen}"
                                       x:Name="MenuToggleButton" />
                         <materialDesign:PopupBox DockPanel.Dock="Right"
                                                  PlacementMode="BottomAndAlignRightEdges"
