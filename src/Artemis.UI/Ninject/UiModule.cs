@@ -4,14 +4,18 @@ using Ninject.Modules;
 
 namespace Artemis.UI.Ninject
 {
+    // ReSharper disable once InconsistentNaming
     public class UIModule : NinjectModule
     {
         public override void Load()
         {
-            // Bind all viewmodels
+            // Bind all built-in viewmodels
             Kernel.Bind(x =>
             {
-                x.FromThisAssembly().SelectAllClasses().InheritedFrom<IArtemisViewModel>().BindAllInterfaces();
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisViewModel>()
+                    .BindAllInterfaces();
             });
         }
     }

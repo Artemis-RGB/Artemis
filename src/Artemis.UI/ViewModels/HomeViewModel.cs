@@ -5,7 +5,7 @@ using Stylet;
 
 namespace Artemis.UI.ViewModels
 {
-    public class HomeViewModel : Screen, IMainViewModel
+    public class HomeViewModel : Screen, IHomeViewModel
     {
         public string Title => "Home";
 
@@ -15,9 +15,5 @@ namespace Artemis.UI.ViewModels
             if (Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
                 Process.Start(url);
         }
-    }
-
-    public interface IMainViewModel : IArtemisViewModel
-    {
     }
 }
