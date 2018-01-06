@@ -147,6 +147,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Project>{9b811f9b-86b9-4771-87af-72bae7078a36}</Project>
+      <Name>Artemis.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
       <Project>{e489e5e3-1a65-4af5-a1ea-f9805fd19a65}</Project>
       <Name>Artemis.Storage</Name>

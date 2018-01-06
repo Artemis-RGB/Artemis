@@ -9,17 +9,17 @@ namespace Artemis.UI.Stylet
     public class NinjectBootstrapper<TRootViewModel> : BootstrapperBase where TRootViewModel : class
     {
         private object _rootViewModel;
-        private IKernel kernel;
+        protected IKernel Kernel;
 
-        protected virtual object RootViewModel =>
-            _rootViewModel ?? (_rootViewModel = GetInstance(typeof(TRootViewModel)));
+        protected virtual object RootViewModel => _rootViewModel ?? (_rootViewModel = GetInstance(typeof(TRootViewModel)));
 
         protected override void ConfigureBootstrapper()
         {
-            kernel = new StandardKernel();
-            DefaultConfigureIoC(kernel);
-            ConfigureIoC(kernel);
+            Kernel = new StandardKernel();
+            DefaultConfigureIoC(Kernel);
+            ConfigureIoC(Kernel);
         }
+  
 
         /// <summary>
         ///     Carries out default configuration of the IoC container. Override if you don't want to do this
@@ -49,7 +49,7 @@ namespace Artemis.UI.Stylet
 
         public override object GetInstance(Type type)
         {
-            return kernel.Get(type);
+            return Kernel.Get(type);
         }
 
         protected override void Launch()
@@ -61,8 +61,8 @@ namespace Artemis.UI.Stylet
         {
             base.Dispose();
             ScreenExtensions.TryDispose(_rootViewModel);
-            if (kernel != null)
-                kernel.Dispose();
+            if (Kernel != null)
+                Kernel.Dispose();
         }
     }
 }

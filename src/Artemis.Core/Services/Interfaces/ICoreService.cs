@@ -1,6 +1,9 @@
-﻿namespace Artemis.Core.Services.Interfaces
+﻿using System;
+
+namespace Artemis.Core.Services.Interfaces
 {
-    public interface ICoreService
+    public interface ICoreService: IArtemisService, IDisposable
     {
+        bool IsInitialized { get; set; }
     }
 }

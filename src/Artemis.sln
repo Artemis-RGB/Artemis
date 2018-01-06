@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Storage", "Artemis.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Core", "Artemis.Core\Artemis.Core.csproj", "{9B811F9B-86B9-4771-87AF-72BAE7078A36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Modules", "Artemis.Modules\Artemis.Modules.csproj", "{6B62C017-8ED8-4076-BDF9-555918266D43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B62C017-8ED8-4076-BDF9-555918266D43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B62C017-8ED8-4076-BDF9-555918266D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B62C017-8ED8-4076-BDF9-555918266D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B62C017-8ED8-4076-BDF9-555918266D43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
