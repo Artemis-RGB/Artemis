@@ -6,27 +6,27 @@ using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models;
-using Artemis.Core.Modules.Interfaces;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Plugins.Interfaces;
 using CSScriptLibrary;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Services
 {
-    public class ModuleService : IModuleService
+    public class PluginService : IPluginService
     {
-        private readonly List<IModule> _modules;
+        private readonly List<IPlugin> _modules;
 
-        public ModuleService()
+        public PluginService()
         {
-            _modules = new List<IModule>();
+            _modules = new List<IPlugin>();
 
             if (!Directory.Exists(Constants.DataFolder + "modules"))
                 Directory.CreateDirectory(Constants.DataFolder + "modules");
         }
 
         public bool LoadingModules { get; private set; }
-        public ReadOnlyCollection<IModule> Modules => _modules.AsReadOnly();
+        public ReadOnlyCollection<IPlugin> Modules => _modules.AsReadOnly();
 
         /// <summary>
         ///     Loads all installed modules. If modules already loaded this will reload them all
@@ -50,7 +50,7 @@ namespace Artemis.Core.Services
             OnFinishedLoadedModules();
         }
 
-        public async Task ReloadModule(IModule module)
+        public async Task ReloadModule(IPlugin plugin)
         {
         }
 
@@ -58,7 +58,7 @@ namespace Artemis.Core.Services
         {
         }
 
-        private async Task<IModule> LoadModuleFromFolder(string folder)
+        private async Task<IPlugin> LoadModuleFromFolder(string folder)
         {
             if (!folder.EndsWith("\\"))
                 folder += "\\";
@@ -67,7 +67,7 @@ namespace Artemis.Core.Services
 
             var moduleInfo = JsonConvert.DeserializeObject<ModuleInfo>(File.ReadAllText(folder + "module.json"));
             // Load the main module which will contain a class implementing IModule
-            var module = await CSScript.Evaluator.LoadFileAsync<IModule>(folder + moduleInfo.MainFile);
+            var module = await CSScript.Evaluator.LoadFileAsync<IPlugin>(folder + moduleInfo.MainFile);
             return module;
         }
 

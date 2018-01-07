@@ -1,9 +1,9 @@
-﻿using Artemis.Core.Modules.Interfaces;
+﻿using Artemis.Core.Plugins.Interfaces;
 
 namespace Artemis.Core.Events
 {
     public class ModuleEventArgs : System.EventArgs
     {
-        public IModule Module { get; set; }
+        public IPlugin Plugin { get; set; }
     }
 }

@@ -5,24 +5,24 @@ namespace Artemis.Core.Services
 {
     public class CoreService : ICoreService
     {
-        private readonly IModuleService _moduleService;
+        private readonly IPluginService _pluginService;
 
-        public CoreService(IModuleService moduleService)
+        public CoreService(IPluginService pluginService)
         {
-            _moduleService = moduleService;
+            _pluginService = pluginService;
             Task.Run(Initialize);
         }
 
         public void Dispose()
         {
-            _moduleService.Dispose();
+            _pluginService.Dispose();
         }
 
         public bool IsInitialized { get; set; }
 
         private async Task Initialize()
         {
-            await _moduleService.LoadModules();
+            await _pluginService.LoadModules();
 
             IsInitialized = true;
         }
