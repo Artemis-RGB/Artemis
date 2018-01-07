@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
-using Artemis.Core.Modules.Interfaces;
+using Artemis.Plugins.Interfaces;
 
 namespace Artemis.Core.Services.Interfaces
 {
-    public interface IModuleService : IArtemisService, IDisposable
+    public interface IPluginService : IArtemisService, IDisposable
     {
         Task LoadModules();
-        Task ReloadModule(IModule module);
+        Task ReloadModule(IPlugin plugin);
 
         event EventHandler<ModuleEventArgs> ModuleLoaded;
         event EventHandler<ModuleEventArgs> ModuleReloaded;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Modules.Interfaces;
+using Artemis.Core.Plugins.Interfaces;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Models
@@ -12,6 +12,6 @@ namespace Artemis.Core.Models
         public IReadOnlyList<string> SubFiles { get; set; }
 
         [JsonIgnore]
-        public IModule Module { get; set; }
+        public IPlugin Plugin { get; set; }
     }
 }
