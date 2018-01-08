@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Interfaces;
+using Artemis.Plugins.Models;
 using CSScriptLibrary;
 using Newtonsoft.Json;
 using Ninject;
@@ -24,7 +24,7 @@ namespace Artemis.Core.Services
         {
             _kernel = kernel;
             _plugins = new List<PluginInfo>();
-
+            
             if (!Directory.Exists(Constants.DataFolder + "plugins"))
                 Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
@@ -66,9 +66,11 @@ namespace Artemis.Core.Services
                 throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this plugin.");
            
             // Instantiate the ViewModel with Ninject
-            return (IPluginViewModel) _kernel.Get(vmType);
+            var vm = (IPluginViewModel) _kernel.Get(vmType);
+            vm.PluginInfo = pluginInfo;
+            return vm;
         }
-
+        
         public void Dispose()
         {
         }

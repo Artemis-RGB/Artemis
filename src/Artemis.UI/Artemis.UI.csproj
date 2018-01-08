@@ -93,6 +93,8 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Ninject\UIModule.cs" />
+    <Compile Include="Services\Interfaces\IArtemisUIService.cs" />
+    <Compile Include="Stylet\ArtemisViewManager.cs" />
     <Compile Include="Stylet\NinjectBootstrapper.cs" />
     <Compile Include="ViewModels\Interfaces\IHomeViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IArtemisViewModel.cs" />

@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
-using Artemis.Core.Models;
 using Artemis.Plugins.Interfaces;
+using Artemis.Plugins.Models;
 
 namespace Artemis.Core.Services.Interfaces
 {
