@@ -5,6 +5,15 @@ namespace Artemis.Core.Events
 {
     public class PluginEventArgs : EventArgs
     {
-        public IPlugin Plugin { get; set; }
+        public PluginEventArgs()
+        {
+        }
+
+        public PluginEventArgs(IPlugin plugin)
+        {
+            Plugin = plugin;
+        }
+
+        public IPlugin Plugin { get; }
     }
 }

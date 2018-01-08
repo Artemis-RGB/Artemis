@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Markup;
-using Artemis.Core.Exceptions;
 using Artemis.Plugins.Interfaces;
 using Stylet;
 
@@ -12,7 +11,7 @@ namespace Artemis.UI.Stylet
         public ArtemisViewManager(ViewManagerConfig config) : base(config)
         {
         }
-        
+
         public override UIElement CreateViewForModel(object model)
         {
             if (model is IPluginViewModel)
@@ -32,13 +31,6 @@ namespace Artemis.UI.Stylet
             // Compile the view if found, must be done on UI thread sadly
             object view = null;
             Execute.OnUIThread(() => view = XamlReader.Parse(File.ReadAllText(viewPath)));
-            var viewType = view.GetType();
-            // Make sure it's a valid UIElement
-            if (viewType.IsAbstract || !typeof(UIElement).IsAssignableFrom(viewType))
-            {
-                var e = new ArtemisPluginException(pluginInfo, $"Found type for view: {viewType.Name}, but it wasn't a class derived from UIElement");
-                throw e;
-            }
 
             return (UIElement) view;
         }
