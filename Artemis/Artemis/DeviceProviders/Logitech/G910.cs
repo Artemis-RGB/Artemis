@@ -54,22 +54,26 @@ namespace Artemis.DeviceProviders.Logitech
         /// <param name="bitmap"></param>
         public override void DrawBitmap(Bitmap bitmap)
         {
-            using (var croppedBitmap = new Bitmap(21 * 4, 6 * 4))
+            // Base all actions on a downscaled bitmap since the bitmap is received upscaled
+            using (var resized = OrionUtilities.ResizeImage(bitmap, Width, Height))
             {
                 // Deal with non-standard DPI
-                croppedBitmap.SetResolution(96, 96);
-                // Don't forget that the image is upscaled 4 times
-                using (var g = Graphics.FromImage(croppedBitmap))
+                resized.SetResolution(96, 96);
+
+                // LogiLedSetLightingFromBitmap doesn't include the special keys so cut the supported keys out of
+                // the received bitmap and send them to the SDK as a whole
+                using (var croppedBitmap = new Bitmap(Width - 1, Height - 1))
                 {
-                    g.DrawImage(bitmap, new Rectangle(0, 0, 84, 24), new Rectangle(4, 4, 84, 24), GraphicsUnit.Pixel);
+                    croppedBitmap.SetResolution(96, 96);
+                    using (var g = Graphics.FromImage(croppedBitmap))
+                    {
+                        g.DrawImage(resized, new Rectangle(0, 0, Width-1, Height-1), new Rectangle(1, 1, Width - 1, Height - 1), GraphicsUnit.Pixel);
+                    }
+
+                    LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
+                    LogitechGSDK.LogiLedSetLightingFromBitmap(OrionUtilities.BitmapToByteArray(croppedBitmap, G910Keymappings));
                 }
-
-                LogitechGSDK.LogiLedSetTargetDevice(LogitechGSDK.LOGI_DEVICETYPE_PERKEY_RGB);
-                LogitechGSDK.LogiLedSetLightingFromBitmap(OrionUtilities.BitmapToByteArray(bitmap, G910Keymappings));
-            }
-
-            using (var resized = OrionUtilities.ResizeImage(bitmap, 22, 7))
-            {
+                
                 // Color the extra keys on the left side of the keyboard
                 SetLogitechColorFromCoordinates(resized, KeyboardNames.G_LOGO, 0, 1);
                 SetLogitechColorFromCoordinates(resized, KeyboardNames.G_1, 0, 2);

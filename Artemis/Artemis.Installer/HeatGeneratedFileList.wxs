@@ -2,6 +2,9 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <Fragment>
         <DirectoryRef Id="INSTALLFOLDER">
+            <Component Id="cmp378A752E2F224E90D883D53E28337CAE" Guid="*">
+                <File Id="fil7C034637F4B3C3E93ACB9990B3AE25CE" KeyPath="yes" Source="$(var.HarvestPath)\artemis-1.11.1.0.zip" />
+            </Component>
             <Component Id="cmp9B04FAC2BF56F13B71858D3F9539F8FE" Guid="*">
                 <File Id="filD726820CC88B0C2D4EF316CD550D5B65" KeyPath="yes" Source="$(var.HarvestPath)\Artemis.exe" />
             </Component>
@@ -210,6 +213,7 @@
     </Fragment>
     <Fragment>
         <ComponentGroup Id="HeatGenerated">
+            <ComponentRef Id="cmp378A752E2F224E90D883D53E28337CAE" />
             <ComponentRef Id="cmp9B04FAC2BF56F13B71858D3F9539F8FE" />
             <ComponentRef Id="cmp84F8E8E529BEF2230424503D7A54F566" />
             <ComponentRef Id="cmp98E421B03991EBFA9D74DA1DE5FDCEB4" />
