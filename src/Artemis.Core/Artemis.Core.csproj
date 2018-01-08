@@ -185,11 +185,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Events\DeviceEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Exceptions\ArtemisPluginException.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CoreService.cs" />
+    <Compile Include="Services\DeviceService.cs" />
     <Compile Include="Services\Interfaces\IArtemisService.cs" />
     <Compile Include="Services\Interfaces\ICoreService.cs" />
     <Compile Include="Services\Interfaces\IPluginService.cs" />

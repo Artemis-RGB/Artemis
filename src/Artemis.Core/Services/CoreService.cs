@@ -6,10 +6,12 @@ namespace Artemis.Core.Services
     public class CoreService : ICoreService
     {
         private readonly IPluginService _pluginService;
+        private readonly IDeviceService _deviceService;
 
-        public CoreService(IPluginService pluginService)
+        public CoreService(IPluginService pluginService, IDeviceService deviceService)
         {
             _pluginService = pluginService;
+            _deviceService = deviceService;
             Task.Run(Initialize);
         }
 
@@ -23,7 +25,7 @@ namespace Artemis.Core.Services
         private async Task Initialize()
         {
             await _pluginService.LoadPlugins();
-
+            await _deviceService.LoadDevices();
             IsInitialized = true;
         }
     }
