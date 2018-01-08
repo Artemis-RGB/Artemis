@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -10,109 +11,127 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Interfaces;
 using CSScriptLibrary;
 using Newtonsoft.Json;
+using Ninject;
 
 namespace Artemis.Core.Services
 {
     public class PluginService : IPluginService
     {
-        private readonly List<IPlugin> _modules;
+        private readonly IKernel _kernel;
+        private readonly List<PluginInfo> _plugins;
 
-        public PluginService()
+        public PluginService(IKernel kernel)
         {
-            _modules = new List<IPlugin>();
+            _kernel = kernel;
+            _plugins = new List<PluginInfo>();
 
-            if (!Directory.Exists(Constants.DataFolder + "modules"))
-                Directory.CreateDirectory(Constants.DataFolder + "modules");
+            if (!Directory.Exists(Constants.DataFolder + "plugins"))
+                Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
 
-        public bool LoadingModules { get; private set; }
-        public ReadOnlyCollection<IPlugin> Modules => _modules.AsReadOnly();
+        public bool LoadingPlugins { get; private set; }
+        public ReadOnlyCollection<PluginInfo> Plugins => _plugins.AsReadOnly();
 
         /// <summary>
-        ///     Loads all installed modules. If modules already loaded this will reload them all
+        ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
         /// <returns></returns>
-        public async Task LoadModules()
+        public async Task LoadPlugins()
         {
-            if (LoadingModules)
-                throw new ArtemisCoreException("Cannot load modules while a previous load hasn't been completed yet.");
+            if (LoadingPlugins)
+                throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 
-            OnStartedLoadingModules();
+            OnStartedLoadingPlugins();
 
-            // Empty the list of modules
-            _modules.Clear();
-            // Iterate all module folders
-            foreach (var directory in Directory.GetDirectories(Constants.DataFolder + "modules"))
-                // Load each module  
-                _modules.Add(await LoadModuleFromFolder(directory));
+            // Empty the list of plugins
+            _plugins.Clear();
 
-
-            OnFinishedLoadedModules();
+            // Iterate all plugin folders and load each plugin
+            foreach (var directory in Directory.GetDirectories(Constants.DataFolder + "plugins"))
+                _plugins.Add(await LoadPluginFromFolder(directory));
+            
+            OnFinishedLoadedPlugins();
         }
 
-        public async Task ReloadModule(IPlugin plugin)
+        public async Task ReloadPlugin(PluginInfo pluginInfo)
         {
+        }
+
+        public async Task<IPluginViewModel> GetPluginViewModel(PluginInfo pluginInfo)
+        {
+            // Compile the ViewModel and get the type
+            var compile = await Task.Run(() => CSScript.LoadFile(pluginInfo.Folder + pluginInfo.ViewModel));
+            var vmType = compile.ExportedTypes.FirstOrDefault(t => typeof(IPluginViewModel).IsAssignableFrom(t));
+            if (vmType == null)
+                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this plugin.");
+           
+            // Instantiate the ViewModel with Ninject
+            return (IPluginViewModel) _kernel.Get(vmType);
         }
 
         public void Dispose()
         {
         }
 
-        private async Task<IPlugin> LoadModuleFromFolder(string folder)
+        private async Task<PluginInfo> LoadPluginFromFolder(string folder)
         {
             if (!folder.EndsWith("\\"))
                 folder += "\\";
-            if (!File.Exists(folder + "module.json"))
-                throw new ArtemisModuleException(null, "Failed to load module, no module.json found in " + folder);
+            if (!File.Exists(folder + "plugin.json"))
+                throw new ArtemisPluginException(null, "Failed to load plugin, no plugin.json found in " + folder);
 
-            var moduleInfo = JsonConvert.DeserializeObject<ModuleInfo>(File.ReadAllText(folder + "module.json"));
-            // Load the main module which will contain a class implementing IModule
-            var module = await CSScript.Evaluator.LoadFileAsync<IPlugin>(folder + moduleInfo.MainFile);
-            return module;
+            var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(folder + "plugin.json"));
+            pluginInfo.Folder = folder;
+
+            // Load the main plugin which will contain a class implementing IPlugin
+            var plugin = await CSScript.Evaluator.LoadFileAsync<IPlugin>(folder + pluginInfo.Main);
+            pluginInfo.Plugin = plugin;
+
+            return pluginInfo;
         }
 
         #region Events
 
         /// <summary>
-        ///     Occurs when a single module has loaded
+        ///     Occurs when a single plugin has loaded
         /// </summary>
-        public event EventHandler<ModuleEventArgs> ModuleLoaded;
+        public event EventHandler<PluginEventArgs> PluginLoaded;
 
         /// <summary>
-        ///     Occurs when a single module has reloaded
+        ///     Occurs when a single plugin has reloaded
         /// </summary>
-        public event EventHandler<ModuleEventArgs> ModuleReloaded;
+        public event EventHandler<PluginEventArgs> PluginReloaded;
 
         /// <summary>
-        ///     Occurs when loading all modules has started
+        ///     Occurs when loading all plugins has started
         /// </summary>
-        public event EventHandler StartedLoadingModules;
+        public event EventHandler StartedLoadingPlugins;
 
         /// <summary>
-        ///     Occurs when loading all modules has finished
+        ///     Occurs when loading all plugins has finished
         /// </summary>
-        public event EventHandler FinishedLoadedModules;
+        public event EventHandler FinishedLoadedPlugins;
 
-        private void OnModuleLoaded(ModuleEventArgs e)
+        private void OnPluginLoaded(PluginEventArgs e)
         {
-            ModuleLoaded?.Invoke(this, e);
+            PluginLoaded?.Invoke(this, e);
         }
 
-        private void OnModuleReloaded(ModuleEventArgs e)
+        private void OnPluginReloaded(PluginEventArgs e)
         {
-            ModuleReloaded?.Invoke(this, e);
+            PluginReloaded?.Invoke(this, e);
         }
 
-        private void OnStartedLoadingModules()
+        private void OnStartedLoadingPlugins()
         {
-            LoadingModules = true;
-            StartedLoadingModules?.Invoke(this, EventArgs.Empty);
+            LoadingPlugins = true;
+            StartedLoadingPlugins?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnFinishedLoadedModules()
+        private void OnFinishedLoadedPlugins()
         {
-            LoadingModules = false;
-            FinishedLoadedModules?.Invoke(this, EventArgs.Empty);
+            LoadingPlugins = false;
+            FinishedLoadedPlugins?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
