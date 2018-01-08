@@ -1,4 +1,5 @@
-﻿using Artemis.UI.ViewModels.Interfaces;
+﻿using Artemis.UI.Services.Interfaces;
+using Artemis.UI.ViewModels.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -16,6 +17,16 @@ namespace Artemis.UI.Ninject
                     .SelectAllClasses()
                     .InheritedFrom<IArtemisViewModel>()
                     .BindAllInterfaces();
+            });
+
+            // Bind all UI services as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisUIService>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
             });
         }
     }

@@ -104,6 +104,9 @@
     <Reference Include="Sanford.Multimedia.Midi, Version=6.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sanford.Multimedia.Midi.6.4.2\lib\net20\Sanford.Multimedia.Midi.dll</HintPath>
     </Reference>
+    <Reference Include="Stylet, Version=1.1.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stylet.1.1.21\lib\net45\Stylet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -184,12 +187,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Exceptions\ArtemisPluginException.cs" />
-    <Compile Include="Models\PluginInfo.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripting.evaluator.cs" />
-    <Compile Include="Scripting.Extensions.cs" />
-    <Compile Include="Scripting.native.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Services\Interfaces\IArtemisService.cs" />
     <Compile Include="Services\Interfaces\ICoreService.cs" />

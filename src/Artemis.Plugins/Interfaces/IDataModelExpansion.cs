@@ -2,9 +2,9 @@
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Allows you to add support for new games/applications
+    ///     Allows you to expand the application-wide datamodel
     /// </summary>
-    public interface IModule : IPlugin
+    public interface IDataModelExpansion : IPlugin
     {
     }
 }

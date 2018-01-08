@@ -1,6 +1,8 @@
-﻿namespace Artemis.UI.ViewModels.Interfaces
+﻿using Stylet;
+
+namespace Artemis.UI.ViewModels.Interfaces
 {
-    public interface IArtemisViewModel
+    public interface IArtemisViewModel : IScreen
     {
         string Title { get; }
     }

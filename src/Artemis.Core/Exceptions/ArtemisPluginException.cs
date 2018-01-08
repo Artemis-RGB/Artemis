@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Models;
+using Artemis.Plugins.Models;
 
 namespace Artemis.Core.Exceptions
 {

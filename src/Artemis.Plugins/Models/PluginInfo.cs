@@ -1,7 +1,7 @@
 ﻿using Artemis.Plugins.Interfaces;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Models
+namespace Artemis.Plugins.Models
 {
     public class PluginInfo
     {
