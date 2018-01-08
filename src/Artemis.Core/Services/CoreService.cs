@@ -22,7 +22,7 @@ namespace Artemis.Core.Services
 
         private async Task Initialize()
         {
-            await _pluginService.LoadModules();
+            await _pluginService.LoadPlugins();
 
             IsInitialized = true;
         }

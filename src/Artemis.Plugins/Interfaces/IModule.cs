@@ -2,6 +2,5 @@
 {
     public interface IModule : IPlugin
     {
-        IPluginViewModel GetMainViewModel();
     }
 }
