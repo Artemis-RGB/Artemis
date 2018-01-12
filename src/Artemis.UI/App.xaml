@@ -36,6 +36,10 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Flyout.xaml" />
 
+                <!-- Artemis -->
+                <ResourceDictionary Source="Styles/Visualizers/RGBSurfaceVisualizer.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Styles/Visualizers/RGBDeviceVisualizer.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Styles/Visualizers/LedVisualizer.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- MahApps Brushes -->

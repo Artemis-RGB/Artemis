@@ -32,6 +32,7 @@ namespace Artemis.Core.Services
         public bool LoadingPlugins { get; private set; }
         public ReadOnlyCollection<PluginInfo> Plugins => _plugins.AsReadOnly();
 
+        /// <inheritdoc />
         /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
