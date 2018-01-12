@@ -11,21 +11,25 @@ using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {
-    public class DeviceService : IDeviceService, IDisposable
+    public class RgbService : IRgbService, IDisposable
     {
-        public DeviceService()
+        public RgbService()
         {
             Surface = RGBSurface.Instance;
             LoadingDevices = false;
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
+            Surface.UpdateMode = UpdateMode.Continuous;
         }
 
+        /// <inheritdoc />
         public bool LoadingDevices { get; private set; }
 
+        /// <inheritdoc />
         public RGBSurface Surface { get; set; }
 
+        /// <inheritdoc />
         public async Task LoadDevices()
         {
             OnStartedLoadingDevices();
@@ -33,19 +37,19 @@ namespace Artemis.Core.Services
             await Task.Run(() =>
             {
                 // TODO SpoinkyNL 8-1-18: Keep settings into account
-//                Surface.LoadDevices(AsusDeviceProvider.Instance);
+                // Surface.LoadDevices(AsusDeviceProvider.Instance);
                 Surface.LoadDevices(CorsairDeviceProvider.Instance);
                 Surface.LoadDevices(LogitechDeviceProvider.Instance);
                 Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
-//                Surface.LoadDevices(NovationDeviceProvider.Instance);
-
+                // Surface.LoadDevices(NovationDeviceProvider.Instance);
+                
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevies();
 
                 // Do some testing, why does this work, how does it know I want to target the surface? Check source!
                 var ledGroup = new RectangleLedGroup(Surface.SurfaceRectangle)
                 {
-                    Brush = new SolidColorBrush(new Color(255, 0, 0)) {BrushCalculationMode = BrushCalculationMode.Absolute}
+                    Brush = new SolidColorBrush(new Color(255, 0, 0)) { BrushCalculationMode = BrushCalculationMode.Absolute }
                 };
                 Surface.UpdateMode = UpdateMode.Continuous;
             });
@@ -65,24 +69,9 @@ namespace Artemis.Core.Services
 
         #region Events
 
-        /// <summary>
-        ///     Occurs when a single device has loaded
-        /// </summary>
         public event EventHandler<DeviceEventArgs> DeviceLoaded;
-
-        /// <summary>
-        ///     Occurs when a single device has reloaded
-        /// </summary>
         public event EventHandler<DeviceEventArgs> DeviceReloaded;
-
-        /// <summary>
-        ///     Occurs when loading all devices has started
-        /// </summary>
-        public event EventHandler StartedLoadingDevices;
-
-        /// <summary>
-        ///     Occurs when loading all devices has finished
-        /// </summary>
+        public event EventHandler StartingLoadingDevices;
         public event EventHandler FinishedLoadedDevices;
 
         private void OnDeviceLoaded(DeviceEventArgs e)
@@ -98,7 +87,7 @@ namespace Artemis.Core.Services
         private void OnStartedLoadingDevices()
         {
             LoadingDevices = true;
-            StartedLoadingDevices?.Invoke(this, EventArgs.Empty);
+            StartingLoadingDevices?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnFinishedLoadedDevices()
@@ -108,10 +97,5 @@ namespace Artemis.Core.Services
         }
 
         #endregion
-    }
-
-    public interface IDeviceService : IArtemisService
-    {
-        Task LoadDevices();
     }
 }
