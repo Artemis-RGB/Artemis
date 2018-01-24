@@ -18,8 +18,8 @@ namespace Artemis.UI.Controls.Visualizers
         #endregion
 
         #region Properties & Fields
-
-        private Canvas _canvas;
+        
+        public Canvas Canvas { get; private set; }
 
         #endregion
 
@@ -51,7 +51,7 @@ namespace Artemis.UI.Controls.Visualizers
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            _canvas = (Canvas) GetTemplateChild(PART_CANVAS);
+            Canvas = (Canvas) GetTemplateChild(PART_CANVAS);
 
             LayoutLeds();
         }
@@ -63,14 +63,14 @@ namespace Artemis.UI.Controls.Visualizers
 
         private void LayoutLeds()
         {
-            if (_canvas == null) return;
+            if (Canvas == null) return;
 
-            _canvas.Children.Clear();
+            Canvas.Children.Clear();
 
             if (Device == null) return;
 
             foreach (Led led in Device)
-                _canvas.Children.Add(new LedVisualizer {Led = led});
+                Canvas.Children.Add(new LedVisualizer {Led = led});
         }
 
         #endregion

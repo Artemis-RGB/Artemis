@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using RGB.NET.Core;
 
 namespace Artemis.UI.Controls.Visualizers
@@ -32,5 +33,15 @@ namespace Artemis.UI.Controls.Visualizers
         // ReSharper restore InconsistentNaming
 
         #endregion
+
+        public void Select()
+        {
+            BorderBrush = new SolidColorBrush(Colors.RoyalBlue);
+        }
+
+        public void Deselect()
+        {
+            BorderBrush = new SolidColorBrush(Colors.Black);
+        }
     }
 }

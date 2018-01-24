@@ -22,10 +22,12 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type visualizers:RGBSurfaceVisualizer}">
-                    <ScrollViewer VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                    <ScrollViewer x:Name="PART_ScrollViewer"
+                                  VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                   HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                                   VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Auto">
+                                  HorizontalScrollBarVisibility="Auto"
+                                  Background="Transparent">
                         <Border VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 BorderBrush="{TemplateBinding BorderBrush}"

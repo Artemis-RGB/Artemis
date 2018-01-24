@@ -68,6 +68,42 @@
     <Reference Include="Ninject.Extensions.Factory, Version=3.3.2.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.Extensions.Factory.3.3.2\lib\net45\Ninject.Extensions.Factory.dll</HintPath>
     </Reference>
+    <Reference Include="RGB.NET.Brushes, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Brushes.0.0.1.26\lib\net45\RGB.NET.Brushes.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Core, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Core.0.0.1.26\lib\net45\RGB.NET.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Decorators, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Decorators.0.0.1.26\lib\net45\RGB.NET.Decorators.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Asus, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Asus.0.0.1.26\lib\net45\RGB.NET.Devices.Asus.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.CoolerMaster, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.26\lib\net45\RGB.NET.Devices.CoolerMaster.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Corsair, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.0.1.26\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Logitech, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Logitech.0.0.1.26\lib\net45\RGB.NET.Devices.Logitech.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Msi, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Msi.0.0.1.26\lib\net45\RGB.NET.Devices.Msi.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Novation, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Novation.0.0.1.26\lib\net45\RGB.NET.Devices.Novation.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Devices.Razer, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Razer.0.0.1.26\lib\net45\RGB.NET.Devices.Razer.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Groups, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Groups.0.0.1.26\lib\net45\RGB.NET.Groups.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Input, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Input.0.0.1.26\lib\net45\RGB.NET.Input.dll</HintPath>
+    </Reference>
     <Reference Include="Sanford.Multimedia.Midi, Version=6.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sanford.Multimedia.Midi.6.4.2\lib\net20\Sanford.Multimedia.Midi.dll</HintPath>
     </Reference>
@@ -138,7 +174,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
+      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.1\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
@@ -178,58 +214,6 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Brushes\RGB.NET.Brushes.csproj">
-      <Project>{347c5f0f-f490-4dec-9c1c-6e84750d838d}</Project>
-      <Name>RGB.NET.Brushes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Core\RGB.NET.Core.csproj">
-      <Project>{5a4f9a75-75fe-47cd-90e5-914d5b20d232}</Project>
-      <Name>RGB.NET.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Decorators\RGB.NET.Decorators.csproj">
-      <Project>{7012c431-244a-453f-b7fd-59e030cdbc44}</Project>
-      <Name>RGB.NET.Decorators</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Asus\RGB.NET.Devices.Asus.csproj">
-      <Project>{4f2f3fbd-a1e4-4968-a2ad-0514959e5e59}</Project>
-      <Name>RGB.NET.Devices.Asus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.CoolerMaster\RGB.NET.Devices.CoolerMaster.csproj">
-      <Project>{85609427-d433-44e2-a249-ce890b66d845}</Project>
-      <Name>RGB.NET.Devices.CoolerMaster</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Corsair\RGB.NET.Devices.Corsair.csproj">
-      <Project>{dda8c4c2-8abf-4fa0-9af9-c47ad0bfe47d}</Project>
-      <Name>RGB.NET.Devices.Corsair</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Logitech\RGB.NET.Devices.Logitech.csproj">
-      <Project>{e7b2f174-fcc6-4fc7-9970-3138b5f4c921}</Project>
-      <Name>RGB.NET.Devices.Logitech</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Msi\RGB.NET.Devices.Msi.csproj">
-      <Project>{4efd77c7-fdb4-4c6b-970c-0ef66d24be09}</Project>
-      <Name>RGB.NET.Devices.Msi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Novation\RGB.NET.Devices.Novation.csproj">
-      <Project>{db2911f6-404c-4bc8-b35f-232a7450755f}</Project>
-      <Name>RGB.NET.Devices.Novation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Devices.Razer\RGB.NET.Devices.Razer.csproj">
-      <Project>{24ff4acb-d679-4b2d-86d4-50ab6c02d816}</Project>
-      <Name>RGB.NET.Devices.Razer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Groups\RGB.NET.Groups.csproj">
-      <Project>{2a39f859-aad0-4c16-94f8-78057820b376}</Project>
-      <Name>RGB.NET.Groups</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Input.Corsair\RGB.NET.Input.Corsair.csproj">
-      <Project>{f905c418-76bb-4ba6-88ab-0793bc2681d3}</Project>
-      <Name>RGB.NET.Input.Corsair</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\RGB.NET\RGB.NET.Input\RGB.NET.Input.csproj">
-      <Project>{e60c3c6f-903f-4d80-99d0-7a1e50af5a9d}</Project>
-      <Name>RGB.NET.Input</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Artemis.Plugins\Artemis.Plugins.csproj">
       <Project>{cd23bc5e-57f0-46ce-a007-24d031146219}</Project>
       <Name>Artemis.Plugins</Name>
@@ -239,4 +223,21 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\RGB.NET.Devices.Asus.0.0.1.26\build\net45\RGB.NET.Devices.Asus.targets" Condition="Exists('..\packages\RGB.NET.Devices.Asus.0.0.1.26\build\net45\RGB.NET.Devices.Asus.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.Asus.0.0.1.26\build\net45\RGB.NET.Devices.Asus.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.Asus.0.0.1.26\build\net45\RGB.NET.Devices.Asus.targets'))" />
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.26\build\net45\RGB.NET.Devices.CoolerMaster.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.26\build\net45\RGB.NET.Devices.CoolerMaster.targets'))" />
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.Corsair.0.0.1.26\build\net45\RGB.NET.Devices.Corsair.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.Corsair.0.0.1.26\build\net45\RGB.NET.Devices.Corsair.targets'))" />
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.Logitech.0.0.1.26\build\net45\RGB.NET.Devices.Logitech.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.Logitech.0.0.1.26\build\net45\RGB.NET.Devices.Logitech.targets'))" />
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.Msi.0.0.1.26\build\net45\RGB.NET.Devices.Msi.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.Msi.0.0.1.26\build\net45\RGB.NET.Devices.Msi.targets'))" />
+    <Error Condition="!Exists('..\packages\RGB.NET.Devices.Razer.0.0.1.26\build\net45\RGB.NET.Devices.Razer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Devices.Razer.0.0.1.26\build\net45\RGB.NET.Devices.Razer.targets'))" />
+  </Target>
+  <Import Project="..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.26\build\net45\RGB.NET.Devices.CoolerMaster.targets" Condition="Exists('..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.26\build\net45\RGB.NET.Devices.CoolerMaster.targets')" />
+  <Import Project="..\packages\RGB.NET.Devices.Corsair.0.0.1.26\build\net45\RGB.NET.Devices.Corsair.targets" Condition="Exists('..\packages\RGB.NET.Devices.Corsair.0.0.1.26\build\net45\RGB.NET.Devices.Corsair.targets')" />
+  <Import Project="..\packages\RGB.NET.Devices.Logitech.0.0.1.26\build\net45\RGB.NET.Devices.Logitech.targets" Condition="Exists('..\packages\RGB.NET.Devices.Logitech.0.0.1.26\build\net45\RGB.NET.Devices.Logitech.targets')" />
+  <Import Project="..\packages\RGB.NET.Devices.Msi.0.0.1.26\build\net45\RGB.NET.Devices.Msi.targets" Condition="Exists('..\packages\RGB.NET.Devices.Msi.0.0.1.26\build\net45\RGB.NET.Devices.Msi.targets')" />
+  <Import Project="..\packages\RGB.NET.Devices.Razer.0.0.1.26\build\net45\RGB.NET.Devices.Razer.targets" Condition="Exists('..\packages\RGB.NET.Devices.Razer.0.0.1.26\build\net45\RGB.NET.Devices.Razer.targets')" />
 </Project>

@@ -2,7 +2,7 @@
 
 namespace Artemis.Storage.Entities
 {
-    internal class Setting
+    internal class SettingEntity
     {
         [Key]
         public string Name { get; set; }

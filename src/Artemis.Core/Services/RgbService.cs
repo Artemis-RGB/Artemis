@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
@@ -42,15 +43,19 @@ namespace Artemis.Core.Services
                 Surface.LoadDevices(LogitechDeviceProvider.Instance);
                 Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
                 // Surface.LoadDevices(NovationDeviceProvider.Instance);
-                
+
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevies();
 
                 // Do some testing, why does this work, how does it know I want to target the surface? Check source!
-                var ledGroup = new RectangleLedGroup(Surface.SurfaceRectangle)
-                {
-                    Brush = new SolidColorBrush(new Color(255, 0, 0)) { BrushCalculationMode = BrushCalculationMode.Absolute }
-                };
+                var mouse1 = Surface.Leds.First(l => l.Id == LedId.Mouse1);
+                mouse1.Color = new Color(255, 0, 0);
+                var mouse2 = Surface.Leds.First(l => l.Id == LedId.Mouse2);
+                mouse2.Color = new Color(255, 255, 0);
+                var mouse3 = Surface.Leds.First(l => l.Id == LedId.Mouse3);
+                mouse3.Color = new Color(255, 255, 255);
+                var mouse4 = Surface.Leds.First(l => l.Id == LedId.Mouse4);
+                mouse4.Color = new Color(255, 0, 255);
                 Surface.UpdateMode = UpdateMode.Continuous;
             });
 
