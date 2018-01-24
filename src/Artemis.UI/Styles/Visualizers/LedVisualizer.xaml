@@ -80,7 +80,7 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="#FFFFFF" />
             </Trigger>
-
+            
             <DataTrigger Binding="{Binding Led.Shape, RelativeSource={RelativeSource Self}}" Value="Circle">
                 <Setter Property="Template" Value="{StaticResource ControlTemplateLedCircle}" />
             </DataTrigger>
