@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Interfaces;
 using Artemis.Plugins.Models;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 
@@ -19,7 +21,7 @@ namespace Artemis.UI.ViewModels
         {
             _artemisViewModels = artemisViewModels;
             _pluginService = pluginService;
-            
+
             // Add the built-in items
             Items.AddRange(artemisViewModels);
             // Activate the home item
@@ -33,52 +35,78 @@ namespace Artemis.UI.ViewModels
 
             if (!LoadingPlugins)
                 Modules.AddRange(_pluginService.Plugins.Where(p => p.Plugin is IModule));
+
+            PropertyChanged += OnSelectedModuleChanged;
+            PropertyChanged += OnSelectedPageChanged;
         }
+
 
         public IObservableCollection<PluginInfo> Modules { get; set; }
 
         public bool MenuOpen { get; set; }
         public bool LoadingPlugins { get; set; }
+        public ListBoxItem SelectedPage { get; set; }
+        public PluginInfo SelectedModule { get; set; }
 
         private void PluginServiceOnStartedLoadingPlugins(object sender, EventArgs eventArgs)
         {
             LoadingPlugins = true;
+
             Modules.Clear();
+            SelectedModule = null;
         }
 
         private void PluginServiceOnFinishedLoadedPlugins(object sender, EventArgs eventArgs)
         {
-            LoadingPlugins = false;
             Modules.AddRange(_pluginService.Plugins.Where(p => p.Plugin is IModule));
-            NavigateToModule(Modules.First());
+            SelectedModule = null;
+
+            LoadingPlugins = false;
         }
 
-        public void NavigateToHome()
+        public async Task NavigateToSelectedModule()
         {
-            ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel)));
-            MenuOpen = false;
-        }
+            if (SelectedModule == null || LoadingPlugins)
+                return;
 
-        public void NavigateToNews()
-        {
-        }
-
-        public void NavigateToWorkshop()
-        {
-        }
-
-        public void NavigateToSettings()
-        {
-            ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(SettingsViewModel)));
-            MenuOpen = false;
-        }
-
-        public async void NavigateToModule(PluginInfo pluginInfo)
-        {
             // Create a view model for the given plugin info (which will be a module)
-            var viewModel = await _pluginService.GetPluginViewModel(pluginInfo);
+            var viewModel = await _pluginService.GetModuleViewModel(SelectedModule);
             // Tell Stylet to active the view model, the view manager will compile and show the XAML
             ActivateItem(viewModel);
+
+            SelectedPage = null;
+            MenuOpen = false;
+        }
+
+        private async void OnSelectedModuleChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "SelectedModule")
+                await NavigateToSelectedModule();
+        }
+
+        private void OnSelectedPageChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "SelectedPage" || SelectedPage == null)
+                return;
+
+            switch (SelectedPage.Name)
+            {
+                case "Home":
+                    ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel)));
+                    break;
+                case "News":
+                    // ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(NewsViewModel)));
+                    break;
+                case "Workshop":
+                    // ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(WorkshopViewModel)));
+                    break;
+                case "Settings":
+                    ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(SettingsViewModel)));
+                    break;
+            }
+
+            SelectedModule = null;
+            MenuOpen = false;
         }
     }
 }

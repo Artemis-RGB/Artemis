@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Plugins.Interfaces;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Services
 {
@@ -14,6 +17,7 @@ namespace Artemis.Core.Services
         {
             _pluginService = pluginService;
             _rgbService = rgbService;
+            _rgbService.Surface.Updating += SurfaceOnUpdating;
 
             Task.Run(Initialize);
         }
@@ -34,8 +38,25 @@ namespace Artemis.Core.Services
             // Initialize the services
             await _pluginService.LoadPlugins();
             await _rgbService.LoadDevices();
-
+            
             OnInitialized();
+        }
+
+        private void SurfaceOnUpdating(UpdatingEventArgs args)
+        {
+            try
+            {
+                // Update all active modules
+                foreach (var module in _pluginService.Plugins.OfType<IModule>())
+                    module.Update(args.DeltaTime);
+                // Render all active modules
+                foreach (var module in _pluginService.Plugins.OfType<IModule>())
+                    module.Render(args.DeltaTime);
+            }
+            catch (Exception e)
+            {
+                throw new ArtemisCoreException("Exception during update", e);
+            }
         }
 
         #region Events

@@ -14,7 +14,7 @@ namespace Artemis.UI.Stylet
 
         public override UIElement CreateViewForModel(object model)
         {
-            if (model is IPluginViewModel)
+            if (model is IModuleViewModel)
                 return CreateViewForPlugin(model);
 
             return base.CreateViewForModel(model);
@@ -22,7 +22,7 @@ namespace Artemis.UI.Stylet
 
         private UIElement CreateViewForPlugin(object model)
         {
-            var pluginInfo = ((IPluginViewModel) model).PluginInfo;
+            var pluginInfo = ((IModuleViewModel) model).PluginInfo;
             var viewPath = pluginInfo.Folder + pluginInfo.ViewModel.Replace("ViewModel", "View").Replace(".cs", ".xaml");
             // There doesn't have to be a view so make sure one exists
             if (!File.Exists(viewPath))
