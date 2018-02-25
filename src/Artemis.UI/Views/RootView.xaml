@@ -7,6 +7,7 @@
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:s="https://github.com/canton7/Stylet"
                    xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
+                   xmlns:models="clr-namespace:Artemis.Plugins.Models;assembly=Artemis.Plugins"
                    mc:Ignorable="d"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
@@ -80,29 +81,30 @@
                     <!-- Built-in pages -->
                     <ListBox Margin="0 16 0 16"
                              SelectedIndex="0"
-                             DockPanel.Dock="Top">
-                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToHome}">
+                             DockPanel.Dock="Top"
+                             SelectedItem="{Binding SelectedPage}">
+                        <ListBoxItem x:Name="Home">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Home"
                                                          Margin="0,0,8,0" />
                                 <TextBlock>Home</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToNews}">
+                        <ListBoxItem x:Name="News">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Newspaper"
                                                          Margin="0,0,8,0" />
                                 <TextBlock>News</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToWorkshop}">
+                        <ListBoxItem x:Name="Workshop">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="TestTube"
                                                          Margin="0,0,8,0" />
                                 <TextBlock>Workshop</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem PreviewMouseLeftButtonUp="{s:Action NavigateToSettings}">
+                        <ListBoxItem x:Name="Settings">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Settings"
                                                          Margin="0,0,8,0" />
@@ -118,39 +120,23 @@
                     </TextBlock>
                     <Border BorderThickness="0 1 0 0"
                             BorderBrush="{DynamicResource MaterialDesignDivider}">
-                        <ScrollViewer DockPanel.Dock="Top">
-                            <ListBox Margin="0 0 0 16"
-                                     SelectedIndex="0">
-                                <ListBoxItem>
-                                    <StackPanel Orientation="Horizontal">
+                        <ListBox Margin="0 0 0 16"
+                                 SelectedIndex="0"
+                                 ItemsSource="{Binding Modules}"
+                                 SelectedItem="{Binding SelectedModule}"
+                                 DockPanel.Dock="Top">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="models:PluginInfo">
+                                    <DockPanel HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"
+                                               Margin="0">
                                         <materialDesign:PackIcon Kind="Home"
                                                                  Margin="0,0,8,0" />
-                                        <TextBlock>Home</TextBlock>
-                                    </StackPanel>
-                                </ListBoxItem>
-                                <ListBoxItem>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Newspaper"
-                                                                 Margin="0,0,8,0" />
-                                        <TextBlock>News</TextBlock>
-                                    </StackPanel>
-                                </ListBoxItem>
-                                <ListBoxItem>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="TestTube"
-                                                                 Margin="0,0,8,0" />
-                                        <TextBlock>Workshop</TextBlock>
-                                    </StackPanel>
-                                </ListBoxItem>
-                                <ListBoxItem>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Settings"
-                                                                 Margin="0,0,8,0" />
-                                        <TextBlock>Settings</TextBlock>
-                                    </StackPanel>
-                                </ListBoxItem>
-                            </ListBox>
-                        </ScrollViewer>
+                                        <TextBlock Text="{Binding Name}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Border>
                 </DockPanel>
             </materialDesign:DrawerHost.LeftDrawerContent>
@@ -185,4 +171,4 @@
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-</metro:MetroWindow>
+</metro:MetroWindow> 

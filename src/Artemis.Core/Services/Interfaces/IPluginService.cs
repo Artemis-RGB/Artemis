@@ -9,17 +9,32 @@ namespace Artemis.Core.Services.Interfaces
 {
     public interface IPluginService : IArtemisService, IDisposable
     {
+        /// <summary>
+        ///     Indicates wether or not plugins are currently being loaded
+        /// </summary>
         bool LoadingPlugins { get; }
+
+        /// <summary>
+        ///     All loaded plugins
+        /// </summary>
         ReadOnlyCollection<PluginInfo> Plugins { get; }
 
         /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
-        /// <returns></returns>
         Task LoadPlugins();
 
+        /// <summary>
+        ///     Reloads the plugin accompanying the provided plugin info
+        /// </summary>
+        /// <param name="pluginInfo">The plugin info containing the plugin to reload</param>
         Task ReloadPlugin(PluginInfo pluginInfo);
-        Task<IPluginViewModel> GetPluginViewModel(PluginInfo pluginInfo);
+
+        /// <summary>
+        ///     Gets the view model of the module accompanying the provided plugin info
+        /// </summary>
+        /// <param name="pluginInfo">The plugin info containing the module for which to load the view model</param>
+        Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo);
 
         /// <summary>
         ///     Occurs when a single plugin has loaded

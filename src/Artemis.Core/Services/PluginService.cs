@@ -33,10 +33,6 @@ namespace Artemis.Core.Services
         public ReadOnlyCollection<PluginInfo> Plugins => _plugins.AsReadOnly();
 
         /// <inheritdoc />
-        /// <summary>
-        ///     Loads all installed plugins. If plugins already loaded this will reload them all
-        /// </summary>
-        /// <returns></returns>
         public async Task LoadPlugins()
         {
             if (LoadingPlugins)
@@ -56,18 +52,22 @@ namespace Artemis.Core.Services
 
         public async Task ReloadPlugin(PluginInfo pluginInfo)
         {
+            throw new NotImplementedException();
         }
 
-        public async Task<IPluginViewModel> GetPluginViewModel(PluginInfo pluginInfo)
+        public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
+            // Don't attempt to locave VMs for something other than a module
+            if (pluginInfo.Plugin is IModule)
+                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this plugin as it's not a module.");
             // Compile the ViewModel and get the type
             var compile = await Task.Run(() => CSScript.LoadFile(pluginInfo.Folder + pluginInfo.ViewModel));
-            var vmType = compile.ExportedTypes.FirstOrDefault(t => typeof(IPluginViewModel).IsAssignableFrom(t));
+            var vmType = compile.ExportedTypes.FirstOrDefault(t => typeof(IModuleViewModel).IsAssignableFrom(t));
             if (vmType == null)
-                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this plugin.");
+                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this module.");
            
             // Instantiate the ViewModel with Ninject
-            var vm = (IPluginViewModel) _kernel.Get(vmType);
+            var vm = (IModuleViewModel) _kernel.Get(vmType);
             vm.PluginInfo = pluginInfo;
             return vm;
         }
@@ -94,25 +94,10 @@ namespace Artemis.Core.Services
         }
 
         #region Events
-
-        /// <summary>
-        ///     Occurs when a single plugin has loaded
-        /// </summary>
+        
         public event EventHandler<PluginEventArgs> PluginLoaded;
-
-        /// <summary>
-        ///     Occurs when a single plugin has reloaded
-        /// </summary>
         public event EventHandler<PluginEventArgs> PluginReloaded;
-
-        /// <summary>
-        ///     Occurs when loading all plugins has started
-        /// </summary>
         public event EventHandler StartedLoadingPlugins;
-
-        /// <summary>
-        ///     Occurs when loading all plugins has finished
-        /// </summary>
         public event EventHandler FinishedLoadedPlugins;
 
         private void OnPluginLoaded(PluginEventArgs e)

@@ -5,9 +5,9 @@ namespace Artemis.Plugins.Interfaces
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Allows you to create a view model for a plugin
+    ///     Allows you to create a view model for a module
     /// </summary>
-    public interface IPluginViewModel : IScreen
+    public interface IModuleViewModel : IScreen
     {
         PluginInfo PluginInfo { get; set; }
     }
