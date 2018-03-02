@@ -208,10 +208,6 @@
       <Project>{cd23bc5e-57f0-46ce-a007-24d031146219}</Project>
       <Name>Artemis.Plugins</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Module.General\Module.General.csproj">
-      <Project>{58113cc5-a9ca-4ec3-ab4e-3c94b99268d8}</Project>
-      <Name>Module.General</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
