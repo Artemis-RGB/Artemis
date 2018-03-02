@@ -5,9 +5,14 @@ using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
+using RGB.NET.Devices.Asus;
 using RGB.NET.Devices.CoolerMaster;
 using RGB.NET.Devices.Corsair;
+using RGB.NET.Devices.DMX;
 using RGB.NET.Devices.Logitech;
+using RGB.NET.Devices.Msi;
+using RGB.NET.Devices.Novation;
+using RGB.NET.Devices.Razer;
 using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
@@ -38,24 +43,18 @@ namespace Artemis.Core.Services
             await Task.Run(() =>
             {
                 // TODO SpoinkyNL 8-1-18: Keep settings into account
-                // Surface.LoadDevices(AsusDeviceProvider.Instance);
-                Surface.LoadDevices(CorsairDeviceProvider.Instance);
-                Surface.LoadDevices(LogitechDeviceProvider.Instance);
+                Surface.LoadDevices(AsusDeviceProvider.Instance);
                 Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
-                // Surface.LoadDevices(NovationDeviceProvider.Instance);
+                Surface.LoadDevices(CorsairDeviceProvider.Instance);
+                Surface.LoadDevices(DMXDeviceProvider.Instance);
+                Surface.LoadDevices(LogitechDeviceProvider.Instance);
+                Surface.LoadDevices(NovationDeviceProvider.Instance);
+                Surface.LoadDevices(MsiDeviceProvider.Instance);
+                Surface.LoadDevices(RazerDeviceProvider.Instance);
 
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevices();
 
-                // Do some testing, why does this work, how does it know I want to target the surface? Check source!
-                var mouse1 = Surface.Leds.First(l => l.Id == LedId.Mouse1);
-                mouse1.Color = new Color(255, 0, 0);
-                var mouse2 = Surface.Leds.First(l => l.Id == LedId.Mouse2);
-                mouse2.Color = new Color(255, 255, 0);
-                var mouse3 = Surface.Leds.First(l => l.Id == LedId.Mouse3);
-                mouse3.Color = new Color(255, 255, 255);
-                var mouse4 = Surface.Leds.First(l => l.Id == LedId.Mouse4);
-                mouse4.Color = new Color(255, 0, 255);
                 Surface.UpdateMode = UpdateMode.Continuous;
             });
 

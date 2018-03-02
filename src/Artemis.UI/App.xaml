@@ -30,12 +30,6 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Teal.xaml" />
 
-                <!-- Material Design: MahApps Compatibility -->
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Fonts.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Flyout.xaml" />
-
                 <!-- Artemis -->
                 <ResourceDictionary Source="Styles/Visualizers/RGBSurfaceVisualizer.xaml"></ResourceDictionary>
                 <ResourceDictionary Source="Styles/Visualizers/RGBDeviceVisualizer.xaml"></ResourceDictionary>
