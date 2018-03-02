@@ -47,13 +47,27 @@ namespace Artemis.Plugins.Models
         public string Folder { get; set; }
 
         /// <summary>
-        ///     Indicates wether this is a built-in plugin. Built-in plugins are precompiled and have no files
+        ///     Indicates wether this is a built-in plugin.
         /// </summary>
         [JsonIgnore]
         public bool IsBuiltIn { get; private set; }
 
+        public void Dispose()
+        {
+            Plugin.UnloadPlugin();
+        }
+
+        /// <summary>
+        ///     Load a plugin from a folder
+        /// </summary>
+        /// <param name="kernel">The Ninject kernel to use for DI</param>
+        /// <param name="folder">The folder in which plugin.json is located</param>
+        /// <returns></returns>
         public static async Task<PluginInfo> FromFolder(IKernel kernel, string folder)
         {
+            // Make sure the right engine is used
+            CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
+
             if (!folder.EndsWith("\\"))
                 folder += "\\";
             if (!File.Exists(folder + "plugin.json"))
@@ -76,33 +90,24 @@ namespace Artemis.Plugins.Models
 
             return pluginInfo;
         }
-
-        public static PluginInfo FromBuiltInPlugin(IKernel kernel, IPlugin builtInPlugin)
-        {
-            var pluginInfo = new PluginInfo
-            {
-                Name = builtInPlugin.GetType().Name,
-                Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion,
-                Plugin = builtInPlugin,
-                IsBuiltIn = true
-            };
-            pluginInfo.Plugin.LoadPlugin();
-
-            return pluginInfo;
-        }
-
-        public void Dispose()
-        {
-        }
-
+        
+        /// <summary>
+        ///     Gets the view model of the module accompanying the provided plugin info
+        /// </summary>
+        /// <param name="kernel">The Ninject kernel to use for DI</param>
+        /// <returns></returns>
         public async Task<IModuleViewModel> GetModuleViewModel(IKernel kernel)
         {
+            // Make sure the right engine is used
+            CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
+
             // Don't attempt to locave VMs for something other than a module
-            if (Plugin is IModule)
+            if (!(Plugin is IModule))
                 throw new ArtemisPluginException(this, "Cannot locate a view model for this plugin as it's not a module.");
 
-            // Compile the ViewModel script and get the type
+            // Use the plugin's assembly as the VM is precompiled if built in, otherwise compile the VM into a new assembly
             var assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(Folder + ViewModel));
+
             var vmType = assembly.GetTypes().Where(t => typeof(IModuleViewModel).IsAssignableFrom(t)).ToList();
             if (!vmType.Any())
                 throw new ArtemisPluginException(this, "Failed to load plugin, no type found that implements IModuleViewModel");
@@ -110,7 +115,7 @@ namespace Artemis.Plugins.Models
                 throw new ArtemisPluginException(this, "Failed to load plugin, more than one type found that implements IModuleViewModel");
 
             // Instantiate the ViewModel with Ninject
-            var vm = (IModuleViewModel)kernel.Get(vmType.First());
+            var vm = (IModuleViewModel) kernel.Get(vmType.First());
             vm.PluginInfo = this;
             return vm;
         }

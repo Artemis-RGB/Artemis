@@ -7,7 +7,7 @@
     <ProjectGuid>{58113CC5-A9CA-4EC3-AB4E-3C94B99268D8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Artemis.BuiltIn.Module.General</RootNamespace>
+    <RootNamespace>Module.General</RootNamespace>
     <AssemblyName>Module.General</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -33,6 +33,9 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Stylet, Version=1.1.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stylet.1.1.21\lib\net45\Stylet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -48,13 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneralModule.cs" />
-    <Compile Include="GeneralView.xaml.cs">
-      <DependentUpon>GeneralView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GeneralViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Project>{9B811F9B-86B9-4771-87AF-72BAE7078A36}</Project>
+      <Name>Artemis.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Artemis.Plugins\Artemis.Plugins.csproj">
       <Project>{CD23BC5E-57F0-46CE-A007-24D031146219}</Project>
       <Name>Artemis.Plugins</Name>
@@ -68,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="plugin.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

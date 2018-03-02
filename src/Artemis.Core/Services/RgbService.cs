@@ -43,7 +43,8 @@ namespace Artemis.Core.Services
             await Task.Run(() =>
             {
                 // TODO SpoinkyNL 8-1-18: Keep settings into account
-                Surface.LoadDevices(AsusDeviceProvider.Instance);
+                // This one doesn't work well without ASUS devices installed
+                // Surface.LoadDevices(AsusDeviceProvider.Instance);
                 Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
                 Surface.LoadDevices(CorsairDeviceProvider.Instance);
                 Surface.LoadDevices(DMXDeviceProvider.Instance);

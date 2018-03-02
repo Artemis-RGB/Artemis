@@ -42,10 +42,6 @@ namespace Artemis.Core.Services
                 pluginInfo.Dispose();
             _plugins.Clear();
 
-            // Load all built-in plugins
-            foreach (var builtInPlugin in _kernel.GetAll<IPlugin>())
-                _plugins.Add(PluginInfo.FromBuiltInPlugin(_kernel, builtInPlugin));
-
             // Iterate all plugin folders and load each plugin
             foreach (var directory in Directory.GetDirectories(Constants.DataFolder + "plugins"))
                 _plugins.Add(await PluginInfo.FromFolder(_kernel, directory));
@@ -53,11 +49,13 @@ namespace Artemis.Core.Services
             OnFinishedLoadedPlugins();
         }
 
+        /// <inheritdoc />
         public async Task ReloadPlugin(PluginInfo pluginInfo)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
         public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
             return await pluginInfo.GetModuleViewModel(_kernel);
