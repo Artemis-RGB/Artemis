@@ -62,7 +62,7 @@ namespace Artemis.Plugins.Models
             var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(folder + "plugin.json"));
             pluginInfo.Folder = folder;
 
-            // Load the main plugin which will contain a class implementing IPlugin
+            // Load the main script and get the type
             var assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(folder + pluginInfo.Main));
             var pluginType = assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
             if (!pluginType.Any())
@@ -70,6 +70,7 @@ namespace Artemis.Plugins.Models
             if (pluginType.Count > 1)
                 throw new ArtemisPluginException(pluginInfo, "Failed to load plugin, more than one type found that implements IPlugin");
 
+            // Instantiate the plugin with Ninject
             pluginInfo.Plugin = (IPlugin) kernel.Get(pluginType.First());
             pluginInfo.Plugin.LoadPlugin();
 
@@ -92,6 +93,26 @@ namespace Artemis.Plugins.Models
 
         public void Dispose()
         {
+        }
+
+        public async Task<IModuleViewModel> GetModuleViewModel(IKernel kernel)
+        {
+            // Don't attempt to locave VMs for something other than a module
+            if (Plugin is IModule)
+                throw new ArtemisPluginException(this, "Cannot locate a view model for this plugin as it's not a module.");
+
+            // Compile the ViewModel script and get the type
+            var assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(Folder + ViewModel));
+            var vmType = assembly.GetTypes().Where(t => typeof(IModuleViewModel).IsAssignableFrom(t)).ToList();
+            if (!vmType.Any())
+                throw new ArtemisPluginException(this, "Failed to load plugin, no type found that implements IModuleViewModel");
+            if (vmType.Count > 1)
+                throw new ArtemisPluginException(this, "Failed to load plugin, more than one type found that implements IModuleViewModel");
+
+            // Instantiate the ViewModel with Ninject
+            var vm = (IModuleViewModel)kernel.Get(vmType.First());
+            vm.PluginInfo = this;
+            return vm;
         }
     }
 }
