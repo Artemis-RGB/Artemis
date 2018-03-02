@@ -45,7 +45,7 @@ namespace Artemis.Core.Services
                 // Surface.LoadDevices(NovationDeviceProvider.Instance);
 
                 // TODO SpoinkyNL 8-1-18: Load alignment
-                Surface.AlignDevies();
+                Surface.AlignDevices();
 
                 // Do some testing, why does this work, how does it know I want to target the surface? Check source!
                 var mouse1 = Surface.Leds.First(l => l.Id == LedId.Mouse1);
