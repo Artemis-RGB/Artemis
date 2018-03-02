@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Interfaces;
 using Artemis.Plugins.Models;
-using CSScriptLibrary;
-using Newtonsoft.Json;
 using Ninject;
 
 namespace Artemis.Core.Services
@@ -24,7 +21,7 @@ namespace Artemis.Core.Services
         {
             _kernel = kernel;
             _plugins = new List<PluginInfo>();
-            
+
             if (!Directory.Exists(Constants.DataFolder + "plugins"))
                 Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
@@ -41,12 +38,18 @@ namespace Artemis.Core.Services
             OnStartedLoadingPlugins();
 
             // Empty the list of plugins
+            foreach (var pluginInfo in _plugins)
+                pluginInfo.Dispose();
             _plugins.Clear();
+
+            // Load all built-in plugins
+            foreach (var builtInPlugin in _kernel.GetAll<IPlugin>())
+                _plugins.Add(PluginInfo.FromBuiltInPlugin(_kernel, builtInPlugin));
 
             // Iterate all plugin folders and load each plugin
             foreach (var directory in Directory.GetDirectories(Constants.DataFolder + "plugins"))
-                _plugins.Add(await LoadPluginFromFolder(directory));
-            
+                _plugins.Add(await PluginInfo.FromFolder(_kernel, directory));
+
             OnFinishedLoadedPlugins();
         }
 
@@ -57,44 +60,15 @@ namespace Artemis.Core.Services
 
         public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
-            // Don't attempt to locave VMs for something other than a module
-            if (pluginInfo.Plugin is IModule)
-                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this plugin as it's not a module.");
-            // Compile the ViewModel and get the type
-            var compile = await Task.Run(() => CSScript.LoadFile(pluginInfo.Folder + pluginInfo.ViewModel));
-            var vmType = compile.ExportedTypes.FirstOrDefault(t => typeof(IModuleViewModel).IsAssignableFrom(t));
-            if (vmType == null)
-                throw new ArtemisPluginException(pluginInfo, "Cannot locate a view model for this module.");
-           
-            // Instantiate the ViewModel with Ninject
-            var vm = (IModuleViewModel) _kernel.Get(vmType);
-            vm.PluginInfo = pluginInfo;
-            return vm;
+            return await pluginInfo.GetModuleViewModel(_kernel);
         }
-        
+
         public void Dispose()
         {
         }
 
-        private async Task<PluginInfo> LoadPluginFromFolder(string folder)
-        {
-            if (!folder.EndsWith("\\"))
-                folder += "\\";
-            if (!File.Exists(folder + "plugin.json"))
-                throw new ArtemisPluginException(null, "Failed to load plugin, no plugin.json found in " + folder);
-
-            var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(folder + "plugin.json"));
-            pluginInfo.Folder = folder;
-
-            // Load the main plugin which will contain a class implementing IPlugin
-            var plugin = await CSScript.Evaluator.LoadFileAsync<IPlugin>(folder + pluginInfo.Main);
-            pluginInfo.Plugin = plugin;
-
-            return pluginInfo;
-        }
-
         #region Events
-        
+
         public event EventHandler<PluginEventArgs> PluginLoaded;
         public event EventHandler<PluginEventArgs> PluginReloaded;
         public event EventHandler StartedLoadingPlugins;

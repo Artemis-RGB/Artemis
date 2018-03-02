@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Services.Interfaces;
+using Artemis.Plugins.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -16,6 +17,15 @@ namespace Artemis.Core.Ninject
                     .InheritedFrom<IArtemisService>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
+            });
+
+            // Bind all built-in plugins
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IPlugin>()
+                    .BindAllBaseClasses();
             });
         }
     }
