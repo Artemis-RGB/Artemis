@@ -49,8 +49,8 @@ namespace Artemis.Core.Services
                 Surface.LoadDevices(CorsairDeviceProvider.Instance);
                 Surface.LoadDevices(DMXDeviceProvider.Instance);
                 Surface.LoadDevices(LogitechDeviceProvider.Instance);
+                // Surface.LoadDevices(MsiDeviceProvider.Instance);
                 Surface.LoadDevices(NovationDeviceProvider.Instance);
-                Surface.LoadDevices(MsiDeviceProvider.Instance);
                 Surface.LoadDevices(RazerDeviceProvider.Instance);
 
                 // TODO SpoinkyNL 8-1-18: Load alignment

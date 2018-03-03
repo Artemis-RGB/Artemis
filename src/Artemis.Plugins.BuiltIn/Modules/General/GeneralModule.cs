@@ -1,14 +1,18 @@
-﻿using System;
+﻿using System.Diagnostics;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Interfaces;
 
-namespace Module.General
+namespace Artemis.Plugins.BuiltIn.Modules.General
 {
     public class GeneralModule : IModule
     {
+        private readonly ICoreService _coreService;
+
         public GeneralModule(ICoreService coreService)
         {
-            Console.WriteLine(coreService);
+            _coreService = coreService;
+
+            Debugger.Break();
         }
 
         public void LoadPlugin()
