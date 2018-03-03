@@ -2,7 +2,7 @@
 using Artemis.Plugins.Models;
 using Stylet;
 
-namespace Module.General
+namespace Artemis.Plugins.BuiltIn.Modules.General
 {
     public class GeneralViewModel : Screen, IModuleViewModel
     {

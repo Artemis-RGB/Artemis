@@ -67,6 +67,7 @@ namespace Artemis.Plugins.Models
         {
             // Make sure the right engine is used
             CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
+            CSScript.EvaluatorConfig.DebugBuild = true;
 
             if (!folder.EndsWith("\\"))
                 folder += "\\";
@@ -100,6 +101,7 @@ namespace Artemis.Plugins.Models
         {
             // Make sure the right engine is used
             CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
+            CSScript.EvaluatorConfig.DebugBuild = true;
 
             // Don't attempt to locave VMs for something other than a module
             if (!(Plugin is IModule))

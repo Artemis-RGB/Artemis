@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Module.General")]
+[assembly: AssemblyTitle("Artemis.Plugins.BuiltIn")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Module.General")]
+[assembly: AssemblyProduct("Artemis.Plugins.BuiltIn")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("58113cc5-a9ca-4ec3-ab4e-3c94b99268d8")]
+[assembly: Guid("106f08ae-5fe8-433e-aa65-64e5219b5fc7")]
 
 // Version information for an assembly consists of the following four values:
 //

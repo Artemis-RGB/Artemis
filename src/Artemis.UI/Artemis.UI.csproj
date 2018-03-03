@@ -224,6 +224,10 @@
       <Project>{9b811f9b-86b9-4771-87af-72bae7078a36}</Project>
       <Name>Artemis.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Artemis.Plugins.BuiltIn\Artemis.Plugins.BuiltIn.csproj">
+      <Project>{106f08ae-5fe8-433e-aa65-64e5219b5fc7}</Project>
+      <Name>Artemis.Plugins.BuiltIn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Artemis.Plugins\Artemis.Plugins.csproj">
       <Project>{cd23bc5e-57f0-46ce-a007-24d031146219}</Project>
       <Name>Artemis.Plugins</Name>
@@ -266,4 +270,8 @@
   <Import Project="..\packages\RGB.NET.Devices.Logitech.0.0.1.38\build\net45\RGB.NET.Devices.Logitech.targets" Condition="Exists('..\packages\RGB.NET.Devices.Logitech.0.0.1.38\build\net45\RGB.NET.Devices.Logitech.targets')" />
   <Import Project="..\packages\RGB.NET.Devices.Msi.0.0.1.38\build\net45\RGB.NET.Devices.Msi.targets" Condition="Exists('..\packages\RGB.NET.Devices.Msi.0.0.1.38\build\net45\RGB.NET.Devices.Msi.targets')" />
   <Import Project="..\packages\RGB.NET.Devices.Razer.0.0.1.38\build\net45\RGB.NET.Devices.Razer.targets" Condition="Exists('..\packages\RGB.NET.Devices.Razer.0.0.1.38\build\net45\RGB.NET.Devices.Razer.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>echo Copying built-in plugins...
+xcopy /s /y /q $(SolutionDir)Artemis.Plugins.BuiltIn\Modules %25ProgramData%25\Artemis\plugins</PostBuildEvent>
+  </PropertyGroup>
 </Project>
