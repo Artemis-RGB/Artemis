@@ -1,34 +1,22 @@
-﻿using System.Diagnostics;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
+﻿//css_inc GeneralViewModel.cs;
+//css_inc GeneralDataModel.cs;
+
+using System;
+using Artemis.Plugins.Abstract;
 
 namespace Artemis.Plugins.BuiltIn.Modules.General
 {
-    public class GeneralModule : IModule
+    public class GeneralModule : ProfileModule
     {
-        private readonly ICoreService _coreService;
-
-        public GeneralModule(ICoreService coreService)
+        public override Type ViewModelType
         {
-            _coreService = coreService;
-
-            Debugger.Break();
+            get { return typeof(GeneralViewModel); }
         }
 
-        public void LoadPlugin()
+        // True since the main data model is all this module shows
+        public override bool ExpandsMainDataModel
         {
-        }
-
-        public void UnloadPlugin()
-        {
-        }
-
-        public void Update(double deltaTime)
-        {
-        }
-
-        public void Render(double deltaTime)
-        {
+            get { return true; }
         }
     }
 }

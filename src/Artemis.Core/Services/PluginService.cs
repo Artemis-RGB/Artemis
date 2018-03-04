@@ -58,7 +58,7 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
-            return await pluginInfo.GetModuleViewModel(_kernel);
+            return pluginInfo.GetModuleViewModel(_kernel);
         }
 
         public void Dispose()

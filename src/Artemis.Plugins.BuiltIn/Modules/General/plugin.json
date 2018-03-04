@@ -1,6 +1,5 @@
 ﻿{
   "Name": "Default",
   "Version": "1.0.0",
-  "Main": "GeneralModule.cs",
-  "ViewModel": "GeneralViewModel.cs"
+  "Main": "GeneralModule.cs"
 }

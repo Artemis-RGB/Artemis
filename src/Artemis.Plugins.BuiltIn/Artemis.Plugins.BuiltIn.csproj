@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,15 +48,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Modules\General\GeneralModule.cs" />
-    <None Include="Modules\General\GeneralViewModel.cs" />
+    <Compile Include="Modules\General\GeneralModule.cs" />
+    <Compile Include="Modules\General\GeneralViewModel.cs" />
+    <Compile Include="Modules\General\GeneralDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Modules\General\GeneralView.xaml">
+    <Page Include="Modules\General\GeneralView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </None>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

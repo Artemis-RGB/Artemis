@@ -6,5 +6,6 @@
     /// </summary>
     public interface IDataModelExpansion : IPlugin
     {
+        void Update(double deltaTime);
     }
 }
