@@ -1,9 +1,4 @@
-﻿using System.Linq;
-using System.Reflection;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
-using Artemis.Plugins.Models;
-using Newtonsoft.Json;
+﻿using Artemis.Core.Services.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 

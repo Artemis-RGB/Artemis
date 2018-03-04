@@ -171,4 +171,4 @@
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-</metro:MetroWindow> 
+</metro:MetroWindow>

@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
-using RGB.NET.Brushes;
 using RGB.NET.Core;
-using RGB.NET.Devices.Asus;
 using RGB.NET.Devices.CoolerMaster;
 using RGB.NET.Devices.Corsair;
 using RGB.NET.Devices.DMX;
 using RGB.NET.Devices.Logitech;
-using RGB.NET.Devices.Msi;
 using RGB.NET.Devices.Novation;
 using RGB.NET.Devices.Razer;
-using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {

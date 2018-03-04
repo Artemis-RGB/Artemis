@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.UI.Controls.Visualizers"
                     xmlns:converters="clr-namespace:Artemis.UI.Converters">
-    
+
     <converters:ColorToSolidColorBrushConverter x:Key="ConverterColorToSolidColorBrush" />
 
     <ControlTemplate x:Key="ControlTemplateLedRectangle" TargetType="{x:Type controls:LedVisualizer}">
@@ -50,12 +50,12 @@
             <Path Opacity="0.5"
                   Clip="{Binding Data, RelativeSource={RelativeSource Self}}"
                   Stroke="{TemplateBinding BorderBrush}"
-                  StrokeThickness="2" 
+                  StrokeThickness="2"
                   Fill="{TemplateBinding Background}">
                 <Path.Data>
                     <PathGeometry Figures="{Binding Led.ShapeData, RelativeSource={RelativeSource TemplatedParent}}">
                         <PathGeometry.Transform>
-                            <ScaleTransform ScaleX="{Binding ActualWidth, ElementName=Border}" 
+                            <ScaleTransform ScaleX="{Binding ActualWidth, ElementName=Border}"
                                             ScaleY="{Binding ActualHeight, ElementName=Border}" />
                         </PathGeometry.Transform>
                     </PathGeometry>
@@ -67,11 +67,14 @@
     <Style x:Key="StyleLedVisualizer" TargetType="{x:Type controls:LedVisualizer}">
         <Setter Property="Width" Value="{Binding Led.LedRectangle.Size.Width, RelativeSource={RelativeSource Self}}" />
         <Setter Property="Height" Value="{Binding Led.LedRectangle.Size.Height, RelativeSource={RelativeSource Self}}" />
-        <Setter Property="Canvas.Left" Value="{Binding Led.LedRectangle.Location.X, RelativeSource={RelativeSource Self}}" />
-        <Setter Property="Canvas.Top" Value="{Binding Led.LedRectangle.Location.Y, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Canvas.Left"
+                Value="{Binding Led.LedRectangle.Location.X, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Canvas.Top"
+                Value="{Binding Led.LedRectangle.Location.Y, RelativeSource={RelativeSource Self}}" />
 
         <Setter Property="BorderBrush" Value="#000000" />
-        <Setter Property="Background" Value="{Binding Led.Color, RelativeSource={RelativeSource Self}, 
+        <Setter Property="Background"
+                Value="{Binding Led.Color, RelativeSource={RelativeSource Self}, 
                                                       Converter={StaticResource ConverterColorToSolidColorBrush}}" />
 
         <Setter Property="Template" Value="{StaticResource ControlTemplateLedRectangle}" />
@@ -80,7 +83,7 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="#FFFFFF" />
             </Trigger>
-            
+
             <DataTrigger Binding="{Binding Led.Shape, RelativeSource={RelativeSource Self}}" Value="Circle">
                 <Setter Property="Template" Value="{StaticResource ControlTemplateLedCircle}" />
             </DataTrigger>
@@ -91,5 +94,5 @@
         </Style.Triggers>
     </Style>
     <Style TargetType="{x:Type controls:LedVisualizer}" BasedOn="{StaticResource StyleLedVisualizer}" />
-    
+
 </ResourceDictionary>

@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
 namespace Artemis.Storage.Migrations
 {
@@ -9,8 +7,8 @@ namespace Artemis.Storage.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Folders",
-                columns: table => new
+                "Folders",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -22,28 +20,25 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Folders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Folders_Folders_FolderEntityId",
-                        column: x => x.FolderEntityId,
-                        principalTable: "Folders",
-                        principalColumn: "Id",
+                        "FK_Folders_Folders_FolderEntityId",
+                        x => x.FolderEntityId,
+                        "Folders",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Settings",
-                columns: table => new
+                "Settings",
+                table => new
                 {
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Settings", x => x.Name);
-                });
+                constraints: table => { table.PrimaryKey("PK_Settings", x => x.Name); });
 
             migrationBuilder.CreateTable(
-                name: "Layers",
-                columns: table => new
+                "Layers",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -56,16 +51,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Layers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Layers_Folders_FolderEntityId",
-                        column: x => x.FolderEntityId,
-                        principalTable: "Folders",
-                        principalColumn: "Id",
+                        "FK_Layers_Folders_FolderEntityId",
+                        x => x.FolderEntityId,
+                        "Folders",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profiles",
-                columns: table => new
+                "Profiles",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -77,16 +72,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Profiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Profiles_Folders_RootFolderId",
-                        column: x => x.RootFolderId,
-                        principalTable: "Folders",
-                        principalColumn: "Id",
+                        "FK_Profiles_Folders_RootFolderId",
+                        x => x.RootFolderId,
+                        "Folders",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LayerSettings",
-                columns: table => new
+                "LayerSettings",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -98,16 +93,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_LayerSettings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LayerSettings_Layers_LayerEntityId",
-                        column: x => x.LayerEntityId,
-                        principalTable: "Layers",
-                        principalColumn: "Id",
+                        "FK_LayerSettings_Layers_LayerEntityId",
+                        x => x.LayerEntityId,
+                        "Layers",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Leds",
-                columns: table => new
+                "Leds",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -119,16 +114,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Leds", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Leds_Layers_LayerId",
-                        column: x => x.LayerId,
-                        principalTable: "Layers",
-                        principalColumn: "Id",
+                        "FK_Leds_Layers_LayerId",
+                        x => x.LayerId,
+                        "Layers",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Keypoints",
-                columns: table => new
+                "Keypoints",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
@@ -140,66 +135,66 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Keypoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Keypoints_LayerSettings_LayerSettingEntityId",
-                        column: x => x.LayerSettingEntityId,
-                        principalTable: "LayerSettings",
-                        principalColumn: "Id",
+                        "FK_Keypoints_LayerSettings_LayerSettingEntityId",
+                        x => x.LayerSettingEntityId,
+                        "LayerSettings",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Folders_FolderEntityId",
-                table: "Folders",
-                column: "FolderEntityId");
+                "IX_Folders_FolderEntityId",
+                "Folders",
+                "FolderEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Keypoints_LayerSettingEntityId",
-                table: "Keypoints",
-                column: "LayerSettingEntityId");
+                "IX_Keypoints_LayerSettingEntityId",
+                "Keypoints",
+                "LayerSettingEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Layers_FolderEntityId",
-                table: "Layers",
-                column: "FolderEntityId");
+                "IX_Layers_FolderEntityId",
+                "Layers",
+                "FolderEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LayerSettings_LayerEntityId",
-                table: "LayerSettings",
-                column: "LayerEntityId");
+                "IX_LayerSettings_LayerEntityId",
+                "LayerSettings",
+                "LayerEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leds_LayerId",
-                table: "Leds",
-                column: "LayerId");
+                "IX_Leds_LayerId",
+                "Leds",
+                "LayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_RootFolderId",
-                table: "Profiles",
-                column: "RootFolderId");
+                "IX_Profiles_RootFolderId",
+                "Profiles",
+                "RootFolderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Keypoints");
+                "Keypoints");
 
             migrationBuilder.DropTable(
-                name: "Leds");
+                "Leds");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                "Profiles");
 
             migrationBuilder.DropTable(
-                name: "Settings");
+                "Settings");
 
             migrationBuilder.DropTable(
-                name: "LayerSettings");
+                "LayerSettings");
 
             migrationBuilder.DropTable(
-                name: "Layers");
+                "Layers");
 
             migrationBuilder.DropTable(
-                name: "Folders");
+                "Folders");
         }
     }
 }

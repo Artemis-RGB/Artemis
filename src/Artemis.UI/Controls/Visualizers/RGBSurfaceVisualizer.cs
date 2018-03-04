@@ -14,7 +14,7 @@ namespace Artemis.UI.Controls.Visualizers
 {
     /// <inheritdoc />
     /// <summary>
-    /// Visualizes the <see cref="T:RGB.NET.Core.RGBSurface" /> in an wpf-application.
+    ///     Visualizes the <see cref="T:RGB.NET.Core.RGBSurface" /> in an wpf-application.
     /// </summary>
     [TemplatePart(Name = PART_CANVAS, Type = typeof(Canvas))]
     public class RGBSurfaceVisualizer : Control
@@ -41,12 +41,12 @@ namespace Artemis.UI.Controls.Visualizers
 
         /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:RGB.NET.WPF.Controls.RGBSurfaceVisualizer" /> class.
+        ///     Initializes a new instance of the <see cref="T:RGB.NET.WPF.Controls.RGBSurfaceVisualizer" /> class.
         /// </summary>
         public RGBSurfaceVisualizer()
         {
-            this.Loaded += OnLoaded;
-            this.Unloaded += OnUnloaded;
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -54,7 +54,7 @@ namespace Artemis.UI.Controls.Visualizers
             _surface = RGBSurface.Instance;
 
             _surface.SurfaceLayoutChanged += RGBSurfaceOnSurfaceLayoutChanged;
-            foreach (IRGBDevice device in _surface.Devices)
+            foreach (var device in _surface.Devices)
                 _newDevices.Add(device);
 
             UpdateSurface();
@@ -70,7 +70,7 @@ namespace Artemis.UI.Controls.Visualizers
         private void RGBSurfaceOnSurfaceLayoutChanged(SurfaceLayoutChangedEventArgs args)
         {
             if (args.DeviceAdded)
-                foreach (IRGBDevice device in args.Devices)
+                foreach (var device in args.Devices)
                     _newDevices.Add(device);
 
             UpdateSurface();
@@ -89,6 +89,7 @@ namespace Artemis.UI.Controls.Visualizers
                 _canvas.MouseLeftButtonDown -= ScrollViewerOnMouseLeftButtonDown;
                 _canvas.MouseLeftButtonUp -= ScrollViewerOnMouseLeftButtonUp;
             }
+
             _canvas?.Children.Clear();
             _canvas = (Canvas) GetTemplateChild(PART_CANVAS);
 
@@ -151,11 +152,11 @@ namespace Artemis.UI.Controls.Visualizers
 
         private void UpdateSurface()
         {
-            if ((_canvas == null) || (_surface == null)) return;
+            if (_canvas == null || _surface == null) return;
 
             if (_newDevices.Count > 0)
             {
-                foreach (IRGBDevice device in _newDevices)
+                foreach (var device in _newDevices)
                     _canvas.Children.Add(new RGBDeviceVisualizer {Device = device});
                 _newDevices.Clear();
             }
