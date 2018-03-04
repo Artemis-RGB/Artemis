@@ -22,8 +22,9 @@ namespace Artemis.UI.Stylet
 
         private UIElement CreateViewForPlugin(object model)
         {
+            var viewName = model.GetType().Name.Replace("Model", "");
             var pluginInfo = ((IModuleViewModel) model).PluginInfo;
-            var viewPath = pluginInfo.Folder + pluginInfo.ViewModel.Replace("ViewModel", "View").Replace(".cs", ".xaml");
+            var viewPath = $"{pluginInfo.Folder}{viewName}.xaml";
             // There doesn't have to be a view so make sure one exists
             if (!File.Exists(viewPath))
                 return null;

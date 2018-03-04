@@ -1,10 +1,12 @@
 ﻿using System;
-using Artemis.Core.Events;
 
 namespace Artemis.Core.Services.Interfaces
 {
-    public interface ICoreService: IArtemisService, IDisposable
+    public interface ICoreService : IArtemisService, IDisposable
     {
+        /// <summary>
+        ///     Indicates wether or not the core has been initialized
+        /// </summary>
         bool IsInitialized { get; set; }
 
         /// <summary>

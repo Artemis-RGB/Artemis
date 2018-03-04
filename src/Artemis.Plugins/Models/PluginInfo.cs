@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,6 +13,8 @@ namespace Artemis.Plugins.Models
 {
     public class PluginInfo : IDisposable
     {
+        private static Assembly _assembly;
+
         /// <summary>
         ///     The name of the plugin
         /// </summary>
@@ -30,11 +31,6 @@ namespace Artemis.Plugins.Models
         public string Main { get; set; }
 
         /// <summary>
-        ///     The file implementing IPluginViewModel, loaded when opened in the UI
-        /// </summary>
-        public string ViewModel { get; set; }
-
-        /// <summary>
         ///     The instantiated plugin, available after successful load
         /// </summary>
         [JsonIgnore]
@@ -45,12 +41,6 @@ namespace Artemis.Plugins.Models
         /// </summary>
         [JsonIgnore]
         public string Folder { get; set; }
-
-        /// <summary>
-        ///     Indicates wether this is a built-in plugin.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsBuiltIn { get; private set; }
 
         public void Dispose()
         {
@@ -68,7 +58,7 @@ namespace Artemis.Plugins.Models
             // Make sure the right engine is used
             CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
             CSScript.EvaluatorConfig.DebugBuild = true;
-
+            CSScript.GlobalSettings.SearchDirs = folder;
             if (!folder.EndsWith("\\"))
                 folder += "\\";
             if (!File.Exists(folder + "plugin.json"))
@@ -78,8 +68,8 @@ namespace Artemis.Plugins.Models
             pluginInfo.Folder = folder;
 
             // Load the main script and get the type
-            var assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(folder + pluginInfo.Main));
-            var pluginType = assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
+            _assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(folder + pluginInfo.Main));
+            var pluginType = _assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
             if (!pluginType.Any())
                 throw new ArtemisPluginException(pluginInfo, "Failed to load plugin, no type found that implements IPlugin");
             if (pluginType.Count > 1)
@@ -91,33 +81,27 @@ namespace Artemis.Plugins.Models
 
             return pluginInfo;
         }
-        
+
         /// <summary>
         ///     Gets the view model of the module accompanying the provided plugin info
         /// </summary>
         /// <param name="kernel">The Ninject kernel to use for DI</param>
         /// <returns></returns>
-        public async Task<IModuleViewModel> GetModuleViewModel(IKernel kernel)
+        public IModuleViewModel GetModuleViewModel(IKernel kernel)
         {
-            // Make sure the right engine is used
-            CSScript.EvaluatorConfig.Engine = EvaluatorEngine.CodeDom;
-            CSScript.EvaluatorConfig.DebugBuild = true;
-
             // Don't attempt to locave VMs for something other than a module
-            if (!(Plugin is IModule))
+            if (Plugin == null)
+                throw new ArtemisPluginException(this, "Cannot locate a view model for this plugin because it's not compiled.");
+            if (!(Plugin is IModule module))
                 throw new ArtemisPluginException(this, "Cannot locate a view model for this plugin as it's not a module.");
 
-            // Use the plugin's assembly as the VM is precompiled if built in, otherwise compile the VM into a new assembly
-            var assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(Folder + ViewModel));
-
-            var vmType = assembly.GetTypes().Where(t => typeof(IModuleViewModel).IsAssignableFrom(t)).ToList();
-            if (!vmType.Any())
-                throw new ArtemisPluginException(this, "Failed to load plugin, no type found that implements IModuleViewModel");
-            if (vmType.Count > 1)
-                throw new ArtemisPluginException(this, "Failed to load plugin, more than one type found that implements IModuleViewModel");
+            // Get the type from the module
+            var vmType = module.ViewModelType;
+            if (!typeof(IModuleViewModel).IsAssignableFrom(vmType))
+                throw new ArtemisPluginException(this, "ViewModel must implement IModuleViewModel.");
 
             // Instantiate the ViewModel with Ninject
-            var vm = (IModuleViewModel) kernel.Get(vmType.First());
+            var vm = (IModuleViewModel) kernel.Get(vmType);
             vm.PluginInfo = this;
             return vm;
         }
