@@ -11,6 +11,16 @@ namespace Artemis.UI.Controls.Visualizers
     /// </summary>
     public class LedVisualizer : Control
     {
+        public void Select()
+        {
+            BorderBrush = new SolidColorBrush(Colors.RoyalBlue);
+        }
+
+        public void Deselect()
+        {
+            BorderBrush = new SolidColorBrush(Colors.Black);
+        }
+
         #region DependencyProperties
 
         // ReSharper disable InconsistentNaming
@@ -33,15 +43,5 @@ namespace Artemis.UI.Controls.Visualizers
         // ReSharper restore InconsistentNaming
 
         #endregion
-
-        public void Select()
-        {
-            BorderBrush = new SolidColorBrush(Colors.RoyalBlue);
-        }
-
-        public void Deselect()
-        {
-            BorderBrush = new SolidColorBrush(Colors.Black);
-        }
     }
 }

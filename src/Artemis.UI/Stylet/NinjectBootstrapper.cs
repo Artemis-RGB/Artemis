@@ -19,7 +19,7 @@ namespace Artemis.UI.Stylet
             DefaultConfigureIoC(Kernel);
             ConfigureIoC(Kernel);
         }
-  
+
 
         /// <summary>
         ///     Carries out default configuration of the IoC container. Override if you don't want to do this

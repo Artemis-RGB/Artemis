@@ -10,8 +10,8 @@ namespace Artemis.Core.Services
 {
     public class CoreService : ICoreService
     {
-        private readonly IRgbService _rgbService;
         private readonly IPluginService _pluginService;
+        private readonly IRgbService _rgbService;
 
         public CoreService(IPluginService pluginService, IRgbService rgbService)
         {
@@ -38,7 +38,7 @@ namespace Artemis.Core.Services
             // Initialize the services
             await _pluginService.LoadPlugins();
             await _rgbService.LoadDevices();
-            
+
             OnInitialized();
         }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Core.Attributes;
+﻿using Artemis.Core.Attributes;
 using Artemis.Plugins.Interfaces;
 
 namespace Artemis.Plugins.BuiltIn.Modules.General

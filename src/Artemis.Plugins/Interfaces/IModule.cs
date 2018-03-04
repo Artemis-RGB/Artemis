@@ -1,5 +1,4 @@
 ﻿using System;
-using Ninject;
 
 namespace Artemis.Plugins.Interfaces
 {
@@ -19,7 +18,7 @@ namespace Artemis.Plugins.Interfaces
         ///     accessed by profiles in this module
         /// </summary>
         bool ExpandsMainDataModel { get; }
-        
+
         /// <summary>
         ///     Called each frame when the module must update
         /// </summary>

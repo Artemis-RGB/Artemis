@@ -6,7 +6,7 @@ namespace Artemis.UI.Controls.Visualizers
 {
     /// <inheritdoc />
     /// <summary>
-    /// Visualizes a <see cref="T:RGB.NET.Core.IRGBDevice" /> in an wpf-application.
+    ///     Visualizes a <see cref="T:RGB.NET.Core.IRGBDevice" /> in an wpf-application.
     /// </summary>
     [TemplatePart(Name = PART_CANVAS, Type = typeof(Canvas))]
     public class RGBDeviceVisualizer : Control
@@ -18,7 +18,7 @@ namespace Artemis.UI.Controls.Visualizers
         #endregion
 
         #region Properties & Fields
-        
+
         public Canvas Canvas { get; private set; }
 
         #endregion
@@ -28,13 +28,13 @@ namespace Artemis.UI.Controls.Visualizers
         // ReSharper disable InconsistentNaming
 
         /// <summary>
-        /// Backing-property for the <see cref="Device"/>-property.
+        ///     Backing-property for the <see cref="Device" />-property.
         /// </summary>
         public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(
             "Device", typeof(IRGBDevice), typeof(RGBDeviceVisualizer), new PropertyMetadata(default(IRGBDevice), DeviceChanged));
 
         /// <summary>
-        /// Gets or sets the <see cref="IRGBDevice"/> to visualize.
+        ///     Gets or sets the <see cref="IRGBDevice" /> to visualize.
         /// </summary>
         public IRGBDevice Device
         {
@@ -69,7 +69,7 @@ namespace Artemis.UI.Controls.Visualizers
 
             if (Device == null) return;
 
-            foreach (Led led in Device)
+            foreach (var led in Device)
                 Canvas.Children.Add(new LedVisualizer {Led = led});
         }
 
