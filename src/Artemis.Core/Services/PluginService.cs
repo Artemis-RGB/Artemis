@@ -39,7 +39,7 @@ namespace Artemis.Core.Services
 
             // Empty the list of plugins
             foreach (var pluginInfo in _plugins)
-                pluginInfo.Dispose();
+                pluginInfo.UnloadPlugin();
             _plugins.Clear();
 
             // Iterate all plugin folders and load each plugin
@@ -52,17 +52,24 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public async Task ReloadPlugin(PluginInfo pluginInfo)
         {
-            throw new NotImplementedException();
+            pluginInfo.UnloadPlugin();
+            await pluginInfo.CompilePlugin(_kernel);
+
+            OnPluginReloaded(new PluginEventArgs(pluginInfo));
         }
 
         /// <inheritdoc />
         public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
-            return pluginInfo.GetModuleViewModel(_kernel);
+            return await Task.Run(() => pluginInfo.GetModuleViewModel(_kernel));
         }
 
         public void Dispose()
         {
+            // Empty the list of plugins
+            foreach (var pluginInfo in _plugins)
+                pluginInfo.UnloadPlugin();
+            _plugins.Clear();
         }
 
         #region Events

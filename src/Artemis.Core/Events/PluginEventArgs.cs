@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Plugins.Interfaces;
+using Artemis.Plugins.Models;
 
 namespace Artemis.Core.Events
 {
@@ -9,11 +9,11 @@ namespace Artemis.Core.Events
         {
         }
 
-        public PluginEventArgs(IPlugin plugin)
+        public PluginEventArgs(PluginInfo pluginInfo)
         {
-            Plugin = plugin;
+            PluginInfo = pluginInfo;
         }
 
-        public IPlugin Plugin { get; }
+        public PluginInfo PluginInfo { get; }
     }
 }
