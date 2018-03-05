@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ using Ninject;
 
 namespace Artemis.Plugins.Models
 {
-    public class PluginInfo : IDisposable
+    public class PluginInfo
     {
         private static Assembly _assembly;
 
@@ -42,9 +41,13 @@ namespace Artemis.Plugins.Models
         [JsonIgnore]
         public string Folder { get; set; }
 
-        public void Dispose()
+        /// <summary>
+        ///     Unloads the plugin and clears the plugin info's internal data
+        /// </summary>
+        public void UnloadPlugin()
         {
             Plugin.UnloadPlugin();
+            _assembly = null;
         }
 
         /// <summary>
@@ -67,19 +70,28 @@ namespace Artemis.Plugins.Models
             var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(folder + "plugin.json"));
             pluginInfo.Folder = folder;
 
+            await pluginInfo.CompilePlugin(kernel);
+            return pluginInfo;
+        }
+
+        /// <summary>
+        ///     Compiles the plugin's main CS file and any of it's includes and instantiates it.
+        /// </summary>
+        /// <param name="kernel">The Ninject kernel to use for DI</param>
+        public async Task CompilePlugin(IKernel kernel)
+        {
             // Load the main script and get the type
-            _assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(folder + pluginInfo.Main));
+            _assembly = await CSScript.Evaluator.CompileCodeAsync(File.ReadAllText(Folder + Main));
+
             var pluginType = _assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
             if (!pluginType.Any())
-                throw new ArtemisPluginException(pluginInfo, "Failed to load plugin, no type found that implements IPlugin");
+                throw new ArtemisPluginException(this, "Failed to load plugin, no type found that implements IPlugin");
             if (pluginType.Count > 1)
-                throw new ArtemisPluginException(pluginInfo, "Failed to load plugin, more than one type found that implements IPlugin");
+                throw new ArtemisPluginException(this, "Failed to load plugin, more than one type found that implements IPlugin");
 
             // Instantiate the plugin with Ninject
-            pluginInfo.Plugin = (IPlugin) kernel.Get(pluginType.First());
-            pluginInfo.Plugin.LoadPlugin();
-
-            return pluginInfo;
+            Plugin = (IPlugin) kernel.Get(pluginType.First());
+            Plugin.LoadPlugin();
         }
 
         /// <summary>
