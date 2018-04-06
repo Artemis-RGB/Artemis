@@ -33,11 +33,17 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="RGB.NET.Core, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Core.0.0.1.48\lib\net45\RGB.NET.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Stylet, Version=1.1.21.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.1.21\lib\net45\Stylet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -68,10 +74,6 @@
     <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
       <Project>{9B811F9B-86B9-4771-87AF-72BAE7078A36}</Project>
       <Name>Artemis.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Artemis.Plugins\Artemis.Plugins.csproj">
-      <Project>{CD23BC5E-57F0-46CE-A007-24D031146219}</Project>
-      <Name>Artemis.Plugins</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

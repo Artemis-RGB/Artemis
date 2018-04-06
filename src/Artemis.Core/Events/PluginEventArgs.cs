@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Plugins.Models;
+using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Events
 {

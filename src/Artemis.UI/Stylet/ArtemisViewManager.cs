@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Markup;
-using Artemis.Plugins.Interfaces;
+using Artemis.Core.Plugins.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Stylet

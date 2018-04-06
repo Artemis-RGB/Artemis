@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
-using Artemis.Plugins.Models;
 using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 

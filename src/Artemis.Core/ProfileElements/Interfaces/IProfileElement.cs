@@ -11,6 +11,16 @@ namespace Artemis.Core.ProfileElements.Interfaces
         List<IProfileElement> Children { get; set; }
 
         /// <summary>
+        ///     The order in which this element appears in the update loop and editor
+        /// </summary>
+        int Order { get; set; }
+
+        /// <summary>
+        ///     The name which appears in the editor
+        /// </summary>
+        string Name { get; set; }
+
+        /// <summary>
         ///     Updates the element
         /// </summary>
         void Update();

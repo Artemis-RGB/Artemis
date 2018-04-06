@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Exceptions;
+using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Models;
+using Artemis.Core.ProfileElements;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
-using Artemis.Plugins.Models;
 using Ninject;
 
 namespace Artemis.Core.Services
@@ -62,6 +65,22 @@ namespace Artemis.Core.Services
         public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
         {
             return await Task.Run(() => pluginInfo.GetModuleViewModel(_kernel));
+        }
+
+        /// <inheritdoc />
+        public ILayerType GetLayerTypeByGuid(Guid layerTypeGuid)
+        {
+            var pluginInfo = _plugins.FirstOrDefault(p => p.Guid == layerTypeGuid);
+            if (pluginInfo == null)
+                return null;
+
+            // Layer types are instantiated per layer so lets compile and return a new instance
+            if (!(pluginInfo.Plugin is ILayerType))
+            {
+                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement ILayerType");
+            }
+
+            return (ILayerType) pluginInfo.Plugin;
         }
 
         public void Dispose()
