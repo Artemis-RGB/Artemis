@@ -5,98 +5,99 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace Artemis.Storage.Migrations
 {
     [DbContext(typeof(StorageContext))]
-    [Migration("20180124134310_InitialCreate")]
+    [Migration("20180406175247_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
+                .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
             modelBuilder.Entity("Artemis.Storage.Entities.FolderEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("FolderEntityId");
+                    b.Property<string>("FolderEntityGuid");
 
                     b.Property<string>("Name");
 
                     b.Property<int>("Order");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
-                    b.HasIndex("FolderEntityId");
+                    b.HasIndex("FolderEntityGuid");
 
                     b.ToTable("Folders");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.KeypointEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("LayerSettingEntityId");
+                    b.Property<string>("LayerSettingEntityGuid");
 
                     b.Property<int>("Time");
 
                     b.Property<string>("Value");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
-                    b.HasIndex("LayerSettingEntityId");
+                    b.HasIndex("LayerSettingEntityGuid");
 
                     b.ToTable("Keypoints");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LayerEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("FolderEntityId");
+                    b.Property<string>("FolderEntityGuid");
 
                     b.Property<string>("Name");
 
                     b.Property<int>("Order");
 
-                    b.Property<string>("Type");
+                    b.HasKey("Guid");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("FolderEntityId");
+                    b.HasIndex("FolderEntityGuid");
 
                     b.ToTable("Layers");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LayerSettingEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("LayerEntityId");
+                    b.Property<string>("LayerEntityGuid");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("Value");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
-                    b.HasIndex("LayerEntityId");
+                    b.HasIndex("LayerEntityGuid");
 
                     b.ToTable("LayerSettings");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LedEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("LayerGuid");
 
                     b.Property<int>("LayerId");
 
@@ -104,27 +105,29 @@ namespace Artemis.Storage.Migrations
 
                     b.Property<string>("LimitedToDevice");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
-                    b.HasIndex("LayerId");
+                    b.HasIndex("LayerGuid");
 
                     b.ToTable("Leds");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.ProfileEntity", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Module");
 
                     b.Property<string>("Name");
 
+                    b.Property<Guid>("PluginGuid");
+
+                    b.Property<string>("RootFolderGuid");
+
                     b.Property<int>("RootFolderId");
 
-                    b.HasKey("Id");
+                    b.HasKey("Guid");
 
-                    b.HasIndex("RootFolderId");
+                    b.HasIndex("RootFolderGuid");
 
                     b.ToTable("Profiles");
                 });
@@ -145,44 +148,42 @@ namespace Artemis.Storage.Migrations
                 {
                     b.HasOne("Artemis.Storage.Entities.FolderEntity")
                         .WithMany("Folders")
-                        .HasForeignKey("FolderEntityId");
+                        .HasForeignKey("FolderEntityGuid");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.KeypointEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.LayerSettingEntity")
                         .WithMany("Keypoints")
-                        .HasForeignKey("LayerSettingEntityId");
+                        .HasForeignKey("LayerSettingEntityGuid");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LayerEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.FolderEntity")
                         .WithMany("Layers")
-                        .HasForeignKey("FolderEntityId");
+                        .HasForeignKey("FolderEntityGuid");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LayerSettingEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.LayerEntity")
                         .WithMany("Settings")
-                        .HasForeignKey("LayerEntityId");
+                        .HasForeignKey("LayerEntityGuid");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.LedEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.LayerEntity", "Layer")
                         .WithMany("Leds")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("LayerGuid");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.ProfileEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.FolderEntity", "RootFolder")
                         .WithMany()
-                        .HasForeignKey("RootFolderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RootFolderGuid");
                 });
 #pragma warning restore 612, 618
         }

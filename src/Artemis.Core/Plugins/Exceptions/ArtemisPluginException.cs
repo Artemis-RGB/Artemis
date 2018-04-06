@@ -1,7 +1,7 @@
 ﻿using System;
-using Artemis.Plugins.Models;
+using Artemis.Core.Plugins.Models;
 
-namespace Artemis.Plugins.Exceptions
+namespace Artemis.Core.Plugins.Exceptions
 {
     public class ArtemisPluginException : Exception
     {

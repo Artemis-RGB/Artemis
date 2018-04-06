@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Plugins.Interfaces
+namespace Artemis.Core.Plugins.Interfaces
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,7 +1,7 @@
-﻿using Artemis.Plugins.Models;
+﻿using Artemis.Core.Plugins.Models;
 using Stylet;
 
-namespace Artemis.Plugins.Interfaces
+namespace Artemis.Core.Plugins.Interfaces
 {
     /// <inheritdoc />
     /// <summary>

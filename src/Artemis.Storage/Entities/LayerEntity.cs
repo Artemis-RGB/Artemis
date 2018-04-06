@@ -5,12 +5,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Artemis.Storage.Entities
 {
     [Table("Layers")]
-    internal class LayerEntity
+    public class LayerEntity
     {
         [Key]
-        public int Id { get; set; }
-
-        public string Type { get; set; }
+        public string Guid { get; set; }
 
         public virtual ICollection<LedEntity> Leds { get; set; }
         public virtual ICollection<LayerSettingEntity> Settings { get; set; }

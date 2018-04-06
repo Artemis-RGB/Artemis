@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models;
+using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
 
 namespace Artemis.Core.Services
 {

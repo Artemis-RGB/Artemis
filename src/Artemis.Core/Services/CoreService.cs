@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Plugins.Interfaces;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services

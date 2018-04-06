@@ -1,5 +1,5 @@
 ﻿using Artemis.Core.Attributes;
-using Artemis.Plugins.Interfaces;
+using Artemis.Core.Plugins.Interfaces;
 
 namespace Artemis.Plugins.BuiltIn.Modules.General
 {

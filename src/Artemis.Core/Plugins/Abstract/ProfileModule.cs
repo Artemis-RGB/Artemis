@@ -1,7 +1,7 @@
 ﻿using System;
-using Artemis.Plugins.Interfaces;
+using Artemis.Core.Plugins.Interfaces;
 
-namespace Artemis.Plugins.Abstract
+namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ProfileModule : IModule
     {
@@ -18,12 +18,6 @@ namespace Artemis.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public void UnloadPlugin()
-        {
-            // Unload the last active profile
-        }
-
-        /// <inheritdoc />
         public virtual void Update(double deltaTime)
         {
             // Update the profile
@@ -33,6 +27,11 @@ namespace Artemis.Plugins.Abstract
         public virtual void Render(double deltaTime)
         {
             // Render the profile
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
         }
     }
 }

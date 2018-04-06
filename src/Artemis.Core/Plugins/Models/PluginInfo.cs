@@ -1,18 +1,24 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Artemis.Plugins.Exceptions;
-using Artemis.Plugins.Interfaces;
+using Artemis.Core.Plugins.Exceptions;
+using Artemis.Core.Plugins.Interfaces;
 using CSScriptLibrary;
 using Newtonsoft.Json;
 using Ninject;
 
-namespace Artemis.Plugins.Models
+namespace Artemis.Core.Plugins.Models
 {
     public class PluginInfo
     {
         private static Assembly _assembly;
+
+        /// <summary>
+        ///     The plugin's GUID
+        /// </summary>
+        public Guid Guid { get; set; }
 
         /// <summary>
         ///     The name of the plugin
@@ -46,7 +52,7 @@ namespace Artemis.Plugins.Models
         /// </summary>
         public void UnloadPlugin()
         {
-            Plugin.UnloadPlugin();
+            Plugin.Dispose();
             _assembly = null;
         }
 
