@@ -1,4 +1,0 @@
-language: csharp
-mono:
-  - latest
-solution: ./src/Artemis.sln
