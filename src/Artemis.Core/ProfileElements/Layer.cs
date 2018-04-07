@@ -10,18 +10,19 @@ namespace Artemis.Core.ProfileElements
 {
     public class Layer : IProfileElement
     {
-        public Layer()
+        public Layer(Profile profile)
         {
+            Profile = profile;
             Children = new List<IProfileElement>();
         }
 
+        public Profile Profile { get; }
         public ILayerType LayerType { get; private set; }
-
         public List<IProfileElement> Children { get; set; }
         public int Order { get; set; }
         public string Name { get; set; }
 
-        public void Update()
+        public void Update(double deltaTime)
         {
             if (LayerType == null)
                 return;
@@ -32,40 +33,43 @@ namespace Artemis.Core.ProfileElements
             }
         }
 
-        public void Render(IRGBDevice rgbDevice)
+        public void Render(double deltaTime, RGBSurface surface)
         {
             if (LayerType == null)
                 return;
 
             lock (LayerType)
             {
-                LayerType.Render(this, rgbDevice);
+                LayerType.Render(this, surface);
             }
         }
 
-        public static Layer FromLayerEntity(LayerEntity layerEntity, IPluginService pluginService)
+        public static Layer FromLayerEntity(Profile profile, LayerEntity layerEntity, IPluginService pluginService)
         {
-            var layer = new Layer
+            var layer = new Layer(profile)
             {
                 Name = layerEntity.Name,
                 Order = layerEntity.Order,
                 LayerType = pluginService.GetLayerTypeByGuid(Guid.Parse(layerEntity.Guid))
             };
-            
+
             return layer;
         }
 
         public void UpdateLayerType(ILayerType layerType)
         {
             if (LayerType != null)
-            {
                 lock (LayerType)
                 {
                     LayerType.Dispose();
                 }
-            }
 
             LayerType = layerType;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Profile)}: {Profile}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
     }
 }

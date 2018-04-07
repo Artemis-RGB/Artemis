@@ -1,4 +1,5 @@
 ﻿using System;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Interfaces
 {
@@ -29,6 +30,7 @@ namespace Artemis.Core.Plugins.Interfaces
         ///     Called each frame when the module must render
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
-        void Render(double deltaTime);
+        /// <param name="surface">The RGB Surface to render to</param>
+        void Render(double deltaTime, RGBSurface surface);
     }
 }

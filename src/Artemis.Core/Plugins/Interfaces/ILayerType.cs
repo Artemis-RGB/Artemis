@@ -18,8 +18,6 @@ namespace Artemis.Core.Plugins.Interfaces
         /// <summary>
         ///     Renders the layer type
         /// </summary>
-        void Render(Layer device, IRGBDevice rgbDevice);
-
-        ILayerType ApplyToLayer(Layer layer);
+        void Render(Layer device, RGBSurface surface);
     }
 }

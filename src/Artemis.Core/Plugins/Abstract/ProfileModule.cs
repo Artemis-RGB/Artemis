@@ -1,10 +1,14 @@
 ﻿using System;
 using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.ProfileElements;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ProfileModule : IModule
     {
+        public Profile ActiveProfile { get; private set; }
+
         /// <inheritdoc />
         public abstract Type ViewModelType { get; }
 
@@ -17,16 +21,38 @@ namespace Artemis.Core.Plugins.Abstract
             // Load and activate the last active profile
         }
 
-        /// <inheritdoc />
-        public virtual void Update(double deltaTime)
+        public void ChangeActiveProfile(Profile profile)
         {
-            // Update the profile
+            lock (this)
+            {
+                if (profile == null)
+                    throw new ArgumentNullException(nameof(profile));
+                
+                ActiveProfile?.Deactivate();
+
+                ActiveProfile = profile;
+                ActiveProfile.Activate();
+            }
         }
 
         /// <inheritdoc />
-        public virtual void Render(double deltaTime)
+        public virtual void Update(double deltaTime)
         {
-            // Render the profile
+            lock (this)
+            {
+                // Update the profile
+                ActiveProfile?.Update(deltaTime);
+            }
+        }
+
+        /// <inheritdoc />
+        public virtual void Render(double deltaTime, RGBSurface surface)
+        {
+            lock (this)
+            {
+                // Render the profile
+                ActiveProfile?.Render(deltaTime, surface);
+            }
         }
 
         /// <inheritdoc />

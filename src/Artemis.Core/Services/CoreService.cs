@@ -51,7 +51,7 @@ namespace Artemis.Core.Services
                     module.Update(args.DeltaTime);
                 // Render all active modules
                 foreach (var module in _pluginService.Plugins.OfType<IModule>())
-                    module.Render(args.DeltaTime);
+                    module.Render(args.DeltaTime, _rgbService.Surface);
             }
             catch (Exception e)
             {
