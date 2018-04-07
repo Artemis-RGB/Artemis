@@ -1,2 +1,4 @@
 language: csharp
 solution: ./src/Artemis.sln
+install:
+- travis_retry nuget restore -source "https://api.nuget.org/v3/index.json;https://www.myget.org/F/rgb_net/api/v3/index.json" ./Fibonacci/Fibonacci.sln 
