@@ -21,7 +21,9 @@ namespace Artemis.Core.Services
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
-            Surface.UpdateMode = UpdateMode.Continuous;
+
+            var updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 30};
+            Surface.RegisterUpdateTrigger(updateTrigger);
         }
 
         /// <inheritdoc />
@@ -50,8 +52,6 @@ namespace Artemis.Core.Services
 
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevices();
-
-                Surface.UpdateMode = UpdateMode.Continuous;
             });
 
             OnFinishedLoadedDevices();
