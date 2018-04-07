@@ -123,5 +123,10 @@ namespace Artemis.Core.Plugins.Models
             vm.PluginInfo = this;
             return vm;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Guid)}: {Guid}, {nameof(Name)}: {Name}, {nameof(Version)}: {Version}";
+        }
     }
 }

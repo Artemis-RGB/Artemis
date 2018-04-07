@@ -23,11 +23,12 @@ namespace Artemis.Core.ProfileElements.Interfaces
         /// <summary>
         ///     Updates the element
         /// </summary>
-        void Update();
+        /// <param name="deltaTime"></param>
+        void Update(double deltaTime);
 
         /// <summary>
         ///     Renders the element
         /// </summary>
-        void Render(IRGBDevice rgbDevice);
+        void Render(double deltaTime, RGBSurface surface);
     }
 }
