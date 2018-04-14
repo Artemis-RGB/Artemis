@@ -18,6 +18,7 @@ namespace Artemis.Core.ProfileElements
 
         public Profile Profile { get; }
         public ILayerType LayerType { get; private set; }
+        public ILayerTypeConfiguration LayerTypeConfiguration { get; set; }
         public List<IProfileElement> Children { get; set; }
         public int Order { get; set; }
         public string Name { get; set; }
