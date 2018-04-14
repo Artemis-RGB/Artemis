@@ -3,17 +3,14 @@ using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
-using RGB.NET.Devices.CoolerMaster;
 using RGB.NET.Devices.Corsair;
-using RGB.NET.Devices.DMX;
-using RGB.NET.Devices.Logitech;
-using RGB.NET.Devices.Novation;
-using RGB.NET.Devices.Razer;
 
 namespace Artemis.Core.Services
 {
     public class RgbService : IRgbService, IDisposable
     {
+        private readonly TimerUpdateTrigger _updateTrigger;
+
         public RgbService()
         {
             Surface = RGBSurface.Instance;
@@ -22,8 +19,8 @@ namespace Artemis.Core.Services
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
 
-            var updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 30};
-            Surface.RegisterUpdateTrigger(updateTrigger);
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 30};
+            Surface.RegisterUpdateTrigger(_updateTrigger);
         }
 
         /// <inheritdoc />
@@ -42,13 +39,13 @@ namespace Artemis.Core.Services
                 // TODO SpoinkyNL 8-1-18: Keep settings into account
                 // This one doesn't work well without ASUS devices installed
                 // Surface.LoadDevices(AsusDeviceProvider.Instance);
-                Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
+                // Surface.LoadDevices(CoolerMasterDeviceProvider.Instance);
                 Surface.LoadDevices(CorsairDeviceProvider.Instance);
-                Surface.LoadDevices(DMXDeviceProvider.Instance);
-                Surface.LoadDevices(LogitechDeviceProvider.Instance);
+                // Surface.LoadDevices(DMXDeviceProvider.Instance);
+                // Surface.LoadDevices(LogitechDeviceProvider.Instance);
                 // Surface.LoadDevices(MsiDeviceProvider.Instance);
-                Surface.LoadDevices(NovationDeviceProvider.Instance);
-                Surface.LoadDevices(RazerDeviceProvider.Instance);
+                // Surface.LoadDevices(NovationDeviceProvider.Instance);
+                // Surface.LoadDevices(RazerDeviceProvider.Instance);
 
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevices();
@@ -59,6 +56,9 @@ namespace Artemis.Core.Services
 
         public void Dispose()
         {
+            Surface.UnregisterUpdateTrigger(_updateTrigger);
+
+            _updateTrigger.Dispose();
             Surface.Dispose();
         }
 
