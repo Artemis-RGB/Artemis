@@ -5,6 +5,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
+using Color = System.Drawing.Color;
 
 namespace Artemis.Core.Services
 {
@@ -18,6 +19,7 @@ namespace Artemis.Core.Services
             _pluginService = pluginService;
             _rgbService = rgbService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
+
 
             Task.Run(Initialize);
         }
@@ -47,11 +49,20 @@ namespace Artemis.Core.Services
             try
             {
                 // Update all active modules
-                foreach (var module in _pluginService.Plugins.OfType<IModule>())
+                foreach (var module in _pluginService.Plugins.Select(p => p.Plugin).OfType<IModule>())
                     module.Update(args.DeltaTime);
+
+                if (_rgbService.GraphicsDecorator == null)
+                    return;
+
                 // Render all active modules
-                foreach (var module in _pluginService.Plugins.OfType<IModule>())
-                    module.Render(args.DeltaTime, _rgbService.Surface);
+                using (var g = _rgbService.GraphicsDecorator.GetGraphics())
+                {
+                    g.Clear(Color.Red);
+
+                    foreach (var module in _pluginService.Plugins.Select(p => p.Plugin).OfType<IModule>())
+                        module.Render(args.DeltaTime, _rgbService.Surface, g);
+                }
             }
             catch (Exception e)
             {

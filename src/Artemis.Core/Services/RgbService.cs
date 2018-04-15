@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
+using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
+using RGB.NET.Brushes;
 using RGB.NET.Core;
 using RGB.NET.Devices.Corsair;
+using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {
@@ -28,6 +31,7 @@ namespace Artemis.Core.Services
 
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
+        public GraphicsDecorator GraphicsDecorator { get; private set; }
 
         /// <inheritdoc />
         public async Task LoadDevices()
@@ -50,6 +54,11 @@ namespace Artemis.Core.Services
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevices();
             });
+
+            // Apply the application wide brush and decorator
+            var background = new ListLedGroup(Surface.Leds) { Brush = new SolidColorBrush(new Color(255, 255, 255, 255)) };
+            GraphicsDecorator = new GraphicsDecorator(background);
+            background.Brush.AddDecorator(GraphicsDecorator);
 
             OnFinishedLoadedDevices();
         }

@@ -1,4 +1,5 @@
-﻿using Artemis.Core.ProfileElements;
+﻿using System.Drawing;
+using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Interfaces
@@ -18,6 +19,6 @@ namespace Artemis.Core.Plugins.Interfaces
         /// <summary>
         ///     Renders the layer type
         /// </summary>
-        void Render(Layer device, RGBSurface surface);
+        void Render(Layer device, RGBSurface surface, Graphics graphics);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements.Interfaces;
 using Artemis.Core.Services.Interfaces;
@@ -34,14 +35,14 @@ namespace Artemis.Core.ProfileElements
             }
         }
 
-        public void Render(double deltaTime, RGBSurface surface)
+        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             if (LayerType == null)
                 return;
 
             lock (LayerType)
             {
-                LayerType.Render(this, surface);
+                LayerType.Render(this, surface, graphics);
             }
         }
 

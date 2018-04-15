@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using Artemis.Core.ProfileElements.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities;
@@ -26,11 +27,11 @@ namespace Artemis.Core.ProfileElements
                 profileElement.Update(deltaTime);
         }
 
-        public void Render(double deltaTime, RGBSurface surface)
+        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             // Folders don't render but their children do
             foreach (var profileElement in Children)
-                profileElement.Render(deltaTime, surface);
+                profileElement.Render(deltaTime, surface, graphics);
         }
 
         public static Folder FromFolderEntity(Profile profile, FolderEntity folderEntity, IPluginService pluginService)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
@@ -46,12 +47,12 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public virtual void Render(double deltaTime, RGBSurface surface)
+        public virtual void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, surface);
+                ActiveProfile?.Render(deltaTime, surface, graphics);
             }
         }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using RGB.NET.Core;
 
 namespace Artemis.Core.ProfileElements.Interfaces
@@ -29,6 +30,6 @@ namespace Artemis.Core.ProfileElements.Interfaces
         /// <summary>
         ///     Renders the element
         /// </summary>
-        void Render(double deltaTime, RGBSurface surface);
+        void Render(double deltaTime, RGBSurface surface, Graphics graphics);
     }
 }

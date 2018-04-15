@@ -57,8 +57,8 @@
     <Reference Include="CSScriptLibrary, Version=3.28.2.0, Culture=neutral, PublicKeyToken=70fcc3d18c749033, processorArchitecture=MSIL">
       <HintPath>..\packages\CS-Script.bin.3.28.2.0\lib\net46\CSScriptLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="HidSharp, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HidSharp.1.5\lib\net35\HidSharp.dll</HintPath>
+    <Reference Include="HidSharp, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HidSharp.2.0.1\lib\net35\HidSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.7.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
@@ -118,40 +118,40 @@
       <HintPath>..\packages\Remotion.Linq.2.2.0\lib\net45\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Brushes, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Brushes.0.0.1.49\lib\net45\RGB.NET.Brushes.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Brushes.0.0.1.51\lib\net45\RGB.NET.Brushes.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Core, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Core.0.0.1.49\lib\net45\RGB.NET.Core.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Core.0.0.1.51\lib\net45\RGB.NET.Core.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Decorators, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Decorators.0.0.1.49\lib\net45\RGB.NET.Decorators.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Decorators.0.0.1.51\lib\net45\RGB.NET.Decorators.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Asus, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Asus.0.0.1.49\lib\net45\RGB.NET.Devices.Asus.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Asus.0.0.1.51\lib\net45\RGB.NET.Devices.Asus.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.CoolerMaster, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.49\lib\net45\RGB.NET.Devices.CoolerMaster.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.51\lib\net45\RGB.NET.Devices.CoolerMaster.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Corsair, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.0.1.49\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.0.1.51\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.DMX, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.DMX.0.0.1.49\lib\net45\RGB.NET.Devices.DMX.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.DMX.0.0.1.51\lib\net45\RGB.NET.Devices.DMX.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Logitech, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Logitech.0.0.1.49\lib\net45\RGB.NET.Devices.Logitech.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Logitech.0.0.1.51\lib\net45\RGB.NET.Devices.Logitech.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Novation, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Novation.0.0.1.49\lib\net45\RGB.NET.Devices.Novation.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Novation.0.0.1.51\lib\net45\RGB.NET.Devices.Novation.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Razer, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Razer.0.0.1.49\lib\net45\RGB.NET.Devices.Razer.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Razer.0.0.1.51\lib\net45\RGB.NET.Devices.Razer.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Groups, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Groups.0.0.1.49\lib\net45\RGB.NET.Groups.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Groups.0.0.1.51\lib\net45\RGB.NET.Groups.dll</HintPath>
     </Reference>
     <Reference Include="Sanford.Multimedia.Midi, Version=6.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sanford.Multimedia.Midi.6.6.0\lib\net20\Sanford.Multimedia.Midi.dll</HintPath>
+      <HintPath>..\packages\Sanford.Multimedia.Midi.Standard.6.6.0\lib\net35\Sanford.Multimedia.Midi.dll</HintPath>
     </Reference>
     <Reference Include="Stylet, Version=1.1.21.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.1.21\lib\net45\Stylet.dll</HintPath>
@@ -186,6 +186,7 @@
       <HintPath>..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Interactive.Async, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Interactive.Async.3.1.1\lib\net46\System.Interactive.Async.dll</HintPath>
     </Reference>
@@ -282,6 +283,8 @@
     <Compile Include="ProfileElements\Profile.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RGB.NET\DirectBitmap.cs" />
+    <Compile Include="RGB.NET\GraphicsDecorator.cs" />
     <Compile Include="Services\Interfaces\IMainDataModelService.cs" />
     <Compile Include="Services\CoreService.cs" />
     <Compile Include="Services\MainDataModelService.cs" />
@@ -293,6 +296,7 @@
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
     <Compile Include="Services\StorageService.cs" />
+    <Compile Include="UtilitiesRemoveMe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
