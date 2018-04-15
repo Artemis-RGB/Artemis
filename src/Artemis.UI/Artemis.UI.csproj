@@ -63,8 +63,8 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="HidSharp, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HidSharp.1.5\lib\net35\HidSharp.dll</HintPath>
+    <Reference Include="HidSharp, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HidSharp.2.0.1\lib\net35\HidSharp.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.1.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.6.1\lib\net45\MahApps.Metro.dll</HintPath>
@@ -87,44 +87,44 @@
     <Reference Include="Ninject.Extensions.Factory, Version=3.3.2.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.Extensions.Factory.3.3.2\lib\net45\Ninject.Extensions.Factory.dll</HintPath>
     </Reference>
-    <Reference Include="PropertyChanged, Version=2.4.0.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\packages\PropertyChanged.Fody.2.4.0\lib\net452\PropertyChanged.dll</HintPath>
+    <Reference Include="PropertyChanged, Version=2.5.3.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyChanged.Fody.2.5.3\lib\net452\PropertyChanged.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Brushes, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Brushes.0.0.1.49\lib\net45\RGB.NET.Brushes.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Brushes.0.0.1.51\lib\net45\RGB.NET.Brushes.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Core, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Core.0.0.1.49\lib\net45\RGB.NET.Core.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Core.0.0.1.51\lib\net45\RGB.NET.Core.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Decorators, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Decorators.0.0.1.49\lib\net45\RGB.NET.Decorators.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Decorators.0.0.1.51\lib\net45\RGB.NET.Decorators.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Asus, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Asus.0.0.1.49\lib\net45\RGB.NET.Devices.Asus.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Asus.0.0.1.51\lib\net45\RGB.NET.Devices.Asus.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.CoolerMaster, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.49\lib\net45\RGB.NET.Devices.CoolerMaster.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.CoolerMaster.0.0.1.51\lib\net45\RGB.NET.Devices.CoolerMaster.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Corsair, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.0.1.49\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.0.1.51\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.DMX, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.DMX.0.0.1.49\lib\net45\RGB.NET.Devices.DMX.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.DMX.0.0.1.51\lib\net45\RGB.NET.Devices.DMX.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Logitech, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Logitech.0.0.1.49\lib\net45\RGB.NET.Devices.Logitech.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Logitech.0.0.1.51\lib\net45\RGB.NET.Devices.Logitech.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Novation, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Novation.0.0.1.49\lib\net45\RGB.NET.Devices.Novation.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Novation.0.0.1.51\lib\net45\RGB.NET.Devices.Novation.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Devices.Razer, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Razer.0.0.1.49\lib\net45\RGB.NET.Devices.Razer.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Devices.Razer.0.0.1.51\lib\net45\RGB.NET.Devices.Razer.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Groups, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Groups.0.0.1.49\lib\net45\RGB.NET.Groups.dll</HintPath>
+      <HintPath>..\packages\RGB.NET.Groups.0.0.1.51\lib\net45\RGB.NET.Groups.dll</HintPath>
     </Reference>
     <Reference Include="Sanford.Multimedia.Midi, Version=6.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sanford.Multimedia.Midi.6.6.0\lib\net20\Sanford.Multimedia.Midi.dll</HintPath>
+      <HintPath>..\packages\Sanford.Multimedia.Midi.Standard.6.6.0\lib\net35\Sanford.Multimedia.Midi.dll</HintPath>
     </Reference>
     <Reference Include="Stylet, Version=1.1.21.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.1.21\lib\net45\Stylet.dll</HintPath>
@@ -273,7 +273,7 @@ xcopy /s /y /q $(SolutionDir)Artemis.Plugins.BuiltIn\Modules %25ProgramData%25\A
     <Error Condition="!Exists('..\packages\RGB.NET.Resources.Logitech.0.1.0\build\RGB.NET.Resources.Logitech.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Resources.Logitech.0.1.0\build\RGB.NET.Resources.Logitech.targets'))" />
     <Error Condition="!Exists('..\packages\RGB.NET.Resources.Novation.0.1.0\build\RGB.NET.Resources.Novation.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Resources.Novation.0.1.0\build\RGB.NET.Resources.Novation.targets'))" />
     <Error Condition="!Exists('..\packages\RGB.NET.Resources.Razer.0.1.0\build\RGB.NET.Resources.Razer.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Resources.Razer.0.1.0\build\RGB.NET.Resources.Razer.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.3.0.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.3.0.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Fody.3.0.3\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.3.0.3\build\Fody.targets'))" />
   </Target>
   <Import Project="..\packages\RGB.NET.Resources.Asus.0.1.0\build\RGB.NET.Resources.Asus.targets" Condition="Exists('..\packages\RGB.NET.Resources.Asus.0.1.0\build\RGB.NET.Resources.Asus.targets')" />
   <Import Project="..\packages\RGB.NET.Resources.CoolerMaster.0.1.0\build\RGB.NET.Resources.CoolerMaster.targets" Condition="Exists('..\packages\RGB.NET.Resources.CoolerMaster.0.1.0\build\RGB.NET.Resources.CoolerMaster.targets')" />
@@ -281,5 +281,5 @@ xcopy /s /y /q $(SolutionDir)Artemis.Plugins.BuiltIn\Modules %25ProgramData%25\A
   <Import Project="..\packages\RGB.NET.Resources.Logitech.0.1.0\build\RGB.NET.Resources.Logitech.targets" Condition="Exists('..\packages\RGB.NET.Resources.Logitech.0.1.0\build\RGB.NET.Resources.Logitech.targets')" />
   <Import Project="..\packages\RGB.NET.Resources.Novation.0.1.0\build\RGB.NET.Resources.Novation.targets" Condition="Exists('..\packages\RGB.NET.Resources.Novation.0.1.0\build\RGB.NET.Resources.Novation.targets')" />
   <Import Project="..\packages\RGB.NET.Resources.Razer.0.1.0\build\RGB.NET.Resources.Razer.targets" Condition="Exists('..\packages\RGB.NET.Resources.Razer.0.1.0\build\RGB.NET.Resources.Razer.targets')" />
-  <Import Project="..\packages\Fody.3.0.1\build\Fody.targets" Condition="Exists('..\packages\Fody.3.0.1\build\Fody.targets')" />
+  <Import Project="..\packages\Fody.3.0.3\build\Fody.targets" Condition="Exists('..\packages\Fody.3.0.3\build\Fody.targets')" />
 </Project>

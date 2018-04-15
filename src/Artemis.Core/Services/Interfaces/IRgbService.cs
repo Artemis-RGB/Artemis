@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
+using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services.Interfaces
@@ -9,6 +10,7 @@ namespace Artemis.Core.Services.Interfaces
     {
         bool LoadingDevices { get; }
         RGBSurface Surface { get; set; }
+        GraphicsDecorator GraphicsDecorator { get; }
         Task LoadDevices();
         void Dispose();
 

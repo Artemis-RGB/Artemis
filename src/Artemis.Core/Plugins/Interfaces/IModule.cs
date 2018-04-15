@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Interfaces
@@ -31,6 +32,7 @@ namespace Artemis.Core.Plugins.Interfaces
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>
-        void Render(double deltaTime, RGBSurface surface);
+        /// <param name="graphics"></param>
+        void Render(double deltaTime, RGBSurface surface, Graphics graphics);
     }
 }

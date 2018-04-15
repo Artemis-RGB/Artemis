@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
@@ -30,7 +27,7 @@ namespace Artemis.Plugins.BuiltIn.LayerTypes.Brush
             // Update the brush
         }
 
-        public void Render(Layer device, RGBSurface surface)
+        public void Render(Layer device, RGBSurface surface, Graphics graphics)
         {
         }
     }

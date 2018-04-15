@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.ProfileElements.Interfaces;
@@ -34,7 +35,7 @@ namespace Artemis.Core.ProfileElements
             }
         }
 
-        public void Render(double deltaTime, RGBSurface surface)
+        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             lock (this)
             {
@@ -42,7 +43,7 @@ namespace Artemis.Core.ProfileElements
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (var profileElement in Children)
-                    profileElement.Render(deltaTime, surface);
+                    profileElement.Render(deltaTime, surface, graphics);
             }
         }
 
