@@ -21,11 +21,18 @@ namespace Artemis.DeviceProviders.Logitech
 
             CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
-                             $"A minimum version of 8.81.15 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
+                             $"A minimum version of 9.0.42 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
                              "If the detected version differs from the version LGS is reporting, reinstall LGS or see the FAQ.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
 
-            return majorNum >= 9;
+            // Anything below 9 is a no go
+            if (majorNum < 9)
+                return false;
+            // If on 9.0 require 9.0.42 or higher
+            if (majorNum == 9 && minorNum == 0)
+                return buildNum >= 42;
+            // If higher then 9.0 just wing it ¯\_(ツ)_/¯
+            return true;
         }
 
         public override void Enable()
