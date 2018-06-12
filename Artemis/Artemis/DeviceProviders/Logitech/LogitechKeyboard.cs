@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Threading;
-using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Utilities.DataReaders;
-using Microsoft.Win32;
+using LedCSharp;
 
 namespace Artemis.DeviceProviders.Logitech
 {
@@ -13,22 +12,20 @@ namespace Artemis.DeviceProviders.Logitech
         {
             // Just to be sure, restore the Logitech DLL registry key
             DllManager.RestoreLogitechDll();
-            
+
             int majorNum = 0, minorNum = 0, buildNum = 0;
 
             LogitechGSDK.LogiLedInit();
             LogitechGSDK.LogiLedGetSdkVersion(ref majorNum, ref minorNum, ref buildNum);
             LogitechGSDK.LogiLedShutdown();
 
-            // Turn it into one long number...
-            var version = int.Parse($"{majorNum}{minorNum}{buildNum}");
             CantEnableText = "Couldn't connect to your Logitech keyboard.\n" +
                              "Please check your cables and updating the Logitech Gaming Software\n" +
                              $"A minimum version of 8.81.15 is required (detected {majorNum}.{minorNum}.{buildNum}).\n\n" +
                              "If the detected version differs from the version LGS is reporting, reinstall LGS or see the FAQ.\n\n" +
                              "If needed, you can select a different keyboard in Artemis under settings.";
 
-            return version >= 88115;
+            return majorNum >= 9;
         }
 
         public override void Enable()
@@ -48,12 +45,12 @@ namespace Artemis.DeviceProviders.Logitech
             LogitechGSDK.LogiLedShutdown();
         }
 
-        protected void SetLogitechColorFromCoordinates(Bitmap bitmap, KeyboardNames key, int x, int y)
+        protected void SetLogitechColorFromCoordinates(Bitmap bitmap, keyboardNames key, int x, int y)
         {
             var color = bitmap.GetPixel(x, y);
-            var rPer = (int)Math.Round(color.R / 2.55);
-            var gPer = (int)Math.Round(color.G / 2.55);
-            var bPer = (int)Math.Round(color.B / 2.55);
+            var rPer = (int) Math.Round(color.R / 2.55);
+            var gPer = (int) Math.Round(color.G / 2.55);
+            var bPer = (int) Math.Round(color.B / 2.55);
 
             LogitechGSDK.LogiLedSetLightingForKeyWithKeyName(key, rPer, gPer, bPer);
         }

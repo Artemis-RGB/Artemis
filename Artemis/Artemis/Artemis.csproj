@@ -311,7 +311,6 @@
     <Compile Include="DeviceProviders\Corsair\CorsairKeyboard.cs" />
     <Compile Include="DeviceProviders\KeyboardProvider.cs" />
     <Compile Include="DeviceProviders\Logitech\G910.cs" />
-    <Compile Include="DeviceProviders\Logitech\Utilities\KeyboardNames.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\KeyMap.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\LogitechGSDK.cs" />
     <Compile Include="DeviceProviders\Logitech\Utilities\OrionUtilities.cs" />

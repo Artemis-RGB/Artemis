@@ -6,6 +6,7 @@ using Artemis.DAL;
 using Artemis.DeviceProviders.Logitech.Utilities;
 using Artemis.Properties;
 using Artemis.Settings;
+using LedCSharp;
 
 namespace Artemis.DeviceProviders.Logitech
 {
@@ -54,17 +55,17 @@ namespace Artemis.DeviceProviders.Logitech
                 }
 
                 // Color G-logo, lets also try some other values to see what happens
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_LOGO, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_BADGE, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_1, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_2, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_3, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_4, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_5, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_6, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_7, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_8, 0, 0);
-                SetLogitechColorFromCoordinates(resized, KeyboardNames.G_9, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_LOGO, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_BADGE, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_1, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_2, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_3, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_4, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_5, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_6, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_7, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_8, 0, 0);
+                SetLogitechColorFromCoordinates(resized, keyboardNames.G_9, 0, 0);
             }
         }
 
