@@ -15,15 +15,15 @@ using Artemis.Utilities.ActiveWindowDetection;
 using Betwixt;
 using CSCore.CoreAudioAPI;
 using Newtonsoft.Json;
-using SpotifyAPI.Local;
+// using SpotifyAPI.Local;
 
 namespace Artemis.Modules.General.GeneralProfile
 {
     public class GeneralProfileModel : ModuleModel
     {
         private DateTime _lastMusicUpdate;
-        private SpotifyLocalAPI _spotify;
-        private bool _spotifySetupBusy;
+        // private SpotifyLocalAPI _spotify;
+        // private bool _spotifySetupBusy;
 
         public GeneralProfileModel(DeviceManager deviceManager, LuaManager luaManager,
             AudioCaptureManager audioCaptureManager) : base(deviceManager, luaManager)
@@ -43,7 +43,7 @@ namespace Artemis.Modules.General.GeneralProfile
         public override void Enable()
         {
             SetupCpu();
-            SetupSpotify();
+            // SetupSpotify();
             SetupAudio();
 
             base.Enable();
@@ -220,34 +220,34 @@ namespace Artemis.Modules.General.GeneralProfile
 
         #region Music
 
-        public void SetupSpotify()
-        {
-            if (_spotifySetupBusy)
-                return;
-
-            _spotifySetupBusy = true;
-            _spotify = new SpotifyLocalAPI();
-
-            // Connecting can sometimes use a little bit more conviction
-            Task.Factory.StartNew(() =>
-            {
-                var tryCount = 0;
-                while (tryCount <= 10)
-                    try
-                    {
-                        tryCount++;
-                        var connected = _spotify.Connect();
-                        if (connected)
-                            break;
-                        Thread.Sleep(1000);
-                    }
-                    catch (WebException)
-                    {
-                        break;
-                    }
-                _spotifySetupBusy = false;
-            });
-        }
+        // public void SetupSpotify()
+        // {
+        //     if (_spotifySetupBusy)
+        //         return;
+        // 
+        //     _spotifySetupBusy = true;
+        //     _spotify = new SpotifyLocalAPI();
+        // 
+        //     // Connecting can sometimes use a little bit more conviction
+        //     Task.Factory.StartNew(() =>
+        //     {
+        //         var tryCount = 0;
+        //         while (tryCount <= 10)
+        //             try
+        //             {
+        //                 tryCount++;
+        //                 var connected = _spotify.Connect();
+        //                 if (connected)
+        //                     break;
+        //                 Thread.Sleep(1000);
+        //             }
+        //             catch (WebException)
+        //             {
+        //                 break;
+        //             }
+        //         _spotifySetupBusy = false;
+        //     });
+        // }
 
         public void UpdateMusicPlayers(GeneralProfileDataModel dataModel)
         {
@@ -256,34 +256,34 @@ namespace Artemis.Modules.General.GeneralProfile
                 return;
             _lastMusicUpdate = DateTime.Now;
 
-            UpdateSpotify(dataModel);
+            // UpdateSpotify(dataModel);
             UpdateGooglePlayMusic(dataModel);
         }
 
         private void UpdateSpotify(GeneralProfileDataModel dataModel)
         {
             // Spotify
-            if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
-                SetupSpotify();
-
-            var status = _spotify.GetStatus();
-            if (status == null)
-                return;
-
-            dataModel.Spotify.Playing = status.Playing;
-            dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
-
-            if (status.Track != null)
-            {
-                dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
-                dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
-                dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
-                dataModel.Spotify.SongLength = status.Track.Length;
-            }
-
-            if (dataModel.Spotify.SongLength > 0)
-                dataModel.Spotify.SongPercentCompleted =
-                    (int) (status.PlayingPosition / dataModel.Spotify.SongLength * 100.0);
+            // if (!dataModel.Spotify.Running && SpotifyLocalAPI.IsSpotifyRunning())
+            //     SetupSpotify();
+            // 
+            // var status = _spotify.GetStatus();
+            // if (status == null)
+            //     return;
+            // 
+            // dataModel.Spotify.Playing = status.Playing;
+            // dataModel.Spotify.Running = SpotifyLocalAPI.IsSpotifyRunning();
+            // 
+            // if (status.Track != null)
+            // {
+            //     dataModel.Spotify.Artist = status.Track.ArtistResource?.Name;
+            //     dataModel.Spotify.SongName = status.Track.TrackResource?.Name;
+            //     dataModel.Spotify.Album = status.Track.AlbumResource?.Name;
+            //     dataModel.Spotify.SongLength = status.Track.Length;
+            // }
+            // 
+            // if (dataModel.Spotify.SongLength > 0)
+            //     dataModel.Spotify.SongPercentCompleted =
+            //         (int) (status.PlayingPosition / dataModel.Spotify.SongLength * 100.0);
         }
 
         private void UpdateGooglePlayMusic(GeneralProfileDataModel dataModel)

@@ -8,7 +8,7 @@ namespace Artemis.Modules.General.GeneralProfile
     {
         public GeneralProfileDataModel()
         {
-            Spotify = new Spotify();
+            // Spotify = new Spotify();
             GooglePlayMusic = new GooglePlayMusic();
             Cpu = new CpuDataModel();
             Performance = new PerformanceDataModel();
@@ -20,7 +20,7 @@ namespace Artemis.Modules.General.GeneralProfile
 
         public CpuDataModel Cpu { get; set; }
         public PerformanceDataModel Performance { get; set; }
-        public Spotify Spotify { get; set; }
+        // public Spotify Spotify { get; set; }
         public GooglePlayMusic GooglePlayMusic { get; set; }
         public CurrentTime CurrentTime { get; set; }
         public KbDataModel Keyboard { get; set; }
@@ -75,20 +75,20 @@ namespace Artemis.Modules.General.GeneralProfile
         public float RamFree { get; set; }
     }
 
-    [MoonSharpUserData]
-    public class Spotify
-    {
-        public bool Running { get; set; }
-        public string Artist { get; set; }
-        public string SongName { get; set; }
-        public int SongPercentCompleted { get; set; }
-        public int SpotifyVolume { get; set; }
-        public string Album { get; set; }
-        public bool Repeat { get; set; }
-        public bool Shuffle { get; set; }
-        public bool Playing { get; set; }
-        public int SongLength { get; set; }
-    }
+    // [MoonSharpUserData]
+    // public class Spotify
+    // {
+    //     public bool Running { get; set; }
+    //     public string Artist { get; set; }
+    //     public string SongName { get; set; }
+    //     public int SongPercentCompleted { get; set; }
+    //     public int SpotifyVolume { get; set; }
+    //     public string Album { get; set; }
+    //     public bool Repeat { get; set; }
+    //     public bool Shuffle { get; set; }
+    //     public bool Playing { get; set; }
+    //     public int SongLength { get; set; }
+    // }
 
     [MoonSharpUserData]
     public class GooglePlayMusic
