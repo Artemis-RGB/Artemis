@@ -1,28 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.ProfileElements;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage;
-using Microsoft.EntityFrameworkCore;
+using Artemis.Storage.Repositories;
 
 namespace Artemis.Core.Services
 {
     public class StorageService : IStorageService
     {
-        private readonly StorageContext _dbContext;
         private readonly IPluginService _pluginService;
+        private readonly ProfileRepository _profileRepository;
 
-        public StorageService(StorageContext dbContext, IPluginService pluginService)
+        public StorageService(IPluginService pluginService)
         {
-            _dbContext = dbContext;
             _pluginService = pluginService;
+            _profileRepository = new ProfileRepository();
         }
 
         public async Task<ICollection<Profile>> GetModuleProfiles(PluginInfo pluginInfo)
         {
-            var profileEntities = await _dbContext.Profiles.Where(p => p.PluginGuid == pluginInfo.Guid).ToListAsync();
+            var profileEntities = await _profileRepository.GetByPluginGuidAsync(pluginInfo.Guid);
             var profiles = new List<Profile>();
             foreach (var profileEntity in profileEntities)
                 profiles.Add(Profile.FromProfileEntity(pluginInfo, profileEntity, _pluginService));
@@ -36,7 +34,7 @@ namespace Artemis.Core.Services
 
             // If not found, create a new one
 
-            await _dbContext.SaveChangesAsync();
+            await _profileRepository.SaveAsync();
         }
     }
 

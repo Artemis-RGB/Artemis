@@ -26,12 +26,6 @@ namespace Artemis.Core.Services.Interfaces
         Task LoadPlugins();
 
         /// <summary>
-        ///     Reloads the plugin accompanying the provided plugin info
-        /// </summary>
-        /// <param name="pluginInfo">The plugin info containing the plugin to reload</param>
-        Task ReloadPlugin(PluginInfo pluginInfo);
-
-        /// <summary>
         ///     Gets the view model of the module accompanying the provided plugin info
         /// </summary>
         /// <param name="pluginInfo">The plugin info containing the module for which to load the view model</param>
@@ -42,10 +36,6 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         event EventHandler<PluginEventArgs> PluginLoaded;
 
-        /// <summary>
-        ///     Occurs when a single plugin has reloaded
-        /// </summary>
-        event EventHandler<PluginEventArgs> PluginReloaded;
 
         /// <summary>
         ///     Occurs when loading all plugins has started

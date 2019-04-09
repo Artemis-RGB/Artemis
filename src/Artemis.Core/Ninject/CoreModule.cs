@@ -1,5 +1,5 @@
-﻿using Artemis.Core.Services.Interfaces;
-using Artemis.Storage;
+﻿using System.Linq;
+using Artemis.Core.Services.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -18,8 +18,6 @@ namespace Artemis.Core.Ninject
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
             });
-
-            Bind<StorageContext>().ToSelf().InSingletonScope();
         }
     }
 }

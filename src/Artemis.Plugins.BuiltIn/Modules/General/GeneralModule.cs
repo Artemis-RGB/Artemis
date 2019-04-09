@@ -1,11 +1,6 @@
-﻿//css_inc GeneralViewModel.cs;
-//css_inc GeneralDataModel.cs;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
@@ -48,16 +43,6 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
 
             foreach (var surfaceLed in _surface.Leds)
                 UpdateLedColor(surfaceLed, deltaTime);
-
-            
-        }
-
-        private void UpdateLedColor(Led led, double deltaTime)
-        {
-            if (_colors.ContainsKey(led))
-                _colors[led] = ColorHelpers.ShiftColor(_colors[led], (int) (deltaTime * 1000));
-            else
-                _colors[led] = ColorHelpers.GetRandomRainbowColor();
         }
 
         public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
@@ -82,6 +67,14 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
         public void LoadPlugin()
         {
             PopulateColors();
+        }
+
+        private void UpdateLedColor(Led led, double deltaTime)
+        {
+            if (_colors.ContainsKey(led))
+                _colors[led] = ColorHelpers.ShiftColor(_colors[led], (int) (deltaTime * 1000));
+            else
+                _colors[led] = ColorHelpers.GetRandomRainbowColor();
         }
 
         private void PopulateColors()
