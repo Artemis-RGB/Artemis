@@ -18,7 +18,7 @@ namespace Artemis.UI.Converters
         {
             return new SolidColorBrush(!(value is Color color)
                 ? System.Windows.Media.Color.FromArgb(0, 0, 0, 0)
-                : System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B));
+                : System.Windows.Media.Color.FromArgb((byte) color.A, (byte) color.R, (byte) color.G, (byte) color.B));
         }
 
         /// <inheritdoc />

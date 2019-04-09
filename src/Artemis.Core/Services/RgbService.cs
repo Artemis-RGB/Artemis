@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.RGB.NET;
@@ -13,6 +14,7 @@ namespace Artemis.Core.Services
     public class RgbService : IRgbService, IDisposable
     {
         private readonly TimerUpdateTrigger _updateTrigger;
+        private List<IRGBDevice> _loadedDevices;
 
         public RgbService()
         {
@@ -22,6 +24,7 @@ namespace Artemis.Core.Services
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
 
+            _loadedDevices = new List<IRGBDevice>();
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 30};
             Surface.RegisterUpdateTrigger(_updateTrigger);
         }
@@ -31,6 +34,7 @@ namespace Artemis.Core.Services
 
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
+
         public GraphicsDecorator GraphicsDecorator { get; private set; }
 
         /// <inheritdoc />
@@ -53,10 +57,24 @@ namespace Artemis.Core.Services
 
                 // TODO SpoinkyNL 8-1-18: Load alignment
                 Surface.AlignDevices();
+
+                lock (_loadedDevices)
+                {
+                    foreach (var surfaceDevice in Surface.Devices)
+                    {
+                        if (!_loadedDevices.Contains(surfaceDevice))
+                        {
+                            _loadedDevices.Add(surfaceDevice);
+                            OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
+                        }
+                        else
+                            OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
+                    }
+                }
             });
 
             // Apply the application wide brush and decorator
-            var background = new ListLedGroup(Surface.Leds) { Brush = new SolidColorBrush(new Color(255, 255, 255, 255)) };
+            var background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
             GraphicsDecorator = new GraphicsDecorator(background);
             background.Brush.AddDecorator(GraphicsDecorator);
 

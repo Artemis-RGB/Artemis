@@ -58,7 +58,7 @@ namespace Artemis.Core.Services
                 // Render all active modules
                 using (var g = _rgbService.GraphicsDecorator.GetGraphics())
                 {
-                    g.Clear(Color.Red);
+                    g.Clear(Color.Black);
 
                     foreach (var module in _pluginService.Plugins.Select(p => p.Plugin).OfType<IModule>())
                         module.Render(args.DeltaTime, _rgbService.Surface, g);

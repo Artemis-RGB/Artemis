@@ -23,7 +23,6 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
 
         public GeneralModule(IRgbService rgbService)
         {
-            Debugger.Break();
             _rgbService = rgbService;
             _surface = _rgbService.Surface;
             _colors = new Dictionary<Led, Color>();

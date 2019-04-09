@@ -8,6 +8,7 @@ using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
+using Artemis.UI.ViewModels.Settings;
 using Stylet;
 
 namespace Artemis.UI.ViewModels

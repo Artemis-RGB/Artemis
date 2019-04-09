@@ -1,9 +1,11 @@
-﻿<UserControl x:Class="Artemis.UI.Views.SettingsView"
+﻿<UserControl x:Class="Artemis.UI.Views.Settings.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
+             xmlns:vms="clr-namespace:Artemis.UI.ViewModels.Settings"
+             d:DataContext="{d:DesignInstance vms:SettingsViewModel}"
              d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -14,12 +16,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignDisplay1TextBlock}">General</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">General</TextBlock>
         <Grid>
             <TextBlock>General settings like start up with Windows etc.</TextBlock>
         </Grid>
 
-        <TextBlock Style="{StaticResource MaterialDesignDisplay1TextBlock}">Plugins</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">Devices</TextBlock>
+        <Grid>
+            <TextBlock>A list of plugins and options to disable them</TextBlock>
+        </Grid>
+
+        <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">Plugins</TextBlock>
         <Grid>
             <TextBlock>A list of plugins and options to disable them</TextBlock>
         </Grid>
