@@ -64,9 +64,6 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="HidSharp, Version=2.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HidSharp.2.0.8\lib\net35\HidSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Humanizer, Version=2.6.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.6.2\lib\netstandard2.0\Humanizer.dll</HintPath>
     </Reference>
@@ -103,18 +100,17 @@
     <Reference Include="RGB.NET.Decorators, Version=0.1.22.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RGB.NET.Decorators.0.1.22\lib\net45\RGB.NET.Decorators.dll</HintPath>
     </Reference>
+    <Reference Include="RGB.NET.Devices.Corsair, Version=0.1.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.1.22\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
+    </Reference>
     <Reference Include="RGB.NET.Groups, Version=0.1.22.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RGB.NET.Groups.0.1.22\lib\net45\RGB.NET.Groups.dll</HintPath>
-    </Reference>
-    <Reference Include="Sanford.Multimedia.Midi, Version=6.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sanford.Multimedia.Midi.Standard.6.6.0\lib\net35\Sanford.Multimedia.Midi.dll</HintPath>
     </Reference>
     <Reference Include="Stylet, Version=1.1.22.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.1.22\lib\net45\Stylet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
@@ -123,11 +119,7 @@
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -227,10 +219,6 @@
     <ProjectReference Include="..\Artemis.Plugins.BuiltIn\Artemis.Plugins.BuiltIn.csproj">
       <Project>{106f08ae-5fe8-433e-aa65-64e5219b5fc7}</Project>
       <Name>Artemis.Plugins.BuiltIn</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
-      <Project>{e489e5e3-1a65-4af5-a1ea-f9805fd19a65}</Project>
-      <Name>Artemis.Storage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

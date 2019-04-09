@@ -18,6 +18,8 @@
   <package id="RGB.NET.Devices.Corsair" version="0.1.22" targetFramework="net461" />
   <package id="RGB.NET.Groups" version="0.1.22" targetFramework="net461" />
   <package id="RGB.NET.Resources.Corsair" version="0.3.0.234" targetFramework="net461" />
+  <package id="Sanford.Multimedia.Midi" version="6.6.0" targetFramework="net461" />
+  <package id="Sanford.Multimedia.Midi.Standard" version="6.6.0" targetFramework="net461" />
   <package id="Stylet" version="1.1.22" targetFramework="net461" />
   <package id="System.ValueTuple" version="4.5.0" targetFramework="net461" />
 </packages>

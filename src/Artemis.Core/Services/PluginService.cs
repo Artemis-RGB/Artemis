@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -12,12 +13,15 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.ProfileElements;
 using Artemis.Core.Services.Interfaces;
 using Ninject;
+using Ninject.Extensions.ChildKernel;
 
 namespace Artemis.Core.Services
 {
     public class PluginService : IPluginService
     {
         private readonly IKernel _kernel;
+        private IKernel _childKernel;
+        private AppDomain _appDomain;
         private readonly List<PluginInfo> _plugins;
 
         public PluginService(IKernel kernel)
@@ -40,25 +44,37 @@ namespace Artemis.Core.Services
 
             OnStartedLoadingPlugins();
 
-            // Empty the list of plugins
-            foreach (var pluginInfo in _plugins)
-                pluginInfo.UnloadPlugin();
-            _plugins.Clear();
+            UnloadPlugins();
 
-            // Iterate all plugin folders and load each plugin
-            foreach (var directory in Directory.GetDirectories(Constants.DataFolder + "plugins"))
-                _plugins.Add(await PluginInfo.FromFolder(_kernel, directory));
+            // Create a child kernel and app domain that will only contain the plugins
+            _childKernel = new ChildKernel(_kernel);
+            _appDomain = AppDomain.CreateDomain("PluginAppDomain");
+            
+            // Load the plugin assemblies into the app domain
+            var directory = new DirectoryInfo(Constants.DataFolder + "plugins");
+            foreach (var subDirectory in directory.EnumerateDirectories())
+            {
+//                _appDomain.Load()
+//                _plugins.Add(new PluginInfo(subDirectory.FullName));
+            }
 
             OnFinishedLoadedPlugins();
         }
 
-        /// <inheritdoc />
-        public async Task ReloadPlugin(PluginInfo pluginInfo)
+        private void UnloadPlugins()
         {
-            pluginInfo.UnloadPlugin();
-            await pluginInfo.CompilePlugin(_kernel);
+            _plugins.Clear();
 
-            OnPluginReloaded(new PluginEventArgs(pluginInfo));
+            if (_childKernel != null)
+            {
+                _childKernel.Dispose();
+                _childKernel = null;
+            }
+            if (_appDomain != null)
+            {
+                AppDomain.Unload(_appDomain);
+                _appDomain = null;
+            }
         }
 
         /// <inheritdoc />
@@ -85,16 +101,12 @@ namespace Artemis.Core.Services
 
         public void Dispose()
         {
-            // Empty the list of plugins
-            foreach (var pluginInfo in _plugins)
-                pluginInfo.UnloadPlugin();
-            _plugins.Clear();
+            UnloadPlugins();
         }
 
         #region Events
 
         public event EventHandler<PluginEventArgs> PluginLoaded;
-        public event EventHandler<PluginEventArgs> PluginReloaded;
         public event EventHandler StartedLoadingPlugins;
         public event EventHandler FinishedLoadedPlugins;
 
@@ -102,12 +114,7 @@ namespace Artemis.Core.Services
         {
             PluginLoaded?.Invoke(this, e);
         }
-
-        private void OnPluginReloaded(PluginEventArgs e)
-        {
-            PluginReloaded?.Invoke(this, e);
-        }
-
+        
         private void OnStartedLoadingPlugins()
         {
             LoadingPlugins = true;
