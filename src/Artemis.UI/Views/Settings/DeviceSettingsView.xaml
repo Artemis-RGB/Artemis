@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Artemis.UI.Views.Settings.DeviceSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vms="clr-namespace:Artemis.UI.ViewModels.Settings"
+             d:DataContext="{d:DesignInstance vms:DeviceSettingsViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Name}" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Manufacturer}" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Type}" />
+    </Grid>
+</UserControl>
