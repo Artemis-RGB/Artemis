@@ -1,6 +1,6 @@
 ﻿using Artemis.Core.Plugins.Interfaces;
 
-namespace Artemis.Plugins.BuiltIn.LayerTypes.Brush
+namespace Artemis.Plugins.LayerTypes.Brush
 {
     public class BrushConfiguration : ILayerTypeConfiguration
     {

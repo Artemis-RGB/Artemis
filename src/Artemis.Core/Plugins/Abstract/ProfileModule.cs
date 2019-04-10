@@ -3,6 +3,7 @@ using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
+using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -11,29 +12,12 @@ namespace Artemis.Core.Plugins.Abstract
         public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />
-        public abstract Type ViewModelType { get; }
-
-        /// <inheritdoc />
         public abstract bool ExpandsMainDataModel { get; }
 
         /// <inheritdoc />
         public void LoadPlugin()
         {
             // Load and activate the last active profile
-        }
-
-        public void ChangeActiveProfile(Profile profile)
-        {
-            lock (this)
-            {
-                if (profile == null)
-                    throw new ArgumentNullException(nameof(profile));
-                
-                ActiveProfile?.Deactivate();
-
-                ActiveProfile = profile;
-                ActiveProfile.Activate();
-            }
         }
 
         /// <inheritdoc />
@@ -57,8 +41,25 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
+        public abstract IScreen GetMainViewModel();
+
+        /// <inheritdoc />
         public void Dispose()
         {
+        }
+
+        public void ChangeActiveProfile(Profile profile)
+        {
+            lock (this)
+            {
+                if (profile == null)
+                    throw new ArgumentNullException(nameof(profile));
+
+                ActiveProfile?.Deactivate();
+
+                ActiveProfile = profile;
+                ActiveProfile.Activate();
+            }
         }
     }
 }

@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Storage", "Artemis.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Core", "Artemis.Core\Artemis.Core.csproj", "{9B811F9B-86B9-4771-87AF-72BAE7078A36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.BuiltIn", "Artemis.Plugins.BuiltIn\Artemis.Plugins.BuiltIn.csproj", "{106F08AE-5FE8-433E-AA65-64E5219B5FC7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E830A02B-A7E5-4A6B-943F-76B0A542630C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Modules.General", "Artemis.Plugins.Modules.General\Artemis.Plugins.Modules.General.csproj", "{E592F239-FAA0-4840-9C85-46E5867D06D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerTypes.Brush", "Artemis.Plugins.LayerTypes.Brush\Artemis.Plugins.LayerTypes.Brush.csproj", "{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,17 +47,29 @@ Global
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Release|x64.ActiveCfg = Release|x64
 		{9B811F9B-86B9-4771-87AF-72BAE7078A36}.Release|x64.Build.0 = Release|x64
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Debug|x64.ActiveCfg = Debug|x64
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Debug|x64.Build.0 = Debug|x64
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Release|x64.ActiveCfg = Release|x64
-		{106F08AE-5FE8-433E-AA65-64E5219B5FC7}.Release|x64.Build.0 = Release|x64
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Debug|x64.Build.0 = Debug|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Release|x64.ActiveCfg = Release|Any CPU
+		{E592F239-FAA0-4840-9C85-46E5867D06D5}.Release|x64.Build.0 = Release|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Debug|x64.Build.0 = Debug|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|x64.ActiveCfg = Release|Any CPU
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E592F239-FAA0-4840-9C85-46E5867D06D5} = {E830A02B-A7E5-4A6B-943F-76B0A542630C}
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2} = {E830A02B-A7E5-4A6B-943F-76B0A542630C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C203080A-4473-4CC2-844B-F552EA43D66A}

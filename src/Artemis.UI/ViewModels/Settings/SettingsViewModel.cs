@@ -8,8 +8,6 @@ namespace Artemis.UI.ViewModels.Settings
 {
     public class SettingsViewModel : Screen, ISettingsViewModel
     {
-        public string Title => "Settings";
-
         public SettingsViewModel(IRgbService rgbService)
         {
             DeviceSettingsViewModels = new List<DeviceSettingsViewModel>();
@@ -20,10 +18,11 @@ namespace Artemis.UI.ViewModels.Settings
         }
 
         public List<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
+        public string Title => "Settings";
 
         private void UpdateDevices(object sender, DeviceEventArgs deviceEventArgs)
         {
             DeviceSettingsViewModels.Add(new DeviceSettingsViewModel(deviceEventArgs.Device));
         }
     }
-}   
+}

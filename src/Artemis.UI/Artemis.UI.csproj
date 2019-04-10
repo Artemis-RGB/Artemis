@@ -216,10 +216,6 @@
       <Project>{9b811f9b-86b9-4771-87af-72bae7078a36}</Project>
       <Name>Artemis.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Artemis.Plugins.BuiltIn\Artemis.Plugins.BuiltIn.csproj">
-      <Project>{106f08ae-5fe8-433e-aa65-64e5219b5fc7}</Project>
-      <Name>Artemis.Plugins.BuiltIn</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\logo-512.png" />
@@ -236,9 +232,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo Copying built-in plugins...
-mkdir %25ProgramData%25\Artemis\plugins
-xcopy /s /y /q $(SolutionDir)Artemis.Plugins.BuiltIn\Modules %25ProgramData%25\Artemis\plugins</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -246,8 +241,8 @@ xcopy /s /y /q $(SolutionDir)Artemis.Plugins.BuiltIn\Modules %25ProgramData%25\A
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Fody.4.2.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.4.2.1\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props'))" />
     <Error Condition="!Exists('..\packages\RGB.NET.Resources.Corsair.0.3.0.234\build\RGB.NET.Resources.Corsair.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RGB.NET.Resources.Corsair.0.3.0.234\build\RGB.NET.Resources.Corsair.targets'))" />
+    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props'))" />
   </Target>
   <Import Project="..\packages\RGB.NET.Resources.Corsair.0.3.0.234\build\RGB.NET.Resources.Corsair.targets" Condition="Exists('..\packages\RGB.NET.Resources.Corsair.0.3.0.234\build\RGB.NET.Resources.Corsair.targets')" />
 </Project>

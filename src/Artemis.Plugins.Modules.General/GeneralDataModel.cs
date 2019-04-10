@@ -1,7 +1,7 @@
 ﻿using Artemis.Core.Attributes;
 using Artemis.Core.Plugins.Interfaces;
 
-namespace Artemis.Plugins.BuiltIn.Modules.General
+namespace Artemis.Plugins.Modules.General
 {
     public class GeneralDataModel : IModuleDataModel
     {

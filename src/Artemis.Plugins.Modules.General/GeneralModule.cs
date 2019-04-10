@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Plugins.Modules.General.ViewModels;
 using RGB.NET.Core;
+using Stylet;
 using Color = System.Drawing.Color;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace Artemis.Plugins.BuiltIn.Modules.General
+namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : IModule
     {
@@ -16,6 +17,10 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
         private readonly RGBSurface _surface;
         private Dictionary<Led, Color> _colors;
 
+        public GeneralModule()
+        {
+            
+        }
         public GeneralModule(IRgbService rgbService)
         {
             _rgbService = rgbService;
@@ -25,16 +30,8 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
             _rgbService.FinishedLoadedDevices += (sender, args) => PopulateColors();
         }
 
-        public Type ViewModelType
-        {
-            get { return typeof(GeneralViewModel); }
-        }
-
         // True since the main data model is all this module shows
-        public bool ExpandsMainDataModel
-        {
-            get { return true; }
-        }
+        public bool ExpandsMainDataModel => true;
 
         public void Update(double deltaTime)
         {
@@ -57,6 +54,11 @@ namespace Artemis.Plugins.BuiltIn.Modules.General
                 graphics.FillRectangle(brush, rectangle);
                 UpdateLedColor(surfaceLed, deltaTime);
             }
+        }
+
+        public IScreen GetMainViewModel()
+        {
+            return new GeneralViewModel();
         }
 
         public void Dispose()

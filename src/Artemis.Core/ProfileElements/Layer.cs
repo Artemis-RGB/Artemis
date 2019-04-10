@@ -61,10 +61,12 @@ namespace Artemis.Core.ProfileElements
         public void UpdateLayerType(ILayerType layerType)
         {
             if (LayerType != null)
+            {
                 lock (LayerType)
                 {
                     LayerType.Dispose();
                 }
+            }
 
             LayerType = layerType;
         }
