@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.ProfileElements;
 
 namespace Artemis.Core.Services.Interfaces
 {
@@ -26,16 +25,9 @@ namespace Artemis.Core.Services.Interfaces
         Task LoadPlugins();
 
         /// <summary>
-        ///     Gets the view model of the module accompanying the provided plugin info
-        /// </summary>
-        /// <param name="pluginInfo">The plugin info containing the module for which to load the view model</param>
-        Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo);
-
-        /// <summary>
         ///     Occurs when a single plugin has loaded
         /// </summary>
         event EventHandler<PluginEventArgs> PluginLoaded;
-
 
         /// <summary>
         ///     Occurs when loading all plugins has started

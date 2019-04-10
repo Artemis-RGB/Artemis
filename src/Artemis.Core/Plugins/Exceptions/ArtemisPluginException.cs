@@ -20,6 +20,14 @@ namespace Artemis.Core.Plugins.Exceptions
             PluginInfo = pluginInfo;
         }
 
+        public ArtemisPluginException(string message) : base(message)
+        {
+        }
+
+        public ArtemisPluginException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
         public PluginInfo PluginInfo { get; }
     }
 }

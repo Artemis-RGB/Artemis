@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Artemis.Storage.Migrations
 {
@@ -9,8 +8,8 @@ namespace Artemis.Storage.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Folders",
-                columns: table => new
+                "Folders",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     FolderEntityGuid = table.Column<string>(nullable: true),
@@ -21,28 +20,25 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Folders", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_Folders_Folders_FolderEntityGuid",
-                        column: x => x.FolderEntityGuid,
-                        principalTable: "Folders",
-                        principalColumn: "Guid",
+                        "FK_Folders_Folders_FolderEntityGuid",
+                        x => x.FolderEntityGuid,
+                        "Folders",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Settings",
-                columns: table => new
+                "Settings",
+                table => new
                 {
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Settings", x => x.Name);
-                });
+                constraints: table => { table.PrimaryKey("PK_Settings", x => x.Name); });
 
             migrationBuilder.CreateTable(
-                name: "Layers",
-                columns: table => new
+                "Layers",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     FolderEntityGuid = table.Column<string>(nullable: true),
@@ -53,16 +49,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Layers", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_Layers_Folders_FolderEntityGuid",
-                        column: x => x.FolderEntityGuid,
-                        principalTable: "Folders",
-                        principalColumn: "Guid",
+                        "FK_Layers_Folders_FolderEntityGuid",
+                        x => x.FolderEntityGuid,
+                        "Folders",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profiles",
-                columns: table => new
+                "Profiles",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
@@ -74,16 +70,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Profiles", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_Profiles_Folders_RootFolderGuid",
-                        column: x => x.RootFolderGuid,
-                        principalTable: "Folders",
-                        principalColumn: "Guid",
+                        "FK_Profiles_Folders_RootFolderGuid",
+                        x => x.RootFolderGuid,
+                        "Folders",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LayerSettings",
-                columns: table => new
+                "LayerSettings",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     LayerEntityGuid = table.Column<string>(nullable: true),
@@ -94,16 +90,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_LayerSettings", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_LayerSettings_Layers_LayerEntityGuid",
-                        column: x => x.LayerEntityGuid,
-                        principalTable: "Layers",
-                        principalColumn: "Guid",
+                        "FK_LayerSettings_Layers_LayerEntityGuid",
+                        x => x.LayerEntityGuid,
+                        "Layers",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Leds",
-                columns: table => new
+                "Leds",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     LayerGuid = table.Column<string>(nullable: true),
@@ -115,16 +111,16 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Leds", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_Leds_Layers_LayerGuid",
-                        column: x => x.LayerGuid,
-                        principalTable: "Layers",
-                        principalColumn: "Guid",
+                        "FK_Leds_Layers_LayerGuid",
+                        x => x.LayerGuid,
+                        "Layers",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Keypoints",
-                columns: table => new
+                "Keypoints",
+                table => new
                 {
                     Guid = table.Column<string>(nullable: false),
                     LayerSettingEntityGuid = table.Column<string>(nullable: true),
@@ -135,66 +131,66 @@ namespace Artemis.Storage.Migrations
                 {
                     table.PrimaryKey("PK_Keypoints", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_Keypoints_LayerSettings_LayerSettingEntityGuid",
-                        column: x => x.LayerSettingEntityGuid,
-                        principalTable: "LayerSettings",
-                        principalColumn: "Guid",
+                        "FK_Keypoints_LayerSettings_LayerSettingEntityGuid",
+                        x => x.LayerSettingEntityGuid,
+                        "LayerSettings",
+                        "Guid",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Folders_FolderEntityGuid",
-                table: "Folders",
-                column: "FolderEntityGuid");
+                "IX_Folders_FolderEntityGuid",
+                "Folders",
+                "FolderEntityGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Keypoints_LayerSettingEntityGuid",
-                table: "Keypoints",
-                column: "LayerSettingEntityGuid");
+                "IX_Keypoints_LayerSettingEntityGuid",
+                "Keypoints",
+                "LayerSettingEntityGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Layers_FolderEntityGuid",
-                table: "Layers",
-                column: "FolderEntityGuid");
+                "IX_Layers_FolderEntityGuid",
+                "Layers",
+                "FolderEntityGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LayerSettings_LayerEntityGuid",
-                table: "LayerSettings",
-                column: "LayerEntityGuid");
+                "IX_LayerSettings_LayerEntityGuid",
+                "LayerSettings",
+                "LayerEntityGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Leds_LayerGuid",
-                table: "Leds",
-                column: "LayerGuid");
+                "IX_Leds_LayerGuid",
+                "Leds",
+                "LayerGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_RootFolderGuid",
-                table: "Profiles",
-                column: "RootFolderGuid");
+                "IX_Profiles_RootFolderGuid",
+                "Profiles",
+                "RootFolderGuid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Keypoints");
+                "Keypoints");
 
             migrationBuilder.DropTable(
-                name: "Leds");
+                "Leds");
 
             migrationBuilder.DropTable(
-                name: "Profiles");
+                "Profiles");
 
             migrationBuilder.DropTable(
-                name: "Settings");
+                "Settings");
 
             migrationBuilder.DropTable(
-                name: "LayerSettings");
+                "LayerSettings");
 
             migrationBuilder.DropTable(
-                name: "Layers");
+                "Layers");
 
             migrationBuilder.DropTable(
-                name: "Folders");
+                "Folders");
         }
     }
 }

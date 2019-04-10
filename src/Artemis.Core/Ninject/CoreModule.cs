@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Artemis.Core.Services.Interfaces;
+﻿using Artemis.Core.Services.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 

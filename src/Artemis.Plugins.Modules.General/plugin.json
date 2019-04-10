@@ -1,0 +1,5 @@
+﻿{
+  "Name": "General module",
+  "Version": "1.0.0",
+  "Main": "Artemis.Plugins.Modules.General.dll"
+}

@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
     public class RgbService : IRgbService, IDisposable
     {
         private readonly TimerUpdateTrigger _updateTrigger;
-        private List<IRGBDevice> _loadedDevices;
+        private readonly List<IRGBDevice> _loadedDevices;
 
         public RgbService()
         {
@@ -44,7 +44,6 @@ namespace Artemis.Core.Services
 
             await Task.Run(() =>
             {
-
                 // TODO SpoinkyNL 8-1-18: Keep settings into account
                 // This one doesn't work well without ASUS devices installed
                 // Surface.LoadDevices(AsusDeviceProvider.Instance);

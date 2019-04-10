@@ -4,7 +4,7 @@ using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
 
-namespace Artemis.Plugins.BuiltIn.LayerTypes.Brush
+namespace Artemis.Plugins.LayerTypes.Brush
 {
     public class BrushLayerType : ILayerType
     {

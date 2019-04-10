@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Artemis.Core.Plugins.Interfaces;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
 using Artemis.UI.ViewModels.Settings;
@@ -29,25 +28,25 @@ namespace Artemis.UI.ViewModels
             ActiveItem = _artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel));
 
             // Sync up with the plugin service
-            Modules = new BindableCollection<PluginInfo>();
+            Modules = new BindableCollection<IModule>();
             LoadingPlugins = _pluginService.LoadingPlugins;
             _pluginService.StartedLoadingPlugins += PluginServiceOnStartedLoadingPlugins;
             _pluginService.FinishedLoadedPlugins += PluginServiceOnFinishedLoadedPlugins;
 
             if (!LoadingPlugins)
-                Modules.AddRange(_pluginService.Plugins.Where(p => p.Plugin is IModule));
+                Modules.AddRange(_pluginService.Plugins.SelectMany(p => p.Instances.Where(i => i is IModule).Cast<IModule>()));
 
             PropertyChanged += OnSelectedModuleChanged;
             PropertyChanged += OnSelectedPageChanged;
         }
 
 
-        public IObservableCollection<PluginInfo> Modules { get; set; }
+        public IObservableCollection<IModule> Modules { get; set; }
 
         public bool MenuOpen { get; set; }
         public bool LoadingPlugins { get; set; }
         public ListBoxItem SelectedPage { get; set; }
-        public PluginInfo SelectedModule { get; set; }
+        public IModule SelectedModule { get; set; }
 
         private void PluginServiceOnStartedLoadingPlugins(object sender, EventArgs eventArgs)
         {
@@ -59,7 +58,7 @@ namespace Artemis.UI.ViewModels
 
         private void PluginServiceOnFinishedLoadedPlugins(object sender, EventArgs eventArgs)
         {
-            Modules.AddRange(_pluginService.Plugins.Where(p => p.Plugin is IModule));
+            Modules.AddRange(_pluginService.Plugins.SelectMany(p => p.Instances.Where(i => i is IModule).Cast<IModule>()));
             SelectedModule = null;
 
             LoadingPlugins = false;
@@ -71,7 +70,7 @@ namespace Artemis.UI.ViewModels
                 return;
 
             // Create a view model for the given plugin info (which will be a module)
-            var viewModel = await _pluginService.GetModuleViewModel(SelectedModule);
+            var viewModel = await Task.Run(() => SelectedModule.GetMainViewModel());
             // Tell Stylet to active the view model, the view manager will compile and show the XAML
             ActivateItem(viewModel);
 

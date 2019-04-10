@@ -10,8 +10,8 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.ProfileElements;
 using Artemis.Core.Services.Interfaces;
+using Newtonsoft.Json;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
 
@@ -20,9 +20,8 @@ namespace Artemis.Core.Services
     public class PluginService : IPluginService
     {
         private readonly IKernel _kernel;
-        private IKernel _childKernel;
-        private AppDomain _appDomain;
         private readonly List<PluginInfo> _plugins;
+        private IKernel _childKernel;
 
         public PluginService(IKernel kernel)
         {
@@ -44,21 +43,68 @@ namespace Artemis.Core.Services
 
             OnStartedLoadingPlugins();
 
-            UnloadPlugins();
-
-            // Create a child kernel and app domain that will only contain the plugins
-            _childKernel = new ChildKernel(_kernel);
-            _appDomain = AppDomain.CreateDomain("PluginAppDomain");
-            
-            // Load the plugin assemblies into the app domain
-            var directory = new DirectoryInfo(Constants.DataFolder + "plugins");
-            foreach (var subDirectory in directory.EnumerateDirectories())
+            await Task.Run(() =>
             {
-//                _appDomain.Load()
-//                _plugins.Add(new PluginInfo(subDirectory.FullName));
-            }
+                UnloadPlugins();
+
+                // Create a child kernel and app domain that will only contain the plugins
+                _childKernel = new ChildKernel(_kernel);
+
+                // Load the plugin assemblies into the plugin context
+                var directory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+                foreach (var subDirectory in directory.EnumerateDirectories())
+                {
+                    try
+                    {
+                        // Load the metadata
+                        var metadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
+                        if (!File.Exists(metadataFile))
+                            throw new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile);
+
+                        // Locate the main entry
+                        var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+                        var mainFile = Path.Combine(subDirectory.FullName, pluginInfo.Main);
+                        if (!File.Exists(mainFile))
+                            throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
+
+                        // Load the plugin, all types implementing IPlugin and register them with DI
+                        var assembly = Assembly.LoadFile(mainFile);
+                        var pluginTypes = assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToArray();
+                        foreach (var pluginType in pluginTypes)
+                        {
+                            _childKernel.Bind(pluginType).To<IPlugin>().InSingletonScope();
+                            pluginInfo.Instances.Add((IPlugin) _childKernel.Get(pluginType));
+                        }
+
+                        _plugins.Add(pluginInfo);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArtemisPluginException("Failed to load plugin", e);
+                    }
+                }
+            });
 
             OnFinishedLoadedPlugins();
+        }
+
+        /// <inheritdoc />
+        public ILayerType GetLayerTypeByGuid(Guid layerTypeGuid)
+        {
+            var pluginInfo = _plugins.FirstOrDefault(p => p.Guid == layerTypeGuid);
+            if (pluginInfo == null)
+                return null;
+
+            var layerType = pluginInfo.Instances.SingleOrDefault(p => p is ILayerType);
+            if (layerType == null)
+                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement exactly one ILayerType");
+
+            return (ILayerType) layerType;
+        }
+
+        public void Dispose()
+        {
+            UnloadPlugins();
         }
 
         private void UnloadPlugins()
@@ -70,38 +116,6 @@ namespace Artemis.Core.Services
                 _childKernel.Dispose();
                 _childKernel = null;
             }
-            if (_appDomain != null)
-            {
-                AppDomain.Unload(_appDomain);
-                _appDomain = null;
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task<IModuleViewModel> GetModuleViewModel(PluginInfo pluginInfo)
-        {
-            return await Task.Run(() => pluginInfo.GetModuleViewModel(_kernel));
-        }
-
-        /// <inheritdoc />
-        public ILayerType GetLayerTypeByGuid(Guid layerTypeGuid)
-        {
-            var pluginInfo = _plugins.FirstOrDefault(p => p.Guid == layerTypeGuid);
-            if (pluginInfo == null)
-                return null;
-
-            // Layer types are instantiated per layer so lets compile and return a new instance
-            if (!(pluginInfo.Plugin is ILayerType))
-            {
-                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement ILayerType");
-            }
-
-            return (ILayerType) pluginInfo.Plugin;
-        }
-
-        public void Dispose()
-        {
-            UnloadPlugins();
         }
 
         #region Events
@@ -114,7 +128,7 @@ namespace Artemis.Core.Services
         {
             PluginLoaded?.Invoke(this, e);
         }
-        
+
         private void OnStartedLoadingPlugins()
         {
             LoadingPlugins = true;

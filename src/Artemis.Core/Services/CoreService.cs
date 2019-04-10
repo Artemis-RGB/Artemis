@@ -48,8 +48,10 @@ namespace Artemis.Core.Services
         {
             try
             {
+                var modules = _pluginService.Plugins.SelectMany(p => p.Instances).OfType<IModule>().ToList();
+
                 // Update all active modules
-                foreach (var module in _pluginService.Plugins.Select(p => p.Plugin).OfType<IModule>())
+                foreach (var module in modules)
                     module.Update(args.DeltaTime);
 
                 if (_rgbService.GraphicsDecorator == null)
@@ -60,7 +62,7 @@ namespace Artemis.Core.Services
                 {
                     g.Clear(Color.Red);
 
-                    foreach (var module in _pluginService.Plugins.Select(p => p.Plugin).OfType<IModule>())
+                    foreach (var module in modules)
                         module.Render(args.DeltaTime, _rgbService.Surface, g);
                 }
             }

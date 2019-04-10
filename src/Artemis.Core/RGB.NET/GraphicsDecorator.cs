@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Linq;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Color = RGB.NET.Core.Color;
@@ -17,7 +16,7 @@ namespace Artemis.Core.RGB.NET
 //            var height = ledGroup.GetLeds().Max(l => l.LedRectangle.Y + l.LedRectangle.Height);
             var width = 500;
             var height = 500;
-            _bitmap = new DirectBitmap((int) width, (int) height);
+            _bitmap = new DirectBitmap(width, height);
         }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)
