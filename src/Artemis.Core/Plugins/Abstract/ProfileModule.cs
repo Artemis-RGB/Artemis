@@ -12,6 +12,9 @@ namespace Artemis.Core.Plugins.Abstract
         public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />
+        public abstract string DisplayName { get; }
+
+        /// <inheritdoc />
         public abstract bool ExpandsMainDataModel { get; }
 
         /// <inheritdoc />

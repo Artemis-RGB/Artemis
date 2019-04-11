@@ -1,11 +1,12 @@
-﻿using Artemis.Core.Plugins.Interfaces;
-using Artemis.Core.Plugins.Models;
-using Stylet;
+﻿using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Interfaces;
 
 namespace Artemis.Plugins.Modules.General.ViewModels
 {
-    public class GeneralViewModel : Screen, IModuleViewModel
+    public class GeneralViewModel : ModuleViewModel
     {
-        public PluginInfo PluginInfo { get; set; }
+        public GeneralViewModel(IModule module) : base(module)
+        {
+        }
     }
 }

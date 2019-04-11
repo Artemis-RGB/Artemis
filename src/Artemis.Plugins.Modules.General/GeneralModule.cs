@@ -13,22 +13,19 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : IModule
     {
-        private readonly IRgbService _rgbService;
         private readonly RGBSurface _surface;
         private Dictionary<Led, Color> _colors;
 
-        public GeneralModule()
-        {
-            
-        }
         public GeneralModule(IRgbService rgbService)
         {
-            _rgbService = rgbService;
-            _surface = _rgbService.Surface;
+            var rgbService1 = rgbService;
+            _surface = rgbService1.Surface;
             _colors = new Dictionary<Led, Color>();
 
-            _rgbService.FinishedLoadedDevices += (sender, args) => PopulateColors();
+            rgbService1.FinishedLoadedDevices += (sender, args) => PopulateColors();
         }
+
+        public string DisplayName => "General";
 
         // True since the main data model is all this module shows
         public bool ExpandsMainDataModel => true;
@@ -58,7 +55,7 @@ namespace Artemis.Plugins.Modules.General
 
         public IScreen GetMainViewModel()
         {
-            return new GeneralViewModel();
+            return new GeneralViewModel(this);
         }
 
         public void Dispose()

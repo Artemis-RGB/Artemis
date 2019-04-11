@@ -68,12 +68,28 @@ namespace Artemis.Core.Services
                             throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
 
                         // Load the plugin, all types implementing IPlugin and register them with DI
-                        var assembly = Assembly.LoadFile(mainFile);
+                        Assembly assembly;
+                        try
+                        {
+                            assembly = Assembly.LoadFile(mainFile);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
+                        }
+
                         var pluginTypes = assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToArray();
                         foreach (var pluginType in pluginTypes)
                         {
-                            _childKernel.Bind(pluginType).To<IPlugin>().InSingletonScope();
-                            pluginInfo.Instances.Add((IPlugin) _childKernel.Get(pluginType));
+                            _childKernel.Bind<IPlugin>().To(pluginType).InSingletonScope();
+                            try
+                            {
+                                pluginInfo.Instances.Add((IPlugin) _childKernel.Get(pluginType));
+                            }
+                            catch (Exception e)
+                            {
+                                throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
+                            }
                         }
 
                         _plugins.Add(pluginInfo);

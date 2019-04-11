@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Windows;
-using System.Windows.Markup;
-using Artemis.Core.Plugins.Interfaces;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.UI.Stylet
 {
@@ -10,30 +6,7 @@ namespace Artemis.UI.Stylet
     {
         public ArtemisViewManager(ViewManagerConfig config) : base(config)
         {
-        }
 
-        public override UIElement CreateViewForModel(object model)
-        {
-            if (model is IModuleViewModel)
-                return CreateViewForPlugin(model);
-
-            return base.CreateViewForModel(model);
-        }
-
-        private UIElement CreateViewForPlugin(object model)
-        {
-            var viewName = model.GetType().Name.Replace("Model", "");
-            var pluginInfo = ((IModuleViewModel) model).PluginInfo;
-            var viewPath = $"{pluginInfo.Folder}{viewName}.xaml";
-            // There doesn't have to be a view so make sure one exists
-            if (!File.Exists(viewPath))
-                return null;
-
-            // Compile the view if found, must be done on UI thread sadly
-            object view = null;
-            Execute.OnUIThread(() => view = XamlReader.Parse(File.ReadAllText(viewPath)));
-
-            return (UIElement) view;
         }
     }
 }

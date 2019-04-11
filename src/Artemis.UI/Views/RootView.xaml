@@ -8,6 +8,7 @@
                    xmlns:s="https://github.com/canton7/Stylet"
                    xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
                    xmlns:models="clr-namespace:Artemis.Core.Plugins.Models;assembly=Artemis.Core"
+                   xmlns:interfaces="clr-namespace:Artemis.Core.Plugins.Interfaces;assembly=Artemis.Core"
                    mc:Ignorable="d"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
@@ -126,13 +127,13 @@
                                  SelectedItem="{Binding SelectedModule}"
                                  DockPanel.Dock="Top">
                             <ListBox.ItemTemplate>
-                                <DataTemplate DataType="models:PluginInfo">
+                                <DataTemplate DataType="interfaces:IModule">
                                     <DockPanel HorizontalAlignment="Stretch"
                                                VerticalAlignment="Stretch"
                                                Margin="0">
                                         <materialDesign:PackIcon Kind="Home"
                                                                  Margin="0,0,8,0" />
-                                        <TextBlock Text="{Binding Name}" />
+                                        <TextBlock Text="{Binding DisplayName}" />
                                     </DockPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
