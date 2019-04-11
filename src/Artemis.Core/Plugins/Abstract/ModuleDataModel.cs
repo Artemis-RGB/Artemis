@@ -1,12 +1,11 @@
 ﻿using Artemis.Core.Plugins.Interfaces;
-using Artemis.Core.Plugins.Models;
 using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {
-    public abstract class ModuleViewModel : Screen
+    public abstract class ModuleDataModel
     {
-        protected ModuleViewModel(IModule module)
+        protected ModuleDataModel(IModule module)
         {
             Module = module;
         }

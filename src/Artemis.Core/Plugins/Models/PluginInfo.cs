@@ -7,6 +7,11 @@ namespace Artemis.Core.Plugins.Models
 {
     public class PluginInfo
     {
+        public PluginInfo()
+        {
+            Instances = new List<IPlugin>();
+        }
+
         /// <summary>
         ///     The plugins GUID
         /// </summary>

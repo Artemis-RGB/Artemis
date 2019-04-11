@@ -11,7 +11,12 @@ namespace Artemis.Core.Plugins.Interfaces
     public interface IModule : IPlugin
     {
         /// <summary>
-        ///     Wether or not this module expands upon the main data model. If set to true any data in main data model can be
+        ///     The modules display name that's shown in the menu
+        /// </summary>
+        string DisplayName { get; }
+
+        /// <summary>
+        ///     Whether or not this module expands upon the main data model. If set to true any data in main data model can be
         ///     accessed by profiles in this module
         /// </summary>
         bool ExpandsMainDataModel { get; }

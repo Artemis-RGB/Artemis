@@ -102,6 +102,7 @@
     <Compile Include="Events\DeviceEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
+    <Compile Include="Plugins\Abstract\ModuleDataModel.cs" />
     <Compile Include="Plugins\Abstract\ModuleViewModel.cs" />
     <Compile Include="Plugins\Abstract\ProfileModule.cs" />
     <Compile Include="Plugins\Exceptions\ArtemisPluginException.cs" />
@@ -110,8 +111,6 @@
     <Compile Include="Plugins\Interfaces\ILayerType.cs" />
     <Compile Include="Plugins\Interfaces\ILayerTypeConfiguration.cs" />
     <Compile Include="Plugins\Interfaces\IModule.cs" />
-    <Compile Include="Plugins\Interfaces\IModuleDataModel.cs" />
-    <Compile Include="Plugins\Interfaces\IModuleViewModel.cs" />
     <Compile Include="Plugins\Interfaces\IPlugin.cs" />
     <Compile Include="Plugins\Models\PluginInfo.cs" />
     <Compile Include="ProfileElements\Folder.cs" />
