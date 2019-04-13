@@ -34,7 +34,7 @@ namespace Artemis.UI.ViewModels
             _pluginService.FinishedLoadedPlugins += PluginServiceOnFinishedLoadedPlugins;
 
             if (!LoadingPlugins)
-                Modules.AddRange(_pluginService.Plugins.SelectMany(p => p.Instances.Where(i => i is IModule).Cast<IModule>()));
+                Modules.AddRange(_pluginService.GetModules());
 
             PropertyChanged += OnSelectedModuleChanged;
             PropertyChanged += OnSelectedPageChanged;
@@ -58,7 +58,7 @@ namespace Artemis.UI.ViewModels
 
         private void PluginServiceOnFinishedLoadedPlugins(object sender, EventArgs eventArgs)
         {
-            Modules.AddRange(_pluginService.Plugins.SelectMany(p => p.Instances.Where(i => i is IModule).Cast<IModule>()));
+            Modules.AddRange(_pluginService.GetModules());
             SelectedModule = null;
 
             LoadingPlugins = false;

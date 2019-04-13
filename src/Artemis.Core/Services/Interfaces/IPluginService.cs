@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
@@ -45,5 +46,11 @@ namespace Artemis.Core.Services.Interfaces
         /// <param name="layerTypeGuid">The GUID of the layer type to find</param>
         /// <returns>An instance of the layer type</returns>
         ILayerType GetLayerTypeByGuid(Guid layerTypeGuid);
+
+        /// <summary>
+        ///     Returns all the plugins implementing <see cref="IModule" />
+        /// </summary>
+        /// <returns></returns>
+        IReadOnlyList<IModule> GetModules();
     }
 }

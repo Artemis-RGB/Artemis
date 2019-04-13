@@ -6,11 +6,11 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralDataModel : ModuleDataModel
     {
-        [DataModelProperty(DisplayName = "Unique boolean")]
-        public bool PropertyUniqueToThisDm { get; set; }
-
         public GeneralDataModel(IModule module) : base(module)
         {
         }
+
+        [DataModelProperty(DisplayName = "Unique boolean")]
+        public bool PropertyUniqueToThisDm { get; set; }
     }
 }

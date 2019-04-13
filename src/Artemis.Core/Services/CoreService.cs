@@ -48,7 +48,7 @@ namespace Artemis.Core.Services
         {
             try
             {
-                var modules = _pluginService.Plugins.SelectMany(p => p.Instances).OfType<IModule>().ToList();
+                var modules = _pluginService.GetModules();
 
                 // Update all active modules
                 foreach (var module in modules)

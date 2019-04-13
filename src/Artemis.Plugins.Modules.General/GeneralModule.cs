@@ -4,6 +4,7 @@ using Artemis.Core;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
+using QRCoder;
 using RGB.NET.Core;
 using Stylet;
 using Color = System.Drawing.Color;
@@ -63,8 +64,9 @@ namespace Artemis.Plugins.Modules.General
             _colors = null;
         }
 
-        public void LoadPlugin()
+        public void EnablePlugin()
         {
+            var qrGenerator = new QRCodeGenerator();
             PopulateColors();
         }
 
