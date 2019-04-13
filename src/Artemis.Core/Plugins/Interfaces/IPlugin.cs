@@ -10,6 +10,6 @@ namespace Artemis.Core.Plugins.Interfaces
         /// <summary>
         ///     Called when the plugin is loaded
         /// </summary>
-        void LoadPlugin();
+        void EnablePlugin();
     }
 }

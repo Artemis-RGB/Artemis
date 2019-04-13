@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using AppDomainToolkit;
 using Artemis.Core.Plugins.Interfaces;
 using Newtonsoft.Json;
 
@@ -7,11 +7,6 @@ namespace Artemis.Core.Plugins.Models
 {
     public class PluginInfo
     {
-        public PluginInfo()
-        {
-            Instances = new List<IPlugin>();
-        }
-
         /// <summary>
         ///     The plugins GUID
         /// </summary>
@@ -39,10 +34,21 @@ namespace Artemis.Core.Plugins.Models
         public string Folder { get; set; }
 
         /// <summary>
-        ///     A references to the types implementing IPlugin, available after successful load
+        ///     A reference to the type implementing IPlugin, available after successful load
         /// </summary>
         [JsonIgnore]
-        public List<IPlugin> Instances { get; set; }
+        public IPlugin Instance { get; set; }
+
+        /// <summary>
+        ///     Indicates whether the user enabled the plugin or not
+        /// </summary>
+        [JsonIgnore]
+        public bool Enabled { get; set; }
+
+        /// <summary>
+        ///     The AppDomain context of this plugin
+        /// </summary>
+        internal AppDomainContext<AssemblyTargetLoader, PathBasedAssemblyResolver> Context { get; set; }
 
         public override string ToString()
         {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
+using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Exceptions;
@@ -53,7 +53,6 @@ namespace Artemis.Core.Services
                 // Load the plugin assemblies into the plugin context
                 var directory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
                 foreach (var subDirectory in directory.EnumerateDirectories())
-                {
                     try
                     {
                         // Load the metadata
@@ -63,42 +62,58 @@ namespace Artemis.Core.Services
 
                         // Locate the main entry
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+                        // TODO Just temporarily until settings are in place
+                        pluginInfo.Enabled = true;
                         var mainFile = Path.Combine(subDirectory.FullName, pluginInfo.Main);
                         if (!File.Exists(mainFile))
                             throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
 
                         // Load the plugin, all types implementing IPlugin and register them with DI
-                        Assembly assembly;
+                        var setupInfo = new AppDomainSetup
+                        {
+                            ApplicationName = pluginInfo.Guid.ToString(),
+                            ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                            PrivateBinPath = subDirectory.FullName
+                        };
+                        pluginInfo.Context = AppDomainContext.Create(setupInfo);
+
                         try
                         {
-                            assembly = Assembly.LoadFile(mainFile);
+                            pluginInfo.Context.LoadAssemblyWithReferences(LoadMethod.LoadFrom, mainFile);
                         }
                         catch (Exception e)
                         {
                             throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
                         }
 
-                        var pluginTypes = assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToArray();
-                        foreach (var pluginType in pluginTypes)
-                        {
-                            _childKernel.Bind<IPlugin>().To(pluginType).InSingletonScope();
-                            try
-                            {
-                                pluginInfo.Instances.Add((IPlugin) _childKernel.Get(pluginType));
-                            }
-                            catch (Exception e)
-                            {
-                                throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
-                            }
-                        }
+                        // Get the IPlugin implementation from the main assembly and if there is only one, instantiate it
+                        var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().First(a => a.Location == mainFile);
+                        var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
+                        if (pluginTypes.Count > 1)
+                            throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of IPlugin, only 1 allowed");
+                        if (pluginTypes.Count == 0)
+                            throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of IPlugin");
 
+                        var pluginType = pluginTypes.Single();
+                        _childKernel.Bind<IPlugin>().To(pluginType).InSingletonScope();
+                        try
+                        {
+                            pluginInfo.Instance = (IPlugin) _childKernel.Get(pluginType);
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
+                        }
                         _plugins.Add(pluginInfo);
                     }
                     catch (Exception e)
                     {
                         throw new ArtemisPluginException("Failed to load plugin", e);
                     }
-                }
+
+                // Activate plugins after they are all loaded
+                foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
+                    pluginInfo.Instance.EnablePlugin();
             });
 
             OnFinishedLoadedPlugins();
@@ -111,11 +126,15 @@ namespace Artemis.Core.Services
             if (pluginInfo == null)
                 return null;
 
-            var layerType = pluginInfo.Instances.SingleOrDefault(p => p is ILayerType);
-            if (layerType == null)
+            if (!(pluginInfo.Instance is ILayerType layerType))
                 throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement exactly one ILayerType");
 
-            return (ILayerType) layerType;
+            return layerType;
+        }
+
+        public IReadOnlyList<IModule> GetModules()
+        {
+            return Plugins.Where(p => p.Instance is IModule).Select(p => (IModule) p.Instance).ToList();
         }
 
         public void Dispose()

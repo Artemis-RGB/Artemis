@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
+using QRCoder;
 using RGB.NET.Core;
 
 namespace Artemis.Plugins.LayerTypes.Brush
@@ -10,12 +10,11 @@ namespace Artemis.Plugins.LayerTypes.Brush
     {
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
-        public void LoadPlugin()
+        public void EnablePlugin()
         {
-            throw new NotImplementedException();
+            var qrGenerator = new QRCodeGenerator();
         }
 
         public void Update(Layer layer)

@@ -18,7 +18,7 @@ namespace Artemis.Core.Plugins.Abstract
         public abstract bool ExpandsMainDataModel { get; }
 
         /// <inheritdoc />
-        public void LoadPlugin()
+        public void EnablePlugin()
         {
             // Load and activate the last active profile
         }
