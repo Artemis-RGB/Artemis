@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements;
 using QRCoder;
@@ -15,6 +16,11 @@ namespace Artemis.Plugins.LayerTypes.Brush
         public void EnablePlugin()
         {
             var qrGenerator = new QRCodeGenerator();
+        }
+
+        public void DisablePlugin()
+        {
+            throw new NotImplementedException();
         }
 
         public void Update(Layer layer)

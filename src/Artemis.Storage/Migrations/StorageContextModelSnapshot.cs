@@ -11,7 +11,7 @@ namespace Artemis.Storage.Migrations
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
-#pragma warning disable 612, 618
+            #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011");
 
@@ -180,7 +180,7 @@ namespace Artemis.Storage.Migrations
                     .WithMany()
                     .HasForeignKey("RootFolderGuid");
             });
-#pragma warning restore 612, 618
+            #pragma warning restore 612, 618
         }
     }
 }

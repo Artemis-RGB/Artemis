@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Artemis.Core.Events;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
@@ -29,44 +29,22 @@ namespace Artemis.UI.ViewModels
 
             // Sync up with the plugin service
             Modules = new BindableCollection<IModule>();
-            LoadingPlugins = _pluginService.LoadingPlugins;
-            _pluginService.StartedLoadingPlugins += PluginServiceOnStartedLoadingPlugins;
-            _pluginService.FinishedLoadedPlugins += PluginServiceOnFinishedLoadedPlugins;
+            Modules.AddRange(_pluginService.GetPluginsOfType<IModule>());
 
-            if (!LoadingPlugins)
-                Modules.AddRange(_pluginService.GetModules());
-
+            _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
+            _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
             PropertyChanged += OnSelectedModuleChanged;
             PropertyChanged += OnSelectedPageChanged;
         }
 
-
         public IObservableCollection<IModule> Modules { get; set; }
-
         public bool MenuOpen { get; set; }
-        public bool LoadingPlugins { get; set; }
         public ListBoxItem SelectedPage { get; set; }
         public IModule SelectedModule { get; set; }
 
-        private void PluginServiceOnStartedLoadingPlugins(object sender, EventArgs eventArgs)
-        {
-            LoadingPlugins = true;
-
-            Modules.Clear();
-            SelectedModule = null;
-        }
-
-        private void PluginServiceOnFinishedLoadedPlugins(object sender, EventArgs eventArgs)
-        {
-            Modules.AddRange(_pluginService.GetModules());
-            SelectedModule = null;
-
-            LoadingPlugins = false;
-        }
-
         public async Task NavigateToSelectedModule()
         {
-            if (SelectedModule == null || LoadingPlugins)
+            if (SelectedModule == null)
                 return;
 
             // Create a view model for the given plugin info (which will be a module)
@@ -76,6 +54,31 @@ namespace Artemis.UI.ViewModels
 
             SelectedPage = null;
             MenuOpen = false;
+        }
+
+        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
+        {
+            var existing = Modules.FirstOrDefault(m => _pluginService.GetPluginInfo(m)?.Guid == e.PluginInfo.Guid);
+            if (existing != null)
+            {
+                if (SelectedModule == existing && SelectedModule != null)
+                    SelectedModule = null;
+                Modules.Remove(existing);
+            }
+
+            if (e.PluginInfo.Instance is IModule module)
+                Modules.Add(module);
+        }
+
+        private void PluginServiceOnPluginDisabled(object sender, PluginEventArgs e)
+        {
+            var existing = Modules.FirstOrDefault(m => _pluginService.GetPluginInfo(m)?.Guid == e.PluginInfo.Guid);
+            if (existing != null)
+            {
+                if (SelectedModule == existing && SelectedModule != null)
+                    SelectedModule = null;
+                Modules.Remove(existing);
+            }
         }
 
         private async void OnSelectedModuleChanged(object sender, PropertyChangedEventArgs e)

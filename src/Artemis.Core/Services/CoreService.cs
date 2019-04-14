@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Interfaces;
@@ -38,7 +37,7 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             // Initialize the services
-            await _pluginService.LoadPlugins();
+            await Task.Run(() => _pluginService.LoadPlugins());
             await _rgbService.LoadDevices();
 
             OnInitialized();
@@ -48,7 +47,7 @@ namespace Artemis.Core.Services
         {
             try
             {
-                var modules = _pluginService.GetModules();
+                var modules = _pluginService.GetPluginsOfType<IModule>();
 
                 // Update all active modules
                 foreach (var module in modules)

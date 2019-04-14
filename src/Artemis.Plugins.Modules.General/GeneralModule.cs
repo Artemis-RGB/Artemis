@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core;
 using Artemis.Core.Plugins.Interfaces;
@@ -68,6 +69,11 @@ namespace Artemis.Plugins.Modules.General
         {
             var qrGenerator = new QRCodeGenerator();
             PopulateColors();
+        }
+
+        public void DisablePlugin()
+        {
+            throw new NotImplementedException();
         }
 
         private void UpdateLedColor(Led led, double deltaTime)

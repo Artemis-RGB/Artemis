@@ -70,10 +70,8 @@ namespace Artemis.UI.Controls.Visualizers
         private void RGBSurfaceOnSurfaceLayoutChanged(SurfaceLayoutChangedEventArgs args)
         {
             if (args.DeviceAdded)
-            {
                 foreach (var device in args.Devices)
                     _newDevices.Add(device);
-            }
 
             UpdateSurface();
         }

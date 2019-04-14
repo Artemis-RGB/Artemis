@@ -13,8 +13,8 @@ namespace Artemis.Core.Services
 {
     public class RgbService : IRgbService, IDisposable
     {
-        private readonly TimerUpdateTrigger _updateTrigger;
         private readonly List<IRGBDevice> _loadedDevices;
+        private readonly TimerUpdateTrigger _updateTrigger;
 
         public RgbService()
         {
@@ -68,7 +68,9 @@ namespace Artemis.Core.Services
                             OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
                         }
                         else
+                        {
                             OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
+                        }
                     }
                 }
             });

@@ -22,6 +22,8 @@ namespace Artemis.UI
 
         protected override void ConfigureIoC(IKernel kernel)
         {
+            kernel.Settings.InjectNonPublic = true;
+
             // Load this assembly's module
             kernel.Load<UIModule>();
             // Load the core assembly's module
