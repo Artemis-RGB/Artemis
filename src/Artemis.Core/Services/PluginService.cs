@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -23,7 +21,7 @@ namespace Artemis.Core.Services
         private readonly List<PluginInfo> _plugins;
         private IKernel _childKernel;
 
-        public PluginService(IKernel kernel)
+        internal PluginService(IKernel kernel)
         {
             _kernel = kernel;
             _plugins = new List<PluginInfo>();
@@ -32,19 +30,20 @@ namespace Artemis.Core.Services
                 Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
 
+        /// <inheritdoc />
         public bool LoadingPlugins { get; private set; }
-        public ReadOnlyCollection<PluginInfo> Plugins => _plugins.AsReadOnly();
 
         /// <inheritdoc />
-        public async Task LoadPlugins()
+        public void LoadPlugins()
         {
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 
-            OnStartedLoadingPlugins();
-
-            await Task.Run(() =>
+            lock (_plugins)
             {
+                LoadingPlugins = true;
+
+                // Unload all currently loaded plugins first
                 UnloadPlugins();
 
                 // Create a child kernel and app domain that will only contain the plugins
@@ -53,6 +52,7 @@ namespace Artemis.Core.Services
                 // Load the plugin assemblies into the plugin context
                 var directory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
                 foreach (var subDirectory in directory.EnumerateDirectories())
+                {
                     try
                     {
                         // Load the metadata
@@ -62,61 +62,145 @@ namespace Artemis.Core.Services
 
                         // Locate the main entry
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
-                        // TODO Just temporarily until settings are in place
-                        pluginInfo.Enabled = true;
-                        var mainFile = Path.Combine(subDirectory.FullName, pluginInfo.Main);
-                        if (!File.Exists(mainFile))
-                            throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
-
-                        // Load the plugin, all types implementing IPlugin and register them with DI
-                        var setupInfo = new AppDomainSetup
-                        {
-                            ApplicationName = pluginInfo.Guid.ToString(),
-                            ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
-                            PrivateBinPath = subDirectory.FullName
-                        };
-                        pluginInfo.Context = AppDomainContext.Create(setupInfo);
-
-                        try
-                        {
-                            pluginInfo.Context.LoadAssemblyWithReferences(LoadMethod.LoadFrom, mainFile);
-                        }
-                        catch (Exception e)
-                        {
-                            throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
-                        }
-
-                        // Get the IPlugin implementation from the main assembly and if there is only one, instantiate it
-                        var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().First(a => a.Location == mainFile);
-                        var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
-                        if (pluginTypes.Count > 1)
-                            throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of IPlugin, only 1 allowed");
-                        if (pluginTypes.Count == 0)
-                            throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of IPlugin");
-
-                        var pluginType = pluginTypes.Single();
-                        _childKernel.Bind<IPlugin>().To(pluginType).InSingletonScope();
-                        try
-                        {
-                            pluginInfo.Instance = (IPlugin) _childKernel.Get(pluginType);
-                        }
-                        catch (Exception e)
-                        {
-                            throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
-                        }
-                        _plugins.Add(pluginInfo);
+                        pluginInfo.Directory = subDirectory;
+                        LoadPlugin(pluginInfo);
                     }
                     catch (Exception e)
                     {
                         throw new ArtemisPluginException("Failed to load plugin", e);
                     }
+                }
 
                 // Activate plugins after they are all loaded
                 foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
+                {
                     pluginInfo.Instance.EnablePlugin();
-            });
+                    OnPluginEnabled(new PluginEventArgs(pluginInfo));
+                }
 
-            OnFinishedLoadedPlugins();
+                LoadingPlugins = false;
+            }
+        }
+
+        /// <inheritdoc />
+        public void UnloadPlugins()
+        {
+            lock (_plugins)
+            {
+                // Unload all plugins
+                while (_plugins.Count > 0)
+                {
+                    UnloadPlugin(_plugins[0]);
+                }
+
+                // Dispose the child kernel and therefore any leftover plugins instantiated with it
+                if (_childKernel != null)
+                {
+                    _childKernel.Dispose();
+                    _childKernel = null;
+                }
+
+                _plugins.Clear();
+            }
+        }
+
+        /// <inheritdoc />
+        public void LoadPlugin(PluginInfo pluginInfo)
+        {
+            lock (_plugins)
+            {
+                // Unload the plugin first if it is already loaded
+                if (_plugins.Contains(pluginInfo))
+                    UnloadPlugin(pluginInfo);
+
+                // TODO Just temporarily until settings are in place
+                pluginInfo.Enabled = true;
+                var mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
+                if (!File.Exists(mainFile))
+                    throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
+
+                // Load the plugin, all types implementing IPlugin and register them with DI
+                var setupInfo = new AppDomainSetup
+                {
+                    ApplicationName = pluginInfo.Guid.ToString(),
+                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
+                    PrivateBinPath = pluginInfo.Directory.FullName
+                };
+                pluginInfo.Context = AppDomainContext.Create(setupInfo);
+
+                try
+                {
+                    pluginInfo.Context.LoadAssemblyWithReferences(LoadMethod.LoadFrom, mainFile);
+                }
+                catch (Exception e)
+                {
+                    throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
+                }
+
+                // Get the IPlugin implementation from the main assembly and if there is only one, instantiate it
+                var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().First(a => a.Location == mainFile);
+                var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
+                if (pluginTypes.Count > 1)
+                    throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of IPlugin, only 1 allowed");
+                if (pluginTypes.Count == 0)
+                    throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of IPlugin");
+
+                var pluginType = pluginTypes.Single();
+                try
+                {
+                    pluginInfo.Instance = (IPlugin) _childKernel.Get(pluginType);
+                }
+                catch (Exception e)
+                {
+                    throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
+                }
+
+                _plugins.Add(pluginInfo);
+                OnPluginLoaded(new PluginEventArgs(pluginInfo));
+            }
+        }
+
+        /// <inheritdoc />
+        public void UnloadPlugin(PluginInfo pluginInfo)
+        {
+            lock (_plugins)
+            {
+                try
+                {
+                    pluginInfo.Instance.DisablePlugin();
+                }
+                catch (Exception)
+                {
+                    // TODO: Log these
+                }
+                finally
+                {
+                    OnPluginDisabled(new PluginEventArgs(pluginInfo));
+                }
+
+                _childKernel.Unbind(pluginInfo.Instance.GetType());
+                
+                pluginInfo.Instance.Dispose();
+                pluginInfo.Context.Dispose();
+                _plugins.Remove(pluginInfo);
+
+                OnPluginUnloaded(new PluginEventArgs(pluginInfo));
+            }
+        }
+
+        /// <inheritdoc />
+        public PluginInfo GetPluginInfo(IPlugin plugin)
+        {
+            lock (_plugins)
+            {
+                return _plugins.FirstOrDefault(p => p.Instance == plugin);
+            }
+        }
+
+        /// <inheritdoc />
+        public List<PluginInfo> GetAllPluginInfo()
+        {
+            return new List<PluginInfo>(_plugins);
         }
 
         /// <inheritdoc />
@@ -132,9 +216,13 @@ namespace Artemis.Core.Services
             return layerType;
         }
 
-        public IReadOnlyList<IModule> GetModules()
+        /// <inheritdoc />
+        public List<T> GetPluginsOfType<T>() where T : IPlugin
         {
-            return Plugins.Where(p => p.Instance is IModule).Select(p => (IModule) p.Instance).ToList();
+            lock (_plugins)
+            {
+                return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
+            }
         }
 
         public void Dispose()
@@ -142,38 +230,32 @@ namespace Artemis.Core.Services
             UnloadPlugins();
         }
 
-        private void UnloadPlugins()
-        {
-            _plugins.Clear();
-
-            if (_childKernel != null)
-            {
-                _childKernel.Dispose();
-                _childKernel = null;
-            }
-        }
 
         #region Events
 
         public event EventHandler<PluginEventArgs> PluginLoaded;
-        public event EventHandler StartedLoadingPlugins;
-        public event EventHandler FinishedLoadedPlugins;
+        public event EventHandler<PluginEventArgs> PluginUnloaded;
+        public event EventHandler<PluginEventArgs> PluginEnabled;
+        public event EventHandler<PluginEventArgs> PluginDisabled;
 
-        private void OnPluginLoaded(PluginEventArgs e)
+        protected virtual void OnPluginLoaded(PluginEventArgs e)
         {
             PluginLoaded?.Invoke(this, e);
         }
 
-        private void OnStartedLoadingPlugins()
+        protected virtual void OnPluginUnloaded(PluginEventArgs e)
         {
-            LoadingPlugins = true;
-            StartedLoadingPlugins?.Invoke(this, EventArgs.Empty);
+            PluginUnloaded?.Invoke(this, e);
         }
 
-        private void OnFinishedLoadedPlugins()
+        protected virtual void OnPluginEnabled(PluginEventArgs e)
         {
-            LoadingPlugins = false;
-            FinishedLoadedPlugins?.Invoke(this, EventArgs.Empty);
+            PluginEnabled?.Invoke(this, e);
+        }
+
+        protected virtual void OnPluginDisabled(PluginEventArgs e)
+        {
+            PluginDisabled?.Invoke(this, e);
         }
 
         #endregion

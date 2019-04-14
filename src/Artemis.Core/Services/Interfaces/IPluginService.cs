@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Plugins.Models;
@@ -11,46 +9,81 @@ namespace Artemis.Core.Services.Interfaces
     public interface IPluginService : IArtemisService, IDisposable
     {
         /// <summary>
-        ///     Indicates wether or not plugins are currently being loaded
+        ///     Indicates whether or not plugins are currently being loaded
         /// </summary>
         bool LoadingPlugins { get; }
 
         /// <summary>
-        ///     All loaded plugins
-        /// </summary>
-        ReadOnlyCollection<PluginInfo> Plugins { get; }
-
-        /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
-        Task LoadPlugins();
+        void LoadPlugins();
 
         /// <summary>
-        ///     Occurs when a single plugin has loaded
+        ///     Unloads all installed plugins.
         /// </summary>
-        event EventHandler<PluginEventArgs> PluginLoaded;
+        void UnloadPlugins();
 
         /// <summary>
-        ///     Occurs when loading all plugins has started
+        ///     Loads the plugin defined in the provided <see cref="PluginInfo" />
         /// </summary>
-        event EventHandler StartedLoadingPlugins;
+        /// <param name="pluginInfo">The plugin info defining the plugin to load</param>
+        void LoadPlugin(PluginInfo pluginInfo);
 
         /// <summary>
-        ///     Occurs when loading all plugins has finished
+        ///     Unloads the plugin defined in the provided <see cref="PluginInfo" />
         /// </summary>
-        event EventHandler FinishedLoadedPlugins;
+        /// <param name="pluginInfo">The plugin info defining the plugin to unload</param>
+        void UnloadPlugin(PluginInfo pluginInfo);
 
         /// <summary>
-        ///     If found, returns an instance of the layer type matching the given GUID
+        ///     Finds the plugin info related to the plugin
+        /// </summary>
+        /// <param name="plugin">The plugin you want to find the plugin info for</param>
+        /// <returns>The plugins PluginInfo</returns>
+        PluginInfo GetPluginInfo(IPlugin plugin);
+
+        /// <summary>
+        ///     Gets the plugin info of all loaded plugins
+        /// </summary>
+        /// <returns>A list containing all the plugin info</returns>
+        List<PluginInfo> GetAllPluginInfo();
+
+        /// <summary>
+        ///     Finds an instance of the layer type matching the given GUID
         /// </summary>
         /// <param name="layerTypeGuid">The GUID of the layer type to find</param>
         /// <returns>An instance of the layer type</returns>
         ILayerType GetLayerTypeByGuid(Guid layerTypeGuid);
 
         /// <summary>
-        ///     Returns all the plugins implementing <see cref="IModule" />
+        ///     Finds all enabled <see cref="IPlugin" /> instances of type <see cref="T" />
         /// </summary>
-        /// <returns></returns>
-        IReadOnlyList<IModule> GetModules();
+        /// <typeparam name="T">Either <see cref="IPlugin" /> or a plugin type implementing <see cref="IPlugin" /></typeparam>
+        /// <returns>Returns a list of plug instances of type <see cref="T" /></returns>
+        List<T> GetPluginsOfType<T>() where T : IPlugin;
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when a plugin has loaded
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginLoaded;
+
+        /// <summary>
+        ///     Occurs when a plugin has been unloaded
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginUnloaded;
+
+        /// <summary>
+        ///     Occurs when a plugin has been enabled
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginEnabled;
+
+        /// <summary>
+        ///     Occurs when a plugin has been disabled
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginDisabled;
+
+        #endregion
     }
 }

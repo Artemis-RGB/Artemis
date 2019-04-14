@@ -1,5 +1,4 @@
 ﻿using Artemis.Core.Plugins.Interfaces;
-using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {

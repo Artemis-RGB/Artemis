@@ -17,11 +17,6 @@ namespace Artemis.Core.Plugins.Abstract
         /// <inheritdoc />
         public abstract bool ExpandsMainDataModel { get; }
 
-        /// <inheritdoc />
-        public void EnablePlugin()
-        {
-            // Load and activate the last active profile
-        }
 
         /// <inheritdoc />
         public virtual void Update(double deltaTime)
@@ -47,9 +42,13 @@ namespace Artemis.Core.Plugins.Abstract
         public abstract IScreen GetMainViewModel();
 
         /// <inheritdoc />
-        public void Dispose()
-        {
-        }
+        public abstract void EnablePlugin();
+
+        /// <inheritdoc />
+        public abstract void DisablePlugin();
+
+        /// <inheritdoc />
+        public abstract void Dispose();
 
         public void ChangeActiveProfile(Profile profile)
         {

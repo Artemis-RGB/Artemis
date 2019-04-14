@@ -6,7 +6,6 @@ namespace Artemis.UI.Stylet
     {
         public ArtemisViewManager(ViewManagerConfig config) : base(config)
         {
-
         }
     }
 }

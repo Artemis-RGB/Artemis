@@ -34,7 +34,7 @@ namespace Artemis.UI.Stylet
             kernel.Bind<IViewManager>().ToConstant(new ViewManager(viewManagerConfig));
 
             kernel.Bind<IWindowManagerConfig>().ToConstant(this).InTransientScope();
-            kernel.Bind<IWindowManager>().ToMethod(c => new WindowManager(c.Kernel.Get<IViewManager>(),() => c.Kernel.Get<IMessageBoxViewModel>(), c.Kernel.Get<IWindowManagerConfig>())).InSingletonScope();
+            kernel.Bind<IWindowManager>().ToMethod(c => new WindowManager(c.Kernel.Get<IViewManager>(), () => c.Kernel.Get<IMessageBoxViewModel>(), c.Kernel.Get<IWindowManagerConfig>())).InSingletonScope();
             kernel.Bind<IEventAggregator>().To<EventAggregator>().InSingletonScope();
             kernel.Bind<IMessageBoxViewModel>().To<MessageBoxViewModel>(); // Not singleton!
         }

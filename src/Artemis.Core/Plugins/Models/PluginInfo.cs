@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using AppDomainToolkit;
 using Artemis.Core.Plugins.Interfaces;
 using Newtonsoft.Json;
@@ -7,6 +8,10 @@ namespace Artemis.Core.Plugins.Models
 {
     public class PluginInfo
     {
+        internal PluginInfo()
+        {
+        }
+
         /// <summary>
         ///     The plugins GUID
         /// </summary>
@@ -28,10 +33,10 @@ namespace Artemis.Core.Plugins.Models
         public string Main { get; set; }
 
         /// <summary>
-        ///     Full path to the plugin's current folder
+        ///     The plugins root directory
         /// </summary>
         [JsonIgnore]
-        public string Folder { get; set; }
+        public DirectoryInfo Directory { get; set; }
 
         /// <summary>
         ///     A reference to the type implementing IPlugin, available after successful load
@@ -48,6 +53,7 @@ namespace Artemis.Core.Plugins.Models
         /// <summary>
         ///     The AppDomain context of this plugin
         /// </summary>
+        [JsonIgnore]
         internal AppDomainContext<AssemblyTargetLoader, PathBasedAssemblyResolver> Context { get; set; }
 
         public override string ToString()
