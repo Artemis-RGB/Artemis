@@ -73,7 +73,6 @@ namespace Artemis.Plugins.Modules.General
 
         public void DisablePlugin()
         {
-            throw new NotImplementedException();
         }
 
         private void UpdateLedColor(Led led, double deltaTime)

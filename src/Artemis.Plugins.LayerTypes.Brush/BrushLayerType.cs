@@ -20,7 +20,6 @@ namespace Artemis.Plugins.LayerTypes.Brush
 
         public void DisablePlugin()
         {
-            throw new NotImplementedException();
         }
 
         public void Update(Layer layer)

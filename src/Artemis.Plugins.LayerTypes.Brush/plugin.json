@@ -1,0 +1,5 @@
+﻿{
+  "Name": "Brush layer",
+  "Version": "1.0.0",
+  "Main": "Artemis.Plugins.LayerTypes.Brush.dll"
+}

@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI", "Artemis.UI\Artemis.UI.csproj", "{46B74153-77CF-4489-BDF9-D53FDB1F7ACB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E592F239-FAA0-4840-9C85-46E5867D06D5} = {E592F239-FAA0-4840-9C85-46E5867D06D5}
+		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2} = {0F288A66-6EB0-4589-8595-E33A3A3EAEA2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Storage", "Artemis.Storage\Artemis.Storage.csproj", "{E489E5E3-1A65-4AF5-A1EA-F9805FD19A65}"
 EndProject
