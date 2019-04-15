@@ -1,15 +1,14 @@
-﻿using Artemis.Core.Plugins.Interfaces;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ModuleViewModel : Screen
     {
-        protected ModuleViewModel(IModule module)
+        protected ModuleViewModel(Module module)
         {
             Module = module;
         }
 
-        public IModule Module { get; }
+        public Module Module { get; }
     }
 }

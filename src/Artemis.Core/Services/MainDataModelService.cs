@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 
@@ -9,14 +10,14 @@ namespace Artemis.Core.Services
 {
     public class MainDataModelService : IMainDataModelService
     {
-        private readonly List<IDataModelExpansion> _dataModelExpansions;
+        private readonly List<DataModelExpansion> _dataModelExpansions;
 
         public MainDataModelService()
         {
-            _dataModelExpansions = new List<IDataModelExpansion>();
+            _dataModelExpansions = new List<DataModelExpansion>();
         }
 
-        public ReadOnlyCollection<IDataModelExpansion> DataModelExpansions
+        public ReadOnlyCollection<DataModelExpansion> DataModelExpansions
         {
             get
             {
@@ -37,7 +38,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void AddExpansion(IDataModelExpansion dataModelExpansion)
+        public void AddExpansion(DataModelExpansion dataModelExpansion)
         {
             lock (_dataModelExpansions)
             {
@@ -46,7 +47,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void RemoveExpansion(IDataModelExpansion dataModelExpansion)
+        public void RemoveExpansion(DataModelExpansion dataModelExpansion)
         {
             lock (_dataModelExpansions)
             {

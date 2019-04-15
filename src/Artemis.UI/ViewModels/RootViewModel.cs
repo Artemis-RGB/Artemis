@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Artemis.Core.Events;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
@@ -28,8 +29,8 @@ namespace Artemis.UI.ViewModels
             ActiveItem = _artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel));
 
             // Sync up with the plugin service
-            Modules = new BindableCollection<IModule>();
-            Modules.AddRange(_pluginService.GetPluginsOfType<IModule>());
+            Modules = new BindableCollection<Module>();
+            Modules.AddRange(_pluginService.GetPluginsOfType<Module>());
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
@@ -37,10 +38,10 @@ namespace Artemis.UI.ViewModels
             PropertyChanged += OnSelectedPageChanged;
         }
 
-        public IObservableCollection<IModule> Modules { get; set; }
+        public IObservableCollection<Module> Modules { get; set; }
         public bool MenuOpen { get; set; }
         public ListBoxItem SelectedPage { get; set; }
-        public IModule SelectedModule { get; set; }
+        public Module SelectedModule { get; set; }
 
         public async Task NavigateToSelectedModule()
         {
@@ -66,7 +67,7 @@ namespace Artemis.UI.ViewModels
                 Modules.Remove(existing);
             }
 
-            if (e.PluginInfo.Instance is IModule module)
+            if (e.PluginInfo.Instance is Module module)
                 Modules.Add(module);
         }
 

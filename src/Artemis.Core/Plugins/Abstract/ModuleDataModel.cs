@@ -1,14 +1,12 @@
-﻿using Artemis.Core.Plugins.Interfaces;
-
-namespace Artemis.Core.Plugins.Abstract
+﻿namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ModuleDataModel
     {
-        protected ModuleDataModel(IModule module)
+        protected ModuleDataModel(Module module)
         {
             Module = module;
         }
 
-        public IModule Module { get; }
+        public Module Module { get; }
     }
 }

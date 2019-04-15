@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using Color = System.Drawing.Color;
@@ -47,7 +47,7 @@ namespace Artemis.Core.Services
         {
             try
             {
-                var modules = _pluginService.GetPluginsOfType<IModule>();
+                var modules = _pluginService.GetPluginsOfType<Module>();
 
                 // Update all active modules
                 foreach (var module in modules)

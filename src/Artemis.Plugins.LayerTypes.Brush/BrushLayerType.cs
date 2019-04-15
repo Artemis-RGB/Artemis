@@ -1,28 +1,28 @@
-﻿using System;
-using System.Drawing;
-using Artemis.Core.Plugins.Interfaces;
+﻿using System.Drawing;
+using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.ProfileElements;
 using QRCoder;
 using RGB.NET.Core;
 
 namespace Artemis.Plugins.LayerTypes.Brush
 {
-    public class BrushLayerType : ILayerType
+    public class BrushLayerType : LayerType
     {
-        public void Dispose()
+        public BrushLayerType(PluginInfo pluginInfo) : base(pluginInfo)
         {
         }
 
-        public void EnablePlugin()
+        public override void EnablePlugin()
         {
             var qrGenerator = new QRCodeGenerator();
         }
 
-        public void DisablePlugin()
+        public override void DisablePlugin()
         {
         }
 
-        public void Update(Layer layer)
+        public override void Update(Layer layer)
         {
             var config = layer.LayerTypeConfiguration as BrushConfiguration;
             if (config == null)
@@ -31,7 +31,11 @@ namespace Artemis.Plugins.LayerTypes.Brush
             // Update the brush
         }
 
-        public void Render(Layer device, RGBSurface surface, Graphics graphics)
+        public override void Render(Layer device, RGBSurface surface, Graphics graphics)
+        {
+        }
+
+        public override void Dispose()
         {
         }
     }

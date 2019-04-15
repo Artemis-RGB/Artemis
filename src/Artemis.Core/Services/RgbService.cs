@@ -68,9 +68,7 @@ namespace Artemis.Core.Services
                             OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
                         }
                         else
-                        {
                             OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
-                        }
                     }
                 }
             });

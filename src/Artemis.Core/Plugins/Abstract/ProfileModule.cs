@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Drawing;
-using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
-using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {
-    public abstract class ProfileModule : IModule
+    public abstract class ProfileModule : Module
     {
+        protected ProfileModule(PluginInfo pluginInfo) : base(pluginInfo)
+        {
+        }
+
         public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />
-        public abstract string DisplayName { get; }
-
-        /// <inheritdoc />
-        public abstract bool ExpandsMainDataModel { get; }
-
-
-        /// <inheritdoc />
-        public virtual void Update(double deltaTime)
+        public override void Update(double deltaTime)
         {
             lock (this)
             {
@@ -29,7 +25,7 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public virtual void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             lock (this)
             {
@@ -37,18 +33,6 @@ namespace Artemis.Core.Plugins.Abstract
                 ActiveProfile?.Render(deltaTime, surface, graphics);
             }
         }
-
-        /// <inheritdoc />
-        public abstract IScreen GetMainViewModel();
-
-        /// <inheritdoc />
-        public abstract void EnablePlugin();
-
-        /// <inheritdoc />
-        public abstract void DisablePlugin();
-
-        /// <inheritdoc />
-        public abstract void Dispose();
 
         public void ChangeActiveProfile(Profile profile)
         {

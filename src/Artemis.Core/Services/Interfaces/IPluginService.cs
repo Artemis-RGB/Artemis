@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Events;
-using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Services.Interfaces
@@ -40,7 +40,7 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="plugin">The plugin you want to find the plugin info for</param>
         /// <returns>The plugins PluginInfo</returns>
-        PluginInfo GetPluginInfo(IPlugin plugin);
+        PluginInfo GetPluginInfo(Plugin plugin);
 
         /// <summary>
         ///     Gets the plugin info of all loaded plugins
@@ -53,14 +53,14 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="layerTypeGuid">The GUID of the layer type to find</param>
         /// <returns>An instance of the layer type</returns>
-        ILayerType GetLayerTypeByGuid(Guid layerTypeGuid);
+        LayerType GetLayerTypeByGuid(Guid layerTypeGuid);
 
         /// <summary>
-        ///     Finds all enabled <see cref="IPlugin" /> instances of type <see cref="T" />
+        ///     Finds all enabled <see cref="Plugin" /> instances of type <see cref="T" />
         /// </summary>
-        /// <typeparam name="T">Either <see cref="IPlugin" /> or a plugin type implementing <see cref="IPlugin" /></typeparam>
+        /// <typeparam name="T">Either <see cref="Plugin" /> or a plugin type implementing <see cref="Plugin" /></typeparam>
         /// <returns>Returns a list of plug instances of type <see cref="T" /></returns>
-        List<T> GetPluginsOfType<T>() where T : IPlugin;
+        List<T> GetPluginsOfType<T>() where T : Plugin;
 
         #region Events
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Artemis.Storage.Entities
 {
@@ -6,6 +7,8 @@ namespace Artemis.Storage.Entities
     {
         [Key]
         public string Name { get; set; }
+
+        public Guid PluginGuid { get; set; }
 
         public string Value { get; set; }
     }

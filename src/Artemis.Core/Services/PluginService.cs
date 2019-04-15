@@ -5,13 +5,14 @@ using System.Linq;
 using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Newtonsoft.Json;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
+using Ninject.Parameters;
 
 namespace Artemis.Core.Services
 {
@@ -88,10 +89,7 @@ namespace Artemis.Core.Services
             lock (_plugins)
             {
                 // Unload all plugins
-                while (_plugins.Count > 0)
-                {
-                    UnloadPlugin(_plugins[0]);
-                }
+                while (_plugins.Count > 0) UnloadPlugin(_plugins[0]);
 
                 // Dispose the child kernel and therefore any leftover plugins instantiated with it
                 if (_childKernel != null)
@@ -119,7 +117,7 @@ namespace Artemis.Core.Services
                 if (!File.Exists(mainFile))
                     throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
 
-                // Load the plugin, all types implementing IPlugin and register them with DI
+                // Load the plugin, all types implementing Plugin and register them with DI
                 var setupInfo = new AppDomainSetup
                 {
                     ApplicationName = pluginInfo.Guid.ToString(),
@@ -137,18 +135,19 @@ namespace Artemis.Core.Services
                     throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
                 }
 
-                // Get the IPlugin implementation from the main assembly and if there is only one, instantiate it
+                // Get the Plugin implementation from the main assembly and if there is only one, instantiate it
                 var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().First(a => a.Location == mainFile);
-                var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t)).ToList();
+                var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
                 if (pluginTypes.Count > 1)
-                    throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of IPlugin, only 1 allowed");
+                    throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of Plugin, only 1 allowed");
                 if (pluginTypes.Count == 0)
-                    throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of IPlugin");
+                    throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of Plugin");
 
                 var pluginType = pluginTypes.Single();
                 try
                 {
-                    pluginInfo.Instance = (IPlugin) _childKernel.Get(pluginType);
+                    var constructorArguments = new ConstructorArgument("pluginInfo", pluginInfo);
+                    pluginInfo.Instance = (Plugin) _childKernel.Get(pluginType, constraint: null, constructorArguments);
                 }
                 catch (Exception e)
                 {
@@ -179,7 +178,7 @@ namespace Artemis.Core.Services
                 }
 
                 _childKernel.Unbind(pluginInfo.Instance.GetType());
-                
+
                 pluginInfo.Instance.Dispose();
                 pluginInfo.Context.Dispose();
                 _plugins.Remove(pluginInfo);
@@ -189,7 +188,7 @@ namespace Artemis.Core.Services
         }
 
         /// <inheritdoc />
-        public PluginInfo GetPluginInfo(IPlugin plugin)
+        public PluginInfo GetPluginInfo(Plugin plugin)
         {
             lock (_plugins)
             {
@@ -204,20 +203,20 @@ namespace Artemis.Core.Services
         }
 
         /// <inheritdoc />
-        public ILayerType GetLayerTypeByGuid(Guid layerTypeGuid)
+        public LayerType GetLayerTypeByGuid(Guid layerTypeGuid)
         {
             var pluginInfo = _plugins.FirstOrDefault(p => p.Guid == layerTypeGuid);
             if (pluginInfo == null)
                 return null;
 
-            if (!(pluginInfo.Instance is ILayerType layerType))
-                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement exactly one ILayerType");
+            if (!(pluginInfo.Instance is LayerType layerType))
+                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement exactly one LayerType");
 
             return layerType;
         }
 
         /// <inheritdoc />
-        public List<T> GetPluginsOfType<T>() where T : IPlugin
+        public List<T> GetPluginsOfType<T>() where T : Plugin
         {
             lock (_plugins)
             {
