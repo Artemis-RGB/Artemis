@@ -9,6 +9,7 @@
                    xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
                    xmlns:models="clr-namespace:Artemis.Core.Plugins.Models;assembly=Artemis.Core"
                    xmlns:interfaces="clr-namespace:Artemis.Core.Plugins.Interfaces;assembly=Artemis.Core"
+                   xmlns:abstract="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
                    mc:Ignorable="d"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
@@ -127,7 +128,7 @@
                                  SelectedItem="{Binding SelectedModule}"
                                  DockPanel.Dock="Top">
                             <ListBox.ItemTemplate>
-                                <DataTemplate DataType="interfaces:IModule">
+                                <DataTemplate DataType="abstract:Module">
                                     <DockPanel HorizontalAlignment="Stretch"
                                                VerticalAlignment="Stretch"
                                                Margin="0">

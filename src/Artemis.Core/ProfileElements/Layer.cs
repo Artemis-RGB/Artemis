@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.ProfileElements.Interfaces;
 using Artemis.Core.Services.Interfaces;
@@ -18,7 +19,7 @@ namespace Artemis.Core.ProfileElements
         }
 
         public Profile Profile { get; }
-        public ILayerType LayerType { get; private set; }
+        public LayerType LayerType { get; private set; }
         public ILayerTypeConfiguration LayerTypeConfiguration { get; set; }
         public List<IProfileElement> Children { get; set; }
         public int Order { get; set; }
@@ -58,13 +59,15 @@ namespace Artemis.Core.ProfileElements
             return layer;
         }
 
-        public void UpdateLayerType(ILayerType layerType)
+        public void UpdateLayerType(LayerType layerType)
         {
             if (LayerType != null)
+            {
                 lock (LayerType)
                 {
                     LayerType.Dispose();
                 }
+            }
 
             LayerType = layerType;
         }

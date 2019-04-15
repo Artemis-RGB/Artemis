@@ -5,7 +5,7 @@ namespace Artemis.Plugins.Modules.General.ViewModels
 {
     public class GeneralViewModel : ModuleViewModel
     {
-        public GeneralViewModel(IModule module) : base(module)
+        public GeneralViewModel(Module module) : base(module)
         {
         }
     }

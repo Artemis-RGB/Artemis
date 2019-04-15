@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Models;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 
 namespace Artemis.Core.Services.Interfaces
@@ -15,13 +16,13 @@ namespace Artemis.Core.Services.Interfaces
         ///     Add an expansion to the datamodel to be available for use after the next update
         /// </summary>
         /// <param name="dataModelExpansion"></param>
-        void AddExpansion(IDataModelExpansion dataModelExpansion);
+        void AddExpansion(DataModelExpansion dataModelExpansion);
 
         /// <summary>
         ///     Remove a previously added expansion so that it is no longer available and updated
         /// </summary>
         /// <param name="dataModelExpansion"></param>
-        void RemoveExpansion(IDataModelExpansion dataModelExpansion);
+        void RemoveExpansion(DataModelExpansion dataModelExpansion);
 
         /// <summary>
         ///     Generates a data model description for the main datamodel including all it's expansions

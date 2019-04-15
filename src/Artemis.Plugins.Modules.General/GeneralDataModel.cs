@@ -6,7 +6,7 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralDataModel : ModuleDataModel
     {
-        public GeneralDataModel(IModule module) : base(module)
+        public GeneralDataModel(Module module) : base(module)
         {
         }
 

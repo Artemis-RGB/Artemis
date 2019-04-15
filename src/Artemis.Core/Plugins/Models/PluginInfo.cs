@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using AppDomainToolkit;
-using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Abstract;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Plugins.Models
@@ -15,40 +15,40 @@ namespace Artemis.Core.Plugins.Models
         /// <summary>
         ///     The plugins GUID
         /// </summary>
-        public Guid Guid { get; set; }
+        public Guid Guid { get; internal set; }
 
         /// <summary>
         ///     The name of the plugin
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     The version of the plugin
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; internal set; }
 
         /// <summary>
-        ///     The main entry DLL, should contain a class implementing IPlugin
+        ///     The main entry DLL, should contain a class implementing Plugin
         /// </summary>
-        public string Main { get; set; }
+        public string Main { get; internal set; }
 
         /// <summary>
         ///     The plugins root directory
         /// </summary>
         [JsonIgnore]
-        public DirectoryInfo Directory { get; set; }
+        public DirectoryInfo Directory { get; internal set; }
 
         /// <summary>
-        ///     A reference to the type implementing IPlugin, available after successful load
+        ///     A reference to the type implementing Plugin, available after successful load
         /// </summary>
         [JsonIgnore]
-        public IPlugin Instance { get; set; }
+        public Plugin Instance { get; internal set; }
 
         /// <summary>
         ///     Indicates whether the user enabled the plugin or not
         /// </summary>
         [JsonIgnore]
-        public bool Enabled { get; set; }
+        public bool Enabled { get; internal set; }
 
         /// <summary>
         ///     The AppDomain context of this plugin

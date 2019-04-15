@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core;
-using Artemis.Core.Plugins.Interfaces;
+using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
 using QRCoder;
@@ -13,26 +13,33 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Plugins.Modules.General
 {
-    public class GeneralModule : IModule
+    public class GeneralModule : Module
     {
         private readonly RGBSurface _surface;
         private Dictionary<Led, Color> _colors;
 
-        public GeneralModule(IRgbService rgbService)
+        public GeneralModule(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo)
         {
-            var rgbService1 = rgbService;
-            _surface = rgbService1.Surface;
-            _colors = new Dictionary<Led, Color>();
+            DisplayName = "General";
+            ExpandsMainDataModel = true;
 
-            rgbService1.FinishedLoadedDevices += (sender, args) => PopulateColors();
+            _surface = rgbService.Surface;
+            _colors = new Dictionary<Led, Color>();
+            
+            rgbService.FinishedLoadedDevices += (sender, args) => PopulateColors();
         }
 
-        public string DisplayName => "General";
+        public override void EnablePlugin()
+        {
+            var qrGenerator = new QRCodeGenerator();
+            PopulateColors();
+        }
 
-        // True since the main data model is all this module shows
-        public bool ExpandsMainDataModel => true;
+        public override void DisablePlugin()
+        {
+        }
 
-        public void Update(double deltaTime)
+        public override void Update(double deltaTime)
         {
             if (_colors == null)
                 return;
@@ -41,7 +48,7 @@ namespace Artemis.Plugins.Modules.General
                 UpdateLedColor(surfaceLed, deltaTime);
         }
 
-        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
             foreach (var surfaceLed in _surface.Leds)
             {
@@ -55,24 +62,14 @@ namespace Artemis.Plugins.Modules.General
             }
         }
 
-        public IScreen GetMainViewModel()
+        public override IScreen GetMainViewModel()
         {
             return new GeneralViewModel(this);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _colors = null;
-        }
-
-        public void EnablePlugin()
-        {
-            var qrGenerator = new QRCodeGenerator();
-            PopulateColors();
-        }
-
-        public void DisablePlugin()
-        {
         }
 
         private void UpdateLedColor(Led led, double deltaTime)

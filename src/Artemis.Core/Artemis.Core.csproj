@@ -109,13 +109,14 @@
     <Compile Include="Plugins\Abstract\ModuleViewModel.cs" />
     <Compile Include="Plugins\Abstract\ProfileModule.cs" />
     <Compile Include="Plugins\Exceptions\ArtemisPluginException.cs" />
-    <Compile Include="Plugins\Interfaces\IDataModelExpansion.cs" />
-    <Compile Include="Plugins\Interfaces\IDevice.cs" />
-    <Compile Include="Plugins\Interfaces\ILayerType.cs" />
+    <Compile Include="Plugins\Abstract\DataModelExpansion.cs" />
+    <Compile Include="Plugins\Abstract\Device.cs" />
+    <Compile Include="Plugins\Abstract\LayerType.cs" />
     <Compile Include="Plugins\Interfaces\ILayerTypeConfiguration.cs" />
-    <Compile Include="Plugins\Interfaces\IModule.cs" />
-    <Compile Include="Plugins\Interfaces\IPlugin.cs" />
+    <Compile Include="Plugins\Abstract\Module.cs" />
+    <Compile Include="Plugins\Abstract\Plugin.cs" />
     <Compile Include="Plugins\Models\PluginInfo.cs" />
+    <Compile Include="Plugins\Models\PluginSettings.cs" />
     <Compile Include="ProfileElements\Folder.cs" />
     <Compile Include="ProfileElements\Interfaces\IProfileElement.cs" />
     <Compile Include="ProfileElements\Layer.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Services\Interfaces\IPluginService.cs" />
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
+    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\StorageService.cs" />
     <Compile Include="UtilitiesRemoveMe.cs" />
   </ItemGroup>

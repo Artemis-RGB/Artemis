@@ -11,10 +11,10 @@ namespace Artemis.Storage.Migrations
                 "Folders",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     FolderEntityGuid = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    Order = table.Column<int>(nullable: false)
+                    Order = table.Column<int>()
                 },
                 constraints: table =>
                 {
@@ -31,7 +31,7 @@ namespace Artemis.Storage.Migrations
                 "Settings",
                 table => new
                 {
-                    Name = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table => { table.PrimaryKey("PK_Settings", x => x.Name); });
@@ -40,10 +40,10 @@ namespace Artemis.Storage.Migrations
                 "Layers",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     FolderEntityGuid = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    Order = table.Column<int>(nullable: false)
+                    Order = table.Column<int>()
                 },
                 constraints: table =>
                 {
@@ -60,11 +60,11 @@ namespace Artemis.Storage.Migrations
                 "Profiles",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     Name = table.Column<string>(nullable: true),
-                    PluginGuid = table.Column<Guid>(nullable: false),
+                    PluginGuid = table.Column<Guid>(),
                     RootFolderGuid = table.Column<string>(nullable: true),
-                    RootFolderId = table.Column<int>(nullable: false)
+                    RootFolderId = table.Column<int>()
                 },
                 constraints: table =>
                 {
@@ -81,7 +81,7 @@ namespace Artemis.Storage.Migrations
                 "LayerSettings",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     LayerEntityGuid = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Value = table.Column<string>(nullable: true)
@@ -101,9 +101,9 @@ namespace Artemis.Storage.Migrations
                 "Leds",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     LayerGuid = table.Column<string>(nullable: true),
-                    LayerId = table.Column<int>(nullable: false),
+                    LayerId = table.Column<int>(),
                     LedName = table.Column<string>(nullable: true),
                     LimitedToDevice = table.Column<string>(nullable: true)
                 },
@@ -122,9 +122,9 @@ namespace Artemis.Storage.Migrations
                 "Keypoints",
                 table => new
                 {
-                    Guid = table.Column<string>(nullable: false),
+                    Guid = table.Column<string>(),
                     LayerSettingEntityGuid = table.Column<string>(nullable: true),
-                    Time = table.Column<int>(nullable: false),
+                    Time = table.Column<int>(),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
