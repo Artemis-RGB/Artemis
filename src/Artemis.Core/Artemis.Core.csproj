@@ -116,7 +116,8 @@
     <Compile Include="Plugins\Abstract\Module.cs" />
     <Compile Include="Plugins\Abstract\Plugin.cs" />
     <Compile Include="Plugins\Models\PluginInfo.cs" />
-    <Compile Include="Plugins\Models\PluginSettings.cs" />
+    <Compile Include="Plugins\Models\PluginSetting.cs" />
+    <Compile Include="Plugins\Models\PluginSettingsContainer.cs" />
     <Compile Include="ProfileElements\Folder.cs" />
     <Compile Include="ProfileElements\Interfaces\IProfileElement.cs" />
     <Compile Include="ProfileElements\Layer.cs" />
