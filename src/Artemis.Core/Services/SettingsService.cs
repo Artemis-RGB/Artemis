@@ -4,6 +4,7 @@ using Artemis.Storage.Repositories;
 
 namespace Artemis.Core.Services
 {
+    // TODO: Rethink this :')
     public class SettingsService : ISettingsService
     {
         private SettingRepository _settingRepository;
@@ -13,9 +14,9 @@ namespace Artemis.Core.Services
             _settingRepository = new SettingRepository();
         }
 
-        public PluginSettings GetPluginSettings(PluginInfo pluginInfo)
+        public PluginSettingsContainer GetPluginSettings(PluginInfo pluginInfo)
         {
-            return new PluginSettings(pluginInfo, _settingRepository);
+            return new PluginSettingsContainer(pluginInfo, _settingRepository);
         }
     }
 

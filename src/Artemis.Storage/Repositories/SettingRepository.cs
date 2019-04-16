@@ -21,7 +21,12 @@ namespace Artemis.Storage.Repositories
             return _dbContext.Settings;
         }
 
-        public async Task<List<SettingEntity>> GetByPluginGuid(Guid pluginGuid)
+        public List<SettingEntity> GetByPluginGuid(Guid pluginGuid)
+        {
+            return _dbContext.Settings.Where(p => p.PluginGuid == pluginGuid).ToList();
+        }
+
+        public async Task<List<SettingEntity>> GetByPluginGuidAsync(Guid pluginGuid)
         {
             return await _dbContext.Settings.Where(p => p.PluginGuid == pluginGuid).ToListAsync();
         }
@@ -34,6 +39,11 @@ namespace Artemis.Storage.Repositories
         public async Task<SettingEntity> GetByName(string name)
         {
             return await _dbContext.Settings.FirstOrDefaultAsync(p => p.Name == name);
+        }
+
+        public void Save()
+        {
+            _dbContext.SaveChanges();
         }
 
         public async Task SaveAsync()
