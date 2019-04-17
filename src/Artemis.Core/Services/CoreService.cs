@@ -13,7 +13,7 @@ namespace Artemis.Core.Services
         private readonly IPluginService _pluginService;
         private readonly IRgbService _rgbService;
 
-        public CoreService(IPluginService pluginService, IRgbService rgbService)
+        internal CoreService(IPluginService pluginService, IRgbService rgbService)
         {
             _pluginService = pluginService;
             _rgbService = rgbService;

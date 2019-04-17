@@ -1,5 +1,10 @@
 ﻿{
+  "Guid": "92a9d6ba-6f7a-4937-94d5-c1d715b4141a",
   "Name": "Brush layer",
-  "Version": "1.0.0",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0
+  },
   "Main": "Artemis.Plugins.LayerTypes.Brush.dll"
 }

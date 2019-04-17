@@ -12,7 +12,7 @@ namespace Artemis.Core.Services
         private readonly IPluginService _pluginService;
         private readonly ProfileRepository _profileRepository;
 
-        public StorageService(IPluginService pluginService)
+        internal StorageService(IPluginService pluginService)
         {
             _pluginService = pluginService;
             _profileRepository = new ProfileRepository();

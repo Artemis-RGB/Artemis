@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Artemis.Core</RootNamespace>
     <AssemblyName>Artemis.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -93,6 +93,9 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.5.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
@@ -105,6 +108,7 @@
     <Compile Include="Events\DeviceEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
+    <Compile Include="Ninject\PluginSettingsProvider.cs" />
     <Compile Include="Plugins\Abstract\ModuleDataModel.cs" />
     <Compile Include="Plugins\Abstract\ModuleViewModel.cs" />
     <Compile Include="Plugins\Abstract\ProfileModule.cs" />
@@ -117,7 +121,7 @@
     <Compile Include="Plugins\Abstract\Plugin.cs" />
     <Compile Include="Plugins\Models\PluginInfo.cs" />
     <Compile Include="Plugins\Models\PluginSetting.cs" />
-    <Compile Include="Plugins\Models\PluginSettingsContainer.cs" />
+    <Compile Include="Plugins\Models\PluginSettings.cs" />
     <Compile Include="ProfileElements\Folder.cs" />
     <Compile Include="ProfileElements\Interfaces\IProfileElement.cs" />
     <Compile Include="ProfileElements\Layer.cs" />
@@ -136,7 +140,6 @@
     <Compile Include="Services\Interfaces\IPluginService.cs" />
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
-    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\StorageService.cs" />
     <Compile Include="UtilitiesRemoveMe.cs" />
   </ItemGroup>

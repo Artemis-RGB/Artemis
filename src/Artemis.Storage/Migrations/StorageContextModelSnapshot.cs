@@ -130,16 +130,13 @@ namespace Artemis.Storage.Migrations
 
             modelBuilder.Entity("Artemis.Storage.Entities.SettingEntity", b =>
                 {
-                    b.Property<string>("Name")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Name");
 
                     b.Property<Guid>("PluginGuid");
 
                     b.Property<string>("Value");
 
-                    b.HasKey("Name");
-
-                    b.HasIndex("Name", "PluginGuid");
+                    b.HasKey("Name", "PluginGuid");
 
                     b.ToTable("Settings");
                 });

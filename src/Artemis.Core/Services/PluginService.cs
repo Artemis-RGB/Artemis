@@ -146,8 +146,12 @@ namespace Artemis.Core.Services
                 var pluginType = pluginTypes.Single();
                 try
                 {
-                    var constructorArguments = new ConstructorArgument("pluginInfo", pluginInfo);
-                    pluginInfo.Instance = (Plugin) _childKernel.Get(pluginType, constraint: null, parameters: constructorArguments);
+                    var parameters = new IParameter[]
+                    {
+                        new ConstructorArgument("pluginInfo", pluginInfo),
+                        new Parameter("PluginInfo", pluginInfo, false)
+                    };
+                    pluginInfo.Instance = (Plugin) _childKernel.Get(pluginType, constraint: null, parameters: parameters);
                 }
                 catch (Exception e)
                 {

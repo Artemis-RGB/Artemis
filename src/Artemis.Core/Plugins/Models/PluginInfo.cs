@@ -15,21 +15,25 @@ namespace Artemis.Core.Plugins.Models
         /// <summary>
         ///     The plugins GUID
         /// </summary>
+        [JsonProperty(Required = Required.Always)]
         public Guid Guid { get; internal set; }
 
         /// <summary>
         ///     The name of the plugin
         /// </summary>
+        [JsonProperty(Required = Required.Always)]
         public string Name { get; internal set; }
 
         /// <summary>
         ///     The version of the plugin
         /// </summary>
-        public string Version { get; internal set; }
+        [JsonProperty(Required = Required.Always)]
+        public Version Version { get; internal set; }
 
         /// <summary>
         ///     The main entry DLL, should contain a class implementing Plugin
         /// </summary>
+        [JsonProperty(Required = Required.Always)]
         public string Main { get; internal set; }
 
         /// <summary>

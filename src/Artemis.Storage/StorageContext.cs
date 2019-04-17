@@ -11,11 +11,12 @@ namespace Artemis.Storage
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=Storage.db");
+            SQLitePCL.Batteries.Init();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SettingEntity>().HasIndex(s => new {s.Name, s.PluginGuid});
+            modelBuilder.Entity<SettingEntity>().HasKey(s => new {s.Name, s.PluginGuid});
             base.OnModelCreating(modelBuilder);
         }
     }

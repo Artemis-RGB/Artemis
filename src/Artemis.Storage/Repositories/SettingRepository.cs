@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage.Repositories
 {
-    public class SettingRepository
+    public class SettingRepository : ISettingRepository
     {
         private readonly StorageContext _dbContext;
 
-        public SettingRepository()
+        internal SettingRepository()
         {
             _dbContext = new StorageContext();
         }
@@ -24,6 +24,11 @@ namespace Artemis.Storage.Repositories
         public List<SettingEntity> GetByPluginGuid(Guid pluginGuid)
         {
             return _dbContext.Settings.Where(p => p.PluginGuid == pluginGuid).ToList();
+        }
+
+        public void Add(SettingEntity settingEntity)
+        {
+            _dbContext.Settings.Add(settingEntity);
         }
 
         public async Task<List<SettingEntity>> GetByPluginGuidAsync(Guid pluginGuid)

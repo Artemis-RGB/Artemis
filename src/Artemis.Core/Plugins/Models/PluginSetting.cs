@@ -9,9 +9,9 @@ namespace Artemis.Core.Plugins.Models
     {
         private readonly PluginInfo _pluginInfo;
         private readonly SettingEntity _settingEntity;
-        private readonly SettingRepository _settingRepository;
+        private readonly ISettingRepository _settingRepository;
 
-        internal PluginSetting(PluginInfo pluginInfo, SettingRepository settingRepository, SettingEntity settingEntity)
+        internal PluginSetting(PluginInfo pluginInfo, ISettingRepository settingRepository, SettingEntity settingEntity)
         {
             _pluginInfo = pluginInfo;
             _settingRepository = settingRepository;
