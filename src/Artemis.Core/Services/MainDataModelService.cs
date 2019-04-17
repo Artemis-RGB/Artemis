@@ -12,7 +12,7 @@ namespace Artemis.Core.Services
     {
         private readonly List<DataModelExpansion> _dataModelExpansions;
 
-        public MainDataModelService()
+        internal MainDataModelService()
         {
             _dataModelExpansions = new List<DataModelExpansion>();
         }

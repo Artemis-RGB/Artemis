@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core;
 using Artemis.Core.Plugins.Abstract;
@@ -15,11 +16,13 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : Module
     {
+        private readonly PluginSettings _settings;
         private readonly RGBSurface _surface;
         private Dictionary<Led, Color> _colors;
 
-        public GeneralModule(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo)
+        public GeneralModule(PluginInfo pluginInfo, IRgbService rgbService, PluginSettings settings) : base(pluginInfo)
         {
+            _settings = settings;
             DisplayName = "General";
             ExpandsMainDataModel = true;
 
@@ -27,6 +30,8 @@ namespace Artemis.Plugins.Modules.General
             _colors = new Dictionary<Led, Color>();
             
             rgbService.FinishedLoadedDevices += (sender, args) => PopulateColors();
+
+            var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
 
         public override void EnablePlugin()

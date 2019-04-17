@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Services.Interfaces;
+﻿using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Repositories;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -17,6 +19,18 @@ namespace Artemis.Core.Ninject
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
             });
+
+            // Bind all repositories as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromAssemblyContaining<IRepository>()
+                    .SelectAllClasses()
+                    .InheritedFrom<IRepository>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
+            });
+
+            Kernel.Bind<PluginSettings>().ToProvider<PluginSettingsProvider>();
         }
     }
 }

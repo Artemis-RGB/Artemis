@@ -16,7 +16,7 @@ namespace Artemis.Core.Services
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly TimerUpdateTrigger _updateTrigger;
 
-        public RgbService()
+        internal RgbService()
         {
             Surface = RGBSurface.Instance;
             LoadingDevices = false;
