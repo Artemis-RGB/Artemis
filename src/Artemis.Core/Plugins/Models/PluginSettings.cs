@@ -19,7 +19,7 @@ namespace Artemis.Core.Plugins.Models
             _settingEntities = settingRepository.GetByPluginGuid(_pluginInfo.Guid).ToDictionary(se => se.Name);
         }
 
-        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)
+        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default(T))
         {
             if (_settingEntities.ContainsKey(name))
                 return new PluginSetting<T>(_pluginInfo, _settingRepository, _settingEntities[name]);
