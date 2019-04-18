@@ -14,6 +14,7 @@ namespace Artemis.Storage.Repositories
         public ProfileRepository()
         {
             _dbContext = new StorageContext();
+            _dbContext.Database.EnsureCreated();
         }
 
         public IQueryable<ProfileEntity> GetAll()
