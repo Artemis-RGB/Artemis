@@ -14,6 +14,7 @@ namespace Artemis.Storage.Repositories
         internal SettingRepository()
         {
             _dbContext = new StorageContext();
+            _dbContext.Database.EnsureCreated();
         }
 
         public IQueryable<SettingEntity> GetAll()
