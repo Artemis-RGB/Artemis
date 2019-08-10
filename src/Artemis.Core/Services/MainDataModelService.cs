@@ -3,11 +3,13 @@ using System.Collections.ObjectModel;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides access to the main data model
+    /// </summary>
     public class MainDataModelService : IMainDataModelService
     {
         private readonly List<DataModelExpansion> _dataModelExpansions;

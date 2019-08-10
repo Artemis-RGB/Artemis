@@ -1,28 +1,28 @@
-﻿using System.Collections.Generic;
-using Artemis.Core.Events;
+﻿using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.ViewModels.Controls.Settings;
 using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 
-namespace Artemis.UI.ViewModels.Settings
+namespace Artemis.UI.ViewModels.Screens
 {
     public class SettingsViewModel : Screen, ISettingsViewModel
     {
         public SettingsViewModel(IRgbService rgbService)
         {
-            DeviceSettingsViewModels = new List<DeviceSettingsViewModel>();
+            DeviceSettingsViewModels = new BindableCollection<RgbDeviceSettingsViewModel>();
             foreach (var device in rgbService.Surface.Devices)
-                DeviceSettingsViewModels.Add(new DeviceSettingsViewModel(device));
+                DeviceSettingsViewModels.Add(new RgbDeviceSettingsViewModel(device));
 
             rgbService.DeviceLoaded += UpdateDevices;
         }
 
-        public List<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
+        public BindableCollection<RgbDeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
         public string Title => "Settings";
 
         private void UpdateDevices(object sender, DeviceEventArgs deviceEventArgs)
         {
-            DeviceSettingsViewModels.Add(new DeviceSettingsViewModel(deviceEventArgs.Device));
+            DeviceSettingsViewModels.Add(new RgbDeviceSettingsViewModel(deviceEventArgs.Device));
         }
     }
 }

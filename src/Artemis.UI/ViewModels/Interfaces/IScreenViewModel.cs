@@ -2,7 +2,7 @@
 
 namespace Artemis.UI.ViewModels.Interfaces
 {
-    public interface IArtemisViewModel : IScreen
+    public interface IScreenViewModel : IScreen
     {
         string Title { get; }
     }

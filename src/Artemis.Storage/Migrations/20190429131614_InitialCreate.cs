@@ -28,7 +28,7 @@ namespace Artemis.Storage.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Settings",
+                name: "PluginSettings",
                 columns: table => new
                 {
                     PluginGuid = table.Column<Guid>(nullable: false),
@@ -37,7 +37,19 @@ namespace Artemis.Storage.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Settings", x => new { x.Name, x.PluginGuid });
+                    table.PrimaryKey("PK_PluginSettings", x => new { x.Name, x.PluginGuid });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Name = table.Column<string>(nullable: false),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,6 +192,9 @@ namespace Artemis.Storage.Migrations
 
             migrationBuilder.DropTable(
                 name: "Leds");
+
+            migrationBuilder.DropTable(
+                name: "PluginSettings");
 
             migrationBuilder.DropTable(
                 name: "Profiles");

@@ -4,6 +4,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
 using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels;
+using Artemis.UI.ViewModels.Screens;
 using Ninject;
 
 namespace Artemis.UI

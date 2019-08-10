@@ -80,7 +80,7 @@ namespace Artemis.Plugins.Modules.General
         private void UpdateLedColor(Led led, double deltaTime)
         {
             if (_colors.ContainsKey(led))
-                _colors[led] = ColorHelpers.ShiftColor(_colors[led], (int) (deltaTime * 1000));
+                _colors[led] = ColorHelpers.ShiftColor(_colors[led], (int) (deltaTime * 200));
             else
                 _colors[led] = ColorHelpers.GetRandomRainbowColor();
         }

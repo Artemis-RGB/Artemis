@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="Artemis.UI.Views.Settings.DeviceSettingsView"
+﻿<UserControl x:Class="Artemis.UI.Views.Controls.Settings.RgbDeviceSettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vms="clr-namespace:Artemis.UI.ViewModels.Settings"
-             d:DataContext="{d:DesignInstance vms:DeviceSettingsViewModel}"
+             xmlns:settings="clr-namespace:Artemis.UI.ViewModels.Controls.Settings"
+             d:DataContext="{d:DesignInstance settings:RgbDeviceSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>

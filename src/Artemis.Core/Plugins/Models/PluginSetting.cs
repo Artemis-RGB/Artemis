@@ -8,17 +8,17 @@ namespace Artemis.Core.Plugins.Models
     public class PluginSetting<T>
     {
         private readonly PluginInfo _pluginInfo;
-        private readonly SettingEntity _settingEntity;
-        private readonly ISettingRepository _settingRepository;
+        private readonly PluginSettingEntity _pluginSettingEntity;
+        private readonly IPluginSettingRepository _pluginSettingRepository;
 
-        internal PluginSetting(PluginInfo pluginInfo, ISettingRepository settingRepository, SettingEntity settingEntity)
+        internal PluginSetting(PluginInfo pluginInfo, IPluginSettingRepository pluginSettingRepository, PluginSettingEntity pluginSettingEntity)
         {
             _pluginInfo = pluginInfo;
-            _settingRepository = settingRepository;
-            _settingEntity = settingEntity;
+            _pluginSettingRepository = pluginSettingRepository;
+            _pluginSettingEntity = pluginSettingEntity;
 
-            Name = settingEntity.Name;
-            Value = JsonConvert.DeserializeObject<T>(settingEntity.Value);
+            Name = pluginSettingEntity.Name;
+            Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
         }
 
         /// <summary>
@@ -34,14 +34,14 @@ namespace Artemis.Core.Plugins.Models
         /// <summary>
         ///     Determines whether the setting has been changed
         /// </summary>
-        public bool HasChanged => JsonConvert.SerializeObject(Value) != _settingEntity.Value;
+        public bool HasChanged => JsonConvert.SerializeObject(Value) != _pluginSettingEntity.Value;
 
         /// <summary>
         ///     Resets the setting to the last saved value
         /// </summary>
         public void RejectChanges()
         {
-            Value = JsonConvert.DeserializeObject<T>(_settingEntity.Value);
+            Value = JsonConvert.DeserializeObject<T>(_pluginSettingEntity.Value);
         }
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace Artemis.Core.Plugins.Models
         /// </summary>
         public void Save()
         {
-            _settingEntity.Value = JsonConvert.SerializeObject(Value);
-            _settingRepository.Save();
+            _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
+            _pluginSettingRepository.Save();
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Artemis.Core.Plugins.Models
         /// <returns></returns>
         public async Task SaveAsync()
         {
-            _settingEntity.Value = JsonConvert.SerializeObject(Value);
-            await _settingRepository.SaveAsync();
+            _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
+            await _pluginSettingRepository.SaveAsync();
         }
     }
 }

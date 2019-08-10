@@ -8,6 +8,9 @@ using Color = System.Drawing.Color;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides Artemis's core update loop
+    /// </summary>
     public class CoreService : ICoreService
     {
         private readonly IPluginService _pluginService;
@@ -18,7 +21,6 @@ namespace Artemis.Core.Services
             _pluginService = pluginService;
             _rgbService = rgbService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
-
 
             Task.Run(Initialize);
         }

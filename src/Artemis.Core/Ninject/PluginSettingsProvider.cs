@@ -1,27 +1,31 @@
 ﻿using System.Linq;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Repositories;
 using Ninject.Activation;
 
 namespace Artemis.Core.Ninject
 {
-    public class PluginSettingsProvider : Provider<PluginSettings>
+    internal class PluginSettingsProvider : Provider<PluginSettings>
     {
-        private readonly ISettingRepository _settingRepository;
+        private readonly IPluginSettingRepository _pluginSettingRepository;
 
-        public PluginSettingsProvider(ISettingRepository settingRepository)
+        internal PluginSettingsProvider(IPluginSettingRepository pluginSettingRepository)
         {
-            _settingRepository = settingRepository;
+            _pluginSettingRepository = pluginSettingRepository;
         }
 
         protected override PluginSettings CreateInstance(IContext context)
         {
-            var pluginInfo = context.Request.ParentRequest?.Parameters.FirstOrDefault(p => p.Name == "PluginInfo")?.GetValue(context, null) as PluginInfo;
+            var parentRequest = context.Request.ParentRequest;
+            if (parentRequest == null || !typeof(Plugin).IsAssignableFrom(parentRequest.Service))
+                throw new ArtemisCoreException("PluginSettings can only be injected into a plugin");
+            var pluginInfo = parentRequest.Parameters.FirstOrDefault(p => p.Name == "PluginInfo")?.GetValue(context, null) as PluginInfo;
             if (pluginInfo == null)
                 throw new ArtemisCoreException("A plugin needs to be initialized with PluginInfo as a parameter");
 
-            return new PluginSettings(pluginInfo, _settingRepository);
+            return new PluginSettings(pluginInfo, _pluginSettingRepository);
         }
     }
 }
