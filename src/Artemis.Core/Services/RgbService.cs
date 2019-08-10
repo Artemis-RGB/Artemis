@@ -11,6 +11,9 @@ using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides wrapped access the RGB.NET
+    /// </summary>
     public class RgbService : IRgbService, IDisposable
     {
         private readonly List<IRGBDevice> _loadedDevices;

@@ -5,20 +5,18 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Interfaces;
-using Artemis.UI.ViewModels.Settings;
 using Stylet;
 
-namespace Artemis.UI.ViewModels
+namespace Artemis.UI.ViewModels.Screens
 {
     public class RootViewModel : Conductor<IScreen>.Collection.OneActive
     {
-        private readonly ICollection<IArtemisViewModel> _artemisViewModels;
+        private readonly ICollection<IScreenViewModel> _artemisViewModels;
         private readonly IPluginService _pluginService;
 
-        public RootViewModel(ICollection<IArtemisViewModel> artemisViewModels, IPluginService pluginService)
+        public RootViewModel(ICollection<IScreenViewModel> artemisViewModels, IPluginService pluginService)
         {
             _artemisViewModels = artemisViewModels;
             _pluginService = pluginService;
@@ -103,6 +101,9 @@ namespace Artemis.UI.ViewModels
                     break;
                 case "Workshop":
                     // ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(WorkshopViewModel)));
+                    break;
+                case "Editor":
+                    ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(EditorViewModel)));
                     break;
                 case "Settings":
                     ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(SettingsViewModel)));

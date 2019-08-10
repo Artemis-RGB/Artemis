@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities;
@@ -17,34 +16,29 @@ namespace Artemis.Storage.Repositories
             _dbContext.Database.EnsureCreated();
         }
 
-        public IQueryable<SettingEntity> GetAll()
-        {
-            return _dbContext.Settings;
-        }
-
-        public List<SettingEntity> GetByPluginGuid(Guid pluginGuid)
-        {
-            return _dbContext.Settings.Where(p => p.PluginGuid == pluginGuid).ToList();
-        }
-
         public void Add(SettingEntity settingEntity)
         {
             _dbContext.Settings.Add(settingEntity);
         }
 
-        public async Task<List<SettingEntity>> GetByPluginGuidAsync(Guid pluginGuid)
+        public SettingEntity Get(string name)
         {
-            return await _dbContext.Settings.Where(p => p.PluginGuid == pluginGuid).ToListAsync();
+            return _dbContext.Settings.FirstOrDefault(p => p.Name == name);
         }
 
-        public async Task<SettingEntity> GetByNameAndPluginGuid(string name, Guid pluginGuid)
-        {
-            return await _dbContext.Settings.FirstOrDefaultAsync(p => p.Name == name && p.PluginGuid == pluginGuid);
-        }
-
-        public async Task<SettingEntity> GetByName(string name)
+        public async Task<SettingEntity> GetAsync(string name)
         {
             return await _dbContext.Settings.FirstOrDefaultAsync(p => p.Name == name);
+        }
+
+        public List<SettingEntity> GetAll()
+        {
+            return _dbContext.Settings.ToList();
+        }
+
+        public async Task<List<SettingEntity>> GetAllAsync()
+        {
+            return await _dbContext.Settings.ToListAsync();
         }
 
         public void Save()

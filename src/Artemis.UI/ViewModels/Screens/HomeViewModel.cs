@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 
-namespace Artemis.UI.ViewModels
+namespace Artemis.UI.ViewModels.Screens
 {
     public class HomeViewModel : Screen, IHomeViewModel
     {

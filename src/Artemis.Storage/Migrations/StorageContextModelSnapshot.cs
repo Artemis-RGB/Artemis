@@ -108,6 +108,19 @@ namespace Artemis.Storage.Migrations
                     b.ToTable("Leds");
                 });
 
+            modelBuilder.Entity("Artemis.Storage.Entities.PluginSettingEntity", b =>
+                {
+                    b.Property<string>("Name");
+
+                    b.Property<Guid>("PluginGuid");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Name", "PluginGuid");
+
+                    b.ToTable("PluginSettings");
+                });
+
             modelBuilder.Entity("Artemis.Storage.Entities.ProfileEntity", b =>
                 {
                     b.Property<string>("Guid")
@@ -130,13 +143,12 @@ namespace Artemis.Storage.Migrations
 
             modelBuilder.Entity("Artemis.Storage.Entities.SettingEntity", b =>
                 {
-                    b.Property<string>("Name");
-
-                    b.Property<Guid>("PluginGuid");
+                    b.Property<string>("Name")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Value");
 
-                    b.HasKey("Name", "PluginGuid");
+                    b.HasKey("Name");
 
                     b.ToTable("Settings");
                 });

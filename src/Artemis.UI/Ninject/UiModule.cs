@@ -15,7 +15,7 @@ namespace Artemis.UI.Ninject
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<IArtemisViewModel>()
+                    .InheritedFrom<IScreenViewModel>()
                     .BindAllInterfaces();
             });
 

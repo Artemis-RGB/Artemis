@@ -1,4 +1,4 @@
-﻿<metro:MetroWindow x:Class="Artemis.UI.Views.RootView"
+﻿<metro:MetroWindow x:Class="Artemis.UI.Views.Screens.RootView"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,13 +10,14 @@
                    xmlns:models="clr-namespace:Artemis.Core.Plugins.Models;assembly=Artemis.Core"
                    xmlns:interfaces="clr-namespace:Artemis.Core.Plugins.Interfaces;assembly=Artemis.Core"
                    xmlns:abstract="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
+                   xmlns:screens="clr-namespace:Artemis.UI.ViewModels.Screens"
                    mc:Ignorable="d"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
                    Title="Artemis"
                    d:DesignHeight="639.411"
                    d:DesignWidth="1113.251"
-                   d:DataContext="{d:DesignInstance vms:RootViewModel}"
+                   d:DataContext="{d:DesignInstance screens:RootViewModel}"
                    Icon="/Artemis.UI;component/Resources/logo-512.png">
     <metro:MetroWindow.Resources>
         <DrawingImage x:Key="BowIcon">
@@ -104,6 +105,13 @@
                                 <materialDesign:PackIcon Kind="TestTube"
                                                          Margin="0,0,8,0" />
                                 <TextBlock>Workshop</TextBlock>
+                            </StackPanel>
+                        </ListBoxItem>
+                        <ListBoxItem x:Name="Editor">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Edit"
+                                                         Margin="0,0,8,0" />
+                                <TextBlock>Editor</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
                         <ListBoxItem x:Name="Settings">

@@ -7,6 +7,9 @@ using Artemis.Storage.Repositories;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides access to profile storage
+    /// </summary>
     public class StorageService : IStorageService
     {
         private readonly IPluginService _pluginService;

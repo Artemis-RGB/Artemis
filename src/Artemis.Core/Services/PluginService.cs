@@ -16,6 +16,9 @@ using Ninject.Parameters;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides access to plugin loading and unloading
+    /// </summary>
     public class PluginService : IPluginService
     {
         private readonly IKernel _kernel;
