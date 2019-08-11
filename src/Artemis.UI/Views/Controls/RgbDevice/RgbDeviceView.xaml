@@ -9,6 +9,7 @@
              d:DataContext="{d:DesignInstance rgbDevice:RgbDeviceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Image Source="{Binding Device.DeviceInfo.Image}"></Image>
         <ItemsControl ItemsSource="{Binding Leds}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -27,5 +28,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        
     </Grid>
 </UserControl>
