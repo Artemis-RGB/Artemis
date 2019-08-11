@@ -82,9 +82,6 @@
     <Reference Include="RGB.NET.Decorators, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RGB.NET.Decorators.0.1.25\lib\net45\RGB.NET.Decorators.dll</HintPath>
     </Reference>
-    <Reference Include="RGB.NET.Devices.Corsair, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Devices.Corsair.0.1.25\lib\net45\RGB.NET.Devices.Corsair.dll</HintPath>
-    </Reference>
     <Reference Include="RGB.NET.Groups, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RGB.NET.Groups.0.1.25\lib\net45\RGB.NET.Groups.dll</HintPath>
     </Reference>
@@ -99,8 +96,8 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data" />
@@ -145,7 +142,6 @@
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
     <Compile Include="Services\StorageService.cs" />
-    <Compile Include="UtilitiesRemoveMe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

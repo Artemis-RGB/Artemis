@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Color = RGB.NET.Core.Color;
@@ -12,11 +13,10 @@ namespace Artemis.Core.RGB.NET
 
         public GraphicsDecorator(ListLedGroup ledGroup)
         {
-//            var width = ledGroup.GetLeds().Max(l => l.LedRectangle.X + l.LedRectangle.Width);
-//            var height = ledGroup.GetLeds().Max(l => l.LedRectangle.Y + l.LedRectangle.Height);
-            var width = 500;
-            var height = 500;
-            _bitmap = new DirectBitmap(width, height);
+            var width = ledGroup.GetLeds().Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width);
+            var height = ledGroup.GetLeds().Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height);
+
+            _bitmap = new DirectBitmap((int) width, (int) height);
         }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)

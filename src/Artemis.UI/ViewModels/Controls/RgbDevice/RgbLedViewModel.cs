@@ -71,13 +71,37 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
 
         public void Update()
         {
-            FillColor = Color.FromRgb((byte) Math.Round(255 * Led.Color.R), (byte) Math.Round(255 * Led.Color.G), (byte) Math.Round(255 * Led.Color.B));
-            X = Led.LedRectangle.X;
-            Y = Led.LedRectangle.Y;
-            Width = Led.LedRectangle.Width;
-            Height = Led.LedRectangle.Height;
+            // Not leveraging on OnPropertyChanged since that'll update for each updated property
+            var changed = false;
 
-            if (DisplayDrawing != null)
+            var newFillColor = Color.FromRgb((byte) Math.Round(255 * Led.Color.R), (byte) Math.Round(255 * Led.Color.G), (byte) Math.Round(255 * Led.Color.B));
+            if (!newFillColor.Equals(FillColor))
+            {
+                FillColor = newFillColor;
+                changed = true;
+            }
+            if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
+            {
+                X = Led.LedRectangle.X;
+                changed = true;
+            }
+            if (Math.Abs(Led.LedRectangle.Y - Y) > 0.1)
+            {
+                Y = Led.LedRectangle.Y;
+                changed = true;
+            }
+            if (Math.Abs(Led.LedRectangle.Width - Width) > 0.1)
+            {
+                Width = Led.LedRectangle.Width;
+                changed = true;
+            }
+            if (Math.Abs(Led.LedRectangle.Height - Height) > 0.1)
+            {
+                Height = Led.LedRectangle.Height;
+                changed = true;
+            }
+
+            if (DisplayDrawing != null && changed)
             {
                 Execute.OnUIThread(() =>
                 {

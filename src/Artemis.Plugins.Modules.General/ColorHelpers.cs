@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace Artemis.Core
+namespace Artemis.Plugins.Modules.General
 {
     public static class ColorHelpers
     {
@@ -18,22 +18,6 @@ namespace Artemis.Core
             var colors = new List<int>();
             for (var i = 0; i < 3; i++)
                 colors.Add(_rand.Next(0, 256));
-
-            var highest = colors.Max();
-            var lowest = colors.Min();
-            colors[colors.FindIndex(c => c == highest)] = 255;
-            colors[colors.FindIndex(c => c == lowest)] = 0;
-
-            var returnColor = Color.FromArgb(255, colors[0], colors[1], colors[2]);
-
-            return returnColor;
-        }
-
-        public static Color GetRandomRainbowMediaColor()
-        {
-            var colors = new List<byte>();
-            for (var i = 0; i < 3; i++)
-                colors.Add((byte) _rand.Next(0, 256));
 
             var highest = colors.Max();
             var lowest = colors.Min();
@@ -79,12 +63,7 @@ namespace Artemis.Core
 
         private static int BringIntInColorRange(int i)
         {
-            if (i < 0)
-                return 0;
-            if (i > 255)
-                return 255;
-
-            return i;
+            return Math.Min(255, Math.Max(0, i));
         }
     }
 }

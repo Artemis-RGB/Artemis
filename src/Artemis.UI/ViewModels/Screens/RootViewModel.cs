@@ -28,7 +28,7 @@ namespace Artemis.UI.ViewModels.Screens
 
             // Sync up with the plugin service
             Modules = new BindableCollection<Module>();
-            Modules.AddRange(_pluginService.GetPluginsOfType<Module>());
+            // Modules.AddRange(_pluginService.GetPluginsOfType<Module>());
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
