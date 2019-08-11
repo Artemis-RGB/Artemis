@@ -40,7 +40,6 @@ namespace Artemis.Core.Services
 
             // Initialize the services
             await Task.Run(() => _pluginService.LoadPlugins());
-            await _rgbService.LoadDevices();
 
             OnInitialized();
         }
@@ -61,7 +60,7 @@ namespace Artemis.Core.Services
                 // Render all active modules
                 using (var g = _rgbService.GraphicsDecorator.GetGraphics())
                 {
-                    g.Clear(Color.Red);
+                    g.Clear(Color.Black);
 
                     foreach (var module in modules)
                         module.Render(args.DeltaTime, _rgbService.Surface, g);

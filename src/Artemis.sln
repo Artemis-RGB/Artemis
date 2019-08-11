@@ -7,6 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI", "Artemis.UI\Ar
 	ProjectSection(ProjectDependencies) = postProject
 		{E592F239-FAA0-4840-9C85-46E5867D06D5} = {E592F239-FAA0-4840-9C85-46E5867D06D5}
 		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2} = {0F288A66-6EB0-4589-8595-E33A3A3EAEA2}
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D} = {A779B2F8-C253-4C4B-8634-6EB8F594E96D}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Storage", "Artemis.Storage\Artemis.Storage.csproj", "{E489E5E3-1A65-4AF5-A1EA-F9805FD19A65}"
@@ -18,6 +19,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Modules.General", "Artemis.Plugins.Modules.General\Artemis.Plugins.Modules.General.csproj", "{E592F239-FAA0-4840-9C85-46E5867D06D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerTypes.Brush", "Artemis.Plugins.LayerTypes.Brush\Artemis.Plugins.LayerTypes.Brush.csproj", "{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Devices.Corsair", "Artemis.Plugins.Devices.Corsair\Artemis.Plugins.Devices.Corsair.csproj", "{A779B2F8-C253-4C4B-8634-6EB8F594E96D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +70,14 @@ Global
 		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|x64.ActiveCfg = Release|Any CPU
 		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}.Release|x64.Build.0 = Release|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Debug|x64.Build.0 = Debug|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Release|x64.ActiveCfg = Release|Any CPU
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +85,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E592F239-FAA0-4840-9C85-46E5867D06D5} = {E830A02B-A7E5-4A6B-943F-76B0A542630C}
 		{0F288A66-6EB0-4589-8595-E33A3A3EAEA2} = {E830A02B-A7E5-4A6B-943F-76B0A542630C}
+		{A779B2F8-C253-4C4B-8634-6EB8F594E96D} = {E830A02B-A7E5-4A6B-943F-76B0A542630C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C203080A-4473-4CC2-844B-F552EA43D66A}

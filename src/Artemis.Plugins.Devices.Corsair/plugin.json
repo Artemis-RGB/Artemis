@@ -1,0 +1,10 @@
+﻿{
+  "Guid": "926629ab-8170-42f3-be18-22c694aa91cd",
+  "Name": "Corsair Devices",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0
+  },
+  "Main": "Artemis.Plugins.Devices.Corsair.dll"
+}
