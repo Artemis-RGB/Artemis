@@ -9,90 +9,20 @@ Artemis adds highly configurable support for several games to a range of RGB key
 **Download**: https://github.com/SpoinkyNL/Artemis/releases  
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
-### Current Features
- - Support for Corsair, Logitech, Razer and Cooler Master keyboards.
- - Support for multiple games including Dota 2, The Witcher 3, Rocket League, and CS:GO.
- - Non-gaming effects such as type waves and audio visualization.
- - A layer-based profile system allowing an immense amount of customization.
- - A fancy, modern looking UI with multiple themes.
- - LUA scripting engine ([docs in the wiki](https://github.com/SpoinkyNL/Artemis/wiki/LUA)).
+### Notice
+Artemis 2 is in development. In the meanwhile I'm no longer supporting Artemis 1.x, sorry!
 
-##### Currently the following games are supported
- - Counter-Strike Global Offensive (uses native gamestate intergration)
- - Dota 2
- - Euro Truck Simulator 2
- - American Truck Simulator
- - Overwatch
- - Rocket League
- - The Division
- - The Witcher 3
- - Unreal Tournament
- - GTA V
- - Project CARS
- - Assetto Corsa 
+Some things I have planned for 2.0
+- Completely overhauled UI
+- Deep intergration with DarthAffe's [RGB.NET](https://github.com/DarthAffe/RGB.NET) (meaning more devices!)
+- Profiles will no longer be bound to a specific keyboard but will work on any keyboard
+- Layers will be assigned to keys accurately like done in per example Corsair's CUE thanks to RGB.NET
+- Instead of the built-in game support Artemis currently offers there will be plugins that add support for games, new layers, effects and more
+- The plugin system will replace the current idea of having a scripting engine and will be in multiple languages (these will be in the form of plugins themselves)
+- I'll include some plugins by default to support most of the games Artemis currently supports (I might drop some games that don't work well/are too much work to maintain)
+- There will be a workshop to share plugins, profiles and even layers. This workshop will be part of an Artemis website
 
-##### The following keyboards are supported
- - All Corsair RGB keyboards
- - Logitech G910
- - Logitech G810
- - Logitech G410 (untested)
- - Razer BlackWidow Chroma
- - Cooler Master Masterkeys Pro L
- - Cooler Master Masterkeys Pro S
-##### Other peripherals
- - All Corsair RGB mice
- - All Corsair RGB headsets
- - Logitech mice and headsets as generic devices
-
-For online games we greatly prefer to use an official API, since memory reading is frowned upon by anti-cheat sofware.
-
-### Profile editor
-For its games Artemis uses a custom-made layer system. For each game you can make one or more profiles consisting of layers that interact with the game. Layers can contain a color, multiple colors, animations and even GIFs!
-
-All this is done in the profile editor. For each game and keyboard we provide a default profile, but you're free to duplicate and modify this, or create one entirely from scratch.
-
-![Profile editor screenshot](http://i.imgur.com/tzc9bpO.png)
-
-The screenshot above shows the profile editor as it would appear for CS:GO. The preview shows a rough indication of how the layers will look and allows dragging and resizing. A realtime preview is also shown on the keyboard.
-
-Layers can be reordered or organized into folders by dragging and dropping them. 
-There are multiple layer types
-
- - Keyboard layer
- - Keyboard GIF layer (Yes, allows you to display a GIF on your keyboard!)
- - Mouse layer
- - Headset layer
- - Folder
-
-A keyboard layer's appearance is controlled by its brush. Brushes can be created using the color picker. For more examples, see the demo profile included in the 'Windows Profile' effect.
-
-![Color picker](http://i.imgur.com/sC6Zua6.png)
-
-The above screenshot shows a rainbow gradient made with the color picker.
-
-![Layer editor conditions](http://i.imgur.com/y7a1GMr.png)
-
-A layer's properties can be adjusted to react to ingame events and variables. This screenshot shows how conditions can be attached to a layer, in this case this layer is only enabled when the player has more than 14.000 ingame cash.
-
-Besides adding display conditions to layers, it is also possible to base certain properties on what is happening ingame. 
-
-![Layer editor dynamic properties](http://i.imgur.com/sJ5Gz0k.png)
-
-In this example, the layer is configured to become smaller when the player loses health. The layer's height is based on the percentage of health left, with the maximum health being 100, shrinking downwards as the health decreases.
-
-To keep things interesting, layers can also be configured to use animations. Here's a preview of the demo profile showing a few of the things possible.
-
-![Animations preview](https://thumbs.gfycat.com/UnlinedAlertBoilweevil-size_restricted.gif)
-
-### Videos
-Rocket League boost display
-
-[![RocketLeague](http://img.youtube.com/vi/L8rqFGaPeTg/0.jpg)](https://www.youtube.com/watch?v=L8rqFGaPeTg "Rocket League")
-
-
-The Witcher 3 sign display
-
-[![Witcher3](http://img.youtube.com/vi/H03D_y2cFYs/0.jpg)](https://www.youtube.com/watch?v=H03D_y2cFYs "The Witcher 3")
+Much of this is subject to change and will take a while to create but it'll leave us with a much better platform to create a community around :smiley:
 
 
 ### Special thanks to:
