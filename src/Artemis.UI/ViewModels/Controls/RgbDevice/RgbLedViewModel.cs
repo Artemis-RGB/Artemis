@@ -28,6 +28,7 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
         public double Height { get; private set; }
 
         public Geometry DisplayGeometry { get; private set; }
+        public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
 
         public string Tooltip => $"{Led.Id} - {Led.LedRectangle}";
@@ -65,6 +66,28 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
                 geometry,
                 GeometryCombineMode.Union,
                 new ScaleTransform(Led.LedRectangle.Width, Led.LedRectangle.Height)
+            );
+
+            // Create a smaller version of the display geometry
+            var innerGeometry = Geometry.Combine(
+                Geometry.Empty,
+                geometry,
+                GeometryCombineMode.Union,
+                new TransformGroup
+                {
+                    Children = new TransformCollection
+                    {
+                        new ScaleTransform(Led.LedRectangle.Width - 2, Led.LedRectangle.Height - 2),
+                        new TranslateTransform(1, 1)
+                    }
+                }
+            );
+            // Stroke geometry is the display geometry excluding the inner geometry
+            StrokeGeometry = Geometry.Combine(
+                DisplayGeometry,
+                innerGeometry,
+                GeometryCombineMode.Exclude,
+                null
             );
         }
 
