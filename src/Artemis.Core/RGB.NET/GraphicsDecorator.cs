@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 using RGB.NET.Core;
 using RGB.NET.Groups;
@@ -21,7 +22,8 @@ namespace Artemis.Core.RGB.NET
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)
         {
-            var pixel = _bitmap.GetPixel((int) (renderTarget.Rectangle.X + renderTarget.Rectangle.Width / 2), (int) (renderTarget.Rectangle.Y + renderTarget.Rectangle.Height / 2));
+            var point = renderTarget.Point;
+            var pixel = _bitmap.GetPixel((int) point.X, (int) point.Y);
             return new Color(pixel.A, pixel.R, pixel.G, pixel.B);
         }
 

@@ -8,5 +8,20 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance rgbDevice:RgbLedViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Image Width="Auto" Height="Auto" Source="{Binding DisplayDrawing}" Margin="2" />
+    <Border Width="{Binding Width}" Height="{Binding Height}">
+        <Border.Background>
+            <ImageBrush AlignmentX="Center" AlignmentY="Center"
+                        Stretch="Fill"
+                        ImageSource="{Binding Led.Image}" />
+        </Border.Background>
+        <Path Data="{Binding DisplayGeometry}" ClipToBounds="False" StrokeThickness="2">
+            <Path.Fill>
+                <SolidColorBrush Color="{Binding DisplayColor}" Opacity="0.25" />
+            </Path.Fill>
+            <!-- TODO: Causes big perf degradation because it makes the entire path recalculate its size -->
+            <Path.Stroke>
+                <SolidColorBrush Color="{Binding DisplayColor}" />
+            </Path.Stroke>
+        </Path>
+    </Border>
 </UserControl>

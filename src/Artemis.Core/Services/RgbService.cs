@@ -38,30 +38,33 @@ namespace Artemis.Core.Services
         public RGBSurface Surface { get; set; }
 
         public GraphicsDecorator GraphicsDecorator { get; private set; }
-        
+
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
-           Surface.LoadDevices(deviceProvider);
-           Surface.AlignDevices();
+            Surface.LoadDevices(deviceProvider);
+            Surface.AlignDevices();
 
-           lock (_loadedDevices)
-           {
-               foreach (var surfaceDevice in deviceProvider.Devices)
-               {
-                   if (!_loadedDevices.Contains(surfaceDevice))
-                   {
-                       _loadedDevices.Add(surfaceDevice);
-                       OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
-                   }
-                   else
-                       OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
-               }
-           }
+            if (deviceProvider.Devices == null)
+                return;
 
-           // Apply the application wide brush and decorator
-           var background = new ListLedGroup(Surface.Leds) { Brush = new SolidColorBrush(new Color(255, 255, 255, 255)) };
-           GraphicsDecorator = new GraphicsDecorator(background);
-           background.Brush.AddDecorator(GraphicsDecorator);
+            lock (_loadedDevices)
+            {
+                foreach (var surfaceDevice in deviceProvider.Devices)
+                {
+                    if (!_loadedDevices.Contains(surfaceDevice))
+                    {
+                        _loadedDevices.Add(surfaceDevice);
+                        OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
+                    }
+                    else
+                        OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
+                }
+            }
+
+            // Apply the application wide brush and decorator
+            var background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
+            GraphicsDecorator = new GraphicsDecorator(background);
+            background.Brush.AddDecorator(GraphicsDecorator);
         }
 
         public void Dispose()
@@ -91,7 +94,7 @@ namespace Artemis.Core.Services
         {
             DeviceReloaded?.Invoke(this, e);
         }
-        
+
         #endregion
     }
 }

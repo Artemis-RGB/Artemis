@@ -18,16 +18,15 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding Led.LedRectangle.X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Led.LedRectangle.Y}" />
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
                 </Style>
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl Width="{Binding Led.LedRectangle.Width}" Height="{Binding Led.LedRectangle.Width}" xaml:View.Model="{Binding}" ToolTip="{Binding Tooltip}" />
+                    <ContentControl Width="{Binding Width}" Height="{Binding Height}" xaml:View.Model="{Binding}" ToolTip="{Binding Tooltip}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        
     </Grid>
 </UserControl>

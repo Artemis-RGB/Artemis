@@ -39,7 +39,8 @@
       <HintPath>..\packages\QRCoder.1.2.5\lib\net40\QRCoder.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Core, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RGB.NET.Core.0.1.25\lib\net45\RGB.NET.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Core.dll</HintPath>
     </Reference>
     <Reference Include="Stylet, Version=1.1.22.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.1.22\lib\net45\Stylet.dll</HintPath>
