@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -57,12 +58,12 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
-            _circlePosition += deltaTime * 200;
-            if (_circlePosition > 500)
-                _circlePosition = -200;
-            var rect = new Rectangle((int) _circlePosition * 4, 0 , 200, 200);
-            graphics.FillEllipse(new SolidBrush(Color.Blue), rect);
-            return;
+//            _circlePosition += deltaTime * 200;
+//            if (_circlePosition > 500)
+//                _circlePosition = -200;
+//            var rect = new Rectangle((int) _circlePosition * 4, 0 , 200, 200);
+//            graphics.FillEllipse(new SolidBrush(Color.Blue), rect);
+//            return;
 
             // Lets do this in the least performant way possible
             foreach (var surfaceLed in _surface.Leds)
@@ -71,7 +72,7 @@ namespace Artemis.Plugins.Modules.General
                     continue;
 
                 var brush = new SolidBrush(_colors[surfaceLed]);
-                var rectangle = new Rectangle((int) surfaceLed.LedRectangle.X, (int) surfaceLed.LedRectangle.Y, (int) surfaceLed.LedRectangle.Width, (int) surfaceLed.LedRectangle.Height);
+                var rectangle = surfaceLed.AbsoluteLedRectangle.ToDrawingRectangle();
                 graphics.FillRectangle(brush, rectangle);
                 UpdateLedColor(surfaceLed, deltaTime);
             }
