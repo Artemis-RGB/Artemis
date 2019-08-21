@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair GLAIVE RGB</Name>
+  <Description>Physical layout of Corsairs GLAIVE RGB</Description>
+  <Type>Mouse</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Width>70</Width>
+  <Height>134</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Mice</ImageBasePath>
+  <DeviceImage>GLAIVERGB.png</DeviceImage>
+  <Leds>
+    <Led Id="Mouse1">
+      <Shape>M0.027,0.932 L0.041,0.853 L0.068,0.788 L0.176,0.641 L0.29,0.508 L0.393,0.417 L0.415,0.406 L0.428,0.417 L0.436,0.436 L0.44,0.463 L0.46,0.008 L0.002,0.038z M0.956,0.985 L0.943,0.917 L0.922,0.849 L0.842,0.724 L0.781,0.633 L0.687,0.508 L0.639,0.451 L0.624,0.451 L0.615,0.466 L0.609,0.493 L0.587,0.012 L0.998,0.016z</Shape>
+      <X>0</X>
+      <Width>69</Width>
+      <Height>20</Height>
+    </Led>
+    <Led Id="Mouse2">
+      <Shape>M0.096,0.057 L0.097,0.2 L0.111,0.389 L0.125,0.548 L0.149,0.698 L0.152,0.738 L0.143,0.768 L0.118,0.809 L0.057,0.92 L0.038,0.955 L0.046,0.97 L0.077,0.91 L0.113,0.849 L0.157,0.772 L0.165,0.754 L0.168,0.734 L0.166,0.694 L0.135,0.478 L0.119,0.293 L0.108,0.107 L0.107,0.066z M0.911,0.051 L0.89,0.075 L0.885,0.088 L0.884,0.112 L0.879,0.219 L0.873,0.311 L0.866,0.396 L0.863,0.437 L0.864,0.457 L0.869,0.473 L0.879,0.495 L0.883,0.498 L0.881,0.484 L0.873,0.467 L0.871,0.451 L0.88,0.375 L0.89,0.256 L0.894,0.174 L0.896,0.115 L0.896,0.088z</Shape>
+      <X>2</X>
+      <Y>45</Y>
+      <Width>68</Width>
+      <Height>72</Height>
+    </Led>
+    <Led Id="Mouse3">
+      <Shape>M0.197,0.365 L0.233,0.402 L0.254,0.468 L0.256,0.487 L0.332,0.499 L0.3,0.409z M0.336,0.273 L0.366,0.312 L0.382,0.356 L0.39,0.392 L0.475,0.419 L0.433,0.324z M0.479,0.156 L0.513,0.217 L0.533,0.287 L0.537,0.324 L0.612,0.343 L0.668,0.378 L0.694,0.414 L0.709,0.441 L0.717,0.409 L0.709,0.356 L0.656,0.278 L0.55,0.192z M0.174,0.466 L0.213,0.527 L0.229,0.593 L0.222,0.715 L0.182,0.813 L0.16,0.859 L0.229,0.819 L0.351,0.761 L0.518,0.7 L0.633,0.677 L0.726,0.674 L0.764,0.689 L0.8,0.721 L0.829,0.671 L0.834,0.619 L0.807,0.547 L0.705,0.46 L0.526,0.336 L0.456,0.284 L0.497,0.391 L0.516,0.507 L0.506,0.631 L0.495,0.66 L0.502,0.585 L0.487,0.475 L0.327,0.382 L0.354,0.48 L0.363,0.59 L0.342,0.697 L0.344,0.625 L0.344,0.544z</Shape>
+      <X>25</X>
+      <Y>100</Y>
+      <Width>23</Width>
+      <Height>19</Height>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout Layout="EN">
+      <LedImages>
+        <LedImage Id="Mouse1" />
+        <LedImage Id="Mouse2" />
+        <LedImage Id="Logo" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

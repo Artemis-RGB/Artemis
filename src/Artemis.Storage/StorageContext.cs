@@ -17,7 +17,7 @@ namespace Artemis.Storage
             // ReSharper disable once RedundantAssignment - Used if not debugging
             var dbLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis\\Storage.db");
             #if DEBUG
-            dbLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\Artemis.Storage\Storage.db"));
+            dbLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Artemis.Storage\Storage.db"));
             #endif
 
             optionsBuilder.UseSqlite("Data Source=" + dbLocation);
