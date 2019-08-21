@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Artemis.Core.Extensions
 {
@@ -12,11 +8,8 @@ namespace Artemis.Core.Extensions
         {
             if (type == null)
                 return false;
-            var baseType = type.BaseType;
-            if (baseType == null)
-                return false;
-
-            return baseType.GetGenericTypeDefinition() == genericType;
+           
+            return type.BaseType?.GetGenericTypeDefinition() == genericType;
         }
     }
 }
