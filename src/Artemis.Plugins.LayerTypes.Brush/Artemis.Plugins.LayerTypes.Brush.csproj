@@ -86,6 +86,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>(robocopy $(TargetDir) %25ProgramData%25\Artemis\plugins\$(ProjectName) /E /NFL /NDL /NJH /NJS /nc /ns /np)  ^&amp; IF %25ERRORLEVEL%25 LEQ 4 exit /B 0</PostBuildEvent>
+    <PostBuildEvent>(robocopy $(TargetDir) $(SolutionDir)\Artemis.UI\$(OutDir)\Plugins\$(ProjectName) /E /NFL /NDL /NJH /NJS /nc /ns /np)  ^&amp; IF %25ERRORLEVEL%25 LEQ 4 exit /B 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

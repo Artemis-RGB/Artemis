@@ -39,6 +39,7 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             // Initialize the services
+            await Task.Run(() => _pluginService.CopyBuiltInPlugins());
             await Task.Run(() => _pluginService.LoadPlugins());
 
             OnInitialized();

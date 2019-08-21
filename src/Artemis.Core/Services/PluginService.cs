@@ -5,6 +5,7 @@ using System.Linq;
 using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
@@ -30,12 +31,61 @@ namespace Artemis.Core.Services
             _kernel = kernel;
             _plugins = new List<PluginInfo>();
 
+            // Ensure the plugins directory exists
             if (!Directory.Exists(Constants.DataFolder + "plugins"))
                 Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
 
         /// <inheritdoc />
         public bool LoadingPlugins { get; private set; }
+
+        /// <inheritdoc />
+        public void CopyBuiltInPlugins()
+        {
+            var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+
+            // Iterate built-in plugins
+            var varBuiltInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            foreach (var subDirectory in varBuiltInPluginDirectory.EnumerateDirectories())
+            {
+                // Load the metadata
+                var builtInMetadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
+                if (!File.Exists(builtInMetadataFile))
+                    throw new ArtemisPluginException("Couldn't find the built-in plugins metadata file at " + builtInMetadataFile);
+
+                var builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(builtInMetadataFile));
+
+                // Find the matching plugin in the plugin folder
+                var match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == subDirectory.Name);
+                if (match == null)
+                    CopyBuiltInPlugin(subDirectory);
+                else
+                {
+                    var metadataFile = Path.Combine(match.FullName, "plugin.json");
+                    if (!File.Exists(metadataFile))
+                        CopyBuiltInPlugin(subDirectory);
+                    else
+                    {
+                        try
+                        {
+                            // Compare versions, copy if the same when debugging
+                            var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(builtInMetadataFile));
+                            #if DEBUG
+                            if (builtInPluginInfo.Version >= pluginInfo.Version)
+                                CopyBuiltInPlugin(subDirectory);
+                            #else
+                            if (builtInPluginInfo.Version > pluginInfo.Version)
+                                CopyBuiltInPlugin(subDirectory);
+                            #endif
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ArtemisPluginException("Failed read plugin metadata needed to install built-in plugin", e);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <inheritdoc />
         public void LoadPlugins()
@@ -54,8 +104,8 @@ namespace Artemis.Core.Services
                 _childKernel = new ChildKernel(_kernel);
 
                 // Load the plugin assemblies into the plugin context
-                var directory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
-                foreach (var subDirectory in directory.EnumerateDirectories())
+                var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+                foreach (var subDirectory in pluginDirectory.EnumerateDirectories())
                 {
                     try
                     {
@@ -236,6 +286,17 @@ namespace Artemis.Core.Services
             UnloadPlugins();
         }
 
+        private static void CopyBuiltInPlugin(DirectoryInfo builtInPluginDirectory)
+        {
+            var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", builtInPluginDirectory.Name));
+
+            // Remove the old directory if it exists
+            if (Directory.Exists(pluginDirectory.FullName))
+                Directory.Delete(pluginDirectory.FullName, true);
+            Directory.CreateDirectory(pluginDirectory.FullName);
+
+            builtInPluginDirectory.CopyFilesRecursively(pluginDirectory);
+        }
 
         #region Events
 

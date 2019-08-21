@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System;
+using System.IO;
 using Artemis.Storage.Entities;
 using Microsoft.EntityFrameworkCore;
 using SQLitePCL;
@@ -14,12 +14,12 @@ namespace Artemis.Storage
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-//            var dbLocation = @"C:\Repos\Artemis\src\Artemis.Storage\Storage.db";
+            // ReSharper disable once RedundantAssignment - Used if not debugging
+            var dbLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Artemis\\Storage.db");
             #if DEBUG
-            var dbLocation = Path.GetFullPath(Path.Combine(Assembly.GetEntryAssembly().Location, @"..\..\..\..\Artemis.Storage\Storage.db"));
-            #else
-            var dbLocation = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Artemis\\Storage.db";
+            dbLocation = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\..\Artemis.Storage\Storage.db"));
             #endif
+
             optionsBuilder.UseSqlite("Data Source=" + dbLocation);
 
             // Requires Microsoft.Data.Sqlite in the startup project
