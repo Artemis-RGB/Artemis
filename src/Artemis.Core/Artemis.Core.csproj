@@ -116,6 +116,7 @@
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
     <Compile Include="Ninject\PluginSettingsProvider.cs" />
     <Compile Include="Plugins\Abstract\ModuleDataModel.cs" />

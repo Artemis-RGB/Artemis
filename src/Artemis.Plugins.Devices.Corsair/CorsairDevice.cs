@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -30,7 +31,7 @@ namespace Artemis.Plugins.Devices.Corsair
 
         private void ResolveCorsairPath(object sender, ResolvePathEventArgs e)
         {
-            if (e.RelativePart.Contains("Layouts\\Corsair"))
+            if (sender.GetType().IsGenericType(typeof(CorsairRGBDevice<>)))
             {
                 // Start from the plugin directory
                 e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePart, e.FileName);
