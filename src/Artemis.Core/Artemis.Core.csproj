@@ -113,6 +113,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Events\DeviceEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
+    <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Models\DataModelDescription.cs" />

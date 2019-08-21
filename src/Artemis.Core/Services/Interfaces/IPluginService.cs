@@ -14,6 +14,12 @@ namespace Artemis.Core.Services.Interfaces
         bool LoadingPlugins { get; }
 
         /// <summary>
+        ///     Copy built-in plugins from the executable directory to the plugins directory if the version is higher
+        ///     (higher or equal if compiled as debug)
+        /// </summary>
+        void CopyBuiltInPlugins();
+
+        /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
         void LoadPlugins();
