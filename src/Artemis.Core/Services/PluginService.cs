@@ -292,7 +292,7 @@ namespace Artemis.Core.Services
 
             // Remove the old directory if it exists
             if (Directory.Exists(pluginDirectory.FullName))
-                Directory.Delete(pluginDirectory.FullName, true);
+                pluginDirectory.RecursiveDelete();
             Directory.CreateDirectory(pluginDirectory.FullName);
 
             builtInPluginDirectory.CopyFilesRecursively(pluginDirectory);

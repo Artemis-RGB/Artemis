@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.IO;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
@@ -23,7 +20,7 @@ namespace Artemis.Plugins.Devices.Corsair
 
         public override void EnablePlugin()
         {
-            PathHelper.ResolvingAbsolutePath += ResolveCorsairPath;   
+            PathHelper.ResolvingAbsolutePath += ResolveCorsairPath;
             CorsairDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "CUESDK.dll"));
             CorsairDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "CUESDK.dll"));
             _rgbService.AddDeviceProvider(CorsairDeviceProvider.Instance);
@@ -34,7 +31,10 @@ namespace Artemis.Plugins.Devices.Corsair
             if (sender.GetType().IsGenericType(typeof(CorsairRGBDevice<>)))
             {
                 // Start from the plugin directory
-                e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePart, e.FileName);
+                if (e.RelativePart != null && e.FileName != null)
+                    e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePart, e.FileName);
+                else if (e.RelativePath != null)
+                    e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePath);
             }
         }
 

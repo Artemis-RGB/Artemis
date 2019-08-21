@@ -23,7 +23,7 @@
         </Grid>
 
         <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">Devices</TextBlock>
-        <Grid>
+        <StackPanel>
             <TextBlock>A list of devices and options to disable them</TextBlock>
             <ItemsControl ItemsSource="{Binding DeviceSettingsViewModels}">
                 <ItemsControl.ItemTemplate>
@@ -32,7 +32,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </Grid>
+        </StackPanel>
 
         <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">Plugins</TextBlock>
         <Grid>
