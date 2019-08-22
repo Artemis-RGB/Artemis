@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair M65 RGB</Name>
+  <Description>Physical layout of Corsairs M65 RGB</Description>
+  <Type>Mouse</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>M65 RGB</Model>
+  <Width>72</Width>
+  <Height>122</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Mice</ImageBasePath>
+  <DeviceImage>M65RGB.png</DeviceImage>
+  <Leds>
+    <Led Id="Mouse1">
+      <Shape>M0.289,0.255 L0.214,0.287 L0.218,0.403 L0.221,0.72 L0.229,0.88 L0.296,0.931 L0.161,0.928 L0.165,0.724 L0.15,0.447 L0.15,0.282 L0.161,0.073 L0.832,0.034 L0.851,0.31 L0.839,0.74 L0.832,0.936 L0.723,0.938 L0.757,0.878 L0.761,0.483 L0.764,0.287 L0.723,0.253z</Shape>
+      <X>31.5</X>
+      <Y>9</Y>
+      <Width>15</Width>
+      <Height>32</Height>
+    </Led>
+    <Led Id="Mouse2">
+      <Shape>M0.225,0.354 L0.259,0.401 L0.274,0.449 L0.274,0.485 L0.356,0.506 L0.328,0.413z M0.38,0.259 L0.41,0.305 L0.426,0.359 L0.428,0.401 L0.519,0.437 L0.488,0.329z M0.542,0.141 L0.578,0.21 L0.596,0.275 L0.601,0.323 L0.665,0.347 L0.717,0.388 L0.753,0.429 L0.776,0.457 L0.781,0.421 L0.776,0.372 L0.75,0.316 L0.688,0.249 L0.624,0.187z M0.188,0.47 L0.216,0.534 L0.231,0.621 L0.222,0.712 L0.185,0.808 L0.128,0.893 L0.204,0.857 L0.382,0.79 L0.572,0.739 L0.696,0.724 L0.789,0.736 L0.816,0.748 L0.853,0.796 L0.88,0.73 L0.883,0.663 L0.877,0.618 L0.81,0.54 L0.705,0.437 L0.502,0.277 L0.557,0.437 L0.554,0.573 L0.524,0.685 L0.505,0.712 L0.521,0.654 L0.527,0.603 L0.533,0.534 L0.527,0.497 L0.361,0.38 L0.388,0.513 L0.382,0.618 L0.364,0.7 L0.348,0.736 L0.361,0.673 L0.361,0.615 L0.367,0.558z</Shape>
+      <X>30</X>
+      <Y>96</Y>
+      <Width>18</Width>
+      <Height>18</Height>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout Layout="NA">
+      <LedImages>
+        <LedImage Id="Mouse1" />
+        <LedImage Id="Mouse2" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>
