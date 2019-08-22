@@ -82,7 +82,7 @@ namespace Artemis.UI.ViewModels.Screens
 
         private async void OnSelectedModuleChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "SelectedModule")
+            if (e.PropertyName == nameof(SelectedModule))
                 await NavigateToSelectedModule();
         }
 

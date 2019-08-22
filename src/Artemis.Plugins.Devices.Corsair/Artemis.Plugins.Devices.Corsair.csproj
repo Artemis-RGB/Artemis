@@ -1081,9 +1081,6 @@
     <Content Include="Layouts\Corsair\Keyboards\K70RGB\UK.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Layouts\Corsair\Keyboards\K95RGBPLATINUM\US - Copy.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Layouts\Corsair\Keyboards\K95RGBPLATINUM\US.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

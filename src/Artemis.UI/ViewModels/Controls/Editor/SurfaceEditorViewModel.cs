@@ -4,6 +4,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Controls.RgbDevice;
 using RGB.NET.Core;
+using Stylet;
 
 namespace Artemis.UI.ViewModels.Controls.Editor
 {
@@ -28,8 +29,11 @@ namespace Artemis.UI.ViewModels.Controls.Editor
 
         private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
         {
-            if (Devices.All(d => d.Device != e.Device))
-                Devices.Add(new RgbDeviceViewModel(e.Device));
+            Execute.OnUIThread(() =>
+            {
+                if (Devices.All(d => d.Device != e.Device))
+                    Devices.Add(new RgbDeviceViewModel(e.Device));
+            });
         }
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)

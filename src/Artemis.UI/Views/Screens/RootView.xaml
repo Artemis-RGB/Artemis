@@ -6,9 +6,6 @@
                    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:s="https://github.com/canton7/Stylet"
-                   xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
-                   xmlns:models="clr-namespace:Artemis.Core.Plugins.Models;assembly=Artemis.Core"
-                   xmlns:interfaces="clr-namespace:Artemis.Core.Plugins.Interfaces;assembly=Artemis.Core"
                    xmlns:abstract="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
                    xmlns:screens="clr-namespace:Artemis.UI.ViewModels.Screens"
                    mc:Ignorable="d"
@@ -131,7 +128,7 @@
                     <Border BorderThickness="0 1 0 0"
                             BorderBrush="{DynamicResource MaterialDesignDivider}">
                         <ListBox Margin="0 0 0 16"
-                                 SelectedIndex="0"
+                                 SelectedIndex="-1"
                                  ItemsSource="{Binding Modules}"
                                  SelectedItem="{Binding SelectedModule}"
                                  DockPanel.Dock="Top">
