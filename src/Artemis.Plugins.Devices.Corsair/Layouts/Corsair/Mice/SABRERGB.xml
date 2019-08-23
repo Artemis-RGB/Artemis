@@ -35,13 +35,4 @@
       <Height>19</Height>
     </Led>
   </Leds>
-  <LedImageLayouts>
-    <LedImageLayout Layout="NA">
-      <LedImages>
-        <LedImage Id="Mouse1" />
-        <LedImage Id="Mouse2" />
-        <LedImage Id="Mouse3" />
-      </LedImages>
-    </LedImageLayout>
-  </LedImageLayouts>
 </Device>

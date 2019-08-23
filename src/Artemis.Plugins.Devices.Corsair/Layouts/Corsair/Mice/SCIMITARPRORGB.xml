@@ -41,15 +41,5 @@
       <Width>21</Width>
       <Height>17</Height>
     </Led>
-  </Leds>
-  <LedImageLayouts>
-    <LedImageLayout Layout="NA">
-      <LedImages>
-        <LedImage Id="Mouse1" />
-        <LedImage Id="Mouse2" />
-        <LedImage Id="Mouse3" />
-        <LedImage Id="Mouse4" />
-      </LedImages>
-    </LedImageLayout>
-  </LedImageLayouts>
+  </Leds>  
 </Device>
