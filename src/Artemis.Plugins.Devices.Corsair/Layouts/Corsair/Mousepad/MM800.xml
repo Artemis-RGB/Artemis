@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair MM800 RGB</Name>
+  <Description>Physical layout of Corsairs MM800 RGB</Description>
+  <Type>Mousepad</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>MM800 RGB</Model>
+  <Width>357</Width>
+  <Height>298</Height>
+  <LedUnitWidth>20</LedUnitWidth>
+  <LedUnitHeight>54</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Mousepad</ImageBasePath>
+  <DeviceImage>MM800RGB.png</DeviceImage>
+  <Leds>
+    <Led Id="Mousepad1">
+      <Shape>M1,0 L0,0.1 L0,1 L1,1z</Shape>
+      <X>0</X>
+      <Y>27</Y>
+    </Led>
+    <Led Id="Mousepad2">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Mousepad3">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Mousepad4">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Mousepad5">
+      <Shape>M0,0 L0,0.9 L1,1 L1,0z</Shape>
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Mousepad6">
+      <Y>~</Y>
+      <Width>3.18</Width>
+      <Height>0.370</Height>
+    </Led>
+    <Led Id="Mousepad7">
+      <Width>3.18</Width>
+      <Height>0.370</Height>
+    </Led>
+    <Led Id="Mousepad8">
+      <Width>3.18</Width>
+      <Height>0.370</Height>
+    </Led>
+    <Led Id="Mousepad9">
+      <Width>3.18</Width>
+      <Height>0.370</Height>
+    </Led>
+    <Led Id="Mousepad10">
+      <Width>3.18</Width>
+      <Height>0.370</Height>
+    </Led>
+    <Led Id="Mousepad11">
+      <Shape>M0,0 L1,0 L1,0.9 L0,1z</Shape>
+      <Y>~</Y>
+    </Led>
+    <Led Id="Mousepad12">
+      <X>=</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="Mousepad13">
+      <X>=</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="Mousepad14">
+      <X>=</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="Mousepad15">
+      <Shape>M0,0 L1,0.1 L1,1 L0,1z</Shape>
+      <X>=</X>
+      <Y>-</Y>
+    </Led>
+  </Leds>  
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad1" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad4" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad5" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad6" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad7" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad8" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad9" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad10" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad11" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad12" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad13" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad14" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mousepad15" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>
