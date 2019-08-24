@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair LL RGB Fan</Name>
+  <Description>Physical layout of Corsairs LL RGB Fan</Description>
+  <Type>Fan</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>MM800 RGB</Model>
+  <Width>140</Width>
+  <Height>140</Height>
+  <LedUnitWidth>20</LedUnitWidth>
+  <LedUnitHeight>20</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Customs</ImageBasePath>
+  <DeviceImage>LLFAN.png</DeviceImage>
+  <Leds>
+    <Led Id="Fan1">
+      <Shape>Circle</Shape>
+      <X>59.5</X>
+      <Y>40</Y>
+    </Led>
+    <Led Id="Fan4">
+      <Shape>Circle</Shape>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Fan3">
+      <Shape>Circle</Shape>
+      <X>-</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Fan2">
+      <Shape>Circle</Shape>
+      <X>-</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="Fan5">
+      <Shape>Circle</Shape>
+      <X>59.5</X>
+      <Y>0</Y>
+    </Led>
+    <Led Id="Fan16">
+      <Shape>Circle</Shape>
+      <X>90.5</X>
+      <Y>7.6</Y>
+    </Led>
+    <Led Id="Fan15">
+      <Shape>Circle</Shape>
+      <X>113</X>
+      <Y>29.8</Y>
+    </Led>
+    <Led Id="Fan14">
+      <Shape>Circle</Shape>
+      <X>120.5</X>
+      <Y>59.9</Y>
+    </Led>
+    <Led Id="Fan13">
+      <Shape>Circle</Shape>
+      <X>113</X>
+      <Y>90.4</Y>
+    </Led>
+    <Led Id="Fan12">
+      <Shape>Circle</Shape>
+      <X>90.5</X>
+      <Y>113.1</Y>
+    </Led>
+    <Led Id="Fan11">
+      <Shape>Circle</Shape>
+      <X>59.5</X>
+      <Y>120.5</Y>
+    </Led>
+    <Led Id="Fan10">
+      <Shape>Circle</Shape>
+      <X>30.7</X>
+      <Y>113.1</Y>
+    </Led>
+    <Led Id="Fan9">
+      <Shape>Circle</Shape>
+      <X>8</X>
+      <Y>90.4</Y>
+    </Led>
+    <Led Id="Fan8">
+      <Shape>Circle</Shape>
+      <X>0.4</X>
+      <Y>59.9</Y>
+    </Led>
+    <Led Id="Fan7">
+      <Shape>Circle</Shape>
+      <X>7.9</X>
+      <Y>29.8</Y>
+    </Led>
+    <Led Id="Fan6">
+      <Shape>Circle</Shape>
+      <X>28</X>
+      <Y>7.6</Y>
+    </Led>
+  </Leds>
+</Device>

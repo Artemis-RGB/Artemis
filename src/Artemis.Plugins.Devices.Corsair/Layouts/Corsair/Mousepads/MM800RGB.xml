@@ -10,7 +10,7 @@
   <Height>298</Height>
   <LedUnitWidth>20</LedUnitWidth>
   <LedUnitHeight>54</LedUnitHeight>
-  <ImageBasePath>Images\Corsair\Mousepad</ImageBasePath>
+  <ImageBasePath>Images\Corsair\Mousepads</ImageBasePath>
   <DeviceImage>MM800RGB.png</DeviceImage>
   <Leds>
     <Led Id="Mousepad1">

@@ -62,7 +62,6 @@ namespace Artemis.Core.Services
                 using (var g = _rgbService.GraphicsDecorator.GetGraphics())
                 {
                     g.Clear(Color.Black);
-
                     foreach (var module in modules)
                         module.Render(args.DeltaTime, _rgbService.Surface, g);
                 }

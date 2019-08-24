@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
@@ -21,6 +22,7 @@ namespace Artemis.Plugins.Modules.General
         private readonly RGBSurface _surface;
         private Dictionary<Led, Color> _colors;
         private double _circlePosition;
+        private Color _color;
 
         public GeneralModule(PluginInfo pluginInfo, IRgbService rgbService, PluginSettings settings) : base(pluginInfo)
         {
@@ -35,6 +37,7 @@ namespace Artemis.Plugins.Modules.General
             rgbService.DeviceReloaded += (sender, args) => PopulateColors();
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
+            _color = ColorHelpers.GetRandomRainbowColor();
         }
 
         public override void EnablePlugin()
@@ -58,12 +61,36 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
         {
-//            _circlePosition += deltaTime * 200;
-//            if (_circlePosition > 500)
-//                _circlePosition = -200;
-//            var rect = new Rectangle((int) _circlePosition * 4, 0 , 200, 200);
-//            graphics.FillEllipse(new SolidBrush(Color.Blue), rect);
-//            return;
+            _circlePosition += deltaTime * 50;
+            if (_circlePosition > 600)
+            {
+                _circlePosition = -200;
+                _color = ColorHelpers.GetRandomRainbowColor();
+            }
+
+            var rect = new Rectangle((int) _circlePosition * 4, 0, 200, (int) surface.Leds.Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height));
+            graphics.FillRectangle(new SolidBrush(_color), rect);
+
+//            // Lets do this in the least performant way possible
+//            foreach (var surfaceLed in _surface.Leds)
+//            {
+//                var rectangle = surfaceLed.AbsoluteLedRectangle.ToDrawingRectangle();
+//                if (surfaceLed.Id == LedId.Fan1)
+//                {
+//                    graphics.FillRectangle(new SolidBrush(Color.Red), rectangle);
+//                }
+//                if (surfaceLed.Id == LedId.Fan2)
+//                {
+//                    graphics.FillRectangle(new SolidBrush(Color.Blue), rectangle);
+//                }
+//                if (surfaceLed.Id == LedId.Fan3)
+//                {
+//                    graphics.FillRectangle(new SolidBrush(Color.Green), rectangle);
+//                }
+//            }
+
+
+            return;
 
             // Lets do this in the least performant way possible
             foreach (var surfaceLed in _surface.Leds)
@@ -98,9 +125,12 @@ namespace Artemis.Plugins.Modules.General
 
         private void PopulateColors()
         {
-            _colors = new Dictionary<Led, Color>();
-            foreach (var surfaceLed in _surface.Leds)
-                _colors.Add(surfaceLed, ColorHelpers.GetRandomRainbowColor());
+            lock (_colors)
+            {
+                _colors = new Dictionary<Led, Color>();
+                foreach (var surfaceLed in _surface.Leds)
+                    _colors.Add(surfaceLed, ColorHelpers.GetRandomRainbowColor());
+            }
         }
     }
 }
