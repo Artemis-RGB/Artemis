@@ -147,9 +147,6 @@
     </ApplicationDefinition>
     <Compile Include="Adorners\BoundingBoxAdorner.cs" />
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Controls\Visualizers\LedVisualizer.cs" />
-    <Compile Include="Controls\Visualizers\RGBDeviceVisualizer.cs" />
-    <Compile Include="Controls\Visualizers\RGBSurfaceVisualizer.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
@@ -157,7 +154,7 @@
     <Compile Include="Services\Interfaces\IArtemisUIService.cs" />
     <Compile Include="Stylet\ArtemisViewManager.cs" />
     <Compile Include="Stylet\NinjectBootstrapper.cs" />
-    <Compile Include="ViewModels\Screens\EditorViewModel.cs" />
+    <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
     <Compile Include="ViewModels\Controls\RgbDevice\RgbDeviceViewModel.cs" />
     <Compile Include="ViewModels\Controls\RgbDevice\RgbLedViewModel.cs" />
@@ -172,19 +169,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\Screens\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\Controls\Editor\SurfaceEditorViewModel.cs" />
-    <Page Include="Styles\Visualizers\LedVisualizer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\Visualizers\RGBDeviceVisualizer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Styles\Visualizers\RGBSurfaceVisualizer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Screens\HomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -201,7 +185,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Screens\EditorView.xaml">
+    <Page Include="Views\Screens\SurfaceEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -210,10 +194,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Screens\SettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\Editor\SurfaceEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -260,8 +240,7 @@
     <None Include="Resources\bow.svg" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controls\ColorPicker\" />
-    <Folder Include="Controls\GradientPicker\" />
+    <Resource Include="Resources\tile.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />

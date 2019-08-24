@@ -104,11 +104,11 @@
                                 <TextBlock>Workshop</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
-                        <ListBoxItem x:Name="Editor">
+                        <ListBoxItem x:Name="SurfaceEditor">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Edit"
                                                          Margin="0,0,8,0" />
-                                <TextBlock>Editor</TextBlock>
+                                <TextBlock>Surface Editor</TextBlock>
                             </StackPanel>
                         </ListBoxItem>
                         <ListBoxItem x:Name="Settings">

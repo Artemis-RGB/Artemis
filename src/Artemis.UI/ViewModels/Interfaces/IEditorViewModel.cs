@@ -1,6 +1,6 @@
 ﻿namespace Artemis.UI.ViewModels.Interfaces
 {
-    public interface IEditorViewModel : IScreenViewModel
+    public interface ISurfaceEditorViewModel : IScreenViewModel
     {
         
     }

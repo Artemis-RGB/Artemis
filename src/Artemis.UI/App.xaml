@@ -29,11 +29,6 @@
                     Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Teal.xaml" />
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Teal.xaml" />
-
-                <!-- Artemis -->
-                <ResourceDictionary Source="Styles/Visualizers/RGBSurfaceVisualizer.xaml" />
-                <ResourceDictionary Source="Styles/Visualizers/RGBDeviceVisualizer.xaml" />
-                <ResourceDictionary Source="Styles/Visualizers/LedVisualizer.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- MahApps Brushes -->
