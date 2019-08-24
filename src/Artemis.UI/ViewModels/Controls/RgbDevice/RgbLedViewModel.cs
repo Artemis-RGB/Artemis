@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.UI.Extensions;
 using PropertyChanged;
@@ -14,7 +15,7 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
         public RgbLedViewModel(Led led)
         {
             Led = led;
-
+            
             Execute.OnUIThread(CreateLedGeometry);
             Update();
         }
@@ -30,6 +31,7 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
         public Geometry DisplayGeometry { get; private set; }
         public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
+        public bool ColorsEnabled { get; set; } = true;
 
         public string Tooltip => $"{Led.Id} - {Led.LedRectangle}";
 
@@ -93,8 +95,11 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
 
         public void Update()
         {
-            var newColor = Led.Color.ToMediaColor();
-            SetColor(newColor);
+            if (ColorsEnabled)
+            {
+                var newColor = Led.Color.ToMediaColor();
+                SetColor(newColor);
+            }
 
             if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
                 X = Led.LedRectangle.X;

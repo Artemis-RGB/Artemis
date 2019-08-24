@@ -102,8 +102,8 @@ namespace Artemis.UI.ViewModels.Screens
                 case "Workshop":
                     // ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(WorkshopViewModel)));
                     break;
-                case "Editor":
-                    ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(EditorViewModel)));
+                case "SurfaceEditor":
+                    ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(SurfaceEditorViewModel)));
                     break;
                 case "Settings":
                     ActivateItem(_artemisViewModels.First(v => v.GetType() == typeof(SettingsViewModel)));
