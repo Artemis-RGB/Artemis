@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair RGB LED Strip</Name>
+  <Description>Physical layout of Corsairs RGB LED Strip</Description>
+  <Type>Cooler</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>RGB LED Strip</Model>
+  <Width>270</Width>
+  <Height>9</Height>
+  <LedUnitWidth>25</LedUnitWidth>
+  <LedUnitHeight>9</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Customs</ImageBasePath>
+  <DeviceImage>LEDSTRIP.png</DeviceImage>
+  <Leds>
+    <Led Id="LedStripe1">
+      <X>10</X>
+    </Led>
+    <Led Id="LedStripe2" />
+    <Led Id="LedStripe3" />
+    <Led Id="LedStripe4" />
+    <Led Id="LedStripe5" />
+    <Led Id="LedStripe6" />
+    <Led Id="LedStripe7" />
+    <Led Id="LedStripe8" />
+    <Led Id="LedStripe9" />
+    <Led Id="LedStripe10" />
+  </Leds>
+</Device>

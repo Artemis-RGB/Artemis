@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.RGB.NET;
@@ -42,8 +43,7 @@ namespace Artemis.Core.Services
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
             Surface.LoadDevices(deviceProvider);
-            Surface.AlignDevices();
-
+            
             if (deviceProvider.Devices == null)
                 return;
 

@@ -4,20 +4,91 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:settings="clr-namespace:Artemis.UI.ViewModels.Controls.Settings"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:s="https://github.com/canton7/Stylet"
              d:DataContext="{d:DesignInstance settings:RgbDeviceSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Name}" />
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Manufacturer}" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Type}" />
-    </Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <materialDesign:Card
+        Width="200">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="140" />
+                <RowDefinition
+                    Height="*" />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <Rectangle Grid.Row="0" Height="140" Width="196" Fill="{DynamicResource MaterialDesignPaper}"></Rectangle>
+            <Image
+                Grid.Row="0"
+                Source="{Binding Device.DeviceInfo.Image}"
+                Height="130"
+                Width="190" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Button
+                Grid.Row="0"
+                Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0 0 16 -20"
+                ToolTip="Identify"
+                Command="{s:Action Identity}">
+                <materialDesign:PackIcon Kind="AlarmLight" />
+            </Button>
+            <StackPanel
+                Grid.Row="1"
+                Margin="8 24 8 0">
+                <TextBlock FontWeight="Bold" Text="{Binding Device.DeviceInfo.Model}" />
+                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
+                    <Run Text="{Binding Device.DeviceInfo.Manufacturer, Mode=OneWay}" />
+                    -
+                    <Run Text="{Binding Device.DeviceInfo.DeviceType, Mode=OneWay}" />
+                </TextBlock>
+
+            </StackPanel>
+            <StackPanel
+                HorizontalAlignment="Right"
+                Grid.Row="2"
+                Orientation="Horizontal"
+                Margin="8">
+                <Button
+                    Style="{StaticResource MaterialDesignToolButton}"
+                    Width="30"
+                    Padding="2 0 2 0"
+                    materialDesign:RippleAssist.IsCentered="True">
+                    <materialDesign:PackIcon
+                        Kind="ShareVariant" />
+                </Button>
+                <Button
+                    Style="{StaticResource MaterialDesignToolButton}"
+                    Width="30"
+                    Padding="2 0 2 0"
+                    materialDesign:RippleAssist.IsCentered="True">
+                    <materialDesign:PackIcon
+                        Kind="Heart" />
+                </Button>
+                <materialDesign:PopupBox
+                    Style="{StaticResource MaterialDesignToolPopupBox}"
+                    Padding="2 0 2 0">
+                    <StackPanel>
+                        <Button
+                            Content="More" />
+                        <Button
+                            Content="Options" />
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </StackPanel>
+        </Grid>
+    </materialDesign:Card>
 </UserControl>
