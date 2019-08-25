@@ -95,6 +95,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>(robocopy $(TargetDir) $(SolutionDir)\Artemis.UI\$(OutDir)\Plugins\$(ProjectName) /E /NFL /NDL /NJH /NJS /nc /ns /np)  ^&amp; IF %25ERRORLEVEL%25 LEQ 4 exit /B 0</PostBuildEvent>
+    <PostBuildEvent>echo Copying plugin to Artemis.UI output directory
+XCOPY "$(TargetDir.TrimEnd('\'))" "$(SolutionDir)\Artemis.UI\$(OutDir)Plugins\$(ProjectName)" /s /q /i /y</PostBuildEvent>
   </PropertyGroup>
 </Project>

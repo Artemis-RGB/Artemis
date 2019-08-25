@@ -20,7 +20,6 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
             Update();
         }
 
-        [DoNotNotify]
         public Led Led { get; }
 
         public double X { get; private set; }
@@ -97,6 +96,8 @@ namespace Artemis.UI.ViewModels.Controls.RgbDevice
         {
             if (ColorsEnabled)
             {
+                if (Led.Id == LedId.Keyboard_Y)
+                    Console.WriteLine();
                 var newColor = Led.Color.ToMediaColor();
                 SetColor(newColor);
             }

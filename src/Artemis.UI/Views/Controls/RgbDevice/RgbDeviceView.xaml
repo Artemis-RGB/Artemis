@@ -4,12 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:rgbDevice="clr-namespace:Artemis.UI.ViewModels.Controls.RgbDevice"
-             xmlns:xaml="https://github.com/canton7/Stylet"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance rgbDevice:RgbDeviceViewModel}"
              d:DesignHeight="450" d:DesignWidth="800"
-             Cursor="{Binding Cursor}">
-    <UserControl.Resources></UserControl.Resources>
+             Cursor="{Binding Cursor}"
+             MouseEnter="{s:Action MouseEnter}"
+             MouseLeave="{s:Action MouseLeave}">
     <Grid>
         <Image Source="{Binding Device.DeviceInfo.Image}" />
         <ItemsControl ItemsSource="{Binding Leds}">
@@ -26,42 +27,54 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl Width="{Binding Width}" Height="{Binding Height}" xaml:View.Model="{Binding}" />
+                    <ContentControl Width="{Binding Width}" Height="{Binding Height}" s:View.Model="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Rectangle Width="Auto" Height="Auto" StrokeThickness="1">
+        <Rectangle Width="Auto" Height="Auto" StrokeThickness="2">
+            <Rectangle.Stroke>
+                <SolidColorBrush Color="{StaticResource IdealForegroundColor}"/>
+            </Rectangle.Stroke>
+            <Rectangle.Fill>
+                <SolidColorBrush Color="{StaticResource IdealForegroundColor}" Opacity="0.25"/>
+            </Rectangle.Fill>
             <Rectangle.Style>
                 <Style TargetType="Rectangle">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static rgbDevice:SelectionStatus.Hover}">
-                            <Setter Property="Rectangle.Fill">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource IdealForegroundColor}" Opacity="0.25" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Rectangle.Stroke" Value="{DynamicResource IdealForegroundColorBrush}"/>
+                            <DataTrigger.EnterActions>
+                                <StopStoryboard BeginStoryboardName="ToSelected"></StopStoryboard>
+                                <BeginStoryboard x:Name="ToHover">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                        <ColorAnimation Storyboard.TargetProperty="(Rectangle.Stroke).(SolidColorBrush.Color)" To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static rgbDevice:SelectionStatus.Selected}">
-                            <Setter Property="Rectangle.Fill">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Rectangle.Stroke" Value="{DynamicResource PrimaryHueLightBrush}" />
+                            <DataTrigger.EnterActions>
+                                <StopStoryboard BeginStoryboardName="ToHover"></StopStoryboard>
+                                <BeginStoryboard x:Name="ToSelected">
+                                    <Storyboard>
+                                        <ColorAnimation Storyboard.TargetProperty="(Rectangle.Fill).(SolidColorBrush.Color)" To="{StaticResource Primary400}" Duration="0:0:0.25" />
+                                        <ColorAnimation Storyboard.TargetProperty="(Rectangle.Stroke).(SolidColorBrush.Color)" To="{StaticResource Primary400}" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static rgbDevice:SelectionStatus.None}">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                             <DataTrigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.ExitActions>
