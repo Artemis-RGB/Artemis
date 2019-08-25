@@ -30,7 +30,7 @@ namespace Artemis.UI.ViewModels.Screens
             foreach (var surfaceDevice in _rgbService.Surface.Devices)
             {
                 var device = new RgbDeviceViewModel(surfaceDevice) {Cursor = Cursors.Hand};
-                device.SetColorsEnabled(false);
+//                device.SetColorsEnabled(false);
 
                 Devices.Add(device);
             }
@@ -48,7 +48,7 @@ namespace Artemis.UI.ViewModels.Screens
                 if (Devices.All(d => d.Device != e.Device))
                 {
                     var device = new RgbDeviceViewModel(e.Device) {Cursor = Cursors.Hand};
-                    device.SetColorsEnabled(false);
+//                    device.SetColorsEnabled(false);
                     Devices.Add(device);
                 }
             });
@@ -60,67 +60,112 @@ namespace Artemis.UI.ViewModels.Screens
                 rgbDeviceViewModel.Update();
         }
 
-        #region Selection
+        #region Mouse actions
 
-        private bool _editorSelecting;
-        private Point _selectionStartPoint;
+        private MouseDragStatus _mouseDragStatus;
+        private Point _mouseDragStartPoint;
 
-        private void StartSelection(Point position)
+        private void StartMouseDrag(Point position)
         {
-            _selectionStartPoint = position;
-            _editorSelecting = true;
+            // If drag started on top of a device, initialise dragging
+            var device = Devices.LastOrDefault(d => d.DeviceRectangle.Contains(position));
+            if (device != null)
+            {
+                _mouseDragStatus = MouseDragStatus.Dragging;
+                // If the device is not selected, deselect others and select only this one
+                if (device.SelectionStatus != SelectionStatus.Selected)
+                {
+                    foreach (var others in Devices)
+                        others.SelectionStatus = SelectionStatus.None;
+                    device.SelectionStatus = SelectionStatus.Selected;
+                }
+                foreach (var selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+                    selectedDevice.StartMouseDrag(position);
+            }
+            // Start multi-selection
+            else
+            {
+                _mouseDragStatus = MouseDragStatus.Selecting;
+                _mouseDragStartPoint = position;
+            }
 
-            SelectionRectangle.Rect = new Rect();
+            // While dragging always show an arrow to avoid cursor flicker
             Mouse.OverrideCursor = Cursors.Arrow;
+            // Any time dragging starts, start with a new rect
+            SelectionRectangle.Rect = new Rect();
         }
 
-        private void StopSelection(Point position)
+        private void StopMouseDrag(Point position)
         {
-            _editorSelecting = false;
-            Mouse.OverrideCursor = null;
-
-            var selectedRect = new Rect(_selectionStartPoint, position);
-            foreach (var device in Devices)
+            if (_mouseDragStatus == MouseDragStatus.Dragging)
             {
-                if (device.DeviceRectangle.IntersectsWith(selectedRect))
-                    device.SelectionStatus = SelectionStatus.Selected;
-                else
-                    device.SelectionStatus = SelectionStatus.None;
             }
+            else
+            {
+                var selectedRect = new Rect(_mouseDragStartPoint, position);
+                foreach (var device in Devices)
+                {
+                    if (device.DeviceRectangle.IntersectsWith(selectedRect))
+                        device.SelectionStatus = SelectionStatus.Selected;
+                    else
+                        device.SelectionStatus = SelectionStatus.None;
+                }
+            }
+
+            Mouse.OverrideCursor = null;
+            _mouseDragStatus = MouseDragStatus.None;
         }
 
         private void UpdateSelection(Point position)
         {
-            var selectedRect = new Rect(_selectionStartPoint, position);
-            SelectionRectangle.Rect = selectedRect;
-
-            foreach (var device in Devices)
+            lock (Devices)
             {
-                if (device.DeviceRectangle.IntersectsWith(selectedRect))
-                    device.SelectionStatus = SelectionStatus.Selected;
-                else
-                    device.SelectionStatus = SelectionStatus.None;
+                var selectedRect = new Rect(_mouseDragStartPoint, position);
+                SelectionRectangle.Rect = selectedRect;
+
+                foreach (var device in Devices)
+                {
+                    if (device.DeviceRectangle.IntersectsWith(selectedRect))
+                        device.SelectionStatus = SelectionStatus.Selected;
+                    else
+                        device.SelectionStatus = SelectionStatus.None;
+                }
             }
         }
 
+        private void MoveSelected(Point position)
+        {
+            foreach (var device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+                device.UpdateMouseDrag(position);
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseEventArgs e)
         {
             var position = e.GetPosition((IInputElement) sender);
             if (e.LeftButton == MouseButtonState.Pressed)
-                StartSelection(position);
+                StartMouseDrag(position);
             else
-                StopSelection(position);
+                StopMouseDrag(position);
         }
 
+        // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseMove(object sender, MouseEventArgs e)
         {
-            if (!_editorSelecting)
-                return;
-
             var position = e.GetPosition((IInputElement) sender);
-            UpdateSelection(position);
+            if (_mouseDragStatus == MouseDragStatus.Dragging)
+                MoveSelected(position);
+            else if (_mouseDragStatus == MouseDragStatus.Selecting)
+                UpdateSelection(position);
         }
 
         #endregion
+    }
+
+    internal enum MouseDragStatus
+    {
+        None,
+        Selecting,
+        Dragging
     }
 }
