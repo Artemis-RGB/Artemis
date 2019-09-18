@@ -10,6 +10,7 @@ namespace Artemis.Storage
     {
         public DbSet<ProfileEntity> Profiles { get; set; }
         public DbSet<SettingEntity> Settings { get; set; }
+        public DbSet<SurfaceEntity> Surfaces { get; set; }
         public DbSet<PluginSettingEntity> PluginSettings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

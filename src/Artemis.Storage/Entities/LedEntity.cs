@@ -12,7 +12,7 @@ namespace Artemis.Storage.Entities
         public string LedName { get; set; }
         public string LimitedToDevice { get; set; }
 
-        public int LayerId { get; set; }
+        public string LayerId { get; set; }
         public virtual LayerEntity Layer { get; set; }
     }
 }

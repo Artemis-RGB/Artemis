@@ -42,9 +42,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Stylet, Version=1.1.17.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Stylet.1.1.17\lib\net45\Stylet.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Stylet, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stylet.1.2.0\lib\net45\Stylet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

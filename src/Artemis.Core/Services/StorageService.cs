@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.ProfileElements;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories;
 

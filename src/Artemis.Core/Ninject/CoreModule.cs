@@ -1,8 +1,10 @@
-﻿using Artemis.Core.Plugins.Models;
+﻿using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
+using Serilog;
 
 namespace Artemis.Core.Ninject
 {
@@ -10,6 +12,9 @@ namespace Artemis.Core.Ninject
     {
         public override void Load()
         {
+            if (Kernel == null)
+                throw new ArtemisCoreException("Failed to bind Ninject Core module, kernel is null.");
+
             // Bind all services as singletons
             Kernel.Bind(x =>
             {
@@ -31,6 +36,7 @@ namespace Artemis.Core.Ninject
             });
 
             Kernel.Bind<PluginSettings>().ToProvider<PluginSettingsProvider>();
+            Kernel.Bind<ILogger>().ToProvider<LoggerProvider>();
         }
     }
 }

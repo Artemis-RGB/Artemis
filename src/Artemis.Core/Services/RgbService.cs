@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core.Events;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services.Storage;
+using Artemis.Storage.Entities;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
 using RGB.NET.Groups;
+using Serilog;
 
 namespace Artemis.Core.Services
 {
@@ -17,10 +20,14 @@ namespace Artemis.Core.Services
     public class RgbService : IRgbService, IDisposable
     {
         private readonly List<IRGBDevice> _loadedDevices;
+        private readonly ILogger _logger;
+        private readonly ISurfaceService _surfaceService;
         private readonly TimerUpdateTrigger _updateTrigger;
 
-        internal RgbService()
+        internal RgbService(ILogger logger, ISurfaceService surfaceService)
         {
+            _logger = logger;
+            _surfaceService = surfaceService;
             Surface = RGBSurface.Instance;
             LoadingDevices = false;
 
@@ -33,7 +40,7 @@ namespace Artemis.Core.Services
         }
 
         /// <inheritdoc />
-        public bool LoadingDevices { get; private set; }
+        public bool LoadingDevices { get; }
 
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
@@ -43,9 +50,17 @@ namespace Artemis.Core.Services
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
             Surface.LoadDevices(deviceProvider);
-            
+
             if (deviceProvider.Devices == null)
+            {
+                _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
+            }
+
+            // Get the currently active surface configuration
+            var surface = _surfaceService.GetActiveSurfaceConfiguration();
+            if (surface == null)
+                _logger.Information("No active surface configuration found, not positioning device");
 
             lock (_loadedDevices)
             {
@@ -54,10 +69,16 @@ namespace Artemis.Core.Services
                     if (!_loadedDevices.Contains(surfaceDevice))
                     {
                         _loadedDevices.Add(surfaceDevice);
+                        if (surface != null)
+                            ApplyDeviceConfiguration(surfaceDevice, surface);
                         OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
                     }
                     else
+                    {
+                        if (surface != null)
+                            ApplyDeviceConfiguration(surfaceDevice, surface);
                         OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
+                    }
                 }
             }
 
@@ -73,6 +94,31 @@ namespace Artemis.Core.Services
 
             _updateTrigger.Dispose();
             Surface.Dispose();
+        }
+
+        public void ApplyDeviceConfiguration(IRGBDevice rgbDevice, SurfaceConfiguration surface)
+        {
+            // Determine the device ID by assuming devices are always added to the loaded devices list in the same order
+            lock (_loadedDevices)
+            {
+                var deviceId = _loadedDevices.Where(d => d.DeviceInfo.DeviceName == rgbDevice.DeviceInfo.DeviceName &&
+                                                         d.DeviceInfo.Model == rgbDevice.DeviceInfo.Model &&
+                                                         d.DeviceInfo.Manufacturer == rgbDevice.DeviceInfo.Manufacturer)
+                                   .ToList()
+                                   .IndexOf(rgbDevice) + 1;
+
+                var deviceConfig = surface.DeviceConfigurations.FirstOrDefault(d => d.DeviceName == rgbDevice.DeviceInfo.DeviceName &&
+                                                                                       d.DeviceModel == rgbDevice.DeviceInfo.Model &&
+                                                                                       d.DeviceManufacturer == rgbDevice.DeviceInfo.Manufacturer &&
+                                                                                       d.DeviceId == deviceId);
+                if (deviceConfig == null)
+                {
+                    _logger.Information("No surface device config found for {deviceInfo}, device ID: {deviceId}", rgbDevice.DeviceInfo, deviceId);
+                    return;
+                }
+
+                rgbDevice.Location = new Point(deviceConfig.X, deviceConfig.Y);
+            }
         }
 
         private void SurfaceOnException(ExceptionEventArgs args)

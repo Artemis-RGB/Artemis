@@ -4,6 +4,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
+using Serilog;
 using Color = System.Drawing.Color;
 
 namespace Artemis.Core.Services
@@ -13,11 +14,13 @@ namespace Artemis.Core.Services
     /// </summary>
     public class CoreService : ICoreService
     {
+        private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IRgbService _rgbService;
 
-        internal CoreService(IPluginService pluginService, IRgbService rgbService)
+        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService)
         {
+            _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
@@ -38,6 +41,8 @@ namespace Artemis.Core.Services
             if (IsInitialized)
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
+            _logger.Information("Initializing Artemis Core version {version}", typeof(CoreService).Assembly.GetName().Version);
+            
             // Initialize the services
             await Task.Run(() => _pluginService.CopyBuiltInPlugins());
             await Task.Run(() => _pluginService.LoadPlugins());

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 
-namespace Artemis.Storage.Repositories
+namespace Artemis.Storage.Repositories.Interfaces
 {
     public interface ISettingRepository : IRepository
     {

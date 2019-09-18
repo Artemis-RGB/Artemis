@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Plugins.Models

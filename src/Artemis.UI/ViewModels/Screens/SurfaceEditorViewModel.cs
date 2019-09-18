@@ -1,10 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Controls.RgbDevice;
 using Artemis.UI.ViewModels.Interfaces;
 using RGB.NET.Core;
@@ -16,21 +19,23 @@ namespace Artemis.UI.ViewModels.Screens
     public class SurfaceEditorViewModel : Screen, ISurfaceEditorViewModel
     {
         private readonly IRgbService _rgbService;
+        private readonly ISurfaceService _surfaceService;
 
-
-        public SurfaceEditorViewModel(IRgbService rgbService)
+        public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService)
         {
             Devices = new ObservableCollection<RgbDeviceViewModel>();
+            SurfaceConfigurations = new ObservableCollection<SurfaceConfiguration>();
             SelectionRectangle = new RectangleGeometry();
 
             _rgbService = rgbService;
+            _surfaceService = surfaceService;
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
 
             foreach (var surfaceDevice in _rgbService.Surface.Devices)
             {
                 var device = new RgbDeviceViewModel(surfaceDevice) {Cursor = Cursors.Hand};
-//                device.SetColorsEnabled(false);
+                device.SetColorsEnabled(false);
 
                 Devices.Add(device);
             }
@@ -38,6 +43,10 @@ namespace Artemis.UI.ViewModels.Screens
 
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<RgbDeviceViewModel> Devices { get; set; }
+
+        public SurfaceConfiguration SelectedSurfaceConfiguration { get; set; }
+        public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
+        public string NewConfigurationName { get; set; }
 
         public string Title => "Surface Editor";
 
@@ -48,7 +57,7 @@ namespace Artemis.UI.ViewModels.Screens
                 if (Devices.All(d => d.Device != e.Device))
                 {
                     var device = new RgbDeviceViewModel(e.Device) {Cursor = Cursors.Hand};
-//                    device.SetColorsEnabled(false);
+                    device.SetColorsEnabled(false);
                     Devices.Add(device);
                 }
             });
@@ -58,6 +67,51 @@ namespace Artemis.UI.ViewModels.Screens
         {
             foreach (var rgbDeviceViewModel in Devices)
                 rgbDeviceViewModel.Update();
+        }
+
+        #region Overrides of Screen
+
+        protected override void OnActivate()
+        {
+            Task.Run(LoadSurfaceConfigurations);
+            base.OnActivate();
+        }
+
+        #endregion
+
+        private async Task LoadSurfaceConfigurations()
+        {
+            SurfaceConfigurations.Clear();
+
+            // Get surface configs
+            var configs = await _surfaceService.GetSurfaceConfigurations();
+            // Populate the UI collection
+            foreach (var surfaceConfiguration in configs)
+                SurfaceConfigurations.Add(surfaceConfiguration);
+            // Select either the first active surface or the first available surface
+            SelectedSurfaceConfiguration = SurfaceConfigurations.FirstOrDefault(s => s.IsActive) ?? SurfaceConfigurations.FirstOrDefault();
+
+            // Create a default if there is none
+            if (SelectedSurfaceConfiguration == null)
+                SelectedSurfaceConfiguration = AddSurfaceConfiguration("Default");
+        }
+
+
+        public SurfaceConfiguration AddSurfaceConfiguration(string name)
+        {
+            var config = new SurfaceConfiguration(name);
+            Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
+            return config;
+        }
+
+        public void ConfigurationDialogClosing()
+        {
+            if (!string.IsNullOrWhiteSpace(NewConfigurationName))
+            {
+                var newConfig = AddSurfaceConfiguration(NewConfigurationName);
+                SelectedSurfaceConfiguration = newConfig;
+            }
+            NewConfigurationName = null;
         }
 
         #region Mouse actions
@@ -79,6 +133,7 @@ namespace Artemis.UI.ViewModels.Screens
                         others.SelectionStatus = SelectionStatus.None;
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
+
                 foreach (var selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                     selectedDevice.StartMouseDrag(position);
             }

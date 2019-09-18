@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.ProfileElements;
 using QRCoder;
 using RGB.NET.Core;
 
