@@ -2,7 +2,7 @@
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
-using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Activation;
 
 namespace Artemis.Core.Ninject

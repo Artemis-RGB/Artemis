@@ -2,6 +2,7 @@
 using System.Linq;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Plugins.Models

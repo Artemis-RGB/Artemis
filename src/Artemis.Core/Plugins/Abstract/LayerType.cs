@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.ProfileElements;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Abstract

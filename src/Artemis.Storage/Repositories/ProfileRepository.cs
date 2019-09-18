@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage.Repositories
 {
-    public class ProfileRepository
+    public class ProfileRepository : IProfileRepository
     {
         private readonly StorageContext _dbContext;
 
@@ -30,6 +31,11 @@ namespace Artemis.Storage.Repositories
         public async Task<ProfileEntity> GetByGuidAsync(string guid)
         {
             return await _dbContext.Profiles.FirstOrDefaultAsync(p => p.Guid == guid);
+        }
+
+        public void Save()
+        {
+            _dbContext.SaveChanges();
         }
 
         public async Task SaveAsync()

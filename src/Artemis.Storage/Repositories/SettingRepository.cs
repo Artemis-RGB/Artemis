@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Artemis.Storage.Repositories

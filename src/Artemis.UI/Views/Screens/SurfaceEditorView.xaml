@@ -5,74 +5,175 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:screens="clr-namespace:Artemis.UI.ViewModels.Screens"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:models="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance screens:SurfaceEditorViewModel}"
              d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="300" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock>The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.</TextBlock>
-        <Grid Name="EditorDisplayGrid"
-              Grid.Row="1"
-              Margin="0 5 0 0"
-              MouseUp="{s:Action EditorGridMouseClick}"
-              MouseDown="{s:Action EditorGridMouseClick}"
-              MouseMove="{s:Action EditorGridMouseMove}">
-            <Grid.Triggers>
-                <EventTrigger RoutedEvent="Grid.MouseDown">
-                    <BeginStoryboard>
-                        <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
-                            <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="Grid.MouseUp">
-                    <BeginStoryboard>
-                        <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
-                            <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Grid.Triggers>
-            <Grid.Background>
-                <ImageBrush TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,15,15" ImageSource="/Artemis.UI;component/Resources/tile.png" />
-            </Grid.Background>
-            <ItemsControl ItemsSource="{Binding Devices}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Device.Location.X}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Device.Location.Y}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl Width="{Binding Device.Size.Width}" Height="{Binding Device.Size.Height}" s:View.Model="{Binding }" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignDisplay1TextBlock}">Surface layout</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}">The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.</TextBlock>
 
-            <!-- Multi-selection rectangle -->
-            <Path Data="{Binding SelectionRectangle}" Opacity="0" Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" Name="MultiSelectionPath">
-                <Path.Fill>
-                    <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
-                </Path.Fill>
-            </Path>
-        </Grid>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,0,5,0">
+            <Grid Name="EditorDisplayGrid"
+                  Margin="5"
+                  MouseUp="{s:Action EditorGridMouseClick}"
+                  MouseDown="{s:Action EditorGridMouseClick}"
+                  MouseMove="{s:Action EditorGridMouseMove}">
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Grid.MouseDown">
+                        <BeginStoryboard>
+                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
+                                <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="Grid.MouseUp">
+                        <BeginStoryboard>
+                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
+                                <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+                <Grid.Background>
+                    <ImageBrush TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,15,15" ImageSource="/Artemis.UI;component/Resources/tile.png" />
+                </Grid.Background>
+                <ItemsControl ItemsSource="{Binding Devices}" ClipToBounds="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding Device.Location.X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Device.Location.Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl Width="{Binding Device.Size.Width}" Height="{Binding Device.Size.Height}" s:View.Model="{Binding }" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Multi-selection rectangle -->
+                <Path Data="{Binding SelectionRectangle}" Opacity="0" Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" Name="MultiSelectionPath">
+                    <Path.Fill>
+                        <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
+                    </Path.Fill>
+                </Path>
+            </Grid>
+        </materialDesign:Card>
+
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" Margin="5,0,0,0">
+            <materialDesign:DialogHost DialogClosing="{s:Action ConfirmationDialogClosing}">
+                <materialDesign:DialogHost.DialogContent>
+                    <StackPanel Margin="16">
+                        <TextBlock>
+                            Add a new surface layout.
+                        </TextBlock>
+                        <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                <Button.CommandParameter>
+                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        True
+                                    </system:Boolean>
+                                </Button.CommandParameter>
+                                ACCEPT
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                <Button.CommandParameter>
+                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                        False
+                                    </system:Boolean>
+                                </Button.CommandParameter>
+                                CANCEL
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:DialogHost.DialogContent>
+                <materialDesign:DialogHost DialogClosing="{s:Action ConfigurationDialogClosing}">
+                    <materialDesign:DialogHost.DialogContent>
+                        <StackPanel Margin="16">
+                            <TextBlock>
+                            Add a new surface layout.
+                            </TextBlock>
+                            <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                    <Button.CommandParameter>
+                                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                            True
+                                        </system:Boolean>
+                                    </Button.CommandParameter>
+                                    ACCEPT
+                                </Button>
+                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                                    <Button.CommandParameter>
+                                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                            False
+                                        </system:Boolean>
+                                    </Button.CommandParameter>
+                                    CANCEL
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </materialDesign:DialogHost.DialogContent>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}">
+                            <ListBox.Resources>
+                                <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                </DataTemplate>
+                            </ListBox.Resources>
+                        </ListBox>
+                        <materialDesign:PopupBox
+                        Grid.Row="0"
+                        Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                        PlacementMode="LeftAndAlignMiddles"
+                        UnfurlOrientation="Horizontal"
+                        ToolTip="Manage surface layouts"
+                        Margin="0 0 10 10"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom">
+                            <StackPanel
+                            Orientation="Horizontal">
+                                <Button ToolTip="Add a new surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                    <materialDesign:PackIcon Kind="Add" />
+                                </Button>
+                                <Button ToolTip="Remove selected surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                    <materialDesign:PackIcon Kind="Delete" />
+                                </Button>
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+                    </Grid>
+                </materialDesign:DialogHost>
+            </materialDesign:DialogHost>
+        </materialDesign:Card>
     </Grid>
 </UserControl>
