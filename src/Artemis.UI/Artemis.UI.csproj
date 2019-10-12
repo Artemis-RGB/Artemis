@@ -148,16 +148,19 @@
     <Compile Include="Adorners\BoundingBoxAdorner.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Ninject\UIModule.cs" />
     <Compile Include="Services\Interfaces\IArtemisUIService.cs" />
     <Compile Include="Stylet\ArtemisViewManager.cs" />
     <Compile Include="Stylet\NinjectBootstrapper.cs" />
+    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileDeviceViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileLedViewModel.cs" />
+    <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceLedViewModel.cs" />
+    <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceDeviceViewModel.cs" />
     <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
-    <Compile Include="ViewModels\Controls\RgbDevice\RgbDeviceViewModel.cs" />
-    <Compile Include="ViewModels\Controls\RgbDevice\RgbLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\Settings\RgbDeviceSettingsViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IHomeViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IScreenViewModel.cs" />
@@ -169,15 +172,23 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\Screens\SettingsViewModel.cs" />
+    <Page Include="Views\Controls\SurfaceEditor\SurfaceLedView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\SurfaceEditor\SurfaceDeviceView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Screens\HomeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\RgbDevice\RgbDeviceView.xaml">
+    <Page Include="Views\Controls\ProfileEditor\ProfileDeviceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\RgbDevice\RgbLedView.xaml">
+    <Page Include="Views\Controls\ProfileEditor\ProfileLedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -247,6 +258,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="logo-512.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Controls\RgbDevice\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

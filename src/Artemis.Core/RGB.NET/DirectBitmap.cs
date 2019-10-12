@@ -43,10 +43,14 @@ namespace Artemis.Core.RGB.NET
         public Color GetPixel(int x, int y)
         {
             var index = x + y * Width;
-            var col = Bits[index];
-            var result = Color.FromArgb(col);
+            if (index >= 0 && index - 1 <= Bits.Length)
+            {
+                var col = Bits[index];
+                var result = Color.FromArgb(col);
 
-            return result;
+                return result;
+            }
+            return Color.Black;
         }
     }
 }
