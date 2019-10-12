@@ -39,14 +39,14 @@
                   MouseDown="{s:Action EditorGridMouseClick}"
                   MouseMove="{s:Action EditorGridMouseMove}">
                 <Grid.Triggers>
-                    <EventTrigger RoutedEvent="Grid.MouseDown">
+                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonDown">
                         <BeginStoryboard>
                             <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
                                 <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Grid.MouseUp">
+                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonUp">
                         <BeginStoryboard>
                             <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
                                 <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
@@ -71,13 +71,48 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ContentControl Width="{Binding Device.Size.Width}" Height="{Binding Device.Size.Height}" s:View.Model="{Binding }" />
+                            <ContentControl Width="{Binding Device.Size.Width}" Height="{Binding Device.Size.Height}" s:View.Model="{Binding }">
+                                <ContentControl.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Bring to Front">
+                                            <MenuItem.Icon>
+                                                <materialDesign:PackIcon Kind="ArrangeBringToFront" />
+                                            </MenuItem.Icon>
+                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeBringToFront" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeBringForward" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuItem>
+                                        <MenuItem Header="Send to Back">
+                                            <MenuItem.Icon>
+                                                <materialDesign:PackIcon Kind="ArrangeSendToBack" />
+                                            </MenuItem.Icon>
+                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeSendToBack" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeSendBackward" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuItem>
+                                    </ContextMenu>
+                                </ContentControl.ContextMenu>
+                            </ContentControl>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <!-- Multi-selection rectangle -->
-                <Path Data="{Binding SelectionRectangle}" Opacity="0" Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" Name="MultiSelectionPath">
+                <Path Data="{Binding SelectionRectangle}" Opacity="0" Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" Name="MultiSelectionPath" IsHitTestVisible="False">
                     <Path.Fill>
                         <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
                     </Path.Fill>
@@ -117,7 +152,7 @@
                     <materialDesign:DialogHost.DialogContent>
                         <StackPanel Margin="16">
                             <TextBlock>
-                            Add a new surface layout.
+                                Add a new surface layout.
                             </TextBlock>
                             <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -153,16 +188,16 @@
                             </ListBox.Resources>
                         </ListBox>
                         <materialDesign:PopupBox
-                        Grid.Row="0"
-                        Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
-                        PlacementMode="LeftAndAlignMiddles"
-                        UnfurlOrientation="Horizontal"
-                        ToolTip="Manage surface layouts"
-                        Margin="0 0 10 10"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom">
+                            Grid.Row="0"
+                            Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                            PlacementMode="LeftAndAlignMiddles"
+                            UnfurlOrientation="Horizontal"
+                            ToolTip="Manage surface layouts"
+                            Margin="0 0 10 10"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom">
                             <StackPanel
-                            Orientation="Horizontal">
+                                Orientation="Horizontal">
                                 <Button ToolTip="Add a new surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                     <materialDesign:PackIcon Kind="Add" />
                                 </Button>

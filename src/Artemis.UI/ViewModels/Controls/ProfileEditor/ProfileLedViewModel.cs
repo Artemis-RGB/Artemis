@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.UI.Extensions;
-using PropertyChanged;
 using RGB.NET.Core;
 using Stylet;
 using Color = System.Windows.Media.Color;
 
-namespace Artemis.UI.ViewModels.Controls.RgbDevice
+namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 {
-    public class RgbLedViewModel : PropertyChangedBase
+    public class ProfileLedViewModel : PropertyChangedBase
     {
-        public RgbLedViewModel(Led led)
+        public ProfileLedViewModel(Led led)
         {
             Led = led;
             
