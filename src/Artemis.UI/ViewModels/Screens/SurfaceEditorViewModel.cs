@@ -79,7 +79,7 @@ namespace Artemis.UI.ViewModels.Screens
                     SelectedSurfaceConfiguration = AddSurfaceConfiguration("Default");
             });
         }
-        
+
         public SurfaceConfiguration AddSurfaceConfiguration(string name)
         {
             var config = new SurfaceConfiguration(name);
@@ -107,7 +107,7 @@ namespace Artemis.UI.ViewModels.Screens
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            Console.WriteLine("Bring forward");
+            surfaceDeviceViewModel.ZIndex++;
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -117,7 +117,7 @@ namespace Artemis.UI.ViewModels.Screens
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            Console.WriteLine("Send backward");
+            surfaceDeviceViewModel.ZIndex--;
         }
 
         #endregion

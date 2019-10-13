@@ -12,7 +12,8 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Cursor="{Binding Cursor}"
              MouseEnter="{s:Action MouseEnter}"
-             MouseLeave="{s:Action MouseLeave}">
+             MouseLeave="{s:Action MouseLeave}"
+             ToolTip="{Binding Device.DeviceInfo.DeviceName}">
     <UserControl.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>

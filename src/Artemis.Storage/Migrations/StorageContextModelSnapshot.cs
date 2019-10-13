@@ -93,9 +93,7 @@ namespace Artemis.Storage.Migrations
                     b.Property<string>("Guid")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("LayerGuid");
-
-                    b.Property<int>("LayerId");
+                    b.Property<string>("LayerId");
 
                     b.Property<string>("LedName");
 
@@ -103,7 +101,7 @@ namespace Artemis.Storage.Migrations
 
                     b.HasKey("Guid");
 
-                    b.HasIndex("LayerGuid");
+                    b.HasIndex("LayerId");
 
                     b.ToTable("Leds");
                 });
@@ -153,6 +151,50 @@ namespace Artemis.Storage.Migrations
                     b.ToTable("Settings");
                 });
 
+            modelBuilder.Entity("Artemis.Storage.Entities.SurfaceEntity", b =>
+                {
+                    b.Property<string>("Guid")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Guid");
+
+                    b.ToTable("Surfaces");
+                });
+
+            modelBuilder.Entity("Artemis.Storage.Entities.SurfacePositionEntity", b =>
+                {
+                    b.Property<string>("Guid")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("DeviceId");
+
+                    b.Property<string>("DeviceManufacturer");
+
+                    b.Property<string>("DeviceModel");
+
+                    b.Property<string>("DeviceName");
+
+                    b.Property<double>("Rotation");
+
+                    b.Property<string>("SurfaceId");
+
+                    b.Property<double>("X");
+
+                    b.Property<double>("Y");
+
+                    b.Property<int>("ZIndex");
+
+                    b.HasKey("Guid");
+
+                    b.HasIndex("SurfaceId");
+
+                    b.ToTable("SurfacePositionEntity");
+                });
+
             modelBuilder.Entity("Artemis.Storage.Entities.FolderEntity", b =>
                 {
                     b.HasOne("Artemis.Storage.Entities.FolderEntity")
@@ -185,7 +227,7 @@ namespace Artemis.Storage.Migrations
                 {
                     b.HasOne("Artemis.Storage.Entities.LayerEntity", "Layer")
                         .WithMany("Leds")
-                        .HasForeignKey("LayerGuid");
+                        .HasForeignKey("LayerId");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.ProfileEntity", b =>
@@ -193,6 +235,13 @@ namespace Artemis.Storage.Migrations
                     b.HasOne("Artemis.Storage.Entities.FolderEntity", "RootFolder")
                         .WithMany()
                         .HasForeignKey("RootFolderGuid");
+                });
+
+            modelBuilder.Entity("Artemis.Storage.Entities.SurfacePositionEntity", b =>
+                {
+                    b.HasOne("Artemis.Storage.Entities.SurfaceEntity", "Surface")
+                        .WithMany("SurfacePositions")
+                        .HasForeignKey("SurfaceId");
                 });
 #pragma warning restore 612, 618
         }
