@@ -15,6 +15,7 @@ namespace Artemis.Storage.Entities
         public double X { get; set; }
         public double Y { get; set; }
         public double Rotation { get; set; }
+        public int ZIndex { get; set; }
 
         public string SurfaceId { get; set; }
         public virtual SurfaceEntity Surface { get; set; }

@@ -26,6 +26,7 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
         public IRGBDevice Device { get; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
+        public int ZIndex { get; set; }
 
         public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
         public Rect DeviceRectangle => new Rect(Device.Location.X, Device.Location.Y, Device.Size.Width, Device.Size.Height);

@@ -57,7 +57,7 @@
                 <Grid.Background>
                     <ImageBrush TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,15,15" ImageSource="/Artemis.UI;component/Resources/tile.png" />
                 </Grid.Background>
-                <ItemsControl ItemsSource="{Binding Devices}" ClipToBounds="True">
+                <ItemsControl ItemsSource="{Binding Devices}" ClipToBounds="True" Panel.ZIndex="{Binding Device.ZIndex}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />
