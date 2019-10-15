@@ -142,6 +142,7 @@
   <ItemGroup>
     <Compile Include="Attributes\DataModelProperty.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Events\DeviceConfigurationEventArgs.cs" />
     <Compile Include="Events\DeviceEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />

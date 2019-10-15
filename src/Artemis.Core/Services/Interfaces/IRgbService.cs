@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Events;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 
@@ -9,6 +11,8 @@ namespace Artemis.Core.Services.Interfaces
     {
         RGBSurface Surface { get; set; }
         GraphicsDecorator GraphicsDecorator { get; }
+        IReadOnlyCollection<IRGBDevice> LoadedDevices { get; }
+
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);
         void Dispose();
 

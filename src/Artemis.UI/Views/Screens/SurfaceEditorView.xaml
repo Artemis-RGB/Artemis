@@ -148,66 +148,39 @@
                         </StackPanel>
                     </StackPanel>
                 </materialDesign:DialogHost.DialogContent>
-                <materialDesign:DialogHost DialogClosing="{s:Action ConfigurationDialogClosing}">
-                    <materialDesign:DialogHost.DialogContent>
-                        <StackPanel Margin="16">
-                            <TextBlock>
-                                Add a new surface layout.
-                            </TextBlock>
-                            <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
-                                    <Button.CommandParameter>
-                                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                            True
-                                        </system:Boolean>
-                                    </Button.CommandParameter>
-                                    ACCEPT
-                                </Button>
-                                <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
-                                    <Button.CommandParameter>
-                                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                            False
-                                        </system:Boolean>
-                                    </Button.CommandParameter>
-                                    CANCEL
-                                </Button>
-                            </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}">
+                        <ListBox.Resources>
+                            <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
+                                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.Resources>
+                    </ListBox>
+                    <materialDesign:PopupBox
+                        PopupMode="Click"
+                        Grid.Row="0"
+                        Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                        PlacementMode="LeftAndAlignMiddles"
+                        UnfurlOrientation="Horizontal"
+                        ToolTip="Manage surface layouts"
+                        Margin="0 0 10 10"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Button ToolTip="Add a new surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <materialDesign:PackIcon Kind="Add" />
+                            </Button>
+                            <Button ToolTip="Remove selected surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <materialDesign:PackIcon Kind="Delete" />
+                            </Button>
                         </StackPanel>
-                    </materialDesign:DialogHost.DialogContent>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}">
-                            <ListBox.Resources>
-                                <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
-                                </DataTemplate>
-                            </ListBox.Resources>
-                        </ListBox>
-                        <materialDesign:PopupBox
-                            Grid.Row="0"
-                            Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
-                            PlacementMode="LeftAndAlignMiddles"
-                            UnfurlOrientation="Horizontal"
-                            ToolTip="Manage surface layouts"
-                            Margin="0 0 10 10"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom">
-                            <StackPanel
-                                Orientation="Horizontal">
-                                <Button ToolTip="Add a new surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                    <materialDesign:PackIcon Kind="Add" />
-                                </Button>
-                                <Button ToolTip="Remove selected surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                    <materialDesign:PackIcon Kind="Delete" />
-                                </Button>
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-                    </Grid>
-                </materialDesign:DialogHost>
+                    </materialDesign:PopupBox>
+                </Grid>
             </materialDesign:DialogHost>
         </materialDesign:Card>
     </Grid>

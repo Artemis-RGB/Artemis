@@ -27,10 +27,11 @@ namespace Artemis.Core.Models.Surface
             X = position.X;
             Y = position.Y;
             Rotation = position.Rotation;
+            ZIndex = position.ZIndex;
 
             Surface = surfaceConfiguration;
         }
-
+        
         internal string Guid { get; set; }
 
         public int DeviceId { get; set; }
@@ -41,6 +42,7 @@ namespace Artemis.Core.Models.Surface
         public double X { get; set; }
         public double Y { get; set; }
         public double Rotation { get; set; }
+        public int ZIndex { get; set; }
 
         public SurfaceConfiguration Surface { get; internal set; }
     }

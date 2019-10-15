@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Surface
 {
     public class SurfaceConfiguration
     {
-        public SurfaceConfiguration(string name)
+        internal SurfaceConfiguration()
         {
-            Name = name;
-            DeviceConfigurations = new List<SurfaceDeviceConfiguration>();
         }
 
         internal SurfaceConfiguration(SurfaceEntity surfaceEntity)
@@ -26,7 +26,7 @@ namespace Artemis.Core.Models.Surface
 
         internal string Guid { get; set; }
         public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public List<SurfaceDeviceConfiguration> DeviceConfigurations { get; set; }
+        public bool IsActive { get; internal set; }
+        public List<SurfaceDeviceConfiguration> DeviceConfigurations { get; internal set; }
     }
 }
