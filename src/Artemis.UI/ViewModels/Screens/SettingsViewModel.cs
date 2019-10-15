@@ -11,7 +11,7 @@ namespace Artemis.UI.ViewModels.Screens
         public SettingsViewModel(IRgbService rgbService)
         {
             DeviceSettingsViewModels = new BindableCollection<RgbDeviceSettingsViewModel>();
-            foreach (var device in rgbService.Surface.Devices)
+            foreach (var device in rgbService.LoadedDevices)
                 DeviceSettingsViewModels.Add(new RgbDeviceSettingsViewModel(device));
 
             rgbService.DeviceLoaded += UpdateDevices;

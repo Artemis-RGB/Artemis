@@ -32,7 +32,7 @@ namespace Artemis.UI.ViewModels.Screens
             _surfaceService = surfaceService;
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
 
-            foreach (var surfaceDevice in _rgbService.Surface.Devices)
+            foreach (var surfaceDevice in _rgbService.LoadedDevices)
             {
                 var device = new SurfaceDeviceViewModel(surfaceDevice) {Cursor = Cursors.Hand};
                 Devices.Add(device);
@@ -62,15 +62,16 @@ namespace Artemis.UI.ViewModels.Screens
 
         private async Task LoadSurfaceConfigurations()
         {
-            Execute.OnUIThread(async () =>
+            await Execute.OnUIThreadAsync(async () =>
             {
                 SurfaceConfigurations.Clear();
 
                 // Get surface configs
-                var configs = await _surfaceService.GetSurfaceConfigurations();
+                var configs = await _surfaceService.GetSurfaceConfigurationsAsync();
                 // Populate the UI collection
                 foreach (var surfaceConfiguration in configs)
                     SurfaceConfigurations.Add(surfaceConfiguration);
+
                 // Select either the first active surface or the first available surface
                 SelectedSurfaceConfiguration = SurfaceConfigurations.FirstOrDefault(s => s.IsActive) ?? SurfaceConfigurations.FirstOrDefault();
 
@@ -82,12 +83,12 @@ namespace Artemis.UI.ViewModels.Screens
 
         public SurfaceConfiguration AddSurfaceConfiguration(string name)
         {
-            var config = new SurfaceConfiguration(name);
+            var config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
             return config;
         }
 
-        public void ConfigurationDialogClosing()
+        public void ConfirmationDialogClosing()
         {
             if (!string.IsNullOrWhiteSpace(NewConfigurationName))
             {
@@ -102,22 +103,56 @@ namespace Artemis.UI.ViewModels.Screens
 
         public void BringToFront(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            Console.WriteLine("Bring to front");
+            var original = surfaceDeviceViewModel.ZIndex;
+            surfaceDeviceViewModel.ZIndex = Devices.Count;
+            foreach (var deviceViewModel in Devices)
+            {
+                if (deviceViewModel.ZIndex >= original && deviceViewModel != surfaceDeviceViewModel)
+                    deviceViewModel.ZIndex--;
+            }
+
+            foreach (var deviceViewModel in Devices)
+                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            surfaceDeviceViewModel.ZIndex++;
+            var newIndex = Math.Max(Devices.Count, surfaceDeviceViewModel.ZIndex + 1);
+            var neighbor = Devices.FirstOrDefault(d => d.ZIndex == newIndex);
+            if (neighbor != null)
+                neighbor.ZIndex--;
+
+            surfaceDeviceViewModel.ZIndex = newIndex;
+
+            foreach (var deviceViewModel in Devices)
+                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            Console.WriteLine("Send to back");
+            var original = surfaceDeviceViewModel.ZIndex;
+            surfaceDeviceViewModel.ZIndex = 1;
+            foreach (var deviceViewModel in Devices)
+            {
+                if (deviceViewModel.ZIndex <= original && deviceViewModel != surfaceDeviceViewModel)
+                    deviceViewModel.ZIndex++;
+            }
+
+            foreach (var deviceViewModel in Devices)
+                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            surfaceDeviceViewModel.ZIndex--;
+            var newIndex = Math.Max(0, surfaceDeviceViewModel.ZIndex - 1);
+            var neighbor = Devices.FirstOrDefault(d => d.ZIndex == newIndex);
+            if (neighbor != null)
+                neighbor.ZIndex++;
+
+            surfaceDeviceViewModel.ZIndex = newIndex;
+
+            foreach (var deviceViewModel in Devices)
+                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         #endregion

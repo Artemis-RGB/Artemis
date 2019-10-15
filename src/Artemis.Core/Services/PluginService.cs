@@ -58,14 +58,15 @@ namespace Artemis.Core.Services
                 // Find the matching plugin in the plugin folder
                 var match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == subDirectory.Name);
                 if (match == null)
+                {
                     CopyBuiltInPlugin(subDirectory);
+                }
                 else
                 {
                     var metadataFile = Path.Combine(match.FullName, "plugin.json");
                     if (!File.Exists(metadataFile))
                         CopyBuiltInPlugin(subDirectory);
                     else
-                    {
                         try
                         {
                             // Compare versions, copy if the same when debugging
@@ -82,7 +83,6 @@ namespace Artemis.Core.Services
                         {
                             throw new ArtemisPluginException("Failed read plugin metadata needed to install built-in plugin", e);
                         }
-                    }
                 }
             }
         }
@@ -142,7 +142,8 @@ namespace Artemis.Core.Services
             lock (_plugins)
             {
                 // Unload all plugins
-                while (_plugins.Count > 0) UnloadPlugin(_plugins[0]);
+                while (_plugins.Count > 0)
+                    UnloadPlugin(_plugins[0]);
 
                 // Dispose the child kernel and therefore any leftover plugins instantiated with it
                 if (_childKernel != null)

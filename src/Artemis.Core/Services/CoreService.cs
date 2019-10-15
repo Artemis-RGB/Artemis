@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services.Storage;
 using RGB.NET.Core;
 using Serilog;
 using Color = System.Drawing.Color;
@@ -17,12 +19,14 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IRgbService _rgbService;
+        private readonly ISurfaceService _surfaceService;
 
-        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService)
+        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService)
         {
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
+            _surfaceService = surfaceService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
 
             Task.Run(Initialize);

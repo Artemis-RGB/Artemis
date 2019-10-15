@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract
