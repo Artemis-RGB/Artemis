@@ -36,6 +36,7 @@ namespace Artemis.UI.ViewModels.Screens
             {
                 var device = new SurfaceDeviceViewModel(surfaceDevice) {Cursor = Cursors.Hand};
                 Devices.Add(device);
+                device.ZIndex = Devices.IndexOf(device) + 1;
             }
         }
 
@@ -56,6 +57,7 @@ namespace Artemis.UI.ViewModels.Screens
                 {
                     var device = new SurfaceDeviceViewModel(e.Device) {Cursor = Cursors.Hand};
                     Devices.Add(device);
+                    device.ZIndex = Devices.IndexOf(device) + 1;
                 }
             });
         }
@@ -103,56 +105,47 @@ namespace Artemis.UI.ViewModels.Screens
 
         public void BringToFront(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var original = surfaceDeviceViewModel.ZIndex;
-            surfaceDeviceViewModel.ZIndex = Devices.Count;
-            foreach (var deviceViewModel in Devices)
+            Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), Devices.Count - 1);
+            for (var i = 0; i < Devices.Count; i++)
             {
-                if (deviceViewModel.ZIndex >= original && deviceViewModel != surfaceDeviceViewModel)
-                    deviceViewModel.ZIndex--;
+                var deviceViewModel = Devices[i];
+                deviceViewModel.ZIndex = i + 1;
             }
-
-            foreach (var deviceViewModel in Devices)
-                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var newIndex = Math.Max(Devices.Count, surfaceDeviceViewModel.ZIndex + 1);
-            var neighbor = Devices.FirstOrDefault(d => d.ZIndex == newIndex);
-            if (neighbor != null)
-                neighbor.ZIndex--;
+            var currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
+            var newIndex = Math.Min(currentIndex + 1, Devices.Count - 1);
+            Devices.Move(currentIndex, newIndex);
 
-            surfaceDeviceViewModel.ZIndex = newIndex;
-
-            foreach (var deviceViewModel in Devices)
-                Console.WriteLine(deviceViewModel.ZIndex);
+            for (var i = 0; i < Devices.Count; i++)
+            {
+                var deviceViewModel = Devices[i];
+                deviceViewModel.ZIndex = i + 1;
+            }
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var original = surfaceDeviceViewModel.ZIndex;
-            surfaceDeviceViewModel.ZIndex = 1;
-            foreach (var deviceViewModel in Devices)
+            Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), 0);
+            for (var i = 0; i < Devices.Count; i++)
             {
-                if (deviceViewModel.ZIndex <= original && deviceViewModel != surfaceDeviceViewModel)
-                    deviceViewModel.ZIndex++;
+                var deviceViewModel = Devices[i];
+                deviceViewModel.ZIndex = i + 1;
             }
-
-            foreach (var deviceViewModel in Devices)
-                Console.WriteLine(deviceViewModel.ZIndex);
         }
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var newIndex = Math.Max(0, surfaceDeviceViewModel.ZIndex - 1);
-            var neighbor = Devices.FirstOrDefault(d => d.ZIndex == newIndex);
-            if (neighbor != null)
-                neighbor.ZIndex++;
-
-            surfaceDeviceViewModel.ZIndex = newIndex;
-
-            foreach (var deviceViewModel in Devices)
-                Console.WriteLine(deviceViewModel.ZIndex);
+            var currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
+            var newIndex = Math.Max(currentIndex - 1, 0);
+            Devices.Move(currentIndex, newIndex);
+            for (var i = 0; i < Devices.Count; i++)
+            {
+                var deviceViewModel = Devices[i];
+                deviceViewModel.ZIndex = i + 1;
+            }
         }
 
         #endregion
