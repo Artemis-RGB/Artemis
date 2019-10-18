@@ -12,10 +12,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Controls.SurfaceEditor;
 using Artemis.UI.ViewModels.Interfaces;
-using MahApps.Metro.Controls;
-using RGB.NET.Core;
 using Stylet;
-using Point = System.Windows.Point;
 
 namespace Artemis.UI.ViewModels.Screens
 {
@@ -42,8 +39,6 @@ namespace Artemis.UI.ViewModels.Screens
             }
         }
 
-        public string Title => "Surface Editor";
-
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
 
@@ -59,8 +54,10 @@ namespace Artemis.UI.ViewModels.Screens
             set => Zoom = value / 100;
         }
 
-        public double PanX { get; set; } = 0;
-        public double PanY { get; set; } = 0;
+        public double PanX { get; set; }
+        public double PanY { get; set; }
+
+        public string Title => "Surface Editor";
 
         private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
         {
@@ -113,6 +110,16 @@ namespace Artemis.UI.ViewModels.Screens
 
             NewConfigurationName = null;
         }
+
+        #region Overrides of Screen
+
+        protected override void OnActivate()
+        {
+            Task.Run(LoadSurfaceConfigurations);
+            base.OnActivate();
+        }
+
+        #endregion
 
         #region Context menu actions
 
@@ -300,7 +307,7 @@ namespace Artemis.UI.ViewModels.Screens
         public void EditorGridMouseWheel(object sender, MouseWheelEventArgs e)
         {
             // Get the mouse position relative to the panned / zoomed grid, not very MVVM but I can't find a better way
-            var relative = e.GetPosition(((Grid)sender).Children[0]);
+            var relative = e.GetPosition(((Grid) sender).Children[0]);
             var absoluteX = relative.X * Zoom + PanX;
             var absoluteY = relative.Y * Zoom + PanY;
 
@@ -316,21 +323,17 @@ namespace Artemis.UI.ViewModels.Screens
             PanX = absoluteX - relative.X * Zoom;
             PanY = absoluteY - relative.Y * Zoom;
         }
-        
+
         public void EditorGridKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-            {
                 Mouse.OverrideCursor = Cursors.ScrollAll;
-            }
         }
 
         public void EditorGridKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
-            {
                 Mouse.OverrideCursor = null;
-            }
         }
 
         public void Pan(object sender, MouseEventArgs e)
@@ -341,7 +344,7 @@ namespace Artemis.UI.ViewModels.Screens
                 _lastPanPosition = null;
                 return;
             }
-            
+
             if (_lastPanPosition == null)
                 _lastPanPosition = e.GetPosition((IInputElement) sender);
 
@@ -355,7 +358,7 @@ namespace Artemis.UI.ViewModels.Screens
 
             _lastPanPosition = position;
         }
-        
+
         public void ResetZoomAndPan()
         {
             Zoom = 1;
@@ -366,16 +369,6 @@ namespace Artemis.UI.ViewModels.Screens
         private bool IsPanKeyDown()
         {
             return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-        }
-
-        #endregion
-
-        #region Overrides of Screen
-
-        protected override void OnActivate()
-        {
-            Task.Run(LoadSurfaceConfigurations);
-            base.OnActivate();
         }
 
         #endregion
