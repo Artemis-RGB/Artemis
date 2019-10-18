@@ -13,8 +13,10 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -32,12 +34,36 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignDisplay1TextBlock}">Surface layout</TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}">The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.</TextBlock>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,0,5,0">
-            <Grid Name="EditorDisplayGrid"
-                  Margin="5"
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0"
+                             VerticalAlignment="Stretch" Margin="0,0,5,0">
+            <Grid ClipToBounds="True"
+                  KeyUp="{s:Action EditorGridKeyUp}"
+                  KeyDown="{s:Action EditorGridKeyDown}"
+                  MouseWheel="{s:Action EditorGridMouseWheel}"
                   MouseUp="{s:Action EditorGridMouseClick}"
                   MouseDown="{s:Action EditorGridMouseClick}"
                   MouseMove="{s:Action EditorGridMouseMove}">
+                <Grid.Background>
+                    <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="20,20,20,20" ViewportUnits="Absolute">
+                        <VisualBrush.Visual>
+                            <Grid Width="20" Height="20">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="LightGray" />
+                                <Rectangle Grid.Row="0" Grid.Column="1" />
+                                <Rectangle Grid.Row="1" Grid.Column="0" />
+                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="LightGray" />
+                            </Grid>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Grid.Background>
+
                 <Grid.Triggers>
                     <EventTrigger RoutedEvent="Grid.MouseLeftButtonDown">
                         <BeginStoryboard>
@@ -54,73 +80,97 @@
                         </BeginStoryboard>
                     </EventTrigger>
                 </Grid.Triggers>
-                <Grid.Background>
-                    <ImageBrush TileMode="Tile" ViewportUnits="Absolute" Viewport="0,0,15,15" ImageSource="/Artemis.UI;component/Resources/tile.png" />
-                </Grid.Background>
-                <ItemsControl ItemsSource="{Binding Devices}" ClipToBounds="True">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="Canvas.Left" Value="{Binding Device.Location.X}" />
-                            <Setter Property="Canvas.Top" Value="{Binding Device.Location.Y}" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ContentControl Width="{Binding Device.Size.Width}" Height="{Binding Device.Size.Height}" s:View.Model="{Binding }" >
-                                <ContentControl.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Bring to Front">
-                                            <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="ArrangeBringToFront" />
-                                            </MenuItem.Icon>
-                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
+
+                <Grid Name="EditorDisplayGrid">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                            <TranslateTransform X="{Binding PanX}" Y="{Binding PanY}" />
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+                    <ItemsControl ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Device.Location.X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Device.Location.Y}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Width="{Binding Device.Size.Width}"
+                                                Height="{Binding Device.Size.Height}" s:View.Model="{Binding }">
+                                    <ContentControl.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}"
+                                                      CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringToFront" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}"
+                                                      CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringForward" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                        </MenuItem>
-                                        <MenuItem Header="Send to Back">
-                                            <MenuItem.Icon>
-                                                <materialDesign:PackIcon Kind="ArrangeSendToBack" />
-                                            </MenuItem.Icon>
-                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}"
+                                                      CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendToBack" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}"
+                                                      CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendBackward" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                        </MenuItem>
-                                    </ContextMenu>
-                                </ContentControl.ContextMenu>
-                            </ContentControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                        </ContextMenu>
+                                    </ContentControl.ContextMenu>
+                                </ContentControl>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
 
                 <!-- Multi-selection rectangle -->
-                <Path Data="{Binding SelectionRectangle}" Opacity="0" Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" Name="MultiSelectionPath" IsHitTestVisible="False">
+                <Path Data="{Binding SelectionRectangle}" Opacity="0"
+                      Stroke="{DynamicResource PrimaryHueLightBrush}"
+                      StrokeThickness="1" 
+                      Name="MultiSelectionPath"
+                      IsHitTestVisible="False">
                     <Path.Fill>
                         <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
                     </Path.Fill>
                 </Path>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                            Margin="0, 0, 15, 15">
+                    <Slider Margin="0,0,14,0"
+                            Orientation="Vertical"
+                            Minimum="10"
+                            Maximum="400"
+                            Height="100"
+                            FocusVisualStyle="{x:Null}"
+                            Value="{Binding ZoomPercentage}"
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                    <Button Command="{s:Action ResetZoomAndPan}"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                            HorizontalAlignment="Right"
+                            ToolTip="Reset zoom &amp; position">
+                        <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
+                    </Button>
+                </StackPanel>
             </Grid>
         </materialDesign:Card>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" Margin="5,0,0,0">
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
+                             VerticalAlignment="Stretch" Margin="5,0,0,0">
             <materialDesign:DialogHost DialogClosing="{s:Action ConfirmationDialogClosing}">
                 <materialDesign:DialogHost.DialogContent>
                     <StackPanel Margin="16">
@@ -129,7 +179,8 @@
                         </TextBlock>
                         <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0"
+                                    Command="materialDesign:DialogHost.CloseDialogCommand">
                                 <Button.CommandParameter>
                                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                         True
@@ -137,7 +188,8 @@
                                 </Button.CommandParameter>
                                 ACCEPT
                             </Button>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="materialDesign:DialogHost.CloseDialogCommand">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
+                                    Command="materialDesign:DialogHost.CloseDialogCommand">
                                 <Button.CommandParameter>
                                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                         False
@@ -172,10 +224,12 @@
                         VerticalAlignment="Bottom">
                         <StackPanel
                             Orientation="Horizontal">
-                            <Button ToolTip="Add a new surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                            <Button ToolTip="Add a new surface layout"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                 <materialDesign:PackIcon Kind="Add" />
                             </Button>
-                            <Button ToolTip="Remove selected surface layout" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                            <Button ToolTip="Remove selected surface layout"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                 <materialDesign:PackIcon Kind="Delete" />
                             </Button>
                         </StackPanel>

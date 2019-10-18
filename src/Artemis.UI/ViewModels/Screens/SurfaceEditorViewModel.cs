@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
@@ -11,6 +12,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Controls.SurfaceEditor;
 using Artemis.UI.ViewModels.Interfaces;
+using MahApps.Metro.Controls;
 using RGB.NET.Core;
 using Stylet;
 using Point = System.Windows.Point;
@@ -40,6 +42,8 @@ namespace Artemis.UI.ViewModels.Screens
             }
         }
 
+        public string Title => "Surface Editor";
+
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
 
@@ -47,7 +51,16 @@ namespace Artemis.UI.ViewModels.Screens
         public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
         public string NewConfigurationName { get; set; }
 
-        public string Title => "Surface Editor";
+        public double Zoom { get; set; } = 1;
+
+        public double ZoomPercentage
+        {
+            get => Zoom * 100;
+            set => Zoom = value / 100;
+        }
+
+        public double PanX { get; set; } = 0;
+        public double PanY { get; set; } = 0;
 
         private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
         {
@@ -150,23 +163,57 @@ namespace Artemis.UI.ViewModels.Screens
 
         #endregion
 
-        #region Mouse actions
+        #region Device selection
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
 
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void EditorGridMouseClick(object sender, MouseEventArgs e)
+        {
+            if (IsPanKeyDown())
+                return;
+
+            var position = e.GetPosition((IInputElement) sender);
+            if (e.LeftButton == MouseButtonState.Pressed)
+                StartMouseDrag(position);
+            else
+                StopMouseDrag(position);
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void EditorGridMouseMove(object sender, MouseEventArgs e)
+        {
+            // If holding down Ctrl, pan instead of move/select
+            if (IsPanKeyDown())
+            {
+                Pan(sender, e);
+                return;
+            }
+
+            var position = e.GetPosition((IInputElement) sender);
+            if (_mouseDragStatus == MouseDragStatus.Dragging)
+                MoveSelected(position);
+            else if (_mouseDragStatus == MouseDragStatus.Selecting)
+                UpdateSelection(position);
+        }
+
         private void StartMouseDrag(Point position)
         {
             // If drag started on top of a device, initialise dragging
-            var device = Devices.LastOrDefault(d => d.DeviceRectangle.Contains(position));
+            var device = Devices.LastOrDefault(d => TransformDeviceRect(d.DeviceRectangle).Contains(position));
             if (device != null)
             {
                 _mouseDragStatus = MouseDragStatus.Dragging;
-                // If the device is not selected, deselect others and select only this one
+                // If the device is not selected, deselect others and select only this one (if shift not held)
                 if (device.SelectionStatus != SelectionStatus.Selected)
                 {
-                    foreach (var others in Devices)
-                        others.SelectionStatus = SelectionStatus.None;
+                    if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                    {
+                        foreach (var others in Devices)
+                            others.SelectionStatus = SelectionStatus.None;
+                    }
+
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
 
@@ -196,9 +243,9 @@ namespace Artemis.UI.ViewModels.Screens
                 var selectedRect = new Rect(_mouseDragStartPoint, position);
                 foreach (var device in Devices)
                 {
-                    if (device.DeviceRectangle.IntersectsWith(selectedRect))
+                    if (TransformDeviceRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                         device.SelectionStatus = SelectionStatus.Selected;
-                    else
+                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
                 }
             }
@@ -209,6 +256,9 @@ namespace Artemis.UI.ViewModels.Screens
 
         private void UpdateSelection(Point position)
         {
+            if (IsPanKeyDown())
+                return;
+
             lock (Devices)
             {
                 var selectedRect = new Rect(_mouseDragStartPoint, position);
@@ -216,9 +266,9 @@ namespace Artemis.UI.ViewModels.Screens
 
                 foreach (var device in Devices)
                 {
-                    if (device.DeviceRectangle.IntersectsWith(selectedRect))
+                    if (TransformDeviceRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                         device.SelectionStatus = SelectionStatus.Selected;
-                    else
+                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
                 }
             }
@@ -230,24 +280,92 @@ namespace Artemis.UI.ViewModels.Screens
                 device.UpdateMouseDrag(position);
         }
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseClick(object sender, MouseEventArgs e)
+        private Rect TransformDeviceRect(Rect deviceRect)
         {
-            var position = e.GetPosition((IInputElement) sender);
-            if (e.LeftButton == MouseButtonState.Pressed)
-                StartMouseDrag(position);
-            else
-                StopMouseDrag(position);
+            // Create the same transform group the view is using
+            var transformGroup = new TransformGroup();
+            transformGroup.Children.Add(new ScaleTransform(Zoom, Zoom));
+            transformGroup.Children.Add(new TranslateTransform(PanX, PanY));
+
+            // Apply it to the device rect
+            return transformGroup.TransformBounds(deviceRect);
         }
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseMove(object sender, MouseEventArgs e)
+        #endregion
+
+        #region Panning and zooming
+
+        private Point? _lastPanPosition;
+
+        public void EditorGridMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            // Get the mouse position relative to the panned / zoomed grid, not very MVVM but I can't find a better way
+            var relative = e.GetPosition(((Grid)sender).Children[0]);
+            var absoluteX = relative.X * Zoom + PanX;
+            var absoluteY = relative.Y * Zoom + PanY;
+
+            if (e.Delta > 0)
+                Zoom *= 1.1;
+            else
+                Zoom *= 0.9;
+
+            // Limit to a min of 0.1 and a max of 4 (10% - 400% in the view)
+            Zoom = Math.Max(0.1, Math.Min(4, Zoom));
+
+            // Update the PanX/Y to enable zooming relative to cursor
+            PanX = absoluteX - relative.X * Zoom;
+            PanY = absoluteY - relative.Y * Zoom;
+        }
+        
+        public void EditorGridKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            {
+                Mouse.OverrideCursor = Cursors.ScrollAll;
+            }
+        }
+
+        public void EditorGridKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        public void Pan(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Released)
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
+                _lastPanPosition = null;
+                return;
+            }
+            
+            if (_lastPanPosition == null)
+                _lastPanPosition = e.GetPosition((IInputElement) sender);
+
+            // Empty the selection rect since it's shown while mouse is down
+            SelectionRectangle.Rect = Rect.Empty;
+
             var position = e.GetPosition((IInputElement) sender);
-            if (_mouseDragStatus == MouseDragStatus.Dragging)
-                MoveSelected(position);
-            else if (_mouseDragStatus == MouseDragStatus.Selecting)
-                UpdateSelection(position);
+            var delta = _lastPanPosition - position;
+            PanX -= delta.Value.X;
+            PanY -= delta.Value.Y;
+
+            _lastPanPosition = position;
+        }
+        
+        public void ResetZoomAndPan()
+        {
+            Zoom = 1;
+            PanX = 0;
+            PanY = 0;
+        }
+
+        private bool IsPanKeyDown()
+        {
+            return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
         }
 
         #endregion
