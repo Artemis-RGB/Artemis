@@ -199,8 +199,9 @@ namespace Artemis.UI.ViewModels.Screens
             }
 
             var position = e.GetPosition((IInputElement) sender);
+            var relative = e.GetPosition(((Grid)sender).Children[0]);
             if (_mouseDragStatus == MouseDragStatus.Dragging)
-                MoveSelected(position);
+                MoveSelected(relative);
             else if (_mouseDragStatus == MouseDragStatus.Selecting)
                 UpdateSelection(position);
         }
