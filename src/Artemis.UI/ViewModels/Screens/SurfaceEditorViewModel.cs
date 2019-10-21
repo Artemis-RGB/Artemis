@@ -228,18 +228,19 @@ namespace Artemis.UI.ViewModels.Screens
                 _mouseDragStartPoint = position;
             }
 
-            // While dragging always show an arrow to avoid cursor flicker
-            Mouse.OverrideCursor = Cursors.Arrow;
+            // While dragging always show a hand to avoid cursor flicker
+            if (_mouseDragStatus == MouseDragStatus.Dragging)
+                Mouse.OverrideCursor = Cursors.Hand;
+            else
+                Mouse.OverrideCursor = Cursors.Arrow;
+
             // Any time dragging starts, start with a new rect
             SelectionRectangle.Rect = new Rect();
         }
 
         private void StopMouseDrag(Point position)
         {
-            if (_mouseDragStatus == MouseDragStatus.Dragging)
-            {
-            }
-            else
+            if (_mouseDragStatus != MouseDragStatus.Dragging)
             {
                 var selectedRect = new Rect(_mouseDragStartPoint, position);
                 foreach (var device in Devices)

@@ -29,10 +29,13 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignDisplay1TextBlock}">Surface layout</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}">The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,0,0,5">
+            The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.
+        </TextBlock>
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0"
                              VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -168,7 +171,7 @@
                 </StackPanel>
             </Grid>
         </materialDesign:Card>
-
+        
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
                              VerticalAlignment="Stretch" Margin="5,0,0,0">
             <materialDesign:DialogHost DialogClosing="{s:Action ConfirmationDialogClosing}">
@@ -237,5 +240,13 @@
                 </Grid>
             </materialDesign:DialogHost>
         </materialDesign:Card>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
+            <Run Text="Hold"/>
+            <Run FontWeight="Bold" Text="shift"/>
+            <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down"/>
+            <Run FontWeight="Bold" Text="ctrl"/>
+            <Run Text="and drag."/>
+        </TextBlock>
     </Grid>
 </UserControl>

@@ -25,7 +25,7 @@ namespace Artemis.UI.ViewModels
         public double PanX { get; set; }
         public double PanY { get; set; }
 
-        public Rect BackgroundViewport => new Rect(PanX, PanY, 20 * Zoom, 20 * Zoom);
+        public Rect BackgroundViewport => new Rect(PanX, PanY, 20, 20);
 
         public void ProcessMouseScroll(object sender, MouseWheelEventArgs e)
         {
