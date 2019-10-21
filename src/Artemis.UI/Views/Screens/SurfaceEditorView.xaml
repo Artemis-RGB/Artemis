@@ -44,7 +44,7 @@
                   MouseDown="{s:Action EditorGridMouseClick}"
                   MouseMove="{s:Action EditorGridMouseMove}">
                 <Grid.Background>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="20,20,20,20" ViewportUnits="Absolute">
+                    <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                         <VisualBrush.Visual>
                             <Grid Width="20" Height="20">
                                 <Grid.RowDefinitions>
@@ -84,8 +84,8 @@
                 <Grid Name="EditorDisplayGrid">
                     <Grid.RenderTransform>
                         <TransformGroup>
-                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
-                            <TranslateTransform X="{Binding PanX}" Y="{Binding PanY}" />
+                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                            <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                         </TransformGroup>
                     </Grid.RenderTransform>
                     <ItemsControl ItemsSource="{Binding Devices}">
@@ -157,7 +157,7 @@
                             Maximum="400"
                             Height="100"
                             FocusVisualStyle="{x:Null}"
-                            Value="{Binding ZoomPercentage}"
+                            Value="{Binding PanZoomViewModel.ZoomPercentage}"
                             Style="{StaticResource MaterialDesignDiscreteSlider}" />
                     <Button Command="{s:Action ResetZoomAndPan}"
                         Style="{StaticResource MaterialDesignFloatingActionMiniButton}"

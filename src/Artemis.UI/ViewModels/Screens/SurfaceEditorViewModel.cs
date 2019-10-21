@@ -26,7 +26,8 @@ namespace Artemis.UI.ViewModels.Screens
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<SurfaceConfiguration>();
             SelectionRectangle = new RectangleGeometry();
-
+            PanZoomViewModel = new PanZoomViewModel();
+            
             _rgbService = rgbService;
             _surfaceService = surfaceService;
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
@@ -38,7 +39,7 @@ namespace Artemis.UI.ViewModels.Screens
                 device.ZIndex = Devices.IndexOf(device) + 1;
             }
         }
-
+        
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
 
@@ -46,17 +47,8 @@ namespace Artemis.UI.ViewModels.Screens
         public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
         public string NewConfigurationName { get; set; }
 
-        public double Zoom { get; set; } = 1;
-
-        public double ZoomPercentage
-        {
-            get => Zoom * 100;
-            set => Zoom = value / 100;
-        }
-
-        public double PanX { get; set; }
-        public double PanY { get; set; }
-
+        public PanZoomViewModel PanZoomViewModel { get; set; }
+        
         public string Title => "Surface Editor";
 
         private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
@@ -182,8 +174,9 @@ namespace Artemis.UI.ViewModels.Screens
                 return;
 
             var position = e.GetPosition((IInputElement) sender);
+            var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (e.LeftButton == MouseButtonState.Pressed)
-                StartMouseDrag(position);
+                StartMouseDrag(position, relative);
             else
                 StopMouseDrag(position);
         }
@@ -199,17 +192,17 @@ namespace Artemis.UI.ViewModels.Screens
             }
 
             var position = e.GetPosition((IInputElement) sender);
-            var relative = e.GetPosition(((Grid)sender).Children[0]);
+            var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (_mouseDragStatus == MouseDragStatus.Dragging)
                 MoveSelected(relative);
             else if (_mouseDragStatus == MouseDragStatus.Selecting)
                 UpdateSelection(position);
         }
 
-        private void StartMouseDrag(Point position)
+        private void StartMouseDrag(Point position, Point relative)
         {
             // If drag started on top of a device, initialise dragging
-            var device = Devices.LastOrDefault(d => TransformDeviceRect(d.DeviceRectangle).Contains(position));
+            var device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
             if (device != null)
             {
                 _mouseDragStatus = MouseDragStatus.Dragging;
@@ -226,7 +219,7 @@ namespace Artemis.UI.ViewModels.Screens
                 }
 
                 foreach (var selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
-                    selectedDevice.StartMouseDrag(position);
+                    selectedDevice.StartMouseDrag(relative);
             }
             // Start multi-selection
             else
@@ -251,7 +244,7 @@ namespace Artemis.UI.ViewModels.Screens
                 var selectedRect = new Rect(_mouseDragStartPoint, position);
                 foreach (var device in Devices)
                 {
-                    if (TransformDeviceRect(device.DeviceRectangle).IntersectsWith(selectedRect))
+                    if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
@@ -274,7 +267,7 @@ namespace Artemis.UI.ViewModels.Screens
 
                 foreach (var device in Devices)
                 {
-                    if (TransformDeviceRect(device.DeviceRectangle).IntersectsWith(selectedRect))
+                    if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
@@ -287,84 +280,39 @@ namespace Artemis.UI.ViewModels.Screens
             foreach (var device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                 device.UpdateMouseDrag(position);
         }
-
-        private Rect TransformDeviceRect(Rect deviceRect)
-        {
-            // Create the same transform group the view is using
-            var transformGroup = new TransformGroup();
-            transformGroup.Children.Add(new ScaleTransform(Zoom, Zoom));
-            transformGroup.Children.Add(new TranslateTransform(PanX, PanY));
-
-            // Apply it to the device rect
-            return transformGroup.TransformBounds(deviceRect);
-        }
-
+        
         #endregion
 
         #region Panning and zooming
 
-        private Point? _lastPanPosition;
-
         public void EditorGridMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            // Get the mouse position relative to the panned / zoomed grid, not very MVVM but I can't find a better way
-            var relative = e.GetPosition(((Grid) sender).Children[0]);
-            var absoluteX = relative.X * Zoom + PanX;
-            var absoluteY = relative.Y * Zoom + PanY;
-
-            if (e.Delta > 0)
-                Zoom *= 1.1;
-            else
-                Zoom *= 0.9;
-
-            // Limit to a min of 0.1 and a max of 4 (10% - 400% in the view)
-            Zoom = Math.Max(0.1, Math.Min(4, Zoom));
-
-            // Update the PanX/Y to enable zooming relative to cursor
-            PanX = absoluteX - relative.X * Zoom;
-            PanY = absoluteY - relative.Y * Zoom;
+            PanZoomViewModel.ProcessMouseScroll(sender, e);
         }
 
         public void EditorGridKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsDown)
                 Mouse.OverrideCursor = Cursors.ScrollAll;
         }
 
         public void EditorGridKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl)
+            if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsUp)
                 Mouse.OverrideCursor = null;
         }
 
         public void Pan(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Released)
-            {
-                Mouse.OverrideCursor = Cursors.Arrow;
-                _lastPanPosition = null;
-                return;
-            }
-
-            if (_lastPanPosition == null)
-                _lastPanPosition = e.GetPosition((IInputElement) sender);
+            PanZoomViewModel.ProcessMouseMove(sender, e);
 
             // Empty the selection rect since it's shown while mouse is down
             SelectionRectangle.Rect = Rect.Empty;
-
-            var position = e.GetPosition((IInputElement) sender);
-            var delta = _lastPanPosition - position;
-            PanX -= delta.Value.X;
-            PanY -= delta.Value.Y;
-
-            _lastPanPosition = position;
         }
 
         public void ResetZoomAndPan()
         {
-            Zoom = 1;
-            PanX = 0;
-            PanY = 0;
+            PanZoomViewModel.Reset();
         }
 
         private bool IsPanKeyDown()

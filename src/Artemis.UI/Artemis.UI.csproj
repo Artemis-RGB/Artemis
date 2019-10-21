@@ -159,6 +159,7 @@
     <Compile Include="ViewModels\Controls\ProfileEditor\ProfileLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceDeviceViewModel.cs" />
+    <Compile Include="ViewModels\PanZoomViewModel.cs" />
     <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
     <Compile Include="ViewModels\Controls\Settings\RgbDeviceSettingsViewModel.cs" />
