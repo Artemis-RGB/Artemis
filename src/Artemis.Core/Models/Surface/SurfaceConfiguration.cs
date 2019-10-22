@@ -7,7 +7,7 @@ namespace Artemis.Core.Models.Surface
     {
         internal SurfaceConfiguration(string name)
         {
-            SurfaceEntity = new SurfaceEntity();
+            SurfaceEntity = new SurfaceEntity {SurfacePositions = new List<SurfacePositionEntity>()};
             Guid = System.Guid.NewGuid().ToString();
 
             Name = name;
