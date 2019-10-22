@@ -22,6 +22,11 @@ namespace Artemis.Storage.Repositories
             _dbContext.Surfaces.Add(surfaceEntity);
         }
 
+        public void Remove(SurfaceEntity surfaceEntity)
+        {
+            _dbContext.Surfaces.Remove(surfaceEntity);
+        }
+
         public SurfaceEntity Get(string name)
         {
             return _dbContext.Surfaces.Include(s => s.SurfacePositions).FirstOrDefault(p => p.Name == name);

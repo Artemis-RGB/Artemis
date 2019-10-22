@@ -1,19 +1,27 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Artemis.Storage.Entities;
-using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Surface
 {
     public class SurfaceConfiguration
     {
-        internal SurfaceConfiguration()
+        internal SurfaceConfiguration(string name)
         {
+            SurfaceEntity = new SurfaceEntity();
+            Guid = System.Guid.NewGuid().ToString();
+
+            Name = name;
+            IsActive = false;
+            DeviceConfigurations = new List<SurfaceDeviceConfiguration>();
+
+            ApplyToEntity();
         }
 
         internal SurfaceConfiguration(SurfaceEntity surfaceEntity)
         {
+            SurfaceEntity = surfaceEntity;
             Guid = surfaceEntity.Guid;
+
             Name = surfaceEntity.Name;
             IsActive = surfaceEntity.IsActive;
             DeviceConfigurations = new List<SurfaceDeviceConfiguration>();
@@ -24,9 +32,27 @@ namespace Artemis.Core.Models.Surface
                 DeviceConfigurations.Add(new SurfaceDeviceConfiguration(position, this));
         }
 
+        internal SurfaceEntity SurfaceEntity { get; set; }
         internal string Guid { get; set; }
+
         public string Name { get; set; }
         public bool IsActive { get; internal set; }
         public List<SurfaceDeviceConfiguration> DeviceConfigurations { get; internal set; }
+
+        internal void ApplyToEntity()
+        {
+            SurfaceEntity.Guid = Guid;
+            SurfaceEntity.Name = Name;
+            SurfaceEntity.IsActive = IsActive;
+        }
+
+        internal void Destroy()
+        {
+            SurfaceEntity = null;
+
+            foreach (var deviceConfiguration in DeviceConfigurations)
+                deviceConfiguration.Destroy();
+            DeviceConfigurations.Clear();
+        }
     }
 }
