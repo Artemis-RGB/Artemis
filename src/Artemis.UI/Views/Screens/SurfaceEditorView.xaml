@@ -33,7 +33,8 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignDisplay1TextBlock}">Surface layout</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,0,0,5">
+        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                   Margin="0,0,0,5">
             The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.
         </TextBlock>
 
@@ -47,7 +48,8 @@
                   MouseDown="{s:Action EditorGridMouseClick}"
                   MouseMove="{s:Action EditorGridMouseMove}">
                 <Grid.Background>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
+                    <VisualBrush TileMode="Tile" Stretch="Uniform"
+                                 Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                         <VisualBrush.Visual>
                             <Grid Width="20" Height="20">
                                 <Grid.RowDefinitions>
@@ -87,7 +89,8 @@
                 <Grid Name="EditorDisplayGrid">
                     <Grid.RenderTransform>
                         <TransformGroup>
-                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}"
+                                            ScaleY="{Binding PanZoomViewModel.Zoom}" />
                             <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                         </TransformGroup>
                     </Grid.RenderTransform>
@@ -99,14 +102,15 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
                             <Style TargetType="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding Device.Location.X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Device.Location.Y}" />
+                                <Setter Property="Canvas.Left" Value="{Binding X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
                             </Style>
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl Width="{Binding Device.Size.Width}"
-                                                Height="{Binding Device.Size.Height}" s:View.Model="{Binding }">
+                                <ContentControl Width="{Binding DeviceConfiguration.Device.Size.Width}"
+                                                Height="{Binding DeviceConfiguration.Device.Size.Height}"
+                                                s:View.Model="{Binding}">
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}"
@@ -144,7 +148,7 @@
                 <!-- Multi-selection rectangle -->
                 <Path Data="{Binding SelectionRectangle}" Opacity="0"
                       Stroke="{DynamicResource PrimaryHueLightBrush}"
-                      StrokeThickness="1" 
+                      StrokeThickness="1"
                       Name="MultiSelectionPath"
                       IsHitTestVisible="False">
                     <Path.Fill>
@@ -163,7 +167,7 @@
                             Value="{Binding PanZoomViewModel.ZoomPercentage}"
                             Style="{StaticResource MaterialDesignDiscreteSlider}" />
                     <Button Command="{s:Action ResetZoomAndPan}"
-                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                             HorizontalAlignment="Right"
                             ToolTip="Reset zoom &amp; position">
                         <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
@@ -171,7 +175,7 @@
                 </StackPanel>
             </Grid>
         </materialDesign:Card>
-        
+
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
                              VerticalAlignment="Stretch" Margin="5,0,0,0">
             <materialDesign:DialogHost DialogClosing="{s:Action ConfirmationDialogClosing}">
@@ -208,7 +212,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}">
+                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurfaceConfiguration}">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
                                 <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
@@ -241,12 +245,13 @@
             </materialDesign:DialogHost>
         </materialDesign:Card>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
-            <Run Text="Hold"/>
-            <Run FontWeight="Bold" Text="shift"/>
-            <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down"/>
-            <Run FontWeight="Bold" Text="ctrl"/>
-            <Run Text="and drag."/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                   Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
+            <Run Text="Hold" />
+            <Run FontWeight="Bold" Text="shift" />
+            <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down" />
+            <Run FontWeight="Bold" Text="ctrl" />
+            <Run Text="and drag." />
         </TextBlock>
     </Grid>
 </UserControl>

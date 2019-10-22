@@ -41,18 +41,39 @@ namespace Artemis.Core.Services.Storage
                     return;
 
                 _activeSurfaceConfiguration = value;
+                lock (_surfaceConfigurations)
+                {
+                    // Mark only the new value as active
+                    foreach (var surfaceConfiguration in _surfaceConfigurations)
+                        surfaceConfiguration.IsActive = false;
+                    _activeSurfaceConfiguration.IsActive = true;
 
-                // Mark only the new value as active
-                foreach (var surfaceConfiguration in _surfaceConfigurations)
-                    surfaceConfiguration.IsActive = false;
-                _activeSurfaceConfiguration.IsActive = true;
+                    SaveToRepository(_surfaceConfigurations, true);
+                }
 
-                SaveToRepository(_surfaceConfigurations, true);
+                // Apply the active surface configuration to the devices
+                if (ActiveSurfaceConfiguration != null)
+                {
+                    foreach (var deviceConfiguration in ActiveSurfaceConfiguration.DeviceConfigurations)
+                        deviceConfiguration.ApplyToDevice();
+                }
+                // Update the RGB service's graphics decorator to work with the new surface configuration
+                _rgbService.GraphicsDecorator.UpdateBitmap();
+
                 OnActiveSurfaceConfigurationChanged(new SurfaceConfigurationEventArgs(_activeSurfaceConfiguration));
             }
         }
 
-        public ReadOnlyCollection<SurfaceConfiguration> SurfaceConfigurations => _surfaceConfigurations.AsReadOnly();
+        public ReadOnlyCollection<SurfaceConfiguration> SurfaceConfigurations
+        {
+            get
+            {
+                lock (_surfaceConfigurations)
+                {
+                    return _surfaceConfigurations.AsReadOnly();
+                }
+            }
+        }
 
         public SurfaceConfiguration CreateSurfaceConfiguration(string name)
         {
@@ -66,9 +87,12 @@ namespace Artemis.Core.Services.Storage
                 configuration.DeviceConfigurations.Add(new SurfaceDeviceConfiguration(rgbDevice, deviceId, configuration));
             }
 
-            _surfaceRepository.Add(configuration.SurfaceEntity);
-            SaveToRepository(configuration, true);
-            return configuration;
+            lock (_surfaceConfigurations)
+            {
+                _surfaceRepository.Add(configuration.SurfaceEntity);
+                SaveToRepository(configuration, true);
+                return configuration;
+            }
         }
 
         public void DeleteSurfaceConfiguration(SurfaceConfiguration surfaceConfiguration)
@@ -76,20 +100,28 @@ namespace Artemis.Core.Services.Storage
             if (surfaceConfiguration == ActiveSurfaceConfiguration)
                 throw new ArtemisCoreException($"Cannot delete surface configuration '{surfaceConfiguration.Name}' because it is active.");
 
-            surfaceConfiguration.Destroy();
-            _surfaceConfigurations.Remove(surfaceConfiguration);
+            lock (_surfaceConfigurations)
+            {
+                surfaceConfiguration.Destroy();
+                _surfaceConfigurations.Remove(surfaceConfiguration);
 
-            _surfaceRepository.Remove(surfaceConfiguration.SurfaceEntity);
-            _surfaceRepository.Save();
+                _surfaceRepository.Remove(surfaceConfiguration.SurfaceEntity);
+                _surfaceRepository.Save();
+            }
         }
 
         #region Event handlers
 
         private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
         {
-            // Match the newly loaded device with the current config
-            if (ActiveSurfaceConfiguration != null)
-                MatchDeviceConfiguration(e.Device, ActiveSurfaceConfiguration);
+            lock (_surfaceConfigurations)
+            {
+                foreach (var surfaceConfiguration in _surfaceConfigurations)
+                    MatchDeviceConfiguration(e.Device, surfaceConfiguration);
+            }
+
+            foreach (var deviceConfiguration in ActiveSurfaceConfiguration.DeviceConfigurations) 
+                deviceConfiguration.ApplyToDevice();
         }
 
         #endregion
@@ -108,7 +140,10 @@ namespace Artemis.Core.Services.Storage
                 foreach (var rgbDevice in devices)
                     MatchDeviceConfiguration(rgbDevice, surfaceConfiguration);
                 // Finally, add the surface config to the collection
-                _surfaceConfigurations.Add(surfaceConfiguration);
+                lock (_surfaceConfigurations)
+                {
+                    _surfaceConfigurations.Add(surfaceConfiguration);
+                }
             }
 
             // When all surface configs are loaded, apply the active surface config
@@ -163,6 +198,7 @@ namespace Artemis.Core.Services.Storage
                 surfaceConfiguration.DeviceConfigurations.Add(deviceConfig);
             }
 
+            deviceConfig.Device = rgbDevice;
             deviceConfig.ApplyToDevice();
         }
 

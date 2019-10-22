@@ -13,19 +13,19 @@
              Cursor="{Binding Cursor}"
              MouseEnter="{s:Action MouseEnter}"
              MouseLeave="{s:Action MouseLeave}"
-             ToolTip="{Binding Device.DeviceInfo.DeviceName}">
+             ToolTip="{Binding DeviceConfiguration.Device.DeviceInfo.DeviceName}">
     <UserControl.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <Image Source="{Binding Device.DeviceInfo.Image}" />
+        <Image Source="{Binding DeviceConfiguration.Device.DeviceInfo.Image}" />
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"
                    StrokeThickness="1"
-                   Visibility="{Binding Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
-        <TextBlock Text="{Binding Device.DeviceInfo.DeviceName}"
-                   Visibility="{Binding Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
+                   Visibility="{Binding DeviceConfiguration.Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
+        <TextBlock Text="{Binding DeviceConfiguration.Device.DeviceInfo.DeviceName}"
+                   Visibility="{Binding DeviceConfiguration.Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    TextWrapping="Wrap"

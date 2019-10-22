@@ -48,7 +48,7 @@ namespace Artemis.Core.Models.Surface
         internal SurfacePositionEntity PositionEntity { get; set; }
         internal string Guid { get; }
 
-        public IRGBDevice Device { get; private set; }
+        public IRGBDevice Device { get; internal set; }
         public int DeviceId { get; }
         public string DeviceName { get; }
         public string DeviceModel { get; }
@@ -66,7 +66,10 @@ namespace Artemis.Core.Models.Surface
         /// </summary>
         public void ApplyToDevice()
         {
-            Device.Location = new Point(X, Y);
+            if (Device != null)
+            {
+                Device.Location = new Point(X, Y);
+            }
         }
 
         /// <summary>
