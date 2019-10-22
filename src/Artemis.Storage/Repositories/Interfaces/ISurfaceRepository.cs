@@ -7,6 +7,7 @@ namespace Artemis.Storage.Repositories.Interfaces
     public interface ISurfaceRepository : IRepository
     {
         void Add(SurfaceEntity surfaceEntity);
+        void Remove(SurfaceEntity surfaceEntity);
         SurfaceEntity Get(string name);
         Task<SurfaceEntity> GetAsync(string name);
         List<SurfaceEntity> GetAll();

@@ -186,6 +186,7 @@
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
     <Compile Include="Services\StorageService.cs" />
+    <Compile Include="Services\Storage\ISurfaceService.cs" />
     <Compile Include="Services\Storage\SurfaceService.cs" />
   </ItemGroup>
   <ItemGroup>
