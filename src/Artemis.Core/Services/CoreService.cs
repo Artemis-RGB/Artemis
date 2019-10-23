@@ -64,12 +64,17 @@ namespace Artemis.Core.Services
                 foreach (var module in modules)
                     module.Update(args.DeltaTime);
 
+                // If there is no graphics decorator, skip the frame
                 if (_rgbService.GraphicsDecorator == null)
                     return;
 
                 // Render all active modules
                 using (var g = _rgbService.GraphicsDecorator.GetGraphics())
                 {
+                    // If there are no graphics, skip the frame
+                    if (g == null)
+                        return;
+
                     g.Clear(Color.Black);
                     foreach (var module in modules)
                         module.Render(args.DeltaTime, _rgbService.Surface, g);

@@ -42,8 +42,8 @@ namespace Artemis.UI.ViewModels
             Zoom = Math.Max(0.1, Math.Min(4, Zoom));
 
             // Update the PanX/Y to enable zooming relative to cursor
-            PanX = absoluteX - relative.X * Zoom;
-            PanY = absoluteY - relative.Y * Zoom;
+            PanX = Math.Min(0, absoluteX - relative.X * Zoom);
+            PanY = Math.Min(0, absoluteY - relative.Y * Zoom);
         }
 
         public void ProcessMouseMove(object sender, MouseEventArgs e)
@@ -60,9 +60,10 @@ namespace Artemis.UI.ViewModels
 
             var position = e.GetPosition((IInputElement) sender);
             var delta = _lastPanPosition - position;
-            PanX -= delta.Value.X;
-            PanY -= delta.Value.Y;
 
+            PanX = Math.Min(0, PanX - delta.Value.X);
+            PanY = Math.Min(0, PanY - delta.Value.Y);
+            
             _lastPanPosition = position;
         }
 

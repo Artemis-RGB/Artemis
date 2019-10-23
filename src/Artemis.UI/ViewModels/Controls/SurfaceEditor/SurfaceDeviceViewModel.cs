@@ -63,8 +63,8 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
         {
             var roundedX = Math.Round((mousePosition.X + _dragOffsetX) / 10, 0, MidpointRounding.AwayFromZero) * 10;
             var roundedY = Math.Round((mousePosition.Y + _dragOffsetY) / 10, 0, MidpointRounding.AwayFromZero) * 10;
-            X = roundedX;
-            Y = roundedY;
+            X = Math.Max(0, roundedX);
+            Y = Math.Max(0, roundedY);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
