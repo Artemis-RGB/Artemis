@@ -70,7 +70,7 @@ namespace Artemis.UI.ViewModels.Screens
             if (activeConfig == null)
             {
                 activeConfig = AddSurfaceConfiguration("Default");
-                _surfaceService.ActiveSurfaceConfiguration = activeConfig;
+                _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
             }
 
             Execute.OnUIThread(() =>
@@ -106,7 +106,7 @@ namespace Artemis.UI.ViewModels.Screens
                 });
             });
 
-            _surfaceService.ActiveSurfaceConfiguration = SelectedSurfaceConfiguration;
+            _surfaceService.SetActiveSurfaceConfiguration(SelectedSurfaceConfiguration);
         }
 
         #region Overrides of Screen
@@ -275,9 +275,7 @@ namespace Artemis.UI.ViewModels.Screens
             }
             else
             {
-                foreach (var device in Devices)
-                    device.DeviceConfiguration.ApplyToDevice();
-                _surfaceService.SaveToRepository(SelectedSurfaceConfiguration, true);
+                _surfaceService.UpdateSurfaceConfiguration(SelectedSurfaceConfiguration, true);
             }
 
             Mouse.OverrideCursor = null;

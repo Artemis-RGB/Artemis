@@ -64,7 +64,7 @@ namespace Artemis.Core.Models.Surface
         /// <summary>
         ///     Applies the configuration to the device
         /// </summary>
-        public void ApplyToDevice()
+        internal void ApplyToDevice()
         {
             if (Device != null)
             {
