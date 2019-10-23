@@ -25,5 +25,7 @@ namespace Artemis.Core.Services.Interfaces
         ///     Occurs when a single device has reloaded
         /// </summary>
         event EventHandler<DeviceEventArgs> DeviceReloaded;
+
+        void UpdateGraphicsDecorator();
     }
 }

@@ -14,16 +14,24 @@ namespace Artemis.Core.RGB.NET
 
         public GraphicsDecorator(ListLedGroup ledGroup)
         {
-            var width = ledGroup.GetLeds().Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width);
-            var height = ledGroup.GetLeds().Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height);
+            var leds = ledGroup.GetLeds().ToList();
+            if (!leds.Any())
+            {
+                _bitmap = null;
+            }
+            else
+            {
+                var width = leds.Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width);
+                var height = leds.Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height);
 
-            _bitmap = new DirectBitmap((int) width, (int) height);
+                _bitmap = new DirectBitmap((int) width, (int) height);
+            }
         }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)
         {
-            var point = renderTarget.Point;
-            if (_bitmap.Width - 1 >= point.X && _bitmap.Height - 1 >= point.Y)
+            var point = renderTarget.Led.AbsoluteLedRectangle.Center;
+            if (_bitmap != null && _bitmap.Width - 1 >= point.X && _bitmap.Height - 1 >= point.Y)
             {
                 var pixel = _bitmap.GetPixel((int) point.X, (int) point.Y);
                 return new Color(pixel.A, pixel.R, pixel.G, pixel.B);
@@ -34,7 +42,7 @@ namespace Artemis.Core.RGB.NET
 
         public Graphics GetGraphics()
         {
-            return Graphics.FromImage(_bitmap.Bitmap);
+            return _bitmap == null ? null : Graphics.FromImage(_bitmap.Bitmap);
         }
     }
 }

@@ -105,6 +105,8 @@ namespace Artemis.UI.ViewModels.Screens
                         Devices.Add(viewModel);
                 });
             });
+
+            _surfaceService.ActiveSurfaceConfiguration = SelectedSurfaceConfiguration;
         }
 
         #region Overrides of Screen

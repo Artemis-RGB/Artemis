@@ -58,7 +58,7 @@ namespace Artemis.Core.Services.Storage
                         deviceConfiguration.ApplyToDevice();
                 }
                 // Update the RGB service's graphics decorator to work with the new surface configuration
-                _rgbService.GraphicsDecorator.UpdateBitmap();
+                _rgbService.UpdateGraphicsDecorator();
 
                 OnActiveSurfaceConfigurationChanged(new SurfaceConfigurationEventArgs(_activeSurfaceConfiguration));
             }

@@ -19,6 +19,7 @@ namespace Artemis.Core.Services
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly ILogger _logger;
         private readonly TimerUpdateTrigger _updateTrigger;
+        private ListLedGroup _background;
 
         internal RgbService(ILogger logger)
         {
@@ -58,7 +59,7 @@ namespace Artemis.Core.Services
                 _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
-            
+
             lock (_loadedDevices)
             {
                 foreach (var surfaceDevice in deviceProvider.Devices)
@@ -74,11 +75,6 @@ namespace Artemis.Core.Services
                     }
                 }
             }
-
-            // Apply the application wide brush and decorator
-            var background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
-            GraphicsDecorator = new GraphicsDecorator(background);
-            background.Brush.AddDecorator(GraphicsDecorator);
         }
 
         public void Dispose()
@@ -98,6 +94,23 @@ namespace Artemis.Core.Services
 
         public event EventHandler<DeviceEventArgs> DeviceLoaded;
         public event EventHandler<DeviceEventArgs> DeviceReloaded;
+
+        public void UpdateGraphicsDecorator()
+        {
+            // Clean up the old background if present
+            if (_background != null)
+            {
+                _background.RemoveAllDecorators();
+                _background.Detach();
+            }
+
+            // Apply the application wide brush and decorator
+            _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
+            GraphicsDecorator = new GraphicsDecorator(_background);
+            _background.Brush.RemoveAllDecorators();
+
+            _background.Brush.AddDecorator(GraphicsDecorator);
+        }
 
         private void OnDeviceLoaded(DeviceEventArgs e)
         {
