@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Events;
 
 namespace Artemis.Core.Services.Interfaces
 {
@@ -13,5 +14,10 @@ namespace Artemis.Core.Services.Interfaces
         ///     Occurs the core has finished initializing
         /// </summary>
         event EventHandler Initialized;
+
+        /// <summary>
+        ///     Occurs whenever a frame has finished rendering
+        /// </summary>
+        event EventHandler<FrameEventArgs> FrameRendered;
     }
 }

@@ -2,27 +2,24 @@
 using System.Drawing;
 using System.Linq;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using Color = RGB.NET.Core.Color;
 using Rectangle = RGB.NET.Core.Rectangle;
 
 namespace Artemis.Core.RGB.NET
 {
-    public class GraphicsDecorator : AbstractDecorator, IBrushDecorator
+    public class GraphicsDecorator : AbstractDecorator, IBrushDecorator, IDisposable
     {
-        private readonly DirectBitmap _bitmap;
+        private DirectBitmap _bitmap;
 
-        public GraphicsDecorator(ListLedGroup ledGroup)
+        public GraphicsDecorator(ILedGroup ledGroup)
         {
             var leds = ledGroup.GetLeds().ToList();
             if (!leds.Any())
-            {
                 _bitmap = null;
-            }
             else
             {
-                var width = leds.Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width);
-                var height = leds.Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height);
+                var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width), 2000);
+                var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height), 2000);
 
                 _bitmap = new DirectBitmap((int) width, (int) height);
             }
@@ -40,9 +37,25 @@ namespace Artemis.Core.RGB.NET
             return new Color(0, 0, 0);
         }
 
+        public override void OnDetached(IDecoratable decoratable)
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            _bitmap?.Dispose();
+            _bitmap = null;
+        }
+
         public Graphics GetGraphics()
         {
             return _bitmap == null ? null : Graphics.FromImage(_bitmap.Bitmap);
+        }
+
+        public Bitmap GetBitmap()
+        {
+            return _bitmap?.Bitmap;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Artemis.Core.Services
             Surface.Exception += SurfaceOnException;
 
             _loadedDevices = new List<IRGBDevice>();
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 30};
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 25};
             Surface.RegisterUpdateTrigger(_updateTrigger);
         }
 
@@ -97,10 +97,12 @@ namespace Artemis.Core.Services
 
         public void UpdateGraphicsDecorator()
         {
+            // TODO: Create new one first, then clean up the old one for a smoother transition
+
             // Clean up the old background if present
             if (_background != null)
             {
-                _background.RemoveAllDecorators();
+                _background.Brush?.RemoveAllDecorators();
                 _background.Detach();
             }
 

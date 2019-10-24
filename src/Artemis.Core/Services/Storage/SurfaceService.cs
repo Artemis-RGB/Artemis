@@ -140,8 +140,7 @@ namespace Artemis.Core.Services.Storage
                     MatchDeviceConfiguration(e.Device, surfaceConfiguration);
             }
 
-            foreach (var deviceConfiguration in ActiveSurfaceConfiguration.DeviceConfigurations)
-                deviceConfiguration.ApplyToDevice();
+            UpdateSurfaceConfiguration(ActiveSurfaceConfiguration, true);
         }
 
         #endregion
@@ -169,7 +168,7 @@ namespace Artemis.Core.Services.Storage
             // When all surface configs are loaded, apply the active surface config
             var active = SurfaceConfigurations.FirstOrDefault(c => c.IsActive);
             if (active != null)
-                ActiveSurfaceConfiguration = active;
+                SetActiveSurfaceConfiguration(active);
         }
 
         #endregion
