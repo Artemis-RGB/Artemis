@@ -165,6 +165,7 @@
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceDeviceViewModel.cs" />
     <Compile Include="ViewModels\PanZoomViewModel.cs" />
+    <Compile Include="ViewModels\Screens\DebugViewModel.cs" />
     <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
     <Compile Include="ViewModels\Controls\Settings\RgbDeviceSettingsViewModel.cs" />
@@ -185,6 +186,10 @@
     <Page Include="Views\Controls\SurfaceEditor\SurfaceDeviceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Screens\DebugView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Screens\HomeView.xaml">
       <SubType>Designer</SubType>

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
@@ -46,10 +47,16 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             _logger.Information("Initializing Artemis Core version {version}", typeof(CoreService).Assembly.GetName().Version);
-            
+
             // Initialize the services
             await Task.Run(() => _pluginService.CopyBuiltInPlugins());
             await Task.Run(() => _pluginService.LoadPlugins());
+
+            var surfaceConfig = _surfaceService.ActiveSurfaceConfiguration;
+            if (surfaceConfig != null)
+                _logger.Information("Initialized with active surface configuration {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.Guid);
+            else
+                _logger.Information("Initialized without an active surface configuration");
 
             OnInitialized();
         }
@@ -79,6 +86,8 @@ namespace Artemis.Core.Services
                     foreach (var module in modules)
                         module.Render(args.DeltaTime, _rgbService.Surface, g);
                 }
+
+                OnFrameRendered(new FrameEventArgs(modules, _rgbService.GraphicsDecorator.GetBitmap(), args.DeltaTime, _rgbService.Surface));
             }
             catch (Exception e)
             {
@@ -89,6 +98,7 @@ namespace Artemis.Core.Services
         #region Events
 
         public event EventHandler Initialized;
+        public event EventHandler<FrameEventArgs> FrameRendered;
 
         private void OnInitialized()
         {
@@ -97,5 +107,10 @@ namespace Artemis.Core.Services
         }
 
         #endregion
+
+        protected virtual void OnFrameRendered(FrameEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
+        }
     }
 }

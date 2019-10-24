@@ -51,7 +51,9 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
 
         public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
 
-        public Rect DeviceRectangle => new Rect(X, Y, DeviceConfiguration.Device.Size.Width, DeviceConfiguration.Device.Size.Height);
+        public Rect DeviceRectangle => DeviceConfiguration.Device == null
+            ? new Rect()
+            : new Rect(X, Y, DeviceConfiguration.Device.Size.Width, DeviceConfiguration.Device.Size.Height);
 
         public void StartMouseDrag(Point mouseStartPosition)
         {
