@@ -38,7 +38,10 @@ namespace Artemis.UI.ViewModels.Screens
             var imageSource = ImageSourceFromBitmap(e.Bitmap);
             imageSource.Freeze();
             CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
-            Execute.OnUIThread(() => CurrentFrame = imageSource);
+            Execute.OnUIThread(() =>
+            {
+                CurrentFrame = imageSource;
+            });
         }
         
         protected override void OnClose()
