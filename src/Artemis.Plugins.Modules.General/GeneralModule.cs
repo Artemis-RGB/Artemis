@@ -87,7 +87,7 @@ namespace Artemis.Plugins.Modules.General
                     Colors[index] = color;
                 }
 
-                var rectangle = led.AbsoluteLedRectangle.ToDrawingRectangle();
+                var rectangle = led.AbsoluteLedRectangle.ToDrawingRectangle(0.25);
                 graphics.FillRectangle(new SolidBrush(color), rectangle);
                 index++;
             }

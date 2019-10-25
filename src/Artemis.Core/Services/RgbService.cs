@@ -108,7 +108,7 @@ namespace Artemis.Core.Services
 
             // Apply the application wide brush and decorator
             _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
-            GraphicsDecorator = new GraphicsDecorator(_background);
+            GraphicsDecorator = new GraphicsDecorator(_background, 0.25);
             _background.Brush.RemoveAllDecorators();
 
             _background.Brush.AddDecorator(GraphicsDecorator);
