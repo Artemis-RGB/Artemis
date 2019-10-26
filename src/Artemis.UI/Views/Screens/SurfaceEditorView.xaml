@@ -176,37 +176,8 @@
             </Grid>
         </materialDesign:Card>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
-                             VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost DialogClosing="{s:Action ConfirmationDialogClosing}">
-                <materialDesign:DialogHost.DialogContent>
-                    <StackPanel Margin="16">
-                        <TextBlock>
-                            Add a new surface layout.
-                        </TextBlock>
-                        <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" Text="{Binding NewConfigurationName}" />
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
-                                    Command="materialDesign:DialogHost.CloseDialogCommand">
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                        False
-                                    </system:Boolean>
-                                </Button.CommandParameter>
-                                CANCEL
-                            </Button>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0"
-                                    Command="materialDesign:DialogHost.CloseDialogCommand">
-                                <Button.CommandParameter>
-                                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                                        True
-                                    </system:Boolean>
-                                </Button.CommandParameter>
-                                ACCEPT
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </materialDesign:DialogHost.DialogContent>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" Margin="5,0,0,0">
+            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True" UseLayoutRounding="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
@@ -215,32 +186,34 @@
                     <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurfaceConfiguration}">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
-                                <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="230"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1" 
+                                            Command="{s:Action DeleteSurfaceConfiguration}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                                            ToolTip="Delete layout configuration" 
+                                            HorizontalAlignment="Right" >
+                                        <materialDesign:PackIcon Kind="Trashcan" />
+                                    </Button>
+                                </Grid>
+                                
                             </DataTemplate>
                         </ListBox.Resources>
                     </ListBox>
-                    <materialDesign:PopupBox
-                        PopupMode="Click"
-                        Grid.Row="0"
-                        Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
-                        PlacementMode="LeftAndAlignMiddles"
-                        UnfurlOrientation="Horizontal"
-                        ToolTip="Manage surface layouts"
-                        Margin="0 0 10 10"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom">
-                        <StackPanel
-                            Orientation="Horizontal">
-                            <Button ToolTip="Add a new surface layout"
-                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                <materialDesign:PackIcon Kind="Add" />
-                            </Button>
-                            <Button ToolTip="Remove selected surface layout"
-                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                <materialDesign:PackIcon Kind="Delete" />
-                            </Button>
-                        </StackPanel>
-                    </materialDesign:PopupBox>
+                    <Button Grid.Row="0" 
+                            Style="{StaticResource MaterialDesignFloatingActionButton}" 
+                            Command="{s:Action AddSurfaceConfiguration}"
+                            Margin="0 0 10 10"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            ToolTip="Add a new surface layout">
+                        <materialDesign:PackIcon Kind="Add" Height="24" Width="24" />
+                    </Button>
                 </Grid>
             </materialDesign:DialogHost>
         </materialDesign:Card>

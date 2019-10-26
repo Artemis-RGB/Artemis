@@ -122,10 +122,11 @@ namespace Artemis.Core.Services.Storage
 
             lock (_surfaceConfigurations)
             {
+                var entity = surfaceConfiguration.SurfaceEntity;
                 surfaceConfiguration.Destroy();
                 _surfaceConfigurations.Remove(surfaceConfiguration);
 
-                _surfaceRepository.Remove(surfaceConfiguration.SurfaceEntity);
+                _surfaceRepository.Remove(entity);
                 _surfaceRepository.Save();
             }
         }
