@@ -1,40 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.ViewModels.Controls.SurfaceEditor;
+using Artemis.UI.ViewModels.Dialogs;
 using Artemis.UI.ViewModels.Interfaces;
+using Artemis.UI.ViewModels.Utilities;
 using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens
 {
     public class SurfaceEditorViewModel : Screen, ISurfaceEditorViewModel
     {
-        private readonly IRgbService _rgbService;
+        private readonly IDialogService _dialogService;
         private readonly ISurfaceService _surfaceService;
 
-        public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService)
+        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService)
         {
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<SurfaceConfiguration>();
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
 
-            _rgbService = rgbService;
             _surfaceService = surfaceService;
+            _dialogService = dialogService;
         }
 
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
+        public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
 
         public SurfaceConfiguration SelectedSurfaceConfiguration
         {
@@ -46,14 +46,10 @@ namespace Artemis.UI.ViewModels.Screens
             }
         }
 
-        public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
-        public string NewConfigurationName { get; set; }
-
         public PanZoomViewModel PanZoomViewModel { get; set; }
-
         public string Title => "Surface Editor";
 
-        public SurfaceConfiguration AddSurfaceConfiguration(string name)
+        public SurfaceConfiguration CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
@@ -69,7 +65,7 @@ namespace Artemis.UI.ViewModels.Screens
             var activeConfig = _surfaceService.ActiveSurfaceConfiguration;
             if (activeConfig == null)
             {
-                activeConfig = AddSurfaceConfiguration("Default");
+                activeConfig = CreateSurfaceConfiguration("Default");
                 _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
             }
 
@@ -121,15 +117,25 @@ namespace Artemis.UI.ViewModels.Screens
 
         #region Configuration management
 
-        public void ConfirmationDialogClosing()
+        public async Task DeleteSurfaceConfiguration(SurfaceConfiguration surfaceConfiguration)
         {
-            if (!string.IsNullOrWhiteSpace(NewConfigurationName))
+            var result = await _dialogService.ShowConfirmDialogAt(
+                "SurfaceListDialogHost",
+                "Delete surface configuration",
+                "Are you sure you want to delete this surface configuration?"
+            );
+            if (result)
             {
-                var newConfig = AddSurfaceConfiguration(NewConfigurationName);
-                SelectedSurfaceConfiguration = newConfig;
+                SurfaceConfigurations.Remove(surfaceConfiguration);
+                _surfaceService.DeleteSurfaceConfiguration(surfaceConfiguration);
             }
+        }
 
-            NewConfigurationName = null;
+        public async Task AddSurfaceConfiguration()
+        {
+            var result = await _dialogService.ShowDialogAt<SurfaceCreateViewModel>("SurfaceListDialogHost");
+            if (result is string name)
+                CreateSurfaceConfiguration(name);
         }
 
         #endregion
@@ -274,9 +280,7 @@ namespace Artemis.UI.ViewModels.Screens
                 }
             }
             else
-            {
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurfaceConfiguration, true);
-            }
 
             Mouse.OverrideCursor = null;
             _mouseDragStatus = MouseDragStatus.None;

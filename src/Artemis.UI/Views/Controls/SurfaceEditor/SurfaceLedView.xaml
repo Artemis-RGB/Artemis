@@ -1,15 +1,19 @@
-﻿<UserControl x:Class="Artemis.UI.Views.Controls.SurfaceEditor.SurfaceLedView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:surfaceEditor="clr-namespace:Artemis.UI.ViewModels.Controls.SurfaceEditor"
+             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Views.Controls.SurfaceEditor.SurfaceLedView"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceLedViewModel}}"
              d:DesignHeight="25" d:DesignWidth="25">
+    <UserControl.Resources>
+        <Converters:NullToImageConverter x:Key="NullToImageConverter"/>
+    </UserControl.Resources>
     <Grid Width="{Binding Width}" Height="{Binding Height}">
         <Grid.Background>
-            <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill" ImageSource="{Binding Led.Image}" />
-        </Grid.Background>        
+            <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill" ImageSource="{Binding Led.Image, Converter={StaticResource NullToImageConverter}}" />
+        </Grid.Background>
     </Grid>
 </UserControl>
