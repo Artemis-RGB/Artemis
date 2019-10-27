@@ -27,7 +27,7 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
             }
         }
 
-        public SurfaceDeviceConfiguration DeviceConfiguration { get; }
+        public SurfaceDeviceConfiguration DeviceConfiguration { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
 
