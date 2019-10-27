@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -89,18 +90,17 @@ namespace Artemis.UI.ViewModels.Screens
                 return;
             }
 
-            Task.Run(() =>
+            // Make sure all devices have an up-to-date VM
+            foreach (var surfaceDeviceConfiguration in SelectedSurfaceConfiguration.DeviceConfigurations)
             {
-                // Create VMs for the new config outside the UI thread
-                var viewModels = SelectedSurfaceConfiguration.DeviceConfigurations.Select(c => new SurfaceDeviceViewModel(c)).ToList();
-                // Commit the VMs to the view
-                Execute.OnUIThread(() =>
-                {
-                    Devices.Clear();
-                    foreach (var viewModel in viewModels.OrderBy(v => v.ZIndex))
-                        Devices.Add(viewModel);
-                });
-            });
+                // Create VMs for missing devices
+                var viewModel = Devices.FirstOrDefault(vm => vm.DeviceConfiguration.Device == surfaceDeviceConfiguration.Device);
+                if (viewModel == null)
+                    Execute.OnUIThread(() => Devices.Add(new SurfaceDeviceViewModel(surfaceDeviceConfiguration)));
+                // Update existing devices
+                else
+                    viewModel.DeviceConfiguration = surfaceDeviceConfiguration;
+            }
 
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurfaceConfiguration);
         }
@@ -122,7 +122,7 @@ namespace Artemis.UI.ViewModels.Screens
             var result = await _dialogService.ShowConfirmDialogAt(
                 "SurfaceListDialogHost",
                 "Delete surface configuration",
-                "Are you sure you want to delete this surface configuration?"
+                "Are you sure you want to delete\nthis surface configuration?"
             );
             if (result)
             {
