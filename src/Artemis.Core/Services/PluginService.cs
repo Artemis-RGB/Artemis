@@ -102,7 +102,7 @@ namespace Artemis.Core.Services
 
                 // Create a child kernel and app domain that will only contain the plugins
                 _childKernel = new ChildKernel(_kernel);
-
+                
                 // Load the plugin assemblies into the plugin context
                 var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
                 foreach (var subDirectory in pluginDirectory.EnumerateDirectories())

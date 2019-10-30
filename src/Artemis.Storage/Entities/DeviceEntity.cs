@@ -2,16 +2,17 @@
 
 namespace Artemis.Storage.Entities
 {
-    public class SurfacePositionEntity
+    public class DeviceEntity
     {
+        public DeviceEntity()
+        {
+            Guid = System.Guid.NewGuid().ToString();
+        }
+
         [Key]
         public string Guid { get; set; }
 
-        public int DeviceId { get; set; }
-        public string DeviceName { get; set; }
-        public string DeviceModel { get; set; }
-        public string DeviceManufacturer { get; set; }
-
+        public int DeviceHashCode { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
         public double Rotation { get; set; }

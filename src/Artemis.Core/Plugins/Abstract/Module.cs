@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using RGB.NET.Core;
 using Stylet;
@@ -38,7 +39,7 @@ namespace Artemis.Core.Plugins.Abstract
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>
         /// <param name="graphics"></param>
-        public abstract void Render(double deltaTime, RGBSurface surface, Graphics graphics);
+        public abstract void Render(double deltaTime, Surface surface, Graphics graphics);
 
         /// <summary>
         ///     Called when the module's main view is being shown

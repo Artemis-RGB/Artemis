@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Events;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.ViewModels.Controls.Settings;
 using Artemis.UI.ViewModels.Interfaces;
@@ -12,7 +13,7 @@ namespace Artemis.UI.ViewModels.Screens
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
 
-        public SettingsViewModel(IKernel kernel, IRgbService rgbService, IWindowManager windowManager)
+        public SettingsViewModel(IKernel kernel, IRgbService rgbService, IWindowManager windowManager, ISettingsService settingsService)
         {
             _kernel = kernel;
             _windowManager = windowManager;

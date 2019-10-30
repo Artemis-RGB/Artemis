@@ -30,6 +30,6 @@ namespace Artemis.Core.Models.Profile.Interfaces
         /// <summary>
         ///     Renders the element
         /// </summary>
-        void Render(double deltaTime, RGBSurface surface, Graphics graphics);
+        void Render(double deltaTime, Surface.Surface surface, Graphics graphics);
     }
 }

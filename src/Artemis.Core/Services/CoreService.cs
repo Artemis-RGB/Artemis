@@ -52,11 +52,11 @@ namespace Artemis.Core.Services
             await Task.Run(() => _pluginService.CopyBuiltInPlugins());
             await Task.Run(() => _pluginService.LoadPlugins());
 
-            var surfaceConfig = _surfaceService.ActiveSurfaceConfiguration;
+            var surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
-                _logger.Information("Initialized with active surface configuration {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.Guid);
+                _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.Guid);
             else
-                _logger.Information("Initialized without an active surface configuration");
+                _logger.Information("Initialized without an active surface entity");
 
             OnInitialized();
         }
@@ -84,7 +84,7 @@ namespace Artemis.Core.Services
 
                     g.Clear(Color.Black);
                     foreach (var module in modules)
-                        module.Render(args.DeltaTime, _rgbService.Surface, g);
+                        module.Render(args.DeltaTime, _surfaceService.ActiveSurface, g);
                 }
 
                 OnFrameRendered(new FrameEventArgs(modules, _rgbService.GraphicsDecorator.GetBitmap(), args.DeltaTime, _rgbService.Surface));

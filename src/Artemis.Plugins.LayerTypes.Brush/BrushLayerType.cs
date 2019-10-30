@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using QRCoder;
@@ -31,7 +32,7 @@ namespace Artemis.Plugins.LayerTypes.Brush
             // Update the brush
         }
 
-        public override void Render(Layer device, RGBSurface surface, Graphics graphics)
+        public override void Render(Layer device, Surface surface, Graphics graphics)
         {
         }
 

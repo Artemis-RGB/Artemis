@@ -16,6 +16,30 @@ namespace Artemis.Storage.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
+            modelBuilder.Entity("Artemis.Storage.Entities.DeviceEntity", b =>
+                {
+                    b.Property<string>("Guid")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("DeviceHashCode");
+
+                    b.Property<double>("Rotation");
+
+                    b.Property<string>("SurfaceId");
+
+                    b.Property<double>("X");
+
+                    b.Property<double>("Y");
+
+                    b.Property<int>("ZIndex");
+
+                    b.HasKey("Guid");
+
+                    b.HasIndex("SurfaceId");
+
+                    b.ToTable("DeviceEntity");
+                });
+
             modelBuilder.Entity("Artemis.Storage.Entities.FolderEntity", b =>
                 {
                     b.Property<string>("Guid")
@@ -165,34 +189,11 @@ namespace Artemis.Storage.Migrations
                     b.ToTable("Surfaces");
                 });
 
-            modelBuilder.Entity("Artemis.Storage.Entities.SurfacePositionEntity", b =>
+            modelBuilder.Entity("Artemis.Storage.Entities.DeviceEntity", b =>
                 {
-                    b.Property<string>("Guid")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("DeviceId");
-
-                    b.Property<string>("DeviceManufacturer");
-
-                    b.Property<string>("DeviceModel");
-
-                    b.Property<string>("DeviceName");
-
-                    b.Property<double>("Rotation");
-
-                    b.Property<string>("SurfaceId");
-
-                    b.Property<double>("X");
-
-                    b.Property<double>("Y");
-
-                    b.Property<int>("ZIndex");
-
-                    b.HasKey("Guid");
-
-                    b.HasIndex("SurfaceId");
-
-                    b.ToTable("SurfacePositionEntity");
+                    b.HasOne("Artemis.Storage.Entities.SurfaceEntity", "Surface")
+                        .WithMany("DeviceEntities")
+                        .HasForeignKey("SurfaceId");
                 });
 
             modelBuilder.Entity("Artemis.Storage.Entities.FolderEntity", b =>
@@ -235,13 +236,6 @@ namespace Artemis.Storage.Migrations
                     b.HasOne("Artemis.Storage.Entities.FolderEntity", "RootFolder")
                         .WithMany()
                         .HasForeignKey("RootFolderGuid");
-                });
-
-            modelBuilder.Entity("Artemis.Storage.Entities.SurfacePositionEntity", b =>
-                {
-                    b.HasOne("Artemis.Storage.Entities.SurfaceEntity", "Surface")
-                        .WithMany("SurfacePositions")
-                        .HasForeignKey("SurfaceId");
                 });
 #pragma warning restore 612, 618
         }

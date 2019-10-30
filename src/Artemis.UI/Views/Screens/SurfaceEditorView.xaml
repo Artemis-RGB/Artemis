@@ -108,8 +108,8 @@
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl Width="{Binding DeviceConfiguration.Device.Size.Width}"
-                                                Height="{Binding DeviceConfiguration.Device.Size.Height}"
+                                <ContentControl Width="{Binding Device.RgbDevice.Size.Width}"
+                                                Height="{Binding Device.RgbDevice.Size.Height}"
                                                 s:View.Model="{Binding}">
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
@@ -183,9 +183,9 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurfaceConfiguration}">
+                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
                         <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type models:SurfaceConfiguration}">
+                            <DataTemplate DataType="{x:Type models:Surface}">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="230"/>

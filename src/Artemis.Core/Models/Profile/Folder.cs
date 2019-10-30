@@ -27,7 +27,7 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Update(deltaTime);
         }
 
-        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
         {
             // Folders don't render but their children do
             foreach (var profileElement in Children)
