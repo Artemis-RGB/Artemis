@@ -25,7 +25,7 @@ namespace Artemis.UI.ViewModels.Screens
         public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService)
         {
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
-            SurfaceConfigurations = new ObservableCollection<SurfaceConfiguration>();
+            SurfaceConfigurations = new ObservableCollection<Surface>();
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
 
@@ -35,14 +35,14 @@ namespace Artemis.UI.ViewModels.Screens
 
         public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
-        public ObservableCollection<SurfaceConfiguration> SurfaceConfigurations { get; set; }
+        public ObservableCollection<Surface> SurfaceConfigurations { get; set; }
 
-        public SurfaceConfiguration SelectedSurfaceConfiguration
+        public Surface SelectedSurface
         {
-            get => _selectedSurfaceConfiguration;
+            get => _selectedSurface;
             set
             {
-                _selectedSurfaceConfiguration = value;
+                _selectedSurface = value;
                 ApplySelectedSurfaceConfiguration();
             }
         }
@@ -50,7 +50,7 @@ namespace Artemis.UI.ViewModels.Screens
         public PanZoomViewModel PanZoomViewModel { get; set; }
         public string Title => "Surface Editor";
 
-        public SurfaceConfiguration CreateSurfaceConfiguration(string name)
+        public Surface CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
@@ -63,7 +63,7 @@ namespace Artemis.UI.ViewModels.Screens
             var configs = _surfaceService.SurfaceConfigurations;
 
             // Get the active config, if empty, create a default config
-            var activeConfig = _surfaceService.ActiveSurfaceConfiguration;
+            var activeConfig = _surfaceService.ActiveSurface;
             if (activeConfig == null)
             {
                 activeConfig = CreateSurfaceConfiguration("Default");
@@ -78,31 +78,31 @@ namespace Artemis.UI.ViewModels.Screens
                     SurfaceConfigurations.Add(surfaceConfiguration);
 
                 // Set the active config
-                SelectedSurfaceConfiguration = activeConfig;
+                SelectedSurface = activeConfig;
             });
         }
 
         private void ApplySelectedSurfaceConfiguration()
         {
-            if (SelectedSurfaceConfiguration == null)
+            if (SelectedSurface == null)
             {
                 Execute.OnUIThread(Devices.Clear);
                 return;
             }
 
             // Make sure all devices have an up-to-date VM
-            foreach (var surfaceDeviceConfiguration in SelectedSurfaceConfiguration.DeviceConfigurations)
+            foreach (var surfaceDeviceConfiguration in SelectedSurface.Devices)
             {
                 // Create VMs for missing devices
-                var viewModel = Devices.FirstOrDefault(vm => vm.DeviceConfiguration.Device == surfaceDeviceConfiguration.Device);
+                var viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
                 if (viewModel == null)
                     Execute.OnUIThread(() => Devices.Add(new SurfaceDeviceViewModel(surfaceDeviceConfiguration)));
                 // Update existing devices
                 else
-                    viewModel.DeviceConfiguration = surfaceDeviceConfiguration;
+                    viewModel.Device = surfaceDeviceConfiguration;
             }
 
-            _surfaceService.SetActiveSurfaceConfiguration(SelectedSurfaceConfiguration);
+            _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
         }
 
         #region Overrides of Screen
@@ -117,7 +117,7 @@ namespace Artemis.UI.ViewModels.Screens
 
         #region Configuration management
 
-        public async Task DeleteSurfaceConfiguration(SurfaceConfiguration surfaceConfiguration)
+        public async Task DeleteSurfaceConfiguration(Surface surface)
         {
             var result = await _dialogService.ShowConfirmDialogAt(
                 "SurfaceListDialogHost",
@@ -126,8 +126,8 @@ namespace Artemis.UI.ViewModels.Screens
             );
             if (result)
             {
-                SurfaceConfigurations.Remove(surfaceConfiguration);
-                _surfaceService.DeleteSurfaceConfiguration(surfaceConfiguration);
+                SurfaceConfigurations.Remove(surface);
+                _surfaceService.DeleteSurfaceConfiguration(surface);
             }
         }
 
@@ -189,11 +189,11 @@ namespace Artemis.UI.ViewModels.Screens
 
         #endregion
 
-        #region Device selection
+        #region RgbDevice selection
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
-        private SurfaceConfiguration _selectedSurfaceConfiguration;
+        private Surface _selectedSurface;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseEventArgs e)
@@ -280,7 +280,7 @@ namespace Artemis.UI.ViewModels.Screens
                 }
             }
             else
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurfaceConfiguration, true);
+                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
 
             Mouse.OverrideCursor = null;
             _mouseDragStatus = MouseDragStatus.None;

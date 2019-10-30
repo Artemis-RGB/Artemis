@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Drawing;
-using Artemis.Core.Extensions;
+using System.Linq;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services;
 using Artemis.Plugins.Modules.General.ViewModels;
-using RGB.NET.Core;
 using Stylet;
-using Color = System.Drawing.Color;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -15,7 +14,7 @@ namespace Artemis.Plugins.Modules.General
     {
         private readonly PluginSettings _settings;
 
-        public GeneralModule(PluginInfo pluginInfo, PluginSettings settings) : base(pluginInfo)
+        public GeneralModule(PluginInfo pluginInfo, PluginSettings settings, ISettingsService settingsService) : base(pluginInfo)
         {
             _settings = settings;
             DisplayName = "General";
@@ -44,7 +43,7 @@ namespace Artemis.Plugins.Modules.General
             }
         }
 
-        public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, Surface surface, Graphics graphics)
         {
             // Per-device coloring, slower
             // RenderPerDevice(surface, graphics);
@@ -53,11 +52,11 @@ namespace Artemis.Plugins.Modules.General
             RenderPerLed(surface, graphics);
         }
 
-        public void RenderFullSurface(RGBSurface surface, Graphics graphics)
+        public void RenderFullSurface(Surface surface, Graphics graphics)
         {
         }
 
-        public void RenderPerDevice(RGBSurface surface, Graphics graphics)
+        public void RenderPerDevice(Surface surface, Graphics graphics)
         {
             var index = 0;
             foreach (var device in surface.Devices)
@@ -69,16 +68,15 @@ namespace Artemis.Plugins.Modules.General
                     Colors[index] = color;
                 }
 
-                var rectangle = new Rectangle((int) device.Location.X, (int) device.Location.Y, (int) device.Size.Width, (int) device.Size.Height);
-                graphics.FillRectangle(new SolidBrush(color), rectangle);
+                graphics.FillRectangle(new SolidBrush(color), device.RenderRectangle);
                 index++;
             }
         }
 
-        public void RenderPerLed(RGBSurface surface, Graphics graphics)
+        public void RenderPerLed(Surface surface, Graphics graphics)
         {
             var index = 0;
-            foreach (var led in surface.Leds)
+            foreach (var led in surface.Devices.SelectMany(d => d.Leds))
             {
                 var color = Colors[index];
                 if (color.A == 0)
@@ -87,8 +85,7 @@ namespace Artemis.Plugins.Modules.General
                     Colors[index] = color;
                 }
 
-                var rectangle = led.AbsoluteLedRectangle.ToDrawingRectangle(0.25);
-                graphics.FillRectangle(new SolidBrush(color), rectangle);
+                graphics.FillRectangle(new SolidBrush(color), led.AbsoluteRenderRectangle);
                 index++;
             }
         }

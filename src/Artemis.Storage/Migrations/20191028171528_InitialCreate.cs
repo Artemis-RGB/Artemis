@@ -107,14 +107,11 @@ namespace Artemis.Storage.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SurfacePositionEntity",
+                name: "DeviceEntity",
                 columns: table => new
                 {
                     Guid = table.Column<string>(nullable: false),
-                    DeviceId = table.Column<int>(nullable: false),
-                    DeviceName = table.Column<string>(nullable: true),
-                    DeviceModel = table.Column<string>(nullable: true),
-                    DeviceManufacturer = table.Column<string>(nullable: true),
+                    DeviceHashCode = table.Column<int>(nullable: false),
                     X = table.Column<double>(nullable: false),
                     Y = table.Column<double>(nullable: false),
                     Rotation = table.Column<double>(nullable: false),
@@ -123,9 +120,9 @@ namespace Artemis.Storage.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SurfacePositionEntity", x => x.Guid);
+                    table.PrimaryKey("PK_DeviceEntity", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_SurfacePositionEntity_Surfaces_SurfaceId",
+                        name: "FK_DeviceEntity_Surfaces_SurfaceId",
                         column: x => x.SurfaceId,
                         principalTable: "Surfaces",
                         principalColumn: "Guid",
@@ -193,6 +190,11 @@ namespace Artemis.Storage.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeviceEntity_SurfaceId",
+                table: "DeviceEntity",
+                column: "SurfaceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Folders_FolderEntityGuid",
                 table: "Folders",
                 column: "FolderEntityGuid");
@@ -221,15 +223,13 @@ namespace Artemis.Storage.Migrations
                 name: "IX_Profiles_RootFolderGuid",
                 table: "Profiles",
                 column: "RootFolderGuid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SurfacePositionEntity_SurfaceId",
-                table: "SurfacePositionEntity",
-                column: "SurfaceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "DeviceEntity");
+
             migrationBuilder.DropTable(
                 name: "Keypoints");
 
@@ -246,13 +246,10 @@ namespace Artemis.Storage.Migrations
                 name: "Settings");
 
             migrationBuilder.DropTable(
-                name: "SurfacePositionEntity");
+                name: "Surfaces");
 
             migrationBuilder.DropTable(
                 name: "LayerSettings");
-
-            migrationBuilder.DropTable(
-                name: "Surfaces");
 
             migrationBuilder.DropTable(
                 name: "Layers");

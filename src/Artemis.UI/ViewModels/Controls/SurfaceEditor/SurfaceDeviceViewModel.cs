@@ -15,45 +15,45 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
         private double _dragOffsetY;
         private readonly List<SurfaceLedViewModel> _leds;
 
-        public SurfaceDeviceViewModel(SurfaceDeviceConfiguration deviceConfiguration)
+        public SurfaceDeviceViewModel(Device device)
         {
-            DeviceConfiguration = deviceConfiguration;
+            Device = device;
             _leds = new List<SurfaceLedViewModel>();
 
-            if (DeviceConfiguration.Device != null)
+            if (Device.RgbDevice != null)
             {
-                foreach (var led in DeviceConfiguration.Device)
+                foreach (var led in Device.RgbDevice)
                     _leds.Add(new SurfaceLedViewModel(led));
             }
         }
 
-        public SurfaceDeviceConfiguration DeviceConfiguration { get; set; }
+        public Device Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
 
         public double X
         {
-            get => DeviceConfiguration.X;
-            set => DeviceConfiguration.X = value;
+            get => Device.X;
+            set => Device.X = value;
         }
 
         public double Y
         {
-            get => DeviceConfiguration.Y;
-            set => DeviceConfiguration.Y = value;
+            get => Device.Y;
+            set => Device.Y = value;
         }
 
         public int ZIndex
         {
-            get => DeviceConfiguration.ZIndex;
-            set => DeviceConfiguration.ZIndex = value;
+            get => Device.ZIndex;
+            set => Device.ZIndex = value;
         }
 
         public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
 
-        public Rect DeviceRectangle => DeviceConfiguration.Device == null
+        public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
-            : new Rect(X, Y, DeviceConfiguration.Device.Size.Width, DeviceConfiguration.Device.Size.Height);
+            : new Rect(X, Y, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height);
 
         public void StartMouseDrag(Point mouseStartPosition)
         {

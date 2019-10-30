@@ -13,20 +13,20 @@
              Cursor="{Binding Cursor}"
              MouseEnter="{s:Action MouseEnter}"
              MouseLeave="{s:Action MouseLeave}"
-             ToolTip="{Binding DeviceConfiguration.Device.DeviceInfo.DeviceName}">
+             ToolTip="{Binding Device.RgbDevice.DeviceInfo.DeviceName}">
     <UserControl.Resources>
         <converters:NullToImageConverter x:Key="NullToImageConverter"/>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <Image Source="{Binding DeviceConfiguration.Device.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
+        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"
                    StrokeThickness="1"
-                   Visibility="{Binding DeviceConfiguration.Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
-        <TextBlock Text="{Binding DeviceConfiguration.Device.DeviceInfo.DeviceName}"
-                   Visibility="{Binding DeviceConfiguration.Device.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
+                   Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
+        <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}"
+                   Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    TextWrapping="Wrap"

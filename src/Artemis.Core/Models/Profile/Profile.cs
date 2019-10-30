@@ -35,7 +35,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
         {
             lock (this)
             {

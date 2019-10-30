@@ -29,22 +29,22 @@ namespace Artemis.Storage.Repositories
 
         public SurfaceEntity Get(string name)
         {
-            return _dbContext.Surfaces.Include(s => s.SurfacePositions).FirstOrDefault(p => p.Name == name);
+            return _dbContext.Surfaces.Include(s => s.DeviceEntities).FirstOrDefault(p => p.Name == name);
         }
 
         public async Task<SurfaceEntity> GetAsync(string name)
         {
-            return await _dbContext.Surfaces.Include(s => s.SurfacePositions).FirstOrDefaultAsync(p => p.Name == name);
+            return await _dbContext.Surfaces.Include(s => s.DeviceEntities).FirstOrDefaultAsync(p => p.Name == name);
         }
 
         public List<SurfaceEntity> GetAll()
         {
-            return _dbContext.Surfaces.Include(s => s.SurfacePositions).ToList();
+            return _dbContext.Surfaces.Include(s => s.DeviceEntities).ToList();
         }
 
         public async Task<List<SurfaceEntity>> GetAllAsync()
         {
-            return await _dbContext.Surfaces.Include(s => s.SurfacePositions).ToListAsync();
+            return await _dbContext.Surfaces.Include(s => s.DeviceEntities).ToListAsync();
         }
         
         public void Save()

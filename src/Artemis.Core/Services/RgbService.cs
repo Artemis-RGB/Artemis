@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Events;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
@@ -20,15 +21,18 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly TimerUpdateTrigger _updateTrigger;
         private ListLedGroup _background;
+        private PluginSetting<double> _renderScaleSetting;
 
-        internal RgbService(ILogger logger)
+        internal RgbService(ILogger logger, ISettingsService settingsService)
         {
             _logger = logger;
+            _renderScaleSetting = settingsService.GetSetting("RenderScale", 1.0);
+
             Surface = RGBSurface.Instance;
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
-
+            _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
             _loadedDevices = new List<IRGBDevice>();
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 25};
             Surface.RegisterUpdateTrigger(_updateTrigger);
@@ -39,16 +43,7 @@ namespace Artemis.Core.Services
 
         public GraphicsDecorator GraphicsDecorator { get; private set; }
 
-        public IReadOnlyCollection<IRGBDevice> LoadedDevices
-        {
-            get
-            {
-                lock (_loadedDevices)
-                {
-                    return _loadedDevices.AsReadOnly();
-                }
-            }
-        }
+        public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
 
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
@@ -56,23 +51,20 @@ namespace Artemis.Core.Services
 
             if (deviceProvider.Devices == null)
             {
-                _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
+                _logger.Warning("RgbDevice provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
 
-            lock (_loadedDevices)
+            foreach (var surfaceDevice in deviceProvider.Devices)
             {
-                foreach (var surfaceDevice in deviceProvider.Devices)
+                if (!_loadedDevices.Contains(surfaceDevice))
                 {
-                    if (!_loadedDevices.Contains(surfaceDevice))
-                    {
-                        _loadedDevices.Add(surfaceDevice);
-                        OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
-                    }
-                    else
-                    {
-                        OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
-                    }
+                    _loadedDevices.Add(surfaceDevice);
+                    OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
+                }
+                else
+                {
+                    OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
                 }
             }
         }
@@ -83,6 +75,11 @@ namespace Artemis.Core.Services
 
             _updateTrigger.Dispose();
             Surface.Dispose();
+        }
+
+        private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
+        {
+            UpdateGraphicsDecorator();
         }
 
         private void SurfaceOnException(ExceptionEventArgs args)
@@ -108,7 +105,7 @@ namespace Artemis.Core.Services
 
             // Apply the application wide brush and decorator
             _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
-            GraphicsDecorator = new GraphicsDecorator(_background, 0.25);
+            GraphicsDecorator = new GraphicsDecorator(_background, _renderScaleSetting.Value);
             _background.Brush.RemoveAllDecorators();
 
             _background.Brush.AddDecorator(GraphicsDecorator);

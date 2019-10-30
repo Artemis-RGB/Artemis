@@ -6,7 +6,6 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities;
-using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -36,7 +35,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
         {
             if (LayerType == null)
                 return;

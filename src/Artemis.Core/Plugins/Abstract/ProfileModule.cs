@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using RGB.NET.Core;
 
@@ -25,7 +26,7 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, RGBSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, Surface surface, Graphics graphics)
         {
             lock (this)
             {

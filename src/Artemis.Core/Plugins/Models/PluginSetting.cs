@@ -1,11 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
+using Stylet;
 
 namespace Artemis.Core.Plugins.Models
 {
-    public class PluginSetting<T>
+    public class PluginSetting<T> : PropertyChangedBase
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly PluginInfo _pluginInfo;
@@ -20,6 +23,15 @@ namespace Artemis.Core.Plugins.Models
 
             Name = pluginSettingEntity.Name;
             Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
+
+            // PropertyChanged is for bindings, but we can use it here to create a easy to use SettingsChanged event
+            PropertyChanged += OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Value)) 
+                OnSettingChanged();
         }
 
         /// <summary>
@@ -68,6 +80,13 @@ namespace Artemis.Core.Plugins.Models
 
             _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
             await _pluginSettingRepository.SaveAsync();
+        }
+
+        public event EventHandler<EventArgs> SettingChanged;
+
+        protected virtual void OnSettingChanged()
+        {
+            SettingChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
