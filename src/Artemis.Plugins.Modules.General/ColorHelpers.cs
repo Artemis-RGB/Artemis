@@ -1,69 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace Artemis.Plugins.Modules.General
 {
     public static class ColorHelpers
     {
-        private static readonly Random _rand = new Random();
+        private static readonly Random Rand = new Random();
 
-        /// <summary>
-        ///     Comes up with a 'pure' psuedo-random color
-        /// </summary>
-        /// <returns>The color</returns>
-        public static Color GetRandomRainbowColor()
+        public static int GetRandomHue()
         {
-            var colors = new List<int>();
-            for (var i = 0; i < 3; i++)
-                colors.Add(_rand.Next(0, 256));
-
-            var highest = colors.Max();
-            var lowest = colors.Min();
-            colors[colors.FindIndex(c => c == highest)] = 255;
-            colors[colors.FindIndex(c => c == lowest)] = 0;
-
-            var returnColor = Color.FromArgb(255, colors[0], colors[1], colors[2]);
-
-            return returnColor;
+            return Rand.Next(0, 360);
         }
 
-        public static Color ShiftColor(Color c, int shiftAmount)
+        public static Color ColorFromHSV(double hue, double saturation, double value)
         {
-            int newRed = c.R;
-            int newGreen = c.G;
-            int newBlue = c.B;
+            var hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            var f = hue / 60 - Math.Floor(hue / 60);
 
-            // Red to purple
-            if (c.R == 255 && c.B < 255 && c.G == 0)
-                newBlue = newBlue + shiftAmount;
-            // Purple to blue
-            else if (c.B == 255 && c.R > 0)
-                newRed = newRed - shiftAmount;
-            // Blue to light-blue
-            else if (c.B == 255 && c.G < 255)
-                newGreen = newGreen + shiftAmount;
-            // Light-blue to green
-            else if (c.G == 255 && c.B > 0)
-                newBlue = newBlue - shiftAmount;
-            // Green to yellow
-            else if (c.G == 255 && c.R < 255)
-                newRed = newRed + shiftAmount;
-            // Yellow to red
-            else if (c.R == 255 && c.G > 0)
-                newGreen = newGreen - shiftAmount;
+            value = value * 255;
+            var v = Convert.ToInt32(value);
+            var p = Convert.ToInt32(value * (1 - saturation));
+            var q = Convert.ToInt32(value * (1 - f * saturation));
+            var t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
 
-            newRed = BringIntInColorRange(newRed);
-            newGreen = BringIntInColorRange(newGreen);
-            newBlue = BringIntInColorRange(newBlue);
-
-            return Color.FromArgb(c.A, newRed, newGreen, newBlue);
-        }
-
-        private static int BringIntInColorRange(int i)
-        {
-            return Math.Min(255, Math.Max(0, i));
+            if (hi == 0)
+                return Color.FromArgb(255, v, t, p);
+            if (hi == 1)
+                return Color.FromArgb(255, q, v, p);
+            if (hi == 2)
+                return Color.FromArgb(255, p, v, t);
+            if (hi == 3)
+                return Color.FromArgb(255, p, q, v);
+            if (hi == 4)
+                return Color.FromArgb(255, t, p, v);
+            return Color.FromArgb(255, v, p, q);
         }
     }
 }
