@@ -22,6 +22,7 @@ namespace Artemis.UI.ViewModels.Screens
             _rgbService = rgbService;
 
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
         }
 
         public ImageSource CurrentFrame { get; set; }
@@ -33,20 +34,25 @@ namespace Artemis.UI.ViewModels.Screens
             GC.WaitForPendingFinalizers();
         }
 
-        private void CoreServiceOnFrameRendered(object sender, FrameEventArgs e)
+        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
             var imageSource = ImageSourceFromBitmap(e.Bitmap);
             imageSource.Freeze();
-            CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
             Execute.OnUIThread(() =>
             {
                 CurrentFrame = imageSource;
             });
         }
-        
+
+        private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
+        {
+            CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
+        }
+
         protected override void OnClose()
         {
             _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
             base.OnClose();
         }
 

@@ -184,7 +184,7 @@
     <Compile Include="ViewModels\Screens\DebugViewModel.cs" />
     <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
-    <Compile Include="ViewModels\Controls\Settings\RgbDeviceSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Settings\DeviceSettingsViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IHomeViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IScreenViewModel.cs" />
     <Compile Include="ViewModels\Screens\HomeViewModel.cs" />
@@ -235,7 +235,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Settings\RgbDeviceSettingsView.xaml">
+    <Page Include="Views\Controls\Settings\DeviceSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

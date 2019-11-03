@@ -16,8 +16,13 @@ namespace Artemis.Core.Services.Interfaces
         event EventHandler Initialized;
 
         /// <summary>
-        ///     Occurs whenever a frame has finished rendering
+        ///     Occurs whenever a frame is rendering, after modules have rendered
         /// </summary>
-        event EventHandler<FrameEventArgs> FrameRendered;
+        event EventHandler<FrameRenderingEventArgs> FrameRendering;
+
+        /// <summary>
+        ///     Occurs whenever a frame is finished rendering and processed by RGB.NET
+        /// </summary>
+        event EventHandler<FrameRenderedEventArgs> FrameRendered;
     }
 }

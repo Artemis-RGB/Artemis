@@ -33,16 +33,6 @@ namespace Artemis.Core.Models.Surface
             Name = surfaceEntity.Name;
             IsActive = surfaceEntity.IsActive;
             Devices = new List<Device>();
-
-            if (surfaceEntity.DeviceEntities == null)
-                return;
-
-            foreach (var position in surfaceEntity.DeviceEntities)
-            {
-                var device = rgbSurface.Devices.FirstOrDefault(d => d.GetDeviceHashCode() == position.DeviceHashCode);
-                if (device != null)
-                    Devices.Add(new Device(device, this, position));
-            }
         }
 
         public RGBSurface RgbSurface { get; }

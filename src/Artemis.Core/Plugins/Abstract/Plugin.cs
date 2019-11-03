@@ -12,7 +12,7 @@ namespace Artemis.Core.Plugins.Abstract
     {
         internal Plugin(PluginInfo pluginInfo)
         {
-            PluginInfo = pluginInfo;
+            PluginInfo = pluginInfo ?? throw new ArgumentNullException(nameof(pluginInfo));
         }
 
         public PluginInfo PluginInfo { get; internal set; }

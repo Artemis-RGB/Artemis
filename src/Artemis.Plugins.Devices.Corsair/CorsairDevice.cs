@@ -13,7 +13,7 @@ namespace Artemis.Plugins.Devices.Corsair
     {
         private readonly IRgbService _rgbService;
 
-        public CorsairDevice(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo)
+        public CorsairDevice(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, CorsairDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }
@@ -23,7 +23,7 @@ namespace Artemis.Plugins.Devices.Corsair
             PathHelper.ResolvingAbsolutePath += ResolveCorsairPath;
             CorsairDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "CUESDK.dll"));
             CorsairDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "CUESDK.dll"));
-            _rgbService.AddDeviceProvider(CorsairDeviceProvider.Instance);
+            _rgbService.AddDeviceProvider(DeviceProvider);
         }
 
         private void ResolveCorsairPath(object sender, ResolvePathEventArgs e)

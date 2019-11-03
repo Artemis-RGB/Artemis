@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Services.Interfaces
 {
@@ -91,5 +92,7 @@ namespace Artemis.Core.Services.Interfaces
         event EventHandler<PluginEventArgs> PluginDisabled;
 
         #endregion
+
+        Plugin GetDevicePlugin(IRGBDevice device);
     }
 }

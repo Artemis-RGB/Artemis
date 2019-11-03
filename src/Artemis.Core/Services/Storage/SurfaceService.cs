@@ -18,15 +18,17 @@ namespace Artemis.Core.Services.Storage
     {
         private readonly ILogger _logger;
         private readonly IRgbService _rgbService;
+        private readonly IPluginService _pluginService;
         private readonly List<Surface> _surfaceConfigurations;
         private readonly ISurfaceRepository _surfaceRepository;
         private readonly PluginSetting<double> _renderScaleSetting;
 
-        internal SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, ISettingsService settingsService)
+        internal SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginService pluginService, ISettingsService settingsService)
         {
             _logger = logger;
             _surfaceRepository = surfaceRepository;
             _rgbService = rgbService;
+            _pluginService = pluginService;
             _surfaceConfigurations = new List<Surface>();
             _renderScaleSetting = settingsService.GetSetting("RenderScale", 1.0);
 
@@ -35,8 +37,6 @@ namespace Artemis.Core.Services.Storage
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
         }
-
-
 
         public Surface ActiveSurface { get; private set; }
         public ReadOnlyCollection<Surface> SurfaceConfigurations => _surfaceConfigurations.AsReadOnly();
@@ -47,8 +47,11 @@ namespace Artemis.Core.Services.Storage
             var configuration = new Surface(_rgbService.Surface, name, _renderScaleSetting.Value);
 
             // Add all current devices
-            foreach (var rgbDevice in _rgbService.LoadedDevices) 
-                configuration.Devices.Add(new Device(rgbDevice, configuration));
+            foreach (var rgbDevice in _rgbService.LoadedDevices)
+            {
+                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                configuration.Devices.Add(new Device(rgbDevice, plugin, configuration));
+            }
 
             lock (_surfaceConfigurations)
             {
@@ -140,9 +143,8 @@ namespace Artemis.Core.Services.Storage
 
         private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
         {
-            foreach (var surfaceConfiguration in SurfaceConfigurations) 
+            foreach (var surfaceConfiguration in SurfaceConfigurations)
                 surfaceConfiguration.UpdateScale(_renderScaleSetting.Value);
-
         }
 
         #endregion
@@ -156,6 +158,15 @@ namespace Artemis.Core.Services.Storage
             {
                 // Create the surface entity
                 var surfaceConfiguration = new Surface(_rgbService.Surface, surfaceEntity, _renderScaleSetting.Value);
+                foreach (var position in surfaceEntity.DeviceEntities)
+                {
+                    var device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceHashCode() == position.DeviceHashCode);
+                    if (device != null)
+                    {
+                        var plugin = _pluginService.GetDevicePlugin(device);
+                        surfaceConfiguration.Devices.Add(new Device(device, plugin, surfaceConfiguration, position));
+                    }
+                }
 
                 // Finally, add the surface config to the collection
                 lock (_surfaceConfigurations)
@@ -189,11 +200,14 @@ namespace Artemis.Core.Services.Storage
 
             if (device != null)
                 return;
-            
+
             // Find an existing device config and use that
             var existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceHashCode == deviceHashCode);
-            if (existingDeviceConfig != null) 
-                device = new Device(rgbDevice,surface, existingDeviceConfig);
+            if (existingDeviceConfig != null)
+            {
+                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                device = new Device(rgbDevice, plugin, surface, existingDeviceConfig);
+            }
             // Fall back on creating a new device
             else
             {
@@ -202,7 +216,8 @@ namespace Artemis.Core.Services.Storage
                     rgbDevice.DeviceInfo,
                     deviceHashCode
                 );
-                device = new Device(rgbDevice, surface);
+                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                device = new Device(rgbDevice, plugin, surface);
             }
 
             surface.Devices.Add(device);

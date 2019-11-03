@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Storage.Entities;
 using RGB.NET.Core;
+using Point = RGB.NET.Core.Point;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
     public class Device
     {
-        internal Device(IRGBDevice rgbDevice, Surface surface)
+        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface)
         {
             RgbDevice = rgbDevice;
+            Plugin = plugin;
             Surface = surface;
             Configuration = new DeviceEntity();
             Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
@@ -24,9 +29,10 @@ namespace Artemis.Core.Models.Surface
             CalculateRenderRectangle();
         }
 
-        internal Device(IRGBDevice rgbDevice, Surface surface, DeviceEntity configuration)
+        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface, DeviceEntity configuration)
         {
             RgbDevice = rgbDevice;
+            Plugin = plugin;
             Surface = surface;
             Configuration = configuration;
             Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
@@ -36,8 +42,10 @@ namespace Artemis.Core.Models.Surface
         }
 
         public Rectangle RenderRectangle { get; private set; }
+        public GraphicsPath RenderPath { get; private set; }
 
         public IRGBDevice RgbDevice { get; private set; }
+        public Plugin Plugin { get; }
         public Surface Surface { get; private set; }
         public DeviceEntity Configuration { get; private set; }
         public ReadOnlyCollection<DeviceLed> Leds { get; set; }
@@ -93,8 +101,12 @@ namespace Artemis.Core.Models.Surface
 
             foreach (var led in Leds)
                 led.CalculateRenderRectangle();
-        }
 
+            var path = new GraphicsPath();
+            path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
+            RenderPath = path;
+        }
+        
         internal void Destroy()
         {
             Configuration = null;

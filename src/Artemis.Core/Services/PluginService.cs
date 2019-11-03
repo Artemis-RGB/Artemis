@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
 using Ninject.Parameters;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Services
 {
@@ -102,7 +103,7 @@ namespace Artemis.Core.Services
 
                 // Create a child kernel and app domain that will only contain the plugins
                 _childKernel = new ChildKernel(_kernel);
-                
+
                 // Load the plugin assemblies into the plugin context
                 var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
                 foreach (var subDirectory in pluginDirectory.EnumerateDirectories())
@@ -280,6 +281,11 @@ namespace Artemis.Core.Services
             {
                 return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
             }
+        }
+
+        public Plugin GetDevicePlugin(IRGBDevice rgbDevice)
+        {
+            return GetPluginsOfType<Device>().First(d => d.DeviceProvider.Devices.Contains(rgbDevice));
         }
 
         public void Dispose()

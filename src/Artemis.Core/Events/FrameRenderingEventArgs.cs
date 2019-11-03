@@ -6,9 +6,9 @@ using RGB.NET.Core;
 
 namespace Artemis.Core.Events
 {
-    public class FrameEventArgs : EventArgs
+    public class FrameRenderingEventArgs : EventArgs
     {
-        public FrameEventArgs(List<Module> modules, Bitmap bitmap, double deltaTime, RGBSurface rgbSurface)
+        public FrameRenderingEventArgs(List<Module> modules, Bitmap bitmap, double deltaTime, RGBSurface rgbSurface)
         {
             Modules = modules;
             Bitmap = bitmap;

@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Artemis.UI.Views.Controls.Settings.DeviceSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:settings="clr-namespace:Artemis.UI.ViewModels.Controls.Settings"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             d:DataContext="{d:DesignInstance settings:DeviceSettingsViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <materialDesign:Card Width="200">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="140" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Rectangle Grid.Row="0" Height="140" Width="196" Fill="{DynamicResource MaterialDesignPaper}" />
+            <Image Grid.Row="0" Source="{Binding Device.RgbDevice.DeviceInfo.Image}" Height="130" Width="190" RenderOptions.BitmapScalingMode="HighQuality" />
+            <Button Grid.Row="0"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0 0 16 -20"
+                    ToolTip="Identify"
+                    Command="{s:Action Identify}">
+                <materialDesign:PackIcon Kind="AlarmLight" />
+            </Button>
+            <StackPanel Grid.Row="1" Margin="8 24 8 0">
+                <TextBlock FontWeight="Bold" Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
+                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
+                    <Run Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
+                    -
+                    <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType, Mode=OneWay}" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
+                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsDeviceEnabled}">
+                    Device enabled
+                </CheckBox>
+                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0">
+                    <StackPanel>
+                        <Button Content="Show device debugger" Command="{s:Action ShowDeviceDebugger}" />
+                        <Button Content="Open plugin directory" Command="{s:Action OpenPluginDirectory}" />
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </StackPanel>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>
