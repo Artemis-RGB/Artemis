@@ -22,6 +22,35 @@
             <TextBlock Style="{StaticResource MaterialDesignHeadlineTextBlock}">General</TextBlock>
             <StackPanel>
                 <TextBlock>General settings like start up with Windows etc.</TextBlock>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock VerticalAlignment="Bottom" Grid.Row="0" Grid.Column="0">Render scale</TextBlock>
+                    <Slider Minimum="0.10" 
+                            Maximum="1" 
+                            TickFrequency="0.05" 
+                            Grid.Row="1" 
+                            Grid.Column="0" 
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" 
+                            ToolTip="MaterialDesignDiscreteSlider"
+                            Value="{Binding RenderScale}" />
+
+                    <TextBlock VerticalAlignment="Bottom" Grid.Row="0" Grid.Column="1">Target framerate</TextBlock>
+                    <Slider Minimum="5" 
+                            Maximum="60" 
+                            Grid.Row="1" 
+                            Grid.Column="1" 
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" 
+                            ToolTip="MaterialDesignDiscreteSlider"
+                            Value="{Binding TargetFrameRate}" />
+                </Grid>
 
                 <Button Command="{s:Action ShowDebugger}" Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Left" Margin="0, 10, 0, 0">
                     Show debugger
@@ -35,7 +64,7 @@
                 <ItemsControl ItemsSource="{Binding DeviceSettingsViewModels}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel/>
+                            <WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
@@ -52,5 +81,5 @@
             </Grid>
         </StackPanel>
     </ScrollViewer>
-    
+
 </UserControl>

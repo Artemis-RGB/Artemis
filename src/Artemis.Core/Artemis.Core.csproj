@@ -144,7 +144,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Events\DeviceConfigurationEventArgs.cs" />
     <Compile Include="Events\DeviceEventArgs.cs" />
-    <Compile Include="Events\FrameEventArgs.cs" />
+    <Compile Include="Events\FrameRenderedEventArgs.cs" />
+    <Compile Include="Events\FrameRenderingEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />

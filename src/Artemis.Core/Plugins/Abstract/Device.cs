@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Plugins.Models;
+﻿using System;
+using Artemis.Core.Plugins.Models;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -8,8 +10,11 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Device : Plugin
     {
-        protected Device(PluginInfo pluginInfo) : base(pluginInfo)
+        public IRGBDeviceProvider DeviceProvider { get; }
+
+        protected Device(PluginInfo pluginInfo, IRGBDeviceProvider deviceProvider) : base(pluginInfo)
         {
+            DeviceProvider = deviceProvider ?? throw new ArgumentNullException(nameof(deviceProvider));
         }
     }
 }
