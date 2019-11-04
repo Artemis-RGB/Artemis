@@ -8,12 +8,13 @@ using Stylet;
 
 namespace Artemis.Core.Plugins.Models
 {
-    public class PluginSetting<T> : PropertyChangedBase
+    public class PluginSetting<T>
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly PluginInfo _pluginInfo;
         private readonly PluginSettingEntity _pluginSettingEntity;
         private readonly IPluginSettingRepository _pluginSettingRepository;
+        private T _value;
 
         internal PluginSetting(PluginInfo pluginInfo, IPluginSettingRepository pluginSettingRepository, PluginSettingEntity pluginSettingEntity)
         {
@@ -23,15 +24,6 @@ namespace Artemis.Core.Plugins.Models
 
             Name = pluginSettingEntity.Name;
             Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
-
-            // PropertyChanged is for bindings, but we can use it here to create a easy to use SettingsChanged event
-            PropertyChanged += OnPropertyChanged;
-        }
-
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Value)) 
-                OnSettingChanged();
         }
 
         /// <summary>
@@ -42,7 +34,15 @@ namespace Artemis.Core.Plugins.Models
         /// <summary>
         ///     The value of the setting
         /// </summary>
-        public T Value { get; set; }
+        public T Value
+        {
+            get => _value;
+            set
+            {
+                _value = value;
+                OnSettingChanged();
+            }
+        }
 
         /// <summary>
         ///     Determines whether the setting has been changed
