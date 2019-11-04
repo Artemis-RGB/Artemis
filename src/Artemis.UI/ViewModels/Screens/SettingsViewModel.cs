@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Controls.Settings;
@@ -11,11 +10,11 @@ namespace Artemis.UI.ViewModels.Screens
 {
     public class SettingsViewModel : Screen, ISettingsViewModel
     {
-        private readonly IKernel _kernel;
         private readonly ICoreService _coreService;
+        private readonly IKernel _kernel;
+        private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private readonly IWindowManager _windowManager;
-        private readonly ISettingsService _settingsService;
 
         public SettingsViewModel(IKernel kernel, ICoreService coreService, ISurfaceService surfaceService, IWindowManager windowManager, ISettingsService settingsService)
         {
@@ -26,15 +25,31 @@ namespace Artemis.UI.ViewModels.Screens
             _settingsService = settingsService;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
-            RenderScale = _settingsService.GetSetting("RenderScale", 1.0).Value;
-            TargetFrameRate = _settingsService.GetSetting("FrameRate", 25).Value;
         }
 
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
-        public string Title => "Settings";
 
-        public double RenderScale { get; set; }
-        public int TargetFrameRate { get; set; }
+        public double RenderScale
+        {
+            get => _settingsService.GetSetting("RenderScale", 1.0).Value;
+            set
+            {
+                _settingsService.GetSetting("RenderScale", 1.0).Value = value;
+                _settingsService.GetSetting("RenderScale", 1.0).Save();
+            }
+        }
+
+        public int TargetFrameRate
+        {
+            get => _settingsService.GetSetting("TargetFrameRate", 25).Value;
+            set
+            {
+                _settingsService.GetSetting("TargetFrameRate", 25).Value = value;
+                _settingsService.GetSetting("TargetFrameRate", 25).Save();
+            }
+        }
+
+        public string Title => "Settings";
 
         protected override void OnActivate()
         {

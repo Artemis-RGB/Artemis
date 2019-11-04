@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -14,13 +13,13 @@ namespace Artemis.Core.Plugins.Models
     {
         private readonly PluginInfo _pluginInfo;
         private readonly IPluginSettingRepository _pluginSettingRepository;
-        private readonly Dictionary<string, PluginSettingEntity> _settingEntities;
+        private readonly Dictionary<string, object> _settingEntities;
 
         internal PluginSettings(PluginInfo pluginInfo, IPluginSettingRepository pluginSettingRepository)
         {
             _pluginInfo = pluginInfo;
             _pluginSettingRepository = pluginSettingRepository;
-            _settingEntities = pluginSettingRepository.GetByPluginGuid(_pluginInfo.Guid).ToDictionary(se => se.Name);
+            _settingEntities = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -34,15 +33,22 @@ namespace Artemis.Core.Plugins.Models
         {
             lock (_settingEntities)
             {
+                // Return cached value if available
                 if (_settingEntities.ContainsKey(name))
-                    return new PluginSetting<T>(_pluginInfo, _pluginSettingRepository, _settingEntities[name]);
+                    return (PluginSetting<T>) _settingEntities[name];
+                // Try to find in database
+                var settingEntity = _pluginSettingRepository.GetByNameAndPluginGuid(name, _pluginInfo.Guid);
+                // If not found, create a new one
+                if (settingEntity == null)
+                {
+                    settingEntity = new PluginSettingEntity {Name = name, PluginGuid = _pluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
+                    _pluginSettingRepository.Add(settingEntity);
+                    _pluginSettingRepository.Save();
+                }
 
-                var settingEntity = new PluginSettingEntity {Name = name, PluginGuid = _pluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
-                _pluginSettingRepository.Add(settingEntity);
-                _pluginSettingRepository.Save();
-
-                _settingEntities.Add(name, settingEntity);
-                return new PluginSetting<T>(_pluginInfo, _pluginSettingRepository, _settingEntities[name]);
+                var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginSettingRepository, settingEntity);
+                _settingEntities.Add(name, pluginSetting);
+                return pluginSetting;
             }
         }
     }

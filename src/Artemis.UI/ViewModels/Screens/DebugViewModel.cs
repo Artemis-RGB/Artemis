@@ -36,6 +36,9 @@ namespace Artemis.UI.ViewModels.Screens
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
+            if (e.Bitmap == null)
+                return;
+
             var imageSource = ImageSourceFromBitmap(e.Bitmap);
             imageSource.Freeze();
             Execute.OnUIThread(() =>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
@@ -21,21 +22,25 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly TimerUpdateTrigger _updateTrigger;
         private ListLedGroup _background;
-        private PluginSetting<double> _renderScaleSetting;
+        private readonly PluginSetting<double> _renderScaleSetting;
+        private readonly PluginSetting<int> _targetFrameRateSetting;
 
         internal RgbService(ILogger logger, ISettingsService settingsService)
         {
             _logger = logger;
             _renderScaleSetting = settingsService.GetSetting("RenderScale", 1.0);
+            _targetFrameRateSetting = settingsService.GetSetting("TargetFrameRate", 25);
 
             Surface = RGBSurface.Instance;
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
+            _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
             _loadedDevices = new List<IRGBDevice>();
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / 25};
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(_updateTrigger);
+            
         }
 
         /// <inheritdoc />
@@ -82,6 +87,11 @@ namespace Artemis.Core.Services
             UpdateGraphicsDecorator();
         }
 
+        private void TargetFrameRateSettingOnSettingChanged(object sender, EventArgs e)
+        {
+            _updateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
+        }
+        
         private void SurfaceOnException(ExceptionEventArgs args)
         {
             throw args.Exception;
