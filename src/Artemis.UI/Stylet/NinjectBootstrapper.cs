@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows.Threading;
 using Ninject;
+using Serilog;
 using Stylet;
 
 namespace Artemis.UI.Stylet
@@ -62,6 +64,14 @@ namespace Artemis.UI.Stylet
             ScreenExtensions.TryDispose(_rootViewModel);
             if (Kernel != null)
                 Kernel.Dispose();
+        }
+
+        protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
+        {
+            var logger = Kernel.Get<ILogger>();
+            logger.Fatal(e.Exception, "Fatal exception, shutting down.");
+
+            base.OnUnhandledException(e);
         }
     }
 }
