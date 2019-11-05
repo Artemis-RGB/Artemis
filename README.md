@@ -11,7 +11,9 @@ Artemis adds highly configurable support for several games to a range of RGB key
 **FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
 
 ### Notice
-Artemis 2 is in development. In the meanwhile I'm no longer supporting Artemis 1.x, sorry!
+Artemis 2 is in development. In the meanwhile I'm no longer supporting Artemis 1.x, sorry!  
+Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekman.nl/repository/downloadAll/Artemis_Build/.lastSuccessful/artifacts.zip?guest=1)  
+**Please note that for now I've only included Corsair support. If you want to test support for a different device (must be RGB.NET supported), let me know on Discord.**
 
 Some things I have planned for 2.0
 - Completely overhauled UI
