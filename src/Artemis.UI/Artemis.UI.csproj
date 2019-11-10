@@ -182,6 +182,7 @@
     <Compile Include="ViewModels\Dialogs\ConfirmDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModelValidator.cs" />
     <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModel.cs" />
+    <Compile Include="ViewModels\Screens\SplashViewModel.cs" />
     <Compile Include="ViewModels\Utilities\DialogViewModelHost.cs" />
     <Compile Include="ViewModels\Dialogs\DialogViewModelBase.cs" />
     <Compile Include="ViewModels\Utilities\PanZoomViewModel.cs" />
@@ -232,6 +233,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Screens\RootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Screens\SplashView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

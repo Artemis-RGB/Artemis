@@ -30,6 +30,7 @@ namespace Artemis.Core.Services
             _surfaceService = surfaceService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
+
             Task.Run(Initialize);
         }
 
