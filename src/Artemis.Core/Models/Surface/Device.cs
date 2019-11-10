@@ -99,9 +99,12 @@ namespace Artemis.Core.Models.Surface
                 (int) Math.Round(RgbDevice.Size.Height * Surface.Scale, MidpointRounding.AwayFromZero)
             );
 
+            if (!Leds.Any())
+                return;
+
             foreach (var led in Leds)
                 led.CalculateRenderRectangle();
-
+            
             var path = new GraphicsPath();
             path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
             RenderPath = path;

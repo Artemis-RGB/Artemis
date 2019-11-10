@@ -69,7 +69,19 @@ namespace Artemis.Core.Services.Interfaces
         /// <returns>Returns a list of plug instances of type <see cref="T" /></returns>
         List<T> GetPluginsOfType<T>() where T : Plugin;
 
+        Plugin GetDevicePlugin(IRGBDevice device);
+
         #region Events
+
+        /// <summary>
+        /// Occurs when built-in plugins are being loaded
+        /// </summary>
+        event EventHandler CopyingBuildInPlugins;
+
+        /// <summary>
+        ///     Occurs when a plugin has started loading
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginLoading;
 
         /// <summary>
         ///     Occurs when a plugin has loaded
@@ -92,7 +104,5 @@ namespace Artemis.Core.Services.Interfaces
         event EventHandler<PluginEventArgs> PluginDisabled;
 
         #endregion
-
-        Plugin GetDevicePlugin(IRGBDevice device);
     }
 }

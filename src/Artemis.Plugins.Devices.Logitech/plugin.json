@@ -1,0 +1,10 @@
+﻿{
+  "Guid": "62a45c0c-884c-4868-9fd7-3c5987fe07ca",
+  "Name": "Logitech Devices",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0
+  },
+  "Main": "Artemis.Plugins.Devices.Logitech.dll"
+}

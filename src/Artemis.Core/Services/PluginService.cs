@@ -43,11 +43,12 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public void CopyBuiltInPlugins()
         {
+            OnCopyingBuildInPlugins();
             var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
 
             // Iterate built-in plugins
-            var varBuiltInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
-            foreach (var subDirectory in varBuiltInPluginDirectory.EnumerateDirectories())
+            var builtInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            foreach (var subDirectory in builtInPluginDirectory.EnumerateDirectories())
             {
                 // Load the metadata
                 var builtInMetadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
@@ -118,6 +119,7 @@ namespace Artemis.Core.Services
                         // Locate the main entry
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
                         pluginInfo.Directory = subDirectory;
+                        OnPluginLoading(new PluginEventArgs(pluginInfo));
                         LoadPlugin(pluginInfo);
                     }
                     catch (Exception e)
@@ -307,10 +309,22 @@ namespace Artemis.Core.Services
 
         #region Events
 
+        public event EventHandler CopyingBuildInPlugins;
+        public event EventHandler<PluginEventArgs> PluginLoading;
         public event EventHandler<PluginEventArgs> PluginLoaded;
         public event EventHandler<PluginEventArgs> PluginUnloaded;
         public event EventHandler<PluginEventArgs> PluginEnabled;
         public event EventHandler<PluginEventArgs> PluginDisabled;
+
+        protected virtual void OnCopyingBuildInPlugins()
+        {
+            CopyingBuildInPlugins?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPluginLoading(PluginEventArgs e)
+        {
+            PluginLoading?.Invoke(this, e);
+        }
 
         protected virtual void OnPluginLoaded(PluginEventArgs e)
         {
