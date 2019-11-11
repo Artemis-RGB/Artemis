@@ -5,7 +5,7 @@ using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens
 {
-    public class HomeViewModel : Screen, IHomeViewModel
+    public class HomeViewModel : Screen, IScreenViewModel
     {
         public string Title => "Home";
 

@@ -7,11 +7,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens
 {
-    public class DebugViewModel : Screen
+    public class DebugViewModel : Screen, IScreenViewModel
     {
         private readonly ICoreService _coreService;
         private readonly IRgbService _rgbService;
@@ -76,5 +77,7 @@ namespace Artemis.UI.ViewModels.Screens
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
+
+        public string Title => "Debugger";
     }
 }

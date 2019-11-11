@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.ViewModels.Interfaces;
 using Stylet;
 
@@ -15,11 +17,13 @@ namespace Artemis.UI.ViewModels.Screens
     {
         private readonly ICollection<IScreenViewModel> _artemisViewModels;
         private readonly IPluginService _pluginService;
+        private readonly IModuleViewModelFactory _moduleViewModelFactory;
 
-        public RootViewModel(ICollection<IScreenViewModel> artemisViewModels, IPluginService pluginService)
+        public RootViewModel(ICollection<IScreenViewModel> artemisViewModels, IPluginService pluginService, IModuleViewModelFactory moduleViewModelFactory)
         {
             _artemisViewModels = artemisViewModels;
             _pluginService = pluginService;
+            _moduleViewModelFactory = moduleViewModelFactory;
 
             // Add the built-in items
             Items.AddRange(artemisViewModels);
@@ -28,7 +32,7 @@ namespace Artemis.UI.ViewModels.Screens
 
             // Sync up with the plugin service
             Modules = new BindableCollection<Module>();
-            // Modules.AddRange(_pluginService.GetPluginsOfType<Module>());
+            Modules.AddRange(_pluginService.GetPluginsOfType<Module>());
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
@@ -47,8 +51,7 @@ namespace Artemis.UI.ViewModels.Screens
                 return;
 
             // Create a view model for the given plugin info (which will be a module)
-            var viewModel = await Task.Run(() => SelectedModule.GetMainViewModel());
-            // Tell Stylet to active the view model, the view manager will compile and show the XAML
+            var viewModel = await Task.Run(() => _moduleViewModelFactory.CreateModuleViewModel(SelectedModule));
             ActivateItem(viewModel);
 
             SelectedPage = null;

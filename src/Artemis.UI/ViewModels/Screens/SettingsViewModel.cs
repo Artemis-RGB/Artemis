@@ -8,7 +8,7 @@ using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens
 {
-    public class SettingsViewModel : Screen, ISettingsViewModel
+    public class SettingsViewModel : Screen, IScreenViewModel
     {
         private readonly ICoreService _coreService;
         private readonly IKernel _kernel;
