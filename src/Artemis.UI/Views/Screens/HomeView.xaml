@@ -4,7 +4,6 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vms="clr-namespace:Artemis.UI.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:screens="clr-namespace:Artemis.UI.ViewModels.Screens"
              mc:Ignorable="d"

@@ -15,6 +15,7 @@ using Ninject;
 using Ninject.Extensions.ChildKernel;
 using Ninject.Parameters;
 using RGB.NET.Core;
+using Serilog;
 
 namespace Artemis.Core.Services
 {
@@ -24,12 +25,14 @@ namespace Artemis.Core.Services
     public class PluginService : IPluginService
     {
         private readonly IKernel _kernel;
+        private readonly ILogger _logger;
         private readonly List<PluginInfo> _plugins;
         private IKernel _childKernel;
 
-        internal PluginService(IKernel kernel)
+        internal PluginService(IKernel kernel, ILogger logger)
         {
             _kernel = kernel;
+            _logger = logger;
             _plugins = new List<PluginInfo>();
 
             // Ensure the plugins directory exists
@@ -114,7 +117,9 @@ namespace Artemis.Core.Services
                         // Load the metadata
                         var metadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
                         if (!File.Exists(metadataFile))
-                            throw new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile);
+                        {
+                            _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
+                        }
 
                         // Locate the main entry
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
@@ -124,14 +129,21 @@ namespace Artemis.Core.Services
                     }
                     catch (Exception e)
                     {
-                        throw new ArtemisPluginException("Failed to load plugin", e);
+                        _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                     }
                 }
 
                 // Activate plugins after they are all loaded
                 foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
                 {
-                    pluginInfo.Instance.EnablePlugin();
+                    try
+                    {
+                        pluginInfo.Instance.EnablePlugin();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Warning(new ArtemisPluginException(pluginInfo, "Failed to load enable plugin", e), "Plugin exception");
+                    }
                     OnPluginEnabled(new PluginEventArgs(pluginInfo));
                 }
 

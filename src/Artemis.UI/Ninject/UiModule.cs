@@ -1,9 +1,11 @@
-﻿using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels.Dialogs;
 using Artemis.UI.ViewModels.Interfaces;
 using FluentValidation;
 using Ninject.Extensions.Conventions;
+using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using Stylet;
 
@@ -31,6 +33,9 @@ namespace Artemis.UI.Ninject
                     .InheritedFrom<DialogViewModelBase>()
                     .BindAllBaseClasses();
             });
+
+            // Bind the module VM
+            Bind<IModuleViewModelFactory>().ToFactory();
 
             // Bind all UI services as singletons
             Kernel.Bind(x =>

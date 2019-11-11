@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -6,15 +7,14 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Plugins.Modules.General.ViewModels;
-using Stylet;
 using Device = Artemis.Core.Models.Surface.Device;
 
 namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : Module
     {
-        private readonly PluginSettings _settings;
         private readonly ColorBlend _rainbowColorBlend;
+        private readonly PluginSettings _settings;
 
         public GeneralModule(PluginInfo pluginInfo, PluginSettings settings) : base(pluginInfo)
         {
@@ -118,9 +118,9 @@ namespace Artemis.Plugins.Modules.General
             }
         }
 
-        public override IScreen GetMainViewModel()
+        public override IEnumerable<ModuleViewModel> GetViewModels()
         {
-            return new GeneralViewModel(this);
+            return new List<ModuleViewModel> {new GeneralViewModel(this)};
         }
 
         public override void Dispose()
