@@ -36,7 +36,8 @@ namespace Artemis.UI.Ninject
 
             // Bind the module VM
             Bind<IModuleViewModelFactory>().ToFactory();
-
+            Bind<IProfileEditorViewModelFactory>().ToFactory();
+            
             // Bind all UI services as singletons
             Kernel.Bind(x =>
             {

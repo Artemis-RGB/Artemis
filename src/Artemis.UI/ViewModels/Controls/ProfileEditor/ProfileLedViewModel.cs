@@ -13,7 +13,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public ProfileLedViewModel(Led led)
         {
             Led = led;
-            
+
             Execute.OnUIThread(CreateLedGeometry);
             Update();
         }
@@ -92,13 +92,9 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
         public void Update()
         {
-            if (ColorsEnabled)
-            {
-                if (Led.Id == LedId.Keyboard_Y)
-                    Console.WriteLine();
-                var newColor = Led.Color.ToMediaColor();
-                SetColor(newColor);
-            }
+            var newColor = Led.Color.ToMediaColor();
+            if (!DisplayColor.Equals(newColor))
+                DisplayColor = newColor;
 
             if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
                 X = Led.LedRectangle.X;
@@ -111,12 +107,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
             if (Math.Abs(Led.LedRectangle.Height - Height) > 0.1)
                 Height = Led.LedRectangle.Height;
-        }
-
-        public void SetColor(Color color)
-        {
-            if (!DisplayColor.Equals(color))
-                DisplayColor = color;
         }
     }
 }
