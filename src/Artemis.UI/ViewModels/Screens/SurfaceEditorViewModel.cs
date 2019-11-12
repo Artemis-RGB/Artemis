@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,10 +32,11 @@ namespace Artemis.UI.ViewModels.Screens
             _dialogService = dialogService;
         }
 
-        public RectangleGeometry SelectionRectangle { get; set; }
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
         public ObservableCollection<Surface> SurfaceConfigurations { get; set; }
-
+        public RectangleGeometry SelectionRectangle { get; set; }
+        public PanZoomViewModel PanZoomViewModel { get; set; }
+        
         public Surface SelectedSurface
         {
             get => _selectedSurface;
@@ -47,7 +47,6 @@ namespace Artemis.UI.ViewModels.Screens
             }
         }
 
-        public PanZoomViewModel PanZoomViewModel { get; set; }
         public string Title => "Surface Editor";
 
         public Surface CreateSurfaceConfiguration(string name)
@@ -189,7 +188,7 @@ namespace Artemis.UI.ViewModels.Screens
 
         #endregion
 
-        #region RgbDevice selection
+        #region Selection
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;

@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Surface;
-using RGB.NET.Core;
 using Stylet;
-using Point = System.Windows.Point;
 
 namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
 {
     public class SurfaceDeviceViewModel : PropertyChangedBase
     {
+        private readonly List<SurfaceLedViewModel> _leds;
         private double _dragOffsetX;
         private double _dragOffsetY;
-        private readonly List<SurfaceLedViewModel> _leds;
 
         public SurfaceDeviceViewModel(Device device)
         {

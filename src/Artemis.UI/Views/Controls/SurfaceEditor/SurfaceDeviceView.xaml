@@ -19,6 +19,7 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
+        <!-- Device image with fallback -->
         <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
@@ -32,6 +33,7 @@
                    TextWrapping="Wrap"
                    TextAlignment="Center" />
 
+        <!-- LEDs -->
         <ItemsControl ItemsSource="{Binding Leds}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -51,6 +53,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <!-- Selection rectangle -->
         <Rectangle Width="Auto" Height="Auto" StrokeThickness="2">
             <Rectangle.Stroke>
                 <SolidColorBrush Color="{StaticResource IdealForegroundColor}" />

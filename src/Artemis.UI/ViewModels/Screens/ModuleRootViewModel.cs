@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Plugins.Abstract;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.ViewModels.Controls.ProfileEditor;
 using Stylet;
 
@@ -6,10 +7,10 @@ namespace Artemis.UI.ViewModels.Screens
 {
     public class ModuleRootViewModel : Screen
     {
-        public ModuleRootViewModel(Module module)
+        public ModuleRootViewModel(Module module, IProfileEditorViewModelFactory profileEditorViewModelFactory)
         {
             Module = module;
-            ModuleViewModels = new BindableCollection<ModuleViewModel> {new ProfileEditorViewModel(Module)};
+            ModuleViewModels = new BindableCollection<ModuleViewModel> {profileEditorViewModelFactory.CreateModuleViewModel(Module)};
             ModuleViewModels.AddRange(Module.GetViewModels());
         }
 
