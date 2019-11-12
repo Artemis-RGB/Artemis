@@ -1,6 +1,5 @@
 ﻿using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.ViewModels.Controls.ProfileEditor;
 using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens

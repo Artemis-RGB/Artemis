@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -19,7 +20,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public ProfileEditorViewModel(Module module, ISurfaceService surfaceService, ICoreService coreService) : base(module, "Profile Editor")
         {
             surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
-            coreService.FrameRendered += CoreServiceOnFrameRendered;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
             Execute.OnUIThread(() =>
             {
@@ -28,8 +28,11 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             });
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
+
+            _timer = new Timer(1000.0 / 15) {AutoReset = true};
+            _timer.Elapsed += UpdateLeds;
         }
-        
+
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
@@ -39,7 +42,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             ApplySurfaceConfiguration(e.Surface);
         }
 
-        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
+        private void UpdateLeds(object sender, ElapsedEventArgs e)
         {
             foreach (var profileDeviceViewModel in Devices)
                 profileDeviceViewModel.Update();
@@ -60,10 +63,23 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             }
         }
 
+        protected override void OnActivate()
+        {
+            _timer.Start();
+            base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _timer.Stop();
+            base.OnDeactivate();
+        }
+
         #region Selection
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
+        private Timer _timer;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseEventArgs e)

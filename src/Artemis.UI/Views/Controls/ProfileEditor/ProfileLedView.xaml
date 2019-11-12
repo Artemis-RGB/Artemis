@@ -1,15 +1,14 @@
 ﻿<UserControl
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:profileEditor="clr-namespace:Artemis.UI.ViewModels.Controls.ProfileEditor"
-             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileLedView"
-             mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileLedViewModel}}"
-             d:DesignHeight="25" d:DesignWidth="25"
-             ToolTip="{Binding Tooltip}"
-             ToolTipService.IsEnabled="{Binding ColorsEnabled}">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:profileEditor="clr-namespace:Artemis.UI.ViewModels.Controls.ProfileEditor"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileLedView"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileLedViewModel}}"
+    d:DesignHeight="25" d:DesignWidth="25"
+    ToolTip="{Binding Tooltip}">
     <UserControl.Resources>
         <Converters:NullToImageConverter x:Key="NullToImageConverter"/>
     </UserControl.Resources>
@@ -18,15 +17,12 @@
             <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill" ImageSource="{Binding Led.Image, Converter={StaticResource NullToImageConverter}}" />
         </Grid.Background>
 
-        <Path Data="{Binding DisplayGeometry}" ClipToBounds="False" Visibility="{Binding ColorsEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Path.Fill>
-                <SolidColorBrush Color="{Binding DisplayColor}" Opacity="0.25" />
-            </Path.Fill>
-        </Path>
-        <Path Data="{Binding StrokeGeometry}" ClipToBounds="False" Visibility="{Binding ColorsEnabled, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Path.Fill>
-                <SolidColorBrush Color="{Binding DisplayColor}" />
-            </Path.Fill>
+        <Path Data="{Binding DisplayGeometry}"
+              Clip="{Binding Data, RelativeSource={RelativeSource Self}}"
+              ClipToBounds="False"
+              Fill="{Binding FillBrush}"
+              Stroke="{Binding BorderBrush}"
+              StrokeThickness="2">
         </Path>
     </Grid>
 </UserControl>
