@@ -31,6 +31,8 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
             _timer = new Timer(1000.0 / 15) {AutoReset = true};
             _timer.Elapsed += UpdateLeds;
+            // Remove
+            _timer.Start();
         }
 
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }

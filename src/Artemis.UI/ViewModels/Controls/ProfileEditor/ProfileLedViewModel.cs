@@ -4,6 +4,7 @@ using System.Windows.Media;
 using Artemis.UI.Extensions;
 using RGB.NET.Core;
 using Stylet;
+using Color = System.Windows.Media.Color;
 
 namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 {
@@ -13,12 +14,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         {
             Led = led;
 
-            Execute.OnUIThread(() =>
-            {
-                CreateLedGeometry();
-                FillBrush = new SolidColorBrush { Opacity = 0.25 };
-                BorderBrush = new SolidColorBrush();
-            });
+            Execute.OnUIThread(() => { CreateLedGeometry(); });
         }
 
         public Led Led { get; }
@@ -29,9 +25,8 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public double Height { get; private set; }
 
         public Geometry DisplayGeometry { get; private set; }
-        public SolidColorBrush FillBrush { get; set; }
-        public SolidColorBrush BorderBrush { get; set; }
-
+        public Geometry StrokeGeometry { get; private set; }
+        public Color DisplayColor { get; private set; }
 
         public string Tooltip => $"{Led.Id} - {Led.LedRectangle}";
 
@@ -69,6 +64,12 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
                 GeometryCombineMode.Union,
                 new ScaleTransform(Led.LedRectangle.Width, Led.LedRectangle.Height)
             );
+
+            // Stroke geometry is the display geometry excluding the inner geometry
+            StrokeGeometry = DisplayGeometry.GetWidenedPathGeometry(new Pen(null, Led.Shape == Shape.Rectangle ? 2.0 : 1.0), 0.1, ToleranceType.Absolute);
+            
+            DisplayGeometry.Freeze();
+            StrokeGeometry.Freeze();
         }
 
         public void Update()
@@ -76,11 +77,8 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             var newColor = Led.Color.ToMediaColor();
             Execute.OnUIThread(() =>
             {
-                if (!FillBrush.Color.Equals(newColor))
-                {
-                    FillBrush.Color = newColor;
-                    BorderBrush.Color = newColor;
-                }
+                if (!DisplayColor.Equals(newColor))
+                    DisplayColor = newColor;
             });
 
             if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
