@@ -69,6 +69,9 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
+    <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.8.5.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
@@ -163,6 +166,7 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
+    <Compile Include="Ninject\Factories\ModuleViewModelFactory.cs" />
     <Compile Include="Ninject\UIModule.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -176,29 +180,33 @@
     <Compile Include="Stylet\FluentValidationAdapter.cs" />
     <Compile Include="Stylet\NinjectBootstrapper.cs" />
     <Compile Include="ViewModels\Controls\ProfileEditor\ProfileDeviceViewModel.cs" />
+    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\Controls\ProfileEditor\ProfileLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceLedViewModel.cs" />
     <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceDeviceViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ConfirmDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModelValidator.cs" />
     <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModel.cs" />
+    <Compile Include="ViewModels\Screens\ModuleRootViewModel.cs" />
+    <Compile Include="ViewModels\Screens\SplashViewModel.cs" />
     <Compile Include="ViewModels\Utilities\DialogViewModelHost.cs" />
     <Compile Include="ViewModels\Dialogs\DialogViewModelBase.cs" />
     <Compile Include="ViewModels\Utilities\PanZoomViewModel.cs" />
     <Compile Include="ViewModels\Screens\DebugViewModel.cs" />
     <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
-    <Compile Include="ViewModels\Interfaces\IEditorViewModel.cs" />
     <Compile Include="ViewModels\Controls\Settings\DeviceSettingsViewModel.cs" />
-    <Compile Include="ViewModels\Interfaces\IHomeViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IScreenViewModel.cs" />
     <Compile Include="ViewModels\Screens\HomeViewModel.cs" />
-    <Compile Include="ViewModels\Interfaces\ISettingsViewModel.cs" />
     <Compile Include="ViewModels\Screens\RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ViewModels\Screens\SettingsViewModel.cs" />
+    <Page Include="Views\Controls\ProfileEditor\ProfileEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\SurfaceEditor\SurfaceLedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -231,7 +239,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Screens\ModuleRootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Screens\RootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Screens\SplashView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
