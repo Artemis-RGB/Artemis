@@ -4,7 +4,6 @@ using System.Windows.Media;
 using Artemis.UI.Extensions;
 using RGB.NET.Core;
 using Stylet;
-using Color = System.Windows.Media.Color;
 
 namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 {
@@ -14,8 +13,12 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         {
             Led = led;
 
-            Execute.OnUIThread(CreateLedGeometry);
-            Update();
+            Execute.OnUIThread(() =>
+            {
+                CreateLedGeometry();
+                FillBrush = new SolidColorBrush { Opacity = 0.25 };
+                BorderBrush = new SolidColorBrush();
+            });
         }
 
         public Led Led { get; }
@@ -26,9 +29,9 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public double Height { get; private set; }
 
         public Geometry DisplayGeometry { get; private set; }
-        public Geometry StrokeGeometry { get; private set; }
-        public Color DisplayColor { get; private set; }
-        public bool ColorsEnabled { get; set; } = true;
+        public SolidColorBrush FillBrush { get; set; }
+        public SolidColorBrush BorderBrush { get; set; }
+
 
         public string Tooltip => $"{Led.Id} - {Led.LedRectangle}";
 
@@ -66,35 +69,19 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
                 GeometryCombineMode.Union,
                 new ScaleTransform(Led.LedRectangle.Width, Led.LedRectangle.Height)
             );
-
-            // Create a smaller version of the display geometry
-            var innerGeometry = Geometry.Combine(
-                Geometry.Empty,
-                geometry,
-                GeometryCombineMode.Union,
-                new TransformGroup
-                {
-                    Children = new TransformCollection
-                    {
-                        new ScaleTransform(Led.LedRectangle.Width - 2, Led.LedRectangle.Height - 2),
-                        new TranslateTransform(1, 1)
-                    }
-                }
-            );
-            // Stroke geometry is the display geometry excluding the inner geometry
-            StrokeGeometry = Geometry.Combine(
-                DisplayGeometry,
-                innerGeometry,
-                GeometryCombineMode.Exclude,
-                null
-            );
         }
 
         public void Update()
         {
             var newColor = Led.Color.ToMediaColor();
-            if (!DisplayColor.Equals(newColor))
-                DisplayColor = newColor;
+            Execute.OnUIThread(() =>
+            {
+                if (!FillBrush.Color.Equals(newColor))
+                {
+                    FillBrush.Color = newColor;
+                    BorderBrush.Color = newColor;
+                }
+            });
 
             if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
                 X = Led.LedRectangle.X;
