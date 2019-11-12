@@ -17,7 +17,7 @@ using Stylet;
 
 namespace Artemis.UI.ViewModels.Screens
 {
-    public class SurfaceEditorViewModel : Screen, ISurfaceEditorViewModel
+    public class SurfaceEditorViewModel : Screen, IScreenViewModel
     {
         private readonly IDialogService _dialogService;
         private readonly ISurfaceService _surfaceService;

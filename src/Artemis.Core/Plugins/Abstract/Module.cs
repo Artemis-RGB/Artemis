@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using RGB.NET.Core;
@@ -42,9 +43,9 @@ namespace Artemis.Core.Plugins.Abstract
         public abstract void Render(double deltaTime, Surface surface, Graphics graphics);
 
         /// <summary>
-        ///     Called when the module's main view is being shown
+        ///     Called when the module's view model is being show, return view models here to create tabs for them
         /// </summary>
         /// <returns></returns>
-        public abstract IScreen GetMainViewModel();
+        public abstract IEnumerable<ModuleViewModel> GetViewModels();
     }
 }

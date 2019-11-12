@@ -1,10 +1,12 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
 using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels.Screens;
 using Ninject;
+using Stylet;
 
 namespace Artemis.UI
 {
@@ -15,9 +17,35 @@ namespace Artemis.UI
         protected override void OnExit(ExitEventArgs e)
         {
             // Stop the Artemis core
-            _core.Dispose();
+            _core?.Dispose();
 
             base.OnExit(e);
+        }
+
+        protected override void Launch()
+        {
+            var windowManager = (IWindowManager) GetInstance(typeof(IWindowManager));
+            var splashViewModel = new SplashViewModel(Kernel);
+            windowManager.ShowWindow(splashViewModel);
+
+            Task.Run(() =>
+            {
+                // Start the Artemis core
+                _core = Kernel.Get<ICoreService>();
+                // When the core is done, hide the splash and show the main window
+                _core.Initialized += (sender, args) => ShowMainWindow(windowManager, splashViewModel);
+                // While the core is instantiated, start listening for events on the splash
+                splashViewModel.ListenToEvents();
+            });
+        }
+
+        private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)
+        {
+            Execute.OnUIThread(() =>
+            {
+                windowManager.ShowWindow(RootViewModel);
+                splashViewModel.RequestClose();
+            });
         }
 
         protected override void ConfigureIoC(IKernel kernel)
@@ -28,10 +56,6 @@ namespace Artemis.UI
             kernel.Load<UIModule>();
             // Load the core assembly's module
             kernel.Load<CoreModule>();
-
-            // Start the Artemis core, the core's constructor will initialize async
-            _core = Kernel.Get<ICoreService>();
-
             base.ConfigureIoC(kernel);
         }
     }
