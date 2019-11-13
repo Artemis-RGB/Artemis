@@ -2,8 +2,6 @@
 using System.Drawing;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
-using RGB.NET.Core;
-using Stylet;
 
 namespace Artemis.Core.Plugins.Abstract
 {

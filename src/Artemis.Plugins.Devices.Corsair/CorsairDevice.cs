@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -25,7 +24,7 @@ namespace Artemis.Plugins.Devices.Corsair
             CorsairDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "CUESDK.dll"));
             _rgbService.AddDeviceProvider(DeviceProvider);
         }
-        
+
         public override void DisablePlugin()
         {
             // TODO: Remove the device provider from the surface

@@ -26,10 +26,10 @@ namespace Artemis.UI.Services
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText),
-                new ConstructorArgument("cancelText", cancelText),
+                new ConstructorArgument("cancelText", cancelText)
             };
             var result = await ShowDialog<ConfirmDialogViewModel>(arguments);
-            return (bool)result;
+            return (bool) result;
         }
 
         public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
@@ -39,7 +39,7 @@ namespace Artemis.UI.Services
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText),
-                new ConstructorArgument("cancelText", cancelText),
+                new ConstructorArgument("cancelText", cancelText)
             };
             var result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
             return (bool) result;

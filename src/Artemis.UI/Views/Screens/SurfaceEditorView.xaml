@@ -176,37 +176,41 @@
             </Grid>
         </materialDesign:Card>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True" UseLayoutRounding="True">
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
+                             VerticalAlignment="Stretch" Margin="5,0,0,0">
+            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True"
+                                       UseLayoutRounding="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
+                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}"
+                             SelectedItem="{Binding SelectedSurface}">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type models:Surface}">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="230"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="230" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <Button Grid.Column="1" 
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"
+                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1"
                                             Command="{s:Action DeleteSurfaceConfiguration}"
                                             CommandParameter="{Binding}"
-                                            Style="{StaticResource MaterialDesignIconForegroundButton}" 
-                                            ToolTip="Delete layout configuration" 
-                                            HorizontalAlignment="Right" >
+                                            Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                            ToolTip="Delete layout configuration"
+                                            HorizontalAlignment="Right">
                                         <materialDesign:PackIcon Kind="Trashcan" />
                                     </Button>
                                 </Grid>
-                                
+
                             </DataTemplate>
                         </ListBox.Resources>
                     </ListBox>
-                    <Button Grid.Row="0" 
-                            Style="{StaticResource MaterialDesignFloatingActionButton}" 
+                    <Button Grid.Row="0"
+                            Style="{StaticResource MaterialDesignFloatingActionButton}"
                             Command="{s:Action AddSurfaceConfiguration}"
                             Margin="0 0 10 10"
                             HorizontalAlignment="Right"

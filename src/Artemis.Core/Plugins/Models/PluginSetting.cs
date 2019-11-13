@@ -1,10 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
-using Stylet;
 
 namespace Artemis.Core.Plugins.Models
 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -17,6 +16,12 @@ namespace Artemis.Core.Plugins.Abstract
 
         public PluginInfo PluginInfo { get; internal set; }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Called when the plugin is unloaded, clean up any unmanaged resources here
+        /// </summary>
+        public abstract void Dispose();
+
         /// <summary>
         ///     Called when the plugin is activated
         /// </summary>
@@ -26,11 +31,5 @@ namespace Artemis.Core.Plugins.Abstract
         ///     Called when the plugin is deactivated
         /// </summary>
         public abstract void DisablePlugin();
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Called when the plugin is unloaded, clean up any unmanaged resources here
-        /// </summary>
-        public abstract void Dispose();
     }
 }

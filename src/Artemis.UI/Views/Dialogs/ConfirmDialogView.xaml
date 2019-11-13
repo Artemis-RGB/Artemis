@@ -1,22 +1,25 @@
 ﻿<UserControl x:Class="Artemis.UI.Views.Dialogs.ConfirmDialogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Views.Dialogs"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:dialogs="clr-namespace:Artemis.UI.ViewModels.Dialogs"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="163.274" d:DesignWidth="254.425"
              d:DataContext="{d:DesignInstance dialogs:ConfirmDialogViewModel}">
     <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Text="{Binding Header}" TextWrapping="Wrap"/>
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Text}" TextWrapping="Wrap"/>
+        <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Text="{Binding Header}" TextWrapping="Wrap" />
+        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Text}"
+                   TextWrapping="Wrap" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}" Content="{Binding CancelText}"/>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0" Command="{s:Action Confirm}" Content="{Binding ConfirmText}"/>
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
+                    Command="{s:Action Cancel}" Content="{Binding CancelText}" />
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0"
+                    Command="{s:Action Confirm}" Content="{Binding ConfirmText}" />
         </StackPanel>
     </StackPanel>
 </UserControl>

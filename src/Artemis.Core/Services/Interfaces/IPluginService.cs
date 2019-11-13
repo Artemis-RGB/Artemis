@@ -74,7 +74,7 @@ namespace Artemis.Core.Services.Interfaces
         #region Events
 
         /// <summary>
-        /// Occurs when built-in plugins are being loaded
+        ///     Occurs when built-in plugins are being loaded
         /// </summary>
         event EventHandler CopyingBuildInPlugins;
 

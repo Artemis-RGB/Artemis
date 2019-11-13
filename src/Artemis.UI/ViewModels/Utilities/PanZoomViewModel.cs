@@ -59,7 +59,7 @@ namespace Artemis.UI.ViewModels.Utilities
 
             PanX = Math.Min(0, PanX - delta.Value.X);
             PanY = Math.Min(0, PanY - delta.Value.Y);
-            
+
             _lastPanPosition = position;
         }
 

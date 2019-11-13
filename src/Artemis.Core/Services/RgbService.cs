@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
 using RGB.NET.Groups;
@@ -20,10 +18,10 @@ namespace Artemis.Core.Services
     {
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly ILogger _logger;
-        private readonly TimerUpdateTrigger _updateTrigger;
-        private ListLedGroup _background;
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
+        private readonly TimerUpdateTrigger _updateTrigger;
+        private ListLedGroup _background;
 
         internal RgbService(ILogger logger, ISettingsService settingsService)
         {
@@ -40,7 +38,6 @@ namespace Artemis.Core.Services
             _loadedDevices = new List<IRGBDevice>();
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(_updateTrigger);
-            
         }
 
         /// <inheritdoc />
@@ -68,9 +65,7 @@ namespace Artemis.Core.Services
                     OnDeviceLoaded(new DeviceEventArgs(surfaceDevice));
                 }
                 else
-                {
                     OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
-                }
             }
         }
 
@@ -91,7 +86,7 @@ namespace Artemis.Core.Services
         {
             _updateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
         }
-        
+
         private void SurfaceOnException(ExceptionEventArgs args)
         {
             _logger.Warning("Surface threw e");

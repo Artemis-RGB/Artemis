@@ -25,7 +25,10 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="6,50,6,6" />
-        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontSize="16">Artemis is initializing...</TextBlock>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White"
+                   FontSize="16">
+            Artemis is initializing...
+        </TextBlock>
         <TextBlock Grid.Row="2" HorizontalAlignment="Center" Foreground="#FFDDDDDD" Text="{Binding Status}" />
         <ProgressBar Grid.Row="3" IsIndeterminate="True" Maximum="1" Minimum="1" Margin="16 0" />
     </Grid>

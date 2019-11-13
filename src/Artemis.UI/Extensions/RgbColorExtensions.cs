@@ -1,5 +1,4 @@
-﻿using System;
-using RGB.NET.Core;
+﻿using RGB.NET.Core;
 using Color = System.Windows.Media.Color;
 
 namespace Artemis.UI.Extensions

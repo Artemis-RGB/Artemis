@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -101,6 +100,16 @@ namespace Artemis.Core.Services
             OnFrameRendered(new FrameRenderedEventArgs(_rgbService.GraphicsDecorator.GetBitmap(), _rgbService.Surface));
         }
 
+        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
+        {
+            FrameRendering?.Invoke(this, e);
+        }
+
+        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
+        }
+
         #region Events
 
         public event EventHandler Initialized;
@@ -114,15 +123,5 @@ namespace Artemis.Core.Services
         }
 
         #endregion
-
-        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
-        {
-            FrameRendering?.Invoke(this, e);
-        }
-
-        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
-        {
-            FrameRendered?.Invoke(this, e);
-        }
     }
 }

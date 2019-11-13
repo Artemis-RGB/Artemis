@@ -8,8 +8,8 @@ namespace Artemis.Core.Ninject
         private static readonly ILogger _logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .Enrich.WithDemystifiedStackTraces()
-            .WriteTo.File("Logs/Artemis log-.txt", 
-                rollingInterval: RollingInterval.Day, 
+            .WriteTo.File("Logs/Artemis log-.txt",
+                rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext:l}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 
@@ -19,7 +19,6 @@ namespace Artemis.Core.Ninject
             if (requestingType != null)
                 return _logger.ForContext(requestingType);
             return _logger;
-            
         }
     }
 }

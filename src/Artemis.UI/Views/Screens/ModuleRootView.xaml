@@ -10,7 +10,8 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance screens:ModuleRootViewModel}">
-    <dragablz:TabablzControl Margin="0 -1 0 0" FixedHeaderCount="{Binding FixedHeaderCount}" ItemsSource="{Binding ModuleViewModels}">
+    <dragablz:TabablzControl Margin="0 -1 0 0" FixedHeaderCount="{Binding FixedHeaderCount}"
+                             ItemsSource="{Binding ModuleViewModels}">
         <dragablz:TabablzControl.HeaderItemTemplate>
             <DataTemplate>
                 <TextBlock Text="{Binding Name}" />

@@ -17,11 +17,11 @@ namespace Artemis.Core.Services.Storage
     public class SurfaceService : ISurfaceService
     {
         private readonly ILogger _logger;
-        private readonly IRgbService _rgbService;
         private readonly IPluginService _pluginService;
+        private readonly PluginSetting<double> _renderScaleSetting;
+        private readonly IRgbService _rgbService;
         private readonly List<Surface> _surfaceConfigurations;
         private readonly ISurfaceRepository _surfaceRepository;
-        private readonly PluginSetting<double> _renderScaleSetting;
 
         internal SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginService pluginService, ISettingsService settingsService)
         {
@@ -128,27 +128,6 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
-        #region Event handlers
-
-        private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
-        {
-            lock (_surfaceConfigurations)
-            {
-                foreach (var surfaceConfiguration in _surfaceConfigurations)
-                    AddDeviceIfMissing(e.Device, surfaceConfiguration);
-            }
-
-            UpdateSurfaceConfiguration(ActiveSurface, true);
-        }
-
-        private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
-        {
-            foreach (var surfaceConfiguration in SurfaceConfigurations)
-                surfaceConfiguration.UpdateScale(_renderScaleSetting.Value);
-        }
-
-        #endregion
-
         #region Repository
 
         private void LoadFromRepository()
@@ -221,6 +200,27 @@ namespace Artemis.Core.Services.Storage
             }
 
             surface.Devices.Add(device);
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
+        {
+            lock (_surfaceConfigurations)
+            {
+                foreach (var surfaceConfiguration in _surfaceConfigurations)
+                    AddDeviceIfMissing(e.Device, surfaceConfiguration);
+            }
+
+            UpdateSurfaceConfiguration(ActiveSurface, true);
+        }
+
+        private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
+        {
+            foreach (var surfaceConfiguration in SurfaceConfigurations)
+                surfaceConfiguration.UpdateScale(_renderScaleSetting.Value);
         }
 
         #endregion

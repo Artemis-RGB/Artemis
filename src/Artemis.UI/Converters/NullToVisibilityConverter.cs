@@ -7,12 +7,6 @@ namespace Artemis.UI.Converters
 {
     public class NullToVisibilityConverter : IValueConverter
     {
-        private enum Parameters
-        {
-            Normal,
-            Inverted
-        }
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var direction = (Parameters) Enum.Parse(typeof(Parameters), (string) parameter ?? throw new InvalidOperationException());
@@ -22,6 +16,7 @@ namespace Artemis.UI.Converters
                     return Visibility.Hidden;
                 return Visibility.Visible;
             }
+
             if (value == null)
                 return Visibility.Visible;
             return Visibility.Hidden;
@@ -30,6 +25,12 @@ namespace Artemis.UI.Converters
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+
+        private enum Parameters
+        {
+            Normal,
+            Inverted
         }
     }
 }

@@ -4,7 +4,6 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using QRCoder;
-using RGB.NET.Core;
 
 namespace Artemis.Plugins.LayerTypes.Brush
 {

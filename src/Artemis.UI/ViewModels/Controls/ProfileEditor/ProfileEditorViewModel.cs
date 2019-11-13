@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -9,7 +8,6 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Screens;
 using Artemis.UI.ViewModels.Utilities;
@@ -21,7 +19,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 {
     public class ProfileEditorViewModel : ModuleViewModel
     {
-        private TimerUpdateTrigger _updateTrigger;
+        private readonly TimerUpdateTrigger _updateTrigger;
 
         public ProfileEditorViewModel(Module module, ISurfaceService surfaceService, ISettingsService settingsService) : base(module, "Profile Editor")
         {
@@ -37,7 +35,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
             // Borrow RGB.NET's update trigger, update up to 25 FPS, ignore higher settings than that
             var targetFps = Math.Min(settingsService.GetSetting("TargetFrameRate", 25).Value, 25);
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps };
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
             _updateTrigger.Update += UpdateLeds;
 
             _updateTrigger.Start();

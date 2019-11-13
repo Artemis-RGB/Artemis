@@ -25,6 +25,5 @@ namespace Artemis.Core.Ninject
 
             return _instance;
         }
-
     }
 }

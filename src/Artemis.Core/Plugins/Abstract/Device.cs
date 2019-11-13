@@ -12,12 +12,12 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Device : Plugin
     {
-        public IRGBDeviceProvider DeviceProvider { get; }
-
         protected Device(PluginInfo pluginInfo, IRGBDeviceProvider deviceProvider) : base(pluginInfo)
         {
             DeviceProvider = deviceProvider ?? throw new ArgumentNullException(nameof(deviceProvider));
         }
+
+        public IRGBDeviceProvider DeviceProvider { get; }
 
 
         protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)

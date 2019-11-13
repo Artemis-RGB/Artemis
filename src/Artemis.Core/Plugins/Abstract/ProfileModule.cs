@@ -3,7 +3,6 @@ using System.Drawing;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
-using RGB.NET.Core;
 
 namespace Artemis.Core.Plugins.Abstract
 {

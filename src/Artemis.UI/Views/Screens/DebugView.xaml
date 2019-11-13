@@ -73,9 +73,9 @@
 
         <Grid Margin="0,10,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0">
                 This image shows what is being rendered and dispatched to RGB.NET
@@ -83,14 +83,15 @@
             <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0" FontWeight="Bold">
                 FPS:
             </TextBlock>
-            <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}" />
         </Grid>
-            
+
         <materialDesign:Card VerticalAlignment="Stretch" Margin="0, 5,0,0">
             <Image Source="{Binding CurrentFrame}" />
         </materialDesign:Card>
 
-        <Button Command="{s:Action ForceGarbageCollection}" Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Left" Margin="0, 10, 0, 0">
+        <Button Command="{s:Action ForceGarbageCollection}" Style="{StaticResource MaterialDesignRaisedButton}"
+                HorizontalAlignment="Left" Margin="0, 10, 0, 0">
             Force garbage collection
         </Button>
     </StackPanel>
