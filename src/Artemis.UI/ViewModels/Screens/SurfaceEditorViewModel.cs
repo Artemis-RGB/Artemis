@@ -101,6 +101,13 @@ namespace Artemis.UI.ViewModels.Screens
                     viewModel.Device = surfaceDeviceConfiguration;
             }
 
+            // Sort the devices by ZIndex
+            Execute.OnUIThread(() =>
+            {
+                foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
+                    Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+            });
+
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
         }
 
