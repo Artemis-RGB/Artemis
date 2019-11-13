@@ -10,12 +10,12 @@
              d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileDeviceViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:NullToImageConverter x:Key="NullToImageConverter"/>
+        <converters:NullToImageConverter x:Key="NullToImageConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <!-- Device image with fallback -->
-        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}"/>
+        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"
