@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Artemis.Core.Extensions;
 using Artemis.Storage.Entities;
 using RGB.NET.Core;
 

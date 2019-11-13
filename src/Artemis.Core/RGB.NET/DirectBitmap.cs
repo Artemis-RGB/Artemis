@@ -50,6 +50,7 @@ namespace Artemis.Core.RGB.NET
 
                 return result;
             }
+
             return Color.Black;
         }
     }

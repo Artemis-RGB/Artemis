@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Events;
-using Artemis.Core.Models.Surface;
 using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 

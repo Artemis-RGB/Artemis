@@ -46,7 +46,7 @@ namespace Artemis.Storage.Repositories
         {
             return await _dbContext.Surfaces.Include(s => s.DeviceEntities).ToListAsync();
         }
-        
+
         public void Save()
         {
             _dbContext.SaveChanges();

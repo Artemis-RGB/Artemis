@@ -11,6 +11,13 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
             ApplyLedToViewModel();
         }
 
+        public Led Led { get; set; }
+
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+
         public void ApplyLedToViewModel()
         {
             X = Led.LedRectangle.X;
@@ -18,12 +25,5 @@ namespace Artemis.UI.ViewModels.Controls.SurfaceEditor
             Width = Led.LedRectangle.Width;
             Height = Led.LedRectangle.Height;
         }
-
-        public Led Led { get; set; }
-
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
     }
 }

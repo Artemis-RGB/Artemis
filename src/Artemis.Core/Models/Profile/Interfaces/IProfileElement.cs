@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Drawing;
-using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Profile.Interfaces
 {

@@ -15,7 +15,7 @@
              MouseLeave="{s:Action MouseLeave}"
              ToolTip="{Binding Device.RgbDevice.DeviceInfo.DeviceName}">
     <UserControl.Resources>
-        <converters:NullToImageConverter x:Key="NullToImageConverter"/>
+        <converters:NullToImageConverter x:Key="NullToImageConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
@@ -64,29 +64,40 @@
             <Rectangle.Style>
                 <Style TargetType="{x:Type Rectangle}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Hover}">
+                        <DataTrigger Binding="{Binding SelectionStatus}"
+                                     Value="{x:Static surfaceEditor:SelectionStatus.Hover}">
                             <DataTrigger.EnterActions>
                                 <StopStoryboard BeginStoryboardName="ToSelected" />
                                 <BeginStoryboard x:Name="ToHover">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
-                                        <ColorAnimation Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)" To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                            To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)"
+                                            To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Selected}">
+                        <DataTrigger Binding="{Binding SelectionStatus}"
+                                     Value="{x:Static surfaceEditor:SelectionStatus.Selected}">
                             <DataTrigger.EnterActions>
                                 <StopStoryboard BeginStoryboardName="ToHover" />
                                 <BeginStoryboard x:Name="ToSelected">
                                     <Storyboard>
-                                        <ColorAnimation Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" To="{StaticResource Primary400}" Duration="0:0:0.25" />
-                                        <ColorAnimation Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)" To="{StaticResource Primary400}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                            To="{StaticResource Primary400}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)"
+                                            To="{StaticResource Primary400}" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.None}">
+                        <DataTrigger Binding="{Binding SelectionStatus}"
+                                     Value="{x:Static surfaceEditor:SelectionStatus.None}">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>

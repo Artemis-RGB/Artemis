@@ -8,7 +8,7 @@ namespace Artemis.Core.Extensions
         {
             if (type == null)
                 return false;
-           
+
             return type.BaseType?.GetGenericTypeDefinition() == genericType;
         }
     }

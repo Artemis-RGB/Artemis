@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Artemis.Core.Events;
@@ -16,8 +15,8 @@ namespace Artemis.UI.ViewModels.Screens
     public class RootViewModel : Conductor<IScreen>.Collection.OneActive
     {
         private readonly ICollection<IScreenViewModel> _artemisViewModels;
-        private readonly IPluginService _pluginService;
         private readonly IModuleViewModelFactory _moduleViewModelFactory;
+        private readonly IPluginService _pluginService;
 
         public RootViewModel(ICollection<IScreenViewModel> artemisViewModels, IPluginService pluginService, IModuleViewModelFactory moduleViewModelFactory)
         {

@@ -1,6 +1,5 @@
 ﻿using Artemis.Core.Models;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Interfaces;
 
 namespace Artemis.Core.Services.Interfaces
 {

@@ -12,9 +12,12 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -26,7 +29,8 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Rectangle Grid.Row="0" Height="140" Width="196" Fill="{DynamicResource MaterialDesignPaper}" />
-            <Image Grid.Row="0" Source="{Binding Device.RgbDevice.DeviceInfo.Image}" Height="130" Width="190" RenderOptions.BitmapScalingMode="HighQuality" />
+            <Image Grid.Row="0" Source="{Binding Device.RgbDevice.DeviceInfo.Image}" Height="130" Width="190"
+                   RenderOptions.BitmapScalingMode="HighQuality" />
             <Button Grid.Row="0"
                     Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                     HorizontalAlignment="Right"

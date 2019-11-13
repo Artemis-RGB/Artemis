@@ -29,6 +29,8 @@ namespace Artemis.UI.ViewModels.Screens
         public ImageSource CurrentFrame { get; set; }
         public double CurrentFps { get; set; }
 
+        public string Title => "Debugger";
+
         public void ForceGarbageCollection()
         {
             GC.Collect();
@@ -42,10 +44,7 @@ namespace Artemis.UI.ViewModels.Screens
 
             var imageSource = ImageSourceFromBitmap(e.Bitmap);
             imageSource.Freeze();
-            Execute.OnUIThread(() =>
-            {
-                CurrentFrame = imageSource;
-            });
+            Execute.OnUIThread(() => { CurrentFrame = imageSource; });
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -72,12 +71,10 @@ namespace Artemis.UI.ViewModels.Screens
             {
                 DeleteObject(handle);
             }
-        } 
+        }
 
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
-
-        public string Title => "Debugger";
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Artemis.Core.Extensions;
+﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -25,7 +23,7 @@ namespace Artemis.Plugins.Devices.Logitech
             LogitechDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "LogitechLedEnginesWrapper.dll"));
             _rgbService.AddDeviceProvider(DeviceProvider);
         }
-        
+
         public override void DisablePlugin()
         {
         }

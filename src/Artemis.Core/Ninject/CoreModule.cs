@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Activation;

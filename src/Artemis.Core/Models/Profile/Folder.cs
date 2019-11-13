@@ -3,7 +3,6 @@ using System.Drawing;
 using Artemis.Core.Models.Profile.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities;
-using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Profile
 {
