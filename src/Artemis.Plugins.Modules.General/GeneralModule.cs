@@ -68,10 +68,10 @@ namespace Artemis.Plugins.Modules.General
         public override void Render(double deltaTime, Surface surface, Graphics graphics)
         {
             // Per-device coloring, slower
-//            RenderPerDevice(surface, graphics);
+            RenderPerDevice(surface, graphics);
 
             // Per-LED coloring, slowest
-            RenderPerLed(surface, graphics);
+            // RenderPerLed(surface, graphics);
         }
 
         public void RenderFullSurface(Surface surface, Graphics graphics)

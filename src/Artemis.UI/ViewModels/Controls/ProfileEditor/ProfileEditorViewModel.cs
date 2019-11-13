@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Timers;
 using System.Windows;
@@ -7,17 +8,22 @@ using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.ViewModels.Screens;
 using Artemis.UI.ViewModels.Utilities;
+using RGB.NET.Core;
 using Stylet;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 {
     public class ProfileEditorViewModel : ModuleViewModel
     {
-        public ProfileEditorViewModel(Module module, ISurfaceService surfaceService, ICoreService coreService) : base(module, "Profile Editor")
+        private TimerUpdateTrigger _updateTrigger;
+
+        public ProfileEditorViewModel(Module module, ISurfaceService surfaceService, ISettingsService settingsService) : base(module, "Profile Editor")
         {
             surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
@@ -29,10 +35,12 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
 
-            _timer = new Timer(1000.0 / 15) {AutoReset = true};
-            _timer.Elapsed += UpdateLeds;
-            // Remove
-            _timer.Start();
+            // Borrow RGB.NET's update trigger, update up to 25 FPS, ignore higher settings than that
+            var targetFps = Math.Min(settingsService.GetSetting("TargetFrameRate", 25).Value, 25);
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps };
+            _updateTrigger.Update += UpdateLeds;
+
+            _updateTrigger.Start();
         }
 
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
@@ -44,7 +52,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             ApplySurfaceConfiguration(e.Surface);
         }
 
-        private void UpdateLeds(object sender, ElapsedEventArgs e)
+        private void UpdateLeds(object sender, CustomUpdateData customUpdateData)
         {
             foreach (var profileDeviceViewModel in Devices)
                 profileDeviceViewModel.Update();
@@ -67,13 +75,13 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
         protected override void OnActivate()
         {
-            _timer.Start();
+            _updateTrigger.Start();
             base.OnActivate();
         }
 
         protected override void OnDeactivate()
         {
-            _timer.Stop();
+            _updateTrigger.Stop();
             base.OnDeactivate();
         }
 
@@ -81,7 +89,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
-        private Timer _timer;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseEventArgs e)

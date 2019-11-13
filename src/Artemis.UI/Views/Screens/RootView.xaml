@@ -28,9 +28,7 @@
                   Background="Transparent"
                   RenderOptions.BitmapScalingMode="HighQuality"
                   Margin="0,0,-10,0">
-                <Image Source="{StaticResource BowIcon}"
-                       Stretch="Uniform"
-                       Margin="6" />
+                <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="6" />
             </Grid>
         </DataTemplate>
     </metro:MetroWindow.IconTemplate>
