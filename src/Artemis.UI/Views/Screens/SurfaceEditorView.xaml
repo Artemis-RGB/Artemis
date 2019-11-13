@@ -22,8 +22,9 @@
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="*" MinWidth="100" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="300" MinWidth="100" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -175,27 +176,24 @@
                 </StackPanel>
             </Grid>
         </materialDesign:Card>
-
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
+        <GridSplitter Grid.Column="1" Grid.Row="2" Width="5" HorizontalAlignment="Stretch" />
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="2"
                              VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True"
-                                       UseLayoutRounding="True">
-                <Grid>
+            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True" UseLayoutRounding="True">
+                <Grid HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding SurfaceConfigurations}"
-                             SelectedItem="{Binding SelectedSurface}">
+                    <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type models:Surface}">
-                                <Grid HorizontalAlignment="Stretch">
+                                <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="230" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="40" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"
-                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" />
                                     <Button Grid.Column="1"
                                             Command="{s:Action DeleteSurfaceConfiguration}"
                                             CommandParameter="{Binding}"

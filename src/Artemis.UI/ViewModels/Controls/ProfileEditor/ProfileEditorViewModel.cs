@@ -37,8 +37,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             var targetFps = Math.Min(settingsService.GetSetting("TargetFrameRate", 25).Value, 25);
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
             _updateTrigger.Update += UpdateLeds;
-
-            _updateTrigger.Start();
         }
 
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
@@ -69,6 +67,13 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
                 else
                     viewModel.Device = surfaceDeviceConfiguration;
             }
+
+            // Sort the devices by ZIndex
+            Execute.OnUIThread(() =>
+            {
+                foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList()) 
+                    Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+            });
         }
 
         protected override void OnActivate()

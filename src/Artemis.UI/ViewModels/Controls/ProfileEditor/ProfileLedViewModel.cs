@@ -13,8 +13,12 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public ProfileLedViewModel(Led led)
         {
             Led = led;
+            X = Led.LedRectangle.X;
+            Y = Led.LedRectangle.Y;
+            Width = Led.LedRectangle.Width;
+            Height = Led.LedRectangle.Height;
 
-            Execute.OnUIThread(() => { CreateLedGeometry(); });
+            Execute.OnUIThread(CreateLedGeometry);
         }
 
         public Led Led { get; }
@@ -27,8 +31,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
         public Geometry DisplayGeometry { get; private set; }
         public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
-
-        public string Tooltip => $"{Led.Id} - {Led.LedRectangle}";
 
         private void CreateLedGeometry()
         {
@@ -103,18 +105,6 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
                 if (!DisplayColor.Equals(newColor))
                     DisplayColor = newColor;
             });
-
-            if (Math.Abs(Led.LedRectangle.X - X) > 0.1)
-                X = Led.LedRectangle.X;
-
-            if (Math.Abs(Led.LedRectangle.Y - Y) > 0.1)
-                Y = Led.LedRectangle.Y;
-
-            if (Math.Abs(Led.LedRectangle.Width - Width) > 0.1)
-                Width = Led.LedRectangle.Width;
-
-            if (Math.Abs(Led.LedRectangle.Height - Height) > 0.1)
-                Height = Led.LedRectangle.Height;
         }
     }
 }

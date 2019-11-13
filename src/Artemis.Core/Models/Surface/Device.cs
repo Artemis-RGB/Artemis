@@ -114,5 +114,10 @@ namespace Artemis.Core.Models.Surface
             RgbDevice = null;
             Surface = null;
         }
+
+        public override string ToString()
+        {
+            return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
+        }
     }
 }
