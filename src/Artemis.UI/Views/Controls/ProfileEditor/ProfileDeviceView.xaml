@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileDeviceView"
+<UserControl x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileDeviceView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,7 +15,7 @@
     </UserControl.Resources>
     <Grid>
         <!-- Device image with fallback -->
-        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
+        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}"/>
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"

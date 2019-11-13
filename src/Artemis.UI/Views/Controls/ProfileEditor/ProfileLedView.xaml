@@ -12,10 +12,10 @@
     <UserControl.Resources>
         <Converters:NullToImageConverter x:Key="NullToImageConverter" />
     </UserControl.Resources>
-    <Grid Width="{Binding Width}" Height="{Binding Height}" ClipToBounds="False">
-        <Grid.Background>
+    <Canvas Width="{Binding Width}" Height="{Binding Height}">
+        <Canvas.Background>
             <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill" ImageSource="{Binding Led.Image, Converter={StaticResource NullToImageConverter}}" />
-        </Grid.Background>
+        </Canvas.Background>
 
         <Path Data="{Binding DisplayGeometry}" ClipToBounds="False">
             <Path.Fill>
@@ -27,6 +27,5 @@
                 <SolidColorBrush Color="{Binding DisplayColor}" />
             </Path.Fill>
         </Path>
-
-    </Grid>
+    </Canvas>
 </UserControl>
