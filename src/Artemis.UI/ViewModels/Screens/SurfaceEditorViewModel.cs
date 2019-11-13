@@ -36,7 +36,7 @@ namespace Artemis.UI.ViewModels.Screens
         public ObservableCollection<Surface> SurfaceConfigurations { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
-        
+
         public Surface SelectedSurface
         {
             get => _selectedSurface;

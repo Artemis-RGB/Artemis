@@ -4,7 +4,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:profileEditor="clr-namespace:Artemis.UI.ViewModels.Controls.ProfileEditor"
-    xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileLedView"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+    x:Class="Artemis.UI.Views.Controls.ProfileEditor.ProfileLedView"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileLedViewModel}}"
     d:DesignHeight="25" d:DesignWidth="25"
@@ -14,7 +15,8 @@
     </UserControl.Resources>
     <Canvas Width="{Binding Width}" Height="{Binding Height}">
         <Canvas.Background>
-            <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill" ImageSource="{Binding Led.Image, Converter={StaticResource NullToImageConverter}}" />
+            <ImageBrush AlignmentX="Center" AlignmentY="Center" Stretch="Fill"
+                        ImageSource="{Binding Led.Image, Converter={StaticResource NullToImageConverter}}" />
         </Canvas.Background>
 
         <Path Data="{Binding DisplayGeometry}" ClipToBounds="False">

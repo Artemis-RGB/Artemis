@@ -31,7 +31,7 @@
                     Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Teal.xaml" />
 
                 <!-- Include the Dragablz Material Design style -->
-                <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- MahApps Brushes -->
@@ -59,7 +59,8 @@
                              Color="{DynamicResource Primary500Foreground}" />
 
             <!-- tell Dragablz tab control to use the Material Design theme -->
-            <Style TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" />
+            <Style TargetType="{x:Type dragablz:TabablzControl}"
+                   BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" />
 
             <!-- Some general convertes etc. -->
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -68,7 +69,7 @@
                 <DrawingImage.Drawing>
                     <DrawingGroup>
                         <GeometryDrawing Brush="{DynamicResource IdealForegroundColorBrush}"
-                                     Geometry="M1518 3378 c-48 -63 -61 -101 -66 -184 -4 -70 -1 -91 27 
+                                         Geometry="M1518 3378 c-48 -63 -61 -101 -66 -184 -4 -70 -1 -91 27 
                                      -170 l31 -89 -27 -20 c-32 -24 -849 -601 -981 -693 l-93 -64 -87 40 
                                      c-48 22 -91 37 -95 32 -5 -4 9 -41 29 -83 l37 -75 -28 -24 c-23 -20 
                                      -29 -35 -33 -81 l-4 -56 -82 -19 c-109 -25 -109 -41 4 -91 l85 -38 7 
