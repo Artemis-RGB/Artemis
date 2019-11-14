@@ -12,9 +12,10 @@
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
                    Title="Artemis"
-                   d:DesignHeight="639.411"
-                   d:DesignWidth="1113.251"
+                   d:DesignHeight="640"
+                   d:DesignWidth="1200"
                    d:DataContext="{d:DesignInstance screens:RootViewModel}"
+                   SaveWindowPosition="True"
                    Icon="/Artemis.UI;component/Resources/logo-512.png">
     <metro:MetroWindow.LeftWindowCommands>
         <metro:WindowCommands>

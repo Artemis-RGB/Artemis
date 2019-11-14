@@ -21,7 +21,14 @@ namespace Artemis.Core.Plugins.Models
             _pluginSettingEntity = pluginSettingEntity;
 
             Name = pluginSettingEntity.Name;
-            Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
+            try
+            {
+                Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
+            }
+            catch (JsonReaderException)
+            {
+                Value = default(T);
+            }
         }
 
         /// <summary>
@@ -85,6 +92,11 @@ namespace Artemis.Core.Plugins.Models
         protected virtual void OnSettingChanged()
         {
             SettingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Name)}: {Name}, {nameof(Value)}: {Value}, {nameof(HasChanged)}: {HasChanged}";
         }
     }
 }

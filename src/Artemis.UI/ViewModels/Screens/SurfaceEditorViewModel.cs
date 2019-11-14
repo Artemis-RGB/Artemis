@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Storage;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.ViewModels.Controls.SurfaceEditor;
@@ -19,9 +21,10 @@ namespace Artemis.UI.ViewModels.Screens
     public class SurfaceEditorViewModel : Screen, IScreenViewModel
     {
         private readonly IDialogService _dialogService;
+        private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
 
-        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService)
+        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService)
         {
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<Surface>();
@@ -30,12 +33,14 @@ namespace Artemis.UI.ViewModels.Screens
 
             _surfaceService = surfaceService;
             _dialogService = dialogService;
+            _settingsService = settingsService;
         }
 
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
         public ObservableCollection<Surface> SurfaceConfigurations { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
+        public PluginSetting<GridLength> SurfaceListWidth { get; set; }
 
         public Surface SelectedSurface
         {
@@ -54,6 +59,16 @@ namespace Artemis.UI.ViewModels.Screens
             var config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
             return config;
+        }
+
+        private void LoadWorkspaceSettings()
+        {
+            SurfaceListWidth = _settingsService.GetSetting("SurfaceEditor.SurfaceListWidth", new GridLength(300.0));
+        }
+        
+        private void SaveWorkspaceSettings()
+        {
+            SurfaceListWidth.Save();
         }
 
         private void LoadSurfaceConfigurations()
@@ -116,7 +131,14 @@ namespace Artemis.UI.ViewModels.Screens
         protected override void OnActivate()
         {
             LoadSurfaceConfigurations();
+            LoadWorkspaceSettings();
             base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            SaveWorkspaceSettings();
+            base.OnDeactivate();
         }
 
         #endregion

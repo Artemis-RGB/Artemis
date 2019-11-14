@@ -37,7 +37,10 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             switch (Led.Shape)
             {
                 case Shape.Custom:
-                    CreateCustomGeometry();
+                    if (Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                        CreateCustomGeometry(2.0);
+                    else
+                        CreateCustomGeometry(1.0);
                     break;
                 case Shape.Rectangle:
                     if (Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
@@ -73,7 +76,7 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
             DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Led.LedRectangle.Width - 2, Led.LedRectangle.Height - 2), 1.6, 1.6);
         }
 
-        private void CreateCustomGeometry()
+        private void CreateCustomGeometry(double deflateAmount)
         {
             try
             {
@@ -85,8 +88,8 @@ namespace Artemis.UI.ViewModels.Controls.ProfileEditor
                     {
                         Children = new TransformCollection
                         {
-                            new ScaleTransform(Led.LedRectangle.Width - 1, Led.LedRectangle.Height - 1),
-                            new TranslateTransform(0.5, 0.5)
+                            new ScaleTransform(Led.LedRectangle.Width - deflateAmount, Led.LedRectangle.Height - deflateAmount),
+                            new TranslateTransform(deflateAmount/2, deflateAmount/2)
                         }
                     }
                 );
