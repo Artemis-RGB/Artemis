@@ -224,9 +224,9 @@ namespace Artemis.UI.ViewModels.Screens
         private Surface _selectedSurface;
 
         // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseClick(object sender, MouseEventArgs e)
+        public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
         {
-            if (IsPanKeyDown())
+            if (IsPanKeyDown() || e.ChangedButton == MouseButton.Right)
                 return;
 
             var position = e.GetPosition((IInputElement) sender);
