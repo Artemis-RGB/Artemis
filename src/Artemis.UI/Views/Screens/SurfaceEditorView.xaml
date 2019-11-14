@@ -3,12 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:screens="clr-namespace:Artemis.UI.ViewModels.Screens"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:models="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance screens:SurfaceEditorViewModel}"
              d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -33,8 +31,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
-            <TextBlock >
-                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3"/> The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.
+            <TextBlock>
+                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" /> The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.
             </TextBlock>
             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 10" />
         </StackPanel>
@@ -177,7 +175,7 @@
             </Grid>
         </materialDesign:Card>
 
-        <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" />
+        <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="2"
                              VerticalAlignment="Stretch" Margin="5,0,0,0">
@@ -226,7 +224,7 @@
         </materialDesign:Card>
 
         <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
-            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3"/>
+            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3" />
             <Run Text="Hold" />
             <Run FontWeight="Bold" Text="shift" />
             <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down" />

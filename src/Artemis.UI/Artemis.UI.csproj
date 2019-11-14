@@ -311,9 +311,7 @@
   <ItemGroup>
     <Resource Include="logo-512.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Controls\RgbDevice\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

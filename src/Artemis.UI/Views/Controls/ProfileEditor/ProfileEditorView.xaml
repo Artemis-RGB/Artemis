@@ -30,18 +30,17 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            
         </Grid.RowDefinitions>
-        
+
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock >
-                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3"/>  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
+            <TextBlock>
+                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" />  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
             </TextBlock>
             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 10" />
         </StackPanel>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0"
-                             VerticalAlignment="Stretch" Margin="0,0,5,0">
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="0" VerticalAlignment="Stretch" Margin="0,0,5,0">
             <Grid ClipToBounds="True"
                   KeyUp="{s:Action EditorGridKeyUp}"
                   KeyDown="{s:Action EditorGridKeyDown}"
@@ -149,21 +148,32 @@
             </Grid>
         </materialDesign:Card>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="1"
-                             VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True"
-                                       UseLayoutRounding="True">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                </Grid>
-            </materialDesign:DialogHost>
-        </materialDesign:Card>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="5,0,0,0" />
+            <GridSplitter Grid.Row="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
+            <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="5,0,0,0" />
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="5,0,0,0" />
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
+            <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="5,0,0,0" />
+        </Grid>
+
 
         <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
-            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3"/>
+            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3" />
             <Run Text="Hold" />
             <Run FontWeight="Bold" Text="shift" />
             <Run Text="or click and drag to select multiple LEDs at once. To move around the surface hold down" />
