@@ -32,12 +32,13 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignDisplay1TextBlock}">Profile editor</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                   Margin="0,0,0,5">
-            The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
-        </TextBlock>
+        
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock >
+                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3"/>  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
+            </TextBlock>
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 10" />
+        </StackPanel>
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Grid.Column="0"
                              VerticalAlignment="Stretch" Margin="0,0,5,0">
@@ -161,8 +162,8 @@
             </materialDesign:DialogHost>
         </materialDesign:Card>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
-                   Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
+            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3"/>
             <Run Text="Hold" />
             <Run FontWeight="Bold" Text="shift" />
             <Run Text="or click and drag to select multiple LEDs at once. To move around the surface hold down" />
