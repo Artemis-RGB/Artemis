@@ -1,8 +1,8 @@
 ﻿using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels.Dialogs;
-using Artemis.UI.ViewModels.Interfaces;
 using FluentValidation;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;

@@ -21,6 +21,7 @@ namespace Artemis.Plugins.Modules.General
             _settings = settings;
             DisplayName = "General";
             ExpandsMainDataModel = true;
+            DeviceBrushes= new Dictionary<Device, TextureBrush>();
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
 
@@ -82,16 +83,17 @@ namespace Artemis.Plugins.Modules.General
         {
             foreach (var device in surface.Devices)
             {
-                using (var gradient = RenderGradientForDevice(device))
-                {
-                    using (var brush = new TextureBrush(gradient, WrapMode.Tile))
-                    {
-                        brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
-                        graphics.FillPath(brush, device.RenderPath);
-                    }
-                }
+                if (!DeviceBrushes.ContainsKey(device))
+                    DeviceBrushes.Add(device, new TextureBrush(RenderGradientForDevice(device), WrapMode.Tile));
+
+                var brush = DeviceBrushes[device];
+                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
+                graphics.FillPath(brush, device.RenderPath);
+                brush.TranslateTransform((int)Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
             }
         }
+
+        public Dictionary<Device, TextureBrush> DeviceBrushes { get; set; }
 
         private Image RenderGradientForDevice(Device device)
         {

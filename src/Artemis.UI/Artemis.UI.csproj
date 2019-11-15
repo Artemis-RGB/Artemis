@@ -174,93 +174,103 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Services\DialogService.cs" />
+    <Compile Include="Screens\News\NewsViewModel.cs" />
+    <Compile Include="Screens\Workshop\WorkshopViewModel.cs" />
+    <Compile Include="Services\Dialog\DialogService.cs" />
     <Compile Include="Services\Interfaces\IDialogService.cs" />
     <Compile Include="Services\Interfaces\IArtemisUIService.cs" />
     <Compile Include="Stylet\ArtemisViewManager.cs" />
     <Compile Include="Stylet\FluentValidationAdapter.cs" />
     <Compile Include="Stylet\NinjectBootstrapper.cs" />
-    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileDeviceViewModel.cs" />
-    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileEditorViewModel.cs" />
-    <Compile Include="ViewModels\Controls\ProfileEditor\ProfileLedViewModel.cs" />
-    <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceLedViewModel.cs" />
-    <Compile Include="ViewModels\Controls\SurfaceEditor\SurfaceDeviceViewModel.cs" />
-    <Compile Include="ViewModels\Dialogs\ConfirmDialogViewModel.cs" />
-    <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModelValidator.cs" />
-    <Compile Include="ViewModels\Dialogs\SurfaceCreateViewModel.cs" />
-    <Compile Include="ViewModels\Screens\ModuleRootViewModel.cs" />
-    <Compile Include="ViewModels\Screens\SplashViewModel.cs" />
-    <Compile Include="ViewModels\Utilities\DialogViewModelHost.cs" />
-    <Compile Include="ViewModels\Dialogs\DialogViewModelBase.cs" />
-    <Compile Include="ViewModels\Utilities\PanZoomViewModel.cs" />
-    <Compile Include="ViewModels\Screens\DebugViewModel.cs" />
-    <Compile Include="ViewModels\Screens\SurfaceEditorViewModel.cs" />
-    <Compile Include="ViewModels\Controls\Settings\DeviceSettingsViewModel.cs" />
-    <Compile Include="ViewModels\Interfaces\IScreenViewModel.cs" />
-    <Compile Include="ViewModels\Screens\HomeViewModel.cs" />
-    <Compile Include="ViewModels\Screens\RootViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileDeviceViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileEditorViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLedViewModel.cs" />
+    <Compile Include="Screens\SurfaceEditor\Visualization\SurfaceLedViewModel.cs" />
+    <Compile Include="Screens\SurfaceEditor\Visualization\SurfaceDeviceViewModel.cs" />
+    <Compile Include="Screens\Dialogs\ConfirmDialogViewModel.cs" />
+    <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceCreateViewModelValidator.cs" />
+    <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceCreateViewModel.cs" />
+    <Compile Include="Screens\Module\ModuleRootViewModel.cs" />
+    <Compile Include="Screens\Splash\SplashViewModel.cs" />
+    <Compile Include="Services\Dialog\DialogViewModelHost.cs" />
+    <Compile Include="Services\Dialog\DialogViewModelBase.cs" />
+    <Compile Include="Screens\Shared\PanZoomViewModel.cs" />
+    <Compile Include="Screens\Settings\Debug\DebugViewModel.cs" />
+    <Compile Include="Screens\SurfaceEditor\SurfaceEditorViewModel.cs" />
+    <Compile Include="Screens\Settings\Tabs\Devices\DeviceSettingsViewModel.cs" />
+    <Compile Include="Screens\IScreenViewModel.cs" />
+    <Compile Include="Screens\Home\HomeViewModel.cs" />
+    <Compile Include="Screens\RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModels\Screens\SettingsViewModel.cs" />
-    <Page Include="Views\Controls\ProfileEditor\ProfileEditorView.xaml">
+    <Compile Include="Screens\Settings\SettingsViewModel.cs" />
+    <Page Include="Screens\Module\ProfileEditor\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\SurfaceEditor\SurfaceLedView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Controls\SurfaceEditor\SurfaceDeviceView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Dialogs\ConfirmDialogView.xaml">
+    <Page Include="Screens\News\NewsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Dialogs\SurfaceCreateView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\DebugView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\HomeView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ProfileEditor\ProfileDeviceView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\ProfileEditor\ProfileLedView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\ModuleRootView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\RootView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\SplashView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Screens\SurfaceEditorView.xaml">
+    <Page Include="Screens\SurfaceEditor\Visualization\SurfaceLedView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Settings\DeviceSettingsView.xaml">
+    <Page Include="Screens\SurfaceEditor\Visualization\SurfaceDeviceView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Screens\Dialogs\ConfirmDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Screens\SettingsView.xaml">
+    <Page Include="Screens\SurfaceEditor\Dialogs\SurfaceCreateView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Settings\Debug\DebugView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Home\HomeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileLedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ModuleRootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\RootView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Splash\SplashView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\SurfaceEditor\SurfaceEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Screens\Settings\Tabs\Devices\DeviceSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Settings\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Workshop\WorkshopView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
