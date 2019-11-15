@@ -1,5 +1,5 @@
 ﻿using Artemis.Core.Plugins.Abstract;
-using Artemis.UI.ViewModels.Screens;
+using Artemis.UI.Screens.Module;
 
 namespace Artemis.UI.Ninject.Factories
 {

@@ -3,8 +3,9 @@ using System.Windows;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
+using Artemis.UI.Screens;
+using Artemis.UI.Screens.Splash;
 using Artemis.UI.Stylet;
-using Artemis.UI.ViewModels.Screens;
 using Ninject;
 using Stylet;
 

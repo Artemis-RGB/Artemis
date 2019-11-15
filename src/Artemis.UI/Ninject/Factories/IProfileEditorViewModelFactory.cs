@@ -1,5 +1,5 @@
 ﻿using Artemis.Core.Plugins.Abstract;
-using Artemis.UI.ViewModels.Controls.ProfileEditor;
+using Artemis.UI.Screens.Module.ProfileEditor;
 
 namespace Artemis.UI.Ninject.Factories
 {
