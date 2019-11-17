@@ -11,11 +11,13 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using MahApps.Metro.Controls;
+using MaterialDesignThemes.Wpf.Transitions;
 using Stylet;
 
 namespace Artemis.UI.Screens
 {
-    public class RootViewModel : Conductor<IScreen>.Collection.OneActive
+    public class RootViewModel : Conductor<IScreen>
     {
         private readonly ICollection<IScreenViewModel> _artemisViewModels;
         private readonly IModuleViewModelFactory _moduleViewModelFactory;
@@ -27,10 +29,9 @@ namespace Artemis.UI.Screens
             _pluginService = pluginService;
             _moduleViewModelFactory = moduleViewModelFactory;
 
-            // Add the built-in items
-            Items.AddRange(artemisViewModels);
             // Activate the home item
             ActiveItem = _artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel));
+            ActiveItemReady = true;
 
             // Sync up with the plugin service
             Modules = new BindableCollection<Core.Plugins.Abstract.Module>();
@@ -46,18 +47,19 @@ namespace Artemis.UI.Screens
         public bool MenuOpen { get; set; }
         public ListBoxItem SelectedPage { get; set; }
         public Core.Plugins.Abstract.Module SelectedModule { get; set; }
+        public bool ActiveItemReady { get; set; }
 
         public async Task NavigateToSelectedModule()
         {
             if (SelectedModule == null)
                 return;
 
+            MenuOpen = false;
+            SelectedPage = null;
+
             // Create a view model for the given plugin info (which will be a module)
             var viewModel = await Task.Run(() => _moduleViewModelFactory.CreateModuleViewModel(SelectedModule));
             ActivateItem(viewModel);
-
-            SelectedPage = null;
-            MenuOpen = false;
         }
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
@@ -91,10 +93,17 @@ namespace Artemis.UI.Screens
                 await NavigateToSelectedModule();
         }
 
-        private void OnSelectedPageChanged(object sender, PropertyChangedEventArgs e)
+        private async void OnSelectedPageChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "SelectedPage" || SelectedPage == null)
                 return;
+
+            SelectedModule = null;
+            MenuOpen = false;
+            ActiveItemReady = false;
+
+            // Let the menu close smoothly to avoid a sluggish feeling
+            await Task.Delay(400);
 
             switch (SelectedPage.Name)
             {
@@ -115,8 +124,7 @@ namespace Artemis.UI.Screens
                     break;
             }
 
-            SelectedModule = null;
-            MenuOpen = false;
+            ActiveItemReady = true;
         }
     }
 }

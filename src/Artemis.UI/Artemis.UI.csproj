@@ -174,6 +174,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Layers\LayersViewModel.cs" />
     <Compile Include="Screens\News\NewsViewModel.cs" />
     <Compile Include="Screens\Workshop\WorkshopViewModel.cs" />
     <Compile Include="Services\Dialog\DialogService.cs" />
@@ -206,6 +213,34 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Screens\Settings\SettingsViewModel.cs" />
+    <Page Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerElements\LayerElementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Layers\LayersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Screens\Module\ProfileEditor\ProfileEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
