@@ -72,10 +72,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\CUESDK.dll">
+    <Content Include="x64\CUESDK.x64_2017.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="x86\CUESDK.dll">
+    <Content Include="x86\CUESDK_2017.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

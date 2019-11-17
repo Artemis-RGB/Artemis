@@ -17,8 +17,34 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="Grid" x:Key="InitializingFade">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsInitializing}" Value="False">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.5">
+                                        <DoubleAnimation.EasingFunction>
+                                            <QuadraticEase EasingMode="EaseInOut" />
+                                        </DoubleAnimation.EasingFunction>
+                                    </DoubleAnimation>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
+
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -145,7 +171,8 @@
                     </Button>
                 </StackPanel>
 
-                <Grid Background="{StaticResource MaterialDesignPaper}" Visibility="{Binding IsInitializing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                <!-- Loading indicator -->
+                <Grid Background="{StaticResource MaterialDesignPaper}" Style="{StaticResource InitializingFade}">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
                             Initializing LED visualization...

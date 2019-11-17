@@ -76,7 +76,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                     {
                         // Gotta call IsInitializing on the UI thread or its never gets picked up
                         IsInitializing = true;
-                        Devices.Add(profileDeviceViewModel);
+                        lock (Devices)
+                        {
+                            Devices.Add(profileDeviceViewModel);
+                        }
                     });
                 }
                 // Update existing devices
@@ -87,8 +90,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             // Sort the devices by ZIndex
             Execute.OnUIThread(() =>
             {
-                foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
-                    Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+                lock (Devices)
+                {
+                    foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
+                        Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+                }
             });
         }
 
