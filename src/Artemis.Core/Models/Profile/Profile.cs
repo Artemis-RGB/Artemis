@@ -11,8 +11,22 @@ namespace Artemis.Core.Models.Profile
 {
     public class Profile : IProfileElement
     {
+        internal Profile(PluginInfo pluginInfo, string name)
+        {
+            ProfileEntity = new ProfileEntity {RootFolder = new FolderEntity()};
+            Guid = System.Guid.NewGuid().ToString();
+
+            PluginInfo = pluginInfo;
+            Name = name;
+
+            Children = new List<IProfileElement>();
+        }
+
         internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
         {
+            ProfileEntity = profileEntity;
+            Guid = profileEntity.Guid;
+
             PluginInfo = pluginInfo;
             Name = profileEntity.Name;
 
@@ -20,16 +34,11 @@ namespace Artemis.Core.Models.Profile
             Children = new List<IProfileElement> {Folder.FromFolderEntity(this, profileEntity.RootFolder, pluginService)};
         }
 
-        internal Profile(PluginInfo pluginInfo, string name)
-        {
-            PluginInfo = pluginInfo;
-            Name = name;
-
-            Children = new List<IProfileElement>();
-        }
-
         public PluginInfo PluginInfo { get; }
         public bool IsActivated { get; private set; }
+
+        internal ProfileEntity ProfileEntity { get; set; }
+        internal string Guid { get; set; }
         public int Order { get; set; }
         public string Name { get; set; }
         public List<IProfileElement> Children { get; set; }

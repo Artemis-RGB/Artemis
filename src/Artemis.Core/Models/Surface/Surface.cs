@@ -23,11 +23,11 @@ namespace Artemis.Core.Models.Surface
 
         internal Surface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity, double scale)
         {
-            RgbSurface = rgbSurface;
             SurfaceEntity = surfaceEntity;
-            Scale = scale;
             Guid = surfaceEntity.Guid;
 
+            RgbSurface = rgbSurface;
+            Scale = scale;
             Name = surfaceEntity.Name;
             IsActive = surfaceEntity.IsActive;
             Devices = new List<Device>();
