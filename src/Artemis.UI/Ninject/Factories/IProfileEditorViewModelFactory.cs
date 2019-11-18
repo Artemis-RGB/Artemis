@@ -5,6 +5,6 @@ namespace Artemis.UI.Ninject.Factories
 {
     public interface IProfileEditorViewModelFactory
     {
-        ProfileEditorViewModel CreateModuleViewModel(Module module);
+        ProfileEditorViewModel CreateModuleViewModel(ProfileModule module);
     }
 }

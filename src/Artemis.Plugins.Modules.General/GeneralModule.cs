@@ -11,7 +11,7 @@ using Device = Artemis.Core.Models.Surface.Device;
 
 namespace Artemis.Plugins.Modules.General
 {
-    public class GeneralModule : Module
+    public class GeneralModule : ProfileModule
     {
         private readonly ColorBlend _rainbowColorBlend;
         private readonly PluginSettings _settings;

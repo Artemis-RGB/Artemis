@@ -28,6 +28,11 @@ namespace Artemis.Storage.Repositories
             return await _dbContext.Profiles.Where(p => p.PluginGuid == pluginGuid).ToListAsync();
         }
 
+        public async Task<ProfileEntity> GetActiveProfileByPluginGuidAsync(Guid pluginGuid)
+        {
+            return await _dbContext.Profiles.FirstOrDefaultAsync(p => p.PluginGuid == pluginGuid && p.IsActive);
+        }
+
         public async Task<ProfileEntity> GetByGuidAsync(string guid)
         {
             return await _dbContext.Profiles.FirstOrDefaultAsync(p => p.Guid == guid);

@@ -4,13 +4,12 @@ namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ModuleViewModel : Screen
     {
-        protected ModuleViewModel(Module module, string name)
+        protected ModuleViewModel(Module module, string displayName)
         {
             Module = module;
-            Name = name;
+            DisplayName = displayName;
         }
-
-        public string Name { get; }
+        
         public Module Module { get; }
     }
 }

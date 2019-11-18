@@ -192,8 +192,9 @@
     <Compile Include="Events\PluginEventArgs.cs" />
     <Compile Include="Services\PluginService.cs" />
     <Compile Include="Services\SettingsService.cs" />
-    <Compile Include="Services\StorageService.cs" />
-    <Compile Include="Services\Storage\ISurfaceService.cs" />
+    <Compile Include="Services\Storage\Interfaces\IProfileService.cs" />
+    <Compile Include="Services\Storage\ProfileService.cs" />
+    <Compile Include="Services\Storage\Interfaces\ISurfaceService.cs" />
     <Compile Include="Services\Storage\SurfaceService.cs" />
   </ItemGroup>
   <ItemGroup>

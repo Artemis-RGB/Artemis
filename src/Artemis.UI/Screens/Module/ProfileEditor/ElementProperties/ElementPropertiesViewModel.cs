@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ElementProperties
 {
-    class ElementPropertiesViewModel
+    public class ElementPropertiesViewModel : ProfileEditorPanelViewModel
     {
     }
 }

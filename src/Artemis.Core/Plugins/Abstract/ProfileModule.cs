@@ -46,6 +46,19 @@ namespace Artemis.Core.Plugins.Abstract
                 ActiveProfile = profile;
                 ActiveProfile.Activate();
             }
+
+            OnActiveProfileChanged();
         }
+
+        #region Events
+
+        public event EventHandler ActiveProfileChanged;
+        
+        protected virtual void OnActiveProfileChanged()
+        {
+            ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

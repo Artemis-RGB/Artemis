@@ -1,6 +1,7 @@
 ﻿using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
+using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Ninject;

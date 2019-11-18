@@ -1,5 +1,6 @@
 ﻿using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
+using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels.Dialogs;
@@ -37,6 +38,15 @@ namespace Artemis.UI.Ninject
             // Bind the module VM
             Bind<IModuleViewModelFactory>().ToFactory();
             Bind<IProfileEditorViewModelFactory>().ToFactory();
+
+            // Bind profile editor VMs
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<ProfileEditorPanelViewModel>()
+                    .BindAllBaseClasses();
+            });
 
             // Bind all UI services as singletons
             Kernel.Bind(x =>

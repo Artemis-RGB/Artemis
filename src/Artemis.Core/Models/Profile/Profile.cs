@@ -11,9 +11,21 @@ namespace Artemis.Core.Models.Profile
 {
     public class Profile : IProfileElement
     {
-        private Profile(PluginInfo pluginInfo)
+        internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
         {
             PluginInfo = pluginInfo;
+            Name = profileEntity.Name;
+
+            // Populate the profile starting at the root, the rest is populated recursively
+            Children = new List<IProfileElement> {Folder.FromFolderEntity(this, profileEntity.RootFolder, pluginService)};
+        }
+
+        internal Profile(PluginInfo pluginInfo, string name)
+        {
+            PluginInfo = pluginInfo;
+            Name = name;
+
+            Children = new List<IProfileElement>();
         }
 
         public PluginInfo PluginInfo { get; }
@@ -43,18 +55,6 @@ namespace Artemis.Core.Models.Profile
 
                 foreach (var profileElement in Children)
                     profileElement.Render(deltaTime, surface, graphics);
-            }
-        }
-
-        public static Profile FromProfileEntity(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
-        {
-            var profile = new Profile(pluginInfo) {Name = profileEntity.Name};
-            lock (profile)
-            {
-                // Populate the profile starting at the root, the rest is populated recursively
-                profile.Children.Add(Folder.FromFolderEntity(profile, profileEntity.RootFolder, pluginService));
-
-                return profile;
             }
         }
 

@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module
 {
-    public class ModuleRootViewModel : Conductor<ModuleViewModel>.Collection.OneActive
+    public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly IProfileEditorViewModelFactory _profileEditorViewModelFactory;
 
@@ -27,14 +28,16 @@ namespace Artemis.UI.Screens.Module
             await Task.Delay(400);
 
             // Create the profile editor and module VMs
-            var profileEditor = _profileEditorViewModelFactory.CreateModuleViewModel(Module);
+            if (Module is ProfileModule profileModule)
+            {
+                var profileEditor = _profileEditorViewModelFactory.CreateModuleViewModel(profileModule);
+                Items.Add(profileEditor);
+            }
+
             var moduleViewModels = Module.GetViewModels();
-
-            Items.Add(profileEditor);
             Items.AddRange(moduleViewModels);
-
-            // Activate the profile editor
-            ActiveItem = profileEditor;
+            
+            ActiveItem = Items.FirstOrDefault();
         }
     }
 }
