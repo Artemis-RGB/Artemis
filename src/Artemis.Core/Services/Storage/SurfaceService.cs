@@ -8,6 +8,7 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
 using Serilog;

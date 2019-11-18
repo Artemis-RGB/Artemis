@@ -14,7 +14,7 @@
     <dragablz:TabablzControl Margin="0 -1 0 0" ItemsSource="{Binding Items}" SelectedItem="{Binding ActiveItem}" FixedHeaderCount="{Binding FixedHeaderCount}">
         <dragablz:TabablzControl.HeaderItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding Name}" />
+                <TextBlock Text="{Binding DisplayName}" />
             </DataTemplate>
         </dragablz:TabablzControl.HeaderItemTemplate>
         <dragablz:TabablzControl.ContentTemplate>

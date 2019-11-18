@@ -5,6 +5,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage;
+using Artemis.Core.Services.Storage.Interfaces;
 using RGB.NET.Core;
 using Serilog;
 using Color = System.Drawing.Color;

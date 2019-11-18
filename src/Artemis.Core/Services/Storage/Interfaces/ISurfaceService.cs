@@ -4,7 +4,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services.Interfaces;
 
-namespace Artemis.Core.Services.Storage
+namespace Artemis.Core.Services.Storage.Interfaces
 {
     public interface ISurfaceService : IArtemisService
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Layers
 {
-    public class LayersViewModel
+    public class LayersViewModel : ProfileEditorPanelViewModel
     {
     }
 }

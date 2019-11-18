@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
-    class DisplayConditionsViewModel
+    public class DisplayConditionsViewModel : ProfileEditorPanelViewModel
     {
     }
 }

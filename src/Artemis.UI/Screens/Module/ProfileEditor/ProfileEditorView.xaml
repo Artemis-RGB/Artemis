@@ -17,31 +17,6 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="Grid" x:Key="InitializingFade">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsInitializing}" Value="False">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.5">
-                                        <DoubleAnimation.EasingFunction>
-                                            <QuadraticEase EasingMode="EaseInOut" />
-                                        </DoubleAnimation.EasingFunction>
-                                    </DoubleAnimation>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -58,129 +33,52 @@
             <RowDefinition Height="200" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
             <TextBlock>
                 <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" />  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
             </TextBlock>
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 10" />
+            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 9 0 8" />
         </StackPanel>
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ComboBox Name="LocaleCombo" 
+                      Height="26"
+                      VerticalAlignment="Top" 
+                      ItemsSource="{Binding Profiles}" 
+                      SelectedItem="{Binding SelectedProfile}" 
+                      DisplayMemberPath="Name">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+            </ComboBox>
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" 
+                    Margin="10 0" 
+                    Grid.Column="1" 
+                    Width="26" 
+                    Height="26" 
+                    VerticalAlignment="Top"
+                    Command="{s:Action AddProfile}">
+                <materialDesign:PackIcon Kind="Add" Height="14" Width="14" />
+            </Button>
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" 
+                    Grid.Column="2"
+                    Width="26" 
+                    Height="26" 
+                    VerticalAlignment="Top"
+                    Command="{s:Action DeleteActiveProfile}">
+                <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" />
+            </Button>
+        </Grid>
 
         <!-- Design area -->
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="0" VerticalAlignment="Stretch">
-            <Grid ClipToBounds="True"
-                  KeyUp="{s:Action EditorGridKeyUp}"
-                  KeyDown="{s:Action EditorGridKeyDown}"
-                  MouseWheel="{s:Action EditorGridMouseWheel}"
-                  MouseUp="{s:Action EditorGridMouseClick}"
-                  MouseDown="{s:Action EditorGridMouseClick}"
-                  MouseMove="{s:Action EditorGridMouseMove}">
-                <Grid.Background>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform"
-                                 Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
-                        <VisualBrush.Visual>
-                            <Grid Width="20" Height="20">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="LightGray" />
-                                <Rectangle Grid.Row="0" Grid.Column="1" />
-                                <Rectangle Grid.Row="1" Grid.Column="0" />
-                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="LightGray" />
-                            </Grid>
-                        </VisualBrush.Visual>
-                    </VisualBrush>
-                </Grid.Background>
-
-                <Grid.Triggers>
-                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonDown">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
-                                <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonUp">
-                        <BeginStoryboard>
-                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
-                                <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Grid.Triggers>
-
-                <Grid Name="EditorDisplayGrid">
-                    <Grid.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
-                            <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
-                        </TransformGroup>
-                    </Grid.RenderTransform>
-                    <ItemsControl ItemsSource="{Binding Devices}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <Canvas />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                            </Style>
-                        </ItemsControl.ItemContainerStyle>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <ContentControl Width="{Binding Device.RgbDevice.Size.Width}"
-                                                Height="{Binding Device.RgbDevice.Size.Height}"
-                                                s:View.Model="{Binding}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Grid>
-
-                <!-- Multi-selection rectangle -->
-                <Path Data="{Binding SelectionRectangle}" Opacity="0"
-                      Stroke="{DynamicResource PrimaryHueLightBrush}"
-                      StrokeThickness="1"
-                      Name="MultiSelectionPath"
-                      IsHitTestVisible="False">
-                    <Path.Fill>
-                        <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
-                    </Path.Fill>
-                </Path>
-
-                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                            Margin="0, 0, 15, 15">
-                    <Slider Margin="0,0,14,0"
-                            Orientation="Vertical"
-                            Minimum="10"
-                            Maximum="400"
-                            Height="100"
-                            FocusVisualStyle="{x:Null}"
-                            Value="{Binding PanZoomViewModel.ZoomPercentage}"
-                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
-                    <Button Command="{s:Action ResetZoomAndPan}"
-                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                            HorizontalAlignment="Right"
-                            ToolTip="Reset zoom &amp; position">
-                        <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
-                    </Button>
-                </StackPanel>
-
-                <!-- Loading indicator -->
-                <Grid Background="{StaticResource MaterialDesignPaper}" Style="{StaticResource InitializingFade}">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            Initializing LED visualization...
-                        </TextBlock>
-                        <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" />
-                    </StackPanel>
-                </Grid>
-            </Grid>
+            <ContentControl s:View.Model="{Binding ProfileViewModel}" />
         </materialDesign:Card>
 
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" Margin="5 0" />
@@ -194,13 +92,13 @@
             </Grid.RowDefinitions>
 
             <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <TextBlock>Right top</TextBlock>
+                <ContentControl s:View.Model="{Binding LayersViewModel}" />
             </materialDesign:Card>
 
             <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeNS" Margin="0 5" />
 
             <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <TextBlock>Right bottom</TextBlock>
+                <ContentControl s:View.Model="{Binding DisplayConditionsViewModel}" />
             </materialDesign:Card>
         </Grid>
 
@@ -214,13 +112,13 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <TextBlock>Bottom left</TextBlock>
+                <ContentControl s:View.Model="{Binding LayerElementsViewModel}" />
             </materialDesign:Card>
 
             <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
 
             <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <TextBlock>Bottom right</TextBlock>
+                <ContentControl s:View.Model="{Binding ElementPropertiesViewModel}" />
             </materialDesign:Card>
         </Grid>
     </Grid>

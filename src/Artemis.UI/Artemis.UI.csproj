@@ -181,6 +181,8 @@
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Layers\LayersViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileEditorPanelViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileViewModel.cs" />
     <Compile Include="Screens\News\NewsViewModel.cs" />
     <Compile Include="Screens\Workshop\WorkshopViewModel.cs" />
     <Compile Include="Services\Dialog\DialogService.cs" />
@@ -242,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\ProfileEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
