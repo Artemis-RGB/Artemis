@@ -74,7 +74,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             if (!profiles.Any())
             {
-                var profile = new Profile();
+                var profile = new Profile(Module.PluginInfo, "Default");
             }
         }
     }

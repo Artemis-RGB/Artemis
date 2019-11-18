@@ -27,7 +27,7 @@ namespace Artemis.Core.Services.Storage
             var profileEntities = await _profileRepository.GetByPluginGuidAsync(module.PluginInfo.Guid);
             var profiles = new List<Profile>();
             foreach (var profileEntity in profileEntities)
-                profiles.Add(Profile.FromProfileEntity(module.PluginInfo, profileEntity, _pluginService));
+                profiles.Add(new Profile(module.PluginInfo, profileEntity, _pluginService));
 
             return profiles;
         }
@@ -38,13 +38,21 @@ namespace Artemis.Core.Services.Storage
             if (profileEntity == null)
                 return null;
 
-            return Profile.FromProfileEntity(module.PluginInfo, profileEntity, _pluginService);
+            return new Profile(module.PluginInfo, profileEntity, _pluginService);
+        }
+
+        public async Task<Profile> CreateProfile(ProfileModule module, string name)
+        {
+            var profile = new Profile(module.PluginInfo, name);
+            await SaveProfile(profile);
+
+            return profile;
         }
 
         public async Task SaveProfile(Profile profile)
         {
             // Find a matching profile entity to update
-
+            var existing = await _profileRepository.GetByGuidAsync(profile.)
             // If not found, create a new one
 
             await _profileRepository.SaveAsync();
