@@ -15,5 +15,6 @@ namespace Artemis.Storage.Entities
 
         public int Order { get; set; }
         public string Name { get; set; }
+        public string LayerTypeGuid { get; set; }
     }
 }

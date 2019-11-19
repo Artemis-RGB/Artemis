@@ -72,10 +72,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Profiles.Clear();
             Profiles.AddRange(profiles);
 
-            if (!profiles.Any())
-            {
-                var profile = new Profile(Module.PluginInfo, "Default");
-            }
+//            if (!profiles.Any())
+//            {
+//                var profile = new Profile(Module.PluginInfo, "Default");
+//            }
         }
     }
 }

@@ -173,7 +173,7 @@
     <Compile Include="Plugins\Models\PluginSetting.cs" />
     <Compile Include="Plugins\Models\PluginSettings.cs" />
     <Compile Include="Models\Profile\Folder.cs" />
-    <Compile Include="Models\Profile\Interfaces\IProfileElement.cs" />
+    <Compile Include="Models\Profile\Abstract\IProfileElement.cs" />
     <Compile Include="Models\Profile\Layer.cs" />
     <Compile Include="Models\Profile\Profile.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
