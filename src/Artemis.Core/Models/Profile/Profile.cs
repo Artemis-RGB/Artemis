@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.Interfaces;
+using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities;
 
 namespace Artemis.Core.Models.Profile
 {
-    public class Profile : IProfileElement
+    public class Profile : ProfileElement
     {
         internal Profile(PluginInfo pluginInfo, string name)
         {
@@ -19,7 +20,7 @@ namespace Artemis.Core.Models.Profile
             PluginInfo = pluginInfo;
             Name = name;
 
-            Children = new List<IProfileElement>();
+            Children = new List<ProfileElement> {new Folder(this, null, "Root folder")};
         }
 
         internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
@@ -31,7 +32,7 @@ namespace Artemis.Core.Models.Profile
             Name = profileEntity.Name;
 
             // Populate the profile starting at the root, the rest is populated recursively
-            Children = new List<IProfileElement> {Folder.FromFolderEntity(this, profileEntity.RootFolder, pluginService)};
+            Children = new List<ProfileElement> {new Folder(this, null, profileEntity.RootFolder, pluginService)};
         }
 
         public PluginInfo PluginInfo { get; }
@@ -39,11 +40,8 @@ namespace Artemis.Core.Models.Profile
 
         internal ProfileEntity ProfileEntity { get; set; }
         internal string Guid { get; set; }
-        public int Order { get; set; }
-        public string Name { get; set; }
-        public List<IProfileElement> Children { get; set; }
 
-        public void Update(double deltaTime)
+        public override void Update(double deltaTime)
         {
             lock (this)
             {
@@ -55,7 +53,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
+        public override void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
         {
             lock (this)
             {
@@ -67,7 +65,16 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public void Activate()
+        internal override void ApplyToEntity()
+        {
+            ProfileEntity.Guid = Guid;
+            ProfileEntity.Name = Name;
+            ProfileEntity.IsActive = IsActivated;
+
+            var rootFolder = Children.Single();
+        }
+
+        internal void Activate()
         {
             lock (this)
             {
@@ -78,7 +85,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public void Deactivate()
+        internal void Deactivate()
         {
             lock (this)
             {
@@ -88,7 +95,7 @@ namespace Artemis.Core.Models.Profile
                 OnDeactivated();
             }
         }
-
+        
         public override string ToString()
         {
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";

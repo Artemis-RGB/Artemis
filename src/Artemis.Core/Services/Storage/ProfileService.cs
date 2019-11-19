@@ -44,18 +44,20 @@ namespace Artemis.Core.Services.Storage
         public async Task<Profile> CreateProfile(ProfileModule module, string name)
         {
             var profile = new Profile(module.PluginInfo, name);
-            await SaveProfile(profile);
-
+            
             return profile;
         }
 
-        public async Task SaveProfile(Profile profile)
+        public async Task UpdateProfile(Profile profile, bool includeChildren)
         {
-            // Find a matching profile entity to update
-            var existing = await _profileRepository.GetByGuidAsync(profile.)
-            // If not found, create a new one
-
-            await _profileRepository.SaveAsync();
+            profile.ApplyToEntity();
+            if (includeChildren)
+            {
+                foreach (var profileElement in profile.Children)
+                {
+                    profileElement.ApplyToEntity();
+                }
+            }
         }
     }
 }

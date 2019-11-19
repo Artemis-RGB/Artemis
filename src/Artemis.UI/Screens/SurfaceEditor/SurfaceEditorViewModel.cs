@@ -74,13 +74,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private void LoadSurfaceConfigurations()
         {
             // Get surface configs
-            var configs = _surfaceService.SurfaceConfigurations;
+            var configs = _surfaceService.SurfaceConfigurations.ToList();
 
             // Get the active config, if empty, create a default config
             var activeConfig = _surfaceService.ActiveSurface;
             if (activeConfig == null)
             {
                 activeConfig = CreateSurfaceConfiguration("Default");
+                configs.Add(activeConfig);
                 _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
             }
 
