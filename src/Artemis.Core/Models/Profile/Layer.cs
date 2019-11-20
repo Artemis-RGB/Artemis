@@ -8,7 +8,7 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
-    public class Layer : ProfileElement
+    public sealed class Layer : ProfileElement
     {
         internal Layer(Profile profile, Folder folder, string name)
         {

@@ -71,8 +71,7 @@ namespace Artemis.Core.Models.Surface
 
         internal void ApplyToEntity()
         {
-            // Other properties are mapped computed
-
+            // Other properties are computed
             DeviceEntity.DeviceHashCode = RgbDevice.GetDeviceHashCode();
         }
 
@@ -100,13 +99,6 @@ namespace Artemis.Core.Models.Surface
             var path = new GraphicsPath();
             path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
             RenderPath = path;
-        }
-
-        internal void Destroy()
-        {
-            DeviceEntity = null;
-            RgbDevice = null;
-            Surface = null;
         }
 
         public override string ToString()

@@ -91,11 +91,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void UpdateLeds(object sender, CustomUpdateData customUpdateData)
         {
-            if (IsInitializing)
+            lock (Devices)
+            {
+                if (IsInitializing)
                 IsInitializing = Devices.Any(d => !d.AddedLeds);
-
-            foreach (var profileDeviceViewModel in Devices)
-                profileDeviceViewModel.Update();
+            
+                foreach (var profileDeviceViewModel in Devices)
+                    profileDeviceViewModel.Update();
+            }
         }
 
         protected override void OnActivate()

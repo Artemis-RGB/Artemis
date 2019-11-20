@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
 using Artemis.UI.Screens.Module.ProfileEditor.Layers;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
+using Artemis.UI.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor
@@ -17,10 +19,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
         private readonly IProfileService _profileService;
+        private readonly IDialogService _dialogService;
+        private Profile _selectedProfile;
 
-        public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService)
+        public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService, IDialogService dialogService)
         {
             _profileService = profileService;
+            _dialogService = dialogService;
 
             DisplayName = "Profile editor";
             Module = module;
@@ -30,13 +35,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             LayerElementsViewModel = (LayerElementsViewModel) viewModels.First(vm => vm is LayerElementsViewModel);
             LayersViewModel = (LayersViewModel) viewModels.First(vm => vm is LayersViewModel);
             ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
+            Profiles = new BindableCollection<Profile>();
 
             Items.AddRange(viewModels);
 
             module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
         }
 
-        public Core.Plugins.Abstract.Module Module { get; }
+        public ProfileModule Module { get; }
         public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
         public ElementPropertiesViewModel ElementPropertiesViewModel { get; }
         public LayerElementsViewModel LayerElementsViewModel { get; }
@@ -44,20 +50,73 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public ProfileViewModel ProfileViewModel { get; }
 
         public BindableCollection<Profile> Profiles { get; set; }
-        public Profile SelectedProfile { get; set; }
-        public bool CanDeleteActiveProfile => SelectedProfile != null;
+
+        public Profile SelectedProfile
+        {
+            get => _selectedProfile;
+            set
+            {
+                if (_selectedProfile == value)
+                    return;
+
+                var old = _selectedProfile;
+                _selectedProfile = value;
+                ChangeActiveProfile(old);
+            }
+        }
+
+        private void ChangeActiveProfile(Profile oldProfile)
+        {
+            Module.ChangeActiveProfile(_selectedProfile);
+            if (_selectedProfile != null)
+                _profileService.UpdateProfile(_selectedProfile, false);
+            if (oldProfile != null)
+                _profileService.UpdateProfile(oldProfile, false);
+        }
+
+        public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
+
+        public Profile CreateProfile(string name)
+        {
+            var profile = _profileService.CreateProfile(Module, name);
+            Profiles.Add(profile);
+            return profile;
+        }
 
         public async Task AddProfile()
         {
+            var result = await _dialogService.ShowDialog<ProfileCreateViewModel>();
+            if (result is string name)
+                CreateProfile(name);
         }
 
         public async Task DeleteActiveProfile()
         {
+            var result = await _dialogService.ShowConfirmDialog(
+                "Delete active profile",
+                "Are you sure you want to delete your currently active profile? This cannot be undone."
+            );
+
+            if (!result || !CanDeleteActiveProfile)
+                return;
+
+            var profile = SelectedProfile;
+            var index = Profiles.IndexOf(profile);
+
+            // Get a new active profile
+            var newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
+
+            // Activate the new active profile
+            Module.ChangeActiveProfile(newActiveProfile);
+
+            // Remove the old one
+            Profiles.Remove(profile);
+            _profileService.DeleteProfile(profile);
         }
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
         {
-            SelectedProfile = ((ProfileModule) Module).ActiveProfile;
+            SelectedProfile = Profiles.FirstOrDefault(p => p == Module.ActiveProfile);
         }
 
         protected override void OnActivate()
@@ -68,14 +127,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         private void LoadProfiles()
         {
-            var profiles = _profileService.GetProfiles((ProfileModule) Module);
-            Profiles.Clear();
-            Profiles.AddRange(profiles);
+            // Get all profiles from the database
+            var profiles = _profileService.GetProfiles(Module);
+            var activeProfile = _profileService.GetActiveProfile(Module);
+            if (activeProfile == null)
+            {
+                activeProfile = CreateProfile("Default");
+                profiles.Add(activeProfile);
+            }
+            
+            // GetActiveProfile can return a duplicate because inactive profiles aren't kept in memory, make sure it's unique in the profiles list
+            profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
+            profiles.Add(activeProfile);
+            
+            Execute.OnUIThread(() =>
+            {
+                // Populate the UI collection
+                Profiles.Clear();
+                Profiles.AddRange(profiles.OrderBy(p => p.Name));
 
-//            if (!profiles.Any())
-//            {
-//                var profile = new Profile(Module.PluginInfo, "Default");
-//            }
+                SelectedProfile = activeProfile;
+            });
+
+            if (!activeProfile.IsActivated)
+                Module.ChangeActiveProfile(activeProfile);
         }
     }
 }
