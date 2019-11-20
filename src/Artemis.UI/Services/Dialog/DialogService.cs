@@ -64,7 +64,7 @@ namespace Artemis.UI.Services
             _viewManager.BindViewToModel(view, viewModel);
 
             if (identifier == null)
-                return await DialogHost.Show(view, viewModel.OnDialogClosed);
+                return await DialogHost.Show(view, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
             return await DialogHost.Show(view, identifier, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
         }
     }

@@ -10,7 +10,7 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
-    public class Profile : ProfileElement
+    public sealed class Profile : ProfileElement
     {
         internal Profile(PluginInfo pluginInfo, string name)
         {
@@ -21,6 +21,8 @@ namespace Artemis.Core.Models.Profile
             Name = name;
 
             Children = new List<ProfileElement> {new Folder(this, null, "Root folder")};
+
+            ApplyToEntity();
         }
 
         internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)

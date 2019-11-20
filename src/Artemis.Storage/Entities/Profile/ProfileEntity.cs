@@ -5,6 +5,12 @@ namespace Artemis.Storage.Entities.Profile
 {
     public class ProfileEntity
     {
+        public ProfileEntity()
+        {
+            Folders = new List<FolderEntity>();
+            Layers = new List<LayerEntity>();
+        }
+
         public Guid Id { get; set; }
         public Guid PluginGuid { get; set; }
 

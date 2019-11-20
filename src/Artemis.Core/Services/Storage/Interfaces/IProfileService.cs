@@ -7,7 +7,10 @@ namespace Artemis.Core.Services.Storage.Interfaces
 {
     public interface IProfileService : IArtemisService
     {
+        Profile CreateProfile(ProfileModule module, string name);
         List<Profile> GetProfiles(ProfileModule module);
         Profile GetActiveProfile(ProfileModule module);
+        void UpdateProfile(Profile profile, bool includeChildren);
+        void DeleteProfile(Profile profile);
     }
 }

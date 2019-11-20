@@ -61,15 +61,6 @@ namespace Artemis.Core.Models.Surface
             }
         }
 
-        internal void Destroy()
-        {
-            SurfaceEntity = null;
-
-            foreach (var deviceConfiguration in Devices)
-                deviceConfiguration.Destroy();
-            Devices.Clear();
-        }
-
         public void UpdateScale(double value)
         {
             Scale = value;

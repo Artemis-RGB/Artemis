@@ -38,13 +38,13 @@ namespace Artemis.Core.Plugins.Abstract
         {
             lock (this)
             {
-                if (profile == null)
-                    throw new ArgumentNullException(nameof(profile));
+                if (profile == ActiveProfile)
+                    return;
 
                 ActiveProfile?.Deactivate();
 
                 ActiveProfile = profile;
-                ActiveProfile.Activate();
+                ActiveProfile?.Activate();
             }
 
             OnActiveProfileChanged();
