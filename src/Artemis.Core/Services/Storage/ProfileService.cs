@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Repositories;
+using Artemis.Storage.Repositories.Interfaces;
 
 namespace Artemis.Core.Services.Storage
 {
@@ -14,17 +16,17 @@ namespace Artemis.Core.Services.Storage
     public class ProfileService : IProfileService
     {
         private readonly IPluginService _pluginService;
-        private readonly ProfileRepository _profileRepository;
+        private readonly IProfileRepository _profileRepository;
 
-        internal ProfileService(IPluginService pluginService)
+        internal ProfileService(IPluginService pluginService, IProfileRepository profileRepository)
         {
             _pluginService = pluginService;
-            _profileRepository = new ProfileRepository();
+            _profileRepository = profileRepository;
         }
 
-        public async Task<ICollection<Profile>> GetProfiles(ProfileModule module)
+        public List<Profile> GetProfiles(ProfileModule module)
         {
-            var profileEntities = await _profileRepository.GetByPluginGuidAsync(module.PluginInfo.Guid);
+            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             var profiles = new List<Profile>();
             foreach (var profileEntity in profileEntities)
                 profiles.Add(new Profile(module.PluginInfo, profileEntity, _pluginService));
@@ -32,23 +34,23 @@ namespace Artemis.Core.Services.Storage
             return profiles;
         }
 
-        public async Task<Profile> GetActiveProfile(ProfileModule module)
+        public Profile GetActiveProfile(ProfileModule module)
         {
-            var profileEntity = await _profileRepository.GetActiveProfileByPluginGuidAsync(module.PluginInfo.Guid);
+            var profileEntity = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid).FirstOrDefault(p => p.IsActive);
             if (profileEntity == null)
                 return null;
 
             return new Profile(module.PluginInfo, profileEntity, _pluginService);
         }
 
-        public async Task<Profile> CreateProfile(ProfileModule module, string name)
+        public Profile CreateProfile(ProfileModule module, string name)
         {
             var profile = new Profile(module.PluginInfo, name);
             
             return profile;
         }
 
-        public async Task UpdateProfile(Profile profile, bool includeChildren)
+        public void UpdateProfile(Profile profile, bool includeChildren)
         {
             profile.ApplyToEntity();
             if (includeChildren)

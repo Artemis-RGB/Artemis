@@ -57,6 +57,8 @@ namespace Artemis.Core.Services.Storage
             lock (_surfaceConfigurations)
             {
                 _surfaceRepository.Add(configuration.SurfaceEntity);
+                _surfaceConfigurations.Add(configuration);
+
                 UpdateSurfaceConfiguration(configuration, true);
                 return configuration;
             }
@@ -78,9 +80,9 @@ namespace Artemis.Core.Services.Storage
                 {
                     configuration.IsActive = configuration == ActiveSurface;
                     configuration.ApplyToEntity();
-                }
 
-                _surfaceRepository.Save();
+                    _surfaceRepository.Save(configuration.SurfaceEntity);
+                }
             }
 
             // Apply the active surface entity to the devices
@@ -102,13 +104,13 @@ namespace Artemis.Core.Services.Storage
             {
                 foreach (var deviceConfiguration in surface.Devices)
                 {
-                    deviceConfiguration.ApplyToConfiguration();
+                    deviceConfiguration.ApplyToEntity();
                     if (surface.IsActive)
                         deviceConfiguration.ApplyToRgbDevice();
                 }
             }
 
-            _surfaceRepository.Save();
+            _surfaceRepository.Save(surface.SurfaceEntity);
             _rgbService.UpdateGraphicsDecorator();
             OnSurfaceConfigurationUpdated(new SurfaceConfigurationEventArgs(surface));
         }
@@ -122,10 +124,9 @@ namespace Artemis.Core.Services.Storage
             {
                 var entity = surface.SurfaceEntity;
                 surface.Destroy();
-                _surfaceConfigurations.Remove(surface);
 
+                _surfaceConfigurations.Remove(surface);
                 _surfaceRepository.Remove(entity);
-                _surfaceRepository.Save();
             }
         }
 
@@ -176,7 +177,7 @@ namespace Artemis.Core.Services.Storage
         private void AddDeviceIfMissing(IRGBDevice rgbDevice, Surface surface)
         {
             var deviceHashCode = rgbDevice.GetDeviceHashCode();
-            var device = surface.Devices.FirstOrDefault(d => d.Configuration.DeviceHashCode == deviceHashCode);
+            var device = surface.Devices.FirstOrDefault(d => d.DeviceEntity.DeviceHashCode == deviceHashCode);
 
             if (device != null)
                 return;

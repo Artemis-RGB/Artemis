@@ -55,7 +55,7 @@ namespace Artemis.Core.Services
 
             var surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
-                _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.Guid);
+                _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
             else
                 _logger.Information("Initialized without an active surface entity");
 

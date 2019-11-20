@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using Rectangle = System.Drawing.Rectangle;
 
@@ -17,26 +17,23 @@ namespace Artemis.Core.Models.Surface
             RgbDevice = rgbDevice;
             Plugin = plugin;
             Surface = surface;
-            Configuration = new DeviceEntity();
+            DeviceEntity = new DeviceEntity();
             Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
 
             Rotation = 0;
             ZIndex = 1;
 
-            ApplyToConfiguration();
+            ApplyToEntity();
             CalculateRenderRectangle();
         }
 
-        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface, DeviceEntity configuration)
+        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface, DeviceEntity deviceEntity)
         {
             RgbDevice = rgbDevice;
             Plugin = plugin;
             Surface = surface;
-            Configuration = configuration;
+            DeviceEntity = deviceEntity;
             Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
-
-            Rotation = configuration.Rotation;
-            ZIndex = configuration.ZIndex;
         }
 
         public Rectangle RenderRectangle { get; private set; }
@@ -45,46 +42,43 @@ namespace Artemis.Core.Models.Surface
         public IRGBDevice RgbDevice { get; private set; }
         public Plugin Plugin { get; }
         public Surface Surface { get; private set; }
-        public DeviceEntity Configuration { get; private set; }
+        public DeviceEntity DeviceEntity { get; private set; }
         public ReadOnlyCollection<DeviceLed> Leds { get; set; }
 
         public double X
         {
-            get => Configuration.X;
-            set => Configuration.X = value;
+            get => DeviceEntity.X;
+            set => DeviceEntity.X = value;
         }
 
         public double Y
         {
-            get => Configuration.Y;
-            set => Configuration.Y = value;
+            get => DeviceEntity.Y;
+            set => DeviceEntity.Y = value;
         }
 
         public double Rotation
         {
-            get => Configuration.Rotation;
-            set => Configuration.Rotation = value;
+            get => DeviceEntity.Rotation;
+            set => DeviceEntity.Rotation = value;
         }
 
         public int ZIndex
         {
-            get => Configuration.ZIndex;
-            set => Configuration.ZIndex = value;
+            get => DeviceEntity.ZIndex;
+            set => DeviceEntity.ZIndex = value;
         }
 
-        internal void ApplyToConfiguration()
+        internal void ApplyToEntity()
         {
-            Configuration.SurfaceId = Surface.Guid;
-            Configuration.DeviceHashCode = RgbDevice.GetDeviceHashCode();
+            // Other properties are mapped computed
 
-            // Ensure the position configuration is in the surface configuration's' collection of positions
-            if (Surface.SurfaceEntity.DeviceEntities.All(p => p.Guid != Configuration.Guid))
-                Surface.SurfaceEntity.DeviceEntities.Add(Configuration);
+            DeviceEntity.DeviceHashCode = RgbDevice.GetDeviceHashCode();
         }
 
         internal void ApplyToRgbDevice()
         {
-            RgbDevice.Location = new Point(Configuration.X, Configuration.Y);
+            RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
             CalculateRenderRectangle();
         }
 
@@ -110,7 +104,7 @@ namespace Artemis.Core.Models.Surface
 
         internal void Destroy()
         {
-            Configuration = null;
+            DeviceEntity = null;
             RgbDevice = null;
             Surface = null;
         }

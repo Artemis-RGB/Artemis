@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -11,7 +13,7 @@ namespace Artemis.Core.Models.Profile
         public Folder(Profile profile, Folder folder, string name)
         {
             FolderEntity = new FolderEntity();
-            Guid = System.Guid.NewGuid().ToString();
+            EntityId = Guid.NewGuid();
 
             Profile = profile;
             ParentFolder = folder;
@@ -22,22 +24,22 @@ namespace Artemis.Core.Models.Profile
         public Folder(Profile profile, Folder folder, FolderEntity folderEntity, IPluginService pluginService)
         {
             FolderEntity = folderEntity;
-            Guid = folderEntity.Guid;
+            EntityId = folderEntity.Id;
 
             Profile = profile;
             ParentFolder = folder;
             Children = new List<ProfileElement>();
 
             // Load child folders
-            foreach (var childFolder in folderEntity.Folders)
+            foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
                 folder.Children.Add(new Folder(profile, this, childFolder, pluginService));
             // Load child layers
-            foreach (var childLayer in folderEntity.Layers)
+            foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
                 folder.Children.Add(new Layer(profile, this, childLayer, pluginService));
         }
 
         internal FolderEntity FolderEntity { get; set; }
-        internal string Guid { get; set; }
+        internal Guid EntityId { get; set; }
 
         public Profile Profile { get; }
         public Folder ParentFolder { get; }
@@ -59,25 +61,15 @@ namespace Artemis.Core.Models.Profile
 
         internal override void ApplyToEntity()
         {
-            FolderEntity.Guid = Guid;
+            FolderEntity.Id = EntityId;
+            FolderEntity.ParentId = ParentFolder?.EntityId ?? new Guid();
+
             FolderEntity.Order = Order;
             FolderEntity.Name = Name;
 
-            foreach (var profileElement in Children)
-            {
-                profileElement.ApplyToEntity();
-                // Add missing children
-                if (profileElement is Folder folder)
-                {
-                    // TODO
-                }
-                else if (profileElement is Layer layer)
-                {
-                    // TODO
-                }
+            FolderEntity.ProfileId = Profile.EntityId;
 
-                // Remove extra childen
-            }
+            // TODO: conditions
         }
 
         public override string ToString()

@@ -1,60 +1,43 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
     public class SurfaceRepository : ISurfaceRepository
     {
-        private readonly StorageContext _dbContext;
+        private readonly LiteRepository _repository;
 
-        internal SurfaceRepository()
+        internal SurfaceRepository(LiteRepository repository)
         {
-            _dbContext = new StorageContext();
-            _dbContext.Database.EnsureCreated();
+            _repository = repository;
+            _repository.Database.GetCollection<SurfaceEntity>().EnsureIndex(s => s.Name);
         }
 
         public void Add(SurfaceEntity surfaceEntity)
         {
-            _dbContext.Surfaces.Add(surfaceEntity);
+            _repository.Insert(surfaceEntity);
         }
 
         public void Remove(SurfaceEntity surfaceEntity)
         {
-            _dbContext.Surfaces.Remove(surfaceEntity);
+            _repository.Delete<SurfaceEntity>(s => s.Id == surfaceEntity.Id);
         }
 
-        public SurfaceEntity Get(string name)
+        public SurfaceEntity GetByName(string name)
         {
-            return _dbContext.Surfaces.Include(s => s.DeviceEntities).FirstOrDefault(p => p.Name == name);
-        }
-
-        public async Task<SurfaceEntity> GetAsync(string name)
-        {
-            return await _dbContext.Surfaces.Include(s => s.DeviceEntities).FirstOrDefaultAsync(p => p.Name == name);
+            return _repository.FirstOrDefault<SurfaceEntity>(s => s.Name == name);
         }
 
         public List<SurfaceEntity> GetAll()
         {
-            return _dbContext.Surfaces.Include(s => s.DeviceEntities).ToList();
+            return _repository.Query<SurfaceEntity>().Include(s => s.DeviceEntities).ToList();
         }
 
-        public async Task<List<SurfaceEntity>> GetAllAsync()
+        public void Save(SurfaceEntity surfaceEntity)
         {
-            return await _dbContext.Surfaces.Include(s => s.DeviceEntities).ToListAsync();
-        }
-
-        public void Save()
-        {
-            _dbContext.SaveChanges();
-        }
-
-        public async Task SaveAsync()
-        {
-            await _dbContext.SaveChangesAsync();
+            _repository.Upsert(surfaceEntity);
         }
     }
 }

@@ -43,7 +43,6 @@ namespace Artemis.Core.Plugins.Models
                 {
                     settingEntity = new PluginSettingEntity {Name = name, PluginGuid = _pluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
                     _pluginSettingRepository.Add(settingEntity);
-                    _pluginSettingRepository.Save();
                 }
 
                 var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginSettingRepository, settingEntity);

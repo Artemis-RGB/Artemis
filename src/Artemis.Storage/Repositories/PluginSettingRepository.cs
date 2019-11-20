@@ -1,56 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
     public class PluginSettingRepository : IPluginSettingRepository
     {
-        private readonly StorageContext _dbContext;
+        private readonly LiteRepository _repository;
 
-        internal PluginSettingRepository()
+        internal PluginSettingRepository(LiteRepository repository)
         {
-            _dbContext = new StorageContext();
-            _dbContext.Database.EnsureCreated();
+            _repository = repository;
+            _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => s.Name);
+            _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => s.PluginGuid);
         }
 
         public void Add(PluginSettingEntity pluginSettingEntity)
         {
-            _dbContext.PluginSettings.Add(pluginSettingEntity);
+            _repository.Insert(pluginSettingEntity);
         }
 
         public List<PluginSettingEntity> GetByPluginGuid(Guid pluginGuid)
         {
-            return _dbContext.PluginSettings.Where(p => p.PluginGuid == pluginGuid).ToList();
-        }
-
-        public async Task<List<PluginSettingEntity>> GetByPluginGuidAsync(Guid pluginGuid)
-        {
-            return await _dbContext.PluginSettings.Where(p => p.PluginGuid == pluginGuid).ToListAsync();
+            return _repository.Query<PluginSettingEntity>().Where(p => p.PluginGuid == pluginGuid).ToList();
         }
 
         public PluginSettingEntity GetByNameAndPluginGuid(string name, Guid pluginGuid)
         {
-            return _dbContext.PluginSettings.FirstOrDefault(p => p.Name == name && p.PluginGuid == pluginGuid);
+            return _repository.FirstOrDefault<PluginSettingEntity>(p => p.Name == name && p.PluginGuid == pluginGuid);
         }
-
-        public async Task<PluginSettingEntity> GetByNameAndPluginGuidAsync(string name, Guid pluginGuid)
+        
+        public void Save(PluginSettingEntity pluginSettingEntity)
         {
-            return await _dbContext.PluginSettings.FirstOrDefaultAsync(p => p.Name == name && p.PluginGuid == pluginGuid);
-        }
-
-        public void Save()
-        {
-            _dbContext.SaveChanges();
-        }
-
-        public async Task SaveAsync()
-        {
-            await _dbContext.SaveChangesAsync();
+            _repository.Upsert(pluginSettingEntity);
         }
     }
 }
