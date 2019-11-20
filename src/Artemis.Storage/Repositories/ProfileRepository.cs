@@ -1,51 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
     public class ProfileRepository : IProfileRepository
     {
-        private readonly StorageContext _dbContext;
+        private readonly LiteRepository _repository;
 
-        public ProfileRepository()
+        internal ProfileRepository(LiteRepository repository)
         {
-            _dbContext = new StorageContext();
-            _dbContext.Database.EnsureCreated();
+            _repository = repository;
+            _repository.Database.GetCollection<ProfileEntity>().EnsureIndex(s => s.Name);
         }
 
-        public IQueryable<ProfileEntity> GetAll()
+        public void Add(ProfileEntity profileEntity)
         {
-            return _dbContext.Profiles;
+            _repository.Insert(profileEntity);
         }
 
-        public async Task<IList<ProfileEntity>> GetByPluginGuidAsync(Guid pluginGuid)
+        public void Remove(ProfileEntity profileEntity)
         {
-            return await _dbContext.Profiles.Where(p => p.PluginGuid == pluginGuid).ToListAsync();
+            _repository.Delete<ProfileEntity>(s => s.Id == profileEntity.Id);
         }
 
-        public async Task<ProfileEntity> GetActiveProfileByPluginGuidAsync(Guid pluginGuid)
+        public List<ProfileEntity> GetAll()
         {
-            return await _dbContext.Profiles.FirstOrDefaultAsync(p => p.PluginGuid == pluginGuid && p.IsActive);
+            return _repository.Query<ProfileEntity>().ToList();
         }
 
-        public async Task<ProfileEntity> GetByGuidAsync(string guid)
+        public ProfileEntity Get(Guid id)
         {
-            return await _dbContext.Profiles.FirstOrDefaultAsync(p => p.Guid == guid);
+            return _repository.FirstOrDefault<ProfileEntity>(p => p.Id == id);
         }
 
-        public void Save()
+        public List<ProfileEntity> GetByPluginGuid(Guid pluginGuid)
         {
-            _dbContext.SaveChanges();
+            return _repository.Query<ProfileEntity>()
+                .Include(p => p.Folders)
+                .Include(p => p.Layers)
+                .Where(s => s.PluginGuid == pluginGuid)
+                .ToList();
         }
 
-        public async Task SaveAsync()
+        public void Save(ProfileEntity profileEntity)
         {
-            await _dbContext.SaveChangesAsync();
+            _repository.Upsert(profileEntity);
         }
     }
 }

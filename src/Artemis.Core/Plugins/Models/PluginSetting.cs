@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Artemis.Storage.Entities;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -71,20 +70,7 @@ namespace Artemis.Core.Plugins.Models
                 return;
 
             _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
-            _pluginSettingRepository.Save();
-        }
-
-        /// <summary>
-        ///     Saves the setting asynchronously
-        /// </summary>
-        /// <returns></returns>
-        public async Task SaveAsync()
-        {
-            if (!HasChanged)
-                return;
-
-            _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
-            await _pluginSettingRepository.SaveAsync();
+            _pluginSettingRepository.Save(_pluginSettingEntity);
         }
 
         public event EventHandler<EventArgs> SettingChanged;

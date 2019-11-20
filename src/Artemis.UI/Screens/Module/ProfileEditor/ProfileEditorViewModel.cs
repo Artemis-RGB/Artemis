@@ -62,13 +62,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         protected override void OnActivate()
         {
-            Task.Run(LoadProfilesAsync);
+            Task.Run(() => LoadProfiles());
             base.OnActivate();
         }
 
-        private async Task LoadProfilesAsync()
+        private void LoadProfiles()
         {
-            var profiles = await _profileService.GetProfiles((ProfileModule) Module);
+            var profiles = _profileService.GetProfiles((ProfileModule) Module);
             Profiles.Clear();
             Profiles.AddRange(profiles);
 

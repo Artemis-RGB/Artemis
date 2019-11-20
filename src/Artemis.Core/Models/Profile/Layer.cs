@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -14,7 +13,7 @@ namespace Artemis.Core.Models.Profile
         internal Layer(Profile profile, Folder folder, string name)
         {
             LayerEntity = new LayerEntity();
-            Guid = System.Guid.NewGuid().ToString();
+            EntityId = Guid.NewGuid();
 
             Profile = profile;
             ParentFolder = folder;
@@ -24,15 +23,15 @@ namespace Artemis.Core.Models.Profile
         internal Layer(Profile profile, Folder folder, LayerEntity layerEntity, IPluginService pluginService)
         {
             LayerEntity = layerEntity;
-            Guid = layerEntity.Guid;
+            EntityId = layerEntity.Id;
 
             Profile = profile;
             ParentFolder = folder;
-            LayerType = pluginService.GetLayerTypeByGuid(System.Guid.Parse(layerEntity.LayerTypeGuid));
+            LayerType = pluginService.GetLayerTypeByGuid(layerEntity.LayerTypeGuid);
         }
 
         internal LayerEntity LayerEntity { get; set; }
-        internal string Guid { get; set; }
+        internal Guid EntityId { get; set; }
 
         public Profile Profile { get; }
         public Folder ParentFolder { get; }
@@ -64,12 +63,16 @@ namespace Artemis.Core.Models.Profile
 
         internal override void ApplyToEntity()
         {
-            LayerEntity.Guid = Guid;
+            LayerEntity.Id = EntityId;
+            LayerEntity.ParentId = ParentFolder?.EntityId ?? new Guid();
+            LayerEntity.LayerTypeGuid = LayerType?.PluginInfo.Guid ?? new Guid();
+
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
-            LayerEntity.LayerTypeGuid = LayerType?.PluginInfo.Guid.ToString();
 
-            // TODO: Settings
+            LayerEntity.ProfileId = Profile.EntityId;
+
+            // TODO: LEDs, conditions, elements
         }
 
         public void UpdateLayerType(LayerType layerType)

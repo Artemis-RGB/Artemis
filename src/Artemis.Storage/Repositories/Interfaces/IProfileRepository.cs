@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Storage.Repositories.Interfaces
 {
     public interface IProfileRepository : IRepository
     {
-        IQueryable<ProfileEntity> GetAll();
-        Task<IList<ProfileEntity>> GetByPluginGuidAsync(Guid pluginGuid);
-        Task<ProfileEntity> GetByGuidAsync(string guid);
-        void Save();
-        Task SaveAsync();
+        void Add(ProfileEntity profileEntity);
+        void Remove(ProfileEntity profileEntity);
+        List<ProfileEntity> GetAll();
+        ProfileEntity Get(Guid id);
+        List<ProfileEntity> GetByPluginGuid(Guid pluginGuid);
+        void Save(ProfileEntity profileEntity);
     }
 }

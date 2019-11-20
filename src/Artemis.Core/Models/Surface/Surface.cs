@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Storage.Entities;
+using System.Linq;
+using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Models.Surface
@@ -10,12 +11,14 @@ namespace Artemis.Core.Models.Surface
         internal Surface(RGBSurface rgbSurface, string name, double scale)
         {
             SurfaceEntity = new SurfaceEntity {DeviceEntities = new List<DeviceEntity>()};
-            Guid = System.Guid.NewGuid().ToString();
+            EntityId = Guid.NewGuid();
 
             Name = name;
             Scale = scale;
             RgbSurface = rgbSurface;
             IsActive = false;
+
+            // Devices are not populated here but as they are detected
             Devices = new List<Device>();
 
             ApplyToEntity();
@@ -24,13 +27,15 @@ namespace Artemis.Core.Models.Surface
         internal Surface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity, double scale)
         {
             SurfaceEntity = surfaceEntity;
-            Guid = surfaceEntity.Guid;
+            EntityId = surfaceEntity.Id;
 
             RgbSurface = rgbSurface;
             Scale = scale;
             Name = surfaceEntity.Name;
             IsActive = surfaceEntity.IsActive;
-            Devices = new List<Device>();
+
+            // Devices are not populated here but as they are detected
+            Devices = new List<Device>(); 
         }
 
         public RGBSurface RgbSurface { get; }
@@ -40,13 +45,20 @@ namespace Artemis.Core.Models.Surface
         public List<Device> Devices { get; internal set; }
 
         internal SurfaceEntity SurfaceEntity { get; set; }
-        internal string Guid { get; set; }
+        internal Guid EntityId { get; set; }
 
         internal void ApplyToEntity()
         {
-            SurfaceEntity.Guid = Guid;
+            SurfaceEntity.Id = EntityId;
             SurfaceEntity.Name = Name;
             SurfaceEntity.IsActive = IsActive;
+
+            // Add missing device entities, don't remove old ones in case they come back later
+            foreach (var deviceEntity in Devices.Select(d => d.DeviceEntity).ToList())
+            {
+                if (!SurfaceEntity.DeviceEntities.Contains(deviceEntity))
+                    SurfaceEntity.DeviceEntities.Add(deviceEntity);
+            }
         }
 
         internal void Destroy()

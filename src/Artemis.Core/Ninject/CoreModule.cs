@@ -3,6 +3,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
+using LiteDB;
 using Ninject.Activation;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
@@ -36,6 +37,8 @@ namespace Artemis.Core.Ninject
                     .BindAllInterfaces()
                     .Configure(c => c.When(HasAccessToProtectedService).InSingletonScope());
             });
+
+            Kernel.Bind<LiteRepository>().ToMethod(t => new LiteRepository(Constants.ConnectionString)).InSingletonScope();
 
             // Bind all repositories as singletons
             Kernel.Bind(x =>

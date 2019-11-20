@@ -6,7 +6,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -14,8 +14,8 @@ namespace Artemis.Core.Models.Profile
     {
         internal Profile(PluginInfo pluginInfo, string name)
         {
-            ProfileEntity = new ProfileEntity {RootFolder = new FolderEntity()};
-            Guid = System.Guid.NewGuid().ToString();
+            ProfileEntity = new ProfileEntity();
+            EntityId = Guid.NewGuid();
 
             PluginInfo = pluginInfo;
             Name = name;
@@ -26,20 +26,24 @@ namespace Artemis.Core.Models.Profile
         internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
         {
             ProfileEntity = profileEntity;
-            Guid = profileEntity.Guid;
+            EntityId = profileEntity.Id;
 
             PluginInfo = pluginInfo;
             Name = profileEntity.Name;
 
             // Populate the profile starting at the root, the rest is populated recursively
-            Children = new List<ProfileElement> {new Folder(this, null, profileEntity.RootFolder, pluginService)};
+            var rootFolder = profileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
+            if (rootFolder == null)
+                Children = new List<ProfileElement> {new Folder(this, null, "Root folder")};
+            else
+                Children = new List<ProfileElement> {new Folder(this, null, rootFolder, pluginService)};
         }
 
         public PluginInfo PluginInfo { get; }
         public bool IsActivated { get; private set; }
 
         internal ProfileEntity ProfileEntity { get; set; }
-        internal string Guid { get; set; }
+        public Guid EntityId { get; set; }
 
         public override void Update(double deltaTime)
         {
@@ -67,12 +71,21 @@ namespace Artemis.Core.Models.Profile
 
         internal override void ApplyToEntity()
         {
-            ProfileEntity.Guid = Guid;
+            ProfileEntity.Id = EntityId;
+            ProfileEntity.PluginGuid = PluginInfo.Guid;
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
 
-            var rootFolder = Children.Single();
+            foreach (var profileElement in Children)
+                profileElement.ApplyToEntity();
+
+            ProfileEntity.Folders.Clear();
+            ProfileEntity.Folders.AddRange(GetAllFolders().Select(f => f.FolderEntity));
+
+            ProfileEntity.Layers.Clear();
+            ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
         }
+
 
         internal void Activate()
         {
@@ -95,7 +108,7 @@ namespace Artemis.Core.Models.Profile
                 OnDeactivated();
             }
         }
-        
+
         public override string ToString()
         {
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";

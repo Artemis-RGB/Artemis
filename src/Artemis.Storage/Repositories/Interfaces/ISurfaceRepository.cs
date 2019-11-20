@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Surface;
 
 namespace Artemis.Storage.Repositories.Interfaces
 {
@@ -8,12 +8,9 @@ namespace Artemis.Storage.Repositories.Interfaces
     {
         void Add(SurfaceEntity surfaceEntity);
         void Remove(SurfaceEntity surfaceEntity);
-        SurfaceEntity Get(string name);
-        Task<SurfaceEntity> GetAsync(string name);
+        SurfaceEntity GetByName(string name);
         List<SurfaceEntity> GetAll();
-        Task<List<SurfaceEntity>> GetAllAsync();
 
-        void Save();
-        Task SaveAsync();
+        void Save(SurfaceEntity surfaceEntity);
     }
 }

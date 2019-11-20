@@ -9,10 +9,7 @@ namespace Artemis.Storage.Repositories.Interfaces
     {
         void Add(PluginSettingEntity pluginSettingEntity);
         List<PluginSettingEntity> GetByPluginGuid(Guid pluginGuid);
-        Task<List<PluginSettingEntity>> GetByPluginGuidAsync(Guid pluginGuid);
         PluginSettingEntity GetByNameAndPluginGuid(string name, Guid pluginGuid);
-        Task<PluginSettingEntity> GetByNameAndPluginGuidAsync(string name, Guid pluginGuid);
-        void Save();
-        Task SaveAsync();
+        void Save(PluginSettingEntity pluginSettingEntity);
     }
 }
