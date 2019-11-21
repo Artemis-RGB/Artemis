@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using Stylet;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class Device
+    public class Device : PropertyChangedBase
     {
         internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface)
         {

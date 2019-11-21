@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Surface;
-using PropertyChanged;
-using RGB.NET.Core;
 using Stylet;
-using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
@@ -26,23 +25,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
                 foreach (var led in Device.RgbDevice)
                     _leds.Add(new SurfaceLedViewModel(led));
             }
-
-            Device.DeviceUpdated += DeviceOnDeviceUpdated;
-        }
-
-        private void DeviceOnDeviceUpdated(object sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(() => RgbDeviceRectangle);        
-            NotifyOfPropertyChange(() => RgbDeviceRectangle.Location.X);        
-            NotifyOfPropertyChange(() => RgbDeviceRectangle.Location.Y);     
-            
         }
 
         public Device Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
-
-        public Rectangle RgbDeviceRectangle => Device.RgbDevice.DeviceRectangle;
 
         public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
 
@@ -86,10 +73,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         public MouseDevicePosition GetMouseDevicePosition(Point position)
         {
-            if ((new Point(0, 0) - position).LengthSquared < 5)
-            {
-                return MouseDevicePosition.TopLeft;
-            }
+            if ((new Point(0, 0) - position).LengthSquared < 5) return MouseDevicePosition.TopLeft;
 
             return MouseDevicePosition.Regular;
         }

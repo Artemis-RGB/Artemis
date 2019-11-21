@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using Stylet;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class Surface
+    public class Surface : PropertyChangedBase
     {
         internal Surface(RGBSurface rgbSurface, string name, double scale)
         {

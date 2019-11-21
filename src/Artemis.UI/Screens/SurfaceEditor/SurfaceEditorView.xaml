@@ -104,8 +104,8 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
                             <Style TargetType="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding RgbDeviceRectangle.Location.X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding RgbDeviceRectangle.Location.Y}" />
+                                <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding Device.Y}" />
                             </Style>
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>

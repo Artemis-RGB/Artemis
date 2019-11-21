@@ -19,11 +19,12 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <Grid.LayoutTransform>
-            <RotateTransform Angle="{Binding Device.RgbDevice.Rotation.Degrees}"></RotateTransform>
-        </Grid.LayoutTransform>
         <!-- Device image with fallback -->
-        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
+        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Image.LayoutTransform>
+                <RotateTransform Angle="{Binding Device.Rotation}" />
+            </Image.LayoutTransform>
+        </Image>
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"
@@ -38,6 +39,9 @@
 
         <!-- LEDs -->
         <ItemsControl ItemsSource="{Binding Leds}">
+            <ItemsControl.LayoutTransform>
+                <RotateTransform Angle="{Binding Device.Rotation}" />
+            </ItemsControl.LayoutTransform>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />

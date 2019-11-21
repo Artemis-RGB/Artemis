@@ -1,10 +1,11 @@
 ﻿using System;
 using RGB.NET.Core;
+using Stylet;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class DeviceLed
+    public class DeviceLed : PropertyChangedBase
     {
         public DeviceLed(Led led, Device device)
         {
