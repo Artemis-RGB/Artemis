@@ -90,6 +90,8 @@ namespace Artemis.Plugins.Modules.General
                 brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
                 graphics.FillPath(brush, device.RenderPath);
                 brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
+
+                graphics.DrawRectangle(new Pen(Color.Red), device.RenderRectangle);
             }
         }
 
