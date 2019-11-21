@@ -13,10 +13,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ProfileLedViewModel(Led led)
         {
             Led = led;
-            X = Led.LedRectangle.X;
-            Y = Led.LedRectangle.Y;
-            Width = Led.LedRectangle.Width;
-            Height = Led.LedRectangle.Height;
+            X = Led.Location.X;
+            Y = Led.Location.Y;
+            Width = Led.Size.Width;
+            Height = Led.Size.Height;
 
             Execute.OnUIThread(CreateLedGeometry);
         }
@@ -63,17 +63,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void CreateRectangleGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Led.LedRectangle.Width - 1, Led.LedRectangle.Height - 1));
+            DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Led.Size.Width - 1, Led.Size.Height - 1));
         }
 
         private void CreateCircleGeometry()
         {
-            DisplayGeometry = new EllipseGeometry(new Rect(0.5, 0.5, Led.LedRectangle.Width - 1, Led.LedRectangle.Height - 1));
+            DisplayGeometry = new EllipseGeometry(new Rect(0.5, 0.5, Led.Size.Width - 1, Led.Size.Height - 1));
         }
 
         private void CreateKeyCapGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Led.LedRectangle.Width - 2, Led.LedRectangle.Height - 2), 1.6, 1.6);
+            DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Led.Size.Width - 2, Led.Size.Height - 2), 1.6, 1.6);
         }
 
         private void CreateCustomGeometry(double deflateAmount)
@@ -88,7 +88,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     {
                         Children = new TransformCollection
                         {
-                            new ScaleTransform(Led.LedRectangle.Width - deflateAmount, Led.LedRectangle.Height - deflateAmount),
+                            new ScaleTransform(Led.Size.Width - deflateAmount, Led.Size.Height - deflateAmount),
                             new TranslateTransform(deflateAmount / 2, deflateAmount / 2)
                         }
                     }

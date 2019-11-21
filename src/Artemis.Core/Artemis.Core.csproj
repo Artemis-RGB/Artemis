@@ -157,7 +157,7 @@
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
-    <Compile Include="Models\Surface\Led.cs" />
+    <Compile Include="Models\Surface\DeviceLed.cs" />
     <Compile Include="Models\Surface\Surface.cs" />
     <Compile Include="Models\Surface\Device.cs" />
     <Compile Include="Ninject\LoggerProvider.cs" />

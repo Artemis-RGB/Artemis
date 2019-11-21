@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -14,12 +16,36 @@ namespace Artemis.Core.Services.Storage
     public class ProfileService : IProfileService
     {
         private readonly IPluginService _pluginService;
+        private readonly ISurfaceService _surfaceService;
         private readonly IProfileRepository _profileRepository;
 
-        internal ProfileService(IPluginService pluginService, IProfileRepository profileRepository)
+        internal ProfileService(IPluginService pluginService, ISurfaceService surfaceService, IProfileRepository profileRepository)
         {
             _pluginService = pluginService;
+            _surfaceService = surfaceService;
             _profileRepository = profileRepository;
+
+            _surfaceService.ActiveSurfaceConfigurationChanged += SurfaceServiceOnActiveSurfaceConfigurationChanged;
+            _surfaceService.SurfaceConfigurationUpdated += SurfaceServiceOnSurfaceConfigurationUpdated;
+        }
+
+        private void SurfaceServiceOnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
+        {
+            ApplySurfaceToProfiles(e.Surface);
+        }
+
+        private void SurfaceServiceOnSurfaceConfigurationUpdated(object sender, SurfaceConfigurationEventArgs e)
+        {
+            if (!e.Surface.IsActive)
+                return;
+            ApplySurfaceToProfiles(e.Surface);
+        }
+
+        private void ApplySurfaceToProfiles(Surface surface)
+        {
+            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
+            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
+                profileModule.ActiveProfile.ApplySurface(surface);
         }
 
         public List<Profile> GetProfiles(ProfileModule module)
@@ -55,6 +81,8 @@ namespace Artemis.Core.Services.Storage
             var profile = new Profile(module.PluginInfo, name);
             _profileRepository.Add(profile.ProfileEntity);
 
+            if (_surfaceService.ActiveSurface != null)
+                profile.ApplySurface(_surfaceService.ActiveSurface);
             return profile;
         }
 
@@ -70,6 +98,9 @@ namespace Artemis.Core.Services.Storage
             {
                 foreach (var profileElement in profile.Children)
                     profileElement.ApplyToEntity();
+
+                if (_surfaceService.ActiveSurface != null)
+                    profile.ApplySurface(_surfaceService.ActiveSurface);
             }
 
             _profileRepository.Save(profile.ProfileEntity);

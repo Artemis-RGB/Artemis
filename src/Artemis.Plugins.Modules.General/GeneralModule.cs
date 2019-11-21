@@ -21,7 +21,7 @@ namespace Artemis.Plugins.Modules.General
             _settings = settings;
             DisplayName = "General";
             ExpandsMainDataModel = true;
-            DeviceBrushes= new Dictionary<Device, TextureBrush>();
+            DeviceBrushes = new Dictionary<Device, TextureBrush>();
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
 
@@ -89,7 +89,7 @@ namespace Artemis.Plugins.Modules.General
                 var brush = DeviceBrushes[device];
                 brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
                 graphics.FillPath(brush, device.RenderPath);
-                brush.TranslateTransform((int)Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
+                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
             }
         }
 

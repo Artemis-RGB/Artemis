@@ -21,8 +21,8 @@ namespace Artemis.Core.RGB.NET
                 _bitmap = null;
             else
             {
-                var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.X + l.AbsoluteLedRectangle.Width) * scale, 4096);
-                var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Y + l.AbsoluteLedRectangle.Height) * scale, 4096);
+                var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.X + l.AbsoluteLedRectangle.Size.Width) * scale, 4096);
+                var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.Y + l.AbsoluteLedRectangle.Size.Height) * scale, 4096);
 
                 _bitmap = new DirectBitmap((int) width, (int) height);
             }
