@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.SurfaceEditor.Dialogs.SurfaceDeviceConfigView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor.Dialogs"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="351.305" d:DesignWidth="262.163"
+             d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceDeviceConfigViewModel}}">
+    <StackPanel Margin="16" UseLayoutRounding="True">
+        <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignTitleTextBlock}" />
+
+        <Label>X-coordinate</Label>
+        <mah:NumericUpDown materialDesign:HintAssist.Hint="X-coordinate"
+                           Value="{Binding X}"
+                           Style="{StaticResource MaterialDesignNumericUpDown}"
+                           Minimum="0"
+                           Interval="1"
+                           StringFormat="0" />
+
+        <Label>Y-coordinate</Label>
+        <mah:NumericUpDown materialDesign:HintAssist.Hint="Y-coordinate"
+                           Value="{Binding Y}"
+                           Style="{StaticResource MaterialDesignNumericUpDown}"
+                           Minimum="0"
+                           Interval="1"
+                           StringFormat="0" />
+
+        <Label>Scale</Label>
+        <mah:NumericUpDown materialDesign:HintAssist.Hint="Scale"
+                           Value="{Binding Scale}"
+                           Style="{StaticResource MaterialDesignNumericUpDown}"
+                           Minimum="0"
+                           Interval="0.1"
+                           StringFormat="0.00" />
+
+        <Label>Rotation</Label>
+        <mah:NumericUpDown materialDesign:HintAssist.Hint="Rotation"
+                           Value="{Binding Rotation}"
+                           Style="{StaticResource MaterialDesignNumericUpDown}"
+                           Minimum="0"
+                           Maximum="359"
+                           Interval="1"
+                           StringFormat="0" />
+
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
+                    Command="{s:Action Cancel}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+                CANCEL
+            </Button>
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0"
+                    Command="{s:Action Accept}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        True
+                    </system:Boolean>
+                </Button.CommandParameter>
+                APPLY
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -170,6 +170,8 @@
     <Compile Include="Screens\Module\ProfileEditor\ProfileEditorPanelViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileViewModel.cs" />
     <Compile Include="Screens\News\NewsViewModel.cs" />
+    <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigViewModelValidator.cs" />
+    <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigViewModel.cs" />
     <Compile Include="Screens\Workshop\WorkshopViewModel.cs" />
     <Compile Include="Services\Dialog\DialogService.cs" />
     <Compile Include="Services\Interfaces\IDialogService.cs" />
@@ -242,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\News\NewsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -352,7 +358,18 @@
   <ItemGroup>
     <Resource Include="logo-512.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\aero_rotate_tl.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_rotate_tr.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_rotate_bl.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_rotate_br.cur" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -7,7 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="213.053" d:DesignWidth="254.425">
-    <StackPanel Margin="16">
+    <StackPanel Margin="16" UseLayoutRounding="True">
         <TextBlock>
             Add a new surface layout
         </TextBlock>

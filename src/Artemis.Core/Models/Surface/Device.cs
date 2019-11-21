@@ -63,12 +63,18 @@ namespace Artemis.Core.Models.Surface
             set => DeviceEntity.Rotation = value;
         }
 
+        public double Scale
+        {
+            get => DeviceEntity.Scale;
+            set => DeviceEntity.Scale = value;
+        }
+
         public int ZIndex
         {
             get => DeviceEntity.ZIndex;
             set => DeviceEntity.ZIndex = value;
         }
-
+        
         internal void ApplyToEntity()
         {
             // Other properties are computed
@@ -79,8 +85,10 @@ namespace Artemis.Core.Models.Surface
         {
             RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
             RgbDevice.Rotation = DeviceEntity.Rotation;
+            RgbDevice.Scale = DeviceEntity.Scale;
 
             CalculateRenderProperties();
+            OnDeviceUpdated();
         }
 
         internal void CalculateRenderProperties()
@@ -103,10 +111,16 @@ namespace Artemis.Core.Models.Surface
             path.FillMode = FillMode.Winding;
             RenderPath = path;
         }
-
+        
         public override string ToString()
         {
             return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
+        }
+
+        public event EventHandler DeviceUpdated;
+        protected virtual void OnDeviceUpdated()
+        {
+            DeviceUpdated?.Invoke(this, EventArgs.Empty);
         }
     }
 }

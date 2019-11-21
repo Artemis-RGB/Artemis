@@ -46,7 +46,6 @@ namespace Artemis.UI.Screens.Shared
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
-                Mouse.OverrideCursor = Cursors.Arrow;
                 _lastPanPosition = null;
                 return;
             }
