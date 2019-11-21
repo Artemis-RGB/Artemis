@@ -32,8 +32,10 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         private void DeviceOnDeviceUpdated(object sender, EventArgs e)
         {
-            NotifyOfPropertyChange(() => RgbDeviceRectangle);
-            NotifyOfPropertyChange(() => Device.RgbDevice);
+            NotifyOfPropertyChange(() => RgbDeviceRectangle);        
+            NotifyOfPropertyChange(() => RgbDeviceRectangle.Location.X);        
+            NotifyOfPropertyChange(() => RgbDeviceRectangle.Location.Y);     
+            
         }
 
         public Device Device { get; set; }

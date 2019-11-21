@@ -19,6 +19,9 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
+        <Grid.LayoutTransform>
+            <RotateTransform Angle="{Binding Device.RgbDevice.Rotation.Degrees}"></RotateTransform>
+        </Grid.LayoutTransform>
         <!-- Device image with fallback -->
         <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 

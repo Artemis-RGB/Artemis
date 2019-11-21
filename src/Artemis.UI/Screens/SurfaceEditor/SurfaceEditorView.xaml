@@ -110,12 +110,9 @@
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl Width="{Binding Device.RgbDevice.Size.Width}"
-                                                Height="{Binding Device.RgbDevice.Size.Height}"
+                                <ContentControl Width="{Binding Device.RgbDevice.DeviceRectangle.Size.Width}"
+                                                Height="{Binding Device.RgbDevice.DeviceRectangle.Size.Height}"
                                                 s:View.Model="{Binding}">
-                                    <ContentControl.RenderTransform>
-                                        <RotateTransform Angle="{Binding Device.RgbDevice.Rotation.Degrees}" CenterX="{Binding RgbDeviceRectangle.Center.X}" CenterY="{Binding RgbDeviceRectangle.Center.Y}"></RotateTransform>
-                                    </ContentControl.RenderTransform>
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
