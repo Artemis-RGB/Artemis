@@ -65,7 +65,7 @@ namespace Artemis.Core.Models.Surface
         {
             Scale = value;
             foreach (var device in Devices)
-                device.CalculateRenderRectangle();
+                device.CalculateRenderProperties();
 
             OnScaleChanged();
         }

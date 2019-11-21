@@ -24,7 +24,7 @@ namespace Artemis.Core.Models.Surface
             ZIndex = 1;
 
             ApplyToEntity();
-            CalculateRenderRectangle();
+            CalculateRenderProperties();
         }
 
         internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface, DeviceEntity deviceEntity)
@@ -78,10 +78,12 @@ namespace Artemis.Core.Models.Surface
         internal void ApplyToRgbDevice()
         {
             RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
-            CalculateRenderRectangle();
+            RgbDevice.Rotation = DeviceEntity.Rotation;
+
+            CalculateRenderProperties();
         }
 
-        internal void CalculateRenderRectangle()
+        internal void CalculateRenderProperties()
         {
             RenderRectangle = new Rectangle(
                 (int) Math.Round(RgbDevice.Location.X * Surface.Scale, MidpointRounding.AwayFromZero),
@@ -98,6 +100,7 @@ namespace Artemis.Core.Models.Surface
 
             var path = new GraphicsPath();
             path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
+            path.FillMode = FillMode.Winding;
             RenderPath = path;
         }
 

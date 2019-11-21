@@ -48,5 +48,10 @@ namespace Artemis.Core.Services.Storage.Interfaces
         ///     Occurs when the active device entity has been changed
         /// </summary>
         event EventHandler<SurfaceConfigurationEventArgs> ActiveSurfaceConfigurationChanged;
+
+        /// <summary>
+        ///     Occurs when a surface configuration has been updated
+        /// </summary>
+        event EventHandler<SurfaceConfigurationEventArgs> SurfaceConfigurationUpdated;
     }
 }

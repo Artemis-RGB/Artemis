@@ -139,5 +139,11 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+
+        public void ApplySurface(Surface.Surface surface)
+        {
+            foreach (var layer in GetAllLayers()) 
+                layer.ApplySurface(surface);
+        }
     }
 }

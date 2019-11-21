@@ -20,10 +20,10 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         public void ApplyLedToViewModel()
         {
-            X = Led.LedRectangle.X;
-            Y = Led.LedRectangle.Y;
-            Width = Led.LedRectangle.Width;
-            Height = Led.LedRectangle.Height;
+            X = Led.Location.X;
+            Y = Led.Location.Y;
+            Width = Led.Size.Width;
+            Height = Led.Size.Height;
         }
     }
 }

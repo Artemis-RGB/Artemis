@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -21,6 +22,7 @@ namespace Artemis.Core.Services
         private readonly IPluginService _pluginService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
+        private List<Module> _modules;
 
         internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService)
         {
@@ -30,6 +32,10 @@ namespace Artemis.Core.Services
             _surfaceService = surfaceService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
+
+            _modules = _pluginService.GetPluginsOfType<Module>();
+            _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
+            _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
 
             Task.Run(Initialize);
         }
@@ -66,11 +72,12 @@ namespace Artemis.Core.Services
         {
             try
             {
-                var modules = _pluginService.GetPluginsOfType<Module>();
-
-                // Update all active modules
-                foreach (var module in modules)
-                    module.Update(args.DeltaTime);
+                lock (_modules)
+                {
+                    // Update all active modules
+                    foreach (var module in _modules)
+                        module.Update(args.DeltaTime);
+                }
 
                 // If there is no graphics decorator, skip the frame
                 if (_rgbService.GraphicsDecorator == null)
@@ -84,11 +91,14 @@ namespace Artemis.Core.Services
                         return;
 
                     g.Clear(Color.Black);
-                    foreach (var module in modules)
-                        module.Render(args.DeltaTime, _surfaceService.ActiveSurface, g);
+                    lock (_modules)
+                    {
+                        foreach (var module in _modules)
+                            module.Render(args.DeltaTime, _surfaceService.ActiveSurface, g);
+                    }
                 }
 
-                OnFrameRendering(new FrameRenderingEventArgs(modules, _rgbService.GraphicsDecorator.GetBitmap(), args.DeltaTime, _rgbService.Surface));
+                OnFrameRendering(new FrameRenderingEventArgs(_modules, _rgbService.GraphicsDecorator.GetBitmap(), args.DeltaTime, _rgbService.Surface));
             }
             catch (Exception e)
             {
