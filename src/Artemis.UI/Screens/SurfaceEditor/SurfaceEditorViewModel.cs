@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Storage;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
+using Ninject.Parameters;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor
@@ -30,6 +32,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SurfaceConfigurations = new ObservableCollection<Surface>();
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
+            Cursor = null;
 
             _surfaceService = surfaceService;
             _dialogService = dialogService;
@@ -41,6 +44,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
         public PluginSetting<GridLength> SurfaceListWidth { get; set; }
+        public Cursor Cursor { get; set; }
 
         public Surface SelectedSurface
         {
@@ -120,8 +124,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             // Sort the devices by ZIndex
             Execute.OnUIThread(() =>
             {
-                foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
-                    Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+                foreach (var device in Devices.OrderBy(d => d.Device.ZIndex).ToList())
+                    Devices.Move(Devices.IndexOf(device), device.Device.ZIndex - 1);
             });
 
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
@@ -177,7 +181,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             for (var i = 0; i < Devices.Count; i++)
             {
                 var deviceViewModel = Devices[i];
-                deviceViewModel.ZIndex = i + 1;
+                deviceViewModel.Device.ZIndex = i + 1;
             }
         }
 
@@ -190,7 +194,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             for (var i = 0; i < Devices.Count; i++)
             {
                 var deviceViewModel = Devices[i];
-                deviceViewModel.ZIndex = i + 1;
+                deviceViewModel.Device.ZIndex = i + 1;
             }
         }
 
@@ -200,7 +204,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             for (var i = 0; i < Devices.Count; i++)
             {
                 var deviceViewModel = Devices[i];
-                deviceViewModel.ZIndex = i + 1;
+                deviceViewModel.Device.ZIndex = i + 1;
             }
         }
 
@@ -212,8 +216,19 @@ namespace Artemis.UI.Screens.SurfaceEditor
             for (var i = 0; i < Devices.Count; i++)
             {
                 var deviceViewModel = Devices[i];
-                deviceViewModel.ZIndex = i + 1;
+                deviceViewModel.Device.ZIndex = i + 1;
             }
+        }
+
+        public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        {
+            var madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(new Dictionary<string, object>
+            {
+                {"surfaceDeviceViewModel", surfaceDeviceViewModel}
+            });
+
+            if ((bool) madeChanges)
+                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         #endregion
@@ -241,6 +256,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseMove(object sender, MouseEventArgs e)
         {
+            ((Grid) sender).Focus();
             // If holding down Ctrl, pan instead of move/select
             if (IsPanKeyDown())
             {
@@ -285,12 +301,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 _mouseDragStartPoint = position;
             }
 
-            // While dragging always show a hand to avoid cursor flicker
-            if (_mouseDragStatus == MouseDragStatus.Dragging)
-                Mouse.OverrideCursor = Cursors.Hand;
-            else
-                Mouse.OverrideCursor = Cursors.Arrow;
-
             // Any time dragging starts, start with a new rect
             SelectionRectangle.Rect = new Rect();
         }
@@ -311,7 +321,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             else
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
 
-            Mouse.OverrideCursor = null;
+
             _mouseDragStatus = MouseDragStatus.None;
         }
 
@@ -353,13 +363,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public void EditorGridKeyDown(object sender, KeyEventArgs e)
         {
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsDown)
-                Mouse.OverrideCursor = Cursors.ScrollAll;
+                Cursor = Cursors.ScrollAll;
         }
 
         public void EditorGridKeyUp(object sender, KeyEventArgs e)
         {
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsUp)
-                Mouse.OverrideCursor = null;
+                Cursor = null;
         }
 
         public void Pan(object sender, MouseEventArgs e)

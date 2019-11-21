@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Artemis.UI.Screens.Dialogs;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.ViewModels.Dialogs;
@@ -7,7 +10,7 @@ using Ninject;
 using Ninject.Parameters;
 using Stylet;
 
-namespace Artemis.UI.Services
+namespace Artemis.UI.Services.Dialog
 {
     public class DialogService : IDialogService
     {
@@ -46,16 +49,44 @@ namespace Artemis.UI.Services
             return (bool) result;
         }
 
-        public async Task<object> ShowDialog<T>(IParameter[] parameters = null) where T : DialogViewModelBase
+        public async Task<object> ShowDialog<T>() where T : DialogViewModelBase
         {
-            var viewModel = parameters != null ? _kernel.Get<T>(parameters) : _kernel.Get<T>();
-            return await ShowDialog(null, viewModel);
+            return await ShowDialog("RootDialog", _kernel.Get<T>());
         }
 
-        public async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters = null) where T : DialogViewModelBase
+        public Task<object> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase
         {
-            var viewModel = parameters != null ? _kernel.Get<T>(parameters) : _kernel.Get<T>();
-            return await ShowDialog(identifier, viewModel);
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            var paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
+            return ShowDialog<T>(paramsArray);
+        }
+
+        public async Task<object> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            return await ShowDialog("RootDialog", _kernel.Get<T>(parameters));
+        }
+
+        public async Task<object> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase
+        {
+            return await ShowDialog(identifier, _kernel.Get<T>());
+        }
+
+        public async Task<object> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            var paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
+            return await ShowDialogAt<T>(identifier, paramsArray);
+        }
+
+        public async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            return await ShowDialog(identifier, _kernel.Get<T>(parameters));
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)

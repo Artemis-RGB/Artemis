@@ -38,14 +38,17 @@
         </StackPanel>
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="0"
-                             VerticalAlignment="Stretch" Margin="0,0,5,0">
+                             VerticalAlignment="Stretch" Margin="0,0,5,0" >
             <Grid ClipToBounds="True"
+                  Focusable="True"
+                  FocusVisualStyle="{StaticResource FocusVisual}"
                   KeyUp="{s:Action EditorGridKeyUp}"
                   KeyDown="{s:Action EditorGridKeyDown}"
                   MouseWheel="{s:Action EditorGridMouseWheel}"
                   MouseUp="{s:Action EditorGridMouseClick}"
                   MouseDown="{s:Action EditorGridMouseClick}"
-                  MouseMove="{s:Action EditorGridMouseMove}">
+                  MouseMove="{s:Action EditorGridMouseMove}"
+                  Cursor="{Binding Cursor}">
                 <Grid.Background>
                     <VisualBrush TileMode="Tile" Stretch="Uniform"
                                  Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
@@ -101,8 +104,8 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
                             <Style TargetType="ContentPresenter">
-                                <Setter Property="Canvas.Left" Value="{Binding X}" />
-                                <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                                <Setter Property="Canvas.Left" Value="{Binding RgbDeviceRectangle.Location.X}" />
+                                <Setter Property="Canvas.Top" Value="{Binding RgbDeviceRectangle.Location.Y}" />
                             </Style>
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>
@@ -110,30 +113,35 @@
                                 <ContentControl Width="{Binding Device.RgbDevice.Size.Width}"
                                                 Height="{Binding Device.RgbDevice.Size.Height}"
                                                 s:View.Model="{Binding}">
+                                    <ContentControl.RenderTransform>
+                                        <RotateTransform Angle="{Binding Device.RgbDevice.Rotation.Degrees}" CenterX="{Binding RgbDeviceRectangle.Center.X}" CenterY="{Binding RgbDeviceRectangle.Center.Y}"></RotateTransform>
+                                    </ContentControl.RenderTransform>
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}"
-                                                      CommandParameter="{Binding}">
+                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringToFront" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}"
-                                                      CommandParameter="{Binding}">
+                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringForward" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}"
-                                                      CommandParameter="{Binding}">
+                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendToBack" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}"
-                                                      CommandParameter="{Binding}">
+                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendBackward" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="View properties" Command="{s:Action ViewProperties}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="Gear" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </ContextMenu>
@@ -179,8 +187,7 @@
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="2"
                              VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True"
-                                       UseLayoutRounding="True">
+            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />

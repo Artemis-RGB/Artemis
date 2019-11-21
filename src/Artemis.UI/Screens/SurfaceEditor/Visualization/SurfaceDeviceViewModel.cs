@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Surface;
+using PropertyChanged;
+using RGB.NET.Core;
 using Stylet;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
@@ -23,52 +26,44 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
                 foreach (var led in Device.RgbDevice)
                     _leds.Add(new SurfaceLedViewModel(led));
             }
+
+            Device.DeviceUpdated += DeviceOnDeviceUpdated;
+        }
+
+        private void DeviceOnDeviceUpdated(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(() => RgbDeviceRectangle);
+            NotifyOfPropertyChange(() => Device.RgbDevice);
         }
 
         public Device Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
 
-        public double X
-        {
-            get => Device.X;
-            set => Device.X = value;
-        }
-
-        public double Y
-        {
-            get => Device.Y;
-            set => Device.Y = value;
-        }
-
-        public int ZIndex
-        {
-            get => Device.ZIndex;
-            set => Device.ZIndex = value;
-        }
+        public Rectangle RgbDeviceRectangle => Device.RgbDevice.DeviceRectangle;
 
         public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
 
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
-            : new Rect(X, Y, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height);
+            : new Rect(Device.X, Device.Y, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height);
 
         public void StartMouseDrag(Point mouseStartPosition)
         {
-            _dragOffsetX = X - mouseStartPosition.X;
-            _dragOffsetY = Y - mouseStartPosition.Y;
+            _dragOffsetX = Device.X - mouseStartPosition.X;
+            _dragOffsetY = Device.Y - mouseStartPosition.Y;
         }
 
         public void UpdateMouseDrag(Point mousePosition)
         {
             var roundedX = Math.Round((mousePosition.X + _dragOffsetX) / 10, 0, MidpointRounding.AwayFromZero) * 10;
             var roundedY = Math.Round((mousePosition.Y + _dragOffsetY) / 10, 0, MidpointRounding.AwayFromZero) * 10;
-            X = Math.Max(0, roundedX);
-            Y = Math.Max(0, roundedY);
+            Device.X = Math.Max(0, roundedX);
+            Device.Y = Math.Max(0, roundedY);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
-        public void MouseEnter()
+        public void MouseEnter(object sender, MouseEventArgs e)
         {
             if (SelectionStatus == SelectionStatus.None)
             {
@@ -86,6 +81,25 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
                 Cursor = Cursors.Arrow;
             }
         }
+
+        public MouseDevicePosition GetMouseDevicePosition(Point position)
+        {
+            if ((new Point(0, 0) - position).LengthSquared < 5)
+            {
+                return MouseDevicePosition.TopLeft;
+            }
+
+            return MouseDevicePosition.Regular;
+        }
+    }
+
+    public enum MouseDevicePosition
+    {
+        Regular,
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
     }
 
     public enum SelectionStatus

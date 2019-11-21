@@ -63,6 +63,46 @@ namespace Artemis.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] aero_rotate_bl {
+            get {
+                object obj = ResourceManager.GetObject("aero_rotate_bl", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_rotate_br {
+            get {
+                object obj = ResourceManager.GetObject("aero_rotate_br", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_rotate_tl {
+            get {
+                object obj = ResourceManager.GetObject("aero_rotate_tl", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_rotate_tr {
+            get {
+                object obj = ResourceManager.GetObject("aero_rotate_tr", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] bow {
             get {
                 object obj = ResourceManager.GetObject("bow", resourceCulture);

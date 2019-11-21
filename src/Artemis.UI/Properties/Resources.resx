@@ -118,6 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="aero_rotate_bl" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_bl.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_rotate_br" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_br.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_rotate_tl" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_tl.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_rotate_tr" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_tr.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="bow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bow.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
