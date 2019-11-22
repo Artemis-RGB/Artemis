@@ -23,7 +23,7 @@ Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekma
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
 4. Open ```<central folder>\Artemis\src\Artemis.sln```
 5. Restore Nuget packages
-6. Run ```Update-Package -reinstall Fody``` on both the **Artemis.Core** and **Artemis.UI** projects
+6. Run ```Update-Package -reinstall PropertyChanged.Fody``` on both the **Artemis.Core** and **Artemis.UI** projects
 
 Some things I have planned for 2.0
 - Completely overhauled UI
