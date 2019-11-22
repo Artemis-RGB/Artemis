@@ -1,4 +1,5 @@
-﻿using RGB.NET.Core;
+﻿using System.ComponentModel;
+using RGB.NET.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Visualization
@@ -9,6 +10,8 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         {
             Led = led;
             ApplyLedToViewModel();
+
+            Led.PropertyChanged += OnLedOnPropertyChanged;
         }
 
         public Led Led { get; set; }
@@ -18,12 +21,18 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         public double Width { get; set; }
         public double Height { get; set; }
 
+        private void OnLedOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "Location" || args.PropertyName == "ActualSize") ApplyLedToViewModel();
+        }
+
         public void ApplyLedToViewModel()
         {
-            X = Led.Location.X;
-            Y = Led.Location.Y;
-            Width = Led.Size.Width;
-            Height = Led.Size.Height;
+            // Don't want ActualLocation here since rotation is done in XAML
+            X = Led.Location.X * Led.Device.Scale.Horizontal;
+            Y = Led.Location.Y * Led.Device.Scale.Vertical;
+            Width = Led.ActualSize.Width;
+            Height = Led.ActualSize.Height;
         }
     }
 }

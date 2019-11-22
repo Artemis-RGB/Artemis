@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
@@ -24,6 +22,7 @@ namespace Artemis.Core.Models.Surface
             Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
 
             Rotation = 0;
+            Scale = 1;
             ZIndex = 1;
 
             ApplyToEntity();
@@ -42,10 +41,10 @@ namespace Artemis.Core.Models.Surface
         public Rectangle RenderRectangle { get; private set; }
         public GraphicsPath RenderPath { get; private set; }
 
-        public IRGBDevice RgbDevice { get; private set; }
+        public IRGBDevice RgbDevice { get; }
         public Plugin Plugin { get; }
-        public Surface Surface { get; private set; }
-        public DeviceEntity DeviceEntity { get; private set; }
+        public Surface Surface { get; }
+        public DeviceEntity DeviceEntity { get; }
         public ReadOnlyCollection<DeviceLed> Leds { get; set; }
 
         public double X
@@ -77,7 +76,7 @@ namespace Artemis.Core.Models.Surface
             get => DeviceEntity.ZIndex;
             set => DeviceEntity.ZIndex = value;
         }
-        
+
         internal void ApplyToEntity()
         {
             // Other properties are computed
@@ -99,8 +98,8 @@ namespace Artemis.Core.Models.Surface
             RenderRectangle = new Rectangle(
                 (int) Math.Round(RgbDevice.Location.X * Surface.Scale, MidpointRounding.AwayFromZero),
                 (int) Math.Round(RgbDevice.Location.Y * Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbDevice.Size.Width * Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbDevice.Size.Height * Surface.Scale, MidpointRounding.AwayFromZero)
+                (int) Math.Round(RgbDevice.DeviceRectangle.Size.Width * Surface.Scale, MidpointRounding.AwayFromZero),
+                (int) Math.Round(RgbDevice.DeviceRectangle.Size.Height * Surface.Scale, MidpointRounding.AwayFromZero)
             );
 
             if (!Leds.Any())
@@ -114,13 +113,14 @@ namespace Artemis.Core.Models.Surface
             path.FillMode = FillMode.Winding;
             RenderPath = path;
         }
-        
+
         public override string ToString()
         {
             return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
         }
 
         public event EventHandler DeviceUpdated;
+
         protected virtual void OnDeviceUpdated()
         {
             DeviceUpdated?.Invoke(this, EventArgs.Empty);

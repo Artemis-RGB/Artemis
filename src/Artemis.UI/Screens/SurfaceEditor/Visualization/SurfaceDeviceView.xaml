@@ -19,47 +19,47 @@
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <!-- Device image with fallback -->
-        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left">
-            <Image.LayoutTransform>
+        <!-- Content -->
+        <Grid Width="{Binding Device.RgbDevice.ActualSize.Width}" Height="{Binding Device.RgbDevice.ActualSize.Height}">
+            <Grid.LayoutTransform>
                 <RotateTransform Angle="{Binding Device.Rotation}" />
-            </Image.LayoutTransform>
-        </Image>
+            </Grid.LayoutTransform>
 
-        <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
-                   Stroke="{DynamicResource ControlBorderBrush}"
-                   StrokeThickness="1"
-                   Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
-        <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}"
-                   Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   TextWrapping="Wrap"
-                   TextAlignment="Center" />
+            <!-- Device image with fallback -->
+            <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
-        <!-- LEDs -->
-        <ItemsControl ItemsSource="{Binding Leds}">
-            <ItemsControl.LayoutTransform>
-                <RotateTransform Angle="{Binding Device.Rotation}" />
-            </ItemsControl.LayoutTransform>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter Property="Canvas.Left" Value="{Binding X}" />
-                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl Width="{Binding Width}" Height="{Binding Height}" s:View.Model="{Binding}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
+                       Stroke="{DynamicResource ControlBorderBrush}"
+                       StrokeThickness="1"
+                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
+            <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}"
+                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center" />
 
+            <!-- LEDs -->
+            <ItemsControl ItemsSource="{Binding Leds}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="{x:Type ContentPresenter}">
+                        <Setter Property="Canvas.Left" Value="{Binding X}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+        
         <!-- Selection rectangle -->
         <Rectangle Width="Auto" Height="Auto" StrokeThickness="2">
             <Rectangle.Stroke>

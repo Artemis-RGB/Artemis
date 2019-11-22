@@ -13,10 +13,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ProfileLedViewModel(Led led)
         {
             Led = led;
-            X = Led.Location.X;
-            Y = Led.Location.Y;
-            Width = Led.Size.Width;
-            Height = Led.Size.Height;
+
+            // Don't want ActualLocation here since rotation is done in XAML
+            X = Led.Location.X * Led.Device.Scale.Horizontal;
+            Y = Led.Location.Y * Led.Device.Scale.Vertical;
+            Width = Led.ActualSize.Width;
+            Height = Led.ActualSize.Height;
 
             Execute.OnUIThread(CreateLedGeometry);
         }
@@ -63,17 +65,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void CreateRectangleGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Led.Size.Width - 1, Led.Size.Height - 1));
+
+            DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Width - 1, Height - 1));
         }
 
         private void CreateCircleGeometry()
         {
-            DisplayGeometry = new EllipseGeometry(new Rect(0.5, 0.5, Led.Size.Width - 1, Led.Size.Height - 1));
+            DisplayGeometry = new EllipseGeometry(new Rect(0.5, 0.5, Width - 1, Height - 1));
         }
 
         private void CreateKeyCapGeometry()
         {
-            DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Led.Size.Width - 2, Led.Size.Height - 2), 1.6, 1.6);
+            DisplayGeometry = new RectangleGeometry(new Rect(1, 1, Width - 2, Height - 2), 1.6, 1.6);
         }
 
         private void CreateCustomGeometry(double deflateAmount)
@@ -88,7 +91,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     {
                         Children = new TransformCollection
                         {
-                            new ScaleTransform(Led.Size.Width - deflateAmount, Led.Size.Height - deflateAmount),
+                            new ScaleTransform(Width - deflateAmount, Height - deflateAmount),
                             new TranslateTransform(deflateAmount / 2, deflateAmount / 2)
                         }
                     }

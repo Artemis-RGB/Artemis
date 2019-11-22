@@ -6,6 +6,7 @@ using System.Linq;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
 using Device = Artemis.Core.Models.Surface.Device;
 
@@ -16,7 +17,7 @@ namespace Artemis.Plugins.Modules.General
         private readonly ColorBlend _rainbowColorBlend;
         private readonly PluginSettings _settings;
 
-        public GeneralModule(PluginInfo pluginInfo, PluginSettings settings) : base(pluginInfo)
+        public GeneralModule(PluginInfo pluginInfo, PluginSettings settings, ISurfaceService surfaceService) : base(pluginInfo)
         {
             _settings = settings;
             DisplayName = "General";
@@ -38,6 +39,8 @@ namespace Artemis.Plugins.Modules.General
                 else
                     _rainbowColorBlend.Colors[i] = ColorHelpers.ColorFromHSV(0, 1, 1);
             }
+
+            surfaceService.SurfaceConfigurationUpdated += (sender, args) => DeviceBrushes.Clear();
         }
 
         public int[] Hues { get; set; }
