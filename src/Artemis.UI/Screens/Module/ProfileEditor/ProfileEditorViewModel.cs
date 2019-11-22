@@ -20,7 +20,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
     {
         private readonly IProfileService _profileService;
         private readonly IDialogService _dialogService;
-        private Profile _selectedProfile;
 
         public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService, IDialogService dialogService)
         {
@@ -39,7 +38,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             Items.AddRange(viewModels);
 
-            module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
+            module.ActiveProfileChanged += ModuleOnActiveProfileChanged;            
         }
 
         public ProfileModule Module { get; }
@@ -50,28 +49,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public ProfileViewModel ProfileViewModel { get; }
 
         public BindableCollection<Profile> Profiles { get; set; }
-
         public Profile SelectedProfile
         {
-            get => _selectedProfile;
-            set
-            {
-                if (_selectedProfile == value)
-                    return;
-
-                var old = _selectedProfile;
-                _selectedProfile = value;
-                ChangeActiveProfile(old);
-            }
+            get => Module.ActiveProfile;
+            set => ChangeSelectedProfile(value);
         }
 
-        private void ChangeActiveProfile(Profile oldProfile)
+        private void ChangeSelectedProfile(Profile profile)
         {
-            Module.ChangeActiveProfile(_selectedProfile);
-            if (_selectedProfile != null)
-                _profileService.UpdateProfile(_selectedProfile, false);
+            if (profile == Module.ActiveProfile)
+                return;
+
+            var oldProfile = Module.ActiveProfile;
+            Module.ChangeActiveProfile(profile);
+
             if (oldProfile != null)
                 _profileService.UpdateProfile(oldProfile, false);
+            if (profile != null)
+                _profileService.UpdateProfile(profile, false);
         }
 
         public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
@@ -107,7 +102,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
 
             // Activate the new active profile
-            Module.ChangeActiveProfile(newActiveProfile);
+            SelectedProfile = newActiveProfile;
 
             // Remove the old one
             Profiles.Remove(profile);

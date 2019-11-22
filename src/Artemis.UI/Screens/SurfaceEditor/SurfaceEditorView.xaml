@@ -50,8 +50,7 @@
                   MouseMove="{s:Action EditorGridMouseMove}"
                   Cursor="{Binding Cursor}">
                 <Grid.Background>
-                    <VisualBrush TileMode="Tile" Stretch="Uniform"
-                                 Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
+                    <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                         <VisualBrush.Visual>
                             <Grid Width="20" Height="20">
                                 <Grid.RowDefinitions>
@@ -91,8 +90,7 @@
                 <Grid Name="EditorDisplayGrid">
                     <Grid.RenderTransform>
                         <TransformGroup>
-                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}"
-                                            ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                            <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
                             <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                         </TransformGroup>
                     </Grid.RenderTransform>
@@ -110,9 +108,7 @@
                         </ItemsControl.ItemContainerStyle>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl Width="{Binding Device.RgbDevice.DeviceRectangle.Size.Width}"
-                                                Height="{Binding Device.RgbDevice.DeviceRectangle.Size.Height}"
-                                                s:View.Model="{Binding}">
+                                <ContentControl s:View.Model="{Binding}">
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
