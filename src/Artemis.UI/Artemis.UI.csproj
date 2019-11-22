@@ -147,6 +147,7 @@
     <Compile Include="Adorners\BoundingBoxAdorner.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />

@@ -1,13 +1,14 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:models="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="600">
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:models="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
+    mc:Ignorable="d"
+    d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,6 +17,7 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="16">
@@ -32,13 +34,16 @@
 
         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <TextBlock>
-                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" /> The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other.
+                <InlineUIContainer>
+                    <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" />
+                </InlineUIContainer>
+                <Run Text=" The surface is a digital representation of your LED setup. Set this up accurately and effects will seamlessly move from one device to the other." />
             </TextBlock>
             <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 10" />
         </StackPanel>
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="0"
-                             VerticalAlignment="Stretch" Margin="0,0,5,0" >
+                             VerticalAlignment="Stretch" Margin="0,0,5,0">
             <Grid ClipToBounds="True"
                   Focusable="True"
                   FocusVisualStyle="{StaticResource FocusVisual}"
@@ -71,23 +76,23 @@
                 </Grid.Background>
 
                 <Grid.Triggers>
-                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonDown">
+                    <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                         <BeginStoryboard>
-                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
+                            <Storyboard Storyboard.TargetName="MultiSelectionPath" Storyboard.TargetProperty="Opacity">
                                 <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Grid.MouseLeftButtonUp">
+                    <EventTrigger RoutedEvent="UIElement.MouseLeftButtonUp">
                         <BeginStoryboard>
-                            <Storyboard TargetName="MultiSelectionPath" TargetProperty="Opacity">
+                            <Storyboard Storyboard.TargetName="MultiSelectionPath" Storyboard.TargetProperty="Opacity">
                                 <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                 </Grid.Triggers>
 
-                <Grid Name="EditorDisplayGrid">
+                <Grid x:Name="EditorDisplayGrid">
                     <Grid.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
@@ -101,7 +106,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemContainerStyle>
-                            <Style TargetType="ContentPresenter">
+                            <Style TargetType="{x:Type ContentPresenter}">
                                 <Setter Property="Canvas.Left" Value="{Binding Device.X}" />
                                 <Setter Property="Canvas.Top" Value="{Binding Device.Y}" />
                             </Style>
@@ -155,7 +160,7 @@
                 <Path Data="{Binding SelectionRectangle}" Opacity="0"
                       Stroke="{DynamicResource PrimaryHueLightBrush}"
                       StrokeThickness="1"
-                      Name="MultiSelectionPath"
+                      x:Name="MultiSelectionPath"
                       IsHitTestVisible="False">
                     <Path.Fill>
                         <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
@@ -182,30 +187,29 @@
             </Grid>
         </materialDesign:Card>
 
-        <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
+        <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" />
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="2"
-                             VerticalAlignment="Stretch" Margin="5,0,0,0">
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="2" VerticalAlignment="Stretch" Margin="5,0,0,0">
             <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch"
-                             ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
+                    <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
                         <ListBox.Resources>
                             <DataTemplate DataType="{x:Type models:Surface}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="40" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"
                                                HorizontalAlignment="Left" VerticalAlignment="Center" />
                                     <Button Grid.Column="1"
                                             Command="{s:Action DeleteSurfaceConfiguration}"
                                             CommandParameter="{Binding}"
+                                            IsEnabled="{Binding IsActive, Converter={StaticResource InverseBooleanConverter}}"
                                             Style="{StaticResource MaterialDesignIconForegroundButton}"
                                             ToolTip="Delete layout configuration"
                                             HorizontalAlignment="Right">
@@ -230,11 +234,11 @@
         </materialDesign:Card>
 
         <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
-            <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3" />
-            <Run Text="Hold" />
-            <Run FontWeight="Bold" Text="shift" />
-            <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down" />
-            <Run FontWeight="Bold" Text="ctrl" />
+            <InlineUIContainer>
+                <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3" />
+            </InlineUIContainer>
+            <Run Text=" " /><Run Text="Hold" /><Run Text=" " /><Run FontWeight="Bold" Text="shift" /><Run Text=" " />
+            <Run Text="or click and drag to select multiple devices at once. To move around the surface hold down" /><Run Text=" " /><Run FontWeight="Bold" Text="ctrl" /><Run Text=" " />
             <Run Text="and drag." />
         </TextBlock>
     </Grid>
