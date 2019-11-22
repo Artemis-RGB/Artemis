@@ -81,7 +81,7 @@
             <ContentControl s:View.Model="{Binding ProfileViewModel}" />
         </materialDesign:Card>
 
-        <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" Margin="5 0" />
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
 
         <!-- Right panels -->
         <Grid Grid.Row="1" Grid.Column="2">
@@ -95,14 +95,14 @@
                 <ContentControl s:View.Model="{Binding LayersViewModel}" />
             </materialDesign:Card>
 
-            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeNS" Margin="0 5" />
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
             <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                 <ContentControl s:View.Model="{Binding DisplayConditionsViewModel}" />
             </materialDesign:Card>
         </Grid>
 
-        <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeNS" Margin="0 5" />
+        <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
         <!-- Bottom panels -->
         <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
@@ -115,7 +115,7 @@
                 <ContentControl s:View.Model="{Binding LayerElementsViewModel}" />
             </materialDesign:Card>
 
-            <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" ShowsPreview="True" Cursor="SizeWE" />
+            <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" Cursor="SizeWE" />
 
             <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                 <ContentControl s:View.Model="{Binding ElementPropertiesViewModel}" />
