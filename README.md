@@ -16,6 +16,15 @@ Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekma
 
 **Please note that for now I've only included Corsair and very limited Logitech support. If you want to test support for a different device (must be RGB.NET supported), let me know on Discord.**
 
+#### Want to build? Follow these instructions
+1. Create a central folder like ```C:\Repos```
+2. Clone RGB.NET's development branch into ```<central folder>\RGB.NET```
+3. Clone Artemis into  ```<central folder>\Artemis```
+5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
+4. Open ```<central folder>\Artemis\src\Artemis.sln```
+5. Restore Nuget packages
+6. Run ```Update-Package -reinstall PropertyChanged.Fody``` on both the **Artemis.Core** and **Artemis.UI** projects
+
 Some things I have planned for 2.0
 - Completely overhauled UI
 - Deep intergration with DarthAffe's [RGB.NET](https://github.com/DarthAffe/RGB.NET) (meaning more devices!)
