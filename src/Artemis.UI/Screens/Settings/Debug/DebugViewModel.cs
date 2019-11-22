@@ -40,7 +40,7 @@ namespace Artemis.UI.Screens.Settings.Debug
 
             var imageSource = ImageSourceFromBitmap(e.Bitmap);
             imageSource.Freeze();
-            Execute.OnUIThread(() => { CurrentFrame = imageSource; });
+            Execute.PostToUIThread(() => { CurrentFrame = imageSource; });
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
-             d:DataContext="{d:DesignInstance settings:DeviceSettingsViewModel}"
+             xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Devices"
+             d:DataContext="{d:DesignInstance devices:DeviceSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -36,7 +37,7 @@
                     VerticalAlignment="Bottom"
                     Margin="0 0 16 -20"
                     ToolTip="Identify"
-                    Command="{s:Action Identify}">
+                    Command="{s:Action IdentifyDevice}">
                 <materialDesign:PackIcon Kind="AlarmLight" />
             </Button>
             <StackPanel Grid.Row="1" Margin="8 24 8 0">

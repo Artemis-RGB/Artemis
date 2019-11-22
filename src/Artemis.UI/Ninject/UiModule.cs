@@ -1,4 +1,5 @@
-﻿using Artemis.UI.Ninject.Factories;
+﻿using System;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Services.Interfaces;
@@ -17,6 +18,9 @@ namespace Artemis.UI.Ninject
     {
         public override void Load()
         {
+            if (Kernel == null)
+                throw new ArgumentNullException("Kernel shouldn't be null here.");
+
             // Bind all built-in VMs
             Kernel.Bind(x =>
             {
@@ -35,10 +39,19 @@ namespace Artemis.UI.Ninject
                     .BindAllBaseClasses();
             });
 
-            // Bind the module VM
-            Bind<IModuleViewModelFactory>().ToFactory();
-            Bind<IProfileEditorViewModelFactory>().ToFactory();
+            // Bind UI factories
+            Kernel.Bind(x =>
+            {
+                x.FromThisAssembly()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisUIFactory>()
+                    .BindToFactory();
+            });
 
+            Kernel.Bind<IDeviceSettingsViewModelFactory>().ToFactory();
+            Kernel.Bind<IModuleViewModelFactory>().ToFactory();
+            Kernel.Bind<IProfileEditorViewModelFactory>().ToFactory();
+            
             // Bind profile editor VMs
             Kernel.Bind(x =>
             {

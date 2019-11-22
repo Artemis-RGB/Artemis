@@ -24,7 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService)
         {
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 SelectionRectangle = new RectangleGeometry();
                 PanZoomViewModel = new PanZoomViewModel();
@@ -63,7 +63,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 {
                     // Create outside the UI thread to avoid slowdowns as much as possible
                     var profileDeviceViewModel = new ProfileDeviceViewModel(surfaceDeviceConfiguration);
-                    Execute.OnUIThread(() =>
+                    Execute.PostToUIThread(() =>
                     {
                         // Gotta call IsInitializing on the UI thread or its never gets picked up
                         IsInitializing = true;
@@ -79,7 +79,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             // Sort the devices by ZIndex
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 lock (Devices)
                 {

@@ -111,6 +111,12 @@
                                 <ContentControl s:View.Model="{Binding}">
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
+                                            <MenuItem Header="Identify" Command="{s:Action IdentifyDevice}" CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="AlarmLight" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
                                             <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringToFront" />

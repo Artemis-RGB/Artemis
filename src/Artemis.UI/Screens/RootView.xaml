@@ -16,7 +16,8 @@
                    d:DesignWidth="1200"
                    d:DataContext="{d:DesignInstance screens:RootViewModel}"
                    SaveWindowPosition="True"
-                   Icon="/Artemis.UI;component/Resources/logo-512.png">
+                   Icon="/Artemis.UI;component/Resources/logo-512.png"
+                   UseLayoutRounding="True">
     <metro:MetroWindow.Resources>
         <Style TargetType="ContentControl" x:Key="InitializingFade">
             <Style.Triggers>

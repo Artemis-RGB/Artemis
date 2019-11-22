@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.Module
             // Create the profile editor and module VMs
             if (Module is ProfileModule profileModule)
             {
-                var profileEditor = _profileEditorViewModelFactory.CreateModuleViewModel(profileModule);
+                var profileEditor = _profileEditorViewModelFactory.Create(profileModule);
                 Items.Add(profileEditor);
             }
 

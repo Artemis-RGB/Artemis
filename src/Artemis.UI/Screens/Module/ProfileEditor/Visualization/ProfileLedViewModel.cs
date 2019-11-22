@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Width = Led.ActualSize.Width;
             Height = Led.ActualSize.Height;
 
-            Execute.OnUIThread(CreateLedGeometry);
+            Execute.PostToUIThread(CreateLedGeometry);
         }
 
         public Led Led { get; }
@@ -106,7 +106,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public void Update()
         {
             var newColor = Led.Color.ToMediaColor();
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 if (!DisplayColor.Equals(newColor))
                     DisplayColor = newColor;

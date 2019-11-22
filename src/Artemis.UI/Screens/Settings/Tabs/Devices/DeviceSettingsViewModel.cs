@@ -1,21 +1,17 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
-using System.Threading.Tasks;
-using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Humanizer;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
     public class DeviceSettingsViewModel
     {
-        private readonly ICoreService _coreService;
+        private readonly IDeviceService _deviceService;
 
-        public DeviceSettingsViewModel(Device device, ICoreService coreService)
+        public DeviceSettingsViewModel(Device device, IDeviceService deviceService)
         {
-            _coreService = coreService;
-
+            _deviceService = deviceService;
             Device = device;
 
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
@@ -31,38 +27,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         public string Manufacturer { get; set; }
         public bool IsDeviceEnabled { get; set; }
 
-        public void Identify()
+        public void IdentifyDevice()
         {
-            BlinkDevice(0);
+            _deviceService.IdentifyDevice(Device);
         }
 
-        private void BlinkDevice(int blinkCount)
-        {
-            // Draw a white overlay over the device
-            void DrawOverlay(object sender, FrameRenderingEventArgs args)
-            {
-                using (var g = Graphics.FromImage(args.Bitmap))
-                {
-                    g.FillPath(new SolidBrush(Color.White), Device.RenderPath);
-                }
-            }
-
-            _coreService.FrameRendering += DrawOverlay;
-
-            // After 200ms, stop drawing the overlay
-            Task.Run(async () =>
-            {
-                await Task.Delay(200);
-                _coreService.FrameRendering -= DrawOverlay;
-
-                if (blinkCount < 5)
-                {
-                    // After another 200ms, draw the overlay again, repeat six times
-                    await Task.Delay(200);
-                    BlinkDevice(blinkCount + 1);
-                }
-            });
-        }
 
         public void ShowDeviceDebugger()
         {

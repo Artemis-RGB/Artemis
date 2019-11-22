@@ -12,8 +12,10 @@
             Add a new profile
         </TextBlock>
 
-        <TextBox materialDesign:HintAssist.Hint="Profile name" Margin="0 8 0 16" 
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding ProfileName}" />
+        <TextBox materialDesign:HintAssist.Hint="Profile name" 
+                 Margin="0 8 0 16" 
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">

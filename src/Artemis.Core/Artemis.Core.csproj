@@ -188,6 +188,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RGB.NET\DirectBitmap.cs" />
     <Compile Include="RGB.NET\GraphicsDecorator.cs" />
+    <Compile Include="Services\DeviceService.cs" />
     <Compile Include="Services\Interfaces\IProtectedArtemisService.cs" />
     <Compile Include="Services\Interfaces\IMainDataModelService.cs" />
     <Compile Include="Services\CoreService.cs" />

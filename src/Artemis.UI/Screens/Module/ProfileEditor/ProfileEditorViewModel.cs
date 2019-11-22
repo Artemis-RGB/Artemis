@@ -135,7 +135,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
             profiles.Add(activeProfile);
             
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 // Populate the UI collection
                 Profiles.Clear();

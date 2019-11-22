@@ -1,7 +1,6 @@
 ﻿using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Ninject;
@@ -11,19 +10,23 @@ namespace Artemis.UI.Screens.Settings
 {
     public class SettingsViewModel : Screen, IScreenViewModel
     {
-        private readonly ICoreService _coreService;
+        private readonly IDeviceSettingsViewModelFactory _deviceSettingsViewModelFactory;
         private readonly IKernel _kernel;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private readonly IWindowManager _windowManager;
 
-        public SettingsViewModel(IKernel kernel, ICoreService coreService, ISurfaceService surfaceService, IWindowManager windowManager, ISettingsService settingsService)
+        public SettingsViewModel(IKernel kernel,
+            ISurfaceService surfaceService,
+            IWindowManager windowManager,
+            ISettingsService settingsService,
+            IDeviceSettingsViewModelFactory deviceSettingsViewModelFactory)
         {
             _kernel = kernel;
-            _coreService = coreService;
             _surfaceService = surfaceService;
             _windowManager = windowManager;
             _settingsService = settingsService;
+            _deviceSettingsViewModelFactory = deviceSettingsViewModelFactory;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
         }
@@ -56,7 +59,7 @@ namespace Artemis.UI.Screens.Settings
         {
             DeviceSettingsViewModels.Clear();
             foreach (var device in _surfaceService.ActiveSurface.Devices)
-                DeviceSettingsViewModels.Add(new DeviceSettingsViewModel(device, _coreService));
+                DeviceSettingsViewModels.Add(_deviceSettingsViewModelFactory.Create(device));
 
             base.OnActivate();
         }
