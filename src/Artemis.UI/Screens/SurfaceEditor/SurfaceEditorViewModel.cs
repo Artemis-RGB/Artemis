@@ -23,9 +23,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
     {
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
+        private readonly IDeviceService _deviceService;
         private readonly ISurfaceService _surfaceService;
 
-        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService)
+        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
         {
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<Surface>();
@@ -36,6 +37,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _surfaceService = surfaceService;
             _dialogService = dialogService;
             _settingsService = settingsService;
+            _deviceService = deviceService;
         }
 
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
@@ -60,7 +62,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public Surface CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);
-            Execute.OnUIThread(() => SurfaceConfigurations.Add(config));
+            Execute.PostToUIThread(() => SurfaceConfigurations.Add(config));
             return config;
         }
 
@@ -88,7 +90,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
             }
 
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 // Populate the UI collection
                 SurfaceConfigurations.Clear();
@@ -104,7 +106,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             if (SelectedSurface == null)
             {
-                Execute.OnUIThread(Devices.Clear);
+                Execute.PostToUIThread(Devices.Clear);
                 return;
             }
 
@@ -114,14 +116,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 // Create VMs for missing devices
                 var viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
                 if (viewModel == null)
-                    Execute.OnUIThread(() => Devices.Add(new SurfaceDeviceViewModel(surfaceDeviceConfiguration)));
+                    Execute.PostToUIThread(() => Devices.Add(new SurfaceDeviceViewModel(surfaceDeviceConfiguration)));
                 // Update existing devices
                 else
                     viewModel.Device = surfaceDeviceConfiguration;
             }
 
             // Sort the devices by ZIndex
-            Execute.OnUIThread(() =>
+            Execute.PostToUIThread(() =>
             {
                 foreach (var device in Devices.OrderBy(d => d.Device.ZIndex).ToList())
                     Devices.Move(Devices.IndexOf(device), device.Device.ZIndex - 1);
@@ -173,6 +175,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
         #endregion
 
         #region Context menu actions
+
+        public void IdentifyDevice(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        {
+            _deviceService.IdentifyDevice(surfaceDeviceViewModel.Device);
+        }
 
         public void BringToFront(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {

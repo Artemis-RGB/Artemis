@@ -58,7 +58,7 @@ namespace Artemis.UI.Screens
             SelectedPage = null;
 
             // Create a view model for the given plugin info (which will be a module)
-            var viewModel = await Task.Run(() => _moduleViewModelFactory.CreateModuleViewModel(SelectedModule));
+            var viewModel = await Task.Run(() => _moduleViewModelFactory.Create(SelectedModule));
             ActivateItem(viewModel);
         }
 

@@ -151,6 +151,8 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
+    <Compile Include="Ninject\Factories\IArtemisUIFactory.cs" />
+    <Compile Include="Ninject\Factories\IDeviceSettingsViewModelFactory.cs" />
     <Compile Include="Ninject\Factories\IModuleViewModelFactory.cs" />
     <Compile Include="Ninject\Factories\IProfileEditorViewModelFactory.cs" />
     <Compile Include="Ninject\UIModule.cs" />

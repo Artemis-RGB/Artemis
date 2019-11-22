@@ -3,8 +3,8 @@ using Artemis.UI.Screens.Module;
 
 namespace Artemis.UI.Ninject.Factories
 {
-    public interface IModuleViewModelFactory
+    public interface IModuleViewModelFactory : IArtemisUIFactory
     {
-        ModuleRootViewModel CreateModuleViewModel(Module module);
+        ModuleRootViewModel Create(Module module);
     }
 }

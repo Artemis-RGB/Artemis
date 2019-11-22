@@ -10,7 +10,7 @@
              mc:Ignorable="d"
              d:DesignHeight="351.305" d:DesignWidth="262.163"
              d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceDeviceConfigViewModel}}">
-    <StackPanel Margin="16" UseLayoutRounding="True">
+    <StackPanel Margin="16">
         <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignTitleTextBlock}" />
 
         <Label>X-coordinate</Label>

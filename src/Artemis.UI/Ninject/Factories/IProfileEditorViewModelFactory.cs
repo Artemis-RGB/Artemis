@@ -3,8 +3,8 @@ using Artemis.UI.Screens.Module.ProfileEditor;
 
 namespace Artemis.UI.Ninject.Factories
 {
-    public interface IProfileEditorViewModelFactory
+    public interface IProfileEditorViewModelFactory : IArtemisUIFactory
     {
-        ProfileEditorViewModel CreateModuleViewModel(ProfileModule module);
+        ProfileEditorViewModel Create(ProfileModule module);
     }
 }

@@ -6,14 +6,16 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="213.053" d:DesignWidth="254.425">
-    <StackPanel Margin="16" UseLayoutRounding="True">
-        <TextBlock>
+             d:DesignHeight="213.053" d:DesignWidth="254.425" >
+    <StackPanel Margin="16">
+        <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}">
             Add a new surface layout
         </TextBlock>
 
-        <TextBox materialDesign:HintAssist.Hint="Layout name" Margin="0 8 0 16"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding SurfaceName}" />
+        <TextBox materialDesign:HintAssist.Hint="Layout name" 
+                 Margin="0 8 0 16"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                 Text="{Binding SurfaceName, UpdateSourceTrigger=PropertyChanged}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"

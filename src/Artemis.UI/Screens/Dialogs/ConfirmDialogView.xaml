@@ -11,8 +11,7 @@
              d:DataContext="{d:DesignInstance dialogs:ConfirmDialogViewModel}">
     <StackPanel Margin="16">
         <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Text="{Binding Header}" TextWrapping="Wrap" />
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Text}"
-                   TextWrapping="Wrap" />
+        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Text}" TextWrapping="Wrap" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
