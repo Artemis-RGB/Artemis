@@ -21,9 +21,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
 {
     public class SurfaceEditorViewModel : Screen, IScreenViewModel
     {
+        private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
-        private readonly IDeviceService _deviceService;
         private readonly ISurfaceService _surfaceService;
 
         public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
@@ -52,6 +52,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             get => _selectedSurface;
             set
             {
+                if (value == null)
+                    return;
+
                 _selectedSurface = value;
                 ApplySelectedSurfaceConfiguration();
             }
@@ -104,12 +107,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private void ApplySelectedSurfaceConfiguration()
         {
-            if (SelectedSurface == null)
-            {
-                Execute.PostToUIThread(Devices.Clear);
-                return;
-            }
-
             // Make sure all devices have an up-to-date VM
             foreach (var surfaceDeviceConfiguration in SelectedSurface.Devices)
             {

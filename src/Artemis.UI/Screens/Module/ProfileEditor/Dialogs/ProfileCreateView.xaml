@@ -12,9 +12,9 @@
             Add a new profile
         </TextBlock>
 
-        <TextBox materialDesign:HintAssist.Hint="Profile name" 
-                 Margin="0 8 0 16" 
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+        <TextBox materialDesign:HintAssist.Hint="Profile name"
+                 Margin="0 8 0 16"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 
@@ -6,15 +8,26 @@ namespace Artemis.Core.Models.Profile.Abstract
 {
     public abstract class ProfileElement
     {
+        protected List<ProfileElement> _children;
+
+        protected ProfileElement()
+        {
+            _children = new List<ProfileElement>();
+        }
+
+        public Guid EntityId { get; internal set; }
+        public Profile Profile { get; internal set; }
+        public ProfileElement Parent { get; internal set; }
+
         /// <summary>
         ///     The element's children
         /// </summary>
-        public List<ProfileElement> Children { get; set; }
+        public ReadOnlyCollection<ProfileElement> Children => _children.AsReadOnly();
 
         /// <summary>
         ///     The order in which this element appears in the update loop and editor
         /// </summary>
-        public int Order { get; set; }
+        public int Order { get; internal set; }
 
         /// <summary>
         ///     The name which appears in the editor
@@ -59,6 +72,59 @@ namespace Artemis.Core.Models.Profile.Abstract
             }
 
             return folders;
+        }
+
+        /// <summary>
+        ///     Adds a profile element to the <see cref="Children" /> collection, optionally at the given position (1-based)
+        /// </summary>
+        /// <param name="child">The profile element to add</param>
+        /// <param name="order">The order where to place the child (1-based), defaults to the end of the collection</param>
+        public void AddChild(ProfileElement child, int? order = null)
+        {
+            lock (_children)
+            {
+                // Add to the end of the list
+                if (order == null)
+                {
+                    _children.Add(child);
+                    child.Order = _children.Count;
+                    return;
+                }
+
+                // Shift everything after the given order
+                foreach (var profileElement in _children.Where(c => c.Order >= order).ToList())
+                    profileElement.Order++;
+
+                int targetIndex;
+                if (order == 0)
+                    targetIndex = 0;
+                else if (order > _children.Count)
+                    targetIndex = _children.Count;
+                else
+                    targetIndex = _children.FindIndex(c => c.Order == order + 1);
+
+                _children.Insert(targetIndex, child);
+                child.Order = order.Value;
+                child.Parent = this;
+            }
+        }
+
+        /// <summary>
+        ///     Removes a profile element from the <see cref="Children" /> collection
+        /// </summary>
+        /// <param name="child">The profile element to remove</param>
+        public void RemoveChild(ProfileElement child)
+        {
+            lock (_children)
+            {
+                _children.Remove(child);
+
+                // Shift everything after the given order
+                foreach (var profileElement in _children.Where(c => c.Order > child.Order).ToList())
+                    profileElement.Order--;
+
+                child.Parent = null;
+            }
         }
     }
 }

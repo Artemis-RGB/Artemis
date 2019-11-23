@@ -65,7 +65,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void CreateRectangleGeometry()
         {
-
             DisplayGeometry = new RectangleGeometry(new Rect(0.5, 0.5, Width - 1, Height - 1));
         }
 

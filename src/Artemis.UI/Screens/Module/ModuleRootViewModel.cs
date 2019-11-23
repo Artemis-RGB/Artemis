@@ -36,7 +36,7 @@ namespace Artemis.UI.Screens.Module
 
             var moduleViewModels = Module.GetViewModels();
             Items.AddRange(moduleViewModels);
-            
+
             ActiveItem = Items.FirstOrDefault();
         }
     }

@@ -9,7 +9,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
-using Artemis.UI.Screens.Module.ProfileEditor.Layers;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -18,8 +18,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 {
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
-        private readonly IProfileService _profileService;
         private readonly IDialogService _dialogService;
+        private readonly IProfileService _profileService;
 
         public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService, IDialogService dialogService)
         {
@@ -32,28 +32,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
             ElementPropertiesViewModel = (ElementPropertiesViewModel) viewModels.First(vm => vm is ElementPropertiesViewModel);
             LayerElementsViewModel = (LayerElementsViewModel) viewModels.First(vm => vm is LayerElementsViewModel);
-            LayersViewModel = (LayersViewModel) viewModels.First(vm => vm is LayersViewModel);
+            ProfileElementsViewModel = (ProfileElementsViewModel) viewModels.First(vm => vm is ProfileElementsViewModel);
             ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
             Profiles = new BindableCollection<Profile>();
 
             Items.AddRange(viewModels);
 
-            module.ActiveProfileChanged += ModuleOnActiveProfileChanged;            
+            module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
         }
 
         public ProfileModule Module { get; }
         public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
         public ElementPropertiesViewModel ElementPropertiesViewModel { get; }
         public LayerElementsViewModel LayerElementsViewModel { get; }
-        public LayersViewModel LayersViewModel { get; }
+        public ProfileElementsViewModel ProfileElementsViewModel { get; }
         public ProfileViewModel ProfileViewModel { get; }
 
         public BindableCollection<Profile> Profiles { get; set; }
+
         public Profile SelectedProfile
         {
             get => Module.ActiveProfile;
             set => ChangeSelectedProfile(value);
         }
+
+        public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
 
         private void ChangeSelectedProfile(Profile profile)
         {
@@ -63,13 +66,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var oldProfile = Module.ActiveProfile;
             Module.ChangeActiveProfile(profile);
 
+            foreach (var panelViewModel in Items)
+            {
+                panelViewModel.Profile = profile;
+                panelViewModel.OnProfileChanged();
+            }
+
             if (oldProfile != null)
                 _profileService.UpdateProfile(oldProfile, false);
             if (profile != null)
                 _profileService.UpdateProfile(profile, false);
         }
-
-        public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
 
         public Profile CreateProfile(string name)
         {
@@ -130,11 +137,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 activeProfile = CreateProfile("Default");
                 profiles.Add(activeProfile);
             }
-            
+
             // GetActiveProfile can return a duplicate because inactive profiles aren't kept in memory, make sure it's unique in the profiles list
             profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
             profiles.Add(activeProfile);
-            
+
             Execute.PostToUIThread(() =>
             {
                 // Populate the UI collection

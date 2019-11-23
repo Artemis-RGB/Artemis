@@ -59,7 +59,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Grid>
-        
+
         <!-- Selection rectangle -->
         <Rectangle Width="Auto" Height="Auto" StrokeThickness="2">
             <Rectangle.Stroke>

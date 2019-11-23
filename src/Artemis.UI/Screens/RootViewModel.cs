@@ -11,8 +11,6 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
-using MahApps.Metro.Controls;
-using MaterialDesignThemes.Wpf.Transitions;
 using Stylet;
 
 namespace Artemis.UI.Screens
