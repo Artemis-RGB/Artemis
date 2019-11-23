@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Artemis.Core.Exceptions;
@@ -20,8 +19,7 @@ namespace Artemis.Core.Models.Profile
             PluginInfo = pluginInfo;
             Name = name;
 
-            Children = new List<ProfileElement> {new Folder(this, null, "Root folder")};
-
+            AddChild(new Folder(this, null, "Root folder"));
             ApplyToEntity();
         }
 
@@ -36,16 +34,15 @@ namespace Artemis.Core.Models.Profile
             // Populate the profile starting at the root, the rest is populated recursively
             var rootFolder = profileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
             if (rootFolder == null)
-                Children = new List<ProfileElement> {new Folder(this, null, "Root folder")};
+                AddChild(new Folder(this, null, "Root folder"));
             else
-                Children = new List<ProfileElement> {new Folder(this, null, rootFolder, pluginService)};
+                AddChild(new Folder(this, null, rootFolder, pluginService));
         }
 
         public PluginInfo PluginInfo { get; }
         public bool IsActivated { get; private set; }
 
         internal ProfileEntity ProfileEntity { get; set; }
-        public Guid EntityId { get; set; }
 
         public override void Update(double deltaTime)
         {
@@ -116,6 +113,12 @@ namespace Artemis.Core.Models.Profile
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
+        public void ApplySurface(Surface.Surface surface)
+        {
+            foreach (var layer in GetAllLayers())
+                layer.ApplySurface(surface);
+        }
+
         #region Events
 
         /// <summary>
@@ -139,11 +142,5 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        public void ApplySurface(Surface.Surface surface)
-        {
-            foreach (var layer in GetAllLayers()) 
-                layer.ApplySurface(surface);
-        }
     }
 }

@@ -7,7 +7,6 @@ using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Storage;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -94,8 +93,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             lock (Devices)
             {
                 if (IsInitializing)
-                IsInitializing = Devices.Any(d => !d.AddedLeds);
-            
+                    IsInitializing = Devices.Any(d => !d.AddedLeds);
+
                 foreach (var profileDeviceViewModel in Devices)
                     profileDeviceViewModel.Update();
             }
@@ -116,7 +115,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         #region Selection
 
         private MouseDragStatus _mouseDragStatus;
-        private System.Windows.Point _mouseDragStartPoint;
+        private Point _mouseDragStartPoint;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseEventArgs e)
@@ -124,7 +123,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             if (IsPanKeyDown())
                 return;
 
-            var position = e.GetPosition((IInputElement)sender);
+            var position = e.GetPosition((IInputElement) sender);
             var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (e.LeftButton == MouseButtonState.Pressed)
                 StartMouseDrag(position, relative);
@@ -142,12 +141,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
             }
 
-            var position = e.GetPosition((IInputElement)sender);
+            var position = e.GetPosition((IInputElement) sender);
             if (_mouseDragStatus == MouseDragStatus.Selecting)
                 UpdateSelection(position);
         }
 
-        private void StartMouseDrag(System.Windows.Point position, System.Windows.Point relative)
+        private void StartMouseDrag(Point position, Point relative)
         {
             _mouseDragStatus = MouseDragStatus.Selecting;
             _mouseDragStartPoint = position;
@@ -156,7 +155,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             SelectionRectangle.Rect = new Rect();
         }
 
-        private void StopMouseDrag(System.Windows.Point position)
+        private void StopMouseDrag(Point position)
         {
             var selectedRect = new Rect(_mouseDragStartPoint, position);
             // TODO: Select LEDs

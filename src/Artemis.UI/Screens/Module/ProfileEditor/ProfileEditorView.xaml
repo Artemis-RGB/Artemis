@@ -45,11 +45,11 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ComboBox Name="LocaleCombo" 
+            <ComboBox Name="LocaleCombo"
                       Height="26"
-                      VerticalAlignment="Top" 
-                      ItemsSource="{Binding Profiles}" 
-                      SelectedItem="{Binding SelectedProfile}" 
+                      VerticalAlignment="Top"
+                      ItemsSource="{Binding Profiles}"
+                      SelectedItem="{Binding SelectedProfile}"
                       DisplayMemberPath="Name">
                 <ComboBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -57,19 +57,19 @@
                     </ItemsPanelTemplate>
                 </ComboBox.ItemsPanel>
             </ComboBox>
-            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" 
-                    Margin="10 0" 
-                    Grid.Column="1" 
-                    Width="26" 
-                    Height="26" 
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    Margin="10 0"
+                    Grid.Column="1"
+                    Width="26"
+                    Height="26"
                     VerticalAlignment="Top"
                     Command="{s:Action AddProfile}">
                 <materialDesign:PackIcon Kind="Add" Height="14" Width="14" />
             </Button>
-            <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" 
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
                     Grid.Column="2"
-                    Width="26" 
-                    Height="26" 
+                    Width="26"
+                    Height="26"
                     VerticalAlignment="Top"
                     Command="{s:Action DeleteActiveProfile}">
                 <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" />
@@ -92,7 +92,7 @@
             </Grid.RowDefinitions>
 
             <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding LayersViewModel}" />
+                <ContentControl s:View.Model="{Binding ProfileElementsViewModel}" />
             </materialDesign:Card>
 
             <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />

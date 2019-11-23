@@ -20,7 +20,7 @@
         <dragablz:TabablzControl.ContentTemplate>
             <DataTemplate>
                 <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
-                    <ContentControl s:View.Model="{Binding}" IsTabStop="False"/>
+                    <ContentControl s:View.Model="{Binding}" IsTabStop="False" />
                 </materialDesign:TransitioningContent>
             </DataTemplate>
         </dragablz:TabablzControl.ContentTemplate>

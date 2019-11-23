@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
@@ -16,33 +17,29 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
-        internal Layer(Profile profile, Folder folder, string name)
+        internal Layer(Profile profile, ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
 
             Profile = profile;
-            ParentFolder = folder;
+            Parent = parent;
             Name = name;
             Leds = new List<DeviceLed>();
         }
 
-        internal Layer(Profile profile, Folder folder, LayerEntity layerEntity, IPluginService pluginService)
+        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity, IPluginService pluginService)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
 
             Profile = profile;
-            ParentFolder = folder;
+            Parent = parent;
             LayerType = pluginService.GetLayerTypeByGuid(layerEntity.LayerTypeGuid);
             Leds = new List<DeviceLed>();
         }
 
         internal LayerEntity LayerEntity { get; set; }
-        internal Guid EntityId { get; set; }
-
-        public Profile Profile { get; }
-        public Folder ParentFolder { get; }
 
         public List<DeviceLed> Leds { get; private set; }
         public LayerType LayerType { get; private set; }
@@ -76,7 +73,7 @@ namespace Artemis.Core.Models.Profile
         internal override void ApplyToEntity()
         {
             LayerEntity.Id = EntityId;
-            LayerEntity.ParentId = ParentFolder?.EntityId ?? new Guid();
+            LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
             LayerEntity.LayerTypeGuid = LayerType?.PluginInfo.Guid ?? new Guid();
 
             LayerEntity.Order = Order;
@@ -135,7 +132,7 @@ namespace Artemis.Core.Models.Profile
         
         public override string ToString()
         {
-            return $"{nameof(Profile)}: {Profile}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
+            return $"Layer - {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
     }
 }

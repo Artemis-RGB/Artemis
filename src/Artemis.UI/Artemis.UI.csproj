@@ -75,6 +75,9 @@
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentValidation.8.5.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
+    <Reference Include="GongSolutions.WPF.DragDrop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=91f1945125b7a587, processorArchitecture=MSIL">
+      <HintPath>..\packages\gong-wpf-dragdrop.2.1.0\lib\net47\GongSolutions.WPF.DragDrop.dll</HintPath>
+    </Reference>
     <Reference Include="Humanizer, Version=2.6.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.6.2\lib\netstandard2.0\Humanizer.dll</HintPath>
     </Reference>
@@ -170,8 +173,14 @@
     <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Layers\LayersViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\FolderView.xaml.cs">
+      <DependentUpon>FolderView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\FolderViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\LayerViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElementsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileEditorPanelViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\Abstract\ProfileElementViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileViewModel.cs" />
     <Compile Include="Screens\News\NewsViewModel.cs" />
     <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigViewModelValidator.cs" />
@@ -235,7 +244,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\Layers\LayersView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\ProfileElements\FolderView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\ProfileElements\LayerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElementsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -374,6 +391,7 @@
   <ItemGroup>
     <None Include="Resources\aero_rotate_br.cur" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
