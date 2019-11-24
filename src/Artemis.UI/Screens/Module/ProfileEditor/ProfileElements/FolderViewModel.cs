@@ -6,11 +6,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 {
     public class FolderViewModel : ProfileElementViewModel
     {
-        public FolderViewModel(Folder folder, FolderViewModel parent)
+        public FolderViewModel(FolderViewModel parent, Folder folder, ProfileEditorViewModel profileEditorViewModel) : base(parent, folder, profileEditorViewModel)
         {
             Folder = folder;
-            Parent = parent;
-            ProfileElement = folder;
+            UpdateProfileElements();
         }
 
         public Folder Folder { get; }
@@ -19,12 +18,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
         {
             Folder.AddFolder("New folder");
             UpdateProfileElements();
+
+            ProfileEditorViewModel.OnProfileUpdated();
         }
 
         public void AddLayer()
         {
             Folder.AddLayer("New layer");
             UpdateProfileElements();
+
+            ProfileEditorViewModel.OnProfileUpdated();
         }
 
         public void RemoveExistingElement(ProfileElementViewModel element)
@@ -32,8 +35,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             Folder.RemoveChild(element.ProfileElement);
             Children.Remove(element);
             element.Parent = null;
-
-            UpdateProfileElements();
         }
 
         public void AddExistingElement(ProfileElementViewModel element)
@@ -41,11 +42,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             Folder.AddChild(element.ProfileElement);
             Children.Add(element);
             element.Parent = this;
-
-            UpdateProfileElements();
         }
 
-        public override void UpdateProfileElements()
+        public sealed override void UpdateProfileElements()
         {
             // Ensure every child element has an up-to-date VM
             if (Folder.Children != null)
@@ -57,13 +56,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     {
                         existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.Folder == folder);
                         if (existing == null)
-                            Children.Add(new FolderViewModel(folder, this));
+                            Children.Add(new FolderViewModel(this, folder, ProfileEditorViewModel));
                     }
                     else if (profileElement is Layer layer)
                     {
                         existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.Layer == layer);
                         if (existing == null)
-                            Children.Add(new LayerViewModel(layer, this));
+                            Children.Add(new LayerViewModel(this, layer, ProfileEditorViewModel));
                     }
 
                     existing?.UpdateProfileElements();

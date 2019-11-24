@@ -140,7 +140,7 @@ namespace Artemis.Core.Models.Profile
         {
             Deactivated?.Invoke(this, EventArgs.Empty);
         }
-
+        
         #endregion
     }
 }

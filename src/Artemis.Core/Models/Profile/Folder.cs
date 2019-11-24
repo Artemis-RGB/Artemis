@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Artemis.Core.Models.Profile.Abstract;
@@ -27,6 +26,10 @@ namespace Artemis.Core.Models.Profile
 
             Profile = profile;
             Parent = parent;
+            Name = folderEntity.Name;
+            Order = folderEntity.Order;
+
+            // TODO: Load conditions
 
             // Load child folders
             foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))

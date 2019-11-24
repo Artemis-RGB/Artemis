@@ -1,17 +1,26 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Models.Profile.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.Abstract
 {
     public abstract class ProfileElementViewModel : PropertyChangedBase
     {
-        protected ProfileElementViewModel()
+        protected ProfileElementViewModel(FolderViewModel parent, ProfileElement profileElement, ProfileEditorViewModel profileEditorViewModel)
         {
+            Parent = parent;
+            ProfileElement = profileElement;
+            ProfileEditorViewModel = profileEditorViewModel;
+
             Children = new BindableCollection<ProfileElementViewModel>();
         }
 
         public FolderViewModel Parent { get; set; }
+        public ProfileEditorViewModel ProfileEditorViewModel { get; set; }
+
         public ProfileElement ProfileElement { get; set; }
         public BindableCollection<ProfileElementViewModel> Children { get; set; }
 
@@ -50,6 +59,36 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.Abstract
             Parent.Folder.RemoveChild(source.ProfileElement);
             Parent.Folder.AddChild(source.ProfileElement, ProfileElement.Order + 1);
             Parent.UpdateProfileElements();
+        }
+
+        public async Task RenameElement()
+        {
+            var result = await ProfileEditorViewModel.DialogService.ShowDialog<ProfileElementRenameViewModel>(
+                new Dictionary<string, object> {{"profileElement", ProfileElement}}
+            );
+            if (result is string newName)
+            {
+                ProfileElement.Name = newName;
+                ProfileEditorViewModel.OnProfileUpdated();
+            }
+        }
+
+        public async Task DeleteElement()
+        {
+            var result = await ProfileEditorViewModel.DialogService.ShowConfirmDialog(
+                "Delete profile element",
+                "Are you sure you want to delete this element? This cannot be undone."
+            );
+
+            if (!result)
+                return;
+
+            // Farewell, cruel world
+            ProfileElement.Parent.RemoveChild(ProfileElement);
+            Parent.RemoveExistingElement(this);
+            Parent.UpdateProfileElements();
+
+            ProfileEditorViewModel.OnProfileUpdated();
         }
     }
 }

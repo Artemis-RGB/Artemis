@@ -5,11 +5,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 {
     public class LayerViewModel : ProfileElementViewModel
     {
-        public LayerViewModel(Layer layer, FolderViewModel parent)
+        public LayerViewModel(FolderViewModel parent, Layer layer, ProfileEditorViewModel profileEditorViewModel) : base(parent, layer, profileEditorViewModel)
         {
             Layer = layer;
-            Parent = parent;
-            ProfileElement = layer;
         }
 
         public Layer Layer { get; }
