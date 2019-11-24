@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Artemis.UI.ViewModels.Dialogs;
+using FluentValidation;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
@@ -25,6 +26,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
         public void Cancel()
         {
             Session.Close();
+        }
+    }
+
+    public class ProfileCreateViewModelValidator : AbstractValidator<ProfileCreateViewModel>
+    {
+        public ProfileCreateViewModelValidator()
+        {
+            RuleFor(m => m.ProfileName).NotEmpty().WithMessage("Profile name may not be empty");
         }
     }
 }

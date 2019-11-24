@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
@@ -11,7 +10,6 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Interfaces;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
-using Device = Artemis.Core.Models.Surface.Device;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -35,6 +33,9 @@ namespace Artemis.Core.Models.Profile
 
             Profile = profile;
             Parent = parent;
+            Name = layerEntity.Name;
+            Order = layerEntity.Order;
+
             LayerType = pluginService.GetLayerTypeByGuid(layerEntity.LayerTypeGuid);
             Leds = new List<DeviceLed>();
         }
@@ -129,7 +130,7 @@ namespace Artemis.Core.Models.Profile
             path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
             RenderPath = path;
         }
-        
+
         public override string ToString()
         {
             return $"Layer - {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";

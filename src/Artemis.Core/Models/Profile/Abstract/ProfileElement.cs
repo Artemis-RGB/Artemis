@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using Stylet;
 
 namespace Artemis.Core.Models.Profile.Abstract
 {
-    public abstract class ProfileElement
+    public abstract class ProfileElement : PropertyChangedBase
     {
         protected List<ProfileElement> _children;
 
@@ -55,7 +56,9 @@ namespace Artemis.Core.Models.Profile.Abstract
             var folders = new List<Folder>();
             foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
             {
+                // Add all folders in this element
                 folders.Add(childFolder);
+                // Add all folders in folders inside this element
                 folders.AddRange(childFolder.GetAllFolders());
             }
 
@@ -64,14 +67,16 @@ namespace Artemis.Core.Models.Profile.Abstract
 
         public List<Layer> GetAllLayers()
         {
-            var folders = new List<Layer>();
-            foreach (var childLayer in Children.Where(c => c is Layer).Cast<Layer>())
-            {
-                folders.Add(childLayer);
-                folders.AddRange(childLayer.GetAllLayers());
-            }
+            var layers = new List<Layer>();
 
-            return folders;
+            // Add all layers in this element
+            layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());
+
+            // Add all layers in folders inside this element
+            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>()) 
+                layers.AddRange(childFolder.GetAllLayers());
+
+            return layers;
         }
 
         /// <summary>

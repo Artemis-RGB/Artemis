@@ -18,16 +18,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 {
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
-        private readonly IDialogService _dialogService;
         private readonly IProfileService _profileService;
 
         public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService, IDialogService dialogService)
         {
             _profileService = profileService;
-            _dialogService = dialogService;
 
             DisplayName = "Profile editor";
             Module = module;
+            DialogService = dialogService;
 
             DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
             ElementPropertiesViewModel = (ElementPropertiesViewModel) viewModels.First(vm => vm is ElementPropertiesViewModel);
@@ -42,6 +41,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         }
 
         public ProfileModule Module { get; }
+        public IDialogService DialogService { get; }
         public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
         public ElementPropertiesViewModel ElementPropertiesViewModel { get; }
         public LayerElementsViewModel LayerElementsViewModel { get; }
@@ -68,8 +68,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             foreach (var panelViewModel in Items)
             {
-                panelViewModel.Profile = profile;
-                panelViewModel.OnProfileChanged();
+                panelViewModel.ProfileEditorViewModel = this;
+                panelViewModel.ActiveProfileChanged();
             }
 
             if (oldProfile != null)
@@ -87,14 +87,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         public async Task AddProfile()
         {
-            var result = await _dialogService.ShowDialog<ProfileCreateViewModel>();
+            var result = await DialogService.ShowDialog<ProfileCreateViewModel>();
             if (result is string name)
                 CreateProfile(name);
         }
 
         public async Task DeleteActiveProfile()
         {
-            var result = await _dialogService.ShowConfirmDialog(
+            var result = await DialogService.ShowConfirmDialog(
                 "Delete active profile",
                 "Are you sure you want to delete your currently active profile? This cannot be undone."
             );
@@ -153,6 +153,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             if (!activeProfile.IsActivated)
                 Module.ChangeActiveProfile(activeProfile);
+        }
+
+        public void OnProfileUpdated()
+        {
+            _profileService.UpdateProfile(SelectedProfile, true);
+
+            foreach (var panelViewModel in Items)
+            {
+                panelViewModel.ActiveProfileUpdated();
+            }
         }
     }
 }

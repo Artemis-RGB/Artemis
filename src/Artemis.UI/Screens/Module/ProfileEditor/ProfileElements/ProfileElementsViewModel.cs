@@ -56,6 +56,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     target.SetElementBehind(source);
                     break;
             }
+
+            ProfileEditorViewModel.OnProfileUpdated();
         }
 
         public void AddFolder()
@@ -68,24 +70,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             RootFolder?.AddLayer();
         }
 
-        public override void OnProfileChanged()
+        public override void ActiveProfileChanged()
         {
             CreateRootFolderViewModel();
-            base.OnProfileChanged();
+            base.ActiveProfileChanged();
         }
 
         private void CreateRootFolderViewModel()
         {
-            if (!(Profile?.Children?.FirstOrDefault() is Folder folder))
+            if (!(ProfileEditorViewModel?.SelectedProfile?.Children?.FirstOrDefault() is Folder folder))
             {
                 RootFolder = null;
                 return;
             }
 
-            RootFolder = new FolderViewModel(folder, null);
+            RootFolder = new FolderViewModel(null, folder, ProfileEditorViewModel);
         }
 
-        private DragDropType GetDragDropType(IDropInfo dropInfo)
+        private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
             var source = dropInfo.Data as ProfileElementViewModel;
             var target = dropInfo.TargetItem as ProfileElementViewModel;

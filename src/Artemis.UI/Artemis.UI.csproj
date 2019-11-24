@@ -166,7 +166,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileCreateViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Dialogs\SurfaceCreateViewModelValidator.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.xaml.cs">
+      <DependentUpon>ProfileElementRenameView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesViewModel.cs" />
@@ -219,6 +222,10 @@
     <Page Include="Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.xaml">
       <SubType>Designer</SubType>

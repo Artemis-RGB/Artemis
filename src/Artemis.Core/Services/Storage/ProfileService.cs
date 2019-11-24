@@ -96,9 +96,11 @@ namespace Artemis.Core.Services.Storage
             profile.ApplyToEntity();
             if (includeChildren)
             {
-                foreach (var profileElement in profile.Children)
-                    profileElement.ApplyToEntity();
-
+                foreach (var folder in profile.GetAllFolders()) 
+                    folder.ApplyToEntity();
+                foreach (var layer in profile.GetAllLayers()) 
+                    layer.ApplyToEntity();
+                
                 if (_surfaceService.ActiveSurface != null)
                     profile.ApplySurface(_surfaceService.ActiveSurface);
             }
