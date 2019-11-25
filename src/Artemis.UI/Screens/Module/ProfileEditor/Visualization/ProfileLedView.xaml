@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:converters="clr-namespace:Artemis.UI.Converters"
     xmlns:visualization="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
+    xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor.Visualization"
     x:Class="Artemis.UI.Screens.Module.ProfileEditor.Visualization.ProfileLedView"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance {x:Type visualization:ProfileLedViewModel}}"
@@ -27,6 +28,67 @@
             <Path.Fill>
                 <SolidColorBrush Color="{Binding DisplayColor, Mode=OneWay}" />
             </Path.Fill>
+        </Path>
+
+        <Path Data="{Binding DisplayGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="2">
+            <Path.Style>
+                <Style TargetType="{x:Type Path}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Hover}">
+                            <DataTrigger.EnterActions>
+                                <StopStoryboard BeginStoryboardName="ToSelected" />
+                                <BeginStoryboard x:Name="ToHover">
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                            To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)"
+                                            To="{StaticResource IdealForegroundColor}" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Selected}">
+                            <DataTrigger.EnterActions>
+                                <StopStoryboard BeginStoryboardName="ToHover" />
+                                <BeginStoryboard x:Name="ToSelected">
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                            To="{StaticResource Accent700}" Duration="0:0:0.25" />
+                                        <ColorAnimation
+                                            Storyboard.TargetProperty="(Shape.Stroke).(SolidColorBrush.Color)"
+                                            To="{StaticResource Accent400}" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.None}">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Path.Style>
+            <Path.Fill>
+                <SolidColorBrush Color="{StaticResource Accent400}" Opacity="0.65" />
+            </Path.Fill>
+            <Path.Stroke>
+                <SolidColorBrush Color="{StaticResource Accent400}"></SolidColorBrush>
+            </Path.Stroke>
         </Path>
     </Canvas>
 </UserControl>

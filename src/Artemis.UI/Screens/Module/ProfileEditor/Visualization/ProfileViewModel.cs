@@ -8,8 +8,10 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using RGB.NET.Core;
 using Stylet;
 using Point = System.Windows.Point;
@@ -28,6 +30,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 SelectionRectangle = new RectangleGeometry();
                 PanZoomViewModel = new PanZoomViewModel();
             });
+            Cursor = null;
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
 
@@ -45,6 +48,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
+        public Cursor Cursor { get; set; }
 
         private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
         {
@@ -158,9 +162,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void StopMouseDrag(Point position)
         {
             var selectedRect = new Rect(_mouseDragStartPoint, position);
-            // TODO: Select LEDs
-
-            Mouse.OverrideCursor = null;
+            foreach (var device in Devices)
+            {
+                foreach (var profileLedViewModel in device.Leds)
+                {
+                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
+                        profileLedViewModel.SelectionStatus = SelectionStatus.Selected;
+                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                        profileLedViewModel.SelectionStatus = SelectionStatus.None;
+                }
+            }
+            
             _mouseDragStatus = MouseDragStatus.None;
         }
 
@@ -168,13 +180,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             if (IsPanKeyDown())
                 return;
+            
+            var selectedRect = new Rect(_mouseDragStartPoint, position);
+            SelectionRectangle.Rect = selectedRect;
 
-            lock (Devices)
+            foreach (var device in Devices)
             {
-                var selectedRect = new Rect(_mouseDragStartPoint, position);
-                SelectionRectangle.Rect = selectedRect;
-
-                // TODO: Highlight LEDs
+                foreach (var profileLedViewModel in device.Leds)
+                {
+                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
+                        profileLedViewModel.SelectionStatus = SelectionStatus.Selected;
+                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                        profileLedViewModel.SelectionStatus = SelectionStatus.None;
+                }
             }
         }
 
@@ -190,13 +208,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public void EditorGridKeyDown(object sender, KeyEventArgs e)
         {
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsDown)
-                Mouse.OverrideCursor = Cursors.ScrollAll;
+                Cursor = Cursors.ScrollAll;
         }
 
         public void EditorGridKeyUp(object sender, KeyEventArgs e)
         {
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsUp)
-                Mouse.OverrideCursor = null;
+                Cursor = null;
         }
 
         public void Pan(object sender, MouseEventArgs e)
