@@ -118,12 +118,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
         {
+            if (SelectedProfile == Module.ActiveProfile)
+                return;
+
             SelectedProfile = Profiles.FirstOrDefault(p => p == Module.ActiveProfile);
         }
 
         protected override void OnActivate()
         {
-            Task.Run(() => LoadProfiles());
+            Task.Run(() =>
+            {
+                LoadProfiles();
+                foreach (var panelViewModel in Items)
+                {
+                    panelViewModel.ProfileEditorViewModel = this;
+                    panelViewModel.ActiveProfileChanged();
+                }
+            });
             base.OnActivate();
         }
 
@@ -131,12 +142,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         {
             // Get all profiles from the database
             var profiles = _profileService.GetProfiles(Module);
-            var activeProfile = _profileService.GetActiveProfile(Module);
-            if (activeProfile == null)
-            {
-                activeProfile = CreateProfile("Default");
-                profiles.Add(activeProfile);
-            }
+            // Get the latest active profile, this falls back to just any profile so if null, create a default profile
+            var activeProfile = _profileService.GetActiveProfile(Module) ?? _profileService.CreateProfile(Module, "Default");
 
             // GetActiveProfile can return a duplicate because inactive profiles aren't kept in memory, make sure it's unique in the profiles list
             profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
@@ -160,9 +167,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             _profileService.UpdateProfile(SelectedProfile, true);
 
             foreach (var panelViewModel in Items)
-            {
                 panelViewModel.ActiveProfileUpdated();
-            }
         }
     }
 }

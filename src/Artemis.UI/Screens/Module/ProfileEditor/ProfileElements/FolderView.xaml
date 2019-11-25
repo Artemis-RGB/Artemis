@@ -9,7 +9,8 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:FolderViewModel}}">
-    <StackPanel>
+    <!-- Margin is a bit hacky but the tree view puts a margin on 10 on us which when clicked outside of doesn't trigger the context menu -->
+    <StackPanel Margin="-10" Background="Transparent">
         <StackPanel.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Rename" Command="{s:Action RenameElement}">
@@ -35,7 +36,7 @@
                 </MenuItem>
             </ContextMenu>
         </StackPanel.ContextMenu>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="10">
             <materialDesign:PackIcon Kind="Folder" />
             <TextBlock Text="{Binding Folder.Name}" Margin="10 0 0 0" />
         </StackPanel>

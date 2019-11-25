@@ -28,7 +28,7 @@
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type profileEditor:LayerViewModel}" ItemsSource="{Binding Children}">
-                    <ContentControl s:View.Model="{Binding}" AllowDrop="False" />
+                    <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>

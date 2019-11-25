@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
 {
     /// <summary>
-    /// Interaction logic for ProfileElementRenameView.xaml
+    ///     Interaction logic for ProfileElementRenameView.xaml
     /// </summary>
     public partial class ProfileElementRenameView : UserControl
     {
         public ProfileElementRenameView()
         {
             InitializeComponent();
+        }
+
+        private void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var textBox = (TextBox) sender;
+            Keyboard.Focus(textBox);
+            textBox.SelectAll();
         }
     }
 }
