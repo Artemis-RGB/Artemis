@@ -41,7 +41,8 @@
           MouseWheel="{s:Action EditorGridMouseWheel}"
           MouseUp="{s:Action EditorGridMouseClick}"
           MouseDown="{s:Action EditorGridMouseClick}"
-          MouseMove="{s:Action EditorGridMouseMove}">
+          MouseMove="{s:Action EditorGridMouseMove}"
+          Cursor="{Binding Cursor}">
         <Grid.Background>
             <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                 <VisualBrush.Visual>

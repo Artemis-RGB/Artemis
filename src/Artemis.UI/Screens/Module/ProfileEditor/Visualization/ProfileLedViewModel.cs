@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.UI.Extensions;
+using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using RGB.NET.Core;
 using Stylet;
 using Color = System.Windows.Media.Color;
@@ -24,6 +25,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         }
 
         public Led Led { get; }
+        public SelectionStatus SelectionStatus { get; set; }
 
         public double X { get; }
         public double Y { get; }

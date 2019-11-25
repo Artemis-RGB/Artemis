@@ -71,8 +71,7 @@
             <Rectangle.Style>
                 <Style TargetType="{x:Type Rectangle}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectionStatus}"
-                                     Value="{x:Static surfaceEditor:SelectionStatus.Hover}">
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Hover}">
                             <DataTrigger.EnterActions>
                                 <StopStoryboard BeginStoryboardName="ToSelected" />
                                 <BeginStoryboard x:Name="ToHover">
@@ -87,8 +86,7 @@
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectionStatus}"
-                                     Value="{x:Static surfaceEditor:SelectionStatus.Selected}">
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.Selected}">
                             <DataTrigger.EnterActions>
                                 <StopStoryboard BeginStoryboardName="ToHover" />
                                 <BeginStoryboard x:Name="ToSelected">
@@ -103,8 +101,7 @@
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding SelectionStatus}"
-                                     Value="{x:Static surfaceEditor:SelectionStatus.None}">
+                        <DataTrigger Binding="{Binding SelectionStatus}" Value="{x:Static surfaceEditor:SelectionStatus.None}">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>

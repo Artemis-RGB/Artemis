@@ -332,19 +332,16 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             if (IsPanKeyDown())
                 return;
+            
+            var selectedRect = new Rect(_mouseDragStartPoint, position);
+            SelectionRectangle.Rect = selectedRect;
 
-            lock (Devices)
+            foreach (var device in Devices)
             {
-                var selectedRect = new Rect(_mouseDragStartPoint, position);
-                SelectionRectangle.Rect = selectedRect;
-
-                foreach (var device in Devices)
-                {
-                    if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
-                        device.SelectionStatus = SelectionStatus.Selected;
-                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        device.SelectionStatus = SelectionStatus.None;
-                }
+                if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
+                    device.SelectionStatus = SelectionStatus.Selected;
+                else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                    device.SelectionStatus = SelectionStatus.None;
             }
         }
 
