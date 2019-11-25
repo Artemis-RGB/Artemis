@@ -84,9 +84,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.Abstract
                 return;
 
             // Farewell, cruel world
+            var parent = Parent;
             ProfileElement.Parent.RemoveChild(ProfileElement);
-            Parent.RemoveExistingElement(this);
-            Parent.UpdateProfileElements();
+            parent.RemoveExistingElement(this);
+            parent.UpdateProfileElements();
 
             ProfileEditorViewModel.OnProfileUpdated();
         }

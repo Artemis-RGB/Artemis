@@ -69,7 +69,8 @@ namespace Artemis.Core.Services.Storage
             if (module.ActiveProfile != null)
                 return module.ActiveProfile;
 
-            var profileEntity = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid).FirstOrDefault(p => p.IsActive);
+            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
             if (profileEntity == null)
                 return null;
 

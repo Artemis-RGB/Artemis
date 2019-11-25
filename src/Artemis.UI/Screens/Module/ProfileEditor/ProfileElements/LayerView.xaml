@@ -9,7 +9,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:LayerViewModel}}">
-    <StackPanel>
+    <StackPanel Margin="-10" Background="Transparent">
         <StackPanel.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Rename" Command="{s:Action RenameElement}">
@@ -24,7 +24,7 @@
                 </MenuItem>
             </ContextMenu>
         </StackPanel.ContextMenu>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="10">
             <materialDesign:PackIcon Kind="Layers" />
             <TextBlock Text="{Binding Layer.Name}" Margin="10 0 0 0" />
         </StackPanel>

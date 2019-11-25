@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
         {
             var source = (ProfileElementViewModel) dropInfo.Data;
             var target = (ProfileElementViewModel) dropInfo.TargetItem;
-
+            
             var dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
             {
@@ -94,6 +94,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             if (source == target)
                 return DragDropType.None;
 
+            var parent = target;
+            while (parent != null)
+            {
+                if (parent == source)
+                    return DragDropType.None;
+                parent = parent.Parent;
+            }
+
             if (target is FolderViewModel)
             {
                 if (dropInfo.InsertPosition >= RelativeInsertPosition.TargetItemCenter)
@@ -107,7 +115,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             {
                 if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
                     return DragDropType.LayerInsertBefore;
-                return DragDropType.LayerInsertAfter;
+                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
+                    return DragDropType.LayerInsertAfter;
+                return DragDropType.None;
             }
 
             return DragDropType.None;
