@@ -67,13 +67,5 @@ namespace Artemis.UI.Stylet
             if (Kernel != null)
                 Kernel.Dispose();
         }
-
-        protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
-        {
-            var logger = Kernel.Get<ILogger>();
-            logger.Fatal(e.Exception, "Fatal exception, shutting down.");
-
-            base.OnUnhandledException(e);
-        }
     }
 }

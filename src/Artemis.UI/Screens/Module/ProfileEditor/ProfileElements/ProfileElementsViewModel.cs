@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using Artemis.Core.Models.Profile;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
 using GongSolutions.Wpf.DragDrop;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
@@ -21,14 +21,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 
             switch (dragDropType)
             {
-                case DragDropType.FolderAdd:
+                case DragDropType.Add:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Move;
                     break;
-                case DragDropType.FolderInsertBefore:
-                case DragDropType.FolderInsertAfter:
-                case DragDropType.LayerInsertBefore:
-                case DragDropType.LayerInsertAfter:
+                case DragDropType.InsertBefore:
+                case DragDropType.InsertAfter:
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
                     dropInfo.Effects = DragDropEffects.Move;
                     break;
@@ -39,20 +37,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
         {
             var source = (ProfileElementViewModel) dropInfo.Data;
             var target = (ProfileElementViewModel) dropInfo.TargetItem;
-            
+
             var dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
             {
-                case DragDropType.FolderAdd:
+                case DragDropType.Add:
                     source.Parent.RemoveExistingElement(source);
-                    ((FolderViewModel) target).AddExistingElement(source);
+                    target.AddExistingElement(source);
                     break;
-                case DragDropType.FolderInsertBefore:
-                case DragDropType.LayerInsertBefore:
+                case DragDropType.InsertBefore:
                     target.SetElementInFront(source);
                     break;
-                case DragDropType.FolderInsertAfter:
-                case DragDropType.LayerInsertAfter:
+                case DragDropType.InsertAfter:
                     target.SetElementBehind(source);
                     break;
             }
@@ -60,11 +56,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             ProfileEditorViewModel.OnProfileUpdated();
         }
 
+        // ReSharper disable once UnusedMember.Global - Called from view
         public void AddFolder()
         {
             RootFolder?.AddFolder();
         }
 
+        // ReSharper disable once UnusedMember.Global - Called from view
         public void AddLayer()
         {
             RootFolder?.AddLayer();
@@ -89,8 +87,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
-            var source = dropInfo.Data as ProfileElementViewModel;
-            var target = dropInfo.TargetItem as ProfileElementViewModel;
+            var source = (ProfileElementViewModel) dropInfo.Data;
+            var target = (ProfileElementViewModel) dropInfo.TargetItem;
             if (source == target)
                 return DragDropType.None;
 
@@ -102,35 +100,26 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                 parent = parent.Parent;
             }
 
-            if (target is FolderViewModel)
+            switch (dropInfo.InsertPosition)
             {
-                if (dropInfo.InsertPosition >= RelativeInsertPosition.TargetItemCenter)
-                    return DragDropType.FolderAdd;
-                if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
-                    return DragDropType.FolderInsertBefore;
-                return DragDropType.FolderInsertAfter;
+                case RelativeInsertPosition.AfterTargetItem | RelativeInsertPosition.TargetItemCenter:
+                case RelativeInsertPosition.BeforeTargetItem | RelativeInsertPosition.TargetItemCenter:
+                    return target.SupportsChildren ? DragDropType.Add : DragDropType.None;
+                case RelativeInsertPosition.BeforeTargetItem:
+                    return DragDropType.InsertBefore;
+                case RelativeInsertPosition.AfterTargetItem:
+                    return DragDropType.InsertAfter;
+                default:
+                    return DragDropType.None;
             }
-
-            if (target is LayerViewModel)
-            {
-                if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
-                    return DragDropType.LayerInsertBefore;
-                if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
-                    return DragDropType.LayerInsertAfter;
-                return DragDropType.None;
-            }
-
-            return DragDropType.None;
         }
     }
 
     public enum DragDropType
     {
         None,
-        FolderAdd,
-        FolderInsertBefore,
-        FolderInsertAfter,
-        LayerInsertBefore,
-        LayerInsertAfter
+        Add,
+        InsertBefore,
+        InsertAfter
     }
 }

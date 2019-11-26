@@ -35,21 +35,21 @@ namespace Artemis.UI.Screens.Settings
 
         public double RenderScale
         {
-            get => _settingsService.GetSetting("RenderScale", 1.0).Value;
+            get => _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             set
             {
-                _settingsService.GetSetting("RenderScale", 1.0).Value = value;
-                _settingsService.GetSetting("RenderScale", 1.0).Save();
+                _settingsService.GetSetting("Core.RenderScale", 1.0).Value = value;
+                _settingsService.GetSetting("Core.RenderScale", 1.0).Save();
             }
         }
 
         public int TargetFrameRate
         {
-            get => _settingsService.GetSetting("TargetFrameRate", 25).Value;
+            get => _settingsService.GetSetting("Core.TargetFrameRate", 25).Value;
             set
             {
-                _settingsService.GetSetting("TargetFrameRate", 25).Value = value;
-                _settingsService.GetSetting("TargetFrameRate", 25).Save();
+                _settingsService.GetSetting("Core.TargetFrameRate", 25).Value = value;
+                _settingsService.GetSetting("Core.TargetFrameRate", 25).Save();
             }
         }
 

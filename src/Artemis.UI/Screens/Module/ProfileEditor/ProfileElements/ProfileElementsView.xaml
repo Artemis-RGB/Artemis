@@ -9,36 +9,45 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:profileElements="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements"
+             xmlns:profileElement="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileElements:ProfileElementsViewModel}}">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TreeView Grid.Row="0"
+        <StackPanel>
+            <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Margin="10 5 0 -4">
+                Profile elements
+            </TextBlock>
+            <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
+        </StackPanel>
+        
+        <TreeView Grid.Row="1"
                   ItemsSource="{Binding RootFolder.Children}"
                   HorizontalContentAlignment="Stretch"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type profileEditor:FolderViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type profileElement:FolderViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type profileEditor:LayerViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type profileElement:LayerViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
         </TreeView>
 
-        <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal" Margin="8">
+        <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
             <Button Style="{StaticResource MaterialDesignToolButton}"
                     Width="30"
                     Padding="2 0 2 0"
                     materialDesign:RippleAssist.IsCentered="True"
-                    ToolTip="Add new folder"
+                    ToolTip="Add new folder to root"
                     Command="{s:Action AddFolder}">
                 <materialDesign:PackIcon Kind="CreateNewFolder" />
             </Button>
@@ -46,7 +55,7 @@
                     Width="30"
                     Padding="2 0 2 0"
                     materialDesign:RippleAssist.IsCentered="True"
-                    ToolTip="Add new layer"
+                    ToolTip="Add new layer to root"
                     Command="{s:Action AddLayer}">
                 <materialDesign:PackIcon Kind="LayersPlus" />
             </Button>

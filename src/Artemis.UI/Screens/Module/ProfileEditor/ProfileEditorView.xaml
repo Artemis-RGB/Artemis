@@ -8,7 +8,7 @@
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileEditorViewModel}}">
+             d:DataContext="{x:Type profileEditor:ProfileEditorViewModel}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -22,64 +22,113 @@
 
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" MinWidth="100" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="{Binding ProfileElementsWidth.Value, Mode=TwoWay}" MinWidth="100" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="100" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="200" />
+            <RowDefinition Height="{Binding LayerElementsHeight.Value, Mode=TwoWay}" MinHeight="100" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock>
-                <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -3" />  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
-            </TextBlock>
-            <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 0 0 1" Margin="0 9 0 8" />
-        </StackPanel>
-        <Grid Grid.Row="0" Grid.Column="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ComboBox Name="LocaleCombo"
-                      Height="26"
-                      VerticalAlignment="Top"
-                      ItemsSource="{Binding Profiles}"
-                      SelectedItem="{Binding SelectedProfile}"
-                      DisplayMemberPath="Name">
-                <ComboBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel />
-                    </ItemsPanelTemplate>
-                </ComboBox.ItemsPanel>
-            </ComboBox>
-            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                    Margin="10 0"
-                    Grid.Column="1"
-                    Width="26"
-                    Height="26"
-                    VerticalAlignment="Top"
-                    Command="{s:Action AddProfile}">
-                <materialDesign:PackIcon Kind="Add" Height="14" Width="14" />
-            </Button>
-            <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
-                    Grid.Column="2"
-                    Width="26"
-                    Height="26"
-                    VerticalAlignment="Top"
-                    Command="{s:Action DeleteActiveProfile}">
-                <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" />
-            </Button>
+        <!-- Left side -->
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <!-- Introduction -->
+                <RowDefinition Height="Auto"/>
+                <!-- Design area -->
+                <RowDefinition Height="*" MinHeight="200"/>
+                <!-- Bottom panels resize -->
+                <RowDefinition Height="Auto"/>
+                <!-- Bottom panels -->
+                <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="100"/>
+            </Grid.RowDefinitions>
+
+            <!-- Introduction -->
+            <StackPanel Grid.Row="0" Margin="0 0 15 0">
+                <TextBlock>
+                    <materialDesign:PackIcon Kind="AboutOutline" Margin="0 0 0 -4" />  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
+                </TextBlock>
+                <Separator Style="{StaticResource MaterialDesignDarkSeparator}" />
+            </StackPanel>
+
+            <!-- Design area -->
+            <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                <ContentControl s:View.Model="{Binding ProfileViewModel}" />
+            </materialDesign:Card>
+
+            <!-- Bottom panels resize -->
+            <GridSplitter Grid.Row="2" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+
+            <!-- Bottom panels -->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="100" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="{Binding ElementPropertiesWidth.Value, Mode=TwoWay}" MinWidth="100" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Layer elements -->
+                <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                    <ContentControl s:View.Model="{Binding LayerElementsViewModel}" />
+                </materialDesign:Card>
+
+                <!-- Element properties resize -->
+                <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" Cursor="SizeWE" />
+
+                <!-- Element properties -->
+                <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                    <ContentControl s:View.Model="{Binding ElementPropertiesViewModel}" />
+                </materialDesign:Card>
+            </Grid>
         </Grid>
 
-        <!-- Design area -->
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="0" VerticalAlignment="Stretch">
-            <ContentControl s:View.Model="{Binding ProfileViewModel}" />
-        </materialDesign:Card>
+        <!-- Right panels resize -->
+        <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
+
+        <!-- Right side -->
+        <Grid Grid.Row="0" Grid.Column="2">
+            <!-- Profile selection -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ComboBox Name="LocaleCombo"
+                          Height="26"
+                          VerticalAlignment="Top"
+                          ItemsSource="{Binding Profiles}"
+                          SelectedItem="{Binding SelectedProfile}"
+                          DisplayMemberPath="Name">
+                    <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ComboBox.ItemsPanel>
+                </ComboBox>
+                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        Margin="10 0"
+                        Grid.Column="1"
+                        Width="26"
+                        Height="26"
+                        VerticalAlignment="Top"
+                        Command="{s:Action AddProfile}">
+                    <materialDesign:PackIcon Kind="Add" Height="14" Width="14" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                        Grid.Column="2"
+                        Width="26"
+                        Height="26"
+                        VerticalAlignment="Top"
+                        Command="{s:Action DeleteActiveProfile}">
+                    <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" />
+                </Button>
+            </Grid>
+
+        </Grid>
+
 
         <GridSplitter Grid.Row="1" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
 
@@ -88,7 +137,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="{Binding DisplayConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
             </Grid.RowDefinitions>
 
             <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
@@ -102,24 +151,8 @@
             </materialDesign:Card>
         </Grid>
 
-        <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+        <GridSplitter Grid.Row="2" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
-        <!-- Bottom panels -->
-        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding LayerElementsViewModel}" />
-            </materialDesign:Card>
-
-            <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" Cursor="SizeWE" />
-
-            <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ElementPropertiesViewModel}" />
-            </materialDesign:Card>
-        </Grid>
+        
     </Grid>
 </UserControl>
