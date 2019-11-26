@@ -55,9 +55,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public ProfileViewModel ProfileViewModel { get; }
         public BindableCollection<Profile> Profiles { get; set; }
 
-        public PluginSetting<GridLength> ProfileElementsWidth { get; set; }
+        public PluginSetting<GridLength> SidePanelsWidth { get; set; }
         public PluginSetting<GridLength> DisplayConditionsHeight { get; set; }
-        public PluginSetting<GridLength> LayerElementsHeight { get; set; }
+        public PluginSetting<GridLength> BottomPanelsHeight { get; set; }
         public PluginSetting<GridLength> ElementPropertiesWidth { get; set; }
 
         public Profile SelectedProfile
@@ -157,17 +157,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         private void LoadWorkspaceSettings()
         {
-            ProfileElementsWidth = _settingsService.GetSetting("ProfileEditor.ProfileElementsWidth", new GridLength(550));
-            DisplayConditionsHeight = _settingsService.GetSetting("ProfileEditor.DisplayConditionsHeight", new GridLength(320));
-            LayerElementsHeight = _settingsService.GetSetting("ProfileEditor.LayerElementsHeight", new GridLength(350));
-            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(920));
+            SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
+            DisplayConditionsHeight = _settingsService.GetSetting("ProfileEditor.DisplayConditionsHeight", new GridLength(345));
+            BottomPanelsHeight = _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
+            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
         }
 
         private void SaveWorkspaceSettings()
         {
-            ProfileElementsWidth.Save();
+            SidePanelsWidth.Save();
             DisplayConditionsHeight.Save();
-            LayerElementsHeight.Save();
+            BottomPanelsHeight.Save();
             ElementPropertiesWidth.Save();
         }
 
