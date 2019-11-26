@@ -20,6 +20,8 @@ namespace Artemis.UI.Screens.Shared
 
         public double PanX { get; set; }
         public double PanY { get; set; }
+        public double CanvasWidth { get; set; }
+        public double CanvasHeight { get; set; }
 
         public Rect BackgroundViewport => new Rect(PanX, PanY, 20, 20);
 
