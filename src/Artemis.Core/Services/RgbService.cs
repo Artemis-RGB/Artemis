@@ -26,8 +26,8 @@ namespace Artemis.Core.Services
         internal RgbService(ILogger logger, ISettingsService settingsService)
         {
             _logger = logger;
-            _renderScaleSetting = settingsService.GetSetting("RenderScale", 1.0);
-            _targetFrameRateSetting = settingsService.GetSetting("TargetFrameRate", 25);
+            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 1.0);
+            _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
 
             Surface = RGBSurface.Instance;
 

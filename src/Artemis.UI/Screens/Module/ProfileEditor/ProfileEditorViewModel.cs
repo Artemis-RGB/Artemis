@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
@@ -19,10 +22,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
         private readonly IProfileService _profileService;
+        private readonly ISettingsService _settingsService;
 
-        public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService, IDialogService dialogService)
+        public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService,
+            IDialogService dialogService, ISettingsService settingsService)
         {
             _profileService = profileService;
+            _settingsService = settingsService;
 
             DisplayName = "Profile editor";
             Module = module;
@@ -47,8 +53,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public LayerElementsViewModel LayerElementsViewModel { get; }
         public ProfileElementsViewModel ProfileElementsViewModel { get; }
         public ProfileViewModel ProfileViewModel { get; }
-
         public BindableCollection<Profile> Profiles { get; set; }
+
+        public PluginSetting<GridLength> ProfileElementsWidth { get; set; }
+        public PluginSetting<GridLength> DisplayConditionsHeight { get; set; }
+        public PluginSetting<GridLength> LayerElementsHeight { get; set; }
+        public PluginSetting<GridLength> ElementPropertiesWidth { get; set; }
 
         public Profile SelectedProfile
         {
@@ -126,6 +136,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         protected override void OnActivate()
         {
+            LoadWorkspaceSettings();
             Task.Run(() =>
             {
                 LoadProfiles();
@@ -136,6 +147,28 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 }
             });
             base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            SaveWorkspaceSettings();
+            base.OnDeactivate();
+        }
+
+        private void LoadWorkspaceSettings()
+        {
+            ProfileElementsWidth = _settingsService.GetSetting("ProfileEditor.ProfileElementsWidth", new GridLength(550));
+            DisplayConditionsHeight = _settingsService.GetSetting("ProfileEditor.DisplayConditionsHeight", new GridLength(320));
+            LayerElementsHeight = _settingsService.GetSetting("ProfileEditor.LayerElementsHeight", new GridLength(350));
+            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(920));
+        }
+
+        private void SaveWorkspaceSettings()
+        {
+            ProfileElementsWidth.Save();
+            DisplayConditionsHeight.Save();
+            LayerElementsHeight.Save();
+            ElementPropertiesWidth.Save();
         }
 
         private void LoadProfiles()

@@ -6,5 +6,12 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid />
+    <Grid>
+        <StackPanel>
+            <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Margin="10 5 0 -4">
+                Display conditions
+            </TextBlock>
+            <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
+        </StackPanel>
+    </Grid>
 </UserControl>

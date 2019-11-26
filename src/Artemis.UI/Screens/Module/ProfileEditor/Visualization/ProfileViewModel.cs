@@ -35,8 +35,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
 
             // Borrow RGB.NET's update trigger but limit the FPS
-            var targetFpsSetting = settingsService.GetSetting("TargetFrameRate", 25);
-            var editorTargetFpsSetting = settingsService.GetSetting("EditorTargetFrameRate", 15);
+            var targetFpsSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
+            var editorTargetFpsSetting = settingsService.GetSetting("ProfileEditor.TargetFrameRate", 15);
             var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
             _updateTrigger.Update += UpdateLeds;
@@ -122,9 +122,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private Point _mouseDragStartPoint;
 
         // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseClick(object sender, MouseEventArgs e)
+        public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
         {
-            if (IsPanKeyDown())
+            if (IsPanKeyDown() || e.ChangedButton == MouseButton.Right)
                 return;
 
             var position = e.GetPosition((IInputElement) sender);

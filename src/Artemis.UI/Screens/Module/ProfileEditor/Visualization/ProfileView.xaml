@@ -43,6 +43,7 @@
           MouseDown="{s:Action EditorGridMouseClick}"
           MouseMove="{s:Action EditorGridMouseMove}"
           Cursor="{Binding Cursor}">
+
         <Grid.Background>
             <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                 <VisualBrush.Visual>
@@ -80,6 +81,37 @@
                 </BeginStoryboard>
             </EventTrigger>
         </Grid.Triggers>
+
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Create new layer for selection" Command="{s:Action CreateLayer}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="LayersPlus" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Apply selection to layer" Command="{s:Action ApplyToLayer}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Selection" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Select all" Command="{s:Action SelectAll}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="SelectAll" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Inverse selection" Command="{s:Action InverseSelection}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="SelectInverse" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Clear selection" Command="{s:Action ClearSelection}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="SelectOff" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
 
         <Grid Name="EditorDisplayGrid">
             <Grid.RenderTransform>
@@ -119,8 +151,21 @@
             </Path.Fill>
         </Path>
 
+        <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
+            <materialDesign:Card Padding="8">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}">
+                        Highlight selected layer
+                    </CheckBox>
+                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0">
+                        Pause visualization on focus loss
+                    </CheckBox>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+
         <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                    Margin="0, 0, 15, 15">
+                    Margin="10" ZIndex="1">
             <Slider Margin="0,0,14,0"
                     Orientation="Vertical"
                     Minimum="10"

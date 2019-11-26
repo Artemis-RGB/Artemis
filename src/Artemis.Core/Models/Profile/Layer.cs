@@ -15,7 +15,7 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
-        internal Layer(Profile profile, ProfileElement parent, string name)
+        public Layer(Profile profile, ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();

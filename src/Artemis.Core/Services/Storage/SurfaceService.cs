@@ -31,7 +31,7 @@ namespace Artemis.Core.Services.Storage
             _rgbService = rgbService;
             _pluginService = pluginService;
             _surfaceConfigurations = new List<Surface>();
-            _renderScaleSetting = settingsService.GetSetting("RenderScale", 1.0);
+            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 1.0);
 
             LoadFromRepository();
 
