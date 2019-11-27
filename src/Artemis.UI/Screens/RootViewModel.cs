@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -11,6 +13,7 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using MahApps.Metro.Controls;
 using Stylet;
 
 namespace Artemis.UI.Screens

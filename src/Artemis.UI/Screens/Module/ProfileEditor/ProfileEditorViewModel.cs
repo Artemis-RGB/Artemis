@@ -13,6 +13,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -195,12 +196,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 Module.ChangeActiveProfile(activeProfile);
         }
 
-        public void OnProfileUpdated()
+        public void OnProfileUpdated(ProfileEditorPanelViewModel source = null)
         {
             _profileService.UpdateProfile(SelectedProfile, true);
 
-            foreach (var panelViewModel in Items)
+            foreach (var panelViewModel in Items.Where(p => p != source))
                 panelViewModel.ActiveProfileUpdated();
+        }
+
+        public void OnProfileElementSelected(ProfileElementViewModel profileElement, ProfileEditorPanelViewModel source = null)
+        {
+            foreach (var panelViewModel in Items.Where(p => p != source))
+                panelViewModel.ProfileElementSelected(profileElement);
         }
     }
 }

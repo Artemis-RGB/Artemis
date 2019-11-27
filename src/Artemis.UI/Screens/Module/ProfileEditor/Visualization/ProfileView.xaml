@@ -6,7 +6,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
-             xmlns:observers="clr-namespace:Artemis.UI.Observers"
+             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileViewModel}}">
@@ -44,9 +44,9 @@
           MouseDown="{s:Action EditorGridMouseClick}"
           MouseMove="{s:Action EditorGridMouseMove}"
           Cursor="{Binding Cursor}"
-          observers:SizeObserver.Observe="True"
-          observers:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth, Mode=OneWayToSource}"
-          observers:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight, Mode=OneWayToSource}">
+          utilities:SizeObserver.Observe="True"
+          utilities:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth, Mode=OneWayToSource}"
+          utilities:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight, Mode=OneWayToSource}">
 
         <Grid.Background>
             <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">

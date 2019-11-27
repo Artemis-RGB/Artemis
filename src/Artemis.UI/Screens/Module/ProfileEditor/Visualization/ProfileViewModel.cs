@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Extensions;
@@ -20,10 +21,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileViewModel : ProfileEditorPanelViewModel
     {
+        private readonly ISettingsService _settingsService;
         private readonly TimerUpdateTrigger _updateTrigger;
 
         public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService)
         {
+            _settingsService = settingsService;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
             Execute.PostToUIThread(() =>
             {
@@ -48,6 +51,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
+        public PluginSetting<bool> HighlightSelectedLayer { get; set; }
+        public PluginSetting<bool> PauseRenderingOnFocusLoss { get; set; }
+
         public Cursor Cursor { get; set; }
 
         private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
@@ -106,12 +112,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         protected override void OnActivate()
         {
+            HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
+            PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
+
             _updateTrigger.Start();
             base.OnActivate();
         }
-
+        
         protected override void OnDeactivate()
         {
+            HighlightSelectedLayer.Save();
+            PauseRenderingOnFocusLoss.Save();
+
             _updateTrigger.Stop();
             base.OnDeactivate();
         }
@@ -172,7 +184,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         profileLedViewModel.SelectionStatus = SelectionStatus.None;
                 }
             }
-            
+
             _mouseDragStatus = MouseDragStatus.None;
         }
 
@@ -180,7 +192,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             if (IsPanKeyDown())
                 return;
-            
+
             var selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
