@@ -20,7 +20,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <!-- Blue -->
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <!-- Left side -->
@@ -31,7 +30,7 @@
             <ColumnDefinition Width="{Binding SidePanelsWidth.Value, Mode=TwoWay}" MinWidth="100" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left side (orange) -->
+        <!-- Left side -->
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
                 <!-- Introduction -->
@@ -60,7 +59,7 @@
             <!-- Bottom panels resize -->
             <GridSplitter Grid.Row="2" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
-            <!-- Bottom panels (green) -->
+            <!-- Bottom panels -->
             <Grid Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <!-- Layer elements -->
@@ -89,7 +88,7 @@
         <!-- Side panels resize -->
         <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 35 5 0" />
 
-        <!-- Side panels (orange) -->
+        <!-- Side panels -->
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
                 <!-- Profile selection -->

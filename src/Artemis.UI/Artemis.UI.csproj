@@ -152,7 +152,8 @@
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
-    <Compile Include="DebugTriggers\TriggerTracing.cs" />
+    <Compile Include="Utilities\BindableSelectedItemBehavior.cs" />
+    <Compile Include="Utilities\TriggerTracing.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
@@ -161,7 +162,7 @@
     <Compile Include="Ninject\Factories\IModuleViewModelFactory.cs" />
     <Compile Include="Ninject\Factories\IProfileEditorViewModelFactory.cs" />
     <Compile Include="Ninject\UIModule.cs" />
-    <Compile Include="Observers\SizeObserver.cs" />
+    <Compile Include="Utilities\SizeObserver.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -1,4 +1,5 @@
-﻿using Stylet;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor
 {
@@ -11,6 +12,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         }
 
         public virtual void ActiveProfileUpdated()
+        {
+        }
+
+        public virtual void ProfileElementSelected(ProfileElementViewModel profileElement)
         {
         }
     }

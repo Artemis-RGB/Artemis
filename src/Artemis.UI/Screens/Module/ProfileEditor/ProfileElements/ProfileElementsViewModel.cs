@@ -8,12 +8,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 {
     public class ProfileElementsViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
+        private ProfileElementViewModel _selectedProfileElement;
+
         public ProfileElementsViewModel()
         {
             CreateRootFolderViewModel();
         }
 
         public FolderViewModel RootFolder { get; set; }
+
+        public ProfileElementViewModel SelectedProfileElement
+        {
+            get => _selectedProfileElement;
+            set
+            {
+                _selectedProfileElement = value;
+                ProfileEditorViewModel.OnProfileElementSelected(_selectedProfileElement, this);
+            }
+        }
 
         public void DragOver(IDropInfo dropInfo)
         {
@@ -53,7 +65,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     break;
             }
 
-            ProfileEditorViewModel.OnProfileUpdated();
+            ProfileEditorViewModel.OnProfileUpdated(this);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -72,6 +84,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
         {
             CreateRootFolderViewModel();
             base.ActiveProfileChanged();
+        }
+
+        public override void ProfileElementSelected(ProfileElementViewModel profileElement)
+        {
+            // Don't set it using the setter or that will trigger the event again
+            _selectedProfileElement = profileElement;
+            NotifyOfPropertyChange(() => SelectedProfileElement);
+
+            base.ProfileElementSelected(profileElement);
         }
 
         private void CreateRootFolderViewModel()

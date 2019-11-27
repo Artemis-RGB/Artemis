@@ -10,6 +10,8 @@
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:profileElements="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements"
              xmlns:profileElement="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileElements:ProfileElementsViewModel}}">
@@ -32,6 +34,9 @@
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
+            <i:Interaction.Behaviors>
+                <utilities:BindableSelectedItemBehavior SelectedItem="{Binding SelectedProfileElement, Mode=TwoWay}" />
+            </i:Interaction.Behaviors>
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type profileElement:FolderViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />

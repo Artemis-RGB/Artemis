@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Windows.Threading;
 using Ninject;
-using Serilog;
 using Stylet;
 
 namespace Artemis.UI.Stylet
