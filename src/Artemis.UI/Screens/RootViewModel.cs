@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.News;
@@ -22,13 +24,19 @@ namespace Artemis.UI.Screens
     {
         private readonly ICollection<IScreenViewModel> _artemisViewModels;
         private readonly IModuleViewModelFactory _moduleViewModelFactory;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IPluginService _pluginService;
+        private bool _lostFocus;
 
-        public RootViewModel(ICollection<IScreenViewModel> artemisViewModels, IPluginService pluginService, IModuleViewModelFactory moduleViewModelFactory)
+        public RootViewModel(ICollection<IScreenViewModel> artemisViewModels,
+            IPluginService pluginService,
+            IModuleViewModelFactory moduleViewModelFactory,
+            IEventAggregator eventAggregator)
         {
             _artemisViewModels = artemisViewModels;
             _pluginService = pluginService;
             _moduleViewModelFactory = moduleViewModelFactory;
+            _eventAggregator = eventAggregator;
 
             // Activate the home item
             ActiveItem = _artemisViewModels.First(v => v.GetType() == typeof(HomeViewModel));
@@ -126,6 +134,25 @@ namespace Artemis.UI.Screens
             }
 
             ActiveItemReady = true;
+        }
+
+        public void WindowDeactivated()
+        {
+            var windowState = ((Window) View).WindowState;
+            if (windowState == WindowState.Minimized)
+                return;
+
+            _lostFocus = true;
+            _eventAggregator.Publish(new MainWindowFocusChangedEvent(false));
+        }
+
+        public void WindowActivated()
+        {
+            if (!_lostFocus)
+                return;
+
+            _lostFocus = false;
+            _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
         }
     }
 }

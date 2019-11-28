@@ -9,6 +9,7 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -19,12 +20,12 @@ using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : ProfileEditorPanelViewModel
+    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>
     {
         private readonly ISettingsService _settingsService;
         private readonly TimerUpdateTrigger _updateTrigger;
 
-        public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService)
+        public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
             _settingsService = settingsService;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
@@ -248,5 +249,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         }
 
         #endregion
+
+        public void Handle(MainWindowFocusChangedEvent message)
+        {
+            Console.WriteLine(message);
+        }
     }
 }
