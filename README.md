@@ -37,10 +37,18 @@ Some things I have planned for 2.0
 
 Much of this is subject to change and will take a while to create but it'll leave us with a much better platform to create a community around :smiley:
 
+### Work in progress screenshots
+![Surface editor](https://i.imgur.com/7d8wgkr.png)
+_The surface editor allows you to recreate your desktop in 2D space, ensure effects scale properly over your different devices. Right clicking a device lets you identify it (it will blink white) and change its properties such as rotation and scale._
 
-### Special thanks to:
- - [Corsair](http://corsair.com) and [GloriousGe0rge](https://twitter.com/GloriousGe0rge) in particular for their continued support of Artemis
- - [DarthAffe](https://github.com/DarthAffe) for his great help and awesome CUE SDK wrapper, [CUE.NET](https://github.com/DarthAffe/CUE.NET)
- - [JewsOfHazard](https://github.com/JewsOfHazard) and [Thoth2020](https://github.com/Thoth2020) for their work and ideas
- - [rakosi2](https://github.com/rakosi2) for providing help and support
- - All the people that helped by reporting bugs over the last few months
+![Profile editor](https://i.imgur.com/e41dal0.png)
+_Here is an overview of the profile editor, the panels aren't populated yet but will allow you to configure display conditions, layer elements (such as colors, animations, filters) and element properties where you can configure the different elements._
+
+![LED selection](https://i.imgur.com/3uYi7Jt.png)
+_Inside the profile editor you'll be able to select LEDs and create layers for them or apply them to layers. A layer will only display on the LEDs it is assigned to._
+
+![Rotation and scale](https://i.imgur.com/jen9nbi.png)
+_An example of what the profile editor might look like whith a rotated keyboard and an enlarged mouse._
+
+![Settings](https://i.imgur.com/rK4oJ5A.png)
+_This is an early version of the device settings tab, in here you can configure devices where applicable._
