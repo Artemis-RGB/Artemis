@@ -9,15 +9,17 @@
                    xmlns:abstract="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
                    xmlns:screens="clr-namespace:Artemis.UI.Screens"
                    mc:Ignorable="d"
+                   Icon="/Artemis.UI;component/Resources/logo-512.png"
+                   Title="Artemis"
                    GlowBrush="{DynamicResource AccentColorBrush}"
                    FontFamily="{StaticResource DefaultFont}"
-                   Title="Artemis"
+                   SaveWindowPosition="True"
+                   UseLayoutRounding="True"
+                   Deactivated="{s:Action WindowDeactivated}"
+                   Activated="{s:Action WindowActivated}"
                    d:DesignHeight="640"
                    d:DesignWidth="1200"
-                   d:DataContext="{d:DesignInstance screens:RootViewModel}"
-                   SaveWindowPosition="True"
-                   Icon="/Artemis.UI;component/Resources/logo-512.png"
-                   UseLayoutRounding="True">
+                   d:DataContext="{d:DesignInstance screens:RootViewModel}">
     <metro:MetroWindow.Resources>
         <Style TargetType="ContentControl" x:Key="InitializingFade">
             <Style.Triggers>

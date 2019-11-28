@@ -20,7 +20,7 @@ namespace Artemis.UI.Ninject
         {
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
-
+            
             // Bind all built-in VMs
             Kernel.Bind(x =>
             {
