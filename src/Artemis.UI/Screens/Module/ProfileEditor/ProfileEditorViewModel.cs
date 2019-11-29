@@ -8,12 +8,12 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -22,14 +22,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 {
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
+        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
 
         public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService,
-            IDialogService dialogService, ISettingsService settingsService)
+            IDialogService dialogService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
             _profileService = profileService;
             _settingsService = settingsService;
+            _eventAggregator = eventAggregator;
 
             DisplayName = "Profile editor";
             Module = module;
@@ -76,12 +78,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             var oldProfile = Module.ActiveProfile;
             Module.ChangeActiveProfile(profile);
-
-            foreach (var panelViewModel in Items)
-            {
-                panelViewModel.ProfileEditorViewModel = this;
-                panelViewModel.ActiveProfileChanged();
-            }
+            _eventAggregator.Publish(new ProfileEditorSelectedProfileChanged(SelectedProfile));
 
             if (oldProfile != null)
                 _profileService.UpdateProfile(oldProfile, false);
@@ -141,11 +138,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Task.Run(() =>
             {
                 LoadProfiles();
-                foreach (var panelViewModel in Items)
-                {
-                    panelViewModel.ProfileEditorViewModel = this;
-                    panelViewModel.ActiveProfileChanged();
-                }
+                _eventAggregator.Publish(new ProfileEditorSelectedProfileChanged(SelectedProfile));
             });
             base.OnActivate();
         }
@@ -194,20 +187,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             if (!activeProfile.IsActivated)
                 Module.ChangeActiveProfile(activeProfile);
-        }
-
-        public void OnProfileUpdated(ProfileEditorPanelViewModel source = null)
-        {
-            _profileService.UpdateProfile(SelectedProfile, true);
-
-            foreach (var panelViewModel in Items.Where(p => p != source))
-                panelViewModel.ActiveProfileUpdated();
-        }
-
-        public void OnProfileElementSelected(ProfileElementViewModel profileElement, ProfileEditorPanelViewModel source = null)
-        {
-            foreach (var panelViewModel in Items.Where(p => p != source))
-                panelViewModel.ProfileElementSelected(profileElement);
         }
     }
 }

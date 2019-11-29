@@ -1,17 +1,25 @@
 ﻿using System.Linq;
 using System.Windows;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
 using GongSolutions.Wpf.DragDrop;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 {
     public class ProfileElementsViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
+        private readonly IProfileService _profileService;
+        private readonly IEventAggregator _eventAggregator;
         private ProfileElementViewModel _selectedProfileElement;
 
-        public ProfileElementsViewModel()
+        public ProfileElementsViewModel(IProfileService profileService, IEventAggregator eventAggregator)
         {
+            _profileService = profileService;
+            _eventAggregator = eventAggregator;
+
             CreateRootFolderViewModel();
         }
 
@@ -23,7 +31,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             set
             {
                 _selectedProfileElement = value;
-                ProfileEditorViewModel.OnProfileElementSelected(_selectedProfileElement, this);
+                _eventAggregator.Publish(new ProfileEditorSelectedElementChanged(_selectedProfileElement.ProfileElement));
             }
         }
 
@@ -65,6 +73,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     break;
             }
 
+            _profileService.UpdateProfile(this.RootFolder.P);
             ProfileEditorViewModel.OnProfileUpdated(this);
         }
 

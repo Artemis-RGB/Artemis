@@ -158,10 +158,10 @@
         <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
             <materialDesign:Card Padding="8">
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}">
+                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding HighlightSelectedLayer.Value}">
                         Highlight selected layer
                     </CheckBox>
-                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0">
+                    <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding PauseRenderingOnFocusLoss.Value}">
                         Pause visualization on focus loss
                     </CheckBox>
                 </StackPanel>

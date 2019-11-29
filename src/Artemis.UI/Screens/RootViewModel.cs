@@ -143,7 +143,7 @@ namespace Artemis.UI.Screens
                 return;
 
             _lostFocus = true;
-            _eventAggregator.Publish(new MainWindowFocusChangedEvent(false));
+            _eventAggregator.Publish(new MainWindowFocusChanged(false));
         }
 
         public void WindowActivated()
@@ -152,7 +152,7 @@ namespace Artemis.UI.Screens
                 return;
 
             _lostFocus = false;
-            _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
+            _eventAggregator.Publish(new MainWindowFocusChanged(true));
         }
     }
 }

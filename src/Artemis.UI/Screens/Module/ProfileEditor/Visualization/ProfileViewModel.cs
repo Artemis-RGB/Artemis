@@ -20,32 +20,29 @@ using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>
+    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<ProfileEditorSelectedElementChanged>, IHandle<MainWindowFocusChanged>
     {
         private readonly ISettingsService _settingsService;
-        private readonly TimerUpdateTrigger _updateTrigger;
+        private readonly ISurfaceService _surfaceService;
+        private TimerUpdateTrigger _updateTrigger;
 
         public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
+            _surfaceService = surfaceService;
             _settingsService = settingsService;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
+            Cursor = null;
+
             Execute.PostToUIThread(() =>
             {
                 SelectionRectangle = new RectangleGeometry();
                 PanZoomViewModel = new PanZoomViewModel();
             });
-            Cursor = null;
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
+            CreateUpdateTrigger();
 
-            // Borrow RGB.NET's update trigger but limit the FPS
-            var targetFpsSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            var editorTargetFpsSetting = settingsService.GetSetting("ProfileEditor.TargetFrameRate", 15);
-            var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
-            _updateTrigger.Update += UpdateLeds;
-
-            surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+            eventAggregator.Subscribe(this);
         }
 
         public bool IsInitializing { get; private set; }
@@ -56,6 +53,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public PluginSetting<bool> PauseRenderingOnFocusLoss { get; set; }
 
         public Cursor Cursor { get; set; }
+
+        private void CreateUpdateTrigger()
+        {
+            // Borrow RGB.NET's update trigger but limit the FPS
+            var targetFpsSetting = _settingsService.GetSetting("Core.TargetFrameRate", 25);
+            var editorTargetFpsSetting = _settingsService.GetSetting("ProfileEditor.TargetFrameRate", 15);
+            var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
+            _updateTrigger.Update += UpdateLeds;
+
+            _surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+        }
 
         private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
         {
@@ -119,7 +128,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _updateTrigger.Start();
             base.OnActivate();
         }
-        
+
         protected override void OnDeactivate()
         {
             HighlightSelectedLayer.Save();
@@ -250,9 +259,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         #endregion
 
-        public void Handle(MainWindowFocusChangedEvent message)
+        #region EventAggregator handlers
+
+        public void Handle(ProfileEditorSelectedElementChanged message)
         {
-            Console.WriteLine(message);
+            if (HighlightSelectedLayer.Value)
+            {
+            }
         }
+
+        public void Handle(MainWindowFocusChanged message)
+        {
+            if (PauseRenderingOnFocusLoss.Value && !message.IsFocused)
+                _updateTrigger.Stop();
+            else if (PauseRenderingOnFocusLoss.Value && message.IsFocused)
+                _updateTrigger.Start();
+        }
+
+        #endregion
     }
 }
