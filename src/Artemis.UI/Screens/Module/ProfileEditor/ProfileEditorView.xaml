@@ -141,7 +141,7 @@
 
             <!-- Profile elements -->
             <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ProfileElementsViewModel}" Margin="0,-1,-0.2,1" />
+                <ContentControl s:View.Model="{Binding ProfileTreeViewModel}" Margin="0,-1,-0.2,1" />
             </materialDesign:Card>
 
             <!-- Conditions resize -->

@@ -8,7 +8,6 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
-using Device = Artemis.Core.Models.Surface.Device;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -22,7 +21,7 @@ namespace Artemis.Plugins.Modules.General
             _settings = settings;
             DisplayName = "General";
             ExpandsMainDataModel = true;
-            DeviceBrushes = new Dictionary<Device, TextureBrush>();
+            DeviceBrushes = new Dictionary<ArtemisDevice, TextureBrush>();
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
 
@@ -69,7 +68,7 @@ namespace Artemis.Plugins.Modules.General
         }
 
 
-        public override void Render(double deltaTime, Surface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             // Per-device coloring, slower
             RenderPerDevice(surface, graphics);
@@ -78,11 +77,11 @@ namespace Artemis.Plugins.Modules.General
             // RenderPerLed(surface, graphics);
         }
 
-        public void RenderFullSurface(Surface surface, Graphics graphics)
+        public void RenderFullSurface(ArtemisSurface surface, Graphics graphics)
         {
         }
 
-        public void RenderPerDevice(Surface surface, Graphics graphics)
+        public void RenderPerDevice(ArtemisSurface surface, Graphics graphics)
         {
             foreach (var device in surface.Devices)
             {
@@ -98,9 +97,9 @@ namespace Artemis.Plugins.Modules.General
             }
         }
 
-        public Dictionary<Device, TextureBrush> DeviceBrushes { get; set; }
+        public Dictionary<ArtemisDevice, TextureBrush> DeviceBrushes { get; set; }
 
-        private Image RenderGradientForDevice(Device device)
+        private Image RenderGradientForDevice(ArtemisDevice device)
         {
             var brush = new LinearGradientBrush(device.RenderRectangle, Color.Black, Color.Black, 0, false)
             {
@@ -115,7 +114,7 @@ namespace Artemis.Plugins.Modules.General
             return bitmap;
         }
 
-        public void RenderPerLed(Surface surface, Graphics graphics)
+        public void RenderPerLed(ArtemisSurface surface, Graphics graphics)
         {
             var index = 0;
             foreach (var led in surface.Devices.SelectMany(d => d.Leds))

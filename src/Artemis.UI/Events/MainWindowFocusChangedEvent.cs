@@ -1,8 +1,8 @@
 ﻿namespace Artemis.UI.Events
 {
-    public class MainWindowFocusChanged
+    public class MainWindowFocusChangedEvent
     {
-        public MainWindowFocusChanged(bool isFocused)
+        public MainWindowFocusChangedEvent(bool isFocused)
         {
             IsFocused = isFocused;
         }

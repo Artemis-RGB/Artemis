@@ -24,6 +24,6 @@ namespace Artemis.Core.Plugins.Abstract
         /// <summary>
         ///     Renders the layer type
         /// </summary>
-        public abstract void Render(Layer device, Surface surface, Graphics graphics);
+        public abstract void Render(Layer device, ArtemisSurface surface, Graphics graphics);
     }
 }

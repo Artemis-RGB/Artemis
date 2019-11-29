@@ -38,7 +38,7 @@ namespace Artemis.Core.Plugins.Abstract
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>
         /// <param name="graphics"></param>
-        public abstract void Render(double deltaTime, Surface surface, Graphics graphics);
+        public abstract void Render(double deltaTime, ArtemisSurface surface, Graphics graphics);
 
         /// <summary>
         ///     Called when the module's view model is being show, return view models here to create tabs for them

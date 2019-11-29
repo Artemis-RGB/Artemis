@@ -1,37 +1,36 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Events;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
+using Artemis.UI.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
-using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
+namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 {
-    public class ProfileElementsViewModel : ProfileEditorPanelViewModel, IDropTarget
+    public class ProfileTreeViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
-        private readonly IProfileService _profileService;
-        private readonly IEventAggregator _eventAggregator;
-        private ProfileElementViewModel _selectedProfileElement;
+        private readonly IProfileEditorService _profileEditorService;
+        private TreeItemViewModel _selectedTreeItem;
 
-        public ProfileElementsViewModel(IProfileService profileService, IEventAggregator eventAggregator)
+        public ProfileTreeViewModel(IProfileEditorService profileEditorService)
         {
-            _profileService = profileService;
-            _eventAggregator = eventAggregator;
+            _profileEditorService = profileEditorService;
 
             CreateRootFolderViewModel();
+            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedElementChanged;
         }
 
         public FolderViewModel RootFolder { get; set; }
 
-        public ProfileElementViewModel SelectedProfileElement
+        public TreeItemViewModel SelectedTreeItem
         {
-            get => _selectedProfileElement;
+            get => _selectedTreeItem;
             set
             {
-                _selectedProfileElement = value;
-                _eventAggregator.Publish(new ProfileEditorSelectedElementChanged(_selectedProfileElement.ProfileElement));
+                _selectedTreeItem = value;
+                _profileEditorService.ChangeSelectedProfileElement(value?.ProfileElement);
             }
         }
 
@@ -55,8 +54,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
 
         public void Drop(IDropInfo dropInfo)
         {
-            var source = (ProfileElementViewModel) dropInfo.Data;
-            var target = (ProfileElementViewModel) dropInfo.TargetItem;
+            var source = (TreeItemViewModel) dropInfo.Data;
+            var target = (TreeItemViewModel) dropInfo.TargetItem;
 
             var dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
@@ -73,8 +72,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     break;
             }
 
-            _profileService.UpdateProfile(this.RootFolder.P);
-            ProfileEditorViewModel.OnProfileUpdated(this);
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -89,36 +87,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
             RootFolder?.AddLayer();
         }
 
-        public override void ActiveProfileChanged()
-        {
-            CreateRootFolderViewModel();
-            base.ActiveProfileChanged();
-        }
-
-        public override void ProfileElementSelected(ProfileElementViewModel profileElement)
-        {
-            // Don't set it using the setter or that will trigger the event again
-            _selectedProfileElement = profileElement;
-            NotifyOfPropertyChange(() => SelectedProfileElement);
-
-            base.ProfileElementSelected(profileElement);
-        }
-
         private void CreateRootFolderViewModel()
         {
-            if (!(ProfileEditorViewModel?.SelectedProfile?.Children?.FirstOrDefault() is Folder folder))
+            var firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
+            if (!(firstChild is Folder folder))
             {
                 RootFolder = null;
                 return;
             }
 
-            RootFolder = new FolderViewModel(null, folder, ProfileEditorViewModel);
+            RootFolder = new FolderViewModel(null, folder, _profileEditorService);
         }
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
-            var source = (ProfileElementViewModel) dropInfo.Data;
-            var target = (ProfileElementViewModel) dropInfo.TargetItem;
+            var source = (TreeItemViewModel) dropInfo.Data;
+            var target = (TreeItemViewModel) dropInfo.TargetItem;
             if (source == target)
                 return DragDropType.None;
 
@@ -143,6 +127,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileElements
                     return DragDropType.None;
             }
         }
+
+        #region Event handlers
+
+        private void OnSelectedElementChanged(object sender, EventArgs e)
+        {
+            var vms = RootFolder.GetAllChildren();
+
+            // Don't set it using the setter or that will trigger the event again
+            _selectedTreeItem = vms.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement);
+            NotifyOfPropertyChange(() => SelectedTreeItem);
+        }
+
+        private void OnSelectedProfileChanged(object sender, EventArgs e)
+        {
+            CreateRootFolderViewModel();
+        }
+
+        #endregion
     }
 
     public enum DragDropType
