@@ -13,7 +13,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileElements;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -22,16 +22,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 {
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
-        private readonly IEventAggregator _eventAggregator;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
 
-        public ProfileEditorViewModel(ProfileModule module, ICollection<ProfileEditorPanelViewModel> viewModels, IProfileService profileService,
-            IDialogService dialogService, ISettingsService settingsService, IEventAggregator eventAggregator)
+        public ProfileEditorViewModel(ProfileModule module,
+            ICollection<ProfileEditorPanelViewModel> viewModels,
+            IProfileEditorService profileEditorService,
+            IProfileService profileService, 
+            IDialogService dialogService, 
+            ISettingsService settingsService)
         {
+            _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
-            _eventAggregator = eventAggregator;
 
             DisplayName = "Profile editor";
             Module = module;
@@ -40,7 +44,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
             ElementPropertiesViewModel = (ElementPropertiesViewModel) viewModels.First(vm => vm is ElementPropertiesViewModel);
             LayerElementsViewModel = (LayerElementsViewModel) viewModels.First(vm => vm is LayerElementsViewModel);
-            ProfileElementsViewModel = (ProfileElementsViewModel) viewModels.First(vm => vm is ProfileElementsViewModel);
+            ProfileTreeViewModel = (ProfileTreeViewModel) viewModels.First(vm => vm is ProfileTreeViewModel);
             ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
             Profiles = new BindableCollection<Profile>();
 
@@ -54,7 +58,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
         public ElementPropertiesViewModel ElementPropertiesViewModel { get; }
         public LayerElementsViewModel LayerElementsViewModel { get; }
-        public ProfileElementsViewModel ProfileElementsViewModel { get; }
+        public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public ProfileViewModel ProfileViewModel { get; }
         public BindableCollection<Profile> Profiles { get; set; }
 
@@ -78,12 +82,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             var oldProfile = Module.ActiveProfile;
             Module.ChangeActiveProfile(profile);
-            _eventAggregator.Publish(new ProfileEditorSelectedProfileChanged(SelectedProfile));
-
+            
             if (oldProfile != null)
                 _profileService.UpdateProfile(oldProfile, false);
             if (profile != null)
                 _profileService.UpdateProfile(profile, false);
+
+            _profileEditorService.ChangeSelectedProfile(profile);
         }
 
         public Profile CreateProfile(string name)
@@ -135,11 +140,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnActivate()
         {
             LoadWorkspaceSettings();
-            Task.Run(() =>
-            {
-                LoadProfiles();
-                _eventAggregator.Publish(new ProfileEditorSelectedProfileChanged(SelectedProfile));
-            });
+            Task.Run(() => LoadProfiles());
             base.OnActivate();
         }
 
@@ -176,14 +177,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
             profiles.Add(activeProfile);
 
-            Execute.PostToUIThread(() =>
-            {
-                // Populate the UI collection
-                Profiles.Clear();
-                Profiles.AddRange(profiles.OrderBy(p => p.Name));
+            // Populate the UI collection
+            Profiles.Clear();
+            Profiles.AddRange(profiles.OrderBy(p => p.Name));
 
-                SelectedProfile = activeProfile;
-            });
+            SelectedProfile = activeProfile;
+
+            _profileEditorService.ChangeSelectedProfile(SelectedProfile);
 
             if (!activeProfile.IsActivated)
                 Module.ChangeActiveProfile(activeProfile);

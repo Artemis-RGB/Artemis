@@ -31,7 +31,7 @@ namespace Artemis.Plugins.LayerTypes.Brush
             // Update the brush
         }
 
-        public override void Render(Layer device, Surface surface, Graphics graphics)
+        public override void Render(Layer device, ArtemisSurface surface, Graphics graphics)
         {
         }
 

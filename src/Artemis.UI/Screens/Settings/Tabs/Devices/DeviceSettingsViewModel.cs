@@ -9,7 +9,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     {
         private readonly IDeviceService _deviceService;
 
-        public DeviceSettingsViewModel(Device device, IDeviceService deviceService)
+        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService)
         {
             _deviceService = deviceService;
             Device = device;
@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             IsDeviceEnabled = true;
         }
 
-        public Device Device { get; }
+        public ArtemisDevice Device { get; }
 
         public string Type { get; set; }
         public string Name { get; set; }

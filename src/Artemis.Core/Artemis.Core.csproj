@@ -161,9 +161,9 @@
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
-    <Compile Include="Models\Surface\DeviceLed.cs" />
-    <Compile Include="Models\Surface\Surface.cs" />
-    <Compile Include="Models\Surface\Device.cs" />
+    <Compile Include="Models\Surface\ArtemisLed.cs" />
+    <Compile Include="Models\Surface\ArtemisSurface.cs" />
+    <Compile Include="Models\Surface\ArtemisDevice.cs" />
     <Compile Include="Ninject\LoggerProvider.cs" />
     <Compile Include="Ninject\PluginSettingsProvider.cs" />
     <Compile Include="Ninject\SettingsServiceProvider.cs" />
@@ -216,9 +216,7 @@
       <Name>Artemis.Storage</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProfileElements\Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.0.5\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.5\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -152,9 +152,9 @@
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
-    <Compile Include="Events\MainWindowFocusChanged.cs" />
-    <Compile Include="Events\ProfileEditorSelectedElementChanged.cs" />
-    <Compile Include="Events\ProfileEditorSelectedProfileChanged.cs" />
+    <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
+    <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
+    <Compile Include="Services\ProfileEditorService.cs" />
     <Compile Include="Utilities\BindableSelectedItemBehavior.cs" />
     <Compile Include="Utilities\TriggerTracing.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
@@ -182,11 +182,11 @@
     <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElement\FolderViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElement\LayerViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElementsViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileTree\ProfileTreeViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileEditorPanelViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElement\ProfileElementViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\TreeItemViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileViewModel.cs" />
     <Compile Include="Screens\News\NewsViewModel.cs" />
     <Compile Include="Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigViewModelValidator.cs" />
@@ -258,15 +258,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElement\FolderView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElement\LayerView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\ProfileElements\ProfileElementsView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
