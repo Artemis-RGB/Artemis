@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
+        private List<ArtemisLed> _leds;
+
         public Layer(Profile profile, ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
@@ -23,7 +26,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
-            Leds = new List<DeviceLed>();
+            _leds = new List<ArtemisLed>();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity, IPluginService pluginService)
@@ -37,12 +40,12 @@ namespace Artemis.Core.Models.Profile
             Order = layerEntity.Order;
 
             LayerType = pluginService.GetLayerTypeByGuid(layerEntity.LayerTypeGuid);
-            Leds = new List<DeviceLed>();
+            _leds = new List<ArtemisLed>();
         }
 
         internal LayerEntity LayerEntity { get; set; }
 
-        public List<DeviceLed> Leds { get; private set; }
+        public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
         public LayerType LayerType { get; private set; }
         public ILayerTypeConfiguration LayerTypeConfiguration { get; set; }
 
@@ -60,7 +63,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             if (LayerType == null)
                 return;
@@ -81,19 +84,62 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Name = Name;
 
             LayerEntity.ProfileId = Profile.EntityId;
-            // TODO: LEDs, conditions, elements
-        }
 
-        public void ApplySurface(Surface.Surface surface)
-        {
-            var leds = new List<DeviceLed>();
-            foreach (var surfaceDevice in surface.Devices)
+            LayerEntity.Leds.Clear();
+            foreach (var artemisLed in Leds)
             {
-                var deviceHash = surfaceDevice.RgbDevice.GetDeviceHashCode();
-                leds.AddRange(surfaceDevice.Leds.Where(dl => LayerEntity.Leds.Any(l => l.DeviceHash == deviceHash && l.LedName == dl.RgbLed.ToString())));
+                var ledEntity = new LedEntity
+                {
+                    DeviceHash = artemisLed.Device.RgbDevice.GetDeviceHashCode(),
+                    LedName = artemisLed.RgbLed.Id.ToString()
+                };
+                LayerEntity.Leds.Add(ledEntity);
             }
 
-            Leds = leds;
+            LayerEntity.Condition.Clear();
+            
+            LayerEntity.Elements.Clear();
+        }
+
+        public void ApplySurface(ArtemisSurface surface)
+        {
+            var leds = new List<ArtemisLed>();
+
+            // Get the surface LEDs for this layer
+            var availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
+            foreach (var ledEntity in LayerEntity.Leds)
+            {
+                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceHashCode() == ledEntity.DeviceHash &&
+                                                              a.RgbLed.Id.ToString() == ledEntity.LedName);
+                if (match != null)
+                    leds.Add(match);
+            }
+
+            _leds = leds;
+            CalculateRenderProperties();
+        }
+
+        public void AddLed(ArtemisLed led)
+        {
+            _leds.Add(led);
+            CalculateRenderProperties();
+        }
+
+        public void AddLeds(IEnumerable<ArtemisLed> leds)
+        {
+            _leds.AddRange(leds);
+            CalculateRenderProperties();
+        }
+
+        public void RemoveLed(ArtemisLed led)
+        {
+            _leds.Remove(led);
+            CalculateRenderProperties();
+        }
+
+        public void ClearLeds()
+        {
+            _leds.Clear();
             CalculateRenderProperties();
         }
 

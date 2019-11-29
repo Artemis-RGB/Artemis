@@ -19,12 +19,12 @@ namespace Artemis.Core.Services
             _coreService = coreService;
         }
 
-        public void IdentifyDevice(Device device)
+        public void IdentifyDevice(ArtemisDevice device)
         {
             BlinkDevice(device, 0);
         }
 
-        private void BlinkDevice(Device device, int blinkCount)
+        private void BlinkDevice(ArtemisDevice device, int blinkCount)
         {
             // Draw a white overlay over the device
             void DrawOverlay(object sender, FrameRenderingEventArgs args)
@@ -59,6 +59,6 @@ namespace Artemis.Core.Services
         /// Identifies the device by making it blink white 5 times
         /// </summary>
         /// <param name="device"></param>
-        void IdentifyDevice(Device device);
+        void IdentifyDevice(ArtemisDevice device);
     }
 }

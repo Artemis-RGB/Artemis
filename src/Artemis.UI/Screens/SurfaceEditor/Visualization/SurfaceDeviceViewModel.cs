@@ -13,7 +13,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         private double _dragOffsetX;
         private double _dragOffsetY;
 
-        public SurfaceDeviceViewModel(Device device)
+        public SurfaceDeviceViewModel(ArtemisDevice device)
         {
             Device = device;
             _leds = new List<SurfaceLedViewModel>();
@@ -25,7 +25,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             }
         }
 
-        public Device Device { get; set; }
+        public ArtemisDevice Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
 

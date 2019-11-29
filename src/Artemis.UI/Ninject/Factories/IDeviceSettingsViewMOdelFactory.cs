@@ -5,6 +5,6 @@ namespace Artemis.UI.Ninject.Factories
 {
     public interface IDeviceSettingsViewModelFactory : IArtemisUIFactory
     {
-        DeviceSettingsViewModel Create(Device device);
+        DeviceSettingsViewModel Create(ArtemisDevice device);
     }
 }

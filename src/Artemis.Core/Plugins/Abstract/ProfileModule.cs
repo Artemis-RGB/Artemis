@@ -25,7 +25,7 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, Surface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             lock (this)
             {

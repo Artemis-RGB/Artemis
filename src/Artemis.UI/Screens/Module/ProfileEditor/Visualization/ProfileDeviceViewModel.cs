@@ -9,17 +9,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileDeviceViewModel : PropertyChangedBase
     {
-        public ProfileDeviceViewModel(Device device)
+        public ProfileDeviceViewModel(ArtemisDevice device)
         {
             Device = device;
             Leds = new ObservableCollection<ProfileLedViewModel>();
 
-            if (Device.RgbDevice != null)
-                Task.Run(AddLedsAsync);
+            Task.Run(AddLedsAsync);
         }
 
         public ObservableCollection<ProfileLedViewModel> Leds { get; set; }
-        public Device Device { get; set; }
+        public ArtemisDevice Device { get; set; }
         public bool AddedLeds { get; private set; }
 
         public double X
@@ -52,7 +51,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private async Task AddLedsAsync()
         {
             var index = 0;
-            foreach (var led in Device.RgbDevice.ToList())
+            foreach (var led in Device.Leds.ToList())
             {
                 Execute.OnUIThreadSync(() => Leds.Add(new ProfileLedViewModel(led)));
                 if (index % 5 == 0)

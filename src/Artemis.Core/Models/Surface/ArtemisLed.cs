@@ -5,9 +5,9 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class DeviceLed : PropertyChangedBase
+    public class ArtemisLed : PropertyChangedBase
     {
-        public DeviceLed(Led led, Device device)
+        public ArtemisLed(Led led, ArtemisDevice device)
         {
             RgbLed = led;
             Device = device;
@@ -15,7 +15,7 @@ namespace Artemis.Core.Models.Surface
         }
 
         public Led RgbLed { get; }
-        public Device Device { get; }
+        public ArtemisDevice Device { get; }
 
         public Rectangle RenderRectangle { get; private set; }
         public Rectangle AbsoluteRenderRectangle { get; private set; }
