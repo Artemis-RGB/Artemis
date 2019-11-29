@@ -7,9 +7,9 @@ using Stylet;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class Surface : PropertyChangedBase
+    public class ArtemisSurface : PropertyChangedBase
     {
-        internal Surface(RGBSurface rgbSurface, string name, double scale)
+        internal ArtemisSurface(RGBSurface rgbSurface, string name, double scale)
         {
             SurfaceEntity = new SurfaceEntity {DeviceEntities = new List<DeviceEntity>()};
             EntityId = Guid.NewGuid();
@@ -20,12 +20,12 @@ namespace Artemis.Core.Models.Surface
             IsActive = false;
 
             // Devices are not populated here but as they are detected
-            Devices = new List<Device>();
+            Devices = new List<ArtemisDevice>();
 
             ApplyToEntity();
         }
 
-        internal Surface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity, double scale)
+        internal ArtemisSurface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity, double scale)
         {
             SurfaceEntity = surfaceEntity;
             EntityId = surfaceEntity.Id;
@@ -36,14 +36,14 @@ namespace Artemis.Core.Models.Surface
             IsActive = surfaceEntity.IsActive;
 
             // Devices are not populated here but as they are detected
-            Devices = new List<Device>(); 
+            Devices = new List<ArtemisDevice>(); 
         }
 
         public RGBSurface RgbSurface { get; }
         public double Scale { get; private set; }
         public string Name { get; set; }
         public bool IsActive { get; internal set; }
-        public List<Device> Devices { get; internal set; }
+        public List<ArtemisDevice> Devices { get; internal set; }
 
         internal SurfaceEntity SurfaceEntity { get; set; }
         internal Guid EntityId { get; set; }

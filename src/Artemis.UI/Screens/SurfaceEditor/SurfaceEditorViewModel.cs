@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
         {
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
-            SurfaceConfigurations = new ObservableCollection<Surface>();
+            SurfaceConfigurations = new ObservableCollection<ArtemisSurface>();
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
             Cursor = null;
@@ -41,13 +41,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         }
 
         public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
-        public ObservableCollection<Surface> SurfaceConfigurations { get; set; }
+        public ObservableCollection<ArtemisSurface> SurfaceConfigurations { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
         public PluginSetting<GridLength> SurfaceListWidth { get; set; }
         public Cursor Cursor { get; set; }
 
-        public Surface SelectedSurface
+        public ArtemisSurface SelectedSurface
         {
             get => _selectedSurface;
             set
@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public string Title => "Surface Editor";
 
-        public Surface CreateSurfaceConfiguration(string name)
+        public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.PostToUIThread(() => SurfaceConfigurations.Add(config));
@@ -148,7 +148,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         #region Configuration management
 
-        public async Task DeleteSurfaceConfiguration(Surface surface)
+        public async Task DeleteSurfaceConfiguration(ArtemisSurface surface)
         {
             var result = await _dialogService.ShowConfirmDialogAt(
                 "SurfaceListDialogHost",
@@ -240,7 +240,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
-        private Surface _selectedSurface;
+        private ArtemisSurface _selectedSurface;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)

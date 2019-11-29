@@ -44,7 +44,7 @@ namespace Artemis.Core.Models.Profile.Abstract
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, Surface.Surface surface, Graphics graphics);
+        public abstract void Render(double deltaTime, Surface.ArtemisSurface surface, Graphics graphics);
 
         /// <summary>
         ///     Applies the profile element's properties to the underlying storage entity

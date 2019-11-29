@@ -1,20 +1,18 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElementsView"
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.ProfileTreeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements"
-             xmlns:models="clr-namespace:Artemis.Core.Models.Profile.Abstract;assembly=Artemis.Core"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:profileElements="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements"
-             xmlns:profileElement="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileElements.ProfileElement"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+             xmlns:profileTree="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileTree"
+             xmlns:treeItem="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance {x:Type profileElements:ProfileElementsViewModel}}">
+             d:DataContext="{d:DesignInstance {x:Type profileTree:ProfileTreeViewModel}}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -35,13 +33,13 @@
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
             <i:Interaction.Behaviors>
-                <utilities:BindableSelectedItemBehavior SelectedItem="{Binding SelectedProfileElement, Mode=TwoWay}" />
+                <utilities:BindableSelectedItemBehavior SelectedItem="{Binding SelectedTreeItem, Mode=TwoWay}" />
             </i:Interaction.Behaviors>
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type profileElement:FolderViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type profileElement:LayerViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type treeItem:LayerViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
             </TreeView.Resources>

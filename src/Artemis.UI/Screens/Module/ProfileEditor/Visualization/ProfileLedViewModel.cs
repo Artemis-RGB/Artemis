@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
+using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
-using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using RGB.NET.Core;
 using Stylet;
 using Color = System.Windows.Media.Color;
@@ -11,21 +11,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileLedViewModel : PropertyChangedBase
     {
-        public ProfileLedViewModel(Led led)
+        public ProfileLedViewModel(ArtemisLed led)
         {
             Led = led;
 
             // Don't want ActualLocation here since rotation is done in XAML
-            X = Led.Location.X * Led.Device.Scale.Horizontal;
-            Y = Led.Location.Y * Led.Device.Scale.Vertical;
-            Width = Led.ActualSize.Width;
-            Height = Led.ActualSize.Height;
+            X = led.RgbLed.Location.X * led.RgbLed.Device.Scale.Horizontal;
+            Y = led.RgbLed.Location.Y * led.RgbLed.Device.Scale.Vertical;
+            Width = led.RgbLed.ActualSize.Width;
+            Height = led.RgbLed.ActualSize.Height;
 
             Execute.PostToUIThread(CreateLedGeometry);
         }
 
-        public Led Led { get; }
-        public SelectionStatus SelectionStatus { get; set; }
+        public ArtemisLed Led { get; }
+
+        public bool IsSelected { get; set; }
+        public bool IsDimmed { get; set; }
 
         public double X { get; }
         public double Y { get; }
@@ -36,18 +38,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
 
+
         private void CreateLedGeometry()
         {
-            switch (Led.Shape)
+            switch (Led.RgbLed.Shape)
             {
                 case Shape.Custom:
-                    if (Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                    if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
                         CreateCustomGeometry(2.0);
                     else
                         CreateCustomGeometry(1.0);
                     break;
                 case Shape.Rectangle:
-                    if (Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                    if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
                         CreateKeyCapGeometry();
                     else
                         CreateRectangleGeometry();
@@ -86,7 +89,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 DisplayGeometry = Geometry.Combine(
                     Geometry.Empty,
-                    Geometry.Parse(Led.ShapeData),
+                    Geometry.Parse(Led.RgbLed.ShapeData),
                     GeometryCombineMode.Union,
                     new TransformGroup
                     {
@@ -106,7 +109,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public void Update()
         {
-            var newColor = Led.Color.ToMediaColor();
+            var newColor = Led.RgbLed.Color.ToMediaColor();
             Execute.PostToUIThread(() =>
             {
                 if (!DisplayColor.Equals(newColor))

@@ -198,7 +198,7 @@
                     </Grid.RowDefinitions>
                     <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
                         <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type models:Surface}">
+                            <DataTemplate DataType="{x:Type models:ArtemisSurface}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />

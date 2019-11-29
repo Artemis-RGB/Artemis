@@ -5,11 +5,11 @@ namespace Artemis.Core.Events
 {
     public class SurfaceConfigurationEventArgs : EventArgs
     {
-        public SurfaceConfigurationEventArgs(Surface surface)
+        public SurfaceConfigurationEventArgs(ArtemisSurface surface)
         {
             Surface = surface;
         }
 
-        public Surface Surface { get; }
+        public ArtemisSurface Surface { get; }
     }
 }

@@ -11,15 +11,15 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
-    public class Device : PropertyChangedBase
+    public class ArtemisDevice : PropertyChangedBase
     {
-        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface)
+        internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface)
         {
             RgbDevice = rgbDevice;
             Plugin = plugin;
             Surface = surface;
             DeviceEntity = new DeviceEntity();
-            Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
+            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
 
             Rotation = 0;
             Scale = 1;
@@ -29,13 +29,13 @@ namespace Artemis.Core.Models.Surface
             CalculateRenderProperties();
         }
 
-        internal Device(IRGBDevice rgbDevice, Plugin plugin, Surface surface, DeviceEntity deviceEntity)
+        internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface, DeviceEntity deviceEntity)
         {
             RgbDevice = rgbDevice;
             Plugin = plugin;
             Surface = surface;
             DeviceEntity = deviceEntity;
-            Leds = rgbDevice.Select(l => new DeviceLed(l, this)).ToList().AsReadOnly();
+            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
         public Rectangle RenderRectangle { get; private set; }
@@ -43,9 +43,9 @@ namespace Artemis.Core.Models.Surface
 
         public IRGBDevice RgbDevice { get; }
         public Plugin Plugin { get; }
-        public Surface Surface { get; }
+        public ArtemisSurface Surface { get; }
         public DeviceEntity DeviceEntity { get; }
-        public ReadOnlyCollection<DeviceLed> Leds { get; set; }
+        public ReadOnlyCollection<ArtemisLed> Leds { get; set; }
 
         public double X
         {

@@ -41,7 +41,7 @@ namespace Artemis.Core.Services.Storage
             ApplySurfaceToProfiles(e.Surface);
         }
 
-        private void ApplySurfaceToProfiles(Surface surface)
+        private void ApplySurfaceToProfiles(ArtemisSurface surface)
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())

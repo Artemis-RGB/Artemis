@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
@@ -13,7 +14,7 @@ using Artemis.UI.Events;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor;
-using Artemis.UI.Screens.SurfaceEditor.Visualization;
+using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
 using Stylet;
 using Point = System.Windows.Point;
@@ -22,30 +23,34 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>
     {
+        private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
-        private readonly TimerUpdateTrigger _updateTrigger;
+        private readonly ISurfaceService _surfaceService;
+        private TimerUpdateTrigger _updateTrigger;
 
-        public ProfileViewModel(ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
+        public ProfileViewModel(IProfileEditorService profileEditorService,
+            ISurfaceService surfaceService,
+            ISettingsService settingsService,
+            IEventAggregator eventAggregator)
         {
+            _profileEditorService = profileEditorService;
+            _surfaceService = surfaceService;
             _settingsService = settingsService;
             Devices = new ObservableCollection<ProfileDeviceViewModel>();
+            Cursor = null;
+
             Execute.PostToUIThread(() =>
             {
                 SelectionRectangle = new RectangleGeometry();
                 PanZoomViewModel = new PanZoomViewModel();
             });
-            Cursor = null;
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
+            CreateUpdateTrigger();
 
-            // Borrow RGB.NET's update trigger but limit the FPS
-            var targetFpsSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            var editorTargetFpsSetting = settingsService.GetSetting("ProfileEditor.TargetFrameRate", 15);
-            var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
-            _updateTrigger.Update += UpdateLeds;
-
-            surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementChanged;
+            eventAggregator.Subscribe(this);
         }
 
         public bool IsInitializing { get; private set; }
@@ -57,12 +62,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public Cursor Cursor { get; set; }
 
+        private void CreateUpdateTrigger()
+        {
+            // Borrow RGB.NET's update trigger but limit the FPS
+            var targetFpsSetting = _settingsService.GetSetting("Core.TargetFrameRate", 25);
+            var editorTargetFpsSetting = _settingsService.GetSetting("ProfileEditor.TargetFrameRate", 15);
+            var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
+            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
+            _updateTrigger.Update += UpdateLeds;
+
+            _surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+        }
+
         private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
         {
             ApplySurfaceConfiguration(e.Surface);
         }
 
-        private void ApplySurfaceConfiguration(Surface surface)
+        private void ApplySurfaceConfiguration(ArtemisSurface surface)
         {
             // Make sure all devices have an up-to-date VM
             foreach (var surfaceDeviceConfiguration in surface.Devices)
@@ -111,15 +128,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
+        private void UpdateLedsDimStatus()
+        {
+            if (HighlightSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
+            {
+                foreach (var led in Devices.SelectMany(d => d.Leds))
+                    led.IsDimmed = !layer.Leds.Contains(led.Led);
+            }
+            else
+            {
+                foreach (var led in Devices.SelectMany(d => d.Leds))
+                    led.IsDimmed = false;
+            }
+        }
+
         protected override void OnActivate()
         {
             HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
             PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
 
+            HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
+
             _updateTrigger.Start();
             base.OnActivate();
         }
-        
+
         protected override void OnDeactivate()
         {
             HighlightSelectedLayer.Save();
@@ -128,6 +161,45 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _updateTrigger.Stop();
             base.OnDeactivate();
         }
+
+        #region Context menu actions
+
+        public bool CanApplyToLayer { get; set; }
+
+        public void CreateLayer()
+        {
+        }
+
+        public void ApplyToLayer()
+        {
+            if (!(_profileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            layer.ClearLeds();
+            layer.AddLeds(Devices.SelectMany(d => d.Leds).Where(vm => vm.IsSelected).Select(vm => vm.Led));
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public void SelectAll()
+        {
+            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+                ledVm.IsSelected = true;
+        }
+
+        public void InverseSelection()
+        {
+            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+                ledVm.IsSelected = !ledVm.IsSelected;
+        }
+
+        public void ClearSelection()
+        {
+            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+                ledVm.IsSelected = false;
+        }
+
+        #endregion
 
         #region Selection
 
@@ -179,10 +251,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 foreach (var profileLedViewModel in device.Leds)
                 {
-                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
-                        profileLedViewModel.SelectionStatus = SelectionStatus.Selected;
+                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
+                        profileLedViewModel.IsSelected = true;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        profileLedViewModel.SelectionStatus = SelectionStatus.None;
+                        profileLedViewModel.IsSelected = false;
                 }
             }
 
@@ -201,10 +273,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 foreach (var profileLedViewModel in device.Leds)
                 {
-                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
-                        profileLedViewModel.SelectionStatus = SelectionStatus.Selected;
+                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
+                        profileLedViewModel.IsSelected = true;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        profileLedViewModel.SelectionStatus = SelectionStatus.None;
+                        profileLedViewModel.IsSelected = false;
                 }
             }
         }
@@ -250,9 +322,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         #endregion
 
+        #region Event handlers
+
+        private void HighlightSelectedLayerOnSettingChanged(object sender, EventArgs e)
+        {
+            UpdateLedsDimStatus();
+        }
+
+        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
+        {
+            UpdateLedsDimStatus();
+            CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;
+        }
+
         public void Handle(MainWindowFocusChangedEvent message)
         {
-            Console.WriteLine(message);
+            if (PauseRenderingOnFocusLoss == null || ScreenState != ScreenState.Active)
+                return;
+
+            if (PauseRenderingOnFocusLoss.Value && !message.IsFocused)
+                _updateTrigger.Stop();
+            else if (PauseRenderingOnFocusLoss.Value && message.IsFocused)
+                _updateTrigger.Start();
         }
+
+        #endregion
     }
 }

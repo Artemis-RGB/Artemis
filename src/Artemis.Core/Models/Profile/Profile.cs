@@ -56,7 +56,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, Surface.Surface surface, Graphics graphics)
+        public override void Render(double deltaTime, Surface.ArtemisSurface surface, Graphics graphics)
         {
             lock (this)
             {
@@ -113,7 +113,7 @@ namespace Artemis.Core.Models.Profile
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
-        public void ApplySurface(Surface.Surface surface)
+        public void ApplySurface(Surface.ArtemisSurface surface)
         {
             foreach (var layer in GetAllLayers())
                 layer.ApplySurface(surface);

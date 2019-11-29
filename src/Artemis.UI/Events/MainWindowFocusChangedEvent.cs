@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Artemis.UI.Events
+﻿namespace Artemis.UI.Events
 {
-    public class MainWindowFocusChangedEvent : EventArgs
+    public class MainWindowFocusChangedEvent
     {
         public MainWindowFocusChangedEvent(bool isFocused)
         {
