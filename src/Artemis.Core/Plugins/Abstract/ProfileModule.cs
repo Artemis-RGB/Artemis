@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
@@ -34,8 +35,10 @@ namespace Artemis.Core.Plugins.Abstract
             }
         }
 
-        public void ChangeActiveProfile(Profile profile)
+        internal void ChangeActiveProfile(Profile profile, ArtemisSurface surface)
         {
+            if (profile != null && profile.PluginInfo != PluginInfo)
+                throw new ArtemisCoreException($"Cannot activate a profile of plugin {profile.PluginInfo} on a module of plugin {PluginInfo}.");
             lock (this)
             {
                 if (profile == ActiveProfile)
@@ -44,7 +47,7 @@ namespace Artemis.Core.Plugins.Abstract
                 ActiveProfile?.Deactivate();
 
                 ActiveProfile = profile;
-                ActiveProfile?.Activate();
+                ActiveProfile?.Activate(surface);
             }
 
             OnActiveProfileChanged();
@@ -53,7 +56,7 @@ namespace Artemis.Core.Plugins.Abstract
         #region Events
 
         public event EventHandler ActiveProfileChanged;
-        
+
         protected virtual void OnActiveProfileChanged()
         {
             ActiveProfileChanged?.Invoke(this, EventArgs.Empty);

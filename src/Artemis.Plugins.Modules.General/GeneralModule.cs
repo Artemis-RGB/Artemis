@@ -8,6 +8,8 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
+using RGB.NET.Core;
+using Color = System.Drawing.Color;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -45,6 +47,8 @@ namespace Artemis.Plugins.Modules.General
         public int[] Hues { get; set; }
         public int MovePercentage { get; set; }
 
+        public Dictionary<ArtemisDevice, TextureBrush> DeviceBrushes { get; set; }
+
         public override void EnablePlugin()
         {
         }
@@ -65,16 +69,20 @@ namespace Artemis.Plugins.Modules.General
             MovePercentage++;
             if (MovePercentage > 100)
                 MovePercentage = 0;
+
+            base.Update(deltaTime);
         }
 
 
         public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             // Per-device coloring, slower
-            RenderPerDevice(surface, graphics);
+            // RenderPerDevice(surface, graphics);
 
             // Per-LED coloring, slowest
             // RenderPerLed(surface, graphics);
+
+            base.Render(deltaTime, surface, graphics);
         }
 
         public void RenderFullSurface(ArtemisSurface surface, Graphics graphics)
@@ -97,8 +105,6 @@ namespace Artemis.Plugins.Modules.General
             }
         }
 
-        public Dictionary<ArtemisDevice, TextureBrush> DeviceBrushes { get; set; }
-
         private Image RenderGradientForDevice(ArtemisDevice device)
         {
             var brush = new LinearGradientBrush(device.RenderRectangle, Color.Black, Color.Black, 0, false)
@@ -119,7 +125,10 @@ namespace Artemis.Plugins.Modules.General
             var index = 0;
             foreach (var led in surface.Devices.SelectMany(d => d.Leds))
             {
-                graphics.FillRectangle(new SolidBrush(ColorHelpers.ColorFromHSV(Hues[index], 1, 1)), led.AbsoluteRenderRectangle);
+                if (led.RgbLed.Id == LedId.HeadsetStand1)
+                    graphics.FillRectangle(new SolidBrush(Color.Red), led.AbsoluteRenderRectangle);
+                else
+                    graphics.FillRectangle(new SolidBrush(ColorHelpers.ColorFromHSV(Hues[index], 1, 1)), led.AbsoluteRenderRectangle);
                 index++;
             }
         }

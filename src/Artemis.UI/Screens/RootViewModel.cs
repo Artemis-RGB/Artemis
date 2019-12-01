@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +13,6 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
-using MahApps.Metro.Controls;
 using Stylet;
 
 namespace Artemis.UI.Screens
@@ -23,8 +20,8 @@ namespace Artemis.UI.Screens
     public class RootViewModel : Conductor<IScreen>
     {
         private readonly ICollection<IScreenViewModel> _artemisViewModels;
-        private readonly IModuleViewModelFactory _moduleViewModelFactory;
         private readonly IEventAggregator _eventAggregator;
+        private readonly IModuleViewModelFactory _moduleViewModelFactory;
         private readonly IPluginService _pluginService;
         private bool _lostFocus;
 

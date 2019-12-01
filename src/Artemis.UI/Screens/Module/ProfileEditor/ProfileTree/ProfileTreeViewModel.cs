@@ -132,10 +132,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 
         private void OnSelectedElementChanged(object sender, EventArgs e)
         {
-            var vms = RootFolder.GetAllChildren();
+            var vms = RootFolder?.GetAllChildren();
 
             // Don't set it using the setter or that will trigger the event again
-            _selectedTreeItem = vms.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement);
+            _selectedTreeItem = vms?.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement);
             NotifyOfPropertyChange(() => SelectedTreeItem);
         }
 

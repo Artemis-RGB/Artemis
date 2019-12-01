@@ -7,11 +7,11 @@ using RGB.NET.Devices.Logitech;
 
 namespace Artemis.Plugins.Devices.Logitech
 {
-    public class LogitechDevice : Device
+    public class LogitechDeviceProvider : DeviceProvider
     {
         private readonly IRgbService _rgbService;
 
-        public LogitechDevice(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, LogitechDeviceProvider.Instance)
+        public LogitechDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Logitech.LogitechDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }
@@ -19,9 +19,9 @@ namespace Artemis.Plugins.Devices.Logitech
         public override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(LogitechRGBDevice<>), sender, args);
-            LogitechDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "LogitechLedEnginesWrapper.dll"));
-            LogitechDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "LogitechLedEnginesWrapper.dll"));
-            _rgbService.AddDeviceProvider(DeviceProvider);
+            RGB.NET.Devices.Logitech.LogitechDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "LogitechLedEnginesWrapper.dll"));
+            RGB.NET.Devices.Logitech.LogitechDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "LogitechLedEnginesWrapper.dll"));
+            _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
         public override void DisablePlugin()

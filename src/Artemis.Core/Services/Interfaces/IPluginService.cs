@@ -56,13 +56,6 @@ namespace Artemis.Core.Services.Interfaces
         List<PluginInfo> GetAllPluginInfo();
 
         /// <summary>
-        ///     Finds an instance of the layer type matching the given GUID
-        /// </summary>
-        /// <param name="layerTypeGuid">The GUID of the layer type to find</param>
-        /// <returns>An instance of the layer type</returns>
-        LayerType GetLayerTypeByGuid(Guid layerTypeGuid);
-
-        /// <summary>
         ///     Finds all enabled <see cref="Plugin" /> instances of type <see cref="T" />
         /// </summary>
         /// <typeparam name="T">Either <see cref="Plugin" /> or a plugin type implementing <see cref="Plugin" /></typeparam>

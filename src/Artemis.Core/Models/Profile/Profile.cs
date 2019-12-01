@@ -3,8 +3,8 @@ using System.Drawing;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.Abstract;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
@@ -23,7 +23,7 @@ namespace Artemis.Core.Models.Profile
             ApplyToEntity();
         }
 
-        internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity, IPluginService pluginService)
+        internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity)
         {
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
@@ -36,7 +36,7 @@ namespace Artemis.Core.Models.Profile
             if (rootFolder == null)
                 AddChild(new Folder(this, null, "Root folder"));
             else
-                AddChild(new Folder(this, null, rootFolder, pluginService));
+                AddChild(new Folder(this, null, rootFolder));
         }
 
         public PluginInfo PluginInfo { get; }
@@ -56,7 +56,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, Surface.ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             lock (this)
             {
@@ -86,12 +86,14 @@ namespace Artemis.Core.Models.Profile
         }
 
 
-        internal void Activate()
+        internal void Activate(ArtemisSurface surface)
         {
             lock (this)
             {
-                if (IsActivated) return;
+                if (IsActivated)
+                    return;
 
+                ApplySurface(surface);
                 OnActivated();
                 IsActivated = true;
             }
@@ -113,7 +115,7 @@ namespace Artemis.Core.Models.Profile
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
-        public void ApplySurface(Surface.ArtemisSurface surface)
+        public void ApplySurface(ArtemisSurface surface)
         {
             foreach (var layer in GetAllLayers())
                 layer.ApplySurface(surface);
@@ -140,7 +142,7 @@ namespace Artemis.Core.Models.Profile
         {
             Deactivated?.Invoke(this, EventArgs.Empty);
         }
-        
+
         #endregion
     }
 }

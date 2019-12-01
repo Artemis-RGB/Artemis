@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{E830
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Modules.General", "Artemis.Plugins.Modules.General\Artemis.Plugins.Modules.General.csproj", "{E592F239-FAA0-4840-9C85-46E5867D06D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerTypes.Brush", "Artemis.Plugins.LayerTypes.Brush\Artemis.Plugins.LayerTypes.Brush.csproj", "{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerElements.Brush", "Artemis.Plugins.LayerTypes.Brush\Artemis.Plugins.LayerElements.Brush.csproj", "{0F288A66-6EB0-4589-8595-E33A3A3EAEA2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Devices.Corsair", "Artemis.Plugins.Devices.Corsair\Artemis.Plugins.Devices.Corsair.csproj", "{A779B2F8-C253-4C4B-8634-6EB8F594E96D}"
 EndProject

@@ -37,9 +37,11 @@
             </ContextMenu>
         </StackPanel.ContextMenu>
         <StackPanel Orientation="Horizontal" Margin="10">
-            <materialDesign:PackIcon Kind="Folder" Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}"/>
-            <materialDesign:PackIcon Kind="FolderOpen" Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}"/>
-            
+            <materialDesign:PackIcon Kind="Folder"
+                                     Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+            <materialDesign:PackIcon Kind="FolderOpen"
+                                     Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
+
             <TextBlock Text="{Binding ProfileElement.Name}" Margin="10 0 0 0" />
         </StackPanel>
     </StackPanel>

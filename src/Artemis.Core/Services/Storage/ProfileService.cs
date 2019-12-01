@@ -16,8 +16,8 @@ namespace Artemis.Core.Services.Storage
     public class ProfileService : IProfileService
     {
         private readonly IPluginService _pluginService;
-        private readonly ISurfaceService _surfaceService;
         private readonly IProfileRepository _profileRepository;
+        private readonly ISurfaceService _surfaceService;
 
         internal ProfileService(IPluginService pluginService, ISurfaceService surfaceService, IProfileRepository profileRepository)
         {
@@ -27,6 +27,73 @@ namespace Artemis.Core.Services.Storage
 
             _surfaceService.ActiveSurfaceConfigurationChanged += SurfaceServiceOnActiveSurfaceConfigurationChanged;
             _surfaceService.SurfaceConfigurationUpdated += SurfaceServiceOnSurfaceConfigurationUpdated;
+        }
+
+        public List<Profile> GetProfiles(ProfileModule module)
+        {
+            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            var profiles = new List<Profile>();
+            foreach (var profileEntity in profileEntities)
+            {
+                // If the profile entity matches the module's currently active profile, use that instead
+                if (module.ActiveProfile != null && module.ActiveProfile.EntityId == profileEntity.Id)
+                    profiles.Add(module.ActiveProfile);
+                else
+                    profiles.Add(new Profile(module.PluginInfo, profileEntity));
+            }
+
+            return profiles;
+        }
+
+        public Profile GetActiveProfile(ProfileModule module)
+        {
+            if (module.ActiveProfile != null)
+                return module.ActiveProfile;
+
+            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
+            if (profileEntity == null)
+                return null;
+
+            return new Profile(module.PluginInfo, profileEntity);
+        }
+
+        public Profile CreateProfile(ProfileModule module, string name)
+        {
+            var profile = new Profile(module.PluginInfo, name);
+            _profileRepository.Add(profile.ProfileEntity);
+
+            if (_surfaceService.ActiveSurface != null)
+                profile.ApplySurface(_surfaceService.ActiveSurface);
+            return profile;
+        }
+
+
+        public void ActivateProfile(ProfileModule module, Profile profile)
+        {
+            module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+        }
+
+        public void DeleteProfile(Profile profile)
+        {
+            _profileRepository.Remove(profile.ProfileEntity);
+        }
+
+        public void UpdateProfile(Profile profile, bool includeChildren)
+        {
+            profile.ApplyToEntity();
+            if (includeChildren)
+            {
+                foreach (var folder in profile.GetAllFolders())
+                    folder.ApplyToEntity();
+                foreach (var layer in profile.GetAllLayers())
+                    layer.ApplyToEntity();
+
+                if (_surfaceService.ActiveSurface != null)
+                    profile.ApplySurface(_surfaceService.ActiveSurface);
+            }
+
+            _profileRepository.Save(profile.ProfileEntity);
         }
 
         private void SurfaceServiceOnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
@@ -46,67 +113,6 @@ namespace Artemis.Core.Services.Storage
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.ApplySurface(surface);
-        }
-
-        public List<Profile> GetProfiles(ProfileModule module)
-        {
-            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            var profiles = new List<Profile>();
-            foreach (var profileEntity in profileEntities)
-            {
-                // If the profile entity matches the module's currently active profile, use that instead
-                if (module.ActiveProfile != null && module.ActiveProfile.EntityId == profileEntity.Id)
-                    profiles.Add(module.ActiveProfile);
-                else
-                    profiles.Add(new Profile(module.PluginInfo, profileEntity, _pluginService));
-            }
-
-            return profiles;
-        }
-
-        public Profile GetActiveProfile(ProfileModule module)
-        {
-            if (module.ActiveProfile != null)
-                return module.ActiveProfile;
-
-            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            if (profileEntity == null)
-                return null;
-
-            return new Profile(module.PluginInfo, profileEntity, _pluginService);
-        }
-
-        public Profile CreateProfile(ProfileModule module, string name)
-        {
-            var profile = new Profile(module.PluginInfo, name);
-            _profileRepository.Add(profile.ProfileEntity);
-
-            if (_surfaceService.ActiveSurface != null)
-                profile.ApplySurface(_surfaceService.ActiveSurface);
-            return profile;
-        }
-
-        public void DeleteProfile(Profile profile)
-        {
-            _profileRepository.Remove(profile.ProfileEntity);
-        }
-
-        public void UpdateProfile(Profile profile, bool includeChildren)
-        {
-            profile.ApplyToEntity();
-            if (includeChildren)
-            {
-                foreach (var folder in profile.GetAllFolders()) 
-                    folder.ApplyToEntity();
-                foreach (var layer in profile.GetAllLayers()) 
-                    layer.ApplyToEntity();
-                
-                if (_surfaceService.ActiveSurface != null)
-                    profile.ApplySurface(_surfaceService.ActiveSurface);
-            }
-
-            _profileRepository.Save(profile.ProfileEntity);
         }
     }
 }

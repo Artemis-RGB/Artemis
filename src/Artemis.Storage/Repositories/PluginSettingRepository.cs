@@ -31,7 +31,7 @@ namespace Artemis.Storage.Repositories
         {
             return _repository.FirstOrDefault<PluginSettingEntity>(p => p.Name == name && p.PluginGuid == pluginGuid);
         }
-        
+
         public void Save(PluginSettingEntity pluginSettingEntity)
         {
             _repository.Upsert(pluginSettingEntity);

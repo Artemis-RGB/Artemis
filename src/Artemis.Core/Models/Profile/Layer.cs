@@ -7,15 +7,15 @@ using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Interfaces;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Plugins.LayerElement;
 using Artemis.Storage.Entities.Profile;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
+        private readonly List<LayerElement> _layerElements;
         private List<ArtemisLed> _leds;
 
         public Layer(Profile profile, ProfileElement parent, string name)
@@ -26,10 +26,12 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+
             _leds = new List<ArtemisLed>();
+            _layerElements = new List<LayerElement>();
         }
 
-        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity, IPluginService pluginService)
+        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
@@ -39,46 +41,44 @@ namespace Artemis.Core.Models.Profile
             Name = layerEntity.Name;
             Order = layerEntity.Order;
 
-            LayerType = pluginService.GetLayerTypeByGuid(layerEntity.LayerTypeGuid);
             _leds = new List<ArtemisLed>();
+            _layerElements = new List<LayerElement>();
         }
 
         internal LayerEntity LayerEntity { get; set; }
 
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
-        public LayerType LayerType { get; private set; }
-        public ILayerTypeConfiguration LayerTypeConfiguration { get; set; }
+        public ReadOnlyCollection<LayerElement> LayerElements => _layerElements.AsReadOnly();
 
         public Rectangle RenderRectangle { get; set; }
         public GraphicsPath RenderPath { get; set; }
 
         public override void Update(double deltaTime)
         {
-            if (LayerType == null)
-                return;
-
-            lock (LayerType)
-            {
-                LayerType.Update(this);
-            }
+            foreach (var layerElement in LayerElements)
+                layerElement.Update(deltaTime);
         }
 
         public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
-            if (LayerType == null)
-                return;
+            graphics.SetClip(RenderPath);
 
-            lock (LayerType)
-            {
-                LayerType.Render(this, surface, graphics);
-            }
+            foreach (var layerElement in LayerElements)
+                layerElement.RenderPreProcess(surface, graphics);
+
+            foreach (var layerElement in LayerElements)
+                layerElement.Render(surface, graphics);
+
+            foreach (var layerElement in LayerElements)
+                layerElement.RenderPostProcess(surface, graphics);
+
+            graphics.ResetClip();
         }
 
         internal override void ApplyToEntity()
         {
             LayerEntity.Id = EntityId;
             LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
-            LayerEntity.LayerTypeGuid = LayerType?.PluginInfo.Guid ?? new Guid();
 
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
@@ -97,26 +97,18 @@ namespace Artemis.Core.Models.Profile
             }
 
             LayerEntity.Condition.Clear();
-            
+
             LayerEntity.Elements.Clear();
-        }
-
-        public void ApplySurface(ArtemisSurface surface)
-        {
-            var leds = new List<ArtemisLed>();
-
-            // Get the surface LEDs for this layer
-            var availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
-            foreach (var ledEntity in LayerEntity.Leds)
+            foreach (var layerElement in LayerElements)
             {
-                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceHashCode() == ledEntity.DeviceHash &&
-                                                              a.RgbLed.Id.ToString() == ledEntity.LedName);
-                if (match != null)
-                    leds.Add(match);
+                var layerElementEntity = new LayerElementEntity
+                {
+                    PluginGuid = layerElement.Descriptor.LayerElementProvider.PluginInfo.Guid,
+                    LayerElementType = layerElement.GetType().Name,
+                    Configuration = JsonConvert.SerializeObject(layerElement.Settings)
+                };
+                LayerEntity.Elements.Add(layerElementEntity);
             }
-
-            _leds = leds;
-            CalculateRenderProperties();
         }
 
         public void AddLed(ArtemisLed led)
@@ -143,17 +135,27 @@ namespace Artemis.Core.Models.Profile
             CalculateRenderProperties();
         }
 
-        public void UpdateLayerType(LayerType layerType)
+        internal void AddLayerElement(LayerElement layerElement)
         {
-            if (LayerType != null)
+            _layerElements.Add(layerElement);
+        }
+
+        public void ApplySurface(ArtemisSurface surface)
+        {
+            var leds = new List<ArtemisLed>();
+
+            // Get the surface LEDs for this layer
+            var availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
+            foreach (var ledEntity in LayerEntity.Leds)
             {
-                lock (LayerType)
-                {
-                    LayerType.Dispose();
-                }
+                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceHashCode() == ledEntity.DeviceHash &&
+                                                              a.RgbLed.Id.ToString() == ledEntity.LedName);
+                if (match != null)
+                    leds.Add(match);
             }
 
-            LayerType = layerType;
+            _leds = leds;
+            CalculateRenderProperties();
         }
 
         internal void CalculateRenderProperties()
@@ -167,8 +169,8 @@ namespace Artemis.Core.Models.Profile
             // Determine to top-left and bottom-right
             var minX = Leds.Min(l => l.AbsoluteRenderRectangle.X);
             var minY = Leds.Min(l => l.AbsoluteRenderRectangle.Y);
-            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.X);
-            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Y);
+            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.X + l.AbsoluteRenderRectangle.Width);
+            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Y + l.AbsoluteRenderRectangle.Height);
 
             RenderRectangle = new Rectangle(minX, minY, maxX - minX, maxY - minY);
 

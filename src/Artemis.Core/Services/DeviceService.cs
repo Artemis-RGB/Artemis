@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
@@ -56,7 +52,7 @@ namespace Artemis.Core.Services
     public interface IDeviceService : IArtemisService
     {
         /// <summary>
-        /// Identifies the device by making it blink white 5 times
+        ///     Identifies the device by making it blink white 5 times
         /// </summary>
         /// <param name="device"></param>
         void IdentifyDevice(ArtemisDevice device);
