@@ -16,7 +16,7 @@
                  Margin="0 8 0 16"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Text="{Binding ElementName, UpdateSourceTrigger=PropertyChanged}"
-                 Loaded="FrameworkElement_OnLoaded"/>
+                 Loaded="FrameworkElement_OnLoaded" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">

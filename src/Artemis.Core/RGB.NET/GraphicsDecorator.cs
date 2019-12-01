@@ -54,7 +54,16 @@ namespace Artemis.Core.RGB.NET
 
         public Graphics GetGraphics()
         {
-            return _bitmap == null ? null : Graphics.FromImage(_bitmap.Bitmap);
+            try
+            {
+                return _bitmap == null ? null : Graphics.FromImage(_bitmap.Bitmap);
+            }
+            catch (AccessViolationException)
+            {
+                // ignored
+            }
+
+            return null;
         }
 
         public Bitmap GetBitmap()

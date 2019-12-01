@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair MM800 RGB</Name>
+  <Description>Physical layout of Corsairs ST100 RGB</Description>
+  <Type>HeadsetStand</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>ST100RGB</Model>
+  <Width>145</Width>
+  <Height>148</Height>
+  <LedUnitWidth>42</LedUnitWidth>
+  <LedUnitHeight>44</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\HeadsetStands</ImageBasePath>
+  <DeviceImage>ST100RGB.png</DeviceImage>
+  <Leds>
+    <Led Id="HeadsetStand9">
+      <X>5</X>
+      <Y>10</Y>
+    </Led>
+    <Led Id="HeadsetStand8">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="HeadsetStand7">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="HeadsetStand6">
+      <Y>~</Y>
+      <Width>1.2</Width>
+      <Height>1</Height>
+    </Led>
+    <Led Id="HeadsetStand5">
+      <Width>1</Width>
+      <Height>1</Height>
+    </Led>
+    <Led Id="HeadsetStand4">
+      <X>~</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="HeadsetStand3">
+      <X>~</X>
+      <Y>-</Y>
+    </Led>
+    <Led Id="HeadsetStand1">
+      <Shape>M0.442,0.467 L0.456,0.518 L0.456,0.567 L0.446,0.62 L0.438,0.645 L0.469,0.613 L0.52,0.579 L0.564,0.569 L0.583,0.596 L0.593,0.564 L0.59,0.528 L0.566,0.474 L0.545,0.43 L0.516,0.384 L0.523,0.445 L0.521,0.491 L0.516,0.55 L0.518,0.496 L0.519,0.469 L0.501,0.447 L0.486,0.425 L0.489,0.469 L0.492,0.528 L0.484,0.564 L0.484,0.499z M0.451,0.411 L0.463,0.443 L0.464,0.467 L0.484,0.479 L0.478,0.435z M0.488,0.379 L0.497,0.43 L0.516,0.447 L0.513,0.406z M0.52,0.318 L0.528,0.37 L0.532,0.394 L0.557,0.418 L0.568,0.457 L0.572,0.425 L0.559,0.377 L0.543,0.343z</Shape>
+      <X>-3.75</X>
+      <Y>0</Y>
+      <Height>0.45</Height>
+    </Led>
+    <Led Id="HeadsetStand2">
+      <X>=</X>
+      <Y>+</Y>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand9" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand8" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand7" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand6" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand5" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand4" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand9" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand8" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand7" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand4" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand6" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="HeadsetStand1" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

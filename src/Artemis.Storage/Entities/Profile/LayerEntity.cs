@@ -15,7 +15,6 @@ namespace Artemis.Storage.Entities.Profile
 
         public Guid Id { get; set; }
         public Guid ParentId { get; set; }
-        public Guid LayerTypeGuid { get; set; }
 
         public int Order { get; set; }
         public string Name { get; set; }

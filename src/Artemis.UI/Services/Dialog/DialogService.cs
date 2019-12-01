@@ -29,8 +29,8 @@ namespace Artemis.UI.Services.Dialog
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
-                new ConstructorArgument("confirmText", confirmText),
-                new ConstructorArgument("cancelText", cancelText)
+                new ConstructorArgument("confirmText", confirmText.ToUpper()),
+                new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
             var result = await ShowDialog<ConfirmDialogViewModel>(arguments);
             return (bool) result;
@@ -42,8 +42,8 @@ namespace Artemis.UI.Services.Dialog
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
-                new ConstructorArgument("confirmText", confirmText),
-                new ConstructorArgument("cancelText", cancelText)
+                new ConstructorArgument("confirmText", confirmText.ToUpper()),
+                new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
             var result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
             return (bool) result;

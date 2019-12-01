@@ -27,11 +27,11 @@
 
                 <!-- Material Design: MahApps Compatibility -->
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.NumericUpDown.xaml" />
-                
+
                 <!-- Include the Dragablz Material Design style -->
                 <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml" />
 
-                <ResourceDictionary Source="ResourceDictionaries/Scrollbar.xaml"/>
+                <ResourceDictionary Source="ResourceDictionaries/Scrollbar.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- MahApps Brushes -->

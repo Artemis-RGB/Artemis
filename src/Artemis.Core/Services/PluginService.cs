@@ -286,19 +286,6 @@ namespace Artemis.Core.Services
         }
 
         /// <inheritdoc />
-        public LayerType GetLayerTypeByGuid(Guid layerTypeGuid)
-        {
-            var pluginInfo = _plugins.FirstOrDefault(p => p.Guid == layerTypeGuid);
-            if (pluginInfo == null)
-                return null;
-
-            if (!(pluginInfo.Instance is LayerType layerType))
-                throw new ArtemisPluginException(pluginInfo, "Plugin is expected to implement exactly one LayerType");
-
-            return layerType;
-        }
-
-        /// <inheritdoc />
         public List<T> GetPluginsOfType<T>() where T : Plugin
         {
             lock (_plugins)
@@ -309,7 +296,7 @@ namespace Artemis.Core.Services
 
         public Plugin GetDevicePlugin(IRGBDevice rgbDevice)
         {
-            return GetPluginsOfType<Device>().First(d => d.DeviceProvider.Devices.Contains(rgbDevice));
+            return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices.Contains(rgbDevice));
         }
 
         public void Dispose()

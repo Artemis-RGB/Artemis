@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using Artemis.Core.Models.Profile.Abstract;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Models.Surface;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
@@ -19,7 +19,7 @@ namespace Artemis.Core.Models.Profile
             Name = name;
         }
 
-        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity, IPluginService pluginService)
+        internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
         {
             FolderEntity = folderEntity;
             EntityId = folderEntity.Id;
@@ -33,10 +33,10 @@ namespace Artemis.Core.Models.Profile
 
             // Load child folders
             foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                _children.Add(new Folder(profile, this, childFolder, pluginService));
+                _children.Add(new Folder(profile, this, childFolder));
             // Load child layers
             foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                _children.Add(new Layer(profile, this, childLayer, pluginService));
+                _children.Add(new Layer(profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
             _children = _children.OrderBy(c => c.Order).ToList();
@@ -56,7 +56,7 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Update(deltaTime);
         }
 
-        public override void Render(double deltaTime, Surface.ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
         {
             // Folders don't render but their children do
             foreach (var profileElement in Children)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Storage.Entities;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Storage.Repositories.Interfaces

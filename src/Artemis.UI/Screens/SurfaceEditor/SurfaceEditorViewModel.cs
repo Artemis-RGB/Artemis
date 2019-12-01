@@ -332,7 +332,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             if (IsPanKeyDown())
                 return;
-            
+
             var selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 

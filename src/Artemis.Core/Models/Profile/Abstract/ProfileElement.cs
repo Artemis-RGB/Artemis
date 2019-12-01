@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
+using Artemis.Core.Models.Surface;
 using Stylet;
 
 namespace Artemis.Core.Models.Profile.Abstract
@@ -44,7 +45,7 @@ namespace Artemis.Core.Models.Profile.Abstract
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, Surface.ArtemisSurface surface, Graphics graphics);
+        public abstract void Render(double deltaTime, ArtemisSurface surface, Graphics graphics);
 
         /// <summary>
         ///     Applies the profile element's properties to the underlying storage entity
@@ -73,7 +74,7 @@ namespace Artemis.Core.Models.Profile.Abstract
             layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());
 
             // Add all layers in folders inside this element
-            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>()) 
+            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
                 layers.AddRange(childFolder.GetAllLayers());
 
             return layers;

@@ -148,11 +148,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
+    <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementViewModel.cs" />
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
     <Compile Include="Utilities\BindableSelectedItemBehavior.cs" />
@@ -179,7 +182,6 @@
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderViewModel.cs" />
@@ -226,6 +228,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Screens\GradientEditor\GradientEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -246,15 +252,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\LayerElements\LayerElementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

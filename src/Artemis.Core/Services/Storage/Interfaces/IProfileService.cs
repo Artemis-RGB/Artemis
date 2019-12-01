@@ -12,5 +12,12 @@ namespace Artemis.Core.Services.Storage.Interfaces
         Profile GetActiveProfile(ProfileModule module);
         void UpdateProfile(Profile profile, bool includeChildren);
         void DeleteProfile(Profile profile);
+
+        /// <summary>
+        ///     Activates the profile for the given <see cref="ProfileModule" /> with the currently active surface
+        /// </summary>
+        /// <param name="module">The module to activate the profile for</param>
+        /// <param name="profile">The profile to activate</param>
+        void ActivateProfile(ProfileModule module, Profile profile);
     }
 }

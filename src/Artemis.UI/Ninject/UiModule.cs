@@ -20,7 +20,7 @@ namespace Artemis.UI.Ninject
         {
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
-            
+
             // Bind all built-in VMs
             Kernel.Bind(x =>
             {
@@ -51,7 +51,7 @@ namespace Artemis.UI.Ninject
             Kernel.Bind<IDeviceSettingsViewModelFactory>().ToFactory();
             Kernel.Bind<IModuleViewModelFactory>().ToFactory();
             Kernel.Bind<IProfileEditorViewModelFactory>().ToFactory();
-            
+
             // Bind profile editor VMs
             Kernel.Bind(x =>
             {

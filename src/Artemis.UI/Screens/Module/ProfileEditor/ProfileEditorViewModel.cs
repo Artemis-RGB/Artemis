@@ -8,7 +8,6 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
@@ -29,8 +28,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public ProfileEditorViewModel(ProfileModule module,
             ICollection<ProfileEditorPanelViewModel> viewModels,
             IProfileEditorService profileEditorService,
-            IProfileService profileService, 
-            IDialogService dialogService, 
+            IProfileService profileService,
+            IDialogService dialogService,
             ISettingsService settingsService)
         {
             _profileEditorService = profileEditorService;
@@ -81,8 +80,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 return;
 
             var oldProfile = Module.ActiveProfile;
-            Module.ChangeActiveProfile(profile);
-            
+            _profileService.ActivateProfile(Module, profile);
+
             if (oldProfile != null)
                 _profileService.UpdateProfile(oldProfile, false);
             if (profile != null)
@@ -186,7 +185,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             _profileEditorService.ChangeSelectedProfile(SelectedProfile);
 
             if (!activeProfile.IsActivated)
-                Module.ChangeActiveProfile(activeProfile);
+                _profileService.ActivateProfile(Module, activeProfile);
         }
     }
 }

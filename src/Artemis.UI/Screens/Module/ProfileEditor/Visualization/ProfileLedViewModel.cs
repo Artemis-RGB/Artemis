@@ -38,7 +38,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
 
-
         private void CreateLedGeometry()
         {
             switch (Led.RgbLed.Shape)

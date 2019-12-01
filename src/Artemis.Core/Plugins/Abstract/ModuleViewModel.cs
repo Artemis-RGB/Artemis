@@ -9,7 +9,7 @@ namespace Artemis.Core.Plugins.Abstract
             Module = module;
             DisplayName = displayName;
         }
-        
+
         public Module Module { get; }
     }
 }

@@ -36,7 +36,7 @@ namespace Artemis.Core.Models.Surface
             IsActive = surfaceEntity.IsActive;
 
             // Devices are not populated here but as they are detected
-            Devices = new List<ArtemisDevice>(); 
+            Devices = new List<ArtemisDevice>();
         }
 
         public RGBSurface RgbSurface { get; }
