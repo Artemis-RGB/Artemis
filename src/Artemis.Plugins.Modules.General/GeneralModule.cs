@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Windows.Media;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
 using RGB.NET.Core;
-using Color = System.Drawing.Color;
+using SkiaSharp;
+using Color = RGB.NET.Core.Color;
 
 namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : ProfileModule
     {
-        private readonly ColorBlend _rainbowColorBlend;
         private readonly PluginSettings _settings;
 
         public GeneralModule(PluginInfo pluginInfo, PluginSettings settings, ISurfaceService surfaceService) : base(pluginInfo)
@@ -23,31 +22,25 @@ namespace Artemis.Plugins.Modules.General
             _settings = settings;
             DisplayName = "General";
             ExpandsMainDataModel = true;
-            DeviceBrushes = new Dictionary<ArtemisDevice, TextureBrush>();
+            DeviceShaders = new Dictionary<ArtemisDevice, SKShader>();
+            RainbowColors = new List<SKColor>();
 
-            var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
-
-            Hues = new int[1000];
-            for (var i = 0; i < 1000; i++)
-                Hues[i] = ColorHelpers.GetRandomHue();
-
-            _rainbowColorBlend = new ColorBlend(9);
             for (var i = 0; i < 9; i++)
             {
-                _rainbowColorBlend.Positions[i] = i / 8f;
                 if (i != 8)
-                    _rainbowColorBlend.Colors[i] = ColorHelpers.ColorFromHSV(i * 32, 1, 1);
+                    RainbowColors.Add(SKColor.FromHsv(i * 32, 1, 1));
                 else
-                    _rainbowColorBlend.Colors[i] = ColorHelpers.ColorFromHSV(0, 1, 1);
+                    RainbowColors.Add(SKColor.FromHsv(0, 1, 1));
             }
 
-            surfaceService.SurfaceConfigurationUpdated += (sender, args) => DeviceBrushes.Clear();
+            surfaceService.SurfaceConfigurationUpdated += (sender, args) => DeviceShaders.Clear();
+            var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
 
-        public int[] Hues { get; set; }
         public int MovePercentage { get; set; }
 
-        public Dictionary<ArtemisDevice, TextureBrush> DeviceBrushes { get; set; }
+        public Dictionary<ArtemisDevice, SKShader> DeviceShaders { get; set; }
+        public List<SKColor> RainbowColors { get; set; }
 
         public override void EnablePlugin()
         {
@@ -59,13 +52,6 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Update(double deltaTime)
         {
-            for (var i = 0; i < Hues.Length; i++)
-            {
-                Hues[i]++;
-                if (Hues[i] > 360)
-                    Hues[i] = 0;
-            }
-
             MovePercentage++;
             if (MovePercentage > 100)
                 MovePercentage = 0;
@@ -74,29 +60,31 @@ namespace Artemis.Plugins.Modules.General
         }
 
 
-        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
-            // Per-device coloring, slower
-            // RenderPerDevice(surface, graphics);
+            foreach (var device in surface.Devices)
+            {
+                if (!DeviceShaders.ContainsKey(device))
+                    DeviceShaders.Add(device,
+                        SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(device.RenderRectangle.Width, device.RenderRectangle.Height), RainbowColors.ToArray(), SKShaderTileMode.Clamp));
 
-            // Per-LED coloring, slowest
-            // RenderPerLed(surface, graphics);
+                var brush = DeviceShaders[device];
+                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
+                graphics.FillPath(brush, device.RenderPath);
+                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
 
-            base.Render(deltaTime, surface, graphics);
-        }
-
-        public void RenderFullSurface(ArtemisSurface surface, Graphics graphics)
-        {
+                graphics.DrawRectangle(new Pen(Color.Red), device.RenderRectangle);
+            }
         }
 
         public void RenderPerDevice(ArtemisSurface surface, Graphics graphics)
         {
             foreach (var device in surface.Devices)
             {
-                if (!DeviceBrushes.ContainsKey(device))
-                    DeviceBrushes.Add(device, new TextureBrush(RenderGradientForDevice(device), WrapMode.Tile));
+                if (!DeviceShaders.ContainsKey(device))
+                    DeviceShaders.Add(device, new TextureBrush(RenderGradientForDevice(device), WrapMode.Tile));
 
-                var brush = DeviceBrushes[device];
+                var brush = DeviceShaders[device];
                 brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
                 graphics.FillPath(brush, device.RenderPath);
                 brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
