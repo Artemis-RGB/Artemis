@@ -30,6 +30,7 @@ namespace Artemis.Core.Services
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
 
             Surface = RGBSurface.Instance;
+            GraphicsDecorator = new GraphicsDecorator(new ListLedGroup(), 1);
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
@@ -100,21 +101,22 @@ namespace Artemis.Core.Services
 
         public void UpdateGraphicsDecorator()
         {
-            // TODO: Create new one first, then clean up the old one for a smoother transition
-
-            // Clean up the old background if present
-            if (_background != null)
+            lock (GraphicsDecorator)
             {
-                _background.Brush?.RemoveAllDecorators();
-                _background.Detach();
+                // Clean up the old background if present
+                if (_background != null)
+                {
+                    _background.Brush?.RemoveAllDecorators();
+                    _background.Detach();
+                }
+
+                // Apply the application wide brush and decorator
+                _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
+                GraphicsDecorator = new GraphicsDecorator(_background, _renderScaleSetting.Value);
+                _background.Brush.RemoveAllDecorators();
+
+                _background.Brush.AddDecorator(GraphicsDecorator);
             }
-
-            // Apply the application wide brush and decorator
-            _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
-            GraphicsDecorator = new GraphicsDecorator(_background, _renderScaleSetting.Value);
-            _background.Brush.RemoveAllDecorators();
-
-            _background.Brush.AddDecorator(GraphicsDecorator);
         }
 
         private void OnDeviceLoaded(DeviceEventArgs e)

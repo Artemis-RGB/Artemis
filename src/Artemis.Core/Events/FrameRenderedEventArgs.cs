@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Drawing;
+using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Events
 {
     public class FrameRenderedEventArgs : EventArgs
     {
-        public FrameRenderedEventArgs(Bitmap bitmap, RGBSurface rgbSurface)
+        public FrameRenderedEventArgs(GraphicsDecorator graphicsDecorator, RGBSurface rgbSurface)
         {
-            Bitmap = bitmap;
+            GraphicsDecorator = graphicsDecorator;
             RgbSurface = rgbSurface;
         }
-
-        public Bitmap Bitmap { get; }
+        
+        public GraphicsDecorator GraphicsDecorator { get; }
         public RGBSurface RgbSurface { get; }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.Drawing;
-using Artemis.Core.Models.Profile;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
+using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerElement
 {
@@ -32,16 +32,16 @@ namespace Artemis.Core.Plugins.LayerElement
         /// <summary>
         ///     Called before rendering, in the order configured on the layer
         /// </summary>
-        public abstract void RenderPreProcess(ArtemisSurface surface, Graphics graphics);
+        public abstract void RenderPreProcess(ArtemisSurface surface, SKCanvas canvas);
 
         /// <summary>
         ///     Called during rendering, in the order configured on the layer
         /// </summary>
-        public abstract void Render(ArtemisSurface surface, Graphics graphics);
+        public abstract void Render(ArtemisSurface surface, SKCanvas canvas);
 
         /// <summary>
         ///     Called after rendering, in the order configured on the layer
         /// </summary>
-        public abstract void RenderPostProcess(ArtemisSurface surface, Graphics graphics);
+        public abstract void RenderPostProcess(ArtemisSurface surface, SKCanvas canvas);
     }
 }

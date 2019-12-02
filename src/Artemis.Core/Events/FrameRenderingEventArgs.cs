@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
+using SkiaSharp;
 
 namespace Artemis.Core.Events
 {
     public class FrameRenderingEventArgs : EventArgs
     {
-        public FrameRenderingEventArgs(List<Module> modules, GraphicsDecorator graphicsDecorator, double deltaTime, RGBSurface rgbSurface)
+        public FrameRenderingEventArgs(List<Module> modules, SKCanvas canvas, double deltaTime, RGBSurface rgbSurface)
         {
             Modules = modules;
-            GraphicsDecorator = graphicsDecorator;
+            Canvas = canvas;
             DeltaTime = deltaTime;
             RgbSurface = rgbSurface;
         }
 
         public List<Module> Modules { get; }
-        public GraphicsDecorator GraphicsDecorator { get; }
+        public SKCanvas Canvas { get; }
         public double DeltaTime { get; }
         public RGBSurface RgbSurface { get; }
     }

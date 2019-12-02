@@ -1,9 +1,9 @@
 using System;
-using System.Drawing;
 using System.Linq;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Storage.Entities.Profile;
+using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -56,11 +56,11 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Update(deltaTime);
         }
 
-        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
             // Folders don't render but their children do
             foreach (var profileElement in Children)
-                profileElement.Render(deltaTime, surface, graphics);
+                profileElement.Render(deltaTime, surface, canvas);
         }
 
         public Folder AddFolder(string name)

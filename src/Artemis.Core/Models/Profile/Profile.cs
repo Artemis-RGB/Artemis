@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
+using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -56,7 +56,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
             lock (this)
             {
@@ -64,7 +64,7 @@ namespace Artemis.Core.Models.Profile
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (var profileElement in Children)
-                    profileElement.Render(deltaTime, surface, graphics);
+                    profileElement.Render(deltaTime, surface, canvas);
             }
         }
 

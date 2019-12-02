@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using SkiaSharp;
+using SkiaSharp.Views.WPF;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug
@@ -35,12 +34,27 @@ namespace Artemis.UI.Screens.Settings.Debug
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
-            if (e.Bitmap == null)
-                return;
+            Execute.PostToUIThread(() =>
+            {
+                if (!(CurrentFrame is WriteableBitmap writeableBitmap))
+                {
+                    CurrentFrame = e.GraphicsDecorator.Bitmap.ToWriteableBitmap();
+                    return;
+                }
 
-            var imageSource = ImageSourceFromBitmap(e.Bitmap);
-            imageSource.Freeze();
-            Execute.PostToUIThread(() => { CurrentFrame = imageSource; });
+                using (var skiaImage = SKImage.FromPixels(e.GraphicsDecorator.Bitmap.PeekPixels()))
+                {
+                    var info = new SKImageInfo(skiaImage.Width, skiaImage.Height);
+                    writeableBitmap.Lock();
+                    using (var pixmap = new SKPixmap(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
+                    {
+                        skiaImage.ReadPixels(pixmap, 0, 0);
+                    }
+
+                    writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, info.Width, info.Height));
+                    writeableBitmap.Unlock();
+                }
+            });
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -61,23 +75,5 @@ namespace Artemis.UI.Screens.Settings.Debug
             _coreService.FrameRendering -= CoreServiceOnFrameRendering;
             base.OnDeactivate();
         }
-
-        // This is much quicker than saving the bitmap into a memory stream and converting it
-        private static ImageSource ImageSourceFromBitmap(Bitmap bmp)
-        {
-            var handle = bmp.GetHbitmap();
-            try
-            {
-                return Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            }
-            finally
-            {
-                DeleteObject(handle);
-            }
-        }
-
-        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DeleteObject([In] IntPtr hObject);
     }
 }

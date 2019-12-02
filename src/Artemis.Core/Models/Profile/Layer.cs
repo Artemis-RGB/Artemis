@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
@@ -10,6 +8,7 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -50,8 +49,8 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
         public ReadOnlyCollection<LayerElement> LayerElements => _layerElements.AsReadOnly();
 
-        public Rectangle RenderRectangle { get; set; }
-        public GraphicsPath RenderPath { get; set; }
+        public SKRect RenderRectangle { get; set; }
+        public SKPath RenderPath { get; set; }
 
         public override void Update(double deltaTime)
         {
@@ -59,20 +58,21 @@ namespace Artemis.Core.Models.Profile
                 layerElement.Update(deltaTime);
         }
 
-        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
-            graphics.SetClip(RenderPath);
+            canvas.Save();
+            canvas.ClipPath(RenderPath);
 
             foreach (var layerElement in LayerElements)
-                layerElement.RenderPreProcess(surface, graphics);
+                layerElement.RenderPreProcess(surface, canvas);
 
             foreach (var layerElement in LayerElements)
-                layerElement.Render(surface, graphics);
+                layerElement.Render(surface, canvas);
 
             foreach (var layerElement in LayerElements)
-                layerElement.RenderPostProcess(surface, graphics);
+                layerElement.RenderPostProcess(surface, canvas);
 
-            graphics.ResetClip();
+            canvas.Restore();
         }
 
         internal override void ApplyToEntity()
@@ -167,15 +167,17 @@ namespace Artemis.Core.Models.Profile
             }
 
             // Determine to top-left and bottom-right
-            var minX = Leds.Min(l => l.AbsoluteRenderRectangle.X);
-            var minY = Leds.Min(l => l.AbsoluteRenderRectangle.Y);
-            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.X + l.AbsoluteRenderRectangle.Width);
-            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Y + l.AbsoluteRenderRectangle.Height);
+            var minX = Leds.Min(l => l.AbsoluteRenderRectangle.Left);
+            var minY = Leds.Min(l => l.AbsoluteRenderRectangle.Top);
+            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
+            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
 
-            RenderRectangle = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+            RenderRectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
 
-            var path = new GraphicsPath();
-            path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
+            var path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (var artemisLed in Leds)
+                path.AddRect(artemisLed.AbsoluteRenderRectangle);
+
             RenderPath = path;
         }
 

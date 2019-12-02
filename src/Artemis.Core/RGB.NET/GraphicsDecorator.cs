@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Artemis.Core.Extensions;
 using RGB.NET.Core;
 using SkiaSharp;
 
@@ -19,12 +20,10 @@ namespace Artemis.Core.RGB.NET
 
             var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.X + l.AbsoluteLedRectangle.Size.Width) * scale, 4096);
             var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.Y + l.AbsoluteLedRectangle.Size.Height) * scale, 4096);
-            Bitmap = new SKBitmap(new SKImageInfo(RoundToInt(width), RoundToInt(height)));
-            Canvas = new SKCanvas(Bitmap);
+            Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
         }
-
+        
         public SKBitmap Bitmap { get; private set; }
-        public SKCanvas Canvas { get; private set; }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)
         {
@@ -46,9 +45,7 @@ namespace Artemis.Core.RGB.NET
         public void Dispose()
         {
             Bitmap?.Dispose();
-            Canvas?.Dispose();
             Bitmap = null;
-            Canvas = null;
         }
 
         private int RoundToInt(double number)
