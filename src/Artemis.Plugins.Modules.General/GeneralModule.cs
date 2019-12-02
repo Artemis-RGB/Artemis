@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Media;
+using System.Diagnostics;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Plugins.Modules.General.ViewModels;
-using RGB.NET.Core;
 using SkiaSharp;
-using Color = RGB.NET.Core.Color;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -28,9 +25,9 @@ namespace Artemis.Plugins.Modules.General
             for (var i = 0; i < 9; i++)
             {
                 if (i != 8)
-                    RainbowColors.Add(SKColor.FromHsv(i * 32, 1, 1));
+                    RainbowColors.Add(SKColor.FromHsv(i * 32, 100, 100));
                 else
-                    RainbowColors.Add(SKColor.FromHsv(0, 1, 1));
+                    RainbowColors.Add(SKColor.FromHsv(0, 100, 100));
             }
 
             surfaceService.SurfaceConfigurationUpdated += (sender, args) => DeviceShaders.Clear();
@@ -62,62 +59,41 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
+            return;
             foreach (var device in surface.Devices)
             {
-                if (!DeviceShaders.ContainsKey(device))
-                    DeviceShaders.Add(device,
-                        SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(device.RenderRectangle.Width, device.RenderRectangle.Height), RainbowColors.ToArray(), SKShaderTileMode.Clamp));
+                using (var bitmap = new SKBitmap(new SKImageInfo((int) device.RenderRectangle.Width, (int) device.RenderRectangle.Height)))
+                {
+                    using (var layerCanvas = new SKCanvas(bitmap))
+                    {
+                        layerCanvas.Clear();
 
-                var brush = DeviceShaders[device];
-                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
-                graphics.FillPath(brush, device.RenderPath);
-                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
+                        var shader = SKShader.CreateLinearGradient(
+                            new SKPoint(0, 0),
+                            new SKPoint(device.RenderRectangle.Width, 0),
+                            RainbowColors.ToArray(),
+                            null,
+                            SKShaderTileMode.Clamp);
 
-                graphics.DrawRectangle(new Pen(Color.Red), device.RenderRectangle);
-            }
-        }
+                        // use the shader
+                        var paint = new SKPaint
+                        {
+                            Shader = shader
+                        };
 
-        public void RenderPerDevice(ArtemisSurface surface, Graphics graphics)
-        {
-            foreach (var device in surface.Devices)
-            {
-                if (!DeviceShaders.ContainsKey(device))
-                    DeviceShaders.Add(device, new TextureBrush(RenderGradientForDevice(device), WrapMode.Tile));
+                        layerCanvas.DrawRect(0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height, paint);
+                    }
 
-                var brush = DeviceShaders[device];
-                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage), 0);
-                graphics.FillPath(brush, device.RenderPath);
-                brush.TranslateTransform((int) Math.Round(device.RenderRectangle.Width / 100.0 * MovePercentage) * -1, 0);
+                    var bitmapShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat);
 
-                graphics.DrawRectangle(new Pen(Color.Red), device.RenderRectangle);
-            }
-        }
+                    canvas.Save();
+                    canvas.ClipRect(device.RenderRectangle);
 
-        private Image RenderGradientForDevice(ArtemisDevice device)
-        {
-            var brush = new LinearGradientBrush(device.RenderRectangle, Color.Black, Color.Black, 0, false)
-            {
-                InterpolationColors = _rainbowColorBlend
-            };
-            var bitmap = new Bitmap(device.RenderRectangle.Width, device.RenderRectangle.Height);
-            using (var g = Graphics.FromImage(bitmap))
-            {
-                g.FillRectangle(brush, 0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height);
-            }
-
-            return bitmap;
-        }
-
-        public void RenderPerLed(ArtemisSurface surface, Graphics graphics)
-        {
-            var index = 0;
-            foreach (var led in surface.Devices.SelectMany(d => d.Leds))
-            {
-                if (led.RgbLed.Id == LedId.HeadsetStand1)
-                    graphics.FillRectangle(new SolidBrush(Color.Red), led.AbsoluteRenderRectangle);
-                else
-                    graphics.FillRectangle(new SolidBrush(ColorHelpers.ColorFromHSV(Hues[index], 1, 1)), led.AbsoluteRenderRectangle);
-                index++;
+                    var scaledRect = SKRect.Create(device.RenderRectangle.Left, device.RenderRectangle.Top, device.RenderRectangle.Width * 2, device.RenderRectangle.Height * 2);
+                    canvas.Translate(device.RenderRectangle.Width / 100 * MovePercentage * -1, 0);
+                    canvas.DrawRect(scaledRect, new SKPaint {Shader = bitmapShader});
+                    canvas.Restore();
+                }
             }
         }
 

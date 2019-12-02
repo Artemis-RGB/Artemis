@@ -8,6 +8,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using RGB.NET.Core;
 using Serilog;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -78,19 +79,24 @@ namespace Artemis.Core.Services
                 }
 
                 // If there is no ready graphics decorator, skip the frame
-                if (_rgbService.GraphicsDecorator?.Canvas == null)
-                    return;
-
-                // Render all active modules
-                _rgbService.GraphicsDecorator.Canvas.Clear();
-                lock (_modules)
+                lock (_rgbService.GraphicsDecorator)
                 {
-                    foreach (var module in _modules)
-                        module.Render(args.DeltaTime, _surfaceService.ActiveSurface, _rgbService.GraphicsDecorator.Canvas);
+                    if (_rgbService.GraphicsDecorator?.Bitmap == null)
+                        return;
+
+                    // Render all active modules
+                    using (var canvas = new SKCanvas(_rgbService.GraphicsDecorator.Bitmap))
+                    {
+                        canvas.Clear(new SKColor(0, 0, 0));
+                        lock (_modules)
+                        {
+                            foreach (var module in _modules)
+                                module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas);
+                        }
+
+                        OnFrameRendering(new FrameRenderingEventArgs(_modules, canvas, args.DeltaTime, _rgbService.Surface));
+                    }
                 }
-
-
-                OnFrameRendering(new FrameRenderingEventArgs(_modules, _rgbService.GraphicsDecorator, args.DeltaTime, _rgbService.Surface));
             }
             catch (Exception e)
             {

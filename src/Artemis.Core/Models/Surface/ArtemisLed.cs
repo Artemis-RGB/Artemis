@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Artemis.Core.Extensions;
 using RGB.NET.Core;
+using SkiaSharp;
 using Stylet;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
@@ -17,22 +17,22 @@ namespace Artemis.Core.Models.Surface
         public Led RgbLed { get; }
         public ArtemisDevice Device { get; }
 
-        public Rectangle RenderRectangle { get; private set; }
-        public Rectangle AbsoluteRenderRectangle { get; private set; }
+        public SKRect RenderRectangle { get; private set; }
+        public SKRect AbsoluteRenderRectangle { get; private set; }
 
         public void CalculateRenderRectangle()
         {
-            RenderRectangle = new Rectangle(
-                (int) Math.Round(RgbLed.LedRectangle.Location.X * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.LedRectangle.Location.Y * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.LedRectangle.Size.Width * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.LedRectangle.Size.Height * Device.Surface.Scale, MidpointRounding.AwayFromZero)
+            RenderRectangle = SKRect.Create(
+                (RgbLed.LedRectangle.Location.X * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.LedRectangle.Location.Y * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.LedRectangle.Size.Width * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.LedRectangle.Size.Height * Device.Surface.Scale).RoundToInt()
             );
-            AbsoluteRenderRectangle = new Rectangle(
-                (int) Math.Round(RgbLed.AbsoluteLedRectangle.Location.X * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.AbsoluteLedRectangle.Location.Y * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.AbsoluteLedRectangle.Size.Width * Device.Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbLed.AbsoluteLedRectangle.Size.Height * Device.Surface.Scale, MidpointRounding.AwayFromZero)
+            AbsoluteRenderRectangle = SKRect.Create(
+                (RgbLed.AbsoluteLedRectangle.Location.X * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.AbsoluteLedRectangle.Location.Y * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.AbsoluteLedRectangle.Size.Width * Device.Surface.Scale).RoundToInt(),
+                (RgbLed.AbsoluteLedRectangle.Size.Height * Device.Surface.Scale).RoundToInt()
             );
         }
     }

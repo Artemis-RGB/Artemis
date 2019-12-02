@@ -1,7 +1,7 @@
-﻿using System.Drawing;
-using Artemis.Core.Models.Profile;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
+using SkiaSharp;
 
 namespace Artemis.Plugins.LayerElements.Brush
 {
@@ -9,7 +9,7 @@ namespace Artemis.Plugins.LayerElements.Brush
     {
         public BrushLayerElement(Layer layer, BrushLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, settings, descriptor)
         {
-            Settings = settings ?? new BrushLayerElementSettings {Brush = new SolidBrush(Color.Red)};
+            Settings = settings ?? new BrushLayerElementSettings();
         }
 
         public new BrushLayerElementSettings Settings { get; }
@@ -23,17 +23,16 @@ namespace Artemis.Plugins.LayerElements.Brush
         {
         }
 
-        public override void RenderPreProcess(ArtemisSurface surface, Graphics graphics)
+        public override void RenderPreProcess(ArtemisSurface surface, SKCanvas canvas)
         {
         }
 
-        public override void Render(ArtemisSurface surface, Graphics graphics)
+        public override void Render(ArtemisSurface surface, SKCanvas canvas)
         {
-            if (Settings?.Brush != null)
-                graphics.FillRectangle(Settings.Brush, Layer.RenderRectangle);
+            canvas.DrawRect(Layer.RenderRectangle, new SKPaint {Color = new SKColor(255, 255, 255, 255)});
         }
 
-        public override void RenderPostProcess(ArtemisSurface surface, Graphics graphics)
+        public override void RenderPostProcess(ArtemisSurface surface, SKCanvas canvas)
         {
         }
     }
