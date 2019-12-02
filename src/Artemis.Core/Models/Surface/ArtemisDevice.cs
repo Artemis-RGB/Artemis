@@ -6,6 +6,7 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using SkiaSharp;
 using Stylet;
 using Rectangle = System.Drawing.Rectangle;
 
@@ -38,8 +39,8 @@ namespace Artemis.Core.Models.Surface
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
-        public Rectangle RenderRectangle { get; private set; }
-        public GraphicsPath RenderPath { get; private set; }
+        public SKRect RenderRectangle { get; private set; }
+        public SKPath RenderPath { get; private set; }
 
         public IRGBDevice RgbDevice { get; }
         public Plugin Plugin { get; }
@@ -95,6 +96,12 @@ namespace Artemis.Core.Models.Surface
 
         internal void CalculateRenderProperties()
         {
+            RenderRectangle = SKRect.Create(
+                (RgbDevice.Location.X * Surface.Scale).RoundToInt(),
+                (RgbDevice.Location.Y * Surface.Scale).RoundToInt(),
+                (RgbDevice.Location.X * Surface.Scale).RoundToInt(),
+                (RgbDevice.Location.X * Surface.Scale).RoundToInt()
+            );
             RenderRectangle = new Rectangle(
                 (int) Math.Round(RgbDevice.Location.X * Surface.Scale, MidpointRounding.AwayFromZero),
                 (int) Math.Round(RgbDevice.Location.Y * Surface.Scale, MidpointRounding.AwayFromZero),

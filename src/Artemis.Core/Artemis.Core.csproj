@@ -110,6 +110,9 @@
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
     </Reference>
+    <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\SkiaSharp.1.68.1\lib\net45\SkiaSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Stylet, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.2.0\lib\net45\Stylet.dll</HintPath>
     </Reference>
@@ -125,7 +128,6 @@
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.5.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -156,6 +158,7 @@
     <Compile Include="Events\FrameRenderingEventArgs.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
+    <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbDeviceExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
@@ -189,7 +192,6 @@
     <Compile Include="Models\Profile\Profile.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RGB.NET\DirectBitmap.cs" />
     <Compile Include="RGB.NET\GraphicsDecorator.cs" />
     <Compile Include="Services\DeviceService.cs" />
     <Compile Include="Services\Interfaces\ILayerService.cs" />
@@ -230,5 +232,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Fody.6.0.5\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.0.5\build\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\PropertyChanged.Fody.3.1.3\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.3.1.3\build\PropertyChanged.Fody.props'))" />
+    <Error Condition="!Exists('..\packages\SkiaSharp.1.68.1\build\net45\SkiaSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SkiaSharp.1.68.1\build\net45\SkiaSharp.targets'))" />
   </Target>
+  <Import Project="..\packages\SkiaSharp.1.68.1\build\net45\SkiaSharp.targets" Condition="Exists('..\packages\SkiaSharp.1.68.1\build\net45\SkiaSharp.targets')" />
 </Project>

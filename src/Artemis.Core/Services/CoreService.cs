@@ -8,7 +8,6 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using RGB.NET.Core;
 using Serilog;
-using Color = System.Drawing.Color;
 
 namespace Artemis.Core.Services
 {
@@ -78,26 +77,20 @@ namespace Artemis.Core.Services
                         module.Update(args.DeltaTime);
                 }
 
-                // If there is no graphics decorator, skip the frame
-                if (_rgbService.GraphicsDecorator == null)
+                // If there is no ready graphics decorator, skip the frame
+                if (_rgbService.GraphicsDecorator?.Canvas == null)
                     return;
 
                 // Render all active modules
-                using (var g = _rgbService.GraphicsDecorator.GetGraphics())
+                _rgbService.GraphicsDecorator.Canvas.Clear();
+                lock (_modules)
                 {
-                    // If there are no graphics, skip the frame
-                    if (g == null)
-                        return;
-
-                    g.Clear(Color.Black);
-                    lock (_modules)
-                    {
-                        foreach (var module in _modules)
-                            module.Render(args.DeltaTime, _surfaceService.ActiveSurface, g);
-                    }
+                    foreach (var module in _modules)
+                        module.Render(args.DeltaTime, _surfaceService.ActiveSurface, _rgbService.GraphicsDecorator.Canvas);
                 }
 
-                OnFrameRendering(new FrameRenderingEventArgs(_modules, _rgbService.GraphicsDecorator.GetBitmap(), args.DeltaTime, _rgbService.Surface));
+
+                OnFrameRendering(new FrameRenderingEventArgs(_modules, _rgbService.GraphicsDecorator, args.DeltaTime, _rgbService.Surface));
             }
             catch (Exception e)
             {
@@ -107,7 +100,7 @@ namespace Artemis.Core.Services
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)
         {
-            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.GraphicsDecorator.GetBitmap(), _rgbService.Surface));
+            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.GraphicsDecorator, _rgbService.Surface));
         }
 
         protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
