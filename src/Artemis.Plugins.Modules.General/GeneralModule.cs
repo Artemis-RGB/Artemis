@@ -59,7 +59,6 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
-            return;
             foreach (var device in surface.Devices)
             {
                 using (var bitmap = new SKBitmap(new SKImageInfo((int) device.RenderRectangle.Width, (int) device.RenderRectangle.Height)))
@@ -67,21 +66,21 @@ namespace Artemis.Plugins.Modules.General
                     using (var layerCanvas = new SKCanvas(bitmap))
                     {
                         layerCanvas.Clear();
-
-                        var shader = SKShader.CreateLinearGradient(
-                            new SKPoint(0, 0),
-                            new SKPoint(device.RenderRectangle.Width, 0),
-                            RainbowColors.ToArray(),
-                            null,
-                            SKShaderTileMode.Clamp);
-
-                        // use the shader
-                        var paint = new SKPaint
+                        SKShader shader = null;
+                        if (DeviceShaders.ContainsKey(device))
+                            shader = DeviceShaders[device];
+                        else
                         {
-                            Shader = shader
-                        };
+                            shader = SKShader.CreateLinearGradient(
+                                new SKPoint(0, 0),
+                                new SKPoint(device.RenderRectangle.Width, 0),
+                                RainbowColors.ToArray(),
+                                null,
+                                SKShaderTileMode.Clamp);
+                            DeviceShaders.Add(device, shader);
+                        }
 
-                        layerCanvas.DrawRect(0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height, paint);
+                        layerCanvas.DrawRect(0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height, new SKPaint {Shader = shader});
                     }
 
                     var bitmapShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat);
