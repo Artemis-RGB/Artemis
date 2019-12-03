@@ -1,0 +1,10 @@
+﻿{
+  "Guid": "a3b94380-6592-44f9-8717-3053ca9b4799",
+  "Name": "Animation layer elements",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0
+  },
+  "Main": "Artemis.Plugins.LayerElements.Animations.dll"
+}

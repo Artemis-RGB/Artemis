@@ -77,7 +77,7 @@ namespace Artemis.Core.Models.Profile
                 foreach (var layerElement in LayerElements)
                     layerElement.Render(surface, layerCanvas);
 
-                var baseShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat);
+                var baseShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
                 foreach (var layerElement in LayerElements)
                 {
                     var newBaseShader = layerElement.RenderPostProcess(surface, bitmap, baseShader);
@@ -91,7 +91,7 @@ namespace Artemis.Core.Models.Profile
                     baseShader = newBaseShader;
                 }
 
-                canvas.ClipPath(RenderPath);
+                //canvas.ClipPath(RenderPath);
                 canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
                 baseShader.Dispose();
             }
