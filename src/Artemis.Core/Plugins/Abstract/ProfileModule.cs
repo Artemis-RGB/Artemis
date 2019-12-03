@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Drawing;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
+using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -26,12 +26,12 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, ArtemisSurface surface, Graphics graphics)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, surface, graphics);
+                ActiveProfile?.Render(deltaTime, surface, canvas);
             }
         }
 

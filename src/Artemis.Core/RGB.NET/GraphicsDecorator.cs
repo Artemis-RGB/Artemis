@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
+using Artemis.Core.Extensions;
 using RGB.NET.Core;
-using Color = RGB.NET.Core.Color;
-using Rectangle = RGB.NET.Core.Rectangle;
+using SkiaSharp;
 
 namespace Artemis.Core.RGB.NET
 {
     public class GraphicsDecorator : AbstractDecorator, IBrushDecorator, IDisposable
     {
         private readonly double _scale;
-        private DirectBitmap _bitmap;
 
         public GraphicsDecorator(ILedGroup ledGroup, double scale)
         {
@@ -18,27 +16,25 @@ namespace Artemis.Core.RGB.NET
 
             var leds = ledGroup.GetLeds().ToList();
             if (!leds.Any())
-                _bitmap = null;
-            else
-            {
-                var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.X + l.AbsoluteLedRectangle.Size.Width) * scale, 4096);
-                var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.Y + l.AbsoluteLedRectangle.Size.Height) * scale, 4096);
+                return;
 
-                _bitmap = new DirectBitmap((int) width, (int) height);
-            }
+            var width = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.X + l.AbsoluteLedRectangle.Size.Width) * scale, 4096);
+            var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.Y + l.AbsoluteLedRectangle.Size.Height) * scale, 4096);
+            Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
         }
+        
+        public SKBitmap Bitmap { get; private set; }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)
         {
+            if (Bitmap == null)
+                return new Color(0, 0, 0);
+
             var x = renderTarget.Led.AbsoluteLedRectangle.Center.X * _scale;
             var y = renderTarget.Led.AbsoluteLedRectangle.Center.Y * _scale;
-            if (_bitmap != null && _bitmap.Width - 1 >= x && _bitmap.Height - 1 >= y)
-            {
-                var pixel = _bitmap.GetPixel((int) x, (int) y);
-                return new Color(pixel.A, pixel.R, pixel.G, pixel.B);
-            }
 
-            return new Color(0, 0, 0);
+            var pixel = Bitmap.GetPixel(RoundToInt(x), RoundToInt(y));
+            return new Color(pixel.Alpha, pixel.Red, pixel.Green, pixel.Blue);
         }
 
         public override void OnDetached(IDecoratable decoratable)
@@ -48,27 +44,13 @@ namespace Artemis.Core.RGB.NET
 
         public void Dispose()
         {
-            _bitmap?.Dispose();
-            _bitmap = null;
+            Bitmap?.Dispose();
+            Bitmap = null;
         }
 
-        public Graphics GetGraphics()
+        private int RoundToInt(double number)
         {
-            try
-            {
-                return _bitmap == null ? null : Graphics.FromImage(_bitmap.Bitmap);
-            }
-            catch (AccessViolationException)
-            {
-                // ignored
-            }
-
-            return null;
-        }
-
-        public Bitmap GetBitmap()
-        {
-            return _bitmap?.Bitmap;
+            return (int) Math.Round(number, MidpointRounding.AwayFromZero);
         }
     }
 }

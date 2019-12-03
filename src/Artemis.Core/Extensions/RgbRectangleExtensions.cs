@@ -1,16 +1,17 @@
-﻿using System.Drawing;
+﻿using RGB.NET.Core;
+using SkiaSharp;
 
 namespace Artemis.Core.Extensions
 {
     public static class RgbRectangleExtensions
     {
-        public static Rectangle ToDrawingRectangle(this global::RGB.NET.Core.Rectangle rectangle, double scale)
+        public static SKRect ToSKRect(this Rectangle rectangle, double scale)
         {
-            return new Rectangle(
-                (int) (rectangle.Location.X * scale),
-                (int) (rectangle.Location.Y * scale),
-                (int) (rectangle.Size.Width * scale),
-                (int) (rectangle.Size.Height * scale)
+            return SKRect.Create(
+                (rectangle.Location.X * scale).RoundToInt(),
+                (rectangle.Location.Y * scale).RoundToInt(),
+                (rectangle.Size.Width * scale).RoundToInt(),
+                (rectangle.Size.Height * scale).RoundToInt()
             );
         }
     }

@@ -1,8 +1,8 @@
-﻿using System.Drawing;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services.Interfaces;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -25,10 +25,7 @@ namespace Artemis.Core.Services
             // Draw a white overlay over the device
             void DrawOverlay(object sender, FrameRenderingEventArgs args)
             {
-                using (var g = Graphics.FromImage(args.Bitmap))
-                {
-                    g.FillPath(new SolidBrush(Color.White), device.RenderPath);
-                }
+                args.Canvas.DrawPath(device.RenderPath, new SKPaint {Color = new SKColor(255, 255, 255)});
             }
 
             _coreService.FrameRendering += DrawOverlay;

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using SkiaSharp;
 using Stylet;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace Artemis.Core.Models.Surface
 {
@@ -38,8 +37,8 @@ namespace Artemis.Core.Models.Surface
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
-        public Rectangle RenderRectangle { get; private set; }
-        public GraphicsPath RenderPath { get; private set; }
+        public SKRect RenderRectangle { get; private set; }
+        public SKPath RenderPath { get; private set; }
 
         public IRGBDevice RgbDevice { get; }
         public Plugin Plugin { get; }
@@ -95,11 +94,11 @@ namespace Artemis.Core.Models.Surface
 
         internal void CalculateRenderProperties()
         {
-            RenderRectangle = new Rectangle(
-                (int) Math.Round(RgbDevice.Location.X * Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbDevice.Location.Y * Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbDevice.DeviceRectangle.Size.Width * Surface.Scale, MidpointRounding.AwayFromZero),
-                (int) Math.Round(RgbDevice.DeviceRectangle.Size.Height * Surface.Scale, MidpointRounding.AwayFromZero)
+            RenderRectangle = SKRect.Create(
+                (RgbDevice.Location.X * Surface.Scale).RoundToInt(),
+                (RgbDevice.Location.Y * Surface.Scale).RoundToInt(),
+                (RgbDevice.DeviceRectangle.Size.Width * Surface.Scale).RoundToInt(),
+                (RgbDevice.DeviceRectangle.Size.Height * Surface.Scale).RoundToInt()
             );
 
             if (!Leds.Any())
@@ -108,9 +107,10 @@ namespace Artemis.Core.Models.Surface
             foreach (var led in Leds)
                 led.CalculateRenderRectangle();
 
-            var path = new GraphicsPath();
-            path.AddRectangles(Leds.Select(l => l.AbsoluteRenderRectangle).ToArray());
-            path.FillMode = FillMode.Winding;
+            var path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (var artemisLed in Leds)
+                path.AddRect(artemisLed.AbsoluteRenderRectangle);
+
             RenderPath = path;
         }
 
