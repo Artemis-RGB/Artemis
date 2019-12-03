@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
+using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -37,8 +37,8 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>
-        /// <param name="graphics"></param>
-        public abstract void Render(double deltaTime, ArtemisSurface surface, Graphics graphics);
+        /// <param name="canvas"></param>
+        public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas);
 
         /// <summary>
         ///     Called when the module's view model is being show, return view models here to create tabs for them
