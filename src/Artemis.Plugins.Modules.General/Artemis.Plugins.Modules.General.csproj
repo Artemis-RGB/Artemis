@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\SkiaSharp.1.68.1\lib\net45\SkiaSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Stylet, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Stylet.1.3.0\lib\net45\Stylet.dll</HintPath>

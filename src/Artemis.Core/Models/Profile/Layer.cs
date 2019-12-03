@@ -50,6 +50,7 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<LayerElement> LayerElements => _layerElements.AsReadOnly();
 
         public SKRect RenderRectangle { get; set; }
+        public SKRect AbsoluteRenderRectangle { get; set; }
         public SKPath RenderPath { get; set; }
 
         public override void Update(double deltaTime)
@@ -60,17 +61,40 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
+            if (RenderRectangle == null || AbsoluteRenderRectangle == null || RenderPath == null)
+                return;
+
             canvas.Save();
-            canvas.ClipPath(RenderPath);
 
             foreach (var layerElement in LayerElements)
                 layerElement.RenderPreProcess(surface, canvas);
 
-            foreach (var layerElement in LayerElements)
-                layerElement.Render(surface, canvas);
+            using (var bitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height)))
+            using (var layerCanvas = new SKCanvas(bitmap))
+            {
+                layerCanvas.Clear();
 
-            foreach (var layerElement in LayerElements)
-                layerElement.RenderPostProcess(surface, canvas);
+                foreach (var layerElement in LayerElements)
+                    layerElement.Render(surface, layerCanvas);
+
+                var baseShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat);
+                foreach (var layerElement in LayerElements)
+                {
+                    var newBaseShader = layerElement.RenderPostProcess(surface, bitmap, baseShader);
+                    if (newBaseShader == null)
+                        continue;
+
+                    // Dispose the old base shader if the layer element provided a new one
+                    if (!ReferenceEquals(baseShader, newBaseShader))
+                        baseShader.Dispose();
+
+                    baseShader = newBaseShader;
+                }
+
+                canvas.ClipPath(RenderPath);
+                canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
+                baseShader.Dispose();
+            }
 
             canvas.Restore();
         }
@@ -169,21 +193,34 @@ namespace Artemis.Core.Models.Profile
             // Determine to top-left and bottom-right
             var minX = Leds.Min(l => l.AbsoluteRenderRectangle.Left);
             var minY = Leds.Min(l => l.AbsoluteRenderRectangle.Top);
-            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
-            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
+            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
+            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
 
             RenderRectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
+            AbsoluteRenderRectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
 
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var artemisLed in Leds)
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             RenderPath = path;
+            OnRenderPropertiesUpdated();
         }
 
         public override string ToString()
         {
             return $"Layer - {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
+
+        #region Events
+
+        public event EventHandler RenderPropertiesUpdated;
+
+        private void OnRenderPropertiesUpdated()
+        {
+            RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

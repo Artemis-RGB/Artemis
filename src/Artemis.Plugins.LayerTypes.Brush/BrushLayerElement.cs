@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System.Collections.Generic;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
@@ -7,9 +8,39 @@ namespace Artemis.Plugins.LayerElements.Brush
 {
     public class BrushLayerElement : LayerElement
     {
+        private SKShader _shader;
+        private List<SKColor> _testColors;
+
         public BrushLayerElement(Layer layer, BrushLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, settings, descriptor)
         {
             Settings = settings ?? new BrushLayerElementSettings();
+
+            _testColors = new List<SKColor>();
+            for (var i = 0; i < 9; i++)
+            {
+                if (i != 8)
+                    _testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
+                else
+                    _testColors.Add(SKColor.FromHsv(0, 100, 100));
+            }
+
+            CreateShader();
+            Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
+        }
+
+        private void CreateShader()
+        {
+            var shader = SKShader.CreateLinearGradient(
+                new SKPoint(0, 0),
+                new SKPoint(Layer.AbsoluteRenderRectangle.Width, 0),
+                _testColors.ToArray(),
+                null,
+                SKShaderTileMode.Clamp);
+
+            var oldShader = _shader;
+            _shader = shader;
+
+            oldShader?.Dispose();
         }
 
         public new BrushLayerElementSettings Settings { get; }
@@ -19,21 +50,12 @@ namespace Artemis.Plugins.LayerElements.Brush
             return new BrushLayerElementViewModel(this);
         }
 
-        public override void Update(double deltaTime)
-        {
-        }
-
-        public override void RenderPreProcess(ArtemisSurface surface, SKCanvas canvas)
-        {
-        }
-
         public override void Render(ArtemisSurface surface, SKCanvas canvas)
         {
-            canvas.DrawRect(Layer.RenderRectangle, new SKPaint {Color = new SKColor(255, 255, 255, 255)});
-        }
-
-        public override void RenderPostProcess(ArtemisSurface surface, SKCanvas canvas)
-        {
+            using (var paint = new SKPaint { Shader = _shader, FilterQuality = SKFilterQuality.Low })
+            {
+                canvas.DrawRect(Layer.AbsoluteRenderRectangle, paint);
+            }
         }
     }
 }

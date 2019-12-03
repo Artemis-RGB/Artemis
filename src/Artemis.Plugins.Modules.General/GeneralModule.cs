@@ -59,6 +59,9 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
+            base.Render(deltaTime, surface, canvas);
+            return;
+
             foreach (var device in surface.Devices)
             {
                 using (var bitmap = new SKBitmap(new SKImageInfo((int) device.RenderRectangle.Width, (int) device.RenderRectangle.Height)))
@@ -66,7 +69,7 @@ namespace Artemis.Plugins.Modules.General
                     using (var layerCanvas = new SKCanvas(bitmap))
                     {
                         layerCanvas.Clear();
-                        SKShader shader = null;
+                        SKShader shader;
                         if (DeviceShaders.ContainsKey(device))
                             shader = DeviceShaders[device];
                         else
@@ -80,18 +83,19 @@ namespace Artemis.Plugins.Modules.General
                             DeviceShaders.Add(device, shader);
                         }
 
-                        layerCanvas.DrawRect(0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height, new SKPaint {Shader = shader});
+                        using (var paint = new SKPaint {Shader = shader, FilterQuality = SKFilterQuality.Low})
+                        {
+                            layerCanvas.DrawRect(0, 0, device.RenderRectangle.Width, device.RenderRectangle.Height, paint);
+                        }
                     }
 
-                    var bitmapShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat);
-
-                    canvas.Save();
-                    canvas.ClipRect(device.RenderRectangle);
-
-                    var scaledRect = SKRect.Create(device.RenderRectangle.Left, device.RenderRectangle.Top, device.RenderRectangle.Width * 2, device.RenderRectangle.Height * 2);
-                    canvas.Translate(device.RenderRectangle.Width / 100 * MovePercentage * -1, 0);
-                    canvas.DrawRect(scaledRect, new SKPaint {Shader = bitmapShader});
-                    canvas.Restore();
+                    using (var bitmapShader = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat))
+                    using (var translated = SKShader.CreateLocalMatrix(bitmapShader, SKMatrix.MakeTranslation(device.RenderRectangle.Width / 100 * MovePercentage * -1, 0)))
+                    using (var translatedPaint = new SKPaint {Shader = translated, FilterQuality = SKFilterQuality.Low})
+                    {
+                        // Here we can let each module modify the shader as needed
+                        canvas.DrawRect(device.RenderRectangle, translatedPaint);
+                    }
                 }
             }
         }
