@@ -30,12 +30,8 @@ namespace Artemis.Plugins.LayerElements.Brush
 
         private void CreateShader()
         {
-            var shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0),
-                new SKPoint(Layer.AbsoluteRenderRectangle.Width, 0),
-                _testColors.ToArray(),
-                null,
-                SKShaderTileMode.Clamp);
+            var center = new SKPoint(Layer.AbsoluteRenderRectangle.MidX, Layer.AbsoluteRenderRectangle.MidY);
+            var shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
 
             var oldShader = _shader;
             _shader = shader;
@@ -52,7 +48,7 @@ namespace Artemis.Plugins.LayerElements.Brush
 
         public override void Render(ArtemisSurface surface, SKCanvas canvas)
         {
-            using (var paint = new SKPaint { Shader = _shader, FilterQuality = SKFilterQuality.Low })
+            using (var paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low})
             {
                 canvas.DrawRect(Layer.AbsoluteRenderRectangle, paint);
             }
