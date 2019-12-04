@@ -220,7 +220,10 @@ namespace Artemis.Core.Services.Storage
         private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
         {
             foreach (var surfaceConfiguration in SurfaceConfigurations)
+            {
                 surfaceConfiguration.UpdateScale(_renderScaleSetting.Value);
+                OnSurfaceConfigurationUpdated(new SurfaceConfigurationEventArgs(surfaceConfiguration));
+            }
         }
 
         #endregion
