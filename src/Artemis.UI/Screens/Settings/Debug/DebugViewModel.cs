@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services.Storage.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -15,10 +16,13 @@ namespace Artemis.UI.Screens.Settings.Debug
         private readonly ICoreService _coreService;
         private readonly IRgbService _rgbService;
 
-        public DebugViewModel(ICoreService coreService, IRgbService rgbService)
+        public DebugViewModel(ICoreService coreService, IRgbService rgbService, ISurfaceService surfaceService)
         {
             _coreService = coreService;
             _rgbService = rgbService;
+
+            surfaceService.SurfaceConfigurationUpdated += (sender, args) => Execute.PostToUIThread(() => CurrentFrame = null);
+            surfaceService.ActiveSurfaceConfigurationChanged += (sender, args) => Execute.PostToUIThread(() => CurrentFrame = null);
         }
 
         public ImageSource CurrentFrame { get; set; }
@@ -36,6 +40,9 @@ namespace Artemis.UI.Screens.Settings.Debug
         {
             Execute.PostToUIThread(() =>
             {
+                if (e.GraphicsDecorator.Bitmap == null)
+                    return;
+
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap))
                 {
                     CurrentFrame = e.GraphicsDecorator.Bitmap.ToWriteableBitmap();
@@ -51,7 +58,7 @@ namespace Artemis.UI.Screens.Settings.Debug
                         skiaImage.ReadPixels(pixmap, 0, 0);
                     }
 
-                    writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, info.Width, info.Height));
+                    writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
                     writeableBitmap.Unlock();
                 }
             });
