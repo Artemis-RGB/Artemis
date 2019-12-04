@@ -172,6 +172,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />

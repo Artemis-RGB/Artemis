@@ -1,19 +1,22 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerElement
 {
-    public abstract class LayerElement
+    public abstract class LayerElement : IDisposable
     {
-        protected LayerElement(Layer layer, LayerElementSettings settings, LayerElementDescriptor descriptor)
+        protected LayerElement(Layer layer, Guid guid, LayerElementSettings settings, LayerElementDescriptor descriptor)
         {
             Layer = layer;
+            Guid = guid;
             Settings = settings;
             Descriptor = descriptor;
         }
 
         public Layer Layer { get; }
+        public Guid Guid { get; }
         public LayerElementSettings Settings { get; }
         public LayerElementDescriptor Descriptor { get; }
 
@@ -64,6 +67,10 @@ namespace Artemis.Core.Plugins.LayerElement
         public virtual SKShader RenderPostProcess(ArtemisSurface surface, SKBitmap bitmap, SKShader shader)
         {
             return shader;
+        }
+
+        public virtual void Dispose()
+        {
         }
     }
 }

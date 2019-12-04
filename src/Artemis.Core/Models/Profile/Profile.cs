@@ -85,7 +85,6 @@ namespace Artemis.Core.Models.Profile
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
         }
 
-
         internal void Activate(ArtemisSurface surface)
         {
             lock (this)
@@ -93,7 +92,7 @@ namespace Artemis.Core.Models.Profile
                 if (IsActivated)
                     return;
 
-                ApplySurface(surface);
+                PopulateLeds(surface);
                 OnActivated();
                 IsActivated = true;
             }
@@ -115,10 +114,10 @@ namespace Artemis.Core.Models.Profile
             return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
-        public void ApplySurface(ArtemisSurface surface)
+        internal void PopulateLeds(ArtemisSurface surface)
         {
             foreach (var layer in GetAllLayers())
-                layer.ApplySurface(surface);
+                layer.PopulateLeds(surface);
         }
 
         #region Events

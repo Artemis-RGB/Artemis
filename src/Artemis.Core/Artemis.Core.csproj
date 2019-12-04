@@ -212,6 +212,7 @@
     <Compile Include="Services\Storage\ProfileService.cs" />
     <Compile Include="Services\Storage\Interfaces\ISurfaceService.cs" />
     <Compile Include="Services\Storage\SurfaceService.cs" />
+    <Compile Include="Utilities\EnumUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

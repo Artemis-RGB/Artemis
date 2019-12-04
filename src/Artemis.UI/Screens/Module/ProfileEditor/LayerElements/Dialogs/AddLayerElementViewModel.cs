@@ -31,12 +31,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerElements.Dialogs
 
         public void Accept()
         {
+            if (Session.IsEnded)
+                return;
             var layerElement = _layerService.InstantiateLayerElement(Layer, SelectedLayerElementDescriptor);
             Session.Close(layerElement);
         }
 
         public void Cancel()
         {
+            if (Session.IsEnded)
+                return;
             Session.Close();
         }
 

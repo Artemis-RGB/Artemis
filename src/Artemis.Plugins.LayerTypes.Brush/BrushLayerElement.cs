@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
@@ -11,9 +13,9 @@ namespace Artemis.Plugins.LayerElements.Brush
         private SKShader _shader;
         private List<SKColor> _testColors;
 
-        public BrushLayerElement(Layer layer, BrushLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, settings, descriptor)
+        public BrushLayerElement(Layer layer, Guid guid, BrushLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
-            Settings = settings ?? new BrushLayerElementSettings();
+            Settings = settings;
 
             _testColors = new List<SKColor>();
             for (var i = 0; i < 9; i++)
@@ -26,13 +28,31 @@ namespace Artemis.Plugins.LayerElements.Brush
 
             CreateShader();
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
+            Settings.PropertyChanged += (sender, args) => CreateShader();
         }
 
         private void CreateShader()
         {
             var center = new SKPoint(Layer.AbsoluteRenderRectangle.MidX, Layer.AbsoluteRenderRectangle.MidY);
-            var shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
-
+            SKShader shader;
+            switch (Settings.BrushType)
+            {
+                case BrushType.Solid:
+                    shader = SKShader.CreateColor(_testColors.First());
+                    break;
+                case BrushType.LinearGradient:
+                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(Layer.AbsoluteRenderRectangle.Width, 0), _testColors.ToArray(), SKShaderTileMode.Clamp);
+                    break;
+                case BrushType.RadialGradient:
+                    shader = SKShader.CreateRadialGradient(center, Math.Min(Layer.AbsoluteRenderRectangle.Width, Layer.AbsoluteRenderRectangle.Height), _testColors.ToArray(), SKShaderTileMode.Clamp);
+                    break;
+                case BrushType.SweepGradient:
+                    shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
             var oldShader = _shader;
             _shader = shader;
 

@@ -6,6 +6,7 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 using SkiaSharp;
@@ -61,7 +62,7 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
         {
-            if (RenderRectangle == null || AbsoluteRenderRectangle == null || RenderPath == null)
+            if (RenderPath == null)
                 return;
 
             canvas.Save();
@@ -127,6 +128,7 @@ namespace Artemis.Core.Models.Profile
             {
                 var layerElementEntity = new LayerElementEntity
                 {
+                    Id = layerElement.Guid,
                     PluginGuid = layerElement.Descriptor.LayerElementProvider.PluginInfo.Guid,
                     LayerElementType = layerElement.GetType().Name,
                     Configuration = JsonConvert.SerializeObject(layerElement.Settings)
@@ -164,7 +166,12 @@ namespace Artemis.Core.Models.Profile
             _layerElements.Add(layerElement);
         }
 
-        public void ApplySurface(ArtemisSurface surface)
+        internal void RemoveLayerElement(LayerElement layerElement)
+        {
+            _layerElements.Remove(layerElement);
+        }
+
+        internal void PopulateLeds(ArtemisSurface surface)
         {
             var leds = new List<ArtemisLed>();
 
@@ -181,14 +188,11 @@ namespace Artemis.Core.Models.Profile
             _leds = leds;
             CalculateRenderProperties();
         }
-
+        
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
-            {
-                // TODO: Create an empty rectangle and path
                 return;
-            }
 
             // Determine to top-left and bottom-right
             var minX = Leds.Min(l => l.AbsoluteRenderRectangle.Left);
