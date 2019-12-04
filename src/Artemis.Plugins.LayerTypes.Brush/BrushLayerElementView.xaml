@@ -20,35 +20,116 @@
     </UserControl.Resources>
 
     <Grid Margin="12">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Setting 1 -->
-        <StackPanel Grid.Row="0" Grid.Column="0">
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
-        </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
-        </StackPanel>
-        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        <!-- Brush type -->
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Brush type</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ComboBox HorizontalAlignment="Left"
+                          ItemsSource="{Binding Path=BrushTypes}"
+                          SelectedValuePath="Value"
+                          DisplayMemberPath="Description"
+                          SelectedValue="{Binding Path=LayerElement.Settings.BrushType}" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <!-- Sample 1 -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <!-- Sample 1 -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
 
         <!-- Setting 2 -->
-        <StackPanel Grid.Row="2" Grid.Column="0">
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
-            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
-        </StackPanel>
-        <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignLightSeparator}" />
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <!-- Setting 2 -->
+        <Grid Grid.Row="5">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Setting title</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">Setting subtitle</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
     </Grid>
 </UserControl>

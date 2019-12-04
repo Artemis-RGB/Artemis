@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
@@ -7,7 +8,7 @@ namespace Artemis.Plugins.LayerElements.Animations
 {
     public class SlideLayerElement : LayerElement
     {
-        public SlideLayerElement(Layer layer, LayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, settings, descriptor)
+        public SlideLayerElement(Layer layer, Guid guid, LayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
         }
 

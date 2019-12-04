@@ -19,7 +19,9 @@
             </TextBlock>
             <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
         </StackPanel>
-        <ContentControl Grid.Row="1" s:View.Model="{Binding LayerElementViewModel}" />
+        <ScrollViewer Grid.Row="1">
+            <ContentControl s:View.Model="{Binding LayerElementViewModel}" Margin="0 0 10 0"/>
+        </ScrollViewer>
     </Grid>
 
 </UserControl>

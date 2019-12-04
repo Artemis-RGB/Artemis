@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerElement;
 
 namespace Artemis.Core.Services.Interfaces
@@ -13,6 +14,8 @@ namespace Artemis.Core.Services.Interfaces
         /// <param name="layerElementDescriptor">The descriptor of the new layer element</param>
         /// <param name="settings">JSON settings to be deserialized and injected into the layer element</param>
         /// <returns></returns>
-        LayerElement InstantiateLayerElement(Layer layer, LayerElementDescriptor layerElementDescriptor, string settings = null);
+        LayerElement InstantiateLayerElement(Layer layer, LayerElementDescriptor layerElementDescriptor, string settings = null, Guid? guid = null);
+
+        void RemoveLayerElement(Layer layer, LayerElement layerElement);
     }
 }
