@@ -57,7 +57,7 @@ namespace Artemis.Core.Services
                 _logger.Warning("RgbDevice provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
-
+            
             foreach (var surfaceDevice in deviceProvider.Devices)
             {
                 if (!_loadedDevices.Contains(surfaceDevice))
