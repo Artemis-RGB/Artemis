@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
@@ -10,41 +8,25 @@ namespace Artemis.Plugins.LayerElements.Noise
 {
     public class NoiseLayerElement : LayerElement
     {
-        private SKShader _shader;
-        private List<SKColor> _testColors;
-        private SKPaint _paint;
+        private readonly OpenSimplexNoise _noise;
+        private float _z;
 
         public NoiseLayerElement(Layer layer, Guid guid, NoiseLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
             Settings = settings;
 
-            _testColors = new List<SKColor>();
-            for (var i = 0; i < 9; i++)
-            {
-                if (i != 8)
-                    _testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
-                else
-                    _testColors.Add(SKColor.FromHsv(0, 100, 100));
-            }
-
-            CreateShader();
-            Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
-            Settings.PropertyChanged += (sender, args) => CreateShader();
-        }
-
-        private void CreateShader()
-        {
-            var shader = SKShader.CreatePerlinNoiseFractalNoise(1, 1, 1, 1);
-
-            var oldShader = _shader;
-            var oldPaint = _paint;
-            _shader = shader;
-            _paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low};
-            oldShader?.Dispose();
-            oldPaint?.Dispose();
+            _z = 0.001f;
+            _noise = new OpenSimplexNoise(Guid.GetHashCode());
         }
 
         public new NoiseLayerElementSettings Settings { get; }
+
+
+        public override void Update(double deltaTime)
+        {
+            _z += Settings.AnimationSpeed;
+            base.Update(deltaTime);
+        }
 
         public override LayerElementViewModel GetViewModel()
         {
@@ -53,7 +35,21 @@ namespace Artemis.Plugins.LayerElements.Noise
 
         public override void Render(ArtemisSurface surface, SKCanvas canvas)
         {
-            canvas.DrawRect(Layer.AbsoluteRenderRectangle, _paint);
+            var width = Layer.AbsoluteRenderRectangle.Width / 2;
+            var height = Layer.AbsoluteRenderRectangle.Height / 2;
+            using (var bitmap = new SKBitmap(new SKImageInfo((int) Layer.AbsoluteRenderRectangle.Width, (int) Layer.AbsoluteRenderRectangle.Height)))
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    for (var y = 0; y < height; y++)
+                    {
+                        var v = _noise.Evaluate(Settings.XScale * x / width, Settings.YScale * y / height, _z);
+                        bitmap.SetPixel(x, y, new SKColor(255, 255, 255, (byte) ((v + 1) * 127)));
+                    }
+                }
+
+                canvas.DrawBitmap(bitmap, SKRect.Create(0, 0, width, height), Layer.AbsoluteRenderRectangle, new SKPaint {BlendMode = Settings.BlendMode});
+            }
         }
     }
 }
