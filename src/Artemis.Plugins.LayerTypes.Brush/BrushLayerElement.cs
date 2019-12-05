@@ -12,6 +12,7 @@ namespace Artemis.Plugins.LayerElements.Brush
     {
         private SKShader _shader;
         private List<SKColor> _testColors;
+        private SKPaint _paint;
 
         public BrushLayerElement(Layer layer, Guid guid, BrushLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
@@ -52,11 +53,13 @@ namespace Artemis.Plugins.LayerElements.Brush
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
-            var oldShader = _shader;
-            _shader = shader;
 
+            var oldShader = _shader;
+            var oldPaint = _paint;
+            _shader = shader;
+            _paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low};
             oldShader?.Dispose();
+            oldPaint?.Dispose();
         }
 
         public new BrushLayerElementSettings Settings { get; }
@@ -68,10 +71,7 @@ namespace Artemis.Plugins.LayerElements.Brush
 
         public override void Render(ArtemisSurface surface, SKCanvas canvas)
         {
-            using (var paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low})
-            {
-                canvas.DrawRect(Layer.AbsoluteRenderRectangle, paint);
-            }
+            canvas.DrawRect(Layer.AbsoluteRenderRectangle, _paint);
         }
     }
 }
