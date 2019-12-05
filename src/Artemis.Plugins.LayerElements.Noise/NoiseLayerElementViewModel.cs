@@ -1,4 +1,7 @@
-﻿using Artemis.Core.Plugins.LayerElement;
+﻿using System.Collections.Generic;
+using Artemis.Core.Plugins.LayerElement;
+using Artemis.Core.Utilities;
+using SkiaSharp;
 
 namespace Artemis.Plugins.LayerElements.Noise
 {
@@ -10,5 +13,6 @@ namespace Artemis.Plugins.LayerElements.Noise
         }
 
         public new NoiseLayerElement LayerElement { get; }
+        public IEnumerable<ValueDescription> BlendModes => EnumUtilities.GetAllValuesAndDescriptions(typeof(SKBlendMode));
     }
 }

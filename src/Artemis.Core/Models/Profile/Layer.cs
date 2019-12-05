@@ -68,33 +68,35 @@ namespace Artemis.Core.Models.Profile
                 return;
 
             canvas.Save();
-
-            foreach (var layerElement in LayerElements)
-                layerElement.RenderPreProcess(surface, canvas);
-
-            _renderCanvas.Clear();
-            foreach (var layerElement in LayerElements)
-                layerElement.Render(surface, _renderCanvas);
-
-            var baseShader = SKShader.CreateBitmap(_renderBitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
-            foreach (var layerElement in LayerElements)
+            lock (_renderBitmap)
             {
-                var newBaseShader = layerElement.RenderPostProcess(surface, _renderBitmap, baseShader);
-                if (newBaseShader == null)
-                    continue;
+                foreach (var layerElement in LayerElements)
+                    layerElement.RenderPreProcess(surface, canvas);
 
-                // Dispose the old base shader if the layer element provided a new one
-                if (!ReferenceEquals(baseShader, newBaseShader))
-                    baseShader.Dispose();
+                _renderCanvas.Clear();
+                foreach (var layerElement in LayerElements)
+                    layerElement.Render(surface, _renderCanvas);
 
-                baseShader = newBaseShader;
+                var baseShader = SKShader.CreateBitmap(_renderBitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
+                foreach (var layerElement in LayerElements)
+                {
+                    var newBaseShader = layerElement.RenderPostProcess(surface, _renderBitmap, baseShader);
+                    if (newBaseShader == null)
+                        continue;
+
+                    // Dispose the old base shader if the layer element provided a new one
+                    if (!ReferenceEquals(baseShader, newBaseShader))
+                        baseShader.Dispose();
+
+                    baseShader = newBaseShader;
+                }
+
+                canvas.ClipPath(RenderPath);
+                canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
+                baseShader.Dispose();
+
+                canvas.Restore();
             }
-
-            canvas.ClipPath(RenderPath);
-            canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
-            baseShader.Dispose();
-            
-            canvas.Restore();
         }
 
         internal override void ApplyToEntity()
@@ -206,12 +208,24 @@ namespace Artemis.Core.Models.Profile
 
             RenderPath = path;
 
-            var oldBitmap = _renderBitmap;
-            var oldCanvas = _renderCanvas;
-            _renderBitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height));
-            _renderCanvas = new SKCanvas(_renderBitmap);
-            oldBitmap?.Dispose();
-            oldCanvas?.Dispose();
+            if (_renderBitmap != null)
+            {
+                lock (_renderBitmap)
+                {
+                    var oldBitmap = _renderBitmap;
+                    var oldCanvas = _renderCanvas;
+                    _renderBitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height));
+                    _renderCanvas = new SKCanvas(_renderBitmap);
+                    oldBitmap?.Dispose();
+                    oldCanvas?.Dispose();
+                }
+            }
+            else
+            {
+                _renderBitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height));
+                _renderCanvas = new SKCanvas(_renderBitmap);
+            }
+
             OnRenderPropertiesUpdated();
         }
 

@@ -1,46 +1,46 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using Artemis.Core.Plugins.LayerElement;
+﻿using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerElements.Noise
 {
     public class NoiseLayerElementSettings : LayerElementSettings
     {
-        private BrushType _brushType;
-        private List<SKColor> _colors;
+        private SKBlendMode _blendMode;
+        private float _xScale;
+        private float _yScale;
+        private float _animationSpeed;
+
 
         public NoiseLayerElementSettings()
         {
-            BrushType = BrushType.Solid;
-            Colors = new List<SKColor>();
+            BlendMode = SKBlendMode.Color;
+            XScale = 0.5f;
+            YScale = 0.5f;
+            AnimationSpeed = 0.1f;
         }
 
-        public BrushType BrushType
+        public float XScale
         {
-            get => _brushType;
-            set => SetAndNotify(ref _brushType, value);
+            get => _xScale;
+            set => SetAndNotify(ref _xScale, value);
         }
 
-        public List<SKColor> Colors
+        public float YScale
         {
-            get => _colors;
-            set => SetAndNotify(ref _colors, value);
+            get => _yScale;
+            set => SetAndNotify(ref _yScale, value);
         }
-    }
 
-    public enum BrushType
-    {
-        [Description("Solid")]
-        Solid,
+        public float AnimationSpeed
+        {
+            get => _animationSpeed;
+            set => SetAndNotify(ref _animationSpeed, value);
+        }
 
-        [Description("Linear Gradient")]
-        LinearGradient,
-
-        [Description("Radial Gradient")]
-        RadialGradient,
-
-        [Description("Sweep Gradient")]
-        SweepGradient
+        public SKBlendMode BlendMode
+        {
+            get => _blendMode;
+            set => SetAndNotify(ref _blendMode, value);
+        }
     }
 }
