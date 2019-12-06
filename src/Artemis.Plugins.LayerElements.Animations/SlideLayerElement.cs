@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
 
@@ -26,9 +25,10 @@ namespace Artemis.Plugins.LayerElements.Animations
                 MovePercentage = 0;
         }
 
-        public override SKShader RenderPostProcess(ArtemisSurface surface, SKBitmap bitmap, SKShader shader)
+        public override void RenderPreProcess(SKPath framePath, SKCanvas canvas)
         {
-            return SKShader.CreateLocalMatrix(shader, SKMatrix.MakeTranslation(Layer.RenderRectangle.Width / 100 * MovePercentage * -1, 0));
+            canvas.Translate(Layer.RenderRectangle.Width / 100 * MovePercentage * -1, 0);
+            framePath.Transform(SKMatrix.MakeTranslation(Layer.RenderRectangle.Width / 100 * MovePercentage, 0));
         }
     }
 }

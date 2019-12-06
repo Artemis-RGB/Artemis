@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
 
@@ -26,15 +25,10 @@ namespace Artemis.Plugins.LayerElements.Animations
                 Rotation = 0;
         }
 
-        public override SKShader RenderPostProcess(ArtemisSurface surface, SKBitmap bitmap, SKShader shader)
+        public override void RenderPreProcess(SKPath framePath, SKCanvas canvas)
         {
-            var rect = Layer.AbsoluteRenderRectangle;
-            var center = new SKPoint(rect.MidX, rect.MidY);
-            
-            var required = (float) Math.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height);
-            var minSide = Math.Min(rect.Width, rect.Height);
-            var scale = required / minSide;
-            return SKShader.CreateLocalMatrix(SKShader.CreateLocalMatrix(shader, SKMatrix.MakeScale(scale, scale, center.X, center.Y)), SKMatrix.MakeRotationDegrees(Rotation, center.X, center.Y));
+            canvas.RotateDegrees(Rotation, Layer.RenderRectangle.MidX, Layer.RenderRectangle.MidY);
+            framePath.Transform(SKMatrix.MakeRotationDegrees(Rotation * -1, Layer.RenderRectangle.MidX, Layer.RenderRectangle.MidY));
         }
     }
 }

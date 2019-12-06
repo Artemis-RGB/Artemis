@@ -31,7 +31,7 @@ namespace Artemis.Core.Plugins.Abstract
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, surface, canvas);
+                ActiveProfile?.Render(deltaTime, canvas);
             }
         }
 

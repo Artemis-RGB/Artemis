@@ -6,7 +6,6 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 using SkiaSharp;
@@ -17,8 +16,6 @@ namespace Artemis.Core.Models.Profile
     {
         private readonly List<LayerElement> _layerElements;
         private List<ArtemisLed> _leds;
-        private SKBitmap _renderBitmap;
-        private SKCanvas _renderCanvas;
 
         public Layer(Profile profile, ProfileElement parent, string name)
         {
@@ -58,47 +55,33 @@ namespace Artemis.Core.Models.Profile
 
         public override void Update(double deltaTime)
         {
-            foreach (var layerElement in LayerElements)
-                layerElement.Update(deltaTime);
+            lock (_layerElements)
+            {
+                foreach (var layerElement in LayerElements)
+                    layerElement.Update(deltaTime);
+            }
         }
 
-        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
+        public override void Render(double deltaTime, SKCanvas canvas)
         {
             if (RenderPath == null)
                 return;
 
-            // TODO Just lock the whole thing, this is asking for deadlock
-            lock (_renderBitmap)
+            lock (_layerElements)
             {
-                lock (LayerElements)
+                canvas.Save();
+                using (var framePath = new SKPath(RenderPath))
                 {
-                    canvas.Save();
+                    canvas.ClipPath(framePath);
+
                     foreach (var layerElement in LayerElements)
-                        layerElement.RenderPreProcess(surface, canvas);
-
-                    _renderCanvas.Clear();
+                        layerElement.RenderPreProcess(framePath, canvas);
                     foreach (var layerElement in LayerElements)
-                        layerElement.Render(surface, _renderCanvas);
-
-                    var baseShader = SKShader.CreateBitmap(_renderBitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
+                        layerElement.Render(framePath, canvas);
                     foreach (var layerElement in LayerElements)
-                    {
-                        var newBaseShader = layerElement.RenderPostProcess(surface, _renderBitmap, baseShader);
-                        if (newBaseShader == null)
-                            continue;
-
-                        // Dispose the old base shader if the layer element provided a new one
-                        if (!ReferenceEquals(baseShader, newBaseShader))
-                            baseShader.Dispose();
-
-                        baseShader = newBaseShader;
-                    }
-
-                    canvas.ClipPath(RenderPath);
-                    canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
-                    baseShader.Dispose();
-                    canvas.Restore();
+                        layerElement.RenderPostProcess(framePath, canvas);
                 }
+                canvas.Restore();
             }
         }
 
@@ -165,7 +148,7 @@ namespace Artemis.Core.Models.Profile
 
         internal void AddLayerElement(LayerElement layerElement)
         {
-            lock (LayerElements)
+            lock (_layerElements)
             {
                 _layerElements.Add(layerElement);
             }
@@ -173,7 +156,7 @@ namespace Artemis.Core.Models.Profile
 
         internal void RemoveLayerElement(LayerElement layerElement)
         {
-            lock (LayerElements)
+            lock (_layerElements)
             {
                 _layerElements.Remove(layerElement);
             }
@@ -216,25 +199,6 @@ namespace Artemis.Core.Models.Profile
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             RenderPath = path;
-
-            if (_renderBitmap != null)
-            {
-                lock (_renderBitmap)
-                {
-                    var oldBitmap = _renderBitmap;
-                    var oldCanvas = _renderCanvas;
-                    _renderBitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height));
-                    _renderCanvas = new SKCanvas(_renderBitmap);
-                    oldBitmap?.Dispose();
-                    oldCanvas?.Dispose();
-                }
-            }
-            else
-            {
-                _renderBitmap = new SKBitmap(new SKImageInfo((int) RenderRectangle.Width, (int) RenderRectangle.Height));
-                _renderCanvas = new SKCanvas(_renderBitmap);
-            }
-
             OnRenderPropertiesUpdated();
         }
 

@@ -45,7 +45,7 @@ namespace Artemis.Core.Models.Profile.Abstract
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas);
+        public abstract void Render(double deltaTime, SKCanvas canvas);
 
         /// <summary>
         ///     Applies the profile element's properties to the underlying storage entity
