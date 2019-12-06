@@ -13,6 +13,8 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Utilities;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens
@@ -47,6 +49,19 @@ namespace Artemis.UI.Screens
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
             PropertyChanged += OnSelectedModuleChanged;
             PropertyChanged += OnSelectedPageChanged;
+
+            var themeWatcher = new ThemeWatcher();
+            themeWatcher.ThemeChanged += (sender, args) => ApplyWindowsTheme(args.Theme);
+            ApplyWindowsTheme(themeWatcher.GetWindowsTheme());
+        }
+
+        private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
+        {
+            var paletteHelper = new PaletteHelper();
+            var theme = paletteHelper.GetTheme();
+
+            theme.SetBaseTheme(windowsTheme == ThemeWatcher.WindowsTheme.Dark ? Theme.Dark : Theme.Light);
+            paletteHelper.SetTheme(theme);
         }
 
         public IObservableCollection<Core.Plugins.Abstract.Module> Modules { get; set; }

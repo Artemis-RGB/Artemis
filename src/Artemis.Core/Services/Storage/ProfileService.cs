@@ -77,7 +77,8 @@ namespace Artemis.Core.Services.Storage
         public void ActivateProfile(ProfileModule module, Profile profile)
         {
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
-            InstantiateProfileLayerElements(profile);
+            if (profile != null)
+                InstantiateProfileLayerElements(profile);
         }
 
         public void DeleteProfile(Profile profile)

@@ -51,7 +51,7 @@
         <Grid.Background>
             <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
                 <VisualBrush.Visual>
-                    <Grid Width="20" Height="20">
+                    <Grid Width="25" Height="25">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
@@ -60,10 +60,10 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="LightGray" />
+                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="{DynamicResource MaterialDesignPaper}" />
                         <Rectangle Grid.Row="0" Grid.Column="1" />
-                        <Rectangle Grid.Row="1" Grid.Column="0" />
-                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="LightGray" />
+                        <Rectangle Grid.Row="1" Grid.Column="0"  />
+                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="{DynamicResource MaterialDesignPaper}" />
                     </Grid>
                 </VisualBrush.Visual>
             </VisualBrush>

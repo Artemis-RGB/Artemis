@@ -67,35 +67,38 @@ namespace Artemis.Core.Models.Profile
             if (RenderPath == null)
                 return;
 
-            canvas.Save();
+            // TODO Just lock the whole thing, this is asking for deadlock
             lock (_renderBitmap)
             {
-                foreach (var layerElement in LayerElements)
-                    layerElement.RenderPreProcess(surface, canvas);
-
-                _renderCanvas.Clear();
-                foreach (var layerElement in LayerElements)
-                    layerElement.Render(surface, _renderCanvas);
-
-                var baseShader = SKShader.CreateBitmap(_renderBitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
-                foreach (var layerElement in LayerElements)
+                lock (LayerElements)
                 {
-                    var newBaseShader = layerElement.RenderPostProcess(surface, _renderBitmap, baseShader);
-                    if (newBaseShader == null)
-                        continue;
+                    canvas.Save();
+                    foreach (var layerElement in LayerElements)
+                        layerElement.RenderPreProcess(surface, canvas);
 
-                    // Dispose the old base shader if the layer element provided a new one
-                    if (!ReferenceEquals(baseShader, newBaseShader))
-                        baseShader.Dispose();
+                    _renderCanvas.Clear();
+                    foreach (var layerElement in LayerElements)
+                        layerElement.Render(surface, _renderCanvas);
 
-                    baseShader = newBaseShader;
+                    var baseShader = SKShader.CreateBitmap(_renderBitmap, SKShaderTileMode.Repeat, SKShaderTileMode.Repeat, SKMatrix.MakeTranslation(RenderRectangle.Left, RenderRectangle.Top));
+                    foreach (var layerElement in LayerElements)
+                    {
+                        var newBaseShader = layerElement.RenderPostProcess(surface, _renderBitmap, baseShader);
+                        if (newBaseShader == null)
+                            continue;
+
+                        // Dispose the old base shader if the layer element provided a new one
+                        if (!ReferenceEquals(baseShader, newBaseShader))
+                            baseShader.Dispose();
+
+                        baseShader = newBaseShader;
+                    }
+
+                    canvas.ClipPath(RenderPath);
+                    canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
+                    baseShader.Dispose();
+                    canvas.Restore();
                 }
-
-                canvas.ClipPath(RenderPath);
-                canvas.DrawRect(RenderRectangle, new SKPaint {Shader = baseShader, FilterQuality = SKFilterQuality.Low});
-                baseShader.Dispose();
-
-                canvas.Restore();
             }
         }
 
@@ -162,12 +165,18 @@ namespace Artemis.Core.Models.Profile
 
         internal void AddLayerElement(LayerElement layerElement)
         {
-            _layerElements.Add(layerElement);
+            lock (LayerElements)
+            {
+                _layerElements.Add(layerElement);
+            }
         }
 
         internal void RemoveLayerElement(LayerElement layerElement)
         {
-            _layerElements.Remove(layerElement);
+            lock (LayerElements)
+            {
+                _layerElements.Remove(layerElement);
+            }
         }
 
         internal void PopulateLeds(ArtemisSurface surface)
