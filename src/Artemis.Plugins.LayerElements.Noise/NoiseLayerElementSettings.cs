@@ -16,7 +16,7 @@ namespace Artemis.Plugins.LayerElements.Noise
             BlendMode = SKBlendMode.Color;
             XScale = 0.5f;
             YScale = 0.5f;
-            AnimationSpeed = 0.1f;
+            AnimationSpeed = 50f;
         }
 
         public float XScale

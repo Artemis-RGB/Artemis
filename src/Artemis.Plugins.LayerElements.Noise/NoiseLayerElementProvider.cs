@@ -7,7 +7,7 @@ namespace Artemis.Plugins.LayerElements.Noise
     {
         public NoiseLayerElementProvider(PluginInfo pluginInfo) : base(pluginInfo)
         {
-            AddLayerElementDescriptor<NoiseLayerElement>("Noise", "A brush of that shows a perlin noise", "Brush");
+            AddLayerElementDescriptor<NoiseLayerElement>("Noise", "A brush of that shows an animated random noise", "ScatterPlot");
         }
 
         public override void EnablePlugin()
