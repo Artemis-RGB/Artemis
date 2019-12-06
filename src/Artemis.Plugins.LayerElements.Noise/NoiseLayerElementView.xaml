@@ -66,7 +66,7 @@
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">X Scale</TextBlock>
             </StackPanel>
             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="20" Value="{Binding LayerElement.Settings.XScale}" Width="100"/>
+                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="40" Value="{Binding LayerElement.Settings.XScale}" Width="100"/>
             </StackPanel>
             <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
         </Grid>
@@ -85,7 +85,7 @@
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Y Scale</TextBlock>
             </StackPanel>
             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="20" Value="{Binding LayerElement.Settings.YScale}" Width="100"/>
+                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="40" Value="{Binding LayerElement.Settings.YScale}" Width="100"/>
             </StackPanel>
             <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
         </Grid>
@@ -104,7 +104,7 @@
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Animation speed</TextBlock>
             </StackPanel>
             <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                <Slider Orientation="Horizontal" TickFrequency="0.05" Minimum="0.05" Maximum="1" Value="{Binding LayerElement.Settings.YScale}" Width="100"/>
+                <Slider Orientation="Horizontal" TickFrequency="1" Minimum="1" Maximum="100" Value="{Binding LayerElement.Settings.AnimationSpeed}" Width="100"/>
             </StackPanel>
             <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
         </Grid>
