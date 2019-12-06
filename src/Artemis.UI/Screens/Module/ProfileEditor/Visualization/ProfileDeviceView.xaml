@@ -6,6 +6,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:visualization="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type visualization:ProfileDeviceViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,7 +21,9 @@
         </Grid.LayoutTransform>
 
         <!-- Device image with fallback -->
-        <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <Border Effect="{StaticResource MaterialDesignShadowDepth3}" VerticalAlignment="Top" HorizontalAlignment="Left" >
+            <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}"/>
+        </Border>
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"

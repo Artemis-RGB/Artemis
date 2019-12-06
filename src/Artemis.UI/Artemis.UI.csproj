@@ -139,6 +139,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -170,6 +171,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Controls\ColorPicker\ColorPickerView.xaml.cs">
+      <DependentUpon>ColorPickerView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
@@ -177,11 +181,13 @@
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
+    <Compile Include="Events\WindowsThemeEventArgs.cs" />
     <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementViewModel.cs" />
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
     <Compile Include="Utilities\BindableSelectedItemBehavior.cs" />
+    <Compile Include="Utilities\ThemeWatcher.cs" />
     <Compile Include="Utilities\TriggerTracing.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
@@ -247,6 +253,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Screens\Settings\SettingsViewModel.cs" />
+    <Page Include="Controls\ColorPicker\ColorPickerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResourceDictionaries\Scrollbar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
