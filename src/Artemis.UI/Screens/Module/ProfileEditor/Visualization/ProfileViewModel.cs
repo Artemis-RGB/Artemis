@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -81,8 +82,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
         {
+            List<ArtemisDevice> devices;
+            lock (Devices)
+            {
+                devices = new List<ArtemisDevice>();
+                devices.AddRange(surface.Devices);
+            }
+
             // Make sure all devices have an up-to-date VM
-            foreach (var surfaceDeviceConfiguration in surface.Devices)
+            foreach (var surfaceDeviceConfiguration in devices)
             {
                 // Create VMs for missing devices
                 var viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
@@ -104,7 +112,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 else
                     viewModel.Device = surfaceDeviceConfiguration;
             }
-
+            
             // Sort the devices by ZIndex
             Execute.PostToUIThread(() =>
             {

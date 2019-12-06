@@ -34,7 +34,7 @@ namespace Artemis.Plugins.LayerElements.Brush
 
         private void CreateShader()
         {
-            var center = new SKPoint(Layer.AbsoluteRenderRectangle.MidX, Layer.AbsoluteRenderRectangle.MidY);
+            var center = new SKPoint(Layer.RenderRectangle.MidX, Layer.RenderRectangle.MidY);
             SKShader shader;
             switch (Settings.BrushType)
             {
@@ -42,10 +42,10 @@ namespace Artemis.Plugins.LayerElements.Brush
                     shader = SKShader.CreateColor(_testColors.First());
                     break;
                 case BrushType.LinearGradient:
-                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(Layer.AbsoluteRenderRectangle.Width, 0), _testColors.ToArray(), SKShaderTileMode.Clamp);
+                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(Layer.RenderRectangle.Width, 0), _testColors.ToArray(), SKShaderTileMode.Repeat);
                     break;
                 case BrushType.RadialGradient:
-                    shader = SKShader.CreateRadialGradient(center, Math.Min(Layer.AbsoluteRenderRectangle.Width, Layer.AbsoluteRenderRectangle.Height), _testColors.ToArray(), SKShaderTileMode.Clamp);
+                    shader = SKShader.CreateRadialGradient(center, Math.Min(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height), _testColors.ToArray(), SKShaderTileMode.Repeat);
                     break;
                 case BrushType.SweepGradient:
                     shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
@@ -69,9 +69,9 @@ namespace Artemis.Plugins.LayerElements.Brush
             return new BrushLayerElementViewModel(this);
         }
 
-        public override void Render(ArtemisSurface surface, SKCanvas canvas)
+        public override void Render(SKPath framePath, SKCanvas canvas)
         {
-            canvas.DrawRect(Layer.AbsoluteRenderRectangle, _paint);
+            canvas.DrawPath(framePath, _paint);
         }
     }
 }

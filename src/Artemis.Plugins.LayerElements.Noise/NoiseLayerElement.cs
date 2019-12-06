@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerElement;
 using SkiaSharp;
 
@@ -11,12 +10,13 @@ namespace Artemis.Plugins.LayerElements.Noise
         private static Random _rand = new Random();
         private readonly OpenSimplexNoise _noise;
         private float _z;
+        private const int Scale = 6;
 
         public NoiseLayerElement(Layer layer, Guid guid, NoiseLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
             Settings = settings;
 
-            _z = 1;
+            _z = _rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Guid.GetHashCode());
         }
 
@@ -39,25 +39,32 @@ namespace Artemis.Plugins.LayerElements.Noise
             return new NoiseLayerElementViewModel(this);
         }
 
-        public override void Render(ArtemisSurface surface, SKCanvas canvas)
+        public override void Render(SKPath framePath, SKCanvas canvas)
         {
             // Scale down the render path
-            var width = Layer.AbsoluteRenderRectangle.Width / 4;
-            var height = Layer.AbsoluteRenderRectangle.Height / 4;
+            var width = (int) Math.Round(Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
+            var height = (int) Math.Round(Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
             
-            using (var bitmap = new SKBitmap(new SKImageInfo((int) Layer.AbsoluteRenderRectangle.Width, (int) Layer.AbsoluteRenderRectangle.Height)))
+            using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
                 for (var x = 0; x < width; x++)
                 {
                     for (var y = 0; y < height; y++)
                     {
-                        // Not setting pixels outside the layer clip would be faster but right now rotation takes place after the rendering, must change that first
+                        // This check is actually more expensive then _noise.Evaluate() ^.^'
+                        // if (!framePath.Contains(x * Scale, y * Scale)) 
+                        //    continue;
+
                         var v = _noise.Evaluate(Settings.XScale * x / width, Settings.YScale * y / height, _z);
                         bitmap.SetPixel(x, y, new SKColor(0, 0, 0, (byte) ((v + 1) * 127)));
                     }
                 }
-
-                canvas.DrawBitmap(bitmap, SKRect.Create(0, 0, width, height), Layer.AbsoluteRenderRectangle, new SKPaint {BlendMode = Settings.BlendMode});
+                
+                using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
+                using (var paint = new SKPaint {Shader = sh})
+                {
+                    canvas.DrawPath(framePath, paint);
+                }
             }
         }
     }

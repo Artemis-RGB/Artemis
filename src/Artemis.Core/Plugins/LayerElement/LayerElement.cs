@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerElement
@@ -20,6 +19,10 @@ namespace Artemis.Core.Plugins.LayerElement
         public LayerElementSettings Settings { get; }
         public LayerElementDescriptor Descriptor { get; }
 
+        public virtual void Dispose()
+        {
+        }
+
         /// <summary>
         ///     Called by the profile editor to populate the layer element properties panel
         /// </summary>
@@ -38,9 +41,9 @@ namespace Artemis.Core.Plugins.LayerElement
         ///     Allows you to perform rendering on the surface <see cref="SKCanvas" /> before any layer-clipping is applied
         ///     <para>Called before rendering, in the order configured on the layer</para>
         /// </summary>
-        /// <param name="surface">The surface the layer is rendered on</param>
+        /// <param name="framePath"></param>
         /// <param name="canvas">The entire surface canvas</param>
-        public virtual void RenderPreProcess(ArtemisSurface surface, SKCanvas canvas)
+        public virtual void RenderPreProcess(SKPath framePath, SKCanvas canvas)
         {
         }
 
@@ -49,9 +52,9 @@ namespace Artemis.Core.Plugins.LayerElement
         ///     and matches it's width and height.
         ///     <para>Called during rendering, in the order configured on the layer</para>
         /// </summary>
-        /// <param name="surface">The surface the layer is rendered on</param>
+        /// <param name="framePath"></param>
         /// <param name="canvas">The layer canvas</param>
-        public virtual void Render(ArtemisSurface surface, SKCanvas canvas)
+        public virtual void Render(SKPath framePath, SKCanvas canvas)
         {
         }
 
@@ -60,16 +63,12 @@ namespace Artemis.Core.Plugins.LayerElement
         ///     <see cref="SKCanvas" />.
         ///     <para>Called after rendering, in the order configured on the layer.</para>
         /// </summary>
-        /// <param name="surface">The surface the layer is rendered on</param>
+        /// <param name="framePath"></param>
+        /// <param name="canvas"></param>
         /// <param name="bitmap">The bitmap created from the layer canvas</param>
         /// <param name="shader">The current shader used to draw the bitmap on the surface canvas</param>
         /// <returns>The resulting shader used to draw the bitmap on the surface canvas</returns>
-        public virtual SKShader RenderPostProcess(ArtemisSurface surface, SKBitmap bitmap, SKShader shader)
-        {
-            return shader;
-        }
-
-        public virtual void Dispose()
+        public virtual void RenderPostProcess(SKPath framePath, SKCanvas canvas)
         {
         }
     }
