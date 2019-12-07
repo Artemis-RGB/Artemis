@@ -21,9 +21,9 @@
         </Grid.LayoutTransform>
 
         <!-- Device image with fallback -->
-        <Border Effect="{StaticResource MaterialDesignShadowDepth3}" VerticalAlignment="Top" HorizontalAlignment="Left" >
-            <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}"/>
-        </Border>
+        <Image VerticalAlignment="Top"
+               HorizontalAlignment="Left"
+               Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
         <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                    Stroke="{DynamicResource ControlBorderBrush}"

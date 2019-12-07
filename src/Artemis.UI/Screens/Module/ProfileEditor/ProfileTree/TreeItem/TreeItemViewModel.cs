@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Abstract;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -11,11 +13,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 {
     public abstract class TreeItemViewModel : PropertyChangedBase
     {
-        protected TreeItemViewModel(TreeItemViewModel parent, ProfileElement profileElement, IProfileEditorService profileEditorService)
+        private readonly IProfileEditorService _profileEditorService;
+        private readonly IDialogService _dialogService;
+        private readonly IFolderViewModelFactory _folderViewModelFactory;
+        private readonly ILayerViewModelFactory _layerViewModelFactory;
+
+        protected TreeItemViewModel(TreeItemViewModel parent,
+            ProfileElement profileElement,
+            IProfileEditorService profileEditorService,
+            IDialogService dialogService,
+            IFolderViewModelFactory folderViewModelFactory, 
+            ILayerViewModelFactory layerViewModelFactory)
         {
+            _profileEditorService = profileEditorService;
+            _dialogService = dialogService;
+            _folderViewModelFactory = folderViewModelFactory;
+            _layerViewModelFactory = layerViewModelFactory;
+
             Parent = parent;
             ProfileElement = profileElement;
-            ProfileEditorService = profileEditorService;
 
             Children = new BindableCollection<TreeItemViewModel>();
             UpdateProfileElements();
@@ -23,7 +39,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
         public TreeItemViewModel Parent { get; set; }
         public ProfileElement ProfileElement { get; set; }
-        public IProfileEditorService ProfileEditorService { get; set; }
 
         public abstract bool SupportsChildren { get; }
         public BindableCollection<TreeItemViewModel> Children { get; set; }
@@ -95,7 +110,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             ProfileElement.AddChild(new Folder(ProfileElement.Profile, ProfileElement, "New folder"));
             UpdateProfileElements();
-            ProfileEditorService.UpdateSelectedProfile();
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         public void AddLayer()
@@ -105,40 +120,40 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             ProfileElement.AddChild(new Layer(ProfileElement.Profile, ProfileElement, "New layer"));
             UpdateProfileElements();
-            ProfileEditorService.UpdateSelectedProfile();
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task RenameElement()
         {
-//            var result = await ProfileEditorService.DialogService.ShowDialog<ProfileElementRenameViewModel>(
-//                new Dictionary<string, object> {{"profileElement", ProfileElement}}
-//            );
-//            if (result is string newName)
-//            {
-//                ProfileElement.Name = newName;
-//                ProfileEditorService.UpdateSelectedProfile();
-//            }
+            var result = await _dialogService.ShowDialog<ProfileElementRenameViewModel>(
+                new Dictionary<string, object> {{"profileElement", ProfileElement}}
+            );
+            if (result is string newName)
+            {
+                ProfileElement.Name = newName;
+                _profileEditorService.UpdateSelectedProfile();
+            }
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task DeleteElement()
         {
-//            var result = await ProfileEditorService.DialogService.ShowConfirmDialog(
-//                "Delete profile element",
-//                "Are you sure you want to delete this element? This cannot be undone."
-//            );
-//
-//            if (!result)
-//                return;
-//
-//            // Farewell, cruel world
-//            var parent = Parent;
-//            ProfileElement.Parent.RemoveChild(ProfileElement);
-//            parent.RemoveExistingElement(this);
-//            parent.UpdateProfileElements();
-//
-//            ProfileEditorService.UpdateSelectedProfile();
+            var result = await _dialogService.ShowConfirmDialog(
+                "Delete profile element",
+                "Are you sure you want to delete this element? This cannot be undone."
+            );
+
+            if (!result)
+                return;
+
+            // Farewell, cruel world
+            var parent = Parent;
+            ProfileElement.Parent.RemoveChild(ProfileElement);
+            parent.RemoveExistingElement(this);
+            parent.UpdateProfileElements();
+
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         private void UpdateProfileElements()
@@ -161,13 +176,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                     {
                         existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder);
                         if (existing == null)
-                            Children.Add(new FolderViewModel(this, folder, ProfileEditorService));
+                            Children.Add(_folderViewModelFactory.Create((FolderViewModel) this, folder));
                     }
                     else if (profileElement is Layer layer)
                     {
                         existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer);
                         if (existing == null)
-                            Children.Add(new LayerViewModel(this, layer, ProfileEditorService));
+                            Children.Add(_layerViewModelFactory.Create((FolderViewModel) this, layer));
                     }
 
                     existing?.UpdateProfileElements();

@@ -43,14 +43,10 @@ namespace Artemis.UI.Ninject
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<IArtemisUIFactory>()
+                    .SelectAllInterfaces()
+                    .InheritedFrom<IViewModelFactory>()
                     .BindToFactory();
             });
-
-            Kernel.Bind<IDeviceSettingsViewModelFactory>().ToFactory();
-            Kernel.Bind<IModuleViewModelFactory>().ToFactory();
-            Kernel.Bind<IProfileEditorViewModelFactory>().ToFactory();
 
             // Bind profile editor VMs
             Kernel.Bind(x =>

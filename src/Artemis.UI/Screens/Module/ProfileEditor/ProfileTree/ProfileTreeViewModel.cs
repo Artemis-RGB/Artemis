@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
@@ -11,11 +12,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
     public class ProfileTreeViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IFolderViewModelFactory _folderViewModelFactory;
         private TreeItemViewModel _selectedTreeItem;
 
-        public ProfileTreeViewModel(IProfileEditorService profileEditorService)
+        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderViewModelFactory folderViewModelFactory)
         {
             _profileEditorService = profileEditorService;
+            _folderViewModelFactory = folderViewModelFactory;
 
             CreateRootFolderViewModel();
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
@@ -96,7 +99,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
                 return;
             }
 
-            RootFolder = new FolderViewModel(null, folder, _profileEditorService);
+            RootFolder = _folderViewModelFactory.Create(folder);
         }
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
