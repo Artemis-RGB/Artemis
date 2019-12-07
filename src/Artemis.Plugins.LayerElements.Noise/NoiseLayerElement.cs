@@ -7,16 +7,16 @@ namespace Artemis.Plugins.LayerElements.Noise
 {
     public class NoiseLayerElement : LayerElement
     {
-        private static Random _rand = new Random();
+        private const int Scale = 6;
+        private static readonly Random Rand = new Random();
         private readonly OpenSimplexNoise _noise;
         private float _z;
-        private const int Scale = 6;
 
         public NoiseLayerElement(Layer layer, Guid guid, NoiseLayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
             Settings = settings;
 
-            _z = _rand.Next(0, 4096);
+            _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Guid.GetHashCode());
         }
 
@@ -41,25 +41,30 @@ namespace Artemis.Plugins.LayerElements.Noise
 
         public override void Render(SKPath framePath, SKCanvas canvas)
         {
-            // Scale down the render path
-            var width = (int) Math.Round(Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
-            var height = (int) Math.Round(Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
-            
+            // Scale down the render path to avoid computing a value for every pixel
+            var width = (int) (Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
+            var height = (int) (Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
+
             using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
-                for (var x = 0; x < width; x++)
+                // Only compute pixels inside LEDs, due to scaling there may be some rounding issues but it's neglect-able
+                foreach (var artemisLed in Layer.Leds)
                 {
-                    for (var y = 0; y < height; y++)
-                    {
-                        // This check is actually more expensive then _noise.Evaluate() ^.^'
-                        // if (!framePath.Contains(x * Scale, y * Scale)) 
-                        //    continue;
+                    var xStart = artemisLed.AbsoluteRenderRectangle.Left / Scale;
+                    var xEnd = artemisLed.AbsoluteRenderRectangle.Right / Scale;
+                    var yStart = artemisLed.AbsoluteRenderRectangle.Top / Scale;
+                    var yEnd = artemisLed.AbsoluteRenderRectangle.Bottom / Scale;
 
-                        var v = _noise.Evaluate(Settings.XScale * x / width, Settings.YScale * y / height, _z);
-                        bitmap.SetPixel(x, y, new SKColor(0, 0, 0, (byte) ((v + 1) * 127)));
+                    for (var x = xStart; x < xEnd; x++)
+                    {
+                        for (var y = yStart; y < yEnd; y++)
+                        {
+                            var v = _noise.Evaluate(Settings.XScale * x / width, Settings.YScale * y / height, _z);
+                            bitmap.SetPixel((int) x, (int) y, new SKColor(0, 0, 0, (byte) ((v + 1) * 127)));
+                        }
                     }
                 }
-                
+
                 using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
                 using (var paint = new SKPaint {Shader = sh})
                 {
