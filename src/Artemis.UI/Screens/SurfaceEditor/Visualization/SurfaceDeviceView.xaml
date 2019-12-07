@@ -26,7 +26,9 @@
             </Grid.LayoutTransform>
 
             <!-- Device image with fallback -->
-            <Image Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left" />
+            <Image VerticalAlignment="Top"
+                   HorizontalAlignment="Left"
+                   Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
             <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
                        Stroke="{DynamicResource ControlBorderBrush}"
