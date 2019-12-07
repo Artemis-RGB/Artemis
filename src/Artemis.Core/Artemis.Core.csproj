@@ -159,6 +159,7 @@
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
+    <Compile Include="Extensions\FloatExtensions.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbDeviceExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
