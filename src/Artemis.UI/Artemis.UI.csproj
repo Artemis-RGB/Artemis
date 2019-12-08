@@ -171,8 +171,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Controls\ColorPicker\ColorPickerView.xaml.cs">
-      <DependentUpon>ColorPickerView.xaml</DependentUpon>
+    <Compile Include="Controls\ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
@@ -250,7 +250,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Screens\Settings\SettingsViewModel.cs" />
-    <Page Include="Controls\ColorPicker\ColorPickerView.xaml">
+    <Page Include="Controls\ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
