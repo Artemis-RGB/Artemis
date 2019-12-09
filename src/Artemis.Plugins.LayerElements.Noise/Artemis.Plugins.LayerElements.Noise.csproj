@@ -100,6 +100,10 @@
       <Name>Artemis.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Project>{adb357e6-151d-4d0d-87cb-68fd0bc29812}</Project>
+      <Name>Artemis.UI.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

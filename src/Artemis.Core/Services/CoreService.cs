@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.JsonConverters;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Newtonsoft.Json;
 using RGB.NET.Core;
 using Serilog;
 using SkiaSharp;
@@ -36,7 +38,16 @@ namespace Artemis.Core.Services
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
 
+            ConfigureJsonConvert();
             Task.Run(Initialize);
+        }
+
+        private void ConfigureJsonConvert()
+        {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new SKColorConverter() }
+            };
         }
 
         public void Dispose()

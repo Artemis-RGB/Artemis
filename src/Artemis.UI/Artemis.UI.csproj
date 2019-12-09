@@ -171,9 +171,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="Controls\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
@@ -250,10 +247,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Screens\Settings\SettingsViewModel.cs" />
-    <Page Include="Controls\ColorPicker.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ResourceDictionaries\Scrollbar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -408,6 +401,10 @@
     <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
       <Project>{9b811f9b-86b9-4771-87af-72bae7078a36}</Project>
       <Name>Artemis.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Project>{adb357e6-151d-4d0d-87cb-68fd0bc29812}</Project>
+      <Name>Artemis.UI.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

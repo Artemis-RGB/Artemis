@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerElemen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.LayerElements.Noise", "Artemis.Plugins.LayerElements.Noise\Artemis.Plugins.LayerElements.Noise.csproj", "{7F4C7AB0-4C9B-452D-AFED-34544C903DEF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.Shared", "Artemis.UI.Shared\Artemis.UI.Shared.csproj", "{ADB357E6-151D-4D0D-87CB-68FD0BC29812}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,14 @@ Global
 		{7F4C7AB0-4C9B-452D-AFED-34544C903DEF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7F4C7AB0-4C9B-452D-AFED-34544C903DEF}.Release|x64.ActiveCfg = Release|Any CPU
 		{7F4C7AB0-4C9B-452D-AFED-34544C903DEF}.Release|x64.Build.0 = Release|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Debug|x64.Build.0 = Debug|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.ActiveCfg = Release|Any CPU
+		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -164,6 +164,7 @@
     <Compile Include="Extensions\RgbDeviceExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="JsonConverters\SKColorConverter.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
     <Compile Include="Models\Surface\ArtemisLed.cs" />
     <Compile Include="Models\Surface\ArtemisSurface.cs" />

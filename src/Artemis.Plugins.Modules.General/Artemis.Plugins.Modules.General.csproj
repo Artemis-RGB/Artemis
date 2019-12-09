@@ -82,7 +82,6 @@
   <ItemGroup>
     <Compile Include="GeneralDataModel.cs" />
     <Compile Include="GeneralModule.cs" />
-    <Compile Include="ColorHelpers.cs" />
     <Compile Include="ViewModels\GeneralViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
