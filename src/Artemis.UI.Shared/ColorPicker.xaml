@@ -1,19 +1,23 @@
-﻿<UserControl x:Class="Artemis.UI.Controls.ColorPicker"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters" x:Class="Artemis.UI.Shared.ColorPicker"
+    mc:Ignorable="d"
+    d:DesignHeight="101.848" d:DesignWidth="242.956">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ColorPicker.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute">
+            <converters:ColorToStringConverter x:Key="ColorToStringConverter" />
+            <converters:ColorToSolidColorConverter x:Key="ColorToSolidColorConverter" />
+            <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute" Viewport="0,0,10,10">
                 <VisualBrush.Visual>
-                    <Grid Width="25" Height="25">
+                    <Grid Width="10" Height="10">
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
@@ -22,10 +26,10 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="White" />
-                        <Rectangle Grid.Row="0" Grid.Column="1" />
-                        <Rectangle Grid.Row="1" Grid.Column="0" />
-                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="White" />
+                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="Gray" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" />
+                        <Rectangle Grid.Row="1" Grid.Column="0" Fill="White" />
+                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="Gray" />
                     </Grid>
                 </VisualBrush.Visual>
             </VisualBrush>
@@ -42,18 +46,13 @@
                             <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Border
-                            Grid.Row="1"
-                            Height="8"
-                            CornerRadius="4"
-                            Background="{StaticResource Checkerboard}">
-                            <Border
-                                Height="8"
-                                CornerRadius="4">
+                        <Border Grid.Row="1" Height="8" CornerRadius="4" Background="{StaticResource Checkerboard}">
+                            <Border Height="8" CornerRadius="4">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Offset="0" Color="Transparent" />
-                                        <GradientStop Offset="1.0" Color="{Binding SolidColor}" />
+                                        <GradientStop Offset="1.0"
+                                                      Color="{Binding Color, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorToSolidColorConverter}}" />
                                     </LinearGradientBrush>
                                 </Border.Background>
                             </Border>
@@ -78,7 +77,8 @@
                                     OverridesDefaultStyle="True"
                                     Template="{StaticResource MaterialDesignColorSliderThumb}">
                                     <Thumb.Foreground>
-                                        <SolidColorBrush Color="{Binding SolidColor}" />
+                                        <SolidColorBrush
+                                            Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay, Converter={StaticResource ColorToSolidColorConverter}}" />
                                     </Thumb.Foreground>
                                 </Thumb>
                             </Track.Thumb>
@@ -88,47 +88,46 @@
             </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
+    <Grid HorizontalAlignment="Stretch">
         <TextBox x:Name="ColorCodeTextBox"
-                 wpf:HintAssist.Hint="Noise color"
-                 wpf:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
+                 materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Text="{Binding ColorCode}"
-                 Margin="0,0,-15,0"
-                 Padding="0 0 18 0"
-                 MinWidth="95" />
+                 Text="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorToStringConverter}}"
+                 MinWidth="95"
+                 Padding="0 0 10 0"
+                 HorizontalAlignment="Stretch" />
 
         <Border Width="15" Height="15" CornerRadius="15" Margin="0,0,0,5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{StaticResource Checkerboard}">
-            <Ellipse Stroke="{StaticResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
+            <Ellipse Stroke="{DynamicResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
                 <Ellipse.Fill>
-                    <SolidColorBrush Color="{Binding Color, Mode=OneWay}" />
+                    <SolidColorBrush Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}" />
                 </Ellipse.Fill>
             </Ellipse>
         </Border>
 
-        <Popup x:Name="ColorCodePopup"
-               AllowsTransparency="True"
+        <Popup AllowsTransparency="True"
                Placement="Bottom"
-               CustomPopupPlacementCallback="{x:Static wpf:CustomPopupPlacementCallbackHelper.LargePopupCallback}"
+               CustomPopupPlacementCallback="{x:Static materialDesign:CustomPopupPlacementCallbackHelper.LargePopupCallback}"
                PlacementTarget="{Binding ElementName=PART_TextBox}"
                StaysOpen="False"
                PopupAnimation="Fade"
-               IsOpen="{Binding PopupOpen}">
-            <wpf:Card Width="200" Height="200" Margin="0 5 0 0">
+               IsOpen="{Binding PopupOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+            <materialDesign:Card Width="200" Height="200" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="160" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <wpf:ColorPicker Grid.Row="0" Color="{Binding Color, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <materialDesign:ColorPicker Grid.Row="0" Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                     <Slider Grid.Row="1" Margin="8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"
                             Style="{StaticResource MaterialDesignColorSlider}"
                             Template="{StaticResource MaterialDesignOpacitySlider}"
-                            Value="{Binding ColorOpacity}" Maximum="255" />
+                            Value="{Binding ColorOpacity, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                            Maximum="255" />
                 </Grid>
-            </wpf:Card>
+            </materialDesign:Card>
         </Popup>
-    </StackPanel>
+    </Grid>
 </UserControl>

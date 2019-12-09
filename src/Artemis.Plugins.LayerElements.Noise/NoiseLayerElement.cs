@@ -44,9 +44,10 @@ namespace Artemis.Plugins.LayerElements.Noise
             // Scale down the render path to avoid computing a value for every pixel
             var width = (int) (Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
             var height = (int) (Math.Max(Layer.RenderRectangle.Width, Layer.RenderRectangle.Height) / Scale);
-
+            var opacity = (float) Math.Round(Settings.Color.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
             using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
+                bitmap.Erase(new SKColor(0, 0, 0, 0));
                 // Only compute pixels inside LEDs, due to scaling there may be some rounding issues but it's neglect-able
                 foreach (var artemisLed in Layer.Leds)
                 {
@@ -60,13 +61,20 @@ namespace Artemis.Plugins.LayerElements.Noise
                         for (var y = yStart; y < yEnd; y++)
                         {
                             var v = _noise.Evaluate(Settings.XScale * x / width, Settings.YScale * y / height, _z);
-                            bitmap.SetPixel((int) x, (int) y, new SKColor(0, 0, 0, (byte) ((v + 1) * 127)));
+                            var alpha = (byte) ((v + 1) * 127 * opacity);
+                            // There's some fun stuff we can do here, like creating hard lines
+                            // if (alpha > 128)
+                            //     alpha = 255;
+                            // else
+                            //     alpha = 0;
+                            var color = new SKColor(Settings.Color.Red, Settings.Color.Green, Settings.Color.Blue, alpha);
+                            bitmap.SetPixel((int) x, (int) y, color);
                         }
                     }
                 }
 
                 using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
-                using (var paint = new SKPaint {Shader = sh})
+                using (var paint = new SKPaint {Shader = sh, BlendMode = Settings.BlendMode})
                 {
                     canvas.DrawPath(framePath, paint);
                 }

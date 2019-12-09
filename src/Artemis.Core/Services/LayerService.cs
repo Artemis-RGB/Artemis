@@ -8,16 +8,19 @@ using Artemis.Core.Services.Interfaces;
 using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
+using Serilog;
 
 namespace Artemis.Core.Services
 {
     public class LayerService : ILayerService
     {
         private readonly IKernel _kernel;
+        private readonly ILogger _logger;
 
-        public LayerService(IKernel kernel)
+        public LayerService(IKernel kernel, ILogger logger)
         {
             _kernel = kernel;
+            _logger = logger;
         }
 
         public LayerElement InstantiateLayerElement(Layer layer, LayerElementDescriptor layerElementDescriptor, string settings, Guid? guid)
@@ -42,7 +45,19 @@ namespace Artemis.Core.Services
                         $"Settings where provided but layer element of type {layerElementDescriptor.LayerElementType.Name} has no Settings property."
                     );
                 }
-                settingsInstance = JsonConvert.DeserializeObject(settings, settingsType);
+
+                try
+                {
+                    settingsInstance = JsonConvert.DeserializeObject(settings, settingsType);
+                }
+                catch (JsonSerializationException e)
+                {
+                    _logger.Warning(e, "Failed to deserialize settings for layer type {type}, resetting element settings - Plugin info: {pluginInfo}",
+                        layerElementDescriptor.LayerElementType.Name,
+                        layerElementDescriptor.LayerElementProvider.PluginInfo);
+
+                    settingsInstance = Activator.CreateInstance(settingsType);
+                }
             }
             // If no settings found, provide a fresh instance of the settings type
             else if (settingsType != null)
