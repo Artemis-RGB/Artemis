@@ -14,6 +14,7 @@ namespace Artemis.Plugins.Modules.General
         {
             _settings = settings;
             DisplayName = "General";
+            DisplayIcon = "AllInclusive";
             ExpandsMainDataModel = true;
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);

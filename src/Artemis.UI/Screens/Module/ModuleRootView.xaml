@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:module="clr-namespace:Artemis.UI.Screens.Module"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -11,18 +10,17 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance module:ModuleRootViewModel}">
 
-    <dragablz:TabablzControl Margin="0 -1 0 0" ItemsSource="{Binding Items}" SelectedItem="{Binding ActiveItem}" FixedHeaderCount="{Binding FixedHeaderCount}">
-        <dragablz:TabablzControl.HeaderItemTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding DisplayName}" />
-            </DataTemplate>
-        </dragablz:TabablzControl.HeaderItemTemplate>
-        <dragablz:TabablzControl.ContentTemplate>
-            <DataTemplate>
+    <TabControl Margin="0 -1 0 0" 
+                ItemsSource="{Binding Items}" 
+                SelectedItem="{Binding ActiveItem}" 
+                DisplayMemberPath="DisplayName" 
+                Style="{StaticResource MaterialDesignTabControl}">
+       <TabControl.ContentTemplate>
+            <DataTemplate >
                 <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
-                    <ContentControl s:View.Model="{Binding}" IsTabStop="False" />
+                    <ContentControl s:View.Model="{Binding}" IsTabStop="False" TextElement.Foreground="{DynamicResource MaterialDesignBody}"/>
                 </materialDesign:TransitioningContent>
             </DataTemplate>
-        </dragablz:TabablzControl.ContentTemplate>
-    </dragablz:TabablzControl>
+        </TabControl.ContentTemplate>
+    </TabControl>
 </UserControl>

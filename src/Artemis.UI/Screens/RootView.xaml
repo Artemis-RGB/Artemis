@@ -1,30 +1,26 @@
-﻿<metro:MetroWindow x:Class="Artemis.UI.Screens.RootView"
-                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                   xmlns:s="https://github.com/canton7/Stylet"
-                   xmlns:abstract="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
-                   xmlns:screens="clr-namespace:Artemis.UI.Screens"
-                   mc:Ignorable="d"
-                   Icon="/Artemis.UI;component/Resources/logo-512.png"
-                   Title="Artemis"
-                   GlowBrush="{DynamicResource AccentColorBrush}"
-                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                   Background="{DynamicResource MaterialDesignPaper}"
-                   TextElement.FontWeight="Medium"
-                   TextElement.FontSize="14"
-                   FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-                   SaveWindowPosition="True"
-                   UseLayoutRounding="True"
-                   Deactivated="{s:Action WindowDeactivated}"
-                   Activated="{s:Action WindowActivated}"
-                   d:DesignHeight="640"
-                   d:DesignWidth="1200"
-                   d:DataContext="{d:DesignInstance screens:RootViewModel}">
-    <metro:MetroWindow.Resources>
+﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.RootView"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:s="https://github.com/canton7/Stylet"
+                    xmlns:screens="clr-namespace:Artemis.UI.Screens"
+                    xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                    mc:Ignorable="d"
+                    FadeContentIfInactive="False"
+                    Icon="/Artemis.UI;component/Resources/logo-512.png"
+                    Title="Artemis"
+                    Foreground="{DynamicResource MaterialDesignBody}"
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                    UseLayoutRounding="True"
+                    Deactivated="{s:Action WindowDeactivated}"
+                    Activated="{s:Action WindowActivated}"
+                    d:DesignHeight="640"
+                    d:DesignWidth="1200"
+                    d:DataContext="{d:DesignInstance screens:RootViewModel}">
+    <mde:MaterialWindow.Resources>
         <Style TargetType="ContentControl" x:Key="InitializingFade">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ActiveItemReady}" Value="False">
@@ -49,122 +45,16 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </metro:MetroWindow.Resources>
-    <metro:MetroWindow.LeftWindowCommands>
-        <metro:WindowCommands>
-            <!-- Make the window title dissapear by providing an empty overwrite of WindowCommands -->
-        </metro:WindowCommands>
-    </metro:MetroWindow.LeftWindowCommands>
-    <metro:MetroWindow.IconTemplate>
-        <DataTemplate>
-            <Grid Width="{TemplateBinding Width}"
-                  Height="{TemplateBinding Height}"
-                  Background="Transparent"
-                  RenderOptions.BitmapScalingMode="HighQuality"
-                  Margin="0,0,-10,0">
-                <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="6" />
-            </Grid>
-        </DataTemplate>
-    </metro:MetroWindow.IconTemplate>
+    </mde:MaterialWindow.Resources>
     <materialDesign:DialogHost Identifier="RootDialog">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel MinWidth="212">
-                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}"
-                                  DockPanel.Dock="Top"
-                                  HorizontalAlignment="Right"
-                                  Margin="16"
-                                  IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
-
-                    <!-- Built-in pages -->
-                    <ListBox Margin="0 16 0 16"
-                             SelectedIndex="0"
-                             DockPanel.Dock="Top"
-                             SelectedItem="{Binding SelectedPage}">
-                        <ListBoxItem x:Name="Home">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Home"
-                                                         Margin="0,0,8,0" />
-                                <TextBlock>Home</TextBlock>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="News">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Newspaper"
-                                                         Margin="0,0,8,0" />
-                                <TextBlock>News</TextBlock>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="Workshop">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="TestTube"
-                                                         Margin="0,0,8,0" />
-                                <TextBlock>Workshop</TextBlock>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="SurfaceEditor">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Edit"
-                                                         Margin="0,0,8,0" />
-                                <TextBlock>Surface Editor</TextBlock>
-                            </StackPanel>
-                        </ListBoxItem>
-                        <ListBoxItem x:Name="Settings">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Settings"
-                                                         Margin="0,0,8,0" />
-                                <TextBlock>Settings</TextBlock>
-                            </StackPanel>
-                        </ListBoxItem>
-                    </ListBox>
-
-                    <!-- Modules -->
-                    <TextBlock Margin="8,8,0,8"
-                               DockPanel.Dock="Top">
-                        Modules
-                    </TextBlock>
-                    <Border BorderThickness="0 1 0 0"
-                            BorderBrush="{DynamicResource MaterialDesignDivider}">
-                        <ListBox Margin="0 0 0 16"
-                                 SelectedIndex="-1"
-                                 ItemsSource="{Binding Modules}"
-                                 SelectedItem="{Binding SelectedModule}"
-                                 DockPanel.Dock="Top">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate DataType="abstract:Module">
-                                    <DockPanel HorizontalAlignment="Stretch"
-                                               VerticalAlignment="Stretch"
-                                               Margin="0">
-                                        <materialDesign:PackIcon Kind="Home"
-                                                                 Margin="0,0,8,0" />
-                                        <TextBlock Text="{Binding DisplayName}" />
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Border>
-                </DockPanel>
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False"/>
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
-                <materialDesign:ColorZone Padding="10" materialDesign:ShadowAssist.ShadowDepth="Depth2" Mode="PrimaryMid" DockPanel.Dock="Top">
-                    <DockPanel>
-                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="{Binding MenuOpen}" x:Name="MenuToggleButton" />
-                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
-                            <StackPanel>
-                                <Button Content="Hello World" />
-                                <Button Content="Nice Popup" />
-                                <Button Content="Can't Touch This" IsEnabled="False" />
-                                <Separator />
-                                <Button Content="Goodbye" />
-                            </StackPanel>
-                        </materialDesign:PopupBox>
-
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="{Binding ActiveItem.Title}" />
-                    </DockPanel>
-                </materialDesign:ColorZone>
-
-                <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" IsTabStop="False" />
+                <mde:AppBar Type="Dense" IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}" Title="{Binding ActiveItem.DisplayName}" ShowNavigationDrawerButton="True" DockPanel.Dock="Top" />
+                <ContentControl s:View.Model="{Binding ActiveItem}" IsTabStop="False"  Style="{StaticResource InitializingFade}"/>
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-</metro:MetroWindow>
+</mde:MaterialWindow>

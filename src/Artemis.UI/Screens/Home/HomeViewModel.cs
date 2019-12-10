@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
-using Stylet;
+using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.Home
 {
-    public class HomeViewModel : Screen, IScreenViewModel
+    public class HomeViewModel : MainScreenViewModel
     {
-        public string Title => "Home";
+        public HomeViewModel()
+        {
+            DisplayName = "Home";
+            DisplayIcon = PackIconKind.Home;
+            DisplayOrder = 1;
+        }
 
         public void OpenUrl(string url)
         {

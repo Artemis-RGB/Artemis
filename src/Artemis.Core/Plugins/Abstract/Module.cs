@@ -21,6 +21,12 @@ namespace Artemis.Core.Plugins.Abstract
         public string DisplayName { get; protected set; }
 
         /// <summary>
+        ///     The modules display icon that's shown in the menu see <see href="https://materialdesignicons.com" /> for available
+        ///     icons
+        /// </summary>
+        public string DisplayIcon { get; set; }
+
+        /// <summary>
         ///     Whether or not this module expands upon the main data model. If set to true any data in main data model can be
         ///     accessed by profiles in this module
         /// </summary>

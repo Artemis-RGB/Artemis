@@ -6,47 +6,19 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor.Dialogs"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="351.305" d:DesignWidth="262.163"
              d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceDeviceConfigViewModel}}">
     <StackPanel Margin="16">
         <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignTitleTextBlock}" />
+        <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubheadingTextBlock}" />
+        <TextBox materialDesign:HintAssist.Hint="X-coordinate" Text="{Binding X}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
 
-        <Label>X-coordinate</Label>
-        <mah:NumericUpDown materialDesign:HintAssist.Hint="X-coordinate"
-                           Value="{Binding X}"
-                           Style="{StaticResource MaterialDesignNumericUpDown}"
-                           Minimum="0"
-                           Interval="1"
-                           StringFormat="0" />
+        <TextBox materialDesign:HintAssist.Hint="Y-coordinate" Text="{Binding Y}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
 
-        <Label>Y-coordinate</Label>
-        <mah:NumericUpDown materialDesign:HintAssist.Hint="Y-coordinate"
-                           Value="{Binding Y}"
-                           Style="{StaticResource MaterialDesignNumericUpDown}"
-                           Minimum="0"
-                           Interval="1"
-                           StringFormat="0" />
+        <TextBox materialDesign:HintAssist.Hint="Scale" Text="{Binding Scale}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
 
-        <Label>Scale</Label>
-        <mah:NumericUpDown materialDesign:HintAssist.Hint="Scale"
-                           Value="{Binding Scale}"
-                           Style="{StaticResource MaterialDesignNumericUpDown}"
-                           Minimum="0"
-                           Interval="0.1"
-                           StringFormat="0.00" />
-
-        <Label>Rotation</Label>
-        <mah:NumericUpDown materialDesign:HintAssist.Hint="Rotation"
-                           Value="{Binding Rotation}"
-                           Style="{StaticResource MaterialDesignNumericUpDown}"
-                           Minimum="0"
-                           Maximum="359"
-                           Interval="1"
-                           StringFormat="0" />
-
-
+        <TextBox materialDesign:HintAssist.Hint="Rotation" Text="{Binding Rotation}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
                     Command="{s:Action Cancel}">
