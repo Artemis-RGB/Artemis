@@ -93,7 +93,7 @@ namespace Artemis.Core.Services.Storage
             }
 
             // Update the RGB service's graphics decorator to work with the new surface entity
-            _rgbService.UpdateGraphicsDecorator();
+            _rgbService.UpdateSurfaceLedGroup();
             OnActiveSurfaceConfigurationChanged(new SurfaceConfigurationEventArgs(ActiveSurface));
         }
 
@@ -111,7 +111,7 @@ namespace Artemis.Core.Services.Storage
             }
 
             _surfaceRepository.Save(surface.SurfaceEntity);
-            _rgbService.UpdateGraphicsDecorator();
+            _rgbService.UpdateSurfaceLedGroup();
             OnSurfaceConfigurationUpdated(new SurfaceConfigurationEventArgs(surface));
         }
 
