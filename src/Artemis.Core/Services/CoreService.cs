@@ -89,14 +89,17 @@ namespace Artemis.Core.Services
                         module.Update(args.DeltaTime);
                 }
 
-                // If there is no ready graphics decorator, skip the frame
-                lock (_rgbService.GraphicsDecorator)
+                // If there is no ready bitmap brush, skip the frame
+                if (_rgbService.BitmapBrush == null)
+                    return;
+
+                lock (_rgbService.BitmapBrush)
                 {
-                    if (_rgbService.GraphicsDecorator?.Bitmap == null)
+                    if (_rgbService.BitmapBrush.Bitmap == null)
                         return;
 
                     // Render all active modules
-                    using (var canvas = new SKCanvas(_rgbService.GraphicsDecorator.Bitmap))
+                    using (var canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap))
                     {
                         canvas.Clear(new SKColor(0, 0, 0));
                         lock (_modules)
@@ -117,7 +120,7 @@ namespace Artemis.Core.Services
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)
         {
-            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.GraphicsDecorator, _rgbService.Surface));
+            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush, _rgbService.Surface));
         }
 
         protected virtual void OnFrameRendering(FrameRenderingEventArgs e)

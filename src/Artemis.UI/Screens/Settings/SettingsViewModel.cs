@@ -1,4 +1,7 @@
-﻿using Artemis.Core.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
@@ -34,9 +37,31 @@ namespace Artemis.UI.Screens.Settings
             _deviceSettingsViewModelFactory = deviceSettingsViewModelFactory;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
+
+            RenderScales = new List<Tuple<string, double>> {new Tuple<string, double>("10%", 0.1)};
+            for (var i = 25; i <= 100; i += 25)
+                RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
+
+            TargetFrameRates = new List<Tuple<string, int>>();
+            for (var i = 10; i <= 30; i += 5)
+                TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
         }
 
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
+
+        public List<Tuple<string, double>> RenderScales { get; set; }
+
+        public Tuple<string, double> SelectedRenderScale
+        {
+            get => RenderScales.FirstOrDefault(s => Math.Abs(s.Item2 - RenderScale) < 0.01);
+            set => RenderScale = value.Item2;
+        }
+
+        public Tuple<string, int> SelectedTargetFrameRate
+        {
+            get => TargetFrameRates.FirstOrDefault(t => Math.Abs(t.Item2 - TargetFrameRate) < 0.01);
+            set => TargetFrameRate = value.Item2;
+        }
 
         public double RenderScale
         {
@@ -47,6 +72,8 @@ namespace Artemis.UI.Screens.Settings
                 _settingsService.GetSetting("Core.RenderScale", 1.0).Save();
             }
         }
+
+        public List<Tuple<string, int>> TargetFrameRates { get; set; }
 
         public int TargetFrameRate
         {

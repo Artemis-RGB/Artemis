@@ -22,7 +22,7 @@ namespace Artemis.Core.RGB.NET
             var height = Math.Min(leds.Max(l => l.AbsoluteLedRectangle.Location.Y + l.AbsoluteLedRectangle.Size.Height) * scale, 4096);
             Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
         }
-        
+
         public SKBitmap Bitmap { get; private set; }
 
         public Color ManipulateColor(Rectangle rectangle, BrushRenderTarget renderTarget, Color color)

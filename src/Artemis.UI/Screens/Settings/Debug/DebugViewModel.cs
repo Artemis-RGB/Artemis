@@ -40,16 +40,16 @@ namespace Artemis.UI.Screens.Settings.Debug
         {
             Execute.PostToUIThread(() =>
             {
-                if (e.GraphicsDecorator.Bitmap == null)
+                if (e.BitmapBrush.Bitmap == null)
                     return;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap))
                 {
-                    CurrentFrame = e.GraphicsDecorator.Bitmap.ToWriteableBitmap();
+                    CurrentFrame = e.BitmapBrush.Bitmap.ToWriteableBitmap();
                     return;
                 }
 
-                using (var skiaImage = SKImage.FromPixels(e.GraphicsDecorator.Bitmap.PeekPixels()))
+                using (var skiaImage = SKImage.FromPixels(e.BitmapBrush.Bitmap.PeekPixels()))
                 {
                     var info = new SKImageInfo(skiaImage.Width, skiaImage.Height);
                     writeableBitmap.Lock();

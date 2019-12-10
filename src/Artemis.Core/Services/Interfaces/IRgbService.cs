@@ -9,7 +9,7 @@ namespace Artemis.Core.Services.Interfaces
     public interface IRgbService : IArtemisService
     {
         RGBSurface Surface { get; set; }
-        GraphicsDecorator GraphicsDecorator { get; }
+        BitmapBrush BitmapBrush { get; }
         IReadOnlyCollection<IRGBDevice> LoadedDevices { get; }
 
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);
@@ -25,6 +25,6 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         event EventHandler<DeviceEventArgs> DeviceReloaded;
 
-        void UpdateGraphicsDecorator();
+        void UpdateSurfaceLedGroup();
     }
 }

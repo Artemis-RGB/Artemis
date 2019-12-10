@@ -160,7 +160,7 @@
     <Compile Include="Extensions\DirectoryInfoExtensions.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\FloatExtensions.cs" />
-    <Compile Include="Extensions\RgbColorExtensions.cs" />
+    <Compile Include="Extensions\SKColorExtensions.cs" />
     <Compile Include="Extensions\RgbDeviceExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
@@ -194,6 +194,7 @@
     <Compile Include="Models\Profile\Profile.cs" />
     <Compile Include="Ninject\CoreModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RGB.NET\BitmapBrush.cs" />
     <Compile Include="RGB.NET\GraphicsDecorator.cs" />
     <Compile Include="Services\DeviceService.cs" />
     <Compile Include="Services\Interfaces\ILayerService.cs" />

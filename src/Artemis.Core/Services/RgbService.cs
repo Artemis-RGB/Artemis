@@ -21,7 +21,7 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
         private readonly TimerUpdateTrigger _updateTrigger;
-        private ListLedGroup _background;
+        private ListLedGroup _surfaceLedGroup;
 
         internal RgbService(ILogger logger, ISettingsService settingsService)
         {
@@ -30,7 +30,6 @@ namespace Artemis.Core.Services
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
 
             Surface = RGBSurface.Instance;
-            GraphicsDecorator = new GraphicsDecorator(new ListLedGroup(), 1);
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
@@ -44,7 +43,7 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
 
-        public GraphicsDecorator GraphicsDecorator { get; private set; }
+        public BitmapBrush BitmapBrush { get; private set; }
 
         public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
 
@@ -57,7 +56,7 @@ namespace Artemis.Core.Services
                 _logger.Warning("RgbDevice provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
-            
+
             foreach (var surfaceDevice in deviceProvider.Devices)
             {
                 if (!_loadedDevices.Contains(surfaceDevice))
@@ -80,7 +79,7 @@ namespace Artemis.Core.Services
 
         private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
         {
-            UpdateGraphicsDecorator();
+            UpdateSurfaceLedGroup();
         }
 
         private void TargetFrameRateSettingOnSettingChanged(object sender, EventArgs e)
@@ -99,23 +98,28 @@ namespace Artemis.Core.Services
         public event EventHandler<DeviceEventArgs> DeviceLoaded;
         public event EventHandler<DeviceEventArgs> DeviceReloaded;
 
-        public void UpdateGraphicsDecorator()
+        public void UpdateSurfaceLedGroup()
         {
-            lock (GraphicsDecorator)
+            if (_surfaceLedGroup == null)
             {
-                // Clean up the old background if present
-                if (_background != null)
-                {
-                    _background.Brush?.RemoveAllDecorators();
-                    _background.Detach();
-                }
+                // Apply the application wide brush and decorator
+                BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value));
+                _surfaceLedGroup = new ListLedGroup(Surface.Leds) { Brush = BitmapBrush };
+                return;
+            }
+
+            lock (_surfaceLedGroup)
+            {
+                // Clean up the old background
+                _surfaceLedGroup.Detach();
 
                 // Apply the application wide brush and decorator
-                _background = new ListLedGroup(Surface.Leds) {Brush = new SolidColorBrush(new Color(255, 255, 255, 255))};
-                GraphicsDecorator = new GraphicsDecorator(_background, _renderScaleSetting.Value);
-                _background.Brush.RemoveAllDecorators();
-
-                _background.Brush.AddDecorator(GraphicsDecorator);
+                BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
+                _surfaceLedGroup = new ListLedGroup(Surface.Leds) { Brush = BitmapBrush };
+            }
+            lock (BitmapBrush)
+            {
+                
             }
         }
 
