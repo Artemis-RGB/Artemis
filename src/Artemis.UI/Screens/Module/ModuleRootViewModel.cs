@@ -12,15 +12,15 @@ namespace Artemis.UI.Screens.Module
 
         public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorViewModelFactory profileEditorViewModelFactory)
         {
+            DisplayName = module?.DisplayName;
             Module = module;
+            
             _profileEditorViewModelFactory = profileEditorViewModelFactory;
 
             Task.Run(AddTabsAsync);
         }
 
-        public string Title => Module?.DisplayName;
         public Core.Plugins.Abstract.Module Module { get; }
-        public int FixedHeaderCount => Items.Count;
 
         private async Task AddTabsAsync()
         {

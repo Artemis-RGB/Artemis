@@ -66,10 +66,10 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="{DynamicResource MaterialDesignPaper}" />
+                                <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
                                 <Rectangle Grid.Row="0" Grid.Column="1" />
-                                <Rectangle Grid.Row="1" Grid.Column="0"  />
-                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="{DynamicResource MaterialDesignPaper}" />
+                                <Rectangle Grid.Row="1" Grid.Column="0" />
+                                <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
                             </Grid>
                         </VisualBrush.Visual>
                     </VisualBrush>

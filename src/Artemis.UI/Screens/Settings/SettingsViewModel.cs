@@ -3,12 +3,13 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
+using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings
 {
-    public class SettingsViewModel : Screen, IScreenViewModel
+    public class SettingsViewModel : MainScreenViewModel
     {
         private readonly IDeviceSettingsViewModelFactory _deviceSettingsViewModelFactory;
         private readonly IKernel _kernel;
@@ -22,6 +23,10 @@ namespace Artemis.UI.Screens.Settings
             ISettingsService settingsService,
             IDeviceSettingsViewModelFactory deviceSettingsViewModelFactory)
         {
+            DisplayName = "Settings";
+            DisplayIcon = PackIconKind.Settings;
+            DisplayOrder = 5;
+
             _kernel = kernel;
             _surfaceService = surfaceService;
             _windowManager = windowManager;

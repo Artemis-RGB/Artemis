@@ -7,7 +7,6 @@ using Artemis.UI.Stylet;
 using Artemis.UI.ViewModels.Dialogs;
 using FluentValidation;
 using Ninject.Extensions.Conventions;
-using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using Stylet;
 
@@ -26,8 +25,9 @@ namespace Artemis.UI.Ninject
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<IScreenViewModel>()
-                    .BindAllInterfaces();
+                    .InheritedFrom<MainScreenViewModel>()
+                    .BindAllBaseClasses()
+                    .Configure(c => c.InSingletonScope());
             });
 
             // Bind all dialog VMs

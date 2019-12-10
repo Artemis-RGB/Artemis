@@ -1,9 +1,15 @@
-﻿using Stylet;
+﻿using MaterialDesignThemes.Wpf;
+using Stylet;
 
 namespace Artemis.UI.Screens.News
 {
-    public class NewsViewModel : Screen, IScreenViewModel
+    public class NewsViewModel : MainScreenViewModel
     {
-        public string Title => "News";
+        public NewsViewModel()
+        {
+            DisplayName = "News";
+            DisplayIcon = PackIconKind.Newspaper;
+            DisplayOrder = 2;
+        }
     }
 }

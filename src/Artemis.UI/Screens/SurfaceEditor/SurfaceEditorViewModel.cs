@@ -15,11 +15,12 @@ using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor
 {
-    public class SurfaceEditorViewModel : Screen, IScreenViewModel
+    public class SurfaceEditorViewModel : MainScreenViewModel
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
@@ -28,6 +29,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
         {
+            DisplayName = "Surface Editor";
+            DisplayIcon = PackIconKind.Edit;
+            DisplayOrder = 4;
+
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<ArtemisSurface>();
             SelectionRectangle = new RectangleGeometry();
@@ -59,9 +64,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 ApplySelectedSurfaceConfiguration();
             }
         }
-
-        public string Title => "Surface Editor";
-
+        
         public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);

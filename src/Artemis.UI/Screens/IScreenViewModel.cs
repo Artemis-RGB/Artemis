@@ -1,9 +1,11 @@
-﻿using Stylet;
+﻿using MaterialDesignThemes.Wpf;
+using Stylet;
 
 namespace Artemis.UI.Screens
 {
-    public interface IScreenViewModel : IScreen
+    public abstract class MainScreenViewModel : Screen
     {
-        string Title { get; }
+        public int DisplayOrder { get; set; }
+        public PackIconKind DisplayIcon { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug
 {
-    public class DebugViewModel : Screen, IScreenViewModel
+    public class DebugViewModel : Screen
     {
         private readonly ICoreService _coreService;
         private readonly IRgbService _rgbService;
