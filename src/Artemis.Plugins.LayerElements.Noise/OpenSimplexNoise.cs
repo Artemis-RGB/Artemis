@@ -268,6 +268,7 @@ namespace Artemis.Plugins.LayerElements.Noise
             return value * NORM_2D;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double Evaluate(double x, double y, double z)
         {
             var stretchOffset = (x + y + z) * STRETCH_3D;
