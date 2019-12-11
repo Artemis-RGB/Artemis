@@ -22,6 +22,9 @@
                                         <QuadraticEase EasingMode="EaseInOut" />
                                     </DoubleAnimation.EasingFunction>
                                 </DoubleAnimation>
+                                <ObjectAnimationUsingKeyFrames BeginTime="0:0:0.5" Storyboard.TargetProperty="Visibility">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Hidden}"/>
+                                </ObjectAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>

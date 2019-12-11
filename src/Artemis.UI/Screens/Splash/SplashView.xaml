@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="6,50,6,6" />
+        <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="50" />
         <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontSize="16">
             Artemis is initializing...
         </TextBlock>

@@ -40,26 +40,33 @@ namespace Artemis.UI.Screens.Settings.Debug
         {
             Execute.PostToUIThread(() =>
             {
-                if (e.GraphicsDecorator.Bitmap == null)
+                if (e.BitmapBrush.Bitmap == null)
                     return;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap))
                 {
-                    CurrentFrame = e.GraphicsDecorator.Bitmap.ToWriteableBitmap();
+                    CurrentFrame = e.BitmapBrush.Bitmap.ToWriteableBitmap();
                     return;
                 }
 
-                using (var skiaImage = SKImage.FromPixels(e.GraphicsDecorator.Bitmap.PeekPixels()))
+                try
                 {
-                    var info = new SKImageInfo(skiaImage.Width, skiaImage.Height);
-                    writeableBitmap.Lock();
-                    using (var pixmap = new SKPixmap(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
+                    using (var skiaImage = SKImage.FromPixels(e.BitmapBrush.Bitmap.PeekPixels()))
                     {
-                        skiaImage.ReadPixels(pixmap, 0, 0);
-                    }
+                        var info = new SKImageInfo(skiaImage.Width, skiaImage.Height);
+                        writeableBitmap.Lock();
+                        using (var pixmap = new SKPixmap(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
+                        {
+                            skiaImage.ReadPixels(pixmap, 0, 0);
+                        }
 
-                    writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
-                    writeableBitmap.Unlock();
+                        writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
+                        writeableBitmap.Unlock();
+                    }
+                }
+                catch (AccessViolationException)
+                {
+                    // oops
                 }
             });
         }
