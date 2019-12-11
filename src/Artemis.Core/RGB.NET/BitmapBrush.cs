@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Artemis.Core.Extensions;
 using RGB.NET.Core;
@@ -55,13 +54,6 @@ namespace Artemis.Core.RGB.NET
             if (RenderedRectangle != rectangle || RenderedScale != Scale)
                 Bitmap = null;
 
-            if (renderTargets.Any())
-            {
-                var test = RGBSurface.Instance.SurfaceRectangle;
-                var width = renderTargets.Max(l => l.Led.AbsoluteLedRectangle.Location.X + l.Led.AbsoluteLedRectangle.Size.Width);
-                var height = renderTargets.Max(l => l.Led.AbsoluteLedRectangle.Location.Y + l.Led.AbsoluteLedRectangle.Size.Height);
-            }
-
             RenderedRectangle = rectangle;
             RenderedScale = Scale;
             RenderedTargets.Clear();
@@ -71,11 +63,10 @@ namespace Artemis.Core.RGB.NET
 
             foreach (var renderTarget in renderTargets)
             {
+                // TODO: Right now the sample size is 1, make this configurable to something higher and average the samples out
                 var scaledLocation = renderTarget.Point * Scale;
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
-                {
                     RenderedTargets[renderTarget] = Bitmap.GetPixel(RoundToInt(scaledLocation.X), RoundToInt(scaledLocation.Y)).ToRgbColor();
-                }
             }
         }
 
@@ -83,6 +74,7 @@ namespace Artemis.Core.RGB.NET
 
         private void CreateBitmap(Rectangle rectangle)
         {
+            // TODO: Test this max size, it applied to System.Drawing.Bitmap but SKBitmap might scale better or worse
             var width = Math.Min((rectangle.Location.X + rectangle.Size.Width) * Scale.Horizontal, 4096);
             var height = Math.Min((rectangle.Location.Y + rectangle.Size.Height) * Scale.Vertical, 4096);
             Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
