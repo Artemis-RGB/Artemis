@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Services.Interfaces;
+﻿using System.Windows.Input;
+using Artemis.Core.Services.Interfaces;
+using MaterialDesignExtensions.Controls;
 using Ninject;
 using Stylet;
 
@@ -22,6 +24,14 @@ namespace Artemis.UI.Screens.Splash
             pluginService.CopyingBuildInPlugins += (sender, args) => Status = "Updating built-in plugins";
             pluginService.PluginLoading += (sender, args) => Status = "Loading plugin: " + args.PluginInfo.Name;
             pluginService.PluginLoaded += (sender, args) => Status = "Initializing UI";
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Allow dragging the window by clicking anywhere
+            if (e.ChangedButton == MouseButton.Left)
+                ((MaterialWindow) View).DragMove();
         }
     }
 }
