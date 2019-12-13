@@ -165,7 +165,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             HighlightSelectedLayer.Save();
             PauseRenderingOnFocusLoss.Save();
-
+            
             _updateTrigger.Stop();
             base.OnDeactivate();
         }

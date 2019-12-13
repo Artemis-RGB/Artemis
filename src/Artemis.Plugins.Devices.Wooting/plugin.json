@@ -1,0 +1,10 @@
+﻿{
+  "Guid": "e70fd5ba-9881-480a-8ff6-078ed5f747fa",
+  "Name": "Wooting Devices",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0
+  },
+  "Main": "Artemis.Plugins.Devices.Wooting.dll"
+}

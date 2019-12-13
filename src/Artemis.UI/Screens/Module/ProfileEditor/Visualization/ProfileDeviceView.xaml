@@ -25,8 +25,9 @@
                HorizontalAlignment="Left"
                Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
-        <Rectangle Fill="{DynamicResource ControlBackgroundBrush}"
-                   Stroke="{DynamicResource ControlBorderBrush}"
+        <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
+                   Stroke="{DynamicResource MaterialDesignTextBoxBorder}"
+                   Margin="-5"
                    StrokeThickness="1"
                    Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
         <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}"
