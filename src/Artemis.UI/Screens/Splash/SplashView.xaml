@@ -5,13 +5,16 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:splash="clr-namespace:Artemis.UI.Screens.Splash"
                  xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                 xmlns:s="https://github.com/canton7/Stylet"
                  mc:Ignorable="d"
-                 Title="Artemis"
-                 WindowStyle="None"
+                 Title=" "
+                 ResizeMode="NoResize"
+                 BorderBackgroundBrush="{DynamicResource PrimaryHueMidBrush}"
                  Height="450"
                  Width="400"
-                 WindowStartupLocation="CenterScreen"
+                 WindowStartupLocation="CenterScreen"                         
                  FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                 MouseDown="{s:Action MouseDown}"
                  d:DataContext="{d:DesignInstance splash:SplashViewModel}">
     <Grid Background="{DynamicResource PrimaryHueMidBrush}">
         <Grid.RowDefinitions>
