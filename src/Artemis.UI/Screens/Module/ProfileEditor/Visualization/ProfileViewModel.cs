@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
@@ -12,13 +11,11 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
-using Artemis.UI.Extensions;
+using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
 using Stylet;
-using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
@@ -29,25 +26,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private readonly ISurfaceService _surfaceService;
         private TimerUpdateTrigger _updateTrigger;
 
-        public ProfileViewModel(IProfileEditorService profileEditorService,
-            ISurfaceService surfaceService,
-            ISettingsService settingsService,
-            IEventAggregator eventAggregator)
+        public ProfileViewModel(IProfileEditorService profileEditorService, ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
         {
             _profileEditorService = profileEditorService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
-            Devices = new ObservableCollection<ProfileDeviceViewModel>();
-            Cursor = null;
 
-            Execute.PostToUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
-                SelectionRectangle = new RectangleGeometry();
+                CanvasViewModels = new ObservableCollection<CanvasViewModel>();
                 PanZoomViewModel = new PanZoomViewModel();
             });
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
             CreateUpdateTrigger();
+            ActivateToolByIndex(0);
 
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementChanged;
@@ -55,13 +48,42 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         }
 
         public bool IsInitializing { get; private set; }
-        public ObservableCollection<ProfileDeviceViewModel> Devices { get; set; }
-        public RectangleGeometry SelectionRectangle { get; set; }
+        public ObservableCollection<CanvasViewModel> CanvasViewModels { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
         public PluginSetting<bool> HighlightSelectedLayer { get; set; }
         public PluginSetting<bool> PauseRenderingOnFocusLoss { get; set; }
 
-        public Cursor Cursor { get; set; }
+        public ReadOnlyCollection<ProfileDeviceViewModel> Devices => CanvasViewModels
+            .Where(vm => vm is ProfileDeviceViewModel)
+            .Cast<ProfileDeviceViewModel>()
+            .ToList()
+            .AsReadOnly();
+
+        public VisualizationToolViewModel ActiveToolViewModel
+        {
+            get => _activeToolViewModel;
+            set
+            {
+                // Remove the tool from the canvas
+                if (_activeToolViewModel != null)
+                    CanvasViewModels.Remove(_activeToolViewModel);
+                // Set the new tool
+                _activeToolViewModel = value;
+                // Add the new tool to the canvas
+                if (_activeToolViewModel != null)
+                    CanvasViewModels.Add(_activeToolViewModel);
+            }
+        }
+
+        public int ActiveToolIndex
+        {
+            get => _activeToolIndex;
+            set
+            {
+                _activeToolIndex = value;
+                ActivateToolByIndex(value);
+            }
+        }
 
         private void CreateUpdateTrigger()
         {
@@ -82,12 +104,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
         {
-            List<ArtemisDevice> devices;
-            lock (Devices)
-            {
-                devices = new List<ArtemisDevice>();
-                devices.AddRange(surface.Devices);
-            }
+            var devices = new List<ArtemisDevice>();
+            devices.AddRange(surface.Devices);
 
             // Make sure all devices have an up-to-date VM
             foreach (var surfaceDeviceConfiguration in devices)
@@ -102,9 +120,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     {
                         // Gotta call IsInitializing on the UI thread or its never gets picked up
                         IsInitializing = true;
-                        lock (Devices)
+                        lock (CanvasViewModels)
                         {
-                            Devices.Add(profileDeviceViewModel);
+                            CanvasViewModels.Add(profileDeviceViewModel);
                         }
                     });
                 }
@@ -112,21 +130,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 else
                     viewModel.Device = surfaceDeviceConfiguration;
             }
-            
+
+
             // Sort the devices by ZIndex
             Execute.PostToUIThread(() =>
             {
-                lock (Devices)
+                lock (CanvasViewModels)
                 {
                     foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
-                        Devices.Move(Devices.IndexOf(device), device.ZIndex - 1);
+                        CanvasViewModels.Move(CanvasViewModels.IndexOf(device), device.ZIndex - 1);
                 }
             });
         }
 
         private void UpdateLeds(object sender, CustomUpdateData customUpdateData)
         {
-            lock (Devices)
+            lock (CanvasViewModels)
             {
                 if (IsInitializing)
                     IsInitializing = Devices.Any(d => !d.AddedLeds);
@@ -165,10 +184,82 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             HighlightSelectedLayer.Save();
             PauseRenderingOnFocusLoss.Save();
-            
-            _updateTrigger.Stop();
+
+            try
+            {
+                _updateTrigger.Stop();
+            }
+            catch (NullReferenceException)
+            {
+                // TODO: Remove when fixed in RGB.NET, or avoid double stopping
+            }
+
             base.OnDeactivate();
         }
+
+        #region Buttons
+
+        private void ActivateToolByIndex(int value)
+        {
+            switch (value)
+            {
+                case 0:
+                    ActiveToolViewModel = new ViewpointMoveToolViewModel(this, _profileEditorService);
+                    break;
+                case 1:
+                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService);
+                    break;
+                case 2:
+                    ActiveToolViewModel = new SelectionAddToolViewModel(this, _profileEditorService);
+                    break;
+                case 3:
+                    ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);
+                    break;
+                case 4:
+                    ActiveToolViewModel = new EllipseToolViewModel(this, _profileEditorService);
+                    break;
+                case 5:
+                    ActiveToolViewModel = new RectangleToolViewModel(this, _profileEditorService);
+                    break;
+                case 6:
+                    ActiveToolViewModel = new PolygonToolViewModel(this, _profileEditorService);
+                    break;
+                case 7:
+                    ActiveToolViewModel = new FillToolViewModel(this, _profileEditorService);
+                    break;
+            }
+        }
+
+        public void ResetZoomAndPan()
+        {
+            PanZoomViewModel.Reset();
+        }
+
+        #endregion
+
+        #region Mouse
+
+        public void CanvasMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ActiveToolViewModel?.MouseDown(sender, e);
+        }
+
+        public void CanvasMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ActiveToolViewModel?.MouseUp(sender, e);
+        }
+
+        public void CanvasMouseMove(object sender, MouseEventArgs e)
+        {
+            ActiveToolViewModel?.MouseMove(sender, e);
+        }
+
+        public void CanvasMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ActiveToolViewModel?.MouseWheel(sender, e);
+        }
+
+        #endregion
 
         #region Context menu actions
 
@@ -209,123 +300,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         #endregion
 
-        #region Selection
+        #region Keys
 
-        private MouseDragStatus _mouseDragStatus;
-        private Point _mouseDragStartPoint;
+        private int _previousTool;
+        private int _activeToolIndex;
+        private VisualizationToolViewModel _activeToolViewModel;
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
+        public void CanvasKeyDown(object sender, KeyEventArgs e)
         {
-            if (IsPanKeyDown() || e.ChangedButton == MouseButton.Right)
-                return;
-
-            var position = e.GetPosition((IInputElement) sender);
-            var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            if (e.LeftButton == MouseButtonState.Pressed)
-                StartMouseDrag(position, relative);
-            else
-                StopMouseDrag(position);
-        }
-
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void EditorGridMouseMove(object sender, MouseEventArgs e)
-        {
-            // If holding down Ctrl, pan instead of move/select
-            if (IsPanKeyDown())
-            {
-                Pan(sender, e);
-                return;
-            }
-
-            var position = e.GetPosition((IInputElement) sender);
-            if (_mouseDragStatus == MouseDragStatus.Selecting)
-                UpdateSelection(position);
-        }
-
-        private void StartMouseDrag(Point position, Point relative)
-        {
-            _mouseDragStatus = MouseDragStatus.Selecting;
-            _mouseDragStartPoint = position;
-
-            // Any time dragging starts, start with a new rect
-            SelectionRectangle.Rect = new Rect();
-        }
-
-        private void StopMouseDrag(Point position)
-        {
-            var selectedRect = new Rect(_mouseDragStartPoint, position);
-            foreach (var device in Devices)
-            {
-                foreach (var profileLedViewModel in device.Leds)
-                {
-                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
-                        profileLedViewModel.IsSelected = true;
-                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        profileLedViewModel.IsSelected = false;
-                }
-            }
-
-            _mouseDragStatus = MouseDragStatus.None;
-        }
-
-        private void UpdateSelection(Point position)
-        {
-            if (IsPanKeyDown())
-                return;
-
-            var selectedRect = new Rect(_mouseDragStartPoint, position);
-            SelectionRectangle.Rect = selectedRect;
-
-            foreach (var device in Devices)
-            {
-                foreach (var profileLedViewModel in device.Leds)
-                {
-                    if (PanZoomViewModel.TransformContainingRect(profileLedViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1)).IntersectsWith(selectedRect))
-                        profileLedViewModel.IsSelected = true;
-                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        profileLedViewModel.IsSelected = false;
-                }
-            }
-        }
-
-        #endregion
-
-        #region Panning and zooming
-
-        public void EditorGridMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            PanZoomViewModel.ProcessMouseScroll(sender, e);
-        }
-
-        public void EditorGridKeyDown(object sender, KeyEventArgs e)
-        {
+            _previousTool = ActiveToolIndex;
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsDown)
-                Cursor = Cursors.ScrollAll;
+                ActiveToolViewModel = new ViewpointMoveToolViewModel(this, _profileEditorService);
         }
 
-        public void EditorGridKeyUp(object sender, KeyEventArgs e)
+        public void CanvasKeyUp(object sender, KeyEventArgs e)
         {
             if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsUp)
-                Cursor = null;
-        }
-
-        public void Pan(object sender, MouseEventArgs e)
-        {
-            PanZoomViewModel.ProcessMouseMove(sender, e);
-
-            // Empty the selection rect since it's shown while mouse is down
-            SelectionRectangle.Rect = Rect.Empty;
-        }
-
-        public void ResetZoomAndPan()
-        {
-            PanZoomViewModel.Reset();
-        }
-
-        private bool IsPanKeyDown()
-        {
-            return Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+                ActivateToolByIndex(_previousTool);
         }
 
         #endregion
@@ -348,10 +339,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             if (PauseRenderingOnFocusLoss == null || ScreenState != ScreenState.Active)
                 return;
 
-            if (PauseRenderingOnFocusLoss.Value && !message.IsFocused)
-                _updateTrigger.Stop();
-            else if (PauseRenderingOnFocusLoss.Value && message.IsFocused)
-                _updateTrigger.Start();
+            try
+            {
+                if (PauseRenderingOnFocusLoss.Value && !message.IsFocused)
+                    _updateTrigger.Stop();
+                else if (PauseRenderingOnFocusLoss.Value && message.IsFocused)
+                    _updateTrigger.Start();
+            }
+            catch (NullReferenceException)
+            {
+                // TODO: Remove when fixed in RGB.NET, or avoid double stopping
+            }
         }
 
         #endregion

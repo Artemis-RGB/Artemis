@@ -118,6 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="aero_crosshair" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_crosshair.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_crosshair_minus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_crosshair_minus.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_crosshair_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_crosshair_plus.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_fill.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_pen_min" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_pen_min.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_pen_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_pen_plus.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="aero_rotate_bl" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\aero_rotate_bl.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

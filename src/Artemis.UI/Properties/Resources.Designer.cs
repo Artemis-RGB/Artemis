@@ -63,6 +63,66 @@ namespace Artemis.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] aero_crosshair {
+            get {
+                object obj = ResourceManager.GetObject("aero_crosshair", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_crosshair_minus {
+            get {
+                object obj = ResourceManager.GetObject("aero_crosshair_minus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_crosshair_plus {
+            get {
+                object obj = ResourceManager.GetObject("aero_crosshair_plus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_fill {
+            get {
+                object obj = ResourceManager.GetObject("aero_fill", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_pen_min {
+            get {
+                object obj = ResourceManager.GetObject("aero_pen_min", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_pen_plus {
+            get {
+                object obj = ResourceManager.GetObject("aero_pen_plus", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] aero_rotate_bl {
             get {
                 object obj = ResourceManager.GetObject("aero_rotate_bl", resourceCulture);

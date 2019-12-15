@@ -1,7 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Abstract;
-using Artemis.Core.Plugins.LayerElement;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Services.Interfaces;
 
@@ -18,7 +16,6 @@ namespace Artemis.UI.Services
 
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
-        public LayerElement SelectedLayerElement { get; private set; }
 
         public void ChangeSelectedProfile(Profile profile)
         {
@@ -44,17 +41,10 @@ namespace Artemis.UI.Services
             OnSelectedProfileElementUpdated();
         }
 
-        public void ChangeSelectedLayerElement(LayerElement layerElement)
-        {
-            SelectedLayerElement = layerElement;
-            OnSelectedLayerElementChanged();
-        }
-
         public event EventHandler SelectedProfileChanged;
         public event EventHandler SelectedProfileUpdated;
         public event EventHandler SelectedProfileElementChanged;
         public event EventHandler SelectedProfileElementUpdated;
-        public event EventHandler SelectedLayerElementChanged;
 
         protected virtual void OnSelectedProfileElementUpdated()
         {
@@ -74,11 +64,6 @@ namespace Artemis.UI.Services
         protected virtual void OnSelectedProfileChanged()
         {
             SelectedProfileChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnSelectedLayerElementChanged()
-        {
-            SelectedLayerElementChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

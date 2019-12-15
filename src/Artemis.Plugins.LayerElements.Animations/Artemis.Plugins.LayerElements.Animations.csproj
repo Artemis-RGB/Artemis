@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimationLayerElementProvider.cs" />
+    <Compile Include="AnimationBrushProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RotationLayerElement.cs" />
     <Compile Include="SlideLayerElement.cs" />

@@ -1,0 +1,140 @@
+﻿<UserControl x:Class="Artemis.Plugins.LayerBrushes.Noise.NoiseBrushView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:artemis="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:noiseBrush="clr-namespace:Artemis.Plugins.LayerBrushes.Noise"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type noiseBrush:NoiseBrushViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Noise color" />
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <artemis:ColorPicker Color="{Binding Brush.Settings.Color, Converter={StaticResource SKColorToColorConverter}}" Width="100" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                    <Run Text="Blend mode" />
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}">
+                    <Run Text="Affects how the noise is rendered on the rest of the layer" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <ComboBox HorizontalAlignment="Left"
+                          ItemsSource="{Binding BlendModes}"
+                          SelectedValuePath="Value"
+                          DisplayMemberPath="Description"
+                          Width="100"
+                          SelectedValue="{Binding Brush.Settings.BlendMode}" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                    <Run Text="X Scale" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="40" Value="{Binding Brush.Settings.XScale}" Width="100" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <!-- Sample 1 -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                    <Run Text="Y Scale" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <Slider Orientation="Horizontal" TickFrequency="0.5" Minimum="0.5" Maximum="40" Value="{Binding Brush.Settings.YScale}" Width="100" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+
+        <!-- Setting 2 -->
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                    <Run Text="Animation speed" />
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+
+                <Slider Orientation="Horizontal" TickFrequency="1" Minimum="1" Maximum="100" Value="{Binding Brush.Settings.AnimationSpeed}" Width="100" />
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSeparator}" />
+        </Grid>
+    </Grid>
+</UserControl>

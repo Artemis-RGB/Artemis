@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Models.Profile.Abstract;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
 

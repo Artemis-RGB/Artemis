@@ -10,8 +10,7 @@ using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
-using Artemis.UI.Screens.Module.ProfileEditor.ElementProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerElements;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
@@ -41,8 +40,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             DialogService = dialogService;
 
             DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
-            ElementPropertiesViewModel = (ElementPropertiesViewModel) viewModels.First(vm => vm is ElementPropertiesViewModel);
-            LayerElementsViewModel = (LayerElementsViewModel) viewModels.First(vm => vm is LayerElementsViewModel);
+            LayerPropertiesViewModel = (LayerPropertiesViewModel) viewModels.First(vm => vm is LayerPropertiesViewModel);
             ProfileTreeViewModel = (ProfileTreeViewModel) viewModels.First(vm => vm is ProfileTreeViewModel);
             ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
             Profiles = new BindableCollection<Profile>();
@@ -55,8 +53,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public ProfileModule Module { get; }
         public IDialogService DialogService { get; }
         public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
-        public ElementPropertiesViewModel ElementPropertiesViewModel { get; }
-        public LayerElementsViewModel LayerElementsViewModel { get; }
+        public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public ProfileViewModel ProfileViewModel { get; }
         public BindableCollection<Profile> Profiles { get; set; }

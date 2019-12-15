@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Models.Profile.Abstract;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;

@@ -21,8 +21,8 @@
         </Grid.LayoutTransform>
 
         <!-- Device image with fallback -->
-        <Image VerticalAlignment="Top"
-               HorizontalAlignment="Left"
+        <Image VerticalAlignment="Stretch"
+               HorizontalAlignment="Stretch"
                Source="{Binding Device.RgbDevice.DeviceInfo.Image, Converter={StaticResource NullToImageConverter}}" />
 
         <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
