@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.Abstract;
+using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.LayerElement;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 using SkiaSharp;
@@ -14,7 +14,7 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
-        private readonly List<LayerElement> _layerElements;
+        private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
 
         public Layer(Profile profile, ProfileElement parent, string name)
@@ -27,7 +27,6 @@ namespace Artemis.Core.Models.Profile
             Name = name;
 
             _leds = new List<ArtemisLed>();
-            _layerElements = new List<LayerElement>();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -40,61 +39,98 @@ namespace Artemis.Core.Models.Profile
             Name = layerEntity.Name;
             Order = layerEntity.Order;
 
+            switch (layerEntity.ShapeEntity?.Type)
+            {
+                case ShapeEntityType.Ellipse:
+                    LayerShape = new Ellipse(this, layerEntity.ShapeEntity);
+                    break;
+                case ShapeEntityType.Fill:
+                    LayerShape = new Fill(this, layerEntity.ShapeEntity);
+                    break;
+                case ShapeEntityType.Polygon:
+                    LayerShape = new Polygon(this, layerEntity.ShapeEntity);
+                    break;
+                case ShapeEntityType.Rectangle:
+                    LayerShape = new Rectangle(this, layerEntity.ShapeEntity);
+                    break;
+                case null:
+                    LayerShape = null;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             _leds = new List<ArtemisLed>();
-            _layerElements = new List<LayerElement>();
         }
 
         internal LayerEntity LayerEntity { get; set; }
 
+        /// <summary>
+        ///     A collection of all the LEDs this layer is assigned to.
+        /// </summary>
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
-        public ReadOnlyCollection<LayerElement> LayerElements => _layerElements.AsReadOnly();
 
-        public SKRect RenderRectangle { get; set; }
-        public SKRect AbsoluteRenderRectangle { get; set; }
-        public SKPath RenderPath { get; set; }
+        /// <summary>
+        ///     A rectangle relative to the surface that contains all the LEDs in this layer.
+        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
+        /// </summary>
+        public SKRect Rectangle { get; private set; }
+
+        /// <summary>
+        ///     A zero-based absolute rectangle that contains all the LEDs in this layer.
+        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
+        /// </summary>
+        public SKRect AbsoluteRectangle { get; private set; }
+
+        /// <summary>
+        ///     A path containing all the LEDs this layer is applied to.
+        ///     <para>For rendering, use the RenderPath on <see cref="LayerShape" />.</para>
+        /// </summary>
+        public SKPath Path { get; private set; }
+
+        /// <summary>
+        ///     Defines the shape that is rendered by the <see cref="LayerBrush"/>.
+        /// </summary>
+        public LayerShape LayerShape
+        {
+            get => _layerShape;
+            set
+            {
+                _layerShape = value;
+                _layerShape.CalculateRenderProperties();
+            }
+        }
+
+        /// <summary>
+        ///     The brush that will fill the <see cref="LayerShape"/>.
+        /// </summary>
+        public LayerBrush LayerBrush { get; internal set; }
 
         public override void Update(double deltaTime)
         {
-            lock (_layerElements)
-            {
-                foreach (var layerElement in LayerElements)
-                    layerElement.Update(deltaTime);
-            }
+            LayerBrush?.Update(deltaTime);
         }
 
         public override void Render(double deltaTime, SKCanvas canvas)
         {
-            if (RenderPath == null)
+            if (Path == null)
                 return;
 
-            lock (_layerElements)
-            {
-                canvas.Save();
-                using (var framePath = new SKPath(RenderPath))
-                {
-                    canvas.ClipPath(framePath);
-
-                    foreach (var layerElement in LayerElements)
-                        layerElement.RenderPreProcess(framePath, canvas);
-                    foreach (var layerElement in LayerElements)
-                        layerElement.Render(framePath, canvas);
-                    foreach (var layerElement in LayerElements)
-                        layerElement.RenderPostProcess(framePath, canvas);
-                }
-                canvas.Restore();
-            }
+            canvas.Save();
+            LayerBrush?.Render(canvas);
+            canvas.Restore();
         }
 
         internal override void ApplyToEntity()
         {
+            // Properties
             LayerEntity.Id = EntityId;
             LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
-
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
-
             LayerEntity.ProfileId = Profile.EntityId;
 
+            // LEDs
             LayerEntity.Leds.Clear();
             foreach (var artemisLed in Leds)
             {
@@ -106,60 +142,58 @@ namespace Artemis.Core.Models.Profile
                 LayerEntity.Leds.Add(ledEntity);
             }
 
+            // Conditions TODO
             LayerEntity.Condition.Clear();
 
-            LayerEntity.Elements.Clear();
-            foreach (var layerElement in LayerElements)
+            // Brush
+            LayerEntity.BrushEntity = new BrushEntity
             {
-                var layerElementEntity = new LayerElementEntity
-                {
-                    Id = layerElement.Guid,
-                    PluginGuid = layerElement.Descriptor.LayerElementProvider.PluginInfo.Guid,
-                    LayerElementType = layerElement.GetType().Name,
-                    Configuration = JsonConvert.SerializeObject(layerElement.Settings)
-                };
-                LayerEntity.Elements.Add(layerElementEntity);
-            }
+                BrushPluginGuid = LayerBrush.Descriptor.LayerBrushProvider.PluginInfo.Guid,
+                BrushType = LayerBrush.GetType().Name,
+                Configuration = JsonConvert.SerializeObject(LayerBrush.Settings)
+            };
+
+            // Shape
+            LayerShape.ApplyToEntity();
         }
 
+        /// <summary>
+        ///     Adds a new <see cref="ArtemisLed" /> to the layer and updates the render properties.
+        /// </summary>
+        /// <param name="led">The LED to add</param>
         public void AddLed(ArtemisLed led)
         {
             _leds.Add(led);
             CalculateRenderProperties();
         }
 
+        /// <summary>
+        ///     Adds a collection of new <see cref="ArtemisLed" />s to the layer and updates the render properties.
+        /// </summary>
+        /// <param name="leds">The LEDs to add</param>
         public void AddLeds(IEnumerable<ArtemisLed> leds)
         {
             _leds.AddRange(leds);
             CalculateRenderProperties();
         }
 
+        /// <summary>
+        ///     Removes a <see cref="ArtemisLed" /> from the layer and updates the render properties.
+        /// </summary>
+        /// <param name="led">The LED to remove</param>
         public void RemoveLed(ArtemisLed led)
         {
             _leds.Remove(led);
             CalculateRenderProperties();
         }
 
+        /// <summary>
+        ///     Removes all <see cref="ArtemisLed" />s from the layer and updates the render properties.
+        /// </summary>
         public void ClearLeds()
         {
             _leds.Clear();
             CalculateRenderProperties();
-        }
-
-        internal void AddLayerElement(LayerElement layerElement)
-        {
-            lock (_layerElements)
-            {
-                _layerElements.Add(layerElement);
-            }
-        }
-
-        internal void RemoveLayerElement(LayerElement layerElement)
-        {
-            lock (_layerElements)
-            {
-                _layerElements.Remove(layerElement);
-            }
         }
 
         internal void PopulateLeds(ArtemisSurface surface)
@@ -191,20 +225,20 @@ namespace Artemis.Core.Models.Profile
             var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
             var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
 
-            RenderRectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
-            AbsoluteRenderRectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
+            Rectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
+            AbsoluteRectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
 
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var artemisLed in Leds)
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
-            RenderPath = path;
+            Path = path;
             OnRenderPropertiesUpdated();
         }
 
         public override string ToString()
         {
-            return $"Layer - {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+            return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
         #region Events

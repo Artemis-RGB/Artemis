@@ -3,7 +3,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Artemis.UI.Extensions;
+using RGB.NET.Core;
 using Stylet;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.Shared
 {
@@ -69,6 +72,11 @@ namespace Artemis.UI.Screens.Shared
             Zoom = 1;
             PanX = 0;
             PanY = 0;
+        }
+
+        public Rect TransformContainingRect(Rectangle rect)
+        {
+            return TransformContainingRect(rect.ToWindowsRect(1));
         }
 
         public Rect TransformContainingRect(Rect rect)

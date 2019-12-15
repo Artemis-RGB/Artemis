@@ -174,7 +174,48 @@
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
     <Compile Include="Events\WindowsThemeEventArgs.cs" />
     <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml.cs">
+      <DependentUpon>LayerPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.xaml.cs">
+      <DependentUpon>LayerPropertiesTimelineView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\CanvasViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml.cs">
+      <DependentUpon>EllipseToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.xaml.cs">
+      <DependentUpon>FillToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.xaml.cs">
+      <DependentUpon>PolygonToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.xaml.cs">
+      <DependentUpon>RectangleToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.xaml.cs">
+      <DependentUpon>SelectionAddToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.xaml.cs">
+      <DependentUpon>SelectionRemoveToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.xaml.cs">
+      <DependentUpon>SelectionToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.xaml.cs">
+      <DependentUpon>ViewpointMoveToolView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\VisualizationToolViewModel.cs" />
     <Compile Include="Screens\Sidebar\SidebarView.xaml.cs">
       <DependentUpon>SidebarView.xaml</DependentUpon>
     </Compile>
@@ -202,9 +243,6 @@
     <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\LayerElements\LayerElementViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\ProfileTree\ProfileTreeViewModel.cs" />
@@ -269,15 +307,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\LayerElements\LayerElementsView.xaml">
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -298,6 +332,38 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -436,7 +502,24 @@
   <ItemGroup>
     <None Include="Resources\aero_rotate_br.cur" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\aero_crosshair.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_crosshair_minus.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_crosshair_plus.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_pen_min.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_pen_plus.cur" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\aero_fill.cur" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

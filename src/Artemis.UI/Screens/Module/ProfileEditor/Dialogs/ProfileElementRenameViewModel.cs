@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Artemis.Core.Models.Profile.Abstract;
+using Artemis.Core.Models.Profile;
 using Artemis.UI.ViewModels.Dialogs;
 using FluentValidation;
 using Stylet;

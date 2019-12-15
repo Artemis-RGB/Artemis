@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Abstract;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;

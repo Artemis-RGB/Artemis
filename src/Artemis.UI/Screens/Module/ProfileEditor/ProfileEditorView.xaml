@@ -80,7 +80,7 @@
 
                 <!-- Element properties -->
                 <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                    <ContentControl s:View.Model="{Binding ElementPropertiesViewModel}" />
+                    <ContentControl s:View.Model="{Binding LayerPropertiesViewModel}" />
                 </materialDesign:Card>
             </Grid>
         </Grid>

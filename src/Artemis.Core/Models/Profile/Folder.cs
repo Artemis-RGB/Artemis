@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
@@ -92,7 +91,7 @@ namespace Artemis.Core.Models.Profile
 
         public override string ToString()
         {
-            return $"Folder - {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+            return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
     }
 }

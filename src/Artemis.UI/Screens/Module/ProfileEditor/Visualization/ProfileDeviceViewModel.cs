@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
-    public class ProfileDeviceViewModel : PropertyChangedBase
+    public class ProfileDeviceViewModel : CanvasViewModel 
     {
         public ProfileDeviceViewModel(ArtemisDevice device)
         {
@@ -21,13 +21,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public ArtemisDevice Device { get; set; }
         public bool AddedLeds { get; private set; }
 
-        public double X
+        public new double X
         {
             get => Device.X;
             set => Device.X = value;
         }
 
-        public double Y
+        public new double Y
         {
             get => Device.Y;
             set => Device.Y = value;

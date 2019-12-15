@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
@@ -109,15 +108,15 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override string ToString()
-        {
-            return $"{nameof(Order)}: {Order}, {nameof(Name)}: {Name}, {nameof(PluginInfo)}: {PluginInfo}";
-        }
-
         internal void PopulateLeds(ArtemisSurface surface)
         {
             foreach (var layer in GetAllLayers())
                 layer.PopulateLeds(surface);
+        }
+
+        public override string ToString()
+        {
+            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
         #region Events

@@ -7,13 +7,13 @@ namespace Artemis.Plugins.LayerElements.Animations
 {
     public class SlideLayerElement : LayerElement
     {
-        public SlideLayerElement(Layer layer, Guid guid, LayerElementSettings settings, LayerElementDescriptor descriptor) : base(layer, guid, settings, descriptor)
+        public SlideLayerElement(Layer layer, Guid guid, BrushSettings settings, BrushDescriptor descriptor) : base(layer, guid, settings, descriptor)
         {
         }
 
         public int MovePercentage { get; set; }
 
-        public override LayerElementViewModel GetViewModel()
+        public override BrushViewModel GetViewModel()
         {
             return null;
         }

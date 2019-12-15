@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.LayerElement;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Newtonsoft.Json;
 using Ninject;
@@ -23,16 +23,13 @@ namespace Artemis.Core.Services
             _logger = logger;
         }
 
-        public LayerElement InstantiateLayerElement(Layer layer, LayerElementDescriptor layerElementDescriptor, string settings, Guid? guid)
+        public LayerBrush InstantiateLayerBrush(Layer layer, LayerBrushDescriptor brushDescriptor, string settings)
         {
-            if (guid == null)
-                guid = Guid.NewGuid();
-
             // Determine the settings type declared by the layer element
             object settingsInstance = null;
-            var properties = layerElementDescriptor.LayerElementType.GetProperties();
+            var properties = brushDescriptor.LayerBrushType.GetProperties();
             var settingsType = properties.FirstOrDefault(p => p.Name == "Settings" &&
-                                                              p.DeclaringType == layerElementDescriptor.LayerElementType)?.PropertyType;
+                                                              p.DeclaringType == brushDescriptor.LayerBrushType)?.PropertyType;
 
             // Deserialize the settings if provided, check for null in JSON as well
             if (settings != null && settings != "null")
@@ -41,8 +38,8 @@ namespace Artemis.Core.Services
                 if (settingsType == null)
                 {
                     throw new ArtemisPluginException(
-                        layerElementDescriptor.LayerElementProvider.PluginInfo,
-                        $"Settings where provided but layer element of type {layerElementDescriptor.LayerElementType.Name} has no Settings property."
+                        brushDescriptor.LayerBrushProvider.PluginInfo,
+                        $"Settings where provided but layer element of type {brushDescriptor.LayerBrushType.Name} has no Settings property."
                     );
                 }
 
@@ -53,8 +50,8 @@ namespace Artemis.Core.Services
                 catch (JsonSerializationException e)
                 {
                     _logger.Warning(e, "Failed to deserialize settings for layer type {type}, resetting element settings - Plugin info: {pluginInfo}",
-                        layerElementDescriptor.LayerElementType.Name,
-                        layerElementDescriptor.LayerElementProvider.PluginInfo);
+                        brushDescriptor.LayerBrushType.Name,
+                        brushDescriptor.LayerBrushProvider.PluginInfo);
 
                     settingsInstance = Activator.CreateInstance(settingsType);
                 }
@@ -68,20 +65,20 @@ namespace Artemis.Core.Services
             var arguments = new IParameter[]
             {
                 new ConstructorArgument("layer", layer),
-                new ConstructorArgument("guid", guid.Value),
                 new ConstructorArgument("settings", settingsInstance),
-                new ConstructorArgument("descriptor", layerElementDescriptor)
+                new ConstructorArgument("descriptor", brushDescriptor)
             };
-            var layerElement = (LayerElement) _kernel.Get(layerElementDescriptor.LayerElementType, arguments);
-            layer.AddLayerElement(layerElement);
+            var layerElement = (LayerBrush) _kernel.Get(brushDescriptor.LayerBrushType, arguments);
+            layer.LayerBrush = (layerElement);
 
             return layerElement;
         }
 
-        public void RemoveLayerElement(Layer layer, LayerElement layerElement)
+        public void RemoveLayerBrush(Layer layer, LayerBrush layerElement)
         {
-            layer.RemoveLayerElement(layerElement);
-            layerElement.Dispose();
+            var brush = layer.LayerBrush;
+            layer.LayerBrush = null;
+            brush.Dispose();
         }
     }
 }

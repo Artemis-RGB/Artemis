@@ -4,7 +4,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.LayerElement;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
@@ -16,10 +16,10 @@ namespace Artemis.Core.Services.Storage
     /// </summary>
     public class ProfileService : IProfileService
     {
+        private readonly ILayerService _layerService;
         private readonly IPluginService _pluginService;
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
-        private readonly ILayerService _layerService;
 
         internal ProfileService(IPluginService pluginService, ISurfaceService surfaceService, ILayerService layerService, IProfileRepository profileRepository)
         {
@@ -78,7 +78,7 @@ namespace Artemis.Core.Services.Storage
         {
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
-                InstantiateProfileLayerElements(profile);
+                InstantiateProfileLayerBrushes(profile);
         }
 
         public void DeleteProfile(Profile profile)
@@ -102,27 +102,22 @@ namespace Artemis.Core.Services.Storage
 
             _profileRepository.Save(profile.ProfileEntity);
         }
-        private void InstantiateProfileLayerElements(Profile profile)
+
+        private void InstantiateProfileLayerBrushes(Profile profile)
         {
-            var layerElementProviders = _pluginService.GetPluginsOfType<LayerElementProvider>();
-            var descriptors = layerElementProviders.SelectMany(l => l.LayerElementDescriptors).ToList();
+            var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
+            var descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
 
-            foreach (var layer in profile.GetAllLayers())
+            // Only instantiate brushes for layers without an existing brush instance
+            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null && l.LayerEntity.BrushEntity != null))
             {
-                foreach (var elementEntity in layer.LayerEntity.Elements)
-                {
-                    // Skip already instantiated layer elements
-                    if (layer.LayerElements.Any(e => e.Guid == elementEntity.Id))
-                        continue;
+                // Get a matching descriptor
+                var descriptor = descriptors.FirstOrDefault(d => d.LayerBrushProvider.PluginInfo.Guid == layer.LayerEntity.BrushEntity.BrushPluginGuid &&
+                                                                 d.LayerBrushType.Name == layer.LayerEntity.BrushEntity.BrushType);
 
-                    // Get a matching descriptor
-                    var descriptor = descriptors.FirstOrDefault(d => d.LayerElementProvider.PluginInfo.Guid == elementEntity.PluginGuid &&
-                                                                     d.LayerElementType.Name == elementEntity.LayerElementType);
-
-                    // If a descriptor that matches if found, instantiate it with the GUID of the element entity
-                    if (descriptor != null)
-                        _layerService.InstantiateLayerElement(layer, descriptor, elementEntity.Configuration, elementEntity.Id);
-                }
+                // If a descriptor that matches if found, instantiate it with the GUID of the element entity
+                if (descriptor != null)
+                    _layerService.InstantiateLayerBrush(layer, descriptor, layer.LayerEntity.BrushEntity.Configuration);
             }
         }
 
@@ -133,11 +128,11 @@ namespace Artemis.Core.Services.Storage
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
 
-        private void ActiveProfilesInstantiateProfileLayerElements()
+        private void ActiveProfilesInstantiateProfileLayerBrushes()
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateProfileLayerElements(profileModule.ActiveProfile);
+                InstantiateProfileLayerBrushes(profileModule.ActiveProfile);
         }
 
         #region Event handlers
@@ -155,8 +150,8 @@ namespace Artemis.Core.Services.Storage
 
         private void OnPluginLoaded(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is LayerElementProvider)
-                ActiveProfilesInstantiateProfileLayerElements();
+            if (e.PluginInfo.Instance is LayerBrushProvider)
+                ActiveProfilesInstantiateProfileLayerBrushes();
         }
 
         #endregion
