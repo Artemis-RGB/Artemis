@@ -17,6 +17,8 @@
                     UseLayoutRounding="True"
                     Deactivated="{s:Action WindowDeactivated}"
                     Activated="{s:Action WindowActivated}"
+                    KeyDown="{s:Action WindowKeyDown}"
+                    KeyUp="{s:Action WindowKeyUp}"
                     d:DesignHeight="640"
                     d:DesignWidth="1200"
                     d:DataContext="{d:DesignInstance screens:RootViewModel}">

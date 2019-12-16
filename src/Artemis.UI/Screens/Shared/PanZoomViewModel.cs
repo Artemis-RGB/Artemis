@@ -12,7 +12,7 @@ namespace Artemis.UI.Screens.Shared
 {
     public class PanZoomViewModel : PropertyChangedBase
     {
-        private Point? _lastPanPosition;
+        public Point? LastPanPosition { get; set; }
         public double Zoom { get; set; } = 1;
 
         public double ZoomPercentage
@@ -51,20 +51,20 @@ namespace Artemis.UI.Screens.Shared
         {
             if (e.LeftButton == MouseButtonState.Released)
             {
-                _lastPanPosition = null;
+                LastPanPosition = null;
                 return;
             }
 
-            if (_lastPanPosition == null)
-                _lastPanPosition = e.GetPosition((IInputElement) sender);
+            if (LastPanPosition == null)
+                LastPanPosition = e.GetPosition((IInputElement) sender);
 
             var position = e.GetPosition((IInputElement) sender);
-            var delta = _lastPanPosition - position;
+            var delta = LastPanPosition - position;
 
             PanX = Math.Min(0, PanX - delta.Value.X);
             PanY = Math.Min(0, PanY - delta.Value.Y);
 
-            _lastPanPosition = position;
+            LastPanPosition = position;
         }
 
         public void Reset()

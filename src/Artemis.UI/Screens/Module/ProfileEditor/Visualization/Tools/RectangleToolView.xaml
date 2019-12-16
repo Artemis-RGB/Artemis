@@ -1,12 +1,62 @@
 ﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools.RectangleToolView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools"
-             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <UserControl.Resources>
+        <Style TargetType="Shape" x:Key="ShowIfMouseDown">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseDown}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Canvas Background="Transparent" Width="50" Height="50">
+        
+        <Canvas.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Ellipse action 1" Command="{s:Action CreateLayer}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="LayersPlus" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Ellipse action 2" Command="{s:Action ApplyToLayer}" CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Selection" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Canvas.ContextMenu>
+        <Rectangle Style="{StaticResource ShowIfMouseDown}"
+                   Width="{Binding DragRectangle.Width}"
+                   Height="{Binding DragRectangle.Height}"
+                   Canvas.Left="{Binding DragRectangle.X}"
+                   Canvas.Top="{Binding DragRectangle.Y}"
+                   Stroke="{DynamicResource PrimaryHueLightBrush}"
+                   StrokeThickness="1"
+                   Opacity="0">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
+            </Rectangle.Fill>
+        </Rectangle>
+    </Canvas>
 </UserControl>

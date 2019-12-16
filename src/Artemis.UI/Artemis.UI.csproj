@@ -172,6 +172,7 @@
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
+    <Compile Include="Events\MainWindowKeyEvent.cs" />
     <Compile Include="Events\WindowsThemeEventArgs.cs" />
     <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml.cs">
@@ -222,8 +223,8 @@
     <Compile Include="Screens\Sidebar\SidebarViewModel.cs" />
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
-    <Compile Include="Utilities\BindableSelectedItemBehavior.cs" />
     <Compile Include="Utilities\ThemeWatcher.cs" />
+    <Compile Include="Behaviors\TreeViewSelectionBehavior.cs" />
     <Compile Include="Utilities\TriggerTracing.cs" />
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
@@ -520,6 +521,7 @@
   <ItemGroup>
     <None Include="Resources\aero_fill.cur" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -8,23 +8,30 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Canvas>
-        <Canvas.Triggers>
-            <EventTrigger RoutedEvent="Canvas.MouseLeftButtonDown">
-                <BeginStoryboard>
-                    <Storyboard TargetName="Preview" TargetProperty="Opacity">
-                        <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="Canvas.MouseLeftButtonUp">
-                <BeginStoryboard>
-                    <Storyboard TargetName="Preview" TargetProperty="Opacity">
-                        <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-        </Canvas.Triggers>
+    <UserControl.Resources>
+        <Style TargetType="Shape" x:Key="ShowIfMouseDown">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseDown}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Canvas Background="Transparent" Width="50" Height="50">
+
         <Canvas.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Ellipse action 1" Command="{s:Action CreateLayer}" CommandParameter="{Binding}">
@@ -39,7 +46,14 @@
                 </MenuItem>
             </ContextMenu>
         </Canvas.ContextMenu>
-        <Ellipse Stroke="{DynamicResource PrimaryHueLightBrush}" StrokeThickness="1" IsHitTestVisible="False" x:Name="Preview" Opacity="1" Width="100" Height="100">
+        <Ellipse Style="{StaticResource ShowIfMouseDown}"
+                 Width="{Binding DragRectangle.Width}"
+                 Height="{Binding DragRectangle.Height}"
+                 Canvas.Left="{Binding DragRectangle.X}"
+                 Canvas.Top="{Binding DragRectangle.Y}"
+                 Stroke="{DynamicResource PrimaryHueLightBrush}"
+                 StrokeThickness="1"
+                 Opacity="0">
             <Ellipse.Fill>
                 <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
             </Ellipse.Fill>

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
@@ -72,6 +73,7 @@ namespace Artemis.Core.Models.Profile
         public Layer AddLayer(string name)
         {
             var layer = new Layer(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
+            layer.LayerShape = new Fill(layer);
             AddChild(layer);
             return layer;
         }

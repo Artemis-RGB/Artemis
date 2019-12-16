@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Utilities;
@@ -79,6 +80,16 @@ namespace Artemis.UI.Screens
 
             _lostFocus = false;
             _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
+        }
+
+        public void WindowKeyDown(object sender, KeyEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowKeyEvent(true, e));
+        }
+
+        public void WindowKeyUp(object sender, KeyEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
         }
     }
 }

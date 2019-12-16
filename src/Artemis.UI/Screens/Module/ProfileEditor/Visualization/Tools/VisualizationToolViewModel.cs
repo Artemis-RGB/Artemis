@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using Artemis.UI.Services.Interfaces;
 
@@ -26,7 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         public virtual void MouseDown(object sender, MouseButtonEventArgs e)
         {
             IsMouseDown = true;
-            MouseDownStartPosition = e.GetPosition((IInputElement) sender);
+            MouseDownStartPosition = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
         }
 
         public virtual void MouseUp(object sender, MouseButtonEventArgs e)
@@ -40,6 +41,29 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public virtual void MouseWheel(object sender, MouseWheelEventArgs e)
         {
+        }
+
+        public virtual void KeyUp(KeyEventArgs e)
+        {
+        }
+
+        public virtual void KeyDown(KeyEventArgs e)
+        {
+        }
+
+        protected Rect GetSquareRectBetweenPoints(Point start, Point end)
+        {
+            // Find the shortest side
+            var size = Math.Min(Math.Abs(start.X - end.X), Math.Abs(start.Y - end.Y));
+
+            // There's probably a very elegant way to do this, and this is not it
+            if (end.X < start.X && end.Y < start.Y)
+                return new Rect(start.X - size, start.Y - size, size, size);
+            if (end.X < start.X)
+                return new Rect(start.X - size, Math.Min(start.Y, end.Y), size, size);
+            if (end.Y < start.Y)
+                return new Rect(Math.Min(start.X, end.X), start.Y - size, size, size);
+            return new Rect(Math.Min(start.X, end.X), Math.Min(start.Y, end.Y), size, size);
         }
     }
 }
