@@ -42,13 +42,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             });
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
+            ApplyActiveProfile();
             CreateUpdateTrigger();
             ActivateToolByIndex(0);
 
+            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
-            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             eventAggregator.Subscribe(this);
         }
+
 
         public bool IsInitializing { get; private set; }
         public ObservableCollection<CanvasViewModel> CanvasViewModels { get; set; }
@@ -114,6 +117,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
         {
             ApplySurfaceConfiguration(e.Surface);
+        }
+
+        private void ApplyActiveProfile()
+        {
+            Execute.PostToUIThread(() =>
+            {
+                lock (CanvasViewModels)
+                {
+                    var layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
+                    var layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
+
+
+                    // Add new layers missing a VM
+                    foreach (var layer in layers)
+                    {
+                        if (layerViewModels.All(vm => vm.Layer != layer))
+                            CanvasViewModels.Add(new ProfileLayerViewModel(layer));
+                    }
+
+                    // Remove layers that no longer exist
+                    var toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
+                    foreach (var profileLayerViewModel in toRemove)
+                        CanvasViewModels.Remove(profileLayerViewModel);
+                }
+            });
         }
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
@@ -324,8 +352,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             UpdateLedsDimStatus();
         }
 
+        private void OnSelectedProfileChanged(object sender, EventArgs e)
+        {
+            ApplyActiveProfile();
+        }
+
         private void OnSelectedProfileElementChanged(object sender, EventArgs e)
         {
+            UpdateLedsDimStatus();
+            CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;
+        }
+
+        private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
+        {
+            ApplyActiveProfile();
             UpdateLedsDimStatus();
             CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;
         }

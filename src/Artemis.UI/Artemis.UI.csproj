@@ -184,6 +184,10 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\CanvasViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerView.xaml.cs">
+      <DependentUpon>ProfileLayerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml.cs">
       <DependentUpon>EllipseToolView.xaml</DependentUpon>
     </Compile>
@@ -329,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\ProfileEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
