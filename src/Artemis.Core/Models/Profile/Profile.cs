@@ -67,6 +67,11 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
+        public Folder GetRootFolder()
+        {
+            return (Folder) Children.Single();
+        }
+
         internal override void ApplyToEntity()
         {
             ProfileEntity.Id = EntityId;

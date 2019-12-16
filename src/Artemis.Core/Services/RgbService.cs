@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Brushes;
+using RGB.NET.Brushes.Gradients;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Serilog;
@@ -30,7 +32,7 @@ namespace Artemis.Core.Services
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
 
             Surface = RGBSurface.Instance;
-
+            
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
@@ -104,7 +106,7 @@ namespace Artemis.Core.Services
             {
                 // Apply the application wide brush and decorator
                 BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value));
-                _surfaceLedGroup = new ListLedGroup(Surface.Leds) { Brush = BitmapBrush };
+                _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
                 return;
             }
 
@@ -115,11 +117,11 @@ namespace Artemis.Core.Services
 
                 // Apply the application wide brush and decorator
                 BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
-                _surfaceLedGroup = new ListLedGroup(Surface.Leds) { Brush = BitmapBrush };
+                _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
             }
+
             lock (BitmapBrush)
             {
-                
             }
         }
 

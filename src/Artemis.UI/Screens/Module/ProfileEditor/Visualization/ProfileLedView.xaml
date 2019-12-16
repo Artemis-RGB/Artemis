@@ -49,7 +49,7 @@
         </Path>
 
         <!-- Selection -->
-        <Path Data="{Binding DisplayGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="2">
+        <Path Data="{Binding DisplayGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="1">
             <Path.Style>
                 <Style TargetType="{x:Type Path}">
                     <Style.Triggers>
@@ -83,10 +83,10 @@
                 </Style>
             </Path.Style>
             <Path.Fill>
-                <SolidColorBrush Opacity="0.65" />
+                <SolidColorBrush Opacity="0.25" />
             </Path.Fill>
             <Path.Stroke>
-                <SolidColorBrush />
+                <SolidColorBrush Opacity="0.5"/>
             </Path.Stroke>
         </Path>
     </Canvas>

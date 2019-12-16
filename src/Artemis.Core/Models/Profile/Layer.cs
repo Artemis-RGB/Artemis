@@ -97,7 +97,8 @@ namespace Artemis.Core.Models.Profile
             set
             {
                 _layerShape = value;
-                _layerShape.CalculateRenderProperties();
+                if (Path != null)
+                    _layerShape.CalculateRenderProperties();
             }
         }
 
@@ -146,15 +147,18 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Condition.Clear();
 
             // Brush
-            LayerEntity.BrushEntity = new BrushEntity
+            if (LayerBrush != null)
             {
-                BrushPluginGuid = LayerBrush.Descriptor.LayerBrushProvider.PluginInfo.Guid,
-                BrushType = LayerBrush.GetType().Name,
-                Configuration = JsonConvert.SerializeObject(LayerBrush.Settings)
-            };
+                LayerEntity.BrushEntity = new BrushEntity
+                {
+                    BrushPluginGuid = LayerBrush.Descriptor.LayerBrushProvider.PluginInfo.Guid,
+                    BrushType = LayerBrush.GetType().Name,
+                    Configuration = JsonConvert.SerializeObject(LayerBrush.Settings)
+                };
+            }
 
             // Shape
-            LayerShape.ApplyToEntity();
+            LayerShape?.ApplyToEntity();
         }
 
         /// <summary>

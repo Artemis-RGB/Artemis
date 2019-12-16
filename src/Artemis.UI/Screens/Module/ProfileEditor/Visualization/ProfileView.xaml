@@ -46,17 +46,17 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <ToolBarTray Orientation="Vertical" Width="58">
-            <ToolBar Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False" ToolBarTray.IsLocked="True" >
+            <ToolBar Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False" ToolBarTray.IsLocked="True">
                 <ListBox SelectedIndex="{Binding ActiveToolIndex}" ToolBar.OverflowMode="Never">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical"/>
+                            <StackPanel Orientation="Vertical" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
-                    <ListBoxItem ToolTip="Pan over different parts of the surface" >
+                    <ListBoxItem ToolTip="Pan over different parts of the surface">
                         <materialDesign:PackIcon Kind="HandLeft" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Change layer selection" >
+                    <ListBoxItem ToolTip="Change layer selection">
                         <materialDesign:PackIcon Kind="SelectionDrag" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Add to layer selection">
@@ -79,16 +79,14 @@
                         <materialDesign:PackIcon Kind="FormatColourFill" />
                     </ListBoxItem>
                 </ListBox>
-               
+
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Column="1"
               ClipToBounds="True"
-              KeyUp="{s:Action CanvasKeyUp}"
-              KeyDown="{s:Action CanvasKeyDown}"
               MouseWheel="{s:Action CanvasMouseWheel}"
-              MouseUp="{s:Action CanvasMouseDown}"
-              MouseDown="{s:Action CanvasMouseUp}"
+              MouseUp="{s:Action CanvasMouseUp}"
+              MouseDown="{s:Action CanvasMouseDown}"
               MouseMove="{s:Action CanvasMouseMove}"
               Cursor="{Binding ActiveToolViewModel.Cursor}"
               utilities:SizeObserver.Observe="True"
@@ -115,7 +113,7 @@
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Grid.Background>
-            
+
             <Grid Name="EditorDisplayGrid">
                 <Grid.RenderTransform>
                     <TransformGroup>
@@ -123,7 +121,7 @@
                         <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                     </TransformGroup>
                 </Grid.RenderTransform>
-                <ItemsControl ItemsSource="{Binding Devices}">
+                <ItemsControl ItemsSource="{Binding CanvasViewModels}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />
@@ -142,7 +140,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-          
+
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">

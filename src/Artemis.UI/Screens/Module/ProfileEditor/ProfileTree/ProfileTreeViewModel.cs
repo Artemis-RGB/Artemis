@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Windows;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Behaviors;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 {
@@ -13,12 +15,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly IFolderViewModelFactory _folderViewModelFactory;
+        private readonly ILayerViewModelFactory _layerViewModelFactory;
         private TreeItemViewModel _selectedTreeItem;
 
-        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderViewModelFactory folderViewModelFactory)
+        public ProfileTreeViewModel(IProfileEditorService profileEditorService,
+            IFolderViewModelFactory folderViewModelFactory,
+            ILayerViewModelFactory layerViewModelFactory)
         {
             _profileEditorService = profileEditorService;
             _folderViewModelFactory = folderViewModelFactory;
+            _layerViewModelFactory = layerViewModelFactory;
 
             CreateRootFolderViewModel();
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
@@ -139,6 +145,27 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 
             // Don't set it using the setter or that will trigger the event again
             _selectedTreeItem = vms?.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement);
+
+            if (_selectedTreeItem == null && _profileEditorService.SelectedProfileElement != null)
+            {
+                var parent = vms?.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement.Parent);
+                if (parent == null)
+                {
+                    // Eh.. we did our best.. start over
+                    CreateRootFolderViewModel();
+                    return;
+                }
+
+                // Create a new TreeItemViewModel for the new ProfileElement
+                TreeItemViewModel treeItemViewModel;
+                if (_profileEditorService.SelectedProfileElement is Folder folder)
+                    treeItemViewModel = _folderViewModelFactory.Create(parent, folder);
+                else
+                    treeItemViewModel = _layerViewModelFactory.Create(parent, (Layer) _profileEditorService.SelectedProfileElement);
+                parent.AddExistingElement(treeItemViewModel);
+                _selectedTreeItem = treeItemViewModel;
+            }
+
             NotifyOfPropertyChange(() => SelectedTreeItem);
         }
 

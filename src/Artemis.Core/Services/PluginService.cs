@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -215,8 +216,19 @@ namespace Artemis.Core.Services
                 }
 
                 // Get the Plugin implementation from the main assembly and if there is only one, instantiate it
-                var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().First(a => a.Location == mainFile);
-                var pluginTypes = mainAssembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
+                List<Type> pluginTypes;
+                var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().FirstOrDefault(a => a.Location == mainFile);
+                if (mainAssembly == null)
+                    throw new ArtemisPluginException(pluginInfo, "Found no supported assembly in the plugins main file");
+                try
+                {
+                    pluginTypes = mainAssembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
+                }
+                catch (ReflectionTypeLoadException e)
+                {
+                    throw new ArtemisPluginException(pluginInfo, "Failed to initialize the plugin assembly", new AggregateException(e.LoaderExceptions));
+                }
+
                 if (pluginTypes.Count > 1)
                     throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of Plugin, only 1 allowed");
                 if (pluginTypes.Count == 0)

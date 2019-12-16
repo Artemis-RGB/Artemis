@@ -7,9 +7,9 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              xmlns:profileTree="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileTree"
              xmlns:treeItem="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileTree:ProfileTreeViewModel}}">
@@ -33,7 +33,7 @@
                   dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.DropHandler="{Binding}">
             <i:Interaction.Behaviors>
-                <utilities:BindableSelectedItemBehavior SelectedItem="{Binding SelectedTreeItem, Mode=TwoWay}" />
+                <behaviors:TreeViewSelectionBehavior ExpandSelected="True" SelectedItem="{Binding SelectedTreeItem}" />
             </i:Interaction.Behaviors>
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Children}">

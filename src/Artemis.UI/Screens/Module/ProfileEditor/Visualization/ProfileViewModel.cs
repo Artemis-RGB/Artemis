@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
-using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
@@ -19,11 +19,14 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>
+    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
+        private int _activeToolIndex;
+        private VisualizationToolViewModel _activeToolViewModel;
+        private int _previousTool;
         private TimerUpdateTrigger _updateTrigger;
 
         public ProfileViewModel(IProfileEditorService profileEditorService, ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
@@ -66,12 +69,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 // Remove the tool from the canvas
                 if (_activeToolViewModel != null)
+                {
                     CanvasViewModels.Remove(_activeToolViewModel);
+                    NotifyOfPropertyChange(() => CanvasViewModels);
+                }
+
                 // Set the new tool
                 _activeToolViewModel = value;
                 // Add the new tool to the canvas
                 if (_activeToolViewModel != null)
+                {
                     CanvasViewModels.Add(_activeToolViewModel);
+                    NotifyOfPropertyChange(() => CanvasViewModels);
+                }
             }
         }
 
@@ -80,8 +90,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             get => _activeToolIndex;
             set
             {
-                _activeToolIndex = value;
-                ActivateToolByIndex(value);
+                if (_activeToolIndex != value)
+                {
+                    _activeToolIndex = value;
+                    ActivateToolByIndex(value);
+                    NotifyOfPropertyChange(() => ActiveToolIndex);
+                }
             }
         }
 
@@ -215,19 +229,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 case 3:
                     ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);
                     break;
-                case 4:
+                case 5:
                     ActiveToolViewModel = new EllipseToolViewModel(this, _profileEditorService);
                     break;
-                case 5:
+                case 6:
                     ActiveToolViewModel = new RectangleToolViewModel(this, _profileEditorService);
                     break;
-                case 6:
+                case 7:
                     ActiveToolViewModel = new PolygonToolViewModel(this, _profileEditorService);
                     break;
-                case 7:
+                case 8:
                     ActiveToolViewModel = new FillToolViewModel(this, _profileEditorService);
                     break;
             }
+
+            ActiveToolIndex = value;
         }
 
         public void ResetZoomAndPan()
@@ -256,6 +272,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public void CanvasMouseWheel(object sender, MouseWheelEventArgs e)
         {
+            PanZoomViewModel.ProcessMouseScroll(sender, e);
             ActiveToolViewModel?.MouseWheel(sender, e);
         }
 
@@ -300,27 +317,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         #endregion
 
-        #region Keys
-
-        private int _previousTool;
-        private int _activeToolIndex;
-        private VisualizationToolViewModel _activeToolViewModel;
-
-        public void CanvasKeyDown(object sender, KeyEventArgs e)
-        {
-            _previousTool = ActiveToolIndex;
-            if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsDown)
-                ActiveToolViewModel = new ViewpointMoveToolViewModel(this, _profileEditorService);
-        }
-
-        public void CanvasKeyUp(object sender, KeyEventArgs e)
-        {
-            if ((e.Key == Key.LeftCtrl || e.Key == Key.RightCtrl) && e.IsUp)
-                ActivateToolByIndex(_previousTool);
-        }
-
-        #endregion
-
         #region Event handlers
 
         private void HighlightSelectedLayerOnSettingChanged(object sender, EventArgs e)
@@ -349,6 +345,29 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             catch (NullReferenceException)
             {
                 // TODO: Remove when fixed in RGB.NET, or avoid double stopping
+            }
+        }
+
+        public void Handle(MainWindowKeyEvent message)
+        {
+            Debug.WriteLine(message.KeyDown);
+            if (message.KeyDown)
+            {
+                if (ActiveToolIndex != 0)
+                {
+                    _previousTool = ActiveToolIndex;
+                    if ((message.EventArgs.Key == Key.LeftCtrl || message.EventArgs.Key == Key.RightCtrl) && message.EventArgs.IsDown)
+                        ActivateToolByIndex(0);
+                }
+
+                ActiveToolViewModel?.KeyDown(message.EventArgs);
+            }
+            else
+            {
+                if ((message.EventArgs.Key == Key.LeftCtrl || message.EventArgs.Key == Key.RightCtrl) && message.EventArgs.IsUp)
+                    ActivateToolByIndex(_previousTool);
+
+                ActiveToolViewModel?.KeyUp(message.EventArgs);
             }
         }
 
