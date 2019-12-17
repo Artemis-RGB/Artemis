@@ -145,7 +145,7 @@
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">
                         <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding HighlightSelectedLayer.Value}">
-                            Highlight selected layer
+                            Dim LEDs outside selected layer
                         </CheckBox>
                         <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding PauseRenderingOnFocusLoss.Value}">
                             Pause visualization on focus loss

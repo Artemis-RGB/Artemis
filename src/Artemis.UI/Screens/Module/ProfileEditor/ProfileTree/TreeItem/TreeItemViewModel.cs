@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement profileElement,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            IFolderViewModelFactory folderViewModelFactory, 
+            IFolderViewModelFactory folderViewModelFactory,
             ILayerViewModelFactory layerViewModelFactory)
         {
             _profileEditorService = profileEditorService;
@@ -155,7 +155,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             _profileEditorService.UpdateSelectedProfile();
         }
 
-        private void UpdateProfileElements()
+        public void UpdateProfileElements()
         {
             // Order the children
             var vmsList = Children.OrderBy(v => v.ProfileElement.Order).ToList();
@@ -175,13 +175,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                     {
                         existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder);
                         if (existing == null)
-                            Children.Add(_folderViewModelFactory.Create((FolderViewModel) this, folder));
+                            Children.Add(_folderViewModelFactory.Create((FolderViewModel)this, folder));
                     }
                     else if (profileElement is Layer layer)
                     {
                         existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer);
                         if (existing == null)
-                            Children.Add(_layerViewModelFactory.Create((FolderViewModel) this, layer));
+                            Children.Add(_layerViewModelFactory.Create((FolderViewModel)this, layer));
                     }
 
                     existing?.UpdateProfileElements();

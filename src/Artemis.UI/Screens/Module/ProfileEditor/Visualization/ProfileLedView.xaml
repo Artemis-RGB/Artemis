@@ -49,7 +49,7 @@
         </Path>
 
         <!-- Selection -->
-        <Path Data="{Binding DisplayGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="1">
+        <Path Data="{Binding DisplayGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="1" StrokeLineJoin="Round">
             <Path.Style>
                 <Style TargetType="{x:Type Path}">
                     <Style.Triggers>
