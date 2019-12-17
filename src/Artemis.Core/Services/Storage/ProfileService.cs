@@ -95,9 +95,6 @@ namespace Artemis.Core.Services.Storage
                     folder.ApplyToEntity();
                 foreach (var layer in profile.GetAllLayers())
                     layer.ApplyToEntity();
-
-                if (_surfaceService.ActiveSurface != null)
-                    profile.PopulateLeds(_surfaceService.ActiveSurface);
             }
 
             _profileRepository.Save(profile.ProfileEntity);

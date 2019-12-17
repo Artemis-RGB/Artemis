@@ -98,7 +98,7 @@ namespace Artemis.Core.Models.Profile
             {
                 _layerShape = value;
                 if (Path != null)
-                    _layerShape.CalculateRenderProperties();
+                    CalculateRenderProperties();
             }
         }
 
@@ -221,7 +221,13 @@ namespace Artemis.Core.Models.Profile
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
+            {
+                Rectangle = SKRect.Empty;
+                AbsoluteRectangle = SKRect.Empty;
+                Path = new SKPath();
+                OnRenderPropertiesUpdated();
                 return;
+            }
 
             // Determine to top-left and bottom-right
             var minX = Leds.Min(l => l.AbsoluteRenderRectangle.Left);
@@ -237,6 +243,7 @@ namespace Artemis.Core.Models.Profile
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             Path = path;
+            LayerShape.CalculateRenderProperties();
             OnRenderPropertiesUpdated();
         }
 
@@ -248,10 +255,16 @@ namespace Artemis.Core.Models.Profile
         #region Events
 
         public event EventHandler RenderPropertiesUpdated;
+        public event EventHandler ShapePropertiesUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
             RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnShapePropertiesUpdated()
+        {
+            ShapePropertiesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

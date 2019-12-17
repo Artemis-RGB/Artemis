@@ -139,7 +139,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     // Remove layers that no longer exist
                     var toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
                     foreach (var profileLayerViewModel in toRemove)
+                    {
+                        profileLayerViewModel.Dispose();
                         CanvasViewModels.Remove(profileLayerViewModel);
+                    }
                 }
             });
         }

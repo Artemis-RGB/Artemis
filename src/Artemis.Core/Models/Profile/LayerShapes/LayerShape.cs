@@ -9,8 +9,6 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         protected LayerShape(Layer layer)
         {
             Layer = layer;
-
-            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
         }
 
         protected LayerShape(Layer layer, ShapeEntity shapeEntity)
@@ -19,14 +17,8 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             Anchor = new SKPoint(shapeEntity.Anchor?.X ?? 0, shapeEntity.Anchor?.Y ?? 0);
             Position = new SKPoint(shapeEntity.Position?.X ?? 0, shapeEntity.Position?.Y ?? 0);
             Size = new SKSize(shapeEntity.Width, shapeEntity.Height);
-
-            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
         }
 
-        private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
-        {
-            CalculateRenderProperties();
-        }
 
         /// <summary>
         ///     The layer this shape is attached to
