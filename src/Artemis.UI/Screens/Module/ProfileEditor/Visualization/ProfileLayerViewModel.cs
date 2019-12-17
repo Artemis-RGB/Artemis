@@ -7,6 +7,7 @@ using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using RGB.NET.Core;
+using SkiaSharp.Views.WPF;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
@@ -85,17 +86,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
             }
 
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
-            var rect = new Rect(
-                x + width * Layer.LayerShape.Position.X,
-                y + height * Layer.LayerShape.Position.Y,
-                width * Layer.LayerShape.Size.Width,
-                height * Layer.LayerShape.Size.Height
-            );
+            var skRect = Layer.LayerShape.GetUnscaledRectangle();
+            var rect = new Rect(skRect.Left, skRect.Top, skRect.Width, skRect.Height);
             var shapeGeometry = Geometry.Empty;
             switch (Layer.LayerShape)
             {
@@ -121,17 +113,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void CreateViewportRectangle()
         {
-            if (!Layer.Leds.Any())
+            if (!Layer.Leds.Any() || Layer.LayerShape == null)
             {
                 ViewportRectangle = Rect.Empty;
                 return;
             }
 
+
             var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
             var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
             var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
             var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-            ViewportRectangle = new Rect(x - x * Layer.LayerShape.Position.X, y - y * Layer.LayerShape.Position.Y, width, height);
+
+            var rect = new Rect(x, y, width, height);
+            ViewportRectangle = rect;
         }
 
         private Geometry CreateRectangleGeometry(ArtemisLed led)

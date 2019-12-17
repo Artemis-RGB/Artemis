@@ -7,6 +7,7 @@ using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Properties;
 using Artemis.UI.Services.Interfaces;
+using SkiaSharp;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
@@ -46,8 +47,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // Apply the selection to the selected layer layer
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
+                // If the layer has a shape, save it's size
+                var shapeSize = SKRect.Empty;
+                if (layer.LayerShape != null)
+                    shapeSize = layer.LayerShape.GetUnscaledRectangle();
                 layer.ClearLeds();
                 layer.AddLeds(selectedLeds);
+                // Restore the saved size
+                if (layer.LayerShape != null)
+                    layer.LayerShape.SetFromUnscaledRectangle(shapeSize);
+
                 ProfileEditorService.UpdateSelectedProfileElement();
             }
             // If no layer selected, apply it to a new layer in the selected folder

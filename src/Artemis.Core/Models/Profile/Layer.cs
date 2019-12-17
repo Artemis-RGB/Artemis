@@ -39,6 +39,8 @@ namespace Artemis.Core.Models.Profile
             Name = layerEntity.Name;
             Order = layerEntity.Order;
 
+            _leds = new List<ArtemisLed>();
+
             switch (layerEntity.ShapeEntity?.Type)
             {
                 case ShapeEntityType.Ellipse:
@@ -59,8 +61,6 @@ namespace Artemis.Core.Models.Profile
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            _leds = new List<ArtemisLed>();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -243,7 +243,7 @@ namespace Artemis.Core.Models.Profile
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             Path = path;
-            LayerShape.CalculateRenderProperties();
+            LayerShape?.CalculateRenderProperties();
             OnRenderPropertiesUpdated();
         }
 
