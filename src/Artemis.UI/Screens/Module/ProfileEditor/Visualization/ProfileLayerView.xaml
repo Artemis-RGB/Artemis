@@ -10,23 +10,23 @@
         <!-- The part of the layer's shape that falls outside the layer -->
         <Path Data="{Binding ShapeGeometry, Mode=OneWay}" >
             <Path.Fill>
-                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.25" />
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.05" />
             </Path.Fill>
             <Path.Stroke>
-                <SolidColorBrush Color="{StaticResource Accent700}" />
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
             </Path.Stroke>
         </Path>
 
         <!-- The part of the layer's shape that is inside the layer -->
         <Path Data="{Binding ShapeGeometry, Mode=OneWay}" >
             <Path.Fill>
-                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.25" />
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.35" />
             </Path.Fill>
             <Path.Stroke>
                 <SolidColorBrush Color="{StaticResource Accent700}" />
             </Path.Stroke>
             <Path.OpacityMask>
-                <VisualBrush >
+                <VisualBrush Viewport="{Binding ViewportRectangle}" ViewportUnits="Absolute">
                     <VisualBrush.Visual>
                         <Path Data="{Binding LayerGeometry, Mode=OneWay}" ClipToBounds="False" Fill="Black" />
                     </VisualBrush.Visual>

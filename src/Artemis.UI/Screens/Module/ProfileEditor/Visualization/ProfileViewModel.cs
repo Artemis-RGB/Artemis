@@ -183,7 +183,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 lock (CanvasViewModels)
                 {
                     foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
-                        CanvasViewModels.Move(CanvasViewModels.IndexOf(device), device.ZIndex - 1);
+                    {
+                        var newIndex = Math.Max(device.ZIndex - 1, CanvasViewModels.Count - 1);
+                        CanvasViewModels.Move(CanvasViewModels.IndexOf(device), newIndex);
+                    }
                 }
             });
         }

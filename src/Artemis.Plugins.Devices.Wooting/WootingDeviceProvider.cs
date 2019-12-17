@@ -19,11 +19,10 @@ namespace Artemis.Plugins.Devices.Wooting
 
         public override void EnablePlugin()
         {
-            // Disabled for now because the DLLs aren't on the repo
-            // PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(WootingRGBDevice<>), sender, args);
-            // RGB.NET.Devices.Wooting.WootingDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "wooting-rgb-sdk64.dll"));
-            // RGB.NET.Devices.Wooting.WootingDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "wooting-rgb-sdk.dll"));
-            // _rgbService.AddDeviceProvider(RgbDeviceProvider);
+            PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(WootingRGBDevice<>), sender, args);
+            RGB.NET.Devices.Wooting.WootingDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "wooting-rgb-sdk64.dll"));
+            RGB.NET.Devices.Wooting.WootingDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "wooting-rgb-sdk.dll"));
+            _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
         public override void DisablePlugin()
