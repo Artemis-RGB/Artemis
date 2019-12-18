@@ -11,6 +11,7 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services.Interfaces;
@@ -23,17 +24,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
+        private readonly IProfileLayerViewModelFactory _profileLayerViewModelFactory;
         private readonly ISurfaceService _surfaceService;
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
         private int _previousTool;
         private TimerUpdateTrigger _updateTrigger;
 
-        public ProfileViewModel(IProfileEditorService profileEditorService, ISurfaceService surfaceService, ISettingsService settingsService, IEventAggregator eventAggregator)
+        public ProfileViewModel(IProfileEditorService profileEditorService,
+            ISurfaceService surfaceService,
+            ISettingsService settingsService,
+            IEventAggregator eventAggregator,
+            IProfileLayerViewModelFactory profileLayerViewModelFactory)
         {
             _profileEditorService = profileEditorService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
+            _profileLayerViewModelFactory = profileLayerViewModelFactory;
 
             Execute.OnUIThreadSync(() =>
             {
@@ -133,7 +140,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     foreach (var layer in layers)
                     {
                         if (layerViewModels.All(vm => vm.Layer != layer))
-                            CanvasViewModels.Add(new ProfileLayerViewModel(layer));
+                            CanvasViewModels.Add(_profileLayerViewModelFactory.Create(layer));
                     }
 
                     // Remove layers that no longer exist

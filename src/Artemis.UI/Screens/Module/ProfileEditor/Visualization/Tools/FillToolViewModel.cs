@@ -25,15 +25,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // Find out if the click is inside a layer and if so, fill it
             var position = e.GetPosition((IInputElement) sender);
             var panZoomVm = ProfileViewModel.PanZoomViewModel;
-
             var layer = ProfileEditorService.SelectedProfile
                 .GetAllLayers()
                 .FirstOrDefault(l => l.Leds.Any(
                     led => panZoomVm.TransformContainingRect(led.RgbLed.AbsoluteLedRectangle).Contains(position))
                 );
 
-            if (layer != null)
-                layer.LayerShape = new Fill(layer);
+            if (layer == null) 
+                return;
+            layer.LayerShape = new Fill(layer);
+            ProfileEditorService.UpdateSelectedProfileElement();
         }
     }
 }

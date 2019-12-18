@@ -45,8 +45,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
+                // Ensure the shape is an ellipse, we're all about ellipses up here
                 if (!(layer.LayerShape is Ellipse))
                     layer.LayerShape = new Ellipse(layer);
+
+                // Apply the drag rectangle
                 layer.LayerShape.SetFromUnscaledRectangle(DragRectangle.ToSKRect());
                 ProfileEditorService.UpdateSelectedProfileElement();
             }

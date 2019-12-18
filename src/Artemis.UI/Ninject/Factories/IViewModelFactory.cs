@@ -4,6 +4,7 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
 using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
+using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 
 namespace Artemis.UI.Ninject.Factories
@@ -36,5 +37,10 @@ namespace Artemis.UI.Ninject.Factories
     public interface ILayerViewModelFactory : IViewModelFactory
     {
         LayerViewModel Create(TreeItemViewModel parent, ProfileElement folder);
+    }
+
+    public interface IProfileLayerViewModelFactory : IViewModelFactory
+    {
+        ProfileLayerViewModel Create(Layer layer);
     }
 }

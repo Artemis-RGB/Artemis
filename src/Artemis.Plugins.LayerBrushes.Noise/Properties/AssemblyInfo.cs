@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Artemis.Plugins.LayerElements.Animations")]
+[assembly: AssemblyTitle("Artemis.Plugins.LayerBrushes.Noise")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Artemis.Plugins.LayerElements.Animations")]
+[assembly: AssemblyProduct("Artemis.Plugins.LayerBrushes.Noise")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6fe5ded5-d62e-4811-985f-644124fceefe")]
+[assembly: Guid("7f4c7ab0-4c9b-452d-afed-34544c903def")]
 
 // Version information for an assembly consists of the following four values:
 //
