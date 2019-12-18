@@ -60,7 +60,10 @@ namespace Artemis.UI.Screens
             paletteHelper.SetTheme(theme);
 
             var extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
+            // That's nice, then don't use it in your own examples and provide a working alternative
+            #pragma warning disable 612
             extensionsPaletteHelper.SetLightDark(windowsTheme == ThemeWatcher.WindowsTheme.Dark);
+            #pragma warning restore 612
         }
 
         public void WindowDeactivated()

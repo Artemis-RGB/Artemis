@@ -107,6 +107,9 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
         public SKRect GetUnscaledRectangle()
         {
+            if (!Layer.Leds.Any())
+                return SKRect.Empty;
+
             var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
             var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
             var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;

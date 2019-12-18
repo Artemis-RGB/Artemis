@@ -6,20 +6,24 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
+using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
-using SkiaSharp.Views.WPF;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileLayerViewModel : CanvasViewModel
     {
-        public ProfileLayerViewModel(Layer layer)
+        private readonly IProfileEditorService _profileEditorService;
+
+        public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService)
         {
+            _profileEditorService = profileEditorService;
             Layer = layer;
 
             Update();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
         }
 
         public Layer Layer { get; }
@@ -28,9 +32,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry OpacityGeometry { get; set; }
         public Geometry ShapeGeometry { get; set; }
         public Rect ViewportRectangle { get; set; }
+        public bool IsSelected { get; set; }
 
         private void Update()
         {
+            IsSelected = _profileEditorService.SelectedProfileElement == Layer;
             CreateLayerGeometry();
             CreateShapeGeometry();
             CreateViewportRectangle();
@@ -118,8 +124,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 ViewportRectangle = Rect.Empty;
                 return;
             }
-
-
+            
             var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
             var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
             var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
@@ -174,6 +179,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
         {
             Update();
+        }
+
+        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
+        {
+            IsSelected = _profileEditorService.SelectedProfileElement == Layer;
         }
 
         public void Dispose()

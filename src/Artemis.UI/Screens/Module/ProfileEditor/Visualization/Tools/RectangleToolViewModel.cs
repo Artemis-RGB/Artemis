@@ -1,8 +1,11 @@
 ﻿using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.UI.Properties;
 using Artemis.UI.Services.Interfaces;
+using SkiaSharp.Views.WPF;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
@@ -32,6 +35,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 DragRectangle = new Rect(MouseDownStartPosition, position);
             else
                 DragRectangle = GetSquareRectBetweenPoints(MouseDownStartPosition, position);
+        }
+
+        public override void MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            base.MouseUp(sender, e);
+
+            if (ProfileEditorService.SelectedProfileElement is Layer layer)
+            {
+                // Ensure the shape is a rectangle
+                if (!(layer.LayerShape is Rectangle))
+                    layer.LayerShape = new Rectangle(layer);
+
+                // Apply the drag rectangle
+                layer.LayerShape.SetFromUnscaledRectangle(DragRectangle.ToSKRect());
+                ProfileEditorService.UpdateSelectedProfileElement();
+            }
         }
 
         public override void KeyUp(KeyEventArgs e)
