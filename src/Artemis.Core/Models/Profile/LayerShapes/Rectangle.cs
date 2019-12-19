@@ -20,6 +20,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             var rect = SKRect.Create(Position.X * width, Position.Y * height, Size.Width * width, Size.Height * height);
             var path = new SKPath();
             path.AddRect(rect);
+            path.Transform(SKMatrix.MakeTranslation(Layer.Rectangle.Left, Layer.Rectangle.Top));
 
             RenderPath = path;
             RenderRectangle = path.GetRect();

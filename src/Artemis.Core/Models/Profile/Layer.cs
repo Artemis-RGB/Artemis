@@ -118,6 +118,10 @@ namespace Artemis.Core.Models.Profile
                 return;
 
             canvas.Save();
+            canvas.ClipPath(Path);
+            // Placeholder
+            if (LayerShape?.RenderPath != null)
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint(){Color = new SKColor(255,0,0)});
             LayerBrush?.Render(canvas);
             canvas.Restore();
         }

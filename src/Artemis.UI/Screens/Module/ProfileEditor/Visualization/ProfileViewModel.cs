@@ -80,8 +80,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 // Remove the tool from the canvas
                 if (_activeToolViewModel != null)
                 {
-                    CanvasViewModels.Remove(_activeToolViewModel);
-                    NotifyOfPropertyChange(() => CanvasViewModels);
+                    lock (CanvasViewModels)
+                    {
+                        CanvasViewModels.Remove(_activeToolViewModel);
+                        NotifyOfPropertyChange(() => CanvasViewModels);
+                    }
                 }
 
                 // Set the new tool
@@ -89,8 +92,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 // Add the new tool to the canvas
                 if (_activeToolViewModel != null)
                 {
-                    CanvasViewModels.Add(_activeToolViewModel);
-                    NotifyOfPropertyChange(() => CanvasViewModels);
+                    lock (CanvasViewModels)
+                    {
+                        CanvasViewModels.Add(_activeToolViewModel);
+                        NotifyOfPropertyChange(() => CanvasViewModels);
+                    }
                 }
             }
         }

@@ -308,7 +308,7 @@ namespace Artemis.Core.Services
 
         public Plugin GetDevicePlugin(IRGBDevice rgbDevice)
         {
-            return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices.Contains(rgbDevice));
+            return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices != null && d.RgbDeviceProvider.Devices.Contains(rgbDevice));
         }
 
         public void Dispose()

@@ -45,7 +45,12 @@ namespace Artemis.UI.Screens.Settings
             TargetFrameRates = new List<Tuple<string, int>>();
             for (var i = 10; i <= 30; i += 5)
                 TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
+
+            // Anything else is kinda broken right now
+            SampleSizes = new List<int> {1, 9};
         }
+
+        public List<int> SampleSizes { get; set; }
 
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
 
@@ -61,7 +66,7 @@ namespace Artemis.UI.Screens.Settings
         {
             get => TargetFrameRates.FirstOrDefault(t => Math.Abs(t.Item2 - TargetFrameRate) < 0.01);
             set => TargetFrameRate = value.Item2;
-        }
+        } 
 
         public double RenderScale
         {
@@ -82,6 +87,16 @@ namespace Artemis.UI.Screens.Settings
             {
                 _settingsService.GetSetting("Core.TargetFrameRate", 25).Value = value;
                 _settingsService.GetSetting("Core.TargetFrameRate", 25).Save();
+            }
+        }
+
+        public int SampleSize
+        {
+            get => _settingsService.GetSetting("Core.SampleSize", 1).Value;
+            set
+            {
+                _settingsService.GetSetting("Core.SampleSize", 1).Value = value;
+                _settingsService.GetSetting("Core.SampleSize", 1).Save();
             }
         }
 
