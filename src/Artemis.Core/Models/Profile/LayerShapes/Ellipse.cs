@@ -21,6 +21,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
             var path = new SKPath();
             path.AddOval(rect);
+            path.Transform(SKMatrix.MakeTranslation(Layer.Rectangle.Left, Layer.Rectangle.Top));
 
             RenderPath = path;
             RenderRectangle = path.GetRect();

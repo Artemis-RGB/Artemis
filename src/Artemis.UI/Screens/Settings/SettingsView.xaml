@@ -130,6 +130,28 @@
                                     <ComboBox Width="80" SelectedItem="{Binding SelectedTargetFrameRate}" ItemsSource="{Binding TargetFrameRates}" DisplayMemberPath="Item1"/>
                                 </StackPanel>
                             </Grid>
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">LED sample size</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                        Sets the amount of samples that is taken to determine each LEDs color. 
+                                        Best you leave it on 1 but included for completeness, a higher value increases CPU-usage quite rapidly.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <ComboBox Width="80" SelectedItem="{Binding SampleSize}" ItemsSource="{Binding SampleSizes}"/>
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </materialDesign:Card>
                 </StackPanel>

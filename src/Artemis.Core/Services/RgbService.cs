@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
-using RGB.NET.Brushes;
-using RGB.NET.Brushes.Gradients;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Serilog;
@@ -21,6 +18,7 @@ namespace Artemis.Core.Services
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly ILogger _logger;
         private readonly PluginSetting<double> _renderScaleSetting;
+        private readonly PluginSetting<int> _sampleSizeSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
         private readonly TimerUpdateTrigger _updateTrigger;
         private ListLedGroup _surfaceLedGroup;
@@ -30,9 +28,10 @@ namespace Artemis.Core.Services
             _logger = logger;
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 1.0);
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
+            _sampleSizeSetting = settingsService.GetSetting("Core.SampleSize", 1);
 
             Surface = RGBSurface.Instance;
-            
+
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
@@ -105,7 +104,7 @@ namespace Artemis.Core.Services
             if (_surfaceLedGroup == null)
             {
                 // Apply the application wide brush and decorator
-                BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value));
+                BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value), _sampleSizeSetting);
                 _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
                 return;
             }
