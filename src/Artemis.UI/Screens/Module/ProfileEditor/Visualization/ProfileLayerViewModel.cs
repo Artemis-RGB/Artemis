@@ -52,7 +52,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
             }
 
-            var layerGeometry = Geometry.Empty;
+            var group = new GeometryGroup();
+            group.FillRule = FillRule.Nonzero;
+
             foreach (var led in Layer.Leds)
             {
                 Geometry geometry;
@@ -74,8 +76,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         throw new ArgumentOutOfRangeException();
                 }
 
-                layerGeometry = Geometry.Combine(layerGeometry, geometry, GeometryCombineMode.Union, null, 5, ToleranceType.Absolute);
+                group.Children.Add(geometry);
             }
+
+            var layerGeometry = group.GetOutlinedPathGeometry();
 
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
             layerGeometry.Freeze();
@@ -124,7 +128,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 ViewportRectangle = Rect.Empty;
                 return;
             }
-            
+
             var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
             var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
             var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
