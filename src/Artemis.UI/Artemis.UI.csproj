@@ -201,6 +201,7 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\VisualizationToolViewModel.cs" />
+    <Compile Include="Screens\Settings\Tabs\Plugins\PluginSettingsViewModel.cs" />
     <Compile Include="Screens\Sidebar\SidebarView.xaml.cs">
       <DependentUpon>SidebarView.xaml</DependentUpon>
     </Compile>
@@ -533,5 +534,5 @@
   </Target>
   <Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
     <RemoveDir Directories="@(FluentValidationExcludedCultures->'$(OutputPath)%(Filename)')" />
-  </Target>  
+  </Target>
 </Project>

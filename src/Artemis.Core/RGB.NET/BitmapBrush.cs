@@ -46,6 +46,7 @@ namespace Artemis.Core.RGB.NET
         public Dictionary<BrushRenderTarget, Color> RenderedTargets { get; } = new Dictionary<BrushRenderTarget, Color>();
 
         public Scale Scale { get; set; }
+        public Scale RenderedScale { get; private set; }
         public SKBitmap Bitmap { get; private set; }
 
         #endregion
@@ -85,7 +86,6 @@ namespace Artemis.Core.RGB.NET
         {
             var sampleSize = _sampleSizeSetting.Value;
             var sampleDepth = Math.Sqrt(sampleSize).RoundToInt();
-            var pixelSpan = Bitmap.GetPixelSpan();
 
             foreach (var renderTarget in renderTargets)
             {
@@ -94,7 +94,8 @@ namespace Artemis.Core.RGB.NET
                     (float) ((renderTarget.Rectangle.Location.X + 4) * Scale.Horizontal),
                     (float) ((renderTarget.Rectangle.Location.Y + 4) * Scale.Vertical),
                     (float) ((renderTarget.Rectangle.Size.Width - 8) * Scale.Horizontal),
-                    (float) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical));
+                    (float) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical)
+                );
 
                 var verticalSteps = rect.Height / (sampleDepth - 1);
                 var horizontalSteps = rect.Width / (sampleDepth - 1);
@@ -103,6 +104,8 @@ namespace Artemis.Core.RGB.NET
                 var r = 0;
                 var g = 0;
                 var b = 0;
+
+                // TODO: Compare this with LINQ, might be quicker and cleaner
                 for (var horizontalStep = 0; horizontalStep < sampleDepth; horizontalStep++)
                 {
                     for (var verticalStep = 0; verticalStep < sampleDepth; verticalStep++)
@@ -112,11 +115,11 @@ namespace Artemis.Core.RGB.NET
                         if (x < 0 || x > Bitmap.Width || y < 0 || y > Bitmap.Height)
                             continue;
 
-                        var (pixelA, pixelR, pixelG, pixelB) = GetRgbColor(pixelSpan, x, y);
-                        a += pixelA;
-                        r += pixelR;
-                        g += pixelG;
-                        b += pixelB;
+                        var color = Bitmap.GetPixel(x, y);
+                        a += color.Alpha;
+                        r += color.Red;
+                        g += color.Green;
+                        b += color.Blue;
 
                         // Uncomment to view the sample pixels in the debugger, need a checkbox in the actual debugger but this was a quickie
                         // Bitmap.SetPixel(x, y, new SKColor(0, 255, 0));
@@ -127,28 +130,11 @@ namespace Artemis.Core.RGB.NET
             }
         }
 
-        public Scale RenderedScale { get; private set; }
-
         private void CreateBitmap(Rectangle rectangle)
         {
             var width = Math.Min((rectangle.Location.X + rectangle.Size.Width) * Scale.Horizontal, 4096);
             var height = Math.Min((rectangle.Location.Y + rectangle.Size.Height) * Scale.Vertical, 4096);
             Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Tuple<int, int, int, int> GetRgbColor(in ReadOnlySpan<byte> pixelSpan, float x, float y)
-        {
-            var index = ((int) y * Bitmap.Width + (int) x) * 4;
-            if (index + 3 > pixelSpan.Length)
-                return new Tuple<int, int, int, int>(0, 0, 0, 0);
-
-            var b = pixelSpan[index];
-            var g = pixelSpan[index + 1];
-            var r = pixelSpan[index + 2];
-            var a = pixelSpan[index + 3];
-
-            return new Tuple<int, int, int, int>(a, r, g, b);
         }
 
         /// <inheritdoc />
