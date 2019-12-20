@@ -78,8 +78,55 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}">
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}"  Width="150">
                                         SHOW DEBUGGER
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Logs</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                        Opens the directory where logs are stored.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}"  Width="150">
+                                        SHOW LOGS
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Application files</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                        Opens the directory where application files like plugins and settings are stored.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDataFolder}" Width="150">
+                                        SHOW APP FILES
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -106,7 +153,7 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ComboBox Width="80" SelectedItem="{Binding SelectedRenderScale}" ItemsSource="{Binding RenderScales}" DisplayMemberPath="Item1"/>
+                                    <ComboBox Width="80" SelectedItem="{Binding SelectedRenderScale}" ItemsSource="{Binding RenderScales}" DisplayMemberPath="Item1" />
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -127,7 +174,7 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ComboBox Width="80" SelectedItem="{Binding SelectedTargetFrameRate}" ItemsSource="{Binding TargetFrameRates}" DisplayMemberPath="Item1"/>
+                                    <ComboBox Width="80" SelectedItem="{Binding SelectedTargetFrameRate}" ItemsSource="{Binding TargetFrameRates}" DisplayMemberPath="Item1" />
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -144,12 +191,11 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">LED sample size</TextBlock>
                                     <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                        Sets the amount of samples that is taken to determine each LEDs color. 
-                                        Best you leave it on 1 but included for completeness, a higher value increases CPU-usage quite rapidly.
+                                        Sets the amount of samples that is taken to determine each LEDs color. This means a LED can be semi off if it is not completely covered by a color.
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ComboBox Width="80" SelectedItem="{Binding SampleSize}" ItemsSource="{Binding SampleSizes}"/>
+                                    <ComboBox Width="80" SelectedItem="{Binding SampleSize}" ItemsSource="{Binding SampleSizes}" />
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -159,64 +205,37 @@
         </TabItem>
         <TabItem Header="PLUGINS" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
             <DockPanel Margin="15">
-                <TextBlock DockPanel.Dock="Top">Below you view and manage your plugins. To find and install new plugins use the workshop (TODO).</TextBlock>
+                <TextBlock DockPanel.Dock="Top">The list below shows all loaded plugins. You can't really edit it right now. If you're missing something, view your logs folder.</TextBlock>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <DataGrid Margin="0 8 0 0"
-                              ItemsSource="{Binding Items3}"
+                              ItemsSource="{Binding Plugins}"
                               CanUserSortColumns="True"
                               CanUserAddRows="False"
                               AutoGenerateColumns="False"
                               materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                               materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding IsSelected}"
+                            <DataGridTextColumn Binding="{Binding Type}" Header="Type"  IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Description}" Header="Description" IsReadOnly="True" Width="*"/>
+                            <DataGridTextColumn Binding="{Binding Version}" Header="Version" IsReadOnly="True"/>
+                            <DataGridCheckBoxColumn Header="Enabled"
+                                                    Binding="{Binding IsEnabled}"
                                                     ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
                                                     EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                                <DataGridCheckBoxColumn.Header>
-                                    <!--padding to allow hit test to pass thru for sorting -->
-                                    <Border Background="Transparent" Padding="6 0 6 0" HorizontalAlignment="Center">
-                                        <CheckBox HorizontalAlignment="Center"
-                                                  DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext}"
-                                                  IsChecked="{Binding IsAllItems3Selected}" />
-                                    </Border>
-                                </DataGridCheckBoxColumn.Header>
-                            </DataGridCheckBoxColumn>
-                            <DataGridTextColumn Binding="{Binding Code}" Header="Code" EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
-                            <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
-                            <materialDesign:MaterialDataGridTextColumn Binding="{Binding Name}"
-                                                                       Header="Name"
-                                                                       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" />
-                            <!-- set a max length to get an indicator in the editor -->
-                            <materialDesign:MaterialDataGridTextColumn Binding="{Binding Description}"
-                                                                       Header="Description"
-                                                                       MaxLength="255"
-                                                                       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}" />
-                            <materialDesign:MaterialDataGridTextColumn Binding="{Binding Numeric}"
-                                                                       Header="Number with long header"
-                                                                       Width="120"
-                                                                       EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
-                                <DataGridTextColumn.HeaderStyle>
+                                <DataGridCheckBoxColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                         <Setter Property="ContentTemplate">
                                             <Setter.Value>
                                                 <DataTemplate>
-                                                    <TextBlock TextWrapping="Wrap" Text="{Binding}" TextAlignment="Right" />
+                                                    <TextBlock Text="{Binding}" TextAlignment="Right" />
                                                 </DataTemplate>
                                             </Setter.Value>
                                         </Setter>
                                     </Style>
-                                </DataGridTextColumn.HeaderStyle>
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="HorizontalAlignment" Value="Right" />
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </materialDesign:MaterialDataGridTextColumn>
-                            <!-- use custom combo box column to get better combos. Use ItemsSourceBinding as your binding template to be applied to each combo -->
-                            <materialDesign:MaterialDataGridComboBoxColumn Header="Food"
-                                                                           SelectedValueBinding="{Binding Food}"
-                                                                           ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Foods}" />
+                                </DataGridCheckBoxColumn.HeaderStyle>
+                            </DataGridCheckBoxColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>
