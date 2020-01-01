@@ -61,25 +61,8 @@
 
             <!-- Bottom panels -->
             <Grid Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <!-- Layer elements -->
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                    <!-- Element properties resize -->
-                    <ColumnDefinition Width="Auto" />
-                    <!-- Element properties -->
-                    <ColumnDefinition Width="{Binding ElementPropertiesWidth.Value, Mode=TwoWay}" MinWidth="100" />
-                </Grid.ColumnDefinitions>
-
                 <!-- Layer elements -->
                 <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                    <ContentControl s:View.Model="{Binding LayerElementsViewModel}" />
-                </materialDesign:Card>
-
-                <!-- Element properties resize -->
-                <GridSplitter Grid.Column="1" Width="5" Margin="5 0" HorizontalAlignment="Stretch" Cursor="SizeWE" />
-
-                <!-- Element properties -->
-                <materialDesign:Card Grid.Column="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                     <ContentControl s:View.Model="{Binding LayerPropertiesViewModel}" />
                 </materialDesign:Card>
             </Grid>
