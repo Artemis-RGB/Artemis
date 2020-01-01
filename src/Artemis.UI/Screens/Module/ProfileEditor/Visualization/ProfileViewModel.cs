@@ -156,6 +156,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         profileLayerViewModel.Dispose();
                         CanvasViewModels.Remove(profileLayerViewModel);
                     }
+
+                    // Sort the devices by ZIndex
+                    Execute.PostToUIThread(() =>
+                    {
+                        foreach (var device in Devices.ToList())
+                            CanvasViewModels.Move(CanvasViewModels.IndexOf(device), device.Device.ZIndex - 1);
+                    });
                 }
             });
         }
@@ -169,7 +176,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             foreach (var surfaceDeviceConfiguration in devices)
             {
                 // Create VMs for missing devices
-                var viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
+                ProfileDeviceViewModel viewModel;
+                lock (CanvasViewModels)
+                {
+                    viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
+                }
                 if (viewModel == null)
                 {
                     // Create outside the UI thread to avoid slowdowns as much as possible

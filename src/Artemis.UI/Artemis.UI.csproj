@@ -159,10 +159,19 @@
       <DependentUpon>LayerPropertiesView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\Controls\TimelineTime.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.xaml.cs">
       <DependentUpon>LayerPropertiesTimelineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeView.xaml.cs">
+      <DependentUpon>TimelineKeyframeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.xaml.cs">
+      <DependentUpon>TimelinePropertyRailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\CanvasViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerView.xaml.cs">
       <DependentUpon>ProfileLayerView.xaml</DependentUpon>
@@ -298,6 +307,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
