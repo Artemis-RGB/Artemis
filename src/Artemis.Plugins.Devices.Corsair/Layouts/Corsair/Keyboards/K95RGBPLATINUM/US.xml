@@ -456,8 +456,8 @@
         <LedImage Id="Keyboard_Custom17" Image="Empty.png" />
         <LedImage Id="Keyboard_Custom18" Image="Empty.png" />
         <LedImage Id="Keyboard_Custom19" Image="Empty.png" />
-        <LedImage Id="Keyboard_Backslash" Image="Strafe_Keys\Blackslash_Pipe.png" />
-        <LedImage Id="Keyboard_Enter" Image="Strafe_Keys\NumEnter.png" />
+        <LedImage Id="Keyboard_Backslash" Image="Strafe_Keys\Blackslash_Pipe_Wide.png" />
+        <LedImage Id="Keyboard_Enter" Image="Strafe_Keys\EnterNarrow.png" />
       </LedImages>
     </LedImageLayout>
   </LedImageLayouts>
