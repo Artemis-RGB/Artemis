@@ -126,7 +126,7 @@ namespace Artemis.UI.Screens.Settings
         {
             _windowManager.ShowWindow(_kernel.Get<DebugViewModel>());
         }
-
+        
         public void ShowLogsFolder()
         {
             Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));

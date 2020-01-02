@@ -9,36 +9,6 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance timeline:LayerPropertiesTimelineViewModel}">
-    <UserControl.Resources>
-        <Style x:Key="ItemsControlVirtualizedStyle" TargetType="ItemsControl">
-            <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True" />
-            <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ItemsControl">
-                        <Border
-                            BorderThickness="{TemplateBinding Border.BorderThickness}"
-                            Padding="{TemplateBinding Control.Padding}"
-                            BorderBrush="{TemplateBinding Border.BorderBrush}"
-                            Background="{TemplateBinding Panel.Background}"
-                            SnapsToDevicePixels="True">
-                            <ScrollViewer Padding="{TemplateBinding Control.Padding}" Focusable="False">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -48,15 +18,24 @@
         <ScrollViewer x:Name="Keyframes"
                       Grid.Row="0"
                       HorizontalScrollBarVisibility="Visible"
-                      VerticalScrollBarVisibility="Hidden"
-                      Padding="5 0 5 0">
-            <StackPanel>
-                <controls:TimelineTime Height="30" Fill="{StaticResource MaterialDesignBody}" PixelsPerSecond="{Binding PixelsPerSecond}"/>
-
+                      VerticalScrollBarVisibility="Hidden">
+            <StackPanel x:Name="KeyframesContainer">
+                <!-- Time caret -->
+                <Canvas ZIndex="10" Height="25" Margin="{Binding TimeCaretPosition}">
+                    <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
+                    <Line X1="0" X2="0" Y1="0" Y2="10000" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                </Canvas>
+                <!-- Time -->
+                <controls:TimelineTime Height="30"
+                                       Fill="{DynamicResource MaterialDesignBody}"
+                                       PixelsPerSecond="{Binding PixelsPerSecond}"
+                                       HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=Keyframes}"
+                                       VisibleWidth="{Binding ActualWidth, ElementName=Keyframes}" />
+                <!-- Keyframes -->
                 <ItemsControl ItemsSource="{Binding TimelinePropertyRailViewModels}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ContentControl s:View.Model="{Binding}" />
+                            <ContentControl s:View.Model="{Binding}" HorizontalAlignment="Stretch" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

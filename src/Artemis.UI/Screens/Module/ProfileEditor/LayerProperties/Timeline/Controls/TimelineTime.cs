@@ -18,12 +18,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline.Contr
             new FrameworkPropertyMetadata(default(int), FrameworkPropertyMetadataOptions.AffectsRender));
 
 
-        public static readonly DependencyProperty FrameStartProperty = DependencyProperty.Register(nameof(FrameStart), typeof(int), typeof(TimelineTime),
-            new FrameworkPropertyMetadata(default(int), FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.Register(nameof(HorizontalOffset), typeof(double), typeof(TimelineTime),
+            new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty VisibleWidthProperty = DependencyProperty.Register(nameof(VisibleWidth), typeof(double), typeof(TimelineTime),
+            new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsRender));
 
         private double _subd1;
         private double _subd2;
         private double _subd3;
+
 
         public Brush Fill
         {
@@ -43,31 +47,45 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline.Contr
             set => SetValue(PixelsPerSecondProperty, value);
         }
 
-        public int FrameStart
+        public double HorizontalOffset
         {
-            get => (int) GetValue(FrameStartProperty);
-            set => SetValue(FrameStartProperty, value);
+            get => (double) GetValue(HorizontalOffsetProperty);
+            set => SetValue(HorizontalOffsetProperty, value);
         }
 
-        // TODO: Does this get called when the size changes?
+        public double VisibleWidth
+        {
+            get => (double) GetValue(VisibleWidthProperty);
+            set => SetValue(VisibleWidthProperty, value);
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
+            SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             base.OnRender(drawingContext);
             UpdateTimeScale();
 
             var linePen = new Pen(Fill, 1);
-            var width = RenderSize.Width;
+            var width = HorizontalOffset + VisibleWidth;
+            var frameStart = 0;
 
             var units = PixelsPerSecond / _subd1;
-            var offsetUnits = FrameStart * PixelsPerSecond % units;
+            var offsetUnits = frameStart * PixelsPerSecond % units;
 
             // Labels
             var count = (width + offsetUnits) / units;
             for (var i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits;
-                var t = TimeSpan.FromSeconds((i * units - offsetUnits) / PixelsPerSecond + FrameStart);
-                if (PixelsPerSecond > 200)
+                var x = i * units - offsetUnits + 1;
+                // Add a 100px margin to allow the text to partially render when needed
+                if (x < HorizontalOffset - 100 || x > HorizontalOffset + width)
+                    continue;
+                
+                var t = TimeSpan.FromSeconds((i * units - offsetUnits) / PixelsPerSecond + frameStart);
+                // 0.00 is always formatted as 0.00
+                if (t == TimeSpan.Zero)
+                    RenderLabel(drawingContext, "0.00", x);
+                else if (PixelsPerSecond > 200)
                     RenderLabel(drawingContext, $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}", x);
                 else if (PixelsPerSecond > 60)
                     RenderLabel(drawingContext, $"{Math.Floor(t.TotalSeconds):00}.{t.Milliseconds:000}", x);
@@ -80,8 +98,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline.Contr
             count = (width + offsetUnits) / units;
             for (var i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits;
-                drawingContext.DrawLine(linePen, new Point(x, 15), new Point(x, 30));
+                var x = i * units - offsetUnits + 1;
+                if (x > HorizontalOffset && x < HorizontalOffset + width)
+                    drawingContext.DrawLine(linePen, new Point(x, 20), new Point(x, 30));
             }
 
             // Small ticks
@@ -91,8 +110,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline.Contr
             for (var i = 0; i < count; i++)
             {
                 if (Math.Abs(i % mul) < 0.001) continue;
-                var x = i * units - offsetUnits;
-                drawingContext.DrawLine(linePen, new Point(x, 22), new Point(x, 30));
+                var x = i * units - offsetUnits + 1;
+                if (x > HorizontalOffset && x < HorizontalOffset + width)
+                    drawingContext.DrawLine(linePen, new Point(x, 25), new Point(x, 30));
             }
         }
 
@@ -100,7 +120,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline.Contr
         {
             var typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
             var formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-            drawingContext.DrawText(formattedText, new Point(x, 0));
+            if (x == 1)
+                drawingContext.DrawText(formattedText, new Point(x, 2));
+            else
+                drawingContext.DrawText(formattedText, new Point(x - formattedText.Width /2, 2));
+           
         }
 
         private void UpdateTimeScale()

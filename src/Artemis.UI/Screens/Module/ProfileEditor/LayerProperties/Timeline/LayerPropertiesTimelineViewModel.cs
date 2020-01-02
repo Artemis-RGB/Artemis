@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Markup;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
@@ -11,6 +14,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             TimelinePropertyRailViewModels = new BindableCollection<TimelinePropertyRailViewModel>();
 
+            TimeCaretTime = TimeSpan.FromSeconds(3);
             CreateTestValues();
             Update();
         }
@@ -23,6 +27,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 _pixelsPerSecond = value;
                 Update();
             }
+        }
+
+        public TimeSpan TimeCaretTime { get; set; }
+        public Thickness TimeCaretPosition
+        {
+            get => new Thickness(TimeCaretTime.TotalSeconds * PixelsPerSecond, 0, 0, 0);
+            set => TimeCaretTime = TimeSpan.FromSeconds(value.Left / PixelsPerSecond);
         }
 
         public BindableCollection<TimelinePropertyRailViewModel> TimelinePropertyRailViewModels { get; set; }
