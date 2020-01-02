@@ -172,6 +172,10 @@
       <DependentUpon>TimelinePropertyRailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.xaml.cs">
+      <DependentUpon>TimelinePropertyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\CanvasViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerView.xaml.cs">
       <DependentUpon>ProfileLayerView.xaml</DependentUpon>
@@ -315,6 +319,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
