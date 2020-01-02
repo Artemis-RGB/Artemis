@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
@@ -13,6 +14,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels { get; set; }
+        public double Width { get; set; }
 
         public void CreateTestValues()
         {
@@ -31,8 +33,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
                 timelineKeyframeViewModel.Update(pixelsPerSecond);
 
-            if (pixelsPerSecond == 10)
-                Console.WriteLine();
+            // End time is the last keyframe + 10 sec
+            var lastKeyFrame = TimelineKeyframeViewModels.OrderByDescending(t => t.Position).FirstOrDefault();
+            var endTime = lastKeyFrame?.Position.Add(new TimeSpan(0, 0, 0, 10)) ?? TimeSpan.FromSeconds(10);
+
+            Width = endTime.TotalSeconds * pixelsPerSecond;
         }
     }
 }

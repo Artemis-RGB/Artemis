@@ -9,8 +9,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:TimelinePropertyRailViewModel}">
-    <Border BorderThickness="0,1" BorderBrush="{StaticResource MaterialDesignTextAreaBorder}" Height="25" Margin="0,0,0,-1">
-        <ItemsControl ItemsSource="{Binding TimelineKeyframeViewModels}">
+    <Border BorderThickness="0,1" BorderBrush="{DynamicResource MaterialDesignDivider}" Height="25" Margin="0,0,0,-1">
+        <ItemsControl ItemsSource="{Binding TimelineKeyframeViewModels}" 
+                      Width="{Binding Width}" 
+                      MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"
+                      Background="{DynamicResource MaterialDesignToolBarBackground}" 
+                      HorizontalAlignment="Left">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />
