@@ -12,7 +12,7 @@
     <AssemblyName>Artemis.Core</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	<ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
@@ -149,6 +149,7 @@
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="JsonConverters\SKColorConverter.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
+    <Compile Include="Models\Profile\Keyframe.cs" />
     <Compile Include="Models\Profile\LayerShapes\Ellipse.cs" />
     <Compile Include="Models\Profile\LayerShapes\Fill.cs" />
     <Compile Include="Models\Profile\LayerShapes\Polygon.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="Ninject\LoggerProvider.cs" />
     <Compile Include="Ninject\PluginSettingsProvider.cs" />
     <Compile Include="Ninject\SettingsServiceProvider.cs" />
+    <Compile Include="Models\Profile\LayerProperty.cs" />
     <Compile Include="Plugins\Abstract\ModuleDataModel.cs" />
     <Compile Include="Plugins\Abstract\ModuleViewModel.cs" />
     <Compile Include="Plugins\Abstract\ProfileModule.cs" />

@@ -24,5 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             InitializeComponent();
         }
+
+        // Keeping the scroll viewers in sync is up to the view, not a viewmodel concern
     }
 }
