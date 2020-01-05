@@ -1,13 +1,78 @@
 ﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerPropertiesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties"
              xmlns:s="https://github.com/canton7/Stylet"
-             mc:Ignorable="d" 
+             xmlns:timeline="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ContentControl s:View.Model="{Binding Timeline}" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left side -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Misc controls & time display -->
+            <StackPanel Grid.Row="0">
+                <TextBlock>A play button, current time etc. etc.!</TextBlock>
+            </StackPanel>
+
+            <!-- Properties tree -->
+            <ScrollViewer Grid.Row="1" x:Name="PropertyTreeScrollViewer">
+                <ContentControl s:View.Model="{Binding PropertyTree}" />
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Right side -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Timeline header -->
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+                <StackPanel>
+                    <!-- Caret -->
+                    <Canvas ZIndex="10" Height="25" Margin="{Binding TimeCaretPosition}" ClipToBounds="False">
+                        <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="10000" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                    </Canvas>
+                    <!-- Time -->
+                    <timeline:PropertyTimelineHeader Fill="{DynamicResource MaterialDesignBody}"
+                                                     PixelsPerSecond="{Binding PixelsPerSecond}"
+                                                     HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
+                                                     VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Timeline rails -->
+            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer">
+                <ContentControl s:View.Model="{Binding PropertyTimeline}" />
+            </ScrollViewer>
+
+            <!-- Zoom control -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="{Binding PixelsPerSecond}" VerticalAlignment="Center" />
+                <Slider Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="10"
+                        TickFrequency="5"
+                        Minimum="1"
+                        Maximum="600"
+                        Value="{Binding PixelsPerSecond}"
+                        Width="600" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

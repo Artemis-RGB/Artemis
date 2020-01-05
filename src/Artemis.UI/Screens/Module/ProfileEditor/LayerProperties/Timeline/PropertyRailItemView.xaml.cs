@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     /// <summary>
-    /// Interaction logic for LayerPropertiesTimelineView.xaml
+    /// Interaction logic for PropertyRailItemView.xaml
     /// </summary>
-    public partial class LayerPropertiesTimelineView : UserControl
+    public partial class PropertyTrackView : UserControl
     {
-        public LayerPropertiesTimelineView()
+        public PropertyTrackView()
         {
             InitializeComponent();
         }
