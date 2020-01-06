@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBlock Style="{StaticResource MaterialDesignSubheadingTextBlock}" Margin="10 5 0 -4">
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="10 5 0 -4">
                 Profile elements
             </TextBlock>
             <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />

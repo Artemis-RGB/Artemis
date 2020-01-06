@@ -37,6 +37,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
+        public string FormattedCurrentTime
+        {
+            get
+            {
+                if (PixelsPerSecond > 200)
+                    return $"{Math.Floor(CurrentTime.TotalSeconds):00}.{CurrentTime.Milliseconds:000}";
+                if (PixelsPerSecond > 60)
+                    return $"{Math.Floor(CurrentTime.TotalSeconds):00}.{CurrentTime.Milliseconds:000}";
+                return $"{Math.Floor(CurrentTime.TotalMinutes):0}:{CurrentTime.Seconds:00}";
+            }
+        }
+
         public int PixelsPerSecond
         {
             get => _pixelsPerSecond;

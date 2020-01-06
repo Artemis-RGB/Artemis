@@ -15,7 +15,6 @@
             <Setter Property="BorderBrush" Value="{x:Null}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
-            <Setter Property="Padding" Value="1" />
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.PanningMode" Value="Both" />
@@ -32,6 +31,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{DynamicResource MaterialDesignDivider}"
                                     BorderThickness="0,0,0,1"
+                                    Height="25"
                                     Padding="{TemplateBinding Padding}">
                                 <Grid Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
                                     <Grid.ColumnDefinitions>
@@ -91,17 +91,16 @@
         <TreeView.Resources>
             <!-- Parents only show their name and children -->
             <HierarchicalDataTemplate DataType="{x:Type local:PropertyTreeParentViewModel}" ItemsSource="{Binding Children}">
-                <StackPanel Height="22" Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding LayerPropertyViewModel.LayerProperty.Name}"
                                ToolTip="{Binding LayerPropertyViewModel.LayerProperty.Description}"
                                Margin="5 0"
                                VerticalAlignment="Center" />
                 </StackPanel>
-
             </HierarchicalDataTemplate>
             <!-- Children show their full view -->
-            <DataTemplate DataType="{x:Type local:PropertyTreeChildViewModel}">
-                <ContentControl s:View.Model="{Binding}" />
+            <DataTemplate DataType="{x:Type local:PropertyTreeChildViewModel}" >
+                <ContentControl s:View.Model="{Binding}"/>
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

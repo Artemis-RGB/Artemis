@@ -29,7 +29,7 @@
 
             <!-- Misc controls & time display -->
             <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Text="{Binding CurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
             </StackPanel>
 
             <!-- Properties tree -->

@@ -14,7 +14,7 @@
         <!-- Placeholder -->
         <StackPanel Margin="15">
             <materialDesign:PackIcon Kind="QuestionMarkCircle" Width="50" Height="50" />
-            <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Margin="0 15 0 0">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 15 0 0">
                 Active module
             </TextBlock>
             <ComboBox BorderThickness="0" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" materialDesign:HintAssist.Hint="Active profile">

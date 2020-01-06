@@ -11,6 +11,7 @@
                     FadeContentIfInactive="False"
                     Icon="/Artemis.UI;component/Resources/logo-512.png"
                     Title="Artemis"
+                    TitleBarIcon="{StaticResource BowIcon}"
                     Foreground="{DynamicResource MaterialDesignBody}"
                     Background="{DynamicResource MaterialDesignPaper}"
                     FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
@@ -51,11 +52,12 @@
     <materialDesign:DialogHost Identifier="RootDialog">
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False"/>
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
-                <mde:AppBar Type="Dense" IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}" Title="{Binding ActiveItem.DisplayName}" ShowNavigationDrawerButton="True" DockPanel.Dock="Top" />
-                <ContentControl s:View.Model="{Binding ActiveItem}" IsTabStop="False"  Style="{StaticResource InitializingFade}"/>
+                <mde:AppBar Type="Dense" IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}" Title="{Binding ActiveItem.DisplayName}" ShowNavigationDrawerButton="True"
+                            DockPanel.Dock="Top" />
+                <ContentControl s:View.Model="{Binding ActiveItem}" IsTabStop="False" Style="{StaticResource InitializingFade}" />
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
