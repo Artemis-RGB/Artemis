@@ -50,7 +50,7 @@
                 Margin="0,1,0,1.2"
                 Padding="0"
                 Width="80"
-                Height="Auto"
+                Height="20"
                 ToolTip="Change the property's data binding"
                 VerticalAlignment="Center">
             <TextBlock FontSize="10">DATA BINDING</TextBlock>

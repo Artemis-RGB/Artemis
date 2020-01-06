@@ -10,8 +10,8 @@
              d:DesignHeight="351.305" d:DesignWidth="262.163"
              d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceDeviceConfigViewModel}}">
     <StackPanel Margin="16">
-        <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignTitleTextBlock}" />
-        <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubheadingTextBlock}" />
+        <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+        <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
         <TextBox materialDesign:HintAssist.Hint="X-coordinate" Text="{Binding X}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
 
         <TextBox materialDesign:HintAssist.Hint="Y-coordinate" Text="{Binding Y}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />

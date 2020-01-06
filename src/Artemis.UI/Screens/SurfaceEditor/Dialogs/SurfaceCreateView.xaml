@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="213.053" d:DesignWidth="254.425">
     <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
             Add a new surface layout
         </TextBlock>
 
