@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerShapes;
-using Artemis.Core.Models.Surface;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 

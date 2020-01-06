@@ -9,23 +9,28 @@
              mc:Ignorable="d"
              d:DesignHeight="20" d:DesignWidth="600"
              d:DataContext="{d:DesignInstance local:PropertyTrackViewModel}">
-    <ItemsControl ItemsSource="{Binding KeyframeViewModels}"
-                  Background="{DynamicResource MaterialDesignToolBarBackground}"
-                  HorizontalAlignment="Left">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <Canvas />
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemContainerStyle>
-            <Style TargetType="{x:Type ContentPresenter}">
-                <Setter Property="Canvas.Left" Value="{Binding X}" />
-            </Style>
-        </ItemsControl.ItemContainerStyle>
-        <ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <Ellipse Fill="{StaticResource PrimaryHueMidBrush}" Width="10" Height="10" Margin="-5,6,0,0" ToolTip="{Binding Timestamp}" />
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <Border Height="25"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource MaterialDesignDivider}"
+            Visibility="{Binding LayerPropertyViewModel.Parent.IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+        <ItemsControl ItemsSource="{Binding KeyframeViewModels}"
+                      Background="{DynamicResource MaterialDesignToolBarBackground}"
+                      HorizontalAlignment="Left">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type ContentPresenter}">
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Fill="{StaticResource PrimaryHueMidBrush}" Width="10" Height="10" Margin="-5,6,0,0" ToolTip="{Binding Timestamp}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Border>
 </UserControl>

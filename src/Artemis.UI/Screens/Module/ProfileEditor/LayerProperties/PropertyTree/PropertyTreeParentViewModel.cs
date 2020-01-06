@@ -1,19 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
     public class PropertyTreeParentViewModel : PropertyTreeItemViewModel
     {
-        public string Name { get; set; }
-        public PropertyTreeItemViewModel Children { get; set; }
-    }
+        public PropertyTreeParentViewModel(LayerPropertyViewModel layerPropertyViewModel)
+        {
+            LayerPropertyViewModel = layerPropertyViewModel;
+            Children = new BindableCollection<PropertyTreeItemViewModel>();
 
-    public class PropertyTreeItemViewModel : PropertyChangedBase
-    {
+            foreach (var childProperty in layerPropertyViewModel.Children)
+            {
+                if (childProperty.Children.Any())
+                    Children.Add(new PropertyTreeParentViewModel(childProperty));
+                else
+                    Children.Add(new PropertyTreeChildViewModel(childProperty));
+            }
+        }
+
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
+        public BindableCollection<PropertyTreeItemViewModel> Children { get; set; }
     }
 }

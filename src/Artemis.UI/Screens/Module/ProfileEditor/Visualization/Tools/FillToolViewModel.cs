@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     led => panZoomVm.TransformContainingRect(led.RgbLed.AbsoluteLedRectangle).Contains(position))
                 );
 
-            if (layer == null) 
+            if (layer == null)
                 return;
             layer.LayerShape = new Fill(layer);
             ProfileEditorService.UpdateSelectedProfileElement();

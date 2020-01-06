@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             base.MouseUp(sender, e);
 
-            var position = e.GetPosition((IInputElement)sender);
+            var position = e.GetPosition((IInputElement) sender);
             var selectedRect = new Rect(MouseDownStartPosition, position);
 
             foreach (var device in ProfileViewModel.Devices)

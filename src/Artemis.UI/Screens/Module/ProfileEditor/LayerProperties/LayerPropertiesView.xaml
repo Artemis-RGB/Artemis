@@ -7,8 +7,14 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:LayerPropertiesViewModel}">
+    <Grid x:Name="ContainerGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -22,34 +28,44 @@
             </Grid.RowDefinitions>
 
             <!-- Misc controls & time display -->
-            <StackPanel Grid.Row="0">
-                <TextBlock>A play button, current time etc. etc.!</TextBlock>
+            <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignTitleTextBlock}" Text="{Binding CurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
             </StackPanel>
 
             <!-- Properties tree -->
-            <ScrollViewer Grid.Row="1" x:Name="PropertyTreeScrollViewer">
-                <ContentControl s:View.Model="{Binding PropertyTree}" />
+            <ScrollViewer Grid.Row="1" x:Name="PropertyTreeScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+                <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                    <ContentControl s:View.Model="{Binding PropertyTree}" />
+                </Border>
             </ScrollViewer>
         </Grid>
 
         <!-- Right side -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1"
+              MouseDown="{s:Action RightGridMouseDown}"
+              MouseMove="{s:Action RightGridMouseMove}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
+            <!-- Caret -->
+            <Canvas ZIndex="1"
+                    Margin="{Binding TimeCaretPosition}"
+                    Cursor="SizeWE"
+                    MouseEnter="{s:Action CaretMouseEnter}"
+                    MouseLeave="{s:Action CaretMouseLeave}">
+                <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
+                <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+            </Canvas>
+
             <!-- Timeline header -->
-            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" >
                 <StackPanel>
-                    <!-- Caret -->
-                    <Canvas ZIndex="10" Height="25" Margin="{Binding TimeCaretPosition}" ClipToBounds="False">
-                        <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
-                        <Line X1="0" X2="0" Y1="0" Y2="10000" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
-                    </Canvas>
                     <!-- Time -->
-                    <timeline:PropertyTimelineHeader Fill="{DynamicResource MaterialDesignBody}"
+                    <timeline:PropertyTimelineHeader Margin="0 25 0 0"
+                                                     Fill="{DynamicResource MaterialDesignBody}"
                                                      PixelsPerSecond="{Binding PixelsPerSecond}"
                                                      HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
                                                      VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}" />
@@ -57,12 +73,20 @@
             </ScrollViewer>
 
             <!-- Timeline rails -->
-            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer">
+            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden">
                 <ContentControl s:View.Model="{Binding PropertyTimeline}" />
             </ScrollViewer>
+        </Grid>
 
+        <!-- Bottom row, a bit hacky but has a ZIndex of 2 to cut off the time caret that overlaps the entire timeline -->
+        <StackPanel Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    ZIndex="2"
+                    Background="{DynamicResource MaterialDesignCardBackground}">
             <!-- Zoom control -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <TextBlock Text="{Binding PixelsPerSecond}" VerticalAlignment="Center" />
                 <Slider Orientation="Horizontal"
                         HorizontalAlignment="Right"
@@ -73,6 +97,6 @@
                         Value="{Binding PixelsPerSecond}"
                         Width="600" />
             </StackPanel>
-        </Grid>
+        </StackPanel>
     </Grid>
 </UserControl>

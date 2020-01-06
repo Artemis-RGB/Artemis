@@ -31,7 +31,7 @@
         </Style>
     </UserControl.Resources>
     <Canvas Background="Transparent" Width="50" Height="50">
-        
+
         <Canvas.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Ellipse action 1" Command="{s:Action CreateLayer}" CommandParameter="{Binding}">

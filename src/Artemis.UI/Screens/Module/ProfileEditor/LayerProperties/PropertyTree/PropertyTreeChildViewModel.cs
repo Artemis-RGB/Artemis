@@ -1,19 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Stylet;
-
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
+﻿namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
-    public class PropertyTreeChildViewModel : PropertyChangedBase
+    public class PropertyTreeChildViewModel : PropertyTreeItemViewModel
     {
-        public LayerPropertyViewModel LayerPropertyViewModel { get; }
+        private bool _keyframesEnabled;
 
         public PropertyTreeChildViewModel(LayerPropertyViewModel layerPropertyViewModel)
         {
             LayerPropertyViewModel = layerPropertyViewModel;
+        }
+
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
+
+        public bool KeyframesEnabled
+        {
+            get => _keyframesEnabled;
+            set
+            {
+                _keyframesEnabled = value;
+                UpdateKeyframes();
+            }
+        }
+
+        private void UpdateKeyframes()
+        {
         }
     }
 }
