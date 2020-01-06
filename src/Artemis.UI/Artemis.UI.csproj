@@ -149,11 +149,13 @@
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Converters\EnumToCollectionConverter.cs" />
     <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\LeftMarginMultiplierConverter.cs" />
     <Compile Include="Converters\NullToImageConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
     <Compile Include="Events\MainWindowKeyEvent.cs" />
     <Compile Include="Events\WindowsThemeEventArgs.cs" />
+    <Compile Include="Extensions\TreeViewItemExtensions.cs" />
     <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml.cs">
       <DependentUpon>LayerPropertiesView.xaml</DependentUpon>
@@ -161,6 +163,7 @@
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertyViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeParentViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackKeyframeViewModel.cs" />

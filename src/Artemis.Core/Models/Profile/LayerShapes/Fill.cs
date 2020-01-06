@@ -7,6 +7,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         public Fill(Layer layer) : base(layer)
         {
         }
+
         internal Fill(Layer layer, ShapeEntity shapeEntity) : base(layer, shapeEntity)
         {
         }

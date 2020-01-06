@@ -12,10 +12,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 {
     public abstract class TreeItemViewModel : PropertyChangedBase
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDialogService _dialogService;
         private readonly IFolderViewModelFactory _folderViewModelFactory;
         private readonly ILayerViewModelFactory _layerViewModelFactory;
+        private readonly IProfileEditorService _profileEditorService;
 
         protected TreeItemViewModel(TreeItemViewModel parent,
             ProfileElement profileElement,
@@ -175,13 +175,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                     {
                         existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder);
                         if (existing == null)
-                            Children.Add(_folderViewModelFactory.Create((FolderViewModel)this, folder));
+                            Children.Add(_folderViewModelFactory.Create((FolderViewModel) this, folder));
                     }
                     else if (profileElement is Layer layer)
                     {
                         existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer);
                         if (existing == null)
-                            Children.Add(_layerViewModelFactory.Create((FolderViewModel)this, layer));
+                            Children.Add(_layerViewModelFactory.Create((FolderViewModel) this, layer));
                     }
 
                     existing?.UpdateProfileElements();

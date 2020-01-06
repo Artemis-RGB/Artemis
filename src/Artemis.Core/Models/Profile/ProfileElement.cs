@@ -131,7 +131,5 @@ namespace Artemis.Core.Models.Profile
                 child.Parent = null;
             }
         }
-
-
     }
 }

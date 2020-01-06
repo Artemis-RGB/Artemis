@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
-    public class ProfileDeviceViewModel : CanvasViewModel 
+    public class ProfileDeviceViewModel : CanvasViewModel
     {
         public ProfileDeviceViewModel(ArtemisDevice device)
         {

@@ -14,6 +14,7 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
+        private readonly List<LayerProperty> _properties;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
 
@@ -27,6 +28,9 @@ namespace Artemis.Core.Models.Profile
             Name = name;
 
             _leds = new List<ArtemisLed>();
+            _properties = new List<LayerProperty>();
+
+            CreateDefaultProperties();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -40,6 +44,10 @@ namespace Artemis.Core.Models.Profile
             Order = layerEntity.Order;
 
             _leds = new List<ArtemisLed>();
+            _properties = new List<LayerProperty>();
+
+            // TODO: Load properties from entity instead of creating the defaults
+            CreateDefaultProperties();
 
             switch (layerEntity.ShapeEntity?.Type)
             {
@@ -89,7 +97,7 @@ namespace Artemis.Core.Models.Profile
         public SKPath Path { get; private set; }
 
         /// <summary>
-        ///     Defines the shape that is rendered by the <see cref="LayerBrush"/>.
+        ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
         /// </summary>
         public LayerShape LayerShape
         {
@@ -103,7 +111,37 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
-        ///     The brush that will fill the <see cref="LayerShape"/>.
+        ///     A collection of all the properties on this layer
+        /// </summary>
+        public ReadOnlyCollection<LayerProperty> Properties => _properties.AsReadOnly();
+
+        /// <summary>
+        ///     The anchor point property of this layer, also found in <see cref="Properties" />
+        /// </summary>
+        public LayerProperty AnchorPointProperty { get; private set; }
+
+        /// <summary>
+        ///     The position of this layer, also found in <see cref="Properties" />
+        /// </summary>
+        public LayerProperty PositionProperty { get; private set; }
+
+        /// <summary>
+        ///     The scale property of this layer, also found in <see cref="Properties" />
+        /// </summary>
+        public LayerProperty ScaleProperty { get; private set; }
+
+        /// <summary>
+        ///     The rotation property of this layer, also found in <see cref="Properties" />
+        /// </summary>
+        public LayerProperty RotationProperty { get; private set; }
+
+        /// <summary>
+        ///     The opacity property of this layer, also found in <see cref="Properties" />
+        /// </summary>
+        public LayerProperty OpacityProperty { get; private set; }
+
+        /// <summary>
+        ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
         public LayerBrush LayerBrush { get; internal set; }
 
@@ -121,7 +159,7 @@ namespace Artemis.Core.Models.Profile
             canvas.ClipPath(Path);
             // Placeholder
             if (LayerShape?.RenderPath != null)
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint(){Color = new SKColor(255,0,0)});
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Color = new SKColor(255, 0, 0)});
             LayerBrush?.Render(canvas);
             canvas.Restore();
         }
@@ -134,6 +172,8 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
+            foreach (var layerProperty in Properties)
+                layerProperty.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -249,6 +289,25 @@ namespace Artemis.Core.Models.Profile
             Path = path;
             LayerShape?.CalculateRenderProperties();
             OnRenderPropertiesUpdated();
+        }
+
+        private void CreateDefaultProperties()
+        {
+            var transformProperty = new LayerProperty(this, null, "Transform", "The default properties collection every layer has, allows you to transform the shape.", null);
+            AnchorPointProperty = new LayerProperty(this, transformProperty, "Anchor Point", "The point at which the shape is attached to its position.", typeof(SKPoint));
+            PositionProperty = new LayerProperty(this, transformProperty, "Position", "The position of the shape.", typeof(SKPoint));
+            ScaleProperty = new LayerProperty(this, transformProperty, "Scale", "The scale of the shape.", typeof(SKSize));
+            RotationProperty = new LayerProperty(this, transformProperty, "Rotation", "The rotation of the shape in degrees.", typeof(int));
+            OpacityProperty = new LayerProperty(this, transformProperty, "Opacity", "The opacity of the shape from 0 to 1.", typeof(float));
+
+            transformProperty.Children.Add(AnchorPointProperty);
+            transformProperty.Children.Add(PositionProperty);
+            transformProperty.Children.Add(ScaleProperty);
+            transformProperty.Children.Add(RotationProperty);
+            transformProperty.Children.Add(OpacityProperty);
+
+            _properties.Add(transformProperty);
+            _properties.AddRange(transformProperty.Children);
         }
 
         public override string ToString()

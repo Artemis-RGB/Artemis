@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class PropertyTrackViewModel : PropertyChangedBase
     {
-        public PropertyTimelineViewModel PropertyTimelineViewModel { get; }
-        public LayerPropertyViewModel LayerPropertyViewModel { get; }
-        public BindableCollection<PropertyTrackKeyframeViewModel> KeyframeViewModels { get; set; }
-
         public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel)
         {
             PropertyTimelineViewModel = propertyTimelineViewModel;
@@ -22,6 +14,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             PopulateKeyframes();
             UpdateKeyframes(propertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
         }
+
+        public PropertyTimelineViewModel PropertyTimelineViewModel { get; }
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
+        public BindableCollection<PropertyTrackKeyframeViewModel> KeyframeViewModels { get; set; }
 
         public void PopulateKeyframes()
         {
@@ -36,9 +32,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void UpdateKeyframes(int pixelsPerSecond)
         {
             foreach (var keyframeViewModel in KeyframeViewModels)
-            {
                 keyframeViewModel.Update(pixelsPerSecond);
-            }
         }
     }
 }

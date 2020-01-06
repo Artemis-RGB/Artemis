@@ -23,8 +23,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
-        private readonly ISettingsService _settingsService;
         private readonly IProfileLayerViewModelFactory _profileLayerViewModelFactory;
+        private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
@@ -181,6 +181,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 {
                     viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
                 }
+
                 if (viewModel == null)
                 {
                     // Create outside the UI thread to avoid slowdowns as much as possible

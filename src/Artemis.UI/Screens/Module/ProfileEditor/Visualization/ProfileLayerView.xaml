@@ -30,7 +30,7 @@
     </UserControl.Resources>
     <Canvas Style="{StaticResource SelectedStyle}">
         <!-- The part of the layer's shape that falls outside the layer -->
-        <Path Data="{Binding ShapeGeometry, Mode=OneWay}" >
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
             <Path.Fill>
                 <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.05" />
             </Path.Fill>
@@ -40,7 +40,7 @@
         </Path>
 
         <!-- The part of the layer's shape that is inside the layer -->
-        <Path Data="{Binding ShapeGeometry, Mode=OneWay}" >
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
             <Path.Fill>
                 <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.35" />
             </Path.Fill>

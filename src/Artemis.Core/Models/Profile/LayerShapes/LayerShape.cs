@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -61,12 +60,12 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         }
 
         /// <summary>
-        /// A render rectangle relative to the layer
+        ///     A render rectangle relative to the layer
         /// </summary>
         public SKRect RenderRectangle { get; protected set; }
 
         /// <summary>
-        /// A path relative to the layer
+        ///     A path relative to the layer
         /// </summary>
         public SKPath RenderPath { get; protected set; }
 
@@ -84,7 +83,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         }
 
         /// <summary>
-        /// Updates Position and Size using the provided unscaled rectangle
+        ///     Updates Position and Size using the provided unscaled rectangle
         /// </summary>
         /// <param name="rect">An unscaled rectangle where 1px = 1mm</param>
         public void SetFromUnscaledRectangle(SKRect rect)

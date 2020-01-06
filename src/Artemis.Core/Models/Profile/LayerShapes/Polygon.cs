@@ -7,7 +7,6 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 {
     public class Polygon : LayerShape
     {
-
         public Polygon(Layer layer) : base(layer)
         {
         }
@@ -39,7 +38,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
             base.ApplyToEntity();
             Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Polygon;
-            Layer.LayerEntity.ShapeEntity.Points = Points.Select(p => new ShapePointEntity { X = p.X, Y = p.Y }).ToList();
+            Layer.LayerEntity.ShapeEntity.Points = Points.Select(p => new ShapePointEntity {X = p.X, Y = p.Y}).ToList();
         }
     }
 }
