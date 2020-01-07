@@ -162,6 +162,11 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertyViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\PropertyInputViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeParentViewModel.cs" />
@@ -301,6 +306,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -468,6 +489,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\RobotoMono-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -497,40 +519,45 @@
     <Resource Include="logo-512.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_rotate_tl.cur" />
+    <Resource Include="Resources\aero_rotate_tl.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_rotate_tr.cur" />
+    <Resource Include="Resources\aero_rotate_tr.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_rotate_bl.cur" />
+    <Resource Include="Resources\aero_rotate_bl.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_rotate_br.cur" />
+    <Resource Include="Resources\aero_rotate_br.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_crosshair.cur" />
+    <Resource Include="Resources\aero_crosshair.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_crosshair_minus.cur" />
+    <Resource Include="Resources\aero_crosshair_minus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_crosshair_plus.cur" />
+    <Resource Include="Resources\aero_crosshair_plus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_pen_min.cur" />
+    <Resource Include="Resources\aero_pen_min.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_pen_plus.cur" />
+    <Resource Include="Resources\aero_pen_plus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\aero_fill.cur" />
+    <Resource Include="Resources\aero_fill.cur" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\aero_drag.cur" />
+  </ItemGroup>
   <ItemGroup>
     <FluentValidationExcludedCultures Include="be;cs;cs-CZ;da;de;es;fa;fi;fr;ja;it;ko;mk;nl;pl;pt;ru;sv;tr;uk;zh-CN;zh-CHS;zh-CHT;uz-Latn-UZ">
       <InProject>false</InProject>
     </FluentValidationExcludedCultures>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aero_drag_ew.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

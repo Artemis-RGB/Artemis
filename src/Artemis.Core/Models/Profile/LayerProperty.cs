@@ -26,6 +26,8 @@ namespace Artemis.Core.Models.Profile
 
         public string Name { get; set; }
         public string Description { get; set; }
+        public string InputPrefix { get; set; }
+        public string InputAffix { get; set; }
         public Type Type { get; set; }
 
         public object BaseValue
