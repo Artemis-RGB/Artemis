@@ -296,10 +296,9 @@ namespace Artemis.Core.Models.Profile
             var transformProperty = new LayerProperty(this, null, "Transform", "The default properties collection every layer has, allows you to transform the shape.", null);
             AnchorPointProperty = new LayerProperty(this, transformProperty, "Anchor Point", "The point at which the shape is attached to its position.", typeof(SKPoint));
             PositionProperty = new LayerProperty(this, transformProperty, "Position", "The position of the shape.", typeof(SKPoint));
-            ScaleProperty = new LayerProperty(this, transformProperty, "Scale", "The scale of the shape.", typeof(SKSize));
-            RotationProperty = new LayerProperty(this, transformProperty, "Rotation", "The rotation of the shape in degrees.", typeof(int));
-            OpacityProperty = new LayerProperty(this, transformProperty, "Opacity", "The opacity of the shape from 0 to 1.", typeof(float));
-
+            ScaleProperty = new LayerProperty(this, transformProperty, "Scale", "The scale of the shape.", typeof(SKSize)) { InputAffix = "%" };
+            RotationProperty = new LayerProperty(this, transformProperty, "Rotation", "The rotation of the shape in degrees.", typeof(int)) {InputAffix = "°" };
+            OpacityProperty = new LayerProperty(this, transformProperty, "Opacity", "The opacity of the shape.", typeof(float)) {InputAffix = "%"};
             transformProperty.Children.Add(AnchorPointProperty);
             transformProperty.Children.Add(PositionProperty);
             transformProperty.Children.Add(ScaleProperty);

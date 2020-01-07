@@ -93,6 +93,26 @@ namespace Artemis.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] aero_drag {
+            get {
+                object obj = ResourceManager.GetObject("aero_drag", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] aero_drag_ew {
+            get {
+                object obj = ResourceManager.GetObject("aero_drag_ew", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] aero_fill {
             get {
                 object obj = ResourceManager.GetObject("aero_fill", resourceCulture);
@@ -177,6 +197,16 @@ namespace Artemis.UI.Properties {
             get {
                 object obj = ResourceManager.GetObject("logo_512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] RobotoMono_Regular {
+            get {
+                object obj = ResourceManager.GetObject("RobotoMono_Regular", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
