@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
@@ -10,6 +9,7 @@ namespace Artemis.Storage.Entities.Profile
         public LayerEntity()
         {
             Leds = new List<LedEntity>();
+            PropertyEntities = new List<PropertyEntity>();
             Condition = new List<ProfileConditionEntity>();
         }
 
@@ -20,6 +20,7 @@ namespace Artemis.Storage.Entities.Profile
         public string Name { get; set; }
 
         public List<LedEntity> Leds { get; set; }
+        public List<PropertyEntity> PropertyEntities { get; set; }
         public List<ProfileConditionEntity> Condition { get; set; }
 
         public ShapeEntity ShapeEntity { get; set; }
@@ -27,6 +28,7 @@ namespace Artemis.Storage.Entities.Profile
 
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
+
         public Guid ProfileId { get; set; }
     }
 }

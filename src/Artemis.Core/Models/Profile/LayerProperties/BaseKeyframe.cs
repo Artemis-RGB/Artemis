@@ -4,7 +4,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 {
     public class BaseKeyframe
     {
-        protected BaseKeyframe(Layer layer, BaseLayerProperty property)
+        protected internal BaseKeyframe(Layer layer, BaseLayerProperty property)
         {
             Layer = layer;
             BaseProperty = property;
@@ -14,6 +14,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public TimeSpan Position { get; set; }
 
         protected BaseLayerProperty BaseProperty { get; }
-        protected object BaseValue { get; set; }
+        protected internal object BaseValue { get; set; }
     }
 }

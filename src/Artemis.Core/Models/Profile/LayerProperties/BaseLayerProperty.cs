@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.KeyframeEngines;
+using Artemis.Storage.Entities.Profile;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
@@ -9,7 +12,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     {
         private object _baseValue;
 
-        protected BaseLayerProperty(Layer layer, BaseLayerProperty parent, string id, string name, string description, Type type)
+        protected internal BaseLayerProperty(Layer layer, BaseLayerProperty parent, string id, string name, string description, Type type)
         {
             Layer = layer;
             Parent = parent;
@@ -78,7 +81,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         protected List<BaseKeyframe> BaseKeyframes { get; set; }
 
-        protected object BaseValue
+        protected internal object BaseValue
         {
             get => _baseValue;
             set
@@ -93,14 +96,48 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             }
         }
 
-        public void ApplyToEntity()
+        internal void ApplyToEntity()
         {
-            // Big o' TODO
+            var propertyEntity = Layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == Id);
+            if (propertyEntity == null)
+            {
+                propertyEntity = new PropertyEntity {Id = Id};
+                Layer.LayerEntity.PropertyEntities.Add(propertyEntity);
+            }
+
+            propertyEntity.ValueType = Type.Name;
+            propertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
+
+            propertyEntity.KeyframeEntities.Clear();
+            foreach (var baseKeyframe in BaseKeyframes)
+            {
+                propertyEntity.KeyframeEntities.Add(new KeyframeEntity
+                {
+                    Position = baseKeyframe.Position,
+                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue)
+                });
+            }
+        }
+
+        internal void ApplyToProperty(PropertyEntity propertyEntity)
+        {
+            BaseValue = DeserializePropertyValue(propertyEntity.Value);
+
+            BaseKeyframes.Clear();
+            foreach (var keyframeEntity in propertyEntity.KeyframeEntities)
+                BaseKeyframes.Add(new BaseKeyframe(Layer, this) {BaseValue = DeserializePropertyValue(keyframeEntity.Value)});
         }
 
         public override string ToString()
         {
             return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(Description)}: {Description}";
+        }
+
+        private object DeserializePropertyValue(string value)
+        {
+            if (value == "null")
+                return Type.IsValueType ? Activator.CreateInstance(Type) : null;
+            return JsonConvert.DeserializeObject(value, Type);
         }
 
         #region Events

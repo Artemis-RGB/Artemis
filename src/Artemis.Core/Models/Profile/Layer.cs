@@ -264,62 +264,6 @@ namespace Artemis.Core.Models.Profile
             CalculateRenderProperties();
         }
 
-        #region Properties
-
-        public void AddLayerProperty<T>(LayerProperty<T> layerProperty)
-        {
-            if (_properties.ContainsKey(layerProperty.Id))
-                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
-
-            _properties.Add(layerProperty.Id, layerProperty);
-        }
-
-        public void AddLayerProperty(BaseLayerProperty layerProperty)
-        {
-            if (_properties.ContainsKey(layerProperty.Id))
-                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
-
-            _properties.Add(layerProperty.Id, layerProperty);
-        }
-
-        /// <summary>
-        /// If found, returns the <see cref="LayerProperty{T}"/> matching the provided ID
-        /// </summary>
-        /// <typeparam name="T">The type of the layer property</typeparam>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public LayerProperty<T> GetLayerPropertyById<T>(string id)
-        {
-            if (!_properties.ContainsKey(id))
-                return null;
-
-            var property = _properties[id];
-            if (property.Type != typeof(T))
-                throw new ArtemisCoreException($"Property type mismatch. Expected property {property} to have type {typeof(T)} but it has {property.Type} instead.");
-            return (LayerProperty<T>) _properties[id];
-        }
-
-        private void CreateDefaultProperties()
-        {
-            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.");
-            AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
-            PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
-            SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};
-            RotationProperty = new LayerProperty<int>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
-            OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
-            transformProperty.Children.Add(AnchorPointProperty);
-            transformProperty.Children.Add(PositionProperty);
-            transformProperty.Children.Add(SizeProperty);
-            transformProperty.Children.Add(RotationProperty);
-            transformProperty.Children.Add(OpacityProperty);
-
-            AddLayerProperty(transformProperty);
-            foreach (var transformPropertyChild in transformProperty.Children)
-                AddLayerProperty(transformPropertyChild);
-        }
-
-        #endregion
-
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
@@ -357,6 +301,78 @@ namespace Artemis.Core.Models.Profile
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
+
+        #region Properties
+
+        /// <summary>
+        ///     Adds the provided layer property to the layer.
+        ///     If found, the last stored base value and keyframes will be applied to the provided property.
+        /// </summary>
+        /// <typeparam name="T">The type of value of the layer property</typeparam>
+        /// <param name="layerProperty">The property to apply to the layer</param>
+        /// <returns>True if an existing value was found and applied, otherwise false.</returns>
+        public bool AddLayerProperty<T>(LayerProperty<T> layerProperty)
+        {
+            return AddLayerProperty((BaseLayerProperty) layerProperty);
+        }
+
+        /// <summary>
+        ///     Adds the provided layer property to the layer.
+        ///     If found, the last stored base value and keyframes will be applied to the provided property.
+        /// </summary>
+        /// <param name="layerProperty">The property to apply to the layer</param>
+        /// <returns>True if an existing value was found and applied, otherwise false.</returns>
+        public bool AddLayerProperty(BaseLayerProperty layerProperty)
+        {
+            if (_properties.ContainsKey(layerProperty.Id))
+                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
+
+            var propertyEntity = LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == layerProperty.Id && p.ValueType == layerProperty.Type.Name);
+            // TODO: Catch serialization exceptions and log them
+            if (propertyEntity != null) 
+                layerProperty.ApplyToProperty(propertyEntity);
+
+            _properties.Add(layerProperty.Id, layerProperty);
+            return propertyEntity != null;
+        }
+
+        /// <summary>
+        ///     If found, returns the <see cref="LayerProperty{T}" /> matching the provided ID
+        /// </summary>
+        /// <typeparam name="T">The type of the layer property</typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public LayerProperty<T> GetLayerPropertyById<T>(string id)
+        {
+            if (!_properties.ContainsKey(id))
+                return null;
+
+            var property = _properties[id];
+            if (property.Type != typeof(T))
+                throw new ArtemisCoreException($"Property type mismatch. Expected property {property} to have type {typeof(T)} but it has {property.Type} instead.");
+            return (LayerProperty<T>) _properties[id];
+        }
+
+        private void CreateDefaultProperties()
+        {
+            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.");
+            AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
+            PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
+            SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};
+            RotationProperty = new LayerProperty<int>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
+            OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
+            transformProperty.Children.Add(AnchorPointProperty);
+            transformProperty.Children.Add(PositionProperty);
+            transformProperty.Children.Add(SizeProperty);
+            transformProperty.Children.Add(RotationProperty);
+            transformProperty.Children.Add(OpacityProperty);
+
+            AddLayerProperty(transformProperty);
+            foreach (var transformPropertyChild in transformProperty.Children)
+                AddLayerProperty(transformPropertyChild);
+        }
+
+        #endregion
 
         #region Events
 
