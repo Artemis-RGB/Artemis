@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public void PopulateKeyframes()
         {
-            foreach (var keyframe in LayerPropertyViewModel.LayerProperty.Keyframes)
+            foreach (var keyframe in LayerPropertyViewModel.LayerProperty.UntypedKeyframes)
             {
                 if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
                     continue;

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
@@ -14,7 +16,7 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
-        private readonly List<LayerProperty> _properties;
+        private readonly Dictionary<string, BaseLayerProperty> _properties;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
 
@@ -28,7 +30,7 @@ namespace Artemis.Core.Models.Profile
             Name = name;
 
             _leds = new List<ArtemisLed>();
-            _properties = new List<LayerProperty>();
+            _properties = new Dictionary<string, BaseLayerProperty>();
 
             CreateDefaultProperties();
         }
@@ -44,7 +46,7 @@ namespace Artemis.Core.Models.Profile
             Order = layerEntity.Order;
 
             _leds = new List<ArtemisLed>();
-            _properties = new List<LayerProperty>();
+            _properties = new Dictionary<string, BaseLayerProperty>();
 
             // TODO: Load properties from entity instead of creating the defaults
             CreateDefaultProperties();
@@ -113,32 +115,32 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     A collection of all the properties on this layer
         /// </summary>
-        public ReadOnlyCollection<LayerProperty> Properties => _properties.AsReadOnly();
+        public ReadOnlyCollection<BaseLayerProperty> Properties => _properties.Values.ToList().AsReadOnly();
 
         /// <summary>
         ///     The anchor point property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty AnchorPointProperty { get; private set; }
+        public LayerProperty<SKPoint> AnchorPointProperty { get; private set; }
 
         /// <summary>
         ///     The position of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty PositionProperty { get; private set; }
+        public LayerProperty<SKPoint> PositionProperty { get; private set; }
 
         /// <summary>
         ///     The scale property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty ScaleProperty { get; private set; }
+        public LayerProperty<SKSize> ScaleProperty { get; private set; }
 
         /// <summary>
         ///     The rotation property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty RotationProperty { get; private set; }
+        public LayerProperty<int> RotationProperty { get; private set; }
 
         /// <summary>
         ///     The opacity property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty OpacityProperty { get; private set; }
+        public LayerProperty<float> OpacityProperty { get; private set; }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
@@ -262,6 +264,62 @@ namespace Artemis.Core.Models.Profile
             CalculateRenderProperties();
         }
 
+        #region Properties
+
+        public void AddLayerProperty<T>(LayerProperty<T> layerProperty)
+        {
+            if (_properties.ContainsKey(layerProperty.Id))
+                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
+
+            _properties.Add(layerProperty.Id, layerProperty);
+        }
+
+        public void AddLayerProperty(BaseLayerProperty layerProperty)
+        {
+            if (_properties.ContainsKey(layerProperty.Id))
+                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
+
+            _properties.Add(layerProperty.Id, layerProperty);
+        }
+
+        /// <summary>
+        /// If found, returns the <see cref="LayerProperty{T}"/> matching the provided ID
+        /// </summary>
+        /// <typeparam name="T">The type of the layer property</typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public LayerProperty<T> GetLayerPropertyById<T>(string id)
+        {
+            if (!_properties.ContainsKey(id))
+                return null;
+
+            var property = _properties[id];
+            if (property.Type != typeof(T))
+                throw new ArtemisCoreException($"Property type mismatch. Expected property {property} to have type {typeof(T)} but it has {property.Type} instead.");
+            return (LayerProperty<T>) _properties[id];
+        }
+
+        private void CreateDefaultProperties()
+        {
+            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.");
+            AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
+            PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
+            ScaleProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Scale", "Scale", "The scale of the shape.") {InputAffix = "%"};
+            RotationProperty = new LayerProperty<int>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
+            OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
+            transformProperty.Children.Add(AnchorPointProperty);
+            transformProperty.Children.Add(PositionProperty);
+            transformProperty.Children.Add(ScaleProperty);
+            transformProperty.Children.Add(RotationProperty);
+            transformProperty.Children.Add(OpacityProperty);
+
+            AddLayerProperty(transformProperty);
+            foreach (var transformPropertyChild in transformProperty.Children)
+                AddLayerProperty(transformPropertyChild);
+        }
+
+        #endregion
+
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
@@ -291,23 +349,6 @@ namespace Artemis.Core.Models.Profile
             OnRenderPropertiesUpdated();
         }
 
-        private void CreateDefaultProperties()
-        {
-            var transformProperty = new LayerProperty(this, null, "Transform", "The default properties collection every layer has, allows you to transform the shape.", null);
-            AnchorPointProperty = new LayerProperty(this, transformProperty, "Anchor Point", "The point at which the shape is attached to its position.", typeof(SKPoint));
-            PositionProperty = new LayerProperty(this, transformProperty, "Position", "The position of the shape.", typeof(SKPoint));
-            ScaleProperty = new LayerProperty(this, transformProperty, "Scale", "The scale of the shape.", typeof(SKSize)) { InputAffix = "%" };
-            RotationProperty = new LayerProperty(this, transformProperty, "Rotation", "The rotation of the shape in degrees.", typeof(int)) {InputAffix = "°" };
-            OpacityProperty = new LayerProperty(this, transformProperty, "Opacity", "The opacity of the shape.", typeof(float)) {InputAffix = "%"};
-            transformProperty.Children.Add(AnchorPointProperty);
-            transformProperty.Children.Add(PositionProperty);
-            transformProperty.Children.Add(ScaleProperty);
-            transformProperty.Children.Add(RotationProperty);
-            transformProperty.Children.Add(OpacityProperty);
-
-            _properties.Add(transformProperty);
-            _properties.AddRange(transformProperty.Children);
-        }
 
         public override string ToString()
         {

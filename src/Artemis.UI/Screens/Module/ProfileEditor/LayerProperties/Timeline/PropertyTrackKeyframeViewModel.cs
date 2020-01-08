@@ -1,17 +1,18 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class PropertyTrackKeyframeViewModel : PropertyChangedBase
     {
-        public PropertyTrackKeyframeViewModel(Keyframe keyframe)
+        public PropertyTrackKeyframeViewModel(BaseKeyframe keyframe)
         {
             Keyframe = keyframe;
         }
 
-        public Keyframe Keyframe { get; }
+        public BaseKeyframe Keyframe { get; }
 
         public double X { get; set; }
         public string Timestamp { get; set; }

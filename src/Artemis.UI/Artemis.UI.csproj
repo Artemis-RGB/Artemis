@@ -559,6 +559,9 @@
   <ItemGroup>
     <Resource Include="Resources\aero_drag_ew.cur" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Ninject\Providers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
