@@ -13,11 +13,11 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
         }
 
-        public override void CalculateRenderProperties()
+        public override void CalculateRenderProperties(SKPoint shapePosition, SKSize shapeSize)
         {
             var width = Layer.AbsoluteRectangle.Width;
             var height = Layer.AbsoluteRectangle.Height;
-            var rect = SKRect.Create(Position.X * width, Position.Y * height, Size.Width * width, Size.Height * height);
+            var rect = SKRect.Create(shapePosition.X * width, shapePosition.Y * height, shapeSize.Width * width, shapeSize.Height * height);
 
             var path = new SKPath();
             path.AddOval(rect);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Models.Profile.KeyframeEngines;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
@@ -67,11 +68,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public Type Type { get; set; }
 
-        protected List<BaseKeyframe> BaseKeyframes { get; set; }
         /// <summary>
-        ///     A list of keyframes defining different values of the property in time, this list contains the untyped <see cref="BaseKeyframe"/>.
+        ///     A list of keyframes defining different values of the property in time, this list contains the untyped
+        ///     <see cref="BaseKeyframe" />.
         /// </summary>
         public IReadOnlyCollection<BaseKeyframe> UntypedKeyframes => BaseKeyframes.AsReadOnly();
+
+        public KeyframeEngine KeyframeEngine { get; set; }
+
+        protected List<BaseKeyframe> BaseKeyframes { get; set; }
 
         protected object BaseValue
         {
@@ -80,10 +85,13 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             {
                 if (value != null && value.GetType() != Type)
                     throw new ArtemisCoreException($"Cannot set value of type {value.GetType()} on property {this}, expected type is {Type}.");
-                _baseValue = value;
+                if (!Equals(_baseValue, value))
+                {
+                    _baseValue = value;
+                    OnValueChanged();
+                }
             }
         }
-
 
         public void ApplyToEntity()
         {
@@ -94,5 +102,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         {
             return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(Description)}: {Description}";
         }
+
+        #region Events
+
+        public event EventHandler<EventArgs> ValueChanged;
+
+        protected virtual void OnValueChanged()
+        {
+            ValueChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

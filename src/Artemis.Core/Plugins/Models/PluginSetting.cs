@@ -43,8 +43,11 @@ namespace Artemis.Core.Plugins.Models
             get => _value;
             set
             {
-                _value = value;
-                OnSettingChanged();
+                if (!Equals(_value, value))
+                {
+                    _value = value;
+                    OnSettingChanged();
+                }
             }
         }
 

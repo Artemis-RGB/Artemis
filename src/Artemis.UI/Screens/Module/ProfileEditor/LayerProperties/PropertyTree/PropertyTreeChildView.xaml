@@ -36,8 +36,8 @@
                    ToolTip="{Binding LayerPropertyViewModel.LayerProperty.Description}"
                    HorizontalAlignment="Left" />
 
-        <ContentControl Grid.Column="2" Margin="20 0" s:View.Model="{Binding PropertyInputViewModel}"/>
-       
+        <ContentControl Grid.Column="2" Margin="20 0" s:View.Model="{Binding PropertyInputViewModel}" />
+
         <Button Grid.Column="3"
                 Style="{StaticResource MaterialDesignOutlinedButton}"
                 Margin="0,1,0,1.2"

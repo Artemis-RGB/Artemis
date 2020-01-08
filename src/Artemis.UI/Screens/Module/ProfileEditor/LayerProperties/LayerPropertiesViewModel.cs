@@ -12,8 +12,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly ILayerPropertyViewModelFactory _layerPropertyViewModelFactory;
+        private readonly IProfileEditorService _profileEditorService;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyViewModelFactory layerPropertyViewModelFactory)
         {

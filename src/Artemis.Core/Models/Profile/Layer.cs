@@ -128,9 +128,9 @@ namespace Artemis.Core.Models.Profile
         public LayerProperty<SKPoint> PositionProperty { get; private set; }
 
         /// <summary>
-        ///     The scale property of this layer, also found in <see cref="Properties" />
+        ///     The size property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty<SKSize> ScaleProperty { get; private set; }
+        public LayerProperty<SKSize> SizeProperty { get; private set; }
 
         /// <summary>
         ///     The rotation property of this layer, also found in <see cref="Properties" />
@@ -304,12 +304,12 @@ namespace Artemis.Core.Models.Profile
             var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.");
             AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
             PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
-            ScaleProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Scale", "Scale", "The scale of the shape.") {InputAffix = "%"};
+            SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};
             RotationProperty = new LayerProperty<int>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
             OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
             transformProperty.Children.Add(AnchorPointProperty);
             transformProperty.Children.Add(PositionProperty);
-            transformProperty.Children.Add(ScaleProperty);
+            transformProperty.Children.Add(SizeProperty);
             transformProperty.Children.Add(RotationProperty);
             transformProperty.Children.Add(OpacityProperty);
 
@@ -345,7 +345,10 @@ namespace Artemis.Core.Models.Profile
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             Path = path;
-            LayerShape?.CalculateRenderProperties();
+            // This is called here so that the shape's render properties are up to date when other code
+            // responds to OnRenderPropertiesUpdated
+            LayerShape?.CalculateRenderProperties(PositionProperty.GetCurrentValue(), SizeProperty.GetCurrentValue());
+
             OnRenderPropertiesUpdated();
         }
 

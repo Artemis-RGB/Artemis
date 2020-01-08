@@ -5,11 +5,6 @@ namespace Artemis.Storage.Entities.Profile
     public class ShapeEntity
     {
         public ShapeEntityType Type { get; set; }
-        public ShapePointEntity Anchor { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
-        public ShapePointEntity Position { get; set; }
-
         public List<ShapePointEntity> Points { get; set; }
     }
 

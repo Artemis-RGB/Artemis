@@ -1,4 +1,5 @@
 ﻿using Artemis.Storage.Entities.Profile;
+using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile.LayerShapes
 {
@@ -12,8 +13,9 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
         }
 
-        public override void CalculateRenderProperties()
+        public override void CalculateRenderProperties(SKPoint shapePosition, SKSize shapeSize)
         {
+            // TODO: Scale the path? Not sure if desirable
             RenderPath = Layer.Path;
             RenderRectangle = Layer.Path.GetRect();
         }
