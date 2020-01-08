@@ -149,6 +149,11 @@
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="JsonConverters\SKColorConverter.cs" />
     <Compile Include="Models\DataModelDescription.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\FloatKeyframeEngine.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\IntKeyframeEngine.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\KeyframeEngine.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\SKPointKeyframeEngine.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\SKSizeKeyframeEngine.cs" />
     <Compile Include="Models\Profile\LayerProperties\BaseKeyframe.cs" />
     <Compile Include="Models\Profile\LayerProperties\Keyframe.cs" />
     <Compile Include="Models\Profile\LayerProperties\BaseLayerProperty.cs" />

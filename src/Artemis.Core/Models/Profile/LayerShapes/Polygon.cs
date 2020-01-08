@@ -25,7 +25,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         /// </summary>
         public List<SKPoint> RenderPoints => Points.Select(p => new SKPoint(p.X * Layer.AbsoluteRectangle.Width, p.Y * Layer.AbsoluteRectangle.Height)).ToList();
 
-        public override void CalculateRenderProperties()
+        public override void CalculateRenderProperties(SKPoint shapePosition, SKSize shapeSize)
         {
             var path = new SKPath();
             path.AddPoly(RenderPoints.ToArray());

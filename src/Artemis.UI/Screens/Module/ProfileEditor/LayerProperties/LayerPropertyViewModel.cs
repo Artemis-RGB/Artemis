@@ -11,10 +11,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertyViewModel : PropertyChangedBase
     {
         private readonly IKernel _kernel;
+        private bool _keyframesEnabled;
 
-        public LayerPropertyViewModel(BaseLayerProperty layerProperty, 
-            LayerPropertyViewModel parent,
-            ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel)
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel)
         {
             _kernel = kernel;
 
@@ -32,6 +31,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public List<LayerPropertyViewModel> Children { get; set; }
 
         public bool IsExpanded { get; set; }
+
+        public bool KeyframesEnabled
+        {
+            get => _keyframesEnabled;
+            set
+            {
+                _keyframesEnabled = value;
+                UpdateKeyframes();
+            }
+        }
+
+        private void UpdateKeyframes()
+        {
+        }
 
         public PropertyInputViewModel GetPropertyInputViewModel()
         {

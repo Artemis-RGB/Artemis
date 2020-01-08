@@ -61,7 +61,7 @@
             </Canvas>
 
             <!-- Timeline header -->
-            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" >
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
                 <StackPanel>
                     <!-- Time -->
                     <timeline:PropertyTimelineHeader Margin="0 25 0 0"

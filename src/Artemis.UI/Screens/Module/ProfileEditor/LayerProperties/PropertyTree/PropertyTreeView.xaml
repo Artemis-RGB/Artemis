@@ -99,8 +99,8 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
             <!-- Children show their full view -->
-            <DataTemplate DataType="{x:Type local:PropertyTreeChildViewModel}" >
-                <ContentControl s:View.Model="{Binding}"/>
+            <DataTemplate DataType="{x:Type local:PropertyTreeChildViewModel}">
+                <ContentControl s:View.Model="{Binding}" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>
