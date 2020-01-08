@@ -1,8 +1,10 @@
 ﻿using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
 using Artemis.UI.Screens.Module.ProfileEditor;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
@@ -42,5 +44,10 @@ namespace Artemis.UI.Ninject.Factories
     public interface IProfileLayerViewModelFactory : IViewModelFactory
     {
         ProfileLayerViewModel Create(Layer layer);
+    }
+
+    public interface ILayerPropertyViewModelFactory : IViewModelFactory
+    {
+        LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
     }
 }

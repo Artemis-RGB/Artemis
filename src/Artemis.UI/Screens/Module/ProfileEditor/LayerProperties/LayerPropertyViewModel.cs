@@ -1,26 +1,46 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Models.Profile;
+using System.Linq;
+using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
+using Ninject;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertyViewModel : PropertyChangedBase
     {
-        public LayerPropertyViewModel(LayerProperty layerProperty, LayerPropertyViewModel parent)
+        private readonly IKernel _kernel;
+
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, 
+            LayerPropertyViewModel parent,
+            ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel)
         {
+            _kernel = kernel;
+
             LayerProperty = layerProperty;
             Parent = parent;
             Children = new List<LayerPropertyViewModel>();
 
             foreach (var child in layerProperty.Children)
-                Children.Add(new LayerPropertyViewModel(child, this));
+                Children.Add(layerPropertyViewModelFactory.Create(child, this));
         }
 
-        public LayerProperty LayerProperty { get; }
+        public BaseLayerProperty LayerProperty { get; }
 
         public LayerPropertyViewModel Parent { get; }
         public List<LayerPropertyViewModel> Children { get; set; }
 
         public bool IsExpanded { get; set; }
+
+        public PropertyInputViewModel GetPropertyInputViewModel()
+        {
+            var match = _kernel.Get<List<PropertyInputViewModel>>().FirstOrDefault(p => p.CompatibleTypes.Contains(LayerProperty.Type));
+            if (match == null)
+                return null;
+
+            match.Initialize(this);
+            return match;
+        }
     }
 }

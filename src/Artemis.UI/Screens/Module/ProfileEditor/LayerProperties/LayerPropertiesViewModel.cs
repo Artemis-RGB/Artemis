@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Services.Interfaces;
@@ -12,10 +13,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly ILayerPropertyViewModelFactory _layerPropertyViewModelFactory;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService)
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyViewModelFactory layerPropertyViewModelFactory)
         {
             _profileEditorService = profileEditorService;
+            _layerPropertyViewModelFactory = layerPropertyViewModelFactory;
 
             CurrentTime = TimeSpan.Zero;
             PixelsPerSecond = 1;
@@ -75,7 +78,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 // Only create VMs for top-level parents, let parents populate their own children recursively
                 var propertyViewModels = selectedLayer.Properties
                     .Where(p => p.Children.Any())
-                    .Select(p => new LayerPropertyViewModel(p, null))
+                    .Select(p => _layerPropertyViewModelFactory.Create(p, null))
                     .ToList();
 
                 PropertyTree.PopulateProperties(propertyViewModels);
