@@ -10,10 +10,14 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
     {
         public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(SKSize)};
 
-        public override object GetCurrentValue()
+        protected override object GetInterpolatedValue()
         {
-            // Nothing fancy for now, just return the base value
-            return ((LayerProperty<SKSize>) LayerProperty).Value;
+            var currentKeyframe = (Keyframe<SKSize>)CurrentKeyframe;
+            var nextKeyframe = (Keyframe<SKSize>)NextKeyframe;
+
+            var widthDiff = nextKeyframe.Value.Width - currentKeyframe.Value.Width;
+            var heightDiff = nextKeyframe.Value.Height - currentKeyframe.Value.Height;
+            return new SKSize(currentKeyframe.Value.Width + widthDiff * KeyframeProgress, currentKeyframe.Value.Height + heightDiff * KeyframeProgress);
         }
     }
 }

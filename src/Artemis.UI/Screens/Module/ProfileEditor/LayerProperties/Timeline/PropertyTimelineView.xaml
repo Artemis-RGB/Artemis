@@ -16,7 +16,7 @@
                   HorizontalAlignment="Left">
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

@@ -15,29 +15,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly ILayerPropertyViewModelFactory _layerPropertyViewModelFactory;
         private readonly IProfileEditorService _profileEditorService;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ILayerPropertyViewModelFactory layerPropertyViewModelFactory)
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
+            ILayerPropertyViewModelFactory layerPropertyViewModelFactory,
+            IPropertyTreeViewModelFactory propertyTreeViewModelFactory,
+            IPropertyTimelineViewModelFactory propertyTimelineViewModelFactory)
         {
             _profileEditorService = profileEditorService;
             _layerPropertyViewModelFactory = layerPropertyViewModelFactory;
 
-            CurrentTime = TimeSpan.Zero;
             PixelsPerSecond = 1;
-            PropertyTree = new PropertyTreeViewModel(this);
-            PropertyTimeline = new PropertyTimelineViewModel(this);
+            PropertyTree = propertyTreeViewModelFactory.Create(this);
+            PropertyTimeline = propertyTimelineViewModelFactory.Create(this);
 
             PopulateProperties();
 
             _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties();
-        }
-
-        public TimeSpan CurrentTime
-        {
-            get => _currentTime;
-            set
-            {
-                _currentTime = value;
-                OnCurrentTimeChanged();
-            }
+            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 
         public string FormattedCurrentTime
@@ -45,10 +38,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             get
             {
                 if (PixelsPerSecond > 200)
-                    return $"{Math.Floor(CurrentTime.TotalSeconds):00}.{CurrentTime.Milliseconds:000}";
+                    return $"{Math.Floor(_profileEditorService.CurrentTime.TotalSeconds):00}.{_profileEditorService.CurrentTime.Milliseconds:000}";
                 if (PixelsPerSecond > 60)
-                    return $"{Math.Floor(CurrentTime.TotalSeconds):00}.{CurrentTime.Milliseconds:000}";
-                return $"{Math.Floor(CurrentTime.TotalMinutes):0}:{CurrentTime.Seconds:00}";
+                    return $"{Math.Floor(_profileEditorService.CurrentTime.TotalSeconds):00}.{_profileEditorService.CurrentTime.Milliseconds:000}";
+                return $"{Math.Floor(_profileEditorService.CurrentTime.TotalMinutes):0}:{_profileEditorService.CurrentTime.Seconds:00}";
             }
         }
 
@@ -64,8 +57,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public Thickness TimeCaretPosition
         {
-            get => new Thickness(CurrentTime.TotalSeconds * PixelsPerSecond, 0, 0, 0);
-            set => CurrentTime = TimeSpan.FromSeconds(value.Left / PixelsPerSecond);
+            get => new Thickness(_profileEditorService.CurrentTime.TotalSeconds * PixelsPerSecond, 0, 0, 0);
+            set => _profileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / PixelsPerSecond);
         }
 
         public PropertyTreeViewModel PropertyTree { get; set; }
@@ -91,15 +84,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
+        private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(() => FormattedCurrentTime);
+            NotifyOfPropertyChange(() => TimeCaretPosition);
+        }
+
         #region Caret movement
 
         private double _caretStartMouseStartOffset;
         private bool _mouseOverCaret;
         private int _pixelsPerSecond;
-        private TimeSpan _currentTime;
 
         public void RightGridMouseDown(object sender, MouseButtonEventArgs e)
         {
+            // TODO Preserve mouse offset
             _caretStartMouseStartOffset = e.GetPosition((IInputElement) sender).X - TimeCaretPosition.Left;
         }
 
@@ -124,13 +123,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         #region Events
 
-        public event EventHandler CurrentTimeChanged;
         public event EventHandler PixelsPerSecondChanged;
-
-        protected virtual void OnCurrentTimeChanged()
-        {
-            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
-        }
 
         protected virtual void OnPixelsPerSecondChanged()
         {

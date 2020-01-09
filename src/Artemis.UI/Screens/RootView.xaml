@@ -57,7 +57,7 @@
             <DockPanel>
                 <mde:AppBar Type="Dense" IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}" Title="{Binding ActiveItem.DisplayName}" ShowNavigationDrawerButton="True"
                             DockPanel.Dock="Top" />
-                <ContentControl s:View.Model="{Binding ActiveItem}" IsTabStop="False" Style="{StaticResource InitializingFade}" />
+                <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
             </DockPanel>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>

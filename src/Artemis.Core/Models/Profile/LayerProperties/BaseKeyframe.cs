@@ -4,7 +4,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 {
     public class BaseKeyframe
     {
-        protected internal BaseKeyframe(Layer layer, BaseLayerProperty property)
+        protected BaseKeyframe(Layer layer, BaseLayerProperty property)
         {
             Layer = layer;
             BaseProperty = property;

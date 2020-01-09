@@ -70,6 +70,7 @@ namespace Artemis.Core.Services.Storage
 
             if (_surfaceService.ActiveSurface != null)
                 profile.PopulateLeds(_surfaceService.ActiveSurface);
+
             return profile;
         }
 
@@ -78,7 +79,10 @@ namespace Artemis.Core.Services.Storage
         {
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
+            {
                 InstantiateProfileLayerBrushes(profile);
+                InstantiateProfileKeyframeEngines(profile);
+            }
         }
 
         public void DeleteProfile(Profile profile)
@@ -118,6 +122,15 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
+        private void InstantiateProfileKeyframeEngines(Profile profile)
+        {
+            // Only instantiate engines for properties without an existing engine instance
+            foreach (var layerProperty in profile.GetAllLayers().SelectMany(l => l.Properties).Where(p => p.KeyframeEngine == null))
+            {
+                _layerService.InstantiateKeyframeEngine(layerProperty);
+            }
+        }
+
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
@@ -130,6 +143,13 @@ namespace Artemis.Core.Services.Storage
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 InstantiateProfileLayerBrushes(profileModule.ActiveProfile);
+        }
+
+        private void ActiveProfilesInstantiateKeyframeEngines()
+        {
+            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
+            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
+                InstantiateProfileKeyframeEngines(profileModule.ActiveProfile);
         }
 
         #region Event handlers
@@ -148,7 +168,10 @@ namespace Artemis.Core.Services.Storage
         private void OnPluginLoaded(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is LayerBrushProvider)
+            {
                 ActiveProfilesInstantiateProfileLayerBrushes();
+                ActiveProfilesInstantiateKeyframeEngines();
+            }
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
+using Artemis.UI.Services.Interfaces;
 using Ninject;
 using Stylet;
 
@@ -11,11 +12,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertyViewModel : PropertyChangedBase
     {
         private readonly IKernel _kernel;
+        private readonly IProfileEditorService _profileEditorService;
         private bool _keyframesEnabled;
 
-        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel)
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel, IProfileEditorService profileEditorService)
         {
             _kernel = kernel;
+            _profileEditorService = profileEditorService;
+            _keyframesEnabled = layerProperty.UntypedKeyframes.Any();
 
             LayerProperty = layerProperty;
             Parent = parent;
@@ -44,6 +48,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void UpdateKeyframes()
         {
+            // Either create a new first keyframe or clear all the keyframes
+            if (_keyframesEnabled)
+                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime);
+            else
+                LayerProperty.ClearKeyframes();
+
+            // Force the keyframe engine to update, the new keyframe is the current keyframe
+            LayerProperty.KeyframeEngine.Update(0);
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public PropertyInputViewModel GetPropertyInputViewModel()

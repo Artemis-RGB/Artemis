@@ -19,6 +19,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
+        ///     The value of the property with keyframes applied
+        /// </summary>
+        public T CurrentValue => (T) KeyframeEngine.GetCurrentValue();
+
+        /// <summary>
         ///     A list of keyframes defining different values of the property in time, this list contains the strongly typed
         ///     <see cref="Keyframe{T}" />
         /// </summary>
@@ -43,20 +48,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Removes all keyframes from the property.
-        /// </summary>
-        public void ClearKeyframes()
-        {
-            BaseKeyframes.Clear();
-        }
-
-        /// <summary>
-        /// Gets the current value using the keyframes
+        ///     Gets the current value using the keyframes
         /// </summary>
         /// <returns></returns>
         public T GetCurrentValue()
         {
-            if (KeyframeEngine == null)
+            if (KeyframeEngine == null || !Keyframes.Any())
                 return Value;
 
             return (T) KeyframeEngine.GetCurrentValue();

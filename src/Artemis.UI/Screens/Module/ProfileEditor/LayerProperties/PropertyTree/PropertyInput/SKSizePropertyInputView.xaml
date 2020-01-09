@@ -16,6 +16,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Height"
+                 Text="{Binding Height}"
                  Cursor="/Resources/aero_drag_ew.cur" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <TextBox Width="60"
@@ -24,6 +25,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Width"
+                 Text="{Binding Width}"
                  Cursor="/Resources/aero_drag_ew.cur" />
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
@@ -48,6 +49,15 @@ namespace Artemis.Core.Ninject
                     .InheritedFrom<IRepository>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
+            });
+
+            // Bind all keyframe engines
+            Kernel.Bind(x =>
+            {
+                x.FromAssemblyContaining<KeyframeEngine>()
+                    .SelectAllClasses()
+                    .InheritedFrom<KeyframeEngine>()
+                    .BindAllBaseClasses();
             });
 
             Kernel.Bind<PluginSettings>().ToProvider<PluginSettingsProvider>();

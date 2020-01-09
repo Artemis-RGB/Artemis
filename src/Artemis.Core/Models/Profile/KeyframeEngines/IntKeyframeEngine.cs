@@ -9,10 +9,13 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
     {
         public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(int)};
 
-        public override object GetCurrentValue()
+        protected override object GetInterpolatedValue()
         {
-            // Nothing fancy for now, just return the base value
-            return ((LayerProperty<int>) LayerProperty).Value;
+            var currentKeyframe = (Keyframe<int>) CurrentKeyframe;
+            var nextKeyframe = (Keyframe<int>) NextKeyframe;
+
+            var diff = nextKeyframe.Value - currentKeyframe.Value;
+            return currentKeyframe.Value + diff * KeyframeProgress;
         }
     }
 }

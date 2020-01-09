@@ -18,7 +18,7 @@
        <TabControl.ContentTemplate>
             <DataTemplate >
                 <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
-                    <ContentControl s:View.Model="{Binding}" IsTabStop="False" TextElement.Foreground="{DynamicResource MaterialDesignBody}"/>
+                    <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}"/>
                 </materialDesign:TransitioningContent>
             </DataTemplate>
         </TabControl.ContentTemplate>
