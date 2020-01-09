@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private bool _mouseOverCaret;
         private int _pixelsPerSecond;
 
-        public void RightGridMouseDown(object sender, MouseButtonEventArgs e)
+        public void TimelineMouseDown(object sender, MouseButtonEventArgs e)
         {
             // TODO Preserve mouse offset
             _caretStartMouseStartOffset = e.GetPosition((IInputElement) sender).X - TimeCaretPosition.Left;
@@ -113,10 +113,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 _mouseOverCaret = false;
         }
 
-        public void RightGridMouseMove(object sender, MouseEventArgs e)
+        public void TimelineMouseMove(object sender, MouseEventArgs e)
         {
             if (_mouseOverCaret && e.LeftButton == MouseButtonState.Pressed)
-                TimeCaretPosition = new Thickness(Math.Max(0, e.GetPosition((IInputElement) sender).X), 0, 0, 0);
+                TimeCaretPosition = new Thickness(Math.Max(0, e.GetPosition((IInputElement) sender).X + _caretStartMouseStartOffset), 0, 0, 0);
         }
 
         #endregion

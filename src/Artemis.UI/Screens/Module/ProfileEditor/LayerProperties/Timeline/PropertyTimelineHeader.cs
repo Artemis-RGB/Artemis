@@ -60,7 +60,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             base.OnRender(drawingContext);
             UpdateTimeScale();
 

@@ -41,40 +41,51 @@
         </Grid>
 
         <!-- Right side -->
-        <Grid Grid.Column="1"
-              MouseDown="{s:Action RightGridMouseDown}"
-              MouseMove="{s:Action RightGridMouseMove}">
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Caret -->
-            <Canvas ZIndex="1"
-                    Margin="{Binding TimeCaretPosition}"
-                    Cursor="SizeWE"
-                    MouseEnter="{s:Action CaretMouseEnter}"
-                    MouseLeave="{s:Action CaretMouseLeave}">
-                <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
-                <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
-            </Canvas>
-
             <!-- Timeline header -->
-            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
-                <StackPanel>
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+                <Grid MouseDown="{s:Action TimelineMouseDown}"
+                      MouseMove="{s:Action TimelineMouseMove}"
+                      Background="{DynamicResource MaterialDesignCardBackground}">
+                    <!-- Caret -->
+                    <Canvas ZIndex="1"
+                            Margin="{Binding TimeCaretPosition}"
+                            Cursor="SizeWE"
+                            MouseEnter="{s:Action CaretMouseEnter}"
+                            MouseLeave="{s:Action CaretMouseLeave}">
+                        <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                    </Canvas>
                     <!-- Time -->
                     <timeline:PropertyTimelineHeader Margin="0 25 0 0"
                                                      Fill="{DynamicResource MaterialDesignBody}"
                                                      PixelsPerSecond="{Binding PixelsPerSecond}"
                                                      HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
-                                                     VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}" />
-                </StackPanel>
+                                                     VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
+                                                     Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
+                </Grid>
             </ScrollViewer>
 
             <!-- Timeline rails -->
-            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden">
-                <ContentControl s:View.Model="{Binding PropertyTimeline}" />
+            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+                <Grid MouseDown="{s:Action TimelineMouseDown}"
+                      MouseMove="{s:Action TimelineMouseMove}">
+                    <Canvas ZIndex="1"
+                            Margin="{Binding TimeCaretPosition}"
+                            Cursor="SizeWE"
+                            MouseEnter="{s:Action CaretMouseEnter}"
+                            MouseLeave="{s:Action CaretMouseLeave}">
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                    </Canvas>
+                    <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding PropertyTimeline}" />
+                </Grid>
+
             </ScrollViewer>
         </Grid>
 

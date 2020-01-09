@@ -64,6 +64,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             foreach (var viewModel in PropertyTrackViewModels)
                 viewModel.UpdateKeyframes(LayerPropertiesViewModel.PixelsPerSecond);
+
+            UpdateEndTime();
         }
 
         /// <summary>
