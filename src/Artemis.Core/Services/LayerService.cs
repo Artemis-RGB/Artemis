@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.KeyframeEngines;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
@@ -72,6 +75,24 @@ namespace Artemis.Core.Services
             layer.LayerBrush = (layerElement);
 
             return layerElement;
+        }
+
+        public KeyframeEngine InstantiateKeyframeEngine<T>(LayerProperty<T> layerProperty)
+        {
+            return InstantiateKeyframeEngine((BaseLayerProperty) layerProperty);
+        }
+
+        public KeyframeEngine InstantiateKeyframeEngine(BaseLayerProperty layerProperty)
+        {
+            // This creates an instance of each keyframe engine, which is pretty cheap since all the expensive stuff is done during
+            // Initialize() call but it's not ideal
+            var keyframeEngines = _kernel.Get<List<KeyframeEngine>>();
+            var keyframeEngine = keyframeEngines.FirstOrDefault(k => k.CompatibleTypes.Contains(layerProperty.Type));
+            if (keyframeEngine == null)
+                return null;
+
+            keyframeEngine.Initialize(layerProperty);
+            return keyframeEngine;
         }
 
         public void RemoveLayerBrush(Layer layer, LayerBrush layerElement)

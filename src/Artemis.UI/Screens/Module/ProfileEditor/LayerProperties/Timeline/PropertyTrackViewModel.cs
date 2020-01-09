@@ -12,7 +12,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             KeyframeViewModels = new BindableCollection<PropertyTrackKeyframeViewModel>();
 
             PopulateKeyframes();
-            UpdateKeyframes(propertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
+            UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
         }
 
         public PropertyTimelineViewModel PropertyTimelineViewModel { get; }
@@ -21,12 +21,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public void PopulateKeyframes()
         {
+            // Remove old keyframes
+            foreach (var viewModel in KeyframeViewModels.ToList())
+            {
+                if (!LayerPropertyViewModel.LayerProperty.UntypedKeyframes.Contains(viewModel.Keyframe))
+                    KeyframeViewModels.Remove(viewModel);
+            }
+
+            // Add new keyframes
             foreach (var keyframe in LayerPropertyViewModel.LayerProperty.UntypedKeyframes)
             {
                 if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
                     continue;
                 KeyframeViewModels.Add(new PropertyTrackKeyframeViewModel(keyframe));
             }
+
+            UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
         }
 
         public void UpdateKeyframes(int pixelsPerSecond)

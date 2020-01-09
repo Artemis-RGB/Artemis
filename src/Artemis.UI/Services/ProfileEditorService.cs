@@ -8,6 +8,8 @@ namespace Artemis.UI.Services
     public class ProfileEditorService : IProfileEditorService
     {
         private readonly IProfileService _profileService;
+        private TimeSpan _currentTime;
+        private TimeSpan _lastUpdateTime;
 
         public ProfileEditorService(IProfileService profileService)
         {
@@ -16,6 +18,19 @@ namespace Artemis.UI.Services
 
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
+
+        public TimeSpan CurrentTime
+        {
+            get => _currentTime;
+            set
+            {
+                if (_currentTime.Equals(value))
+                    return;
+                _currentTime = value;
+                UpdateProfilePreview();
+                OnCurrentTimeChanged();
+            }
+        }
 
         public void ChangeSelectedProfile(Profile profile)
         {
@@ -41,10 +56,30 @@ namespace Artemis.UI.Services
             OnSelectedProfileElementUpdated();
         }
 
+
+        private void UpdateProfilePreview()
+        {
+            var delta = CurrentTime - _lastUpdateTime;
+            foreach (var layer in SelectedProfile.GetAllLayers())
+            {
+                // Override keyframe progress
+                foreach (var baseLayerProperty in layer.Properties)
+                    baseLayerProperty.KeyframeEngine?.OverrideProgress(CurrentTime);
+
+                // Force layer shape to redraw
+                layer.LayerShape?.CalculateRenderProperties(layer.PositionProperty.GetCurrentValue(), layer.SizeProperty.GetCurrentValue());
+                // Update the brush with the delta (which can now be negative ^^)
+                layer.Update(delta.TotalSeconds);
+            }
+
+            _lastUpdateTime = CurrentTime;
+        }
+
         public event EventHandler SelectedProfileChanged;
         public event EventHandler SelectedProfileUpdated;
         public event EventHandler SelectedProfileElementChanged;
         public event EventHandler SelectedProfileElementUpdated;
+        public event EventHandler CurrentTimeChanged;
 
         protected virtual void OnSelectedProfileElementUpdated()
         {
@@ -64,6 +99,11 @@ namespace Artemis.UI.Services
         protected virtual void OnSelectedProfileChanged()
         {
             SelectedProfileChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnCurrentTimeChanged()
+        {
+            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

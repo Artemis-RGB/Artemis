@@ -60,7 +60,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             Layer.SizeProperty.Value = new SKSize((float) (100f / width * rect.Width) / 100f, (float) (100f / height * rect.Height) / 100f);
 
             // TODO: Update keyframes
-            CalculateRenderProperties(Layer.PositionProperty.Value, Layer.SizeProperty.Value);
+            CalculateRenderProperties(Layer.PositionProperty.CurrentValue, Layer.SizeProperty.CurrentValue);
         }
 
         public SKRect GetUnscaledRectangle()
@@ -74,10 +74,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
 
             return SKRect.Create(
-                (float) (x + width * Layer.PositionProperty.Value.X),
-                (float) (y + height * Layer.PositionProperty.Value.Y),
-                (float) (width * Layer.SizeProperty.Value.Width),
-                (float) (height * Layer.SizeProperty.Value.Height)
+                (float) (x + width * Layer.PositionProperty.CurrentValue.X),
+                (float) (y + height * Layer.PositionProperty.CurrentValue.Y),
+                (float) (width * Layer.SizeProperty.CurrentValue.Width),
+                (float) (height * Layer.SizeProperty.CurrentValue.Height)
             );
         }
     }

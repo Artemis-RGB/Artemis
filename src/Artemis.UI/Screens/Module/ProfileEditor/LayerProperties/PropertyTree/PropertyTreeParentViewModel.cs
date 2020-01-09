@@ -21,5 +21,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 
         public LayerPropertyViewModel LayerPropertyViewModel { get; }
         public BindableCollection<PropertyTreeItemViewModel> Children { get; set; }
+
+        public override void Update(bool forceUpdate)
+        {
+            foreach (var child in Children)
+                child.Update(forceUpdate);
+        }
     }
 }

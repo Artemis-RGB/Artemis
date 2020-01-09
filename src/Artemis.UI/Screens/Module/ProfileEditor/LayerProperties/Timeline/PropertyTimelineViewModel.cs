@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.UI.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class PropertyTimelineViewModel : PropertyChangedBase
     {
-        public PropertyTimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel)
+        private readonly IProfileEditorService _profileEditorService;
+
+        public PropertyTimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IProfileEditorService profileEditorService)
         {
+            _profileEditorService = profileEditorService;
+
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyTrackViewModels = new BindableCollection<PropertyTrackViewModel>();
+
+            _profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
+            LayerPropertiesViewModel.PixelsPerSecondChanged += (sender, args) => UpdateKeyframePositions();
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
@@ -27,8 +35,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             Width = endTime.TotalSeconds * LayerPropertiesViewModel.PixelsPerSecond;
 
             // Ensure the caret isn't outside the end time
-            if (LayerPropertiesViewModel.CurrentTime > endTime)
-                LayerPropertiesViewModel.CurrentTime = endTime;
+            if (_profileEditorService.CurrentTime > endTime)
+                _profileEditorService.CurrentTime = endTime;
         }
 
         public void PopulateProperties(List<LayerPropertyViewModel> properties)
@@ -50,6 +58,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void ClearProperties()
         {
             PropertyTrackViewModels.Clear();
+        }
+
+        public void UpdateKeyframePositions()
+        {
+            foreach (var viewModel in PropertyTrackViewModels)
+                viewModel.UpdateKeyframes(LayerPropertiesViewModel.PixelsPerSecond);
+        }
+
+        /// <summary>
+        /// Updates the time line's keyframes
+        /// </summary>
+        public void Update()
+        {
+            foreach (var viewModel in PropertyTrackViewModels)
+                viewModel.PopulateKeyframes();
+
+            UpdateEndTime();
         }
     }
 }

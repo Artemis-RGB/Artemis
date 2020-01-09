@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
 
@@ -15,12 +16,27 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         /// <summary>
         ///     The layer property this keyframe engine applies to.
         /// </summary>
-        public BaseLayerProperty LayerProperty { get; set; }
+        public BaseLayerProperty LayerProperty { get; private set; }
 
         /// <summary>
-        ///     The keyframe progress in milliseconds.
+        ///     The total progress
         /// </summary>
-        public double Progress { get; set; }
+        public TimeSpan Progress { get; private set; }
+
+        /// <summary>
+        ///     The progress from the current keyframe to the next 0 to 1
+        /// </summary>
+        public float KeyframeProgress { get; private set; }
+
+        /// <summary>
+        ///     The current keyframe
+        /// </summary>
+        public BaseKeyframe CurrentKeyframe { get; private set; }
+
+        /// <summary>
+        ///     The next keyframe
+        /// </summary>
+        public BaseKeyframe NextKeyframe { get; private set; }
 
         /// <summary>
         ///     The types this keyframe engine supports.
@@ -39,6 +55,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
                 throw new ArtemisCoreException($"This property engine does not support the provided type {layerProperty.Type.Name}");
 
             LayerProperty = layerProperty;
+            LayerProperty.KeyframeEngine = this;
             Initialized = true;
         }
 
@@ -51,15 +68,52 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
             if (!Initialized)
                 return;
 
-            Progress += deltaTime;
+            Progress = Progress.Add(TimeSpan.FromMilliseconds(deltaTime));
+
+            // TODO Keep them sorted somewhere else, iterating all keyframes multiple times sucks
+            var sortedKeyframes = LayerProperty.UntypedKeyframes.ToList().OrderBy(k => k.Position).ToList();
+
+            CurrentKeyframe = sortedKeyframes.LastOrDefault(k => k.Position <= Progress);
+            NextKeyframe = sortedKeyframes.FirstOrDefault(k => k.Position > Progress);
+            if (CurrentKeyframe == null)
+                KeyframeProgress = 0;
+            else if (NextKeyframe == null)
+                KeyframeProgress = 1;
+            else
+            {
+                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
+                KeyframeProgress = (float) ((Progress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+            }
+
+            // TODO Apply easing and store it separately
 
             // LayerProperty determines what's next: reset, stop, continue
+        }
+
+        /// <summary>
+        ///     Overrides the engine's progress to the provided value
+        /// </summary>
+        /// <param name="progress"></param>
+        public void OverrideProgress(TimeSpan progress)
+        {
+            Progress = TimeSpan.Zero;
+            Update(progress.TotalMilliseconds);
         }
 
         /// <summary>
         ///     Gets the current value, if the progress is in between two keyframes the value will be interpolated
         /// </summary>
         /// <returns></returns>
-        public abstract object GetCurrentValue();
+        public object GetCurrentValue()
+        {
+            if (CurrentKeyframe == null)
+                return LayerProperty.BaseValue;
+            if (NextKeyframe == null)
+                return CurrentKeyframe.BaseValue;
+
+            return GetInterpolatedValue();
+        }
+
+        protected abstract object GetInterpolatedValue();
     }
 }

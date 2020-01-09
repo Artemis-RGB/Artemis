@@ -12,7 +12,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     {
         private object _baseValue;
 
-        protected internal BaseLayerProperty(Layer layer, BaseLayerProperty parent, string id, string name, string description, Type type)
+        protected BaseLayerProperty(Layer layer, BaseLayerProperty parent, string id, string name, string description, Type type)
         {
             Layer = layer;
             Parent = parent;
@@ -125,7 +125,37 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             BaseKeyframes.Clear();
             foreach (var keyframeEntity in propertyEntity.KeyframeEntities)
-                BaseKeyframes.Add(new BaseKeyframe(Layer, this) {BaseValue = DeserializePropertyValue(keyframeEntity.Value)});
+            {
+                // Create a strongly typed keyframe or else it cannot be cast later on
+                var keyframeType = typeof(Keyframe<>);
+                var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
+                keyframe.BaseValue = DeserializePropertyValue(keyframeEntity.Value);
+                BaseKeyframes.Add(keyframe);
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new keyframe for this base property without knowing the type
+        /// </summary>
+        /// <returns></returns>
+        public BaseKeyframe CreateNewKeyframe(TimeSpan position)
+        {
+            // Create a strongly typed keyframe or else it cannot be cast later on
+            var keyframeType = typeof(Keyframe<>);
+            var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
+            keyframe.Position = position;
+            keyframe.BaseValue = BaseValue;
+            BaseKeyframes.Add(keyframe);
+
+            return keyframe;
+        }
+
+        /// <summary>
+        ///     Removes all keyframes from the property.
+        /// </summary>
+        public void ClearKeyframes()
+        {
+            BaseKeyframes.Clear();
         }
 
         public override string ToString()

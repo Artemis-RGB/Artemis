@@ -22,7 +22,7 @@
                       ToolTip="Toggle key-framing"
                       Width="18"
                       Height="18"
-                      IsChecked="{Binding KeyframesEnabled}"
+                      IsChecked="{Binding LayerPropertyViewModel.KeyframesEnabled}"
                       VerticalAlignment="Center" Padding="-25">
             <materialDesign:PackIcon Kind="Stopwatch" Height="13" Width="13" />
         </ToggleButton>

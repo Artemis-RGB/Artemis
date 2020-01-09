@@ -5,6 +5,8 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
 using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
@@ -49,5 +51,15 @@ namespace Artemis.UI.Ninject.Factories
     public interface ILayerPropertyViewModelFactory : IViewModelFactory
     {
         LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
+    }
+
+    public interface IPropertyTreeViewModelFactory : IViewModelFactory
+    {
+        PropertyTreeViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
+    }
+
+    public interface IPropertyTimelineViewModelFactory : IViewModelFactory
+    {
+        PropertyTimelineViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
     }
 }

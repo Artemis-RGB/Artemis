@@ -24,8 +24,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Update();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
+            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
-
+        
         public Layer Layer { get; }
 
         public Geometry LayerGeometry { get; set; }
@@ -119,8 +121,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             shapeGeometry.Freeze();
             ShapeGeometry = shapeGeometry;
         }
-
-
+        
         private void CreateViewportRectangle()
         {
             if (!Layer.Leds.Any() || Layer.LayerShape == null)
@@ -188,6 +189,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void OnSelectedProfileElementChanged(object sender, EventArgs e)
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
+        }
+
+        private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
+        {
+            if (IsSelected)
+                Update();
+        }
+
+        private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
+        {
+            if (!IsSelected)
+                return;
+            CreateShapeGeometry();
+            CreateViewportRectangle();
         }
 
         public void Dispose()

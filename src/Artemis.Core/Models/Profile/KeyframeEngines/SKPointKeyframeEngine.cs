@@ -10,10 +10,14 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
     {
         public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(SKPoint)};
 
-        public override object GetCurrentValue()
+        protected override object GetInterpolatedValue()
         {
-            // Nothing fancy for now, just return the base value
-            return ((LayerProperty<SKPoint>) LayerProperty).Value;
+            var currentKeyframe = (Keyframe<SKPoint>) CurrentKeyframe;
+            var nextKeyframe = (Keyframe<SKPoint>) NextKeyframe;
+
+            var xDiff = nextKeyframe.Value.X - currentKeyframe.Value.X;
+            var yDiff = nextKeyframe.Value.Y - currentKeyframe.Value.Y;
+            return new SKPoint(currentKeyframe.Value.X + xDiff * KeyframeProgress, currentKeyframe.Value.Y + yDiff * KeyframeProgress);
         }
     }
 }
