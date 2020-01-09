@@ -21,7 +21,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     The value of the property with keyframes applied
         /// </summary>
-        public T CurrentValue => (T) KeyframeEngine.GetCurrentValue();
+        public T CurrentValue => KeyframeEngine != null ? (T) KeyframeEngine.GetCurrentValue() : Value;
 
         /// <summary>
         ///     A list of keyframes defining different values of the property in time, this list contains the strongly typed
