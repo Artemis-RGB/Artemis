@@ -116,7 +116,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public void TimelineMouseMove(object sender, MouseEventArgs e)
         {
             if (_mouseOverCaret && e.LeftButton == MouseButtonState.Pressed)
+            {
+                // Snap to visible keyframes
+                var visibleKeyframes = PropertyTimeline.PropertyTrackViewModels.Where(t => t.LayerPropertyViewModel.Parent != null &&
+                                                                                           t.LayerPropertyViewModel.Parent.IsExpanded)
+                    .SelectMany(t => t.KeyframeViewModels);
+
                 TimeCaretPosition = new Thickness(Math.Max(0, e.GetPosition((IInputElement) sender).X + _caretStartMouseStartOffset), 0, 0, 0);
+
+
+                // Take a tolerance of 5 pixels (half a keyframe width)
+                var tolerance = 1000f / PixelsPerSecond * 5;
+                var closeKeyframe = visibleKeyframes.FirstOrDefault(
+                    kf => Math.Abs(kf.Keyframe.Position.TotalMilliseconds - _profileEditorService.CurrentTime.TotalMilliseconds) < tolerance
+                );
+                if (closeKeyframe != null)
+                    _profileEditorService.CurrentTime = closeKeyframe.Keyframe.Position;
+            }
         }
 
         #endregion
