@@ -17,7 +17,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
 
             var xDiff = nextKeyframe.Value.X - currentKeyframe.Value.X;
             var yDiff = nextKeyframe.Value.Y - currentKeyframe.Value.Y;
-            return new SKPoint(currentKeyframe.Value.X + xDiff * KeyframeProgress, currentKeyframe.Value.Y + yDiff * KeyframeProgress);
+            return new SKPoint(currentKeyframe.Value.X + xDiff * KeyframeProgressEased, currentKeyframe.Value.Y + yDiff * KeyframeProgressEased);
         }
     }
 }

@@ -48,7 +48,6 @@ namespace Artemis.Core.Models.Profile
             _leds = new List<ArtemisLed>();
             _properties = new Dictionary<string, BaseLayerProperty>();
 
-            // TODO: Load properties from entity instead of creating the defaults
             CreateDefaultProperties();
 
             switch (layerEntity.ShapeEntity?.Type)
@@ -355,7 +354,7 @@ namespace Artemis.Core.Models.Profile
 
         private void CreateDefaultProperties()
         {
-            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.");
+            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.") {ExpandByDefault = true};
             AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
             PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
             SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};

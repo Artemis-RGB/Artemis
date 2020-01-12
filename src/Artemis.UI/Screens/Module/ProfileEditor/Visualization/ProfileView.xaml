@@ -114,6 +114,33 @@
                 </VisualBrush>
             </Grid.Background>
 
+            <Grid Name="DeviceDisplayGrid">
+                <Grid.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                        <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
+                    </TransformGroup>
+                </Grid.RenderTransform>
+                <ItemsControl ItemsSource="{Binding DeviceViewModels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl s:View.Model="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
             <Grid Name="EditorDisplayGrid">
                 <Grid.RenderTransform>
                     <TransformGroup>
@@ -140,6 +167,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
+
+           
 
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
                 <materialDesign:Card Padding="8">

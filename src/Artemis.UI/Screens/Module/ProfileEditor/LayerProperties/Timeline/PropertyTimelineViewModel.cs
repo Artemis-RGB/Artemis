@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -9,10 +10,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     public class PropertyTimelineViewModel : PropertyChangedBase
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IPropertyTrackViewModelFactory _propertyTrackViewModelFactory;
 
-        public PropertyTimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IProfileEditorService profileEditorService)
+        public PropertyTimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
+            IProfileEditorService profileEditorService,
+            IPropertyTrackViewModelFactory propertyTrackViewModelFactory)
         {
             _profileEditorService = profileEditorService;
+            _propertyTrackViewModelFactory = propertyTrackViewModelFactory;
 
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyTrackViewModels = new BindableCollection<PropertyTrackViewModel>();
@@ -50,7 +55,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         private void CreateViewModels(LayerPropertyViewModel property)
         {
-            PropertyTrackViewModels.Add(new PropertyTrackViewModel(this, property));
+            PropertyTrackViewModels.Add(_propertyTrackViewModelFactory.Create(this, property));
             foreach (var child in property.Children)
                 CreateViewModels(child);
         }

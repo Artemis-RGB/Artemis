@@ -33,6 +33,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry LayerGeometry { get; set; }
         public Geometry OpacityGeometry { get; set; }
         public Geometry ShapeGeometry { get; set; }
+        public Rect ShapeRectangle { get; set; }
         public Rect ViewportRectangle { get; set; }
         public bool IsSelected { get; set; }
 
@@ -99,22 +100,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             var skRect = Layer.LayerShape.GetUnscaledRectangle();
-            var rect = new Rect(skRect.Left, skRect.Top, skRect.Width, skRect.Height);
+            ShapeRectangle = new Rect(skRect.Left, skRect.Top, skRect.Width, skRect.Height);
             var shapeGeometry = Geometry.Empty;
             switch (Layer.LayerShape)
             {
                 case Ellipse _:
-                    shapeGeometry = new EllipseGeometry(rect);
+                    shapeGeometry = new EllipseGeometry(ShapeRectangle);
                     break;
                 case Fill _:
                     shapeGeometry = LayerGeometry;
                     break;
                 case Polygon _:
                     // TODO
-                    shapeGeometry = new RectangleGeometry(rect);
+                    shapeGeometry = new RectangleGeometry(ShapeRectangle);
                     break;
                 case Rectangle _:
-                    shapeGeometry = new RectangleGeometry(rect);
+                    shapeGeometry = new RectangleGeometry(ShapeRectangle);
                     break;
             }
 

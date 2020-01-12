@@ -8,8 +8,9 @@
              xmlns:visualization="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance {x:Type visualization:ProfileDeviceViewModel}}"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type visualization:ProfileDeviceViewModel}}">
     <UserControl.Resources>
         <converters:NullToImageConverter x:Key="NullToImageConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />

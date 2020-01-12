@@ -6,10 +6,20 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:LayerPropertiesViewModel}">
+             d:DataContext="{d:DesignInstance local:LayerPropertiesViewModel}"
+             behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
+    <UserControl.InputBindings>
+        <KeyBinding Command="{s:Action Play}" Key="Space"></KeyBinding>
+        <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space"></KeyBinding>
+    </UserControl.InputBindings>
+    <UserControl.Resources>
+        <s:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid x:Name="ContainerGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -28,9 +38,34 @@
             </Grid.RowDefinitions>
 
             <!-- Misc controls & time display -->
-            <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
-            </StackPanel>
+            <DockPanel Grid.Row="0" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}">
+                        <materialDesign:PackIcon Kind="StepForward" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}">
+                        <StackPanel>
+                            <materialDesign:PackIcon Kind="Play" Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+                            <materialDesign:PackIcon Kind="Pause" Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}">
+                        <materialDesign:PackIcon Kind="SkipBackward" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}">
+                        <materialDesign:PackIcon Kind="SkipForward" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}">
+                        <materialDesign:PackIcon Kind="SkipPrevious" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}">
+                        <materialDesign:PackIcon Kind="SkipNext" />
+                    </Button>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
+                </StackPanel>
+            </DockPanel>
 
             <!-- Properties tree -->
             <ScrollViewer Grid.Row="1" x:Name="PropertyTreeScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
@@ -50,15 +85,14 @@
 
             <!-- Timeline header -->
             <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
-                <Grid MouseDown="{s:Action TimelineMouseDown}"
-                      MouseMove="{s:Action TimelineMouseMove}"
-                      Background="{DynamicResource MaterialDesignCardBackground}">
+                <Grid Background="{DynamicResource MaterialDesignCardBackground}">
                     <!-- Caret -->
                     <Canvas ZIndex="1"
                             Margin="{Binding TimeCaretPosition}"
                             Cursor="SizeWE"
-                            MouseEnter="{s:Action CaretMouseEnter}"
-                            MouseLeave="{s:Action CaretMouseLeave}">
+                            MouseDown="{s:Action TimelineMouseDown}"
+                            MouseUp="{s:Action TimelineMouseUp}"
+                            MouseMove="{s:Action TimelineMouseMove}">
                         <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
                         <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
@@ -74,13 +108,13 @@
 
             <!-- Timeline rails -->
             <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
-                <Grid MouseDown="{s:Action TimelineMouseDown}"
-                      MouseMove="{s:Action TimelineMouseMove}">
+                <Grid>
                     <Canvas ZIndex="1"
                             Margin="{Binding TimeCaretPosition}"
                             Cursor="SizeWE"
-                            MouseEnter="{s:Action CaretMouseEnter}"
-                            MouseLeave="{s:Action CaretMouseLeave}">
+                            MouseDown="{s:Action TimelineMouseDown}"
+                            MouseUp="{s:Action TimelineMouseUp}"
+                            MouseMove="{s:Action TimelineMouseMove}">
                         <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
                     <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding PropertyTimeline}" />
@@ -102,11 +136,10 @@
                 <Slider Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="10"
-                        TickFrequency="5"
-                        Minimum="1"
-                        Maximum="600"
+                        Minimum="31"
+                        Maximum="350"
                         Value="{Binding PixelsPerSecond}"
-                        Width="600" />
+                        Width="319" />
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -24,6 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             LayerProperty = layerProperty;
             Parent = parent;
             Children = new List<LayerPropertyViewModel>();
+            IsExpanded = layerProperty.ExpandByDefault;
 
             foreach (var child in layerProperty.Children)
                 Children.Add(layerPropertyViewModelFactory.Create(child, this));

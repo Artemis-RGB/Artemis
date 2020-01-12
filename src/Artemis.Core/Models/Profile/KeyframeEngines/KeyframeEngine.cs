@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Utilities;
 
 namespace Artemis.Core.Models.Profile.KeyframeEngines
 {
@@ -24,9 +25,16 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         public TimeSpan Progress { get; private set; }
 
         /// <summary>
-        ///     The progress from the current keyframe to the next 0 to 1
+        ///     The progress from the current keyframe to the next.
+        ///     <para>Range 0.0 to 1.0.</para>
         /// </summary>
         public float KeyframeProgress { get; private set; }
+
+        /// <summary>
+        ///     The progress from the current keyframe to the next with the current keyframes easing function applied.
+        ///     <para>Range 0.0 to 1.0 but can be higher than 1.0 depending on easing function.</para>
+        /// </summary>
+        public float KeyframeProgressEased { get; set; }
 
         /// <summary>
         ///     The current keyframe
@@ -68,27 +76,34 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
             if (!Initialized)
                 return;
 
+            var keyframes = LayerProperty.UntypedKeyframes.ToList();
             Progress = Progress.Add(TimeSpan.FromMilliseconds(deltaTime));
 
-            // TODO Keep them sorted somewhere else, iterating all keyframes multiple times sucks
-            var sortedKeyframes = LayerProperty.UntypedKeyframes.ToList().OrderBy(k => k.Position).ToList();
+            // The current keyframe is the last keyframe before the current time
+            CurrentKeyframe = keyframes.LastOrDefault(k => k.Position <= Progress);
+            // The next keyframe is the first keyframe that's after the current time
+            NextKeyframe = keyframes.FirstOrDefault(k => k.Position > Progress);
 
-            CurrentKeyframe = sortedKeyframes.LastOrDefault(k => k.Position <= Progress);
-            NextKeyframe = sortedKeyframes.FirstOrDefault(k => k.Position > Progress);
             if (CurrentKeyframe == null)
+            {
                 KeyframeProgress = 0;
+                KeyframeProgressEased = 0;
+            }
             else if (NextKeyframe == null)
+            {
                 KeyframeProgress = 1;
+                KeyframeProgressEased = 1;
+            }
             else
             {
                 var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
                 KeyframeProgress = (float) ((Progress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                KeyframeProgressEased = (float) Easings.Interpolate(KeyframeProgress, CurrentKeyframe.EasingFunction);
             }
-
-            // TODO Apply easing and store it separately
 
             // LayerProperty determines what's next: reset, stop, continue
         }
+
 
         /// <summary>
         ///     Overrides the engine's progress to the provided value
@@ -106,6 +121,8 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         /// <returns></returns>
         public object GetCurrentValue()
         {
+            if (CurrentKeyframe == null && LayerProperty.UntypedKeyframes.Any())
+                return LayerProperty.UntypedKeyframes.First().BaseValue;
             if (CurrentKeyframe == null)
                 return LayerProperty.BaseValue;
             if (NextKeyframe == null)

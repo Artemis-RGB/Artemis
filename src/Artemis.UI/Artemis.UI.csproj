@@ -144,6 +144,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\InputBindingBehavior.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\ColorToDrawingColorConverter.cs" />
     <Compile Include="Converters\ColorToSolidColorBrushConverter.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeParentViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackEasingViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackKeyframeViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineHeader.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackViewModel.cs" />

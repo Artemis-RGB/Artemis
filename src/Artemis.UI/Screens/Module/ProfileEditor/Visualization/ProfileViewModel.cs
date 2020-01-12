@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
@@ -45,6 +46,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Execute.OnUIThreadSync(() =>
             {
                 CanvasViewModels = new ObservableCollection<CanvasViewModel>();
+                DeviceViewModels = new ObservableCollection<ProfileDeviceViewModel>();
                 PanZoomViewModel = new PanZoomViewModel();
             });
 
@@ -62,15 +64,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public bool IsInitializing { get; private set; }
         public ObservableCollection<CanvasViewModel> CanvasViewModels { get; set; }
+        public ObservableCollection<ProfileDeviceViewModel> DeviceViewModels { get; set; }
         public PanZoomViewModel PanZoomViewModel { get; set; }
         public PluginSetting<bool> HighlightSelectedLayer { get; set; }
         public PluginSetting<bool> PauseRenderingOnFocusLoss { get; set; }
-
-        public ReadOnlyCollection<ProfileDeviceViewModel> Devices => CanvasViewModels
-            .Where(vm => vm is ProfileDeviceViewModel)
-            .Cast<ProfileDeviceViewModel>()
-            .ToList()
-            .AsReadOnly();
 
         public VisualizationToolViewModel ActiveToolViewModel
         {
@@ -141,7 +138,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     var layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
                     var layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
 
-
                     // Add new layers missing a VM
                     foreach (var layer in layers)
                     {
@@ -156,74 +152,51 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         profileLayerViewModel.Dispose();
                         CanvasViewModels.Remove(profileLayerViewModel);
                     }
-
-                    // Sort the devices by ZIndex
-                    Execute.PostToUIThread(() =>
-                    {
-                        foreach (var device in Devices.ToList())
-                            CanvasViewModels.Move(CanvasViewModels.IndexOf(device), device.Device.ZIndex - 1);
-                    });
                 }
             });
         }
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
         {
-            var devices = new List<ArtemisDevice>();
-            devices.AddRange(surface.Devices);
-
             // Make sure all devices have an up-to-date VM
-            foreach (var surfaceDeviceConfiguration in devices)
-            {
-                // Create VMs for missing devices
-                ProfileDeviceViewModel viewModel;
-                lock (CanvasViewModels)
-                {
-                    viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
-                }
-
-                if (viewModel == null)
-                {
-                    // Create outside the UI thread to avoid slowdowns as much as possible
-                    var profileDeviceViewModel = new ProfileDeviceViewModel(surfaceDeviceConfiguration);
-                    Execute.PostToUIThread(() =>
-                    {
-                        // Gotta call IsInitializing on the UI thread or its never gets picked up
-                        IsInitializing = true;
-                        lock (CanvasViewModels)
-                        {
-                            CanvasViewModels.Add(profileDeviceViewModel);
-                        }
-                    });
-                }
-                // Update existing devices
-                else
-                    viewModel.Device = surfaceDeviceConfiguration;
-            }
-
-
-            // Sort the devices by ZIndex
             Execute.PostToUIThread(() =>
             {
-                lock (CanvasViewModels)
+                lock (DeviceViewModels)
                 {
-                    foreach (var device in Devices.OrderBy(d => d.ZIndex).ToList())
+                    var existing = DeviceViewModels.ToList();
+                    var deviceViewModels = new List<ProfileDeviceViewModel>();
+
+                    // Add missing/update existing
+                    foreach (var surfaceDeviceConfiguration in surface.Devices.OrderBy(d => d.ZIndex).ToList())
                     {
-                        var newIndex = Math.Max(device.ZIndex - 1, CanvasViewModels.Count - 1);
-                        CanvasViewModels.Move(CanvasViewModels.IndexOf(device), newIndex);
+                        // Create VMs for missing devices
+                        var viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
+                        if (viewModel == null)
+                        {
+                            IsInitializing = true;
+                            viewModel = new ProfileDeviceViewModel(surfaceDeviceConfiguration);
+                        }
+                        // Update existing devices
+                        else
+                            viewModel.Device = surfaceDeviceConfiguration;
+
+                        // Add the viewModel to the list of VMs we want to keep
+                        deviceViewModels.Add(viewModel);
                     }
+
+                    DeviceViewModels = new ObservableCollection<ProfileDeviceViewModel>(deviceViewModels);
                 }
             });
         }
 
         private void UpdateLeds(object sender, CustomUpdateData customUpdateData)
         {
-            lock (CanvasViewModels)
+            lock (DeviceViewModels)
             {
                 if (IsInitializing)
-                    IsInitializing = Devices.Any(d => !d.AddedLeds);
+                    IsInitializing = DeviceViewModels.Any(d => !d.AddedLeds);
 
-                foreach (var profileDeviceViewModel in Devices)
+                foreach (var profileDeviceViewModel in DeviceViewModels)
                     profileDeviceViewModel.Update();
             }
         }
@@ -232,12 +205,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             if (HighlightSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
             {
-                foreach (var led in Devices.SelectMany(d => d.Leds))
+                foreach (var led in DeviceViewModels.SelectMany(d => d.Leds))
                     led.IsDimmed = !layer.Leds.Contains(led.Led);
             }
             else
             {
-                foreach (var led in Devices.SelectMany(d => d.Leds))
+                foreach (var led in DeviceViewModels.SelectMany(d => d.Leds))
                     led.IsDimmed = false;
             }
         }
@@ -316,11 +289,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public void CanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
+            ((IInputElement) sender).CaptureMouse();
             ActiveToolViewModel?.MouseDown(sender, e);
         }
 
         public void CanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
+            ((IInputElement) sender).ReleaseMouseCapture();
             ActiveToolViewModel?.MouseUp(sender, e);
         }
 
@@ -351,26 +326,26 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
 
             layer.ClearLeds();
-            layer.AddLeds(Devices.SelectMany(d => d.Leds).Where(vm => vm.IsSelected).Select(vm => vm.Led));
+            layer.AddLeds(DeviceViewModels.SelectMany(d => d.Leds).Where(vm => vm.IsSelected).Select(vm => vm.Led));
 
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void SelectAll()
         {
-            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+            foreach (var ledVm in DeviceViewModels.SelectMany(d => d.Leds))
                 ledVm.IsSelected = true;
         }
 
         public void InverseSelection()
         {
-            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+            foreach (var ledVm in DeviceViewModels.SelectMany(d => d.Leds))
                 ledVm.IsSelected = !ledVm.IsSelected;
         }
 
         public void ClearSelection()
         {
-            foreach (var ledVm in Devices.SelectMany(d => d.Leds))
+            foreach (var ledVm in DeviceViewModels.SelectMany(d => d.Leds))
                 ledVm.IsSelected = false;
         }
 
@@ -421,7 +396,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public void Handle(MainWindowKeyEvent message)
         {
-            Debug.WriteLine(message.KeyDown);
             if (message.KeyDown)
             {
                 if (ActiveToolIndex != 0)
