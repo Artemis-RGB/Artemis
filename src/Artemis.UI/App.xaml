@@ -60,6 +60,12 @@
                     </DrawingGroup>
                 </DrawingImage.Drawing>
             </DrawingImage>
+
+            <!-- Disable tab stop/focusable on all content controls -->
+            <Style TargetType="ContentControl">
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Focusable" Value="False"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

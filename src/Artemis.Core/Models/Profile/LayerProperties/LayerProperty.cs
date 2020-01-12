@@ -36,6 +36,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public void AddKeyframe(Keyframe<T> keyframe)
         {
             BaseKeyframes.Add(keyframe);
+            SortKeyframes();
         }
 
         /// <summary>
@@ -45,6 +46,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public void RemoveKeyframe(Keyframe<T> keyframe)
         {
             BaseKeyframes.Remove(keyframe);
+            SortKeyframes();
         }
 
         /// <summary>

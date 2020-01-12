@@ -28,7 +28,48 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Ellipse Fill="{StaticResource PrimaryHueMidBrush}" Width="10" Height="10" Margin="-5,6,0,0" ToolTip="{Binding Timestamp}" />
+                    <Ellipse Fill="{StaticResource PrimaryHueMidBrush}"
+                             Width="10"
+                             Height="10"
+                             Margin="-5,6,0,0"
+                             ToolTip="{Binding Timestamp}"
+                             s:View.ActionTarget="{Binding}"
+                             MouseDown="{s:Action KeyframeMouseDown}"
+                             MouseUp="{s:Action KeyframeMouseUp}"
+                             MouseMove="{s:Action KeyframeMouseMove}">
+                        <Ellipse.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Copy" />
+                                <MenuItem Header="Easing" ItemsSource="{Binding EasingViewModels}">
+                                    <MenuItem.ItemContainerStyle>
+                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                            <Setter Property="IsCheckable" Value="True" />
+                                            <Setter Property="IsChecked" Value="{Binding Path=IsEasingModeSelected, Mode=TwoWay}" />
+                                        </Style>
+                                    </MenuItem.ItemContainerStyle>
+                                    <MenuItem.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Polyline Stroke="{DynamicResource MaterialDesignBody}"
+                                                          StrokeThickness="1"
+                                                          Points="{Binding EasingPoints}"
+                                                          Stretch="Uniform"
+                                                          Width="20"
+                                                          Height="20"
+                                                          Margin="0 0 10 0" />
+                                                <TextBlock Text="{Binding Description}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </MenuItem.ItemTemplate>
+                                </MenuItem>
+                                <!-- <MenuItem Header="Easing mode" IsEnabled="{Binding CanSelectEasingMode}"> -->
+                                <!--     <MenuItem Header="Ease in" Command="{s:Action SetEasingMode}" CommandParameter="EaseIn" /> -->
+                                <!--     <MenuItem Header="Ease out" Command="{s:Action SetEasingMode}" CommandParameter="EaseOut" /> -->
+                                <!--     <MenuItem Header="Ease in and out" Command="{s:Action SetEasingMode}" CommandParameter="EaseInOut" /> -->
+                                <!-- </MenuItem> -->
+                            </ContextMenu>
+                        </Ellipse.ContextMenu>
+                    </Ellipse>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

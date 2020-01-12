@@ -64,7 +64,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 ApplySelectedSurfaceConfiguration();
             }
         }
-        
+
         public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
             var config = _surfaceService.CreateSurfaceConfiguration(name);
@@ -111,22 +111,32 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private void ApplySelectedSurfaceConfiguration()
         {
             // Make sure all devices have an up-to-date VM
-            foreach (var surfaceDeviceConfiguration in SelectedSurface.Devices)
-            {
-                // Create VMs for missing devices
-                var viewModel = Devices.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
-                if (viewModel == null)
-                    Execute.PostToUIThread(() => Devices.Add(new SurfaceDeviceViewModel(surfaceDeviceConfiguration)));
-                // Update existing devices
-                else
-                    viewModel.Device = surfaceDeviceConfiguration;
-            }
-
-            // Sort the devices by ZIndex
             Execute.PostToUIThread(() =>
             {
-                foreach (var device in Devices.OrderBy(d => d.Device.ZIndex).ToList())
-                    Devices.Move(Devices.IndexOf(device), device.Device.ZIndex - 1);
+                lock (Devices)
+                {
+                    var existing = Devices.ToList();
+                    var deviceViewModels = new List<SurfaceDeviceViewModel>();
+
+                    // Add missing/update existing
+                    foreach (var surfaceDeviceConfiguration in SelectedSurface.Devices.OrderBy(d => d.ZIndex).ToList())
+                    {
+                        // Create VMs for missing devices
+                        var viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
+                        if (viewModel == null)
+                        {
+                            viewModel = new SurfaceDeviceViewModel(surfaceDeviceConfiguration);
+                        }
+                        // Update existing devices
+                        else
+                            viewModel.Device = surfaceDeviceConfiguration;
+
+                        // Add the viewModel to the list of VMs we want to keep
+                        deviceViewModels.Add(viewModel);
+                    }
+
+                    Devices = new ObservableCollection<SurfaceDeviceViewModel>(deviceViewModels);
+                }
             });
 
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
@@ -189,6 +199,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -202,6 +213,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -212,6 +224,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -224,6 +237,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -248,6 +262,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                ((IInputElement) sender).CaptureMouse();
+            else
+                ((IInputElement) sender).ReleaseMouseCapture();
+
             if (IsPanKeyDown() || e.ChangedButton == MouseButton.Right)
                 return;
 

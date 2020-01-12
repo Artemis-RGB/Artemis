@@ -17,7 +17,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
 
             var widthDiff = nextKeyframe.Value.Width - currentKeyframe.Value.Width;
             var heightDiff = nextKeyframe.Value.Height - currentKeyframe.Value.Height;
-            return new SKSize(currentKeyframe.Value.Width + widthDiff * KeyframeProgress, currentKeyframe.Value.Height + heightDiff * KeyframeProgress);
+            return new SKSize(currentKeyframe.Value.Width + widthDiff * KeyframeProgressEased, currentKeyframe.Value.Height + heightDiff * KeyframeProgressEased);
         }
     }
 }

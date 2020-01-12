@@ -1,12 +1,18 @@
 ﻿using System.Linq;
+using Artemis.UI.Ninject.Factories;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class PropertyTrackViewModel : PropertyChangedBase
+    public class PropertyTrackViewModel : Screen
     {
-        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel)
+        private readonly IPropertyTrackKeyframeViewModelFactory _propertyTrackKeyframeViewModelFactory;
+
+        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel,
+            LayerPropertyViewModel layerPropertyViewModel,
+            IPropertyTrackKeyframeViewModelFactory propertyTrackKeyframeViewModelFactory)
         {
+            _propertyTrackKeyframeViewModelFactory = propertyTrackKeyframeViewModelFactory;
             PropertyTimelineViewModel = propertyTimelineViewModel;
             LayerPropertyViewModel = layerPropertyViewModel;
             KeyframeViewModels = new BindableCollection<PropertyTrackKeyframeViewModel>();
@@ -33,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             {
                 if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
                     continue;
-                KeyframeViewModels.Add(new PropertyTrackKeyframeViewModel(keyframe));
+                KeyframeViewModels.Add(_propertyTrackKeyframeViewModelFactory.Create(keyframe));
             }
 
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
@@ -42,7 +48,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void UpdateKeyframes(int pixelsPerSecond)
         {
             foreach (var keyframeViewModel in KeyframeViewModels)
+            {
+                keyframeViewModel.ParentView = View;
                 keyframeViewModel.Update(pixelsPerSecond);
+            }
+        }
+
+        protected override void OnViewLoaded()
+        {
+            foreach (var keyframeViewModel in KeyframeViewModels)
+                keyframeViewModel.ParentView = View;
+            base.OnViewLoaded();
         }
     }
 }

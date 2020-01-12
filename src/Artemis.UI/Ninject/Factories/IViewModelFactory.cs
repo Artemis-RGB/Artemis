@@ -62,4 +62,14 @@ namespace Artemis.UI.Ninject.Factories
     {
         PropertyTimelineViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
     }
+
+    public interface IPropertyTrackViewModelFactory : IViewModelFactory
+    {
+        PropertyTrackViewModel Create(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel);
+    }
+
+    public interface IPropertyTrackKeyframeViewModelFactory : IViewModelFactory
+    {
+        PropertyTrackKeyframeViewModel Create(BaseKeyframe keyframe);
+    }
 }

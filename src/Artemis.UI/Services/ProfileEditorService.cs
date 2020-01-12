@@ -35,12 +35,14 @@ namespace Artemis.UI.Services
         public void ChangeSelectedProfile(Profile profile)
         {
             SelectedProfile = profile;
+            UpdateProfilePreview();
             OnSelectedProfileChanged();
         }
 
         public void UpdateSelectedProfile()
         {
             _profileService.UpdateProfile(SelectedProfile, false);
+            UpdateProfilePreview();
             OnSelectedProfileElementUpdated();
         }
 
@@ -53,12 +55,15 @@ namespace Artemis.UI.Services
         public void UpdateSelectedProfileElement()
         {
             _profileService.UpdateProfile(SelectedProfile, true);
+            UpdateProfilePreview();
             OnSelectedProfileElementUpdated();
         }
 
 
         private void UpdateProfilePreview()
         {
+            if (SelectedProfile == null)
+                return;
             var delta = CurrentTime - _lastUpdateTime;
             foreach (var layer in SelectedProfile.GetAllLayers())
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.KeyframeEngines;
+using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -55,6 +56,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     The user-friendly description for this property, shown in the UI.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        ///     Whether to expand this property by default, this is useful for important parent properties.
+        /// </summary>
+        public bool ExpandByDefault { get; set; }
 
         /// <summary>
         ///     An optional input prefix to show before input elements in the UI.
@@ -114,7 +120,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 propertyEntity.KeyframeEntities.Add(new KeyframeEntity
                 {
                     Position = baseKeyframe.Position,
-                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue)
+                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue),
+                    EasingFunction = (int) baseKeyframe.EasingFunction
                 });
             }
         }
@@ -124,12 +131,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             BaseValue = DeserializePropertyValue(propertyEntity.Value);
 
             BaseKeyframes.Clear();
-            foreach (var keyframeEntity in propertyEntity.KeyframeEntities)
+            foreach (var keyframeEntity in propertyEntity.KeyframeEntities.OrderBy(e => e.Position))
             {
                 // Create a strongly typed keyframe or else it cannot be cast later on
                 var keyframeType = typeof(Keyframe<>);
                 var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
+                keyframe.Position = keyframeEntity.Position;
                 keyframe.BaseValue = DeserializePropertyValue(keyframeEntity.Value);
+                keyframe.EasingFunction = (Easings.Functions) keyframeEntity.EasingFunction;
+
                 BaseKeyframes.Add(keyframe);
             }
         }
@@ -146,16 +156,23 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             keyframe.Position = position;
             keyframe.BaseValue = BaseValue;
             BaseKeyframes.Add(keyframe);
+            SortKeyframes();
 
             return keyframe;
         }
 
         /// <summary>
-        ///     Removes all keyframes from the property.
+        ///     Removes all keyframes from the property and sets the base value to the current value.
         /// </summary>
         public void ClearKeyframes()
         {
+            BaseValue = KeyframeEngine.GetCurrentValue();
             BaseKeyframes.Clear();
+        }
+
+        internal void SortKeyframes()
+        {
+            BaseKeyframes = BaseKeyframes.OrderBy(k => k.Position).ToList();
         }
 
         public override string ToString()

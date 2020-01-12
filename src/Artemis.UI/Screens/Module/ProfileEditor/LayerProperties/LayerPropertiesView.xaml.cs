@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {

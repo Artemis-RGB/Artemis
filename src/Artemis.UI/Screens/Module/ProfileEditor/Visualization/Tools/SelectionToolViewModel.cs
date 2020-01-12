@@ -33,7 +33,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             // Get selected LEDs
             var selectedLeds = new List<ArtemisLed>();
-            foreach (var device in ProfileViewModel.Devices)
+            foreach (var device in ProfileViewModel.DeviceViewModels)
             {
                 foreach (var ledViewModel in device.Leds)
                 {
@@ -90,7 +90,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
             var selectedRect = new Rect(MouseDownStartPosition, position);
 
-            foreach (var device in ProfileViewModel.Devices)
+            foreach (var device in ProfileViewModel.DeviceViewModels)
             {
                 foreach (var ledViewModel in device.Leds)
                 {

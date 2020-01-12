@@ -15,7 +15,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
             var nextKeyframe = (Keyframe<float>) NextKeyframe;
 
             var diff = nextKeyframe.Value - currentKeyframe.Value;
-            return currentKeyframe.Value + diff * KeyframeProgress;
+            return currentKeyframe.Value + diff * KeyframeProgressEased;
         }
     }
 }
