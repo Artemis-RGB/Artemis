@@ -15,25 +15,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         public int IntInputValue
         {
-            get => (int) InputValue;
+            get => (int?) InputValue ?? 0;
             set => InputValue = value;
         }
 
         public override void Update()
         {
             NotifyOfPropertyChange(() => IntInputValue);
-        }
-
-        protected override void UpdateBaseValue(object value)
-        {
-            var layerProperty = (LayerProperty<int>) LayerPropertyViewModel.LayerProperty;
-            layerProperty.Value = (int) value;
-        }
-
-        protected override void UpdateKeyframeValue(BaseKeyframe baseKeyframe, object value)
-        {
-            var keyframe = (Keyframe<int>) baseKeyframe;
-            keyframe.Value = (int) value;
         }
     }
 }

@@ -28,8 +28,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
-            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
         }
+
 
         public Layer Layer { get; }
 
@@ -102,8 +103,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             var skRect = Layer.LayerShape.GetUnscaledRectangle();
-            var rect = new Rect(skRect.Left, skRect.Top, Math.Max(0, skRect.Width), Math.Max(0,skRect.Height));
-            
+            var rect = new Rect(skRect.Left, skRect.Top, Math.Max(0, skRect.Width), Math.Max(0, skRect.Height));
+
             var shapeGeometry = Geometry.Empty;
             switch (Layer.LayerShape)
             {
@@ -189,7 +190,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
         }
-        
+
         #region Event handlers  
 
         private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
@@ -208,7 +209,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 Update();
         }
 
-        private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
+        private void ProfileEditorServiceOnProfilePreviewUpdated(object sender, EventArgs e)
         {
             if (!IsSelected)
                 return;

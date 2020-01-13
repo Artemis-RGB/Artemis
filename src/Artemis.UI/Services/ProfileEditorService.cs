@@ -60,7 +60,7 @@ namespace Artemis.UI.Services
         }
 
 
-        private void UpdateProfilePreview()
+        public void UpdateProfilePreview()
         {
             if (SelectedProfile == null)
                 return;
@@ -78,6 +78,7 @@ namespace Artemis.UI.Services
             }
 
             _lastUpdateTime = CurrentTime;
+            OnProfilePreviewUpdated();
         }
 
         public event EventHandler SelectedProfileChanged;
@@ -85,6 +86,7 @@ namespace Artemis.UI.Services
         public event EventHandler SelectedProfileElementChanged;
         public event EventHandler SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
+        public event EventHandler ProfilePreviewUpdated;
 
         protected virtual void OnSelectedProfileElementUpdated()
         {
@@ -109,6 +111,11 @@ namespace Artemis.UI.Services
         protected virtual void OnCurrentTimeChanged()
         {
             CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnProfilePreviewUpdated()
+        {
+            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
         }
     }
 }

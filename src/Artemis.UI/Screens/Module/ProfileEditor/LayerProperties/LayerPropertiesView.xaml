@@ -40,25 +40,25 @@
             <!-- Misc controls & time display -->
             <DockPanel Grid.Row="0" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}" Focusable="False">
                         <materialDesign:PackIcon Kind="StepForward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
                         <StackPanel>
                             <materialDesign:PackIcon Kind="Play" Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
                             <materialDesign:PackIcon Kind="Pause" Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipBackward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipForward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipPrevious" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipNext" />
                     </Button>
                 </StackPanel>

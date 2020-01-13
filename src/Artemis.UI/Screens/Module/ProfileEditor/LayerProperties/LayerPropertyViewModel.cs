@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             _kernel = kernel;
             _profileEditorService = profileEditorService;
-            _keyframesEnabled = layerProperty.UntypedKeyframes.Any();
+            _keyframesEnabled = layerProperty.IsUsingKeyframes;
 
             LayerProperty = layerProperty;
             Parent = parent;
@@ -56,6 +56,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 LayerProperty.ClearKeyframes();
 
             // Force the keyframe engine to update, the new keyframe is the current keyframe
+            LayerProperty.IsUsingKeyframes = _keyframesEnabled;
             LayerProperty.KeyframeEngine.Update(0);
 
             _profileEditorService.UpdateSelectedProfileElement();

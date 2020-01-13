@@ -21,68 +21,82 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             Name = name;
             Description = description;
             Type = type;
+            CanUseKeyframes = true;
 
             Children = new List<BaseLayerProperty>();
             BaseKeyframes = new List<BaseKeyframe>();
         }
 
         /// <summary>
-        ///     The layer this property applies to
+        ///     Gets the layer this property applies to
         /// </summary>
         public Layer Layer { get; }
 
         /// <summary>
-        ///     The parent property of this property.
+        ///     Gets the parent property of this property.
         /// </summary>
         public BaseLayerProperty Parent { get; }
 
         /// <summary>
-        ///     The child properties of this property.
+        ///     Gets or sets the child properties of this property.
         ///     <remarks>If the layer has children it cannot contain a value or keyframes.</remarks>
         /// </summary>
         public List<BaseLayerProperty> Children { get; set; }
 
         /// <summary>
-        ///     A unique identifier for this property, a layer may not contain two properties with the same ID.
+        ///     Gets or sets a unique identifier for this property, a layer may not contain two properties with the same ID.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        ///     The user-friendly name for this property, shown in the UI.
+        ///     Gets or sets the user-friendly name for this property, shown in the UI.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        ///     The user-friendly description for this property, shown in the UI.
+        ///     Gets or sets the user-friendly description for this property, shown in the UI.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        ///     Whether to expand this property by default, this is useful for important parent properties.
+        ///     Gets or sets whether to expand this property by default, this is useful for important parent properties.
         /// </summary>
         public bool ExpandByDefault { get; set; }
 
         /// <summary>
-        ///     An optional input prefix to show before input elements in the UI.
+        ///     Gets or sets the an optional input prefix to show before input elements in the UI.
         /// </summary>
         public string InputPrefix { get; set; }
 
         /// <summary>
-        ///     An optional input affix to show behind input elements in the UI.
+        ///     Gets or sets an optional input affix to show behind input elements in the UI.
         /// </summary>
         public string InputAffix { get; set; }
 
         /// <summary>
-        ///     The type of value this layer property contains.
+        ///     Gets or sets whether this property can use keyframes, True by default. 
         /// </summary>
-        public Type Type { get; set; }
+        public bool CanUseKeyframes { get; set; }
 
         /// <summary>
-        ///     A list of keyframes defining different values of the property in time, this list contains the untyped
+        ///     Gets or sets whether this property is using keyframes.
+        /// </summary>
+        public bool IsUsingKeyframes { get; set; }
+
+        /// <summary>
+        ///     Gets the type of value this layer property contains.
+        /// </summary>
+        public Type Type { get; protected set; }
+
+        /// <summary>
+        ///     Gets a list of keyframes defining different values of the property in time, this list contains the untyped
         ///     <see cref="BaseKeyframe" />.
         /// </summary>
         public IReadOnlyCollection<BaseKeyframe> UntypedKeyframes => BaseKeyframes.AsReadOnly();
 
+        /// <summary>
+        ///     Gets or sets the keyframe engine instance of this property
+        /// </summary>
         public KeyframeEngine KeyframeEngine { get; set; }
 
         protected List<BaseKeyframe> BaseKeyframes { get; set; }
@@ -113,6 +127,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             propertyEntity.ValueType = Type.Name;
             propertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
+            propertyEntity.IsUsingKeyframes = IsUsingKeyframes;
 
             propertyEntity.KeyframeEntities.Clear();
             foreach (var baseKeyframe in BaseKeyframes)
@@ -129,6 +144,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         internal void ApplyToProperty(PropertyEntity propertyEntity)
         {
             BaseValue = DeserializePropertyValue(propertyEntity.Value);
+            IsUsingKeyframes = propertyEntity.IsUsingKeyframes;
 
             BaseKeyframes.Clear();
             foreach (var keyframeEntity in propertyEntity.KeyframeEntities.OrderBy(e => e.Position))
@@ -168,6 +184,33 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         {
             BaseValue = KeyframeEngine.GetCurrentValue();
             BaseKeyframes.Clear();
+        }
+
+        /// <summary>
+        ///     Gets the current value using the regular value or keyframes.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <param name="time">
+        ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
+        ///     or existing keyframe.
+        /// </param>
+        public void SetCurrentValue(object value, TimeSpan? time)
+        {
+            if (value != null && value.GetType() != Type)
+                throw new ArtemisCoreException($"Cannot set value of type {value.GetType()} on property {this}, expected type is {Type}.");
+
+            if (time == null || !CanUseKeyframes || !IsUsingKeyframes)
+                BaseValue = value;
+            else
+            {
+                // If on a keyframe, update the keyframe
+                var currentKeyframe = UntypedKeyframes.FirstOrDefault(k => k.Position == time.Value);
+                // Create a new keyframe if none found
+                if (currentKeyframe == null)
+                    currentKeyframe = CreateNewKeyframe(time.Value);
+
+                currentKeyframe.BaseValue = value;
+            }
         }
 
         internal void SortKeyframes()

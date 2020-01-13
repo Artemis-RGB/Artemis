@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
@@ -10,7 +11,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     The value of the property without any keyframes applied
+        ///     Gets or sets the value of the property without any keyframes applied
         /// </summary>
         public T Value
         {
@@ -19,12 +20,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     The value of the property with keyframes applied
+        ///     Gets the value of the property with keyframes applied
         /// </summary>
         public T CurrentValue => KeyframeEngine != null ? (T) KeyframeEngine.GetCurrentValue() : Value;
 
         /// <summary>
-        ///     A list of keyframes defining different values of the property in time, this list contains the strongly typed
+        ///     Gets a list of keyframes defining different values of the property in time, this list contains the strongly typed
         ///     <see cref="Keyframe{T}" />
         /// </summary>
         public ReadOnlyCollection<Keyframe<T>> Keyframes => BaseKeyframes.Cast<Keyframe<T>>().ToList().AsReadOnly();
@@ -50,7 +51,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Gets the current value using the keyframes
+        ///     Gets the current value using the regular value or if present, keyframes
         /// </summary>
         /// <returns></returns>
         public T GetCurrentValue()

@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -13,6 +14,7 @@ namespace Artemis.UI.Services.Interfaces
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(ProfileElement profileElement);
         void UpdateSelectedProfileElement();
+        void UpdateProfilePreview();
 
         /// <summary>
         ///     Occurs when a new profile is selected
@@ -38,5 +40,10 @@ namespace Artemis.UI.Services.Interfaces
         ///     Occurs when the current editor time is changed
         /// </summary>
         event EventHandler CurrentTimeChanged;
+
+        /// <summary>
+        /// Occurs when the profile preview has been updated
+        /// </summary>
+        event EventHandler ProfilePreviewUpdated;
     }
 }

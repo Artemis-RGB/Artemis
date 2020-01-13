@@ -19,14 +19,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         [DependsOn(nameof(InputValue))]
         public float X
         {
-            get => ((SKPoint) InputValue).X;
+            get => ((SKPoint?) InputValue)?.X ?? 0;
             set => InputValue = new SKPoint(value, Y);
         }
 
         [DependsOn(nameof(InputValue))]
         public float Y
         {
-            get => ((SKPoint) InputValue).Y;
+            get => ((SKPoint?)InputValue)?.Y ?? 0;
             set => InputValue = new SKPoint(X, value);
         }
 
@@ -34,18 +34,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             NotifyOfPropertyChange(() => X);
             NotifyOfPropertyChange(() => Y);
-        }
-
-        protected override void UpdateBaseValue(object value)
-        {
-            var layerProperty = (LayerProperty<SKPoint>) LayerPropertyViewModel.LayerProperty;
-            layerProperty.Value = (SKPoint) value;
-        }
-
-        protected override void UpdateKeyframeValue(BaseKeyframe baseKeyframe, object value)
-        {
-            var keyframe = (Keyframe<SKPoint>) baseKeyframe;
-            keyframe.Value = (SKPoint) value;
         }
     }
 }

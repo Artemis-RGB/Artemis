@@ -13,6 +13,7 @@ namespace Artemis.Storage.Entities.Profile
         public string Id { get; set; }
         public string ValueType { get; set; }
         public string Value { get; set; }
+        public bool IsUsingKeyframes { get; set; }
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
     }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
@@ -13,6 +14,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
     public abstract class TreeItemViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
+        private readonly ILayerService _layerService;
         private readonly IFolderViewModelFactory _folderViewModelFactory;
         private readonly ILayerViewModelFactory _layerViewModelFactory;
         private readonly IProfileEditorService _profileEditorService;
@@ -21,11 +23,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement profileElement,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
+            ILayerService layerService,
             IFolderViewModelFactory folderViewModelFactory,
             ILayerViewModelFactory layerViewModelFactory)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
+            _layerService = layerService;
             _folderViewModelFactory = folderViewModelFactory;
             _layerViewModelFactory = layerViewModelFactory;
 
@@ -117,7 +121,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            ProfileElement.AddChild(new Layer(ProfileElement.Profile, ProfileElement, "New layer"));
+            var layer = new Layer(ProfileElement.Profile, ProfileElement, "New layer");
+            foreach (var baseLayerProperty in layer.Properties) 
+                _layerService.InstantiateKeyframeEngine(baseLayerProperty);
+            ProfileElement.AddChild(layer);
             UpdateProfileElements();
             _profileEditorService.UpdateSelectedProfile();
         }
