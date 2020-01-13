@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800"
@@ -63,13 +64,5 @@
                 <SolidColorBrush Color="{StaticResource Accent400}" />
             </Path.Stroke>
         </Path>
-
-        <!-- The rectangle around the shape that allows modification -->
-        <Rectangle Width="{Binding ShapeRectangle.Width}"
-                   Height="{Binding ShapeRectangle.Height}"
-                   Canvas.Left="{Binding ShapeRectangle.X}"
-                   Canvas.Top="{Binding ShapeRectangle.Y}" Stroke="{DynamicResource PrimaryHueMidBrush}" 
-                   StrokeThickness="1"
-                   StrokeDashArray="2 2" />
     </Canvas>
 </UserControl>
