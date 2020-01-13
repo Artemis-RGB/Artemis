@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
@@ -8,6 +9,8 @@ using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
+using SkiaSharp;
+using SkiaSharp.Views.WPF;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
@@ -27,13 +30,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
-        
+
         public Layer Layer { get; }
 
         public Geometry LayerGeometry { get; set; }
         public Geometry OpacityGeometry { get; set; }
         public Geometry ShapeGeometry { get; set; }
-        public Rect ShapeRectangle { get; set; }
         public Rect ViewportRectangle { get; set; }
         public bool IsSelected { get; set; }
 
@@ -100,29 +102,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             var skRect = Layer.LayerShape.GetUnscaledRectangle();
-            ShapeRectangle = new Rect(skRect.Left, skRect.Top, skRect.Width, skRect.Height);
+            var rect = new Rect(skRect.Left, skRect.Top, Math.Max(0, skRect.Width), Math.Max(0,skRect.Height));
+            
             var shapeGeometry = Geometry.Empty;
             switch (Layer.LayerShape)
             {
                 case Ellipse _:
-                    shapeGeometry = new EllipseGeometry(ShapeRectangle);
+                    shapeGeometry = new EllipseGeometry(rect);
                     break;
                 case Fill _:
                     shapeGeometry = LayerGeometry;
                     break;
                 case Polygon _:
                     // TODO
-                    shapeGeometry = new RectangleGeometry(ShapeRectangle);
+                    shapeGeometry = new RectangleGeometry(rect);
                     break;
                 case Rectangle _:
-                    shapeGeometry = new RectangleGeometry(ShapeRectangle);
+                    shapeGeometry = new RectangleGeometry(rect);
                     break;
             }
 
             shapeGeometry.Freeze();
             ShapeGeometry = shapeGeometry;
         }
-        
+
         private void CreateViewportRectangle()
         {
             if (!Layer.Leds.Any() || Layer.LayerShape == null)
@@ -182,6 +185,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
+        public void Dispose()
+        {
+            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+        }
+        
+        #region Event handlers  
+
         private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
         {
             Update();
@@ -206,9 +216,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             CreateViewportRectangle();
         }
 
-        public void Dispose()
-        {
-            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-        }
+        #endregion
     }
 }

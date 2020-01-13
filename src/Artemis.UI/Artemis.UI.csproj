@@ -182,6 +182,7 @@
       <DependentUpon>ProfileLayerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EditToolViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml.cs">
       <DependentUpon>EllipseToolView.xaml</DependentUpon>
     </Compile>
@@ -364,6 +365,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\Visualization\ProfileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

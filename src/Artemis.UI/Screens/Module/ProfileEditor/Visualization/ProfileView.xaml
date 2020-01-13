@@ -55,15 +55,18 @@
                     </ListBox.ItemsPanel>
                     <ListBoxItem ToolTip="Pan over different parts of the surface">
                         <materialDesign:PackIcon Kind="HandLeft" />
+                    </ListBoxItem>       
+                    <ListBoxItem ToolTip="Edit shape in layer">
+                        <materialDesign:PackIcon Kind="Edit" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Change layer selection">
                         <materialDesign:PackIcon Kind="SelectionDrag" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Add to layer selection">
-                        <materialDesign:PackIcon Kind="PencilPlusOutline" />
+                        <materialDesign:PackIcon Kind="AddToPhotos" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Remove from layer selection">
-                        <materialDesign:PackIcon Kind="PencilMinusOutline" />
+                        <materialDesign:PackIcon Kind="MinusBoxMultiple" />
                     </ListBoxItem>
                     <Separator />
                     <ListBoxItem ToolTip="Create round shape in layer">
