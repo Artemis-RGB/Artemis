@@ -19,14 +19,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         [DependsOn(nameof(InputValue))]
         public float Width
         {
-            get => ((SKSize) InputValue).Width;
+            get => ((SKSize?) InputValue)?.Width ?? 0;
             set => InputValue = new SKSize(value, Height);
         }
 
         [DependsOn(nameof(InputValue))]
         public float Height
         {
-            get => ((SKSize) InputValue).Height;
+            get => ((SKSize?)InputValue)?.Height ?? 0;
             set => InputValue = new SKSize(Width, value);
         }
 
@@ -34,18 +34,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             NotifyOfPropertyChange(() => Width);
             NotifyOfPropertyChange(() => Height);
-        }
-
-        protected override void UpdateBaseValue(object value)
-        {
-            var layerProperty = (LayerProperty<SKSize>) LayerPropertyViewModel.LayerProperty;
-            layerProperty.Value = (SKSize) value;
-        }
-
-        protected override void UpdateKeyframeValue(BaseKeyframe baseKeyframe, object value)
-        {
-            var keyframe = (Keyframe<SKSize>) baseKeyframe;
-            keyframe.Value = (SKSize) value;
         }
     }
 }

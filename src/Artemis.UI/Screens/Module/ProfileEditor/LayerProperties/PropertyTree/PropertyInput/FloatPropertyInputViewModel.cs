@@ -15,25 +15,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         public float FloatInputValue
         {
-            get => (float) InputValue;
+            get => (float?) InputValue ?? 0f;
             set => InputValue = value;
         }
 
         public override void Update()
         {
             NotifyOfPropertyChange(() => FloatInputValue);
-        }
-
-        protected override void UpdateBaseValue(object value)
-        {
-            var layerProperty = (LayerProperty<float>) LayerPropertyViewModel.LayerProperty;
-            layerProperty.Value = (float) value;
-        }
-
-        protected override void UpdateKeyframeValue(BaseKeyframe baseKeyframe, object value)
-        {
-            var keyframe = (Keyframe<float>) baseKeyframe;
-            keyframe.Value = (float) value;
         }
     }
 }

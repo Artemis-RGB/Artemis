@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -43,29 +42,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         private void UpdateInputValue(object value)
         {
-            // If keyframes are disabled, update the base value
-            if (!LayerPropertyViewModel.KeyframesEnabled)
-            {
-                UpdateBaseValue(value);
-                return;
-            }
-
-            // If on a keyframe, update the keyframe
-            var currentKeyframe = LayerPropertyViewModel.LayerProperty.UntypedKeyframes.FirstOrDefault(k => k.Position == ProfileEditorService.CurrentTime);
-            // Create a new keyframe if none found
-            if (currentKeyframe == null)
-                currentKeyframe = LayerPropertyViewModel.LayerProperty.CreateNewKeyframe(ProfileEditorService.CurrentTime);
-
-            UpdateKeyframeValue(currentKeyframe, value);
+            LayerPropertyViewModel.LayerProperty.SetCurrentValue(value, ProfileEditorService.CurrentTime);
             // Force the keyframe engine to update, the edited keyframe might affect the current keyframe progress
             LayerPropertyViewModel.LayerProperty.KeyframeEngine.Update(0);
 
             ProfileEditorService.UpdateSelectedProfileElement();
-
         }
 
         public abstract void Update();
-        protected abstract void UpdateBaseValue(object value);
-        protected abstract void UpdateKeyframeValue(BaseKeyframe baseKeyframe, object value);
     }
 }

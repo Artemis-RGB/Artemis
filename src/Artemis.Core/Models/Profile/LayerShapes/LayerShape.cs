@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -41,13 +42,14 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         /// <summary>
         ///     Updates Position and Size using the provided unscaled rectangle
         /// </summary>
-        /// <param name="rect">An unscaled rectangle where 1px = 1mm</param>
-        public void SetFromUnscaledRectangle(SKRect rect)
+        /// <param name="rect">An unscaled rectangle which is relative to the layer (1.0 being full width/height, 0.5 being half).</param>
+        /// <param name="time">An optional timespan to indicate where to set the properties, if null the properties' base values will be used.</param>
+        public void SetFromUnscaledRectangle(SKRect rect, TimeSpan? time)
         {
             if (!Layer.Leds.Any())
             {
-                Layer.PositionProperty.Value = SKPoint.Empty;
-                Layer.SizeProperty.Value = SKSize.Empty;
+                Layer.PositionProperty.SetCurrentValue(SKPoint.Empty, time);
+                Layer.SizeProperty.SetCurrentValue(SKSize.Empty, time);
                 return;
             }
 
@@ -56,10 +58,9 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
             var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
 
-            Layer.PositionProperty.Value = new SKPoint((float) (100f / width * (rect.Left - x)) / 100f, (float) (100f / height * (rect.Top - y)) / 100f);
-            Layer.SizeProperty.Value = new SKSize((float) (100f / width * rect.Width) / 100f, (float) (100f / height * rect.Height) / 100f);
+            Layer.PositionProperty.SetCurrentValue(new SKPoint((float) (100f / width * (rect.Left - x)) / 100f, (float) (100f / height * (rect.Top - y)) / 100f), time);
+            Layer.SizeProperty.SetCurrentValue(new SKSize((float) (100f / width * rect.Width) / 100f, (float) (100f / height * rect.Height) / 100f), time);
 
-            // TODO: Update keyframes
             CalculateRenderProperties(Layer.PositionProperty.CurrentValue, Layer.SizeProperty.CurrentValue);
         }
 

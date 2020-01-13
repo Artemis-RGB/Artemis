@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 layer.AddLeds(selectedLeds);
                 // Restore the saved size
                 if (layer.LayerShape != null)
-                    layer.LayerShape.SetFromUnscaledRectangle(shapeSize);
+                    layer.LayerShape.SetFromUnscaledRectangle(shapeSize, ProfileEditorService.CurrentTime);
 
                 ProfileEditorService.UpdateSelectedProfileElement();
             }
