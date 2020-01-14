@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Models;
 using RGB.NET.Core;

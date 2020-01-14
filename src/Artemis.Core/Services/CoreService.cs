@@ -42,14 +42,6 @@ namespace Artemis.Core.Services
             Task.Run(Initialize);
         }
 
-        private void ConfigureJsonConvert()
-        {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter> { new SKColorConverter() }
-            };
-        }
-
         public void Dispose()
         {
             // Dispose services
@@ -57,6 +49,14 @@ namespace Artemis.Core.Services
         }
 
         public bool IsInitialized { get; set; }
+
+        private void ConfigureJsonConvert()
+        {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> {new SKColorConverter()}
+            };
+        }
 
         private async Task Initialize()
         {

@@ -74,7 +74,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         /// <summary>
-        /// Updates the time line's keyframes
+        ///     Updates the time line's keyframes
         /// </summary>
         public void Update()
         {

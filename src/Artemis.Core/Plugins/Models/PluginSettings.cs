@@ -29,7 +29,7 @@ namespace Artemis.Core.Plugins.Models
         /// <param name="name">The name of the setting</param>
         /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
         /// <returns></returns>
-        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default(T))
+        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)
         {
             lock (_settingEntities)
             {

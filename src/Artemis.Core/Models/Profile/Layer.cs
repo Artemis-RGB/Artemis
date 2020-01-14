@@ -328,7 +328,7 @@ namespace Artemis.Core.Models.Profile
 
             var propertyEntity = LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == layerProperty.Id && p.ValueType == layerProperty.Type.Name);
             // TODO: Catch serialization exceptions and log them
-            if (propertyEntity != null) 
+            if (propertyEntity != null)
                 layerProperty.ApplyToProperty(propertyEntity);
 
             _properties.Add(layerProperty.Id, layerProperty);
@@ -354,7 +354,8 @@ namespace Artemis.Core.Models.Profile
 
         private void CreateDefaultProperties()
         {
-            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.") {ExpandByDefault = true};
+            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.")
+                {ExpandByDefault = true};
             AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
             PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
             SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};

@@ -1,6 +1,5 @@
 ﻿using System.Windows.Media;
 using MaterialDesignThemes.Wpf;
-using Stylet;
 
 namespace Artemis.UI.Screens.Workshop
 {
@@ -15,7 +14,7 @@ namespace Artemis.UI.Screens.Workshop
 
         public Color TestColor { get; set; }
         public bool TestPopupOpen { get; set; }
-        
+
         public void UpdateValues()
         {
             TestPopupOpen = !TestPopupOpen;

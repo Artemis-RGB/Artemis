@@ -9,9 +9,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
 {
     public class ColorBrush : LayerBrush
     {
-        private SKShader _shader;
-        private List<SKColor> _testColors;
         private SKPaint _paint;
+        private SKShader _shader;
+        private readonly List<SKColor> _testColors;
 
         public ColorBrush(Layer layer, ColorBrushSettings settings, LayerBrushDescriptor descriptor) : base(layer, settings, descriptor)
         {
@@ -30,6 +30,8 @@ namespace Artemis.Plugins.LayerBrushes.Color
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
             Settings.PropertyChanged += (sender, args) => CreateShader();
         }
+
+        public new ColorBrushSettings Settings { get; }
 
         private void CreateShader()
         {
@@ -60,8 +62,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
             oldShader?.Dispose();
             oldPaint?.Dispose();
         }
-
-        public new ColorBrushSettings Settings { get; }
 
         public override LayerBrushViewModel GetViewModel()
         {

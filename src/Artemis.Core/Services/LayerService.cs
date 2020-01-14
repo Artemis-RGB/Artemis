@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Models.Profile.LayerProperties;
@@ -61,9 +60,7 @@ namespace Artemis.Core.Services
             }
             // If no settings found, provide a fresh instance of the settings type
             else if (settingsType != null)
-            {
                 settingsInstance = Activator.CreateInstance(settingsType);
-            }
 
             var arguments = new IParameter[]
             {
@@ -72,7 +69,7 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("descriptor", brushDescriptor)
             };
             var layerElement = (LayerBrush) _kernel.Get(brushDescriptor.LayerBrushType, arguments);
-            layer.LayerBrush = (layerElement);
+            layer.LayerBrush = layerElement;
 
             return layerElement;
         }

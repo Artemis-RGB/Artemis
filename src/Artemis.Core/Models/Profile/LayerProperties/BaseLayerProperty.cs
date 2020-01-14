@@ -74,7 +74,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public string InputAffix { get; set; }
 
         /// <summary>
-        ///     Gets or sets whether this property can use keyframes, True by default. 
+        ///     Gets or sets whether this property can use keyframes, True by default.
         /// </summary>
         public bool CanUseKeyframes { get; set; }
 

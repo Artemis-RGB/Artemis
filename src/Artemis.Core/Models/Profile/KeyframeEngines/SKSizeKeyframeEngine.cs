@@ -12,8 +12,8 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
 
         protected override object GetInterpolatedValue()
         {
-            var currentKeyframe = (Keyframe<SKSize>)CurrentKeyframe;
-            var nextKeyframe = (Keyframe<SKSize>)NextKeyframe;
+            var currentKeyframe = (Keyframe<SKSize>) CurrentKeyframe;
+            var nextKeyframe = (Keyframe<SKSize>) NextKeyframe;
 
             var widthDiff = nextKeyframe.Value.Width - currentKeyframe.Value.Width;
             var heightDiff = nextKeyframe.Value.Height - currentKeyframe.Value.Height;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Services.Interfaces;
 using PropertyChanged;
 using SkiaSharp;
@@ -26,7 +25,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         [DependsOn(nameof(InputValue))]
         public float Height
         {
-            get => ((SKSize?)InputValue)?.Height ?? 0;
+            get => ((SKSize?) InputValue)?.Height ?? 0;
             set => InputValue = new SKSize(Width, value);
         }
 

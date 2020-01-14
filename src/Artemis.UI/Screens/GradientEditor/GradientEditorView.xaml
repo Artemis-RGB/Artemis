@@ -1,15 +1,15 @@
 ﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.GradientEditor.GradientEditorView"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:gradientEditor="clr-namespace:Artemis.UI.Screens.GradientEditor"
-                 xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                 xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
-                 mc:Ignorable="d"
-                 Title="Gradient Editor"
-                 Height="450" Width="800"
-                 d:DataContext="{d:DesignInstance {x:Type gradientEditor:GradientEditorViewModel}}">
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:gradientEditor="clr-namespace:Artemis.UI.Screens.GradientEditor"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                    mc:Ignorable="d"
+                    Title="Gradient Editor"
+                    Height="450" Width="800"
+                    d:DataContext="{d:DesignInstance {x:Type gradientEditor:GradientEditorViewModel}}">
     <Grid>
         <materialDesign:ColorPicker Color="{Binding CurrentColor}" />
     </Grid>

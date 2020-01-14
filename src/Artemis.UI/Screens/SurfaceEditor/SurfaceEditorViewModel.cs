@@ -124,9 +124,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                         // Create VMs for missing devices
                         var viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
                         if (viewModel == null)
-                        {
                             viewModel = new SurfaceDeviceViewModel(surfaceDeviceConfiguration);
-                        }
                         // Update existing devices
                         else
                             viewModel.Device = surfaceDeviceConfiguration;
@@ -199,6 +197,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
@@ -213,6 +212,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
@@ -224,6 +224,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
@@ -237,6 +238,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 var deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 

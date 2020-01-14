@@ -14,11 +14,11 @@
              d:DataContext="{d:DesignInstance local:LayerPropertiesViewModel}"
              behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
     <UserControl.InputBindings>
-        <KeyBinding Command="{s:Action Play}" Key="Space"></KeyBinding>
-        <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space"></KeyBinding>
+        <KeyBinding Command="{s:Action Play}" Key="Space" />
+        <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space" />
     </UserControl.InputBindings>
     <UserControl.Resources>
-        <s:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <s:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </UserControl.Resources>
     <Grid x:Name="ContainerGrid">
         <Grid.RowDefinitions>

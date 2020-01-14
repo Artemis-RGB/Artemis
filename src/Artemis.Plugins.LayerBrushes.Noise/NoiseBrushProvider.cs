@@ -1,5 +1,4 @@
-﻿
-using Artemis.Core.Plugins.LayerBrush;
+﻿using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Plugins.LayerBrushes.Noise

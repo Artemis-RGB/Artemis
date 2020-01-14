@@ -9,11 +9,6 @@ namespace Artemis.UI.Utilities
 {
     public class ThemeWatcher
     {
-        public ThemeWatcher()
-        {
-            WatchTheme();
-        }
-
         public enum WindowsTheme
         {
             Light,
@@ -23,6 +18,11 @@ namespace Artemis.UI.Utilities
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
 
         private const string RegistryValueName = "AppsUseLightTheme";
+
+        public ThemeWatcher()
+        {
+            WatchTheme();
+        }
 
         public void WatchTheme()
         {

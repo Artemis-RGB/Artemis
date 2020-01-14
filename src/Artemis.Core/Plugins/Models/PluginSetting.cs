@@ -26,7 +26,7 @@ namespace Artemis.Core.Plugins.Models
             }
             catch (JsonReaderException)
             {
-                Value = default(T);
+                Value = default;
             }
         }
 

@@ -22,9 +22,9 @@ namespace Artemis.UI.Screens.Settings
     {
         private readonly IDeviceSettingsViewModelFactory _deviceSettingsViewModelFactory;
         private readonly IKernel _kernel;
+        private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
-        private readonly IPluginService _pluginService;
         private readonly IWindowManager _windowManager;
 
         public SettingsViewModel(IKernel kernel,
@@ -126,7 +126,7 @@ namespace Artemis.UI.Screens.Settings
         {
             _windowManager.ShowWindow(_kernel.Get<DebugViewModel>());
         }
-        
+
         public void ShowLogsFolder()
         {
             Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));

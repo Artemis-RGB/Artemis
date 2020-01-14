@@ -15,7 +15,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly IProfileEditorService _profileEditorService;
         private bool _keyframesEnabled;
 
-        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel, IProfileEditorService profileEditorService)
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel,
+            IProfileEditorService profileEditorService)
         {
             _kernel = kernel;
             _profileEditorService = profileEditorService;

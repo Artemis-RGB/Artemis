@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         {
             _deviceService.IdentifyDevice(Device);
         }
-        
+
         public void ShowDeviceDebugger()
         {
         }
