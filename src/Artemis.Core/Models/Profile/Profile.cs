@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Surface;
@@ -17,6 +18,8 @@ namespace Artemis.Core.Models.Profile
 
             PluginInfo = pluginInfo;
             Name = name;
+            UndoStack = new Stack<string>();
+            RedoStack = new Stack<string>();
 
             AddChild(new Folder(this, null, "Root folder"));
             ApplyToEntity();
@@ -28,20 +31,19 @@ namespace Artemis.Core.Models.Profile
             EntityId = profileEntity.Id;
 
             PluginInfo = pluginInfo;
-            Name = profileEntity.Name;
+            UndoStack = new Stack<string>();
+            RedoStack = new Stack<string>();
 
-            // Populate the profile starting at the root, the rest is populated recursively
-            var rootFolder = profileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
-            if (rootFolder == null)
-                AddChild(new Folder(this, null, "Root folder"));
-            else
-                AddChild(new Folder(this, null, rootFolder));
+            ApplyToProfile();
         }
 
         public PluginInfo PluginInfo { get; }
         public bool IsActivated { get; private set; }
 
         internal ProfileEntity ProfileEntity { get; set; }
+
+        internal Stack<string> UndoStack { get; set; }
+        internal Stack<string> RedoStack { get; set; }
 
         public override void Update(double deltaTime)
         {
@@ -87,6 +89,22 @@ namespace Artemis.Core.Models.Profile
 
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
+        }
+
+        public void ApplyToProfile()
+        {
+            Name = ProfileEntity.Name;
+
+            lock (_children)
+            {
+                _children.Clear();
+                // Populate the profile starting at the root, the rest is populated recursively
+                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
+                if (rootFolder == null)
+                    AddChild(new Folder(this, null, "Root folder"));
+                else
+                    AddChild(new Folder(this, null, rootFolder));
+            }
         }
 
         internal void Activate(ArtemisSurface surface)

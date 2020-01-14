@@ -81,5 +81,42 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 (float) (height * Layer.SizeProperty.CurrentValue.Height)
             );
         }
+
+        public void SetFromUnscaledAnchor(SKPoint anchor, TimeSpan? time)
+        {
+            if (!Layer.Leds.Any())
+            {
+                Layer.PositionProperty.SetCurrentValue(SKPoint.Empty, time);
+                Layer.SizeProperty.SetCurrentValue(SKSize.Empty, time);
+                return;
+            }
+
+            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
+            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
+            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
+            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
+
+            Layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
+                (float) (100f / width * (anchor.X - x - Layer.PositionProperty.CurrentValue.X)) / 100f,
+                (float) (100f / height * (anchor.Y - y - Layer.PositionProperty.CurrentValue.Y)) / 100f
+            ), time);
+            CalculateRenderProperties(Layer.PositionProperty.CurrentValue, Layer.SizeProperty.CurrentValue);
+        }
+
+        public SKPoint GetUnscaledAnchor()
+        {
+            if (!Layer.Leds.Any())
+                return SKPoint.Empty;
+
+            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
+            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
+            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
+            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
+
+            return new SKPoint(
+                (float) (x + width * (Layer.AnchorPointProperty.CurrentValue.X + Layer.PositionProperty.CurrentValue.X)),
+                (float) (y + height * (Layer.AnchorPointProperty.CurrentValue.Y + Layer.PositionProperty.CurrentValue.Y))
+            );
+        }
     }
 }

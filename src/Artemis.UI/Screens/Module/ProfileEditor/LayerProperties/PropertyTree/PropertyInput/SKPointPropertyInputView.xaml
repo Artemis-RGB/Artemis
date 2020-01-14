@@ -16,8 +16,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="X-coordinate (horizontal)"
-                 Text="{Binding X}"
-                 Cursor="/Resources/aero_drag_ew.cur" KeyboardNavigation.IsTabStop="True" TabIndex="1" />
+                 Text="{Binding X}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <TextBox Width="60"
                  Margin="0 2"
@@ -25,8 +24,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Y-coordinate (vertical)"
-                 Text="{Binding Y}"
-                 Cursor="/Resources/aero_drag_ew.cur" KeyboardNavigation.IsTabStop="True" TabIndex="2" />
+                 Text="{Binding Y}" />
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

@@ -290,7 +290,7 @@ namespace Artemis.Core.Models.Profile
             Path = path;
             // This is called here so that the shape's render properties are up to date when other code
             // responds to OnRenderPropertiesUpdated
-            LayerShape?.CalculateRenderProperties(PositionProperty.GetCurrentValue(), SizeProperty.GetCurrentValue());
+            LayerShape?.CalculateRenderProperties(PositionProperty.CurrentValue, SizeProperty.CurrentValue);
 
             OnRenderPropertiesUpdated();
         }

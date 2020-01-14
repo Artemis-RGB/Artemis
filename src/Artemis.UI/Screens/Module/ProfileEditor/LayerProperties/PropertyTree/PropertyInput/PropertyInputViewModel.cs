@@ -23,7 +23,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         protected object InputValue
         {
-            get => LayerPropertyViewModel.LayerProperty.KeyframeEngine.GetCurrentValue();
+            get => LayerPropertyViewModel.LayerProperty.GetCurrentValue();
             set => UpdateInputValue(value);
         }
 

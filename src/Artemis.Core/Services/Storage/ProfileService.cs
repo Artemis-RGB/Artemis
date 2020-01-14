@@ -7,7 +7,9 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Services.Storage
 {
@@ -92,6 +94,10 @@ namespace Artemis.Core.Services.Storage
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            profile.RedoStack.Clear();
+            profile.UndoStack.Push(memento);
+
             profile.ApplyToEntity();
             if (includeChildren)
             {
@@ -102,6 +108,34 @@ namespace Artemis.Core.Services.Storage
             }
 
             _profileRepository.Save(profile.ProfileEntity);
+        }
+
+        public void UndoUpdateProfile(Profile profile, ProfileModule module)
+        {
+            if (!profile.UndoStack.Any())
+                return;
+
+            ActivateProfile(module, null);
+            var top = profile.UndoStack.Pop();
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            profile.RedoStack.Push(memento);
+            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
+            profile.ApplyToProfile();
+            ActivateProfile(module, profile);
+        }
+
+        public void RedoUpdateProfile(Profile profile, ProfileModule module)
+        {
+            if (!profile.RedoStack.Any())
+                return;
+
+            ActivateProfile(module, null);
+            var top = profile.RedoStack.Pop();
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            profile.UndoStack.Push(memento);
+            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
+            profile.ApplyToProfile();
+            ActivateProfile(module, profile);
         }
 
         private void InstantiateProfileLayerBrushes(Profile profile)

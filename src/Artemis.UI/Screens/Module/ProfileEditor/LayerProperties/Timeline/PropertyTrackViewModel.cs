@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             {
                 if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
                     continue;
-                KeyframeViewModels.Add(_propertyTrackKeyframeViewModelFactory.Create(keyframe));
+                KeyframeViewModels.Add(_propertyTrackKeyframeViewModelFactory.Create(this, keyframe));
             }
 
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);

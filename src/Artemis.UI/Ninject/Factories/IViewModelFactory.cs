@@ -70,6 +70,6 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IPropertyTrackKeyframeViewModelFactory : IViewModelFactory
     {
-        PropertyTrackKeyframeViewModel Create(BaseKeyframe keyframe);
+        PropertyTrackKeyframeViewModel Create(PropertyTrackViewModel propertyTrackViewModel, BaseKeyframe keyframe);
     }
 }

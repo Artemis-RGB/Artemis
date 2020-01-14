@@ -45,7 +45,7 @@
         <!-- The part of the layer's shape that is inside the layer -->
         <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
             <Path.Fill>
-                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.25" />
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
             </Path.Fill>
             <Path.Stroke>
                 <SolidColorBrush Color="{StaticResource Accent700}" />

@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             // Either create a new first keyframe or clear all the keyframes
             if (_keyframesEnabled)
-                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime);
+                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime, LayerProperty.GetCurrentValue());
             else
                 LayerProperty.ClearKeyframes();
 
