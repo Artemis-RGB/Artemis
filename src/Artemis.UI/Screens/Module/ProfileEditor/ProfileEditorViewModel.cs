@@ -125,6 +125,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             _profileService.DeleteProfile(profile);
         }
 
+        public void Undo()
+        {
+            _profileEditorService.UndoUpdateProfile(Module);
+        }
+
+        public void Redo()
+        {
+            _profileEditorService.RedoUpdateProfile(Module);
+        }
+
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
         {
             if (SelectedProfile == Module.ActiveProfile)

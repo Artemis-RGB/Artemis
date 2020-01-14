@@ -39,7 +39,17 @@
                              MouseMove="{s:Action KeyframeMouseMove}">
                         <Ellipse.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Copy" />
+                                <MenuItem Header="Copy" Command="{s:Action Copy}">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="ContentCopy" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Delete" Command="{s:Action Delete}">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Delete" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator />
                                 <MenuItem Header="Easing" ItemsSource="{Binding EasingViewModels}">
                                     <MenuItem.ItemContainerStyle>
                                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">

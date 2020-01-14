@@ -14,15 +14,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         private readonly IProfileEditorService _profileEditorService;
         private int _pixelsPerSecond;
 
-        public PropertyTrackKeyframeViewModel(BaseKeyframe keyframe, IProfileEditorService profileEditorService)
+        public PropertyTrackKeyframeViewModel(PropertyTrackViewModel propertyTrackViewModel, BaseKeyframe keyframe, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
 
+            PropertyTrackViewModel = propertyTrackViewModel;
             Keyframe = keyframe;
             EasingViewModels = new BindableCollection<PropertyTrackEasingViewModel>();
             CreateEasingViewModels();
         }
 
+        public bool IsSelected { get; set; }
+        public PropertyTrackViewModel PropertyTrackViewModel { get; }
         public BaseKeyframe Keyframe { get; }
         public BindableCollection<PropertyTrackEasingViewModel> EasingViewModels { get; set; }
         public double X { get; set; }
@@ -49,6 +52,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
         {
             ((IInputElement) sender).ReleaseMouseCapture();
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
@@ -72,7 +76,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                     Keyframe.Position = newTime;
 
                     Update(_pixelsPerSecond);
-                    _profileEditorService.UpdateSelectedProfileElement();
+                    _profileEditorService.UpdateProfilePreview();
                     return;
                 }
 
@@ -85,8 +89,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                     Keyframe.Position = newTime;
 
                 Update(_pixelsPerSecond);
-                _profileEditorService.UpdateSelectedProfileElement();
+                _profileEditorService.UpdateProfilePreview();
             }
+        }
+
+        #endregion
+
+        #region Context menu actions
+
+        public void Copy()
+        {
+            var keyframe = PropertyTrackViewModel.LayerPropertyViewModel.LayerProperty.CreateNewKeyframe(Keyframe.Position, Keyframe.BaseValue);
+            keyframe.EasingFunction = Keyframe.EasingFunction;
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public void Delete()
+        {
+            PropertyTrackViewModel.LayerPropertyViewModel.LayerProperty.RemoveKeyframe(Keyframe);
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         #endregion

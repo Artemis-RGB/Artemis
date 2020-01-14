@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Services.Interfaces;
 
@@ -72,13 +74,39 @@ namespace Artemis.UI.Services
                     baseLayerProperty.KeyframeEngine?.OverrideProgress(CurrentTime);
 
                 // Force layer shape to redraw
-                layer.LayerShape?.CalculateRenderProperties(layer.PositionProperty.GetCurrentValue(), layer.SizeProperty.GetCurrentValue());
+                layer.LayerShape?.CalculateRenderProperties(layer.PositionProperty.CurrentValue, layer.SizeProperty.CurrentValue);
                 // Update the brush with the delta (which can now be negative ^^)
                 layer.Update(delta.TotalSeconds);
             }
 
             _lastUpdateTime = CurrentTime;
             OnProfilePreviewUpdated();
+        }
+
+        public void UndoUpdateProfile(ProfileModule module)
+        {
+            _profileService.UndoUpdateProfile(SelectedProfile, module);
+            OnSelectedProfileChanged();
+
+            var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
+            elements.AddRange(SelectedProfile.GetAllFolders());
+
+            var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
+            ChangeSelectedProfileElement(element);
+            UpdateProfilePreview();
+        }
+
+        public void RedoUpdateProfile(ProfileModule module)
+        {
+            _profileService.RedoUpdateProfile(SelectedProfile, module);
+            OnSelectedProfileChanged();
+
+            var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
+            elements.AddRange(SelectedProfile.GetAllFolders());
+
+            var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
+            ChangeSelectedProfileElement(element);
+            UpdateProfilePreview();
         }
 
         public event EventHandler SelectedProfileChanged;

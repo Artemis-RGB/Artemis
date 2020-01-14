@@ -101,10 +101,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         protected List<BaseKeyframe> BaseKeyframes { get; set; }
 
-        protected internal object BaseValue
+        public object BaseValue
         {
             get => _baseValue;
-            set
+            internal set
             {
                 if (value != null && value.GetType() != Type)
                     throw new ArtemisCoreException($"Cannot set value of type {value.GetType()} on property {this}, expected type is {Type}.");
@@ -164,13 +164,13 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Creates a new keyframe for this base property without knowing the type
         /// </summary>
         /// <returns></returns>
-        public BaseKeyframe CreateNewKeyframe(TimeSpan position)
+        public BaseKeyframe CreateNewKeyframe(TimeSpan position, object value)
         {
             // Create a strongly typed keyframe or else it cannot be cast later on
             var keyframeType = typeof(Keyframe<>);
             var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
             keyframe.Position = position;
-            keyframe.BaseValue = BaseValue;
+            keyframe.BaseValue = value;
             BaseKeyframes.Add(keyframe);
             SortKeyframes();
 
@@ -184,6 +184,17 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         {
             BaseValue = KeyframeEngine.GetCurrentValue();
             BaseKeyframes.Clear();
+        }
+
+        /// <summary>
+        ///     Gets the current value using the regular value or if present, keyframes
+        /// </summary>
+        public object GetCurrentValue()
+        {
+            if (KeyframeEngine == null || !UntypedKeyframes.Any())
+                return BaseValue;
+
+            return KeyframeEngine.GetCurrentValue();
         }
 
         /// <summary>
@@ -207,10 +218,30 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 var currentKeyframe = UntypedKeyframes.FirstOrDefault(k => k.Position == time.Value);
                 // Create a new keyframe if none found
                 if (currentKeyframe == null)
-                    currentKeyframe = CreateNewKeyframe(time.Value);
+                    currentKeyframe = CreateNewKeyframe(time.Value, value);
 
                 currentKeyframe.BaseValue = value;
             }
+        }
+
+        /// <summary>
+        ///     Adds a keyframe to the property.
+        /// </summary>
+        /// <param name="keyframe">The keyframe to remove</param>
+        public void AddKeyframe(BaseKeyframe keyframe)
+        {
+            BaseKeyframes.Add(keyframe);
+            SortKeyframes();
+        }
+
+        /// <summary>
+        ///     Removes a keyframe from the property.
+        /// </summary>
+        /// <param name="keyframe">The keyframe to remove</param>
+        public void RemoveKeyframe(BaseKeyframe keyframe)
+        {
+            BaseKeyframes.Remove(keyframe);
+            SortKeyframes();
         }
 
         internal void SortKeyframes()

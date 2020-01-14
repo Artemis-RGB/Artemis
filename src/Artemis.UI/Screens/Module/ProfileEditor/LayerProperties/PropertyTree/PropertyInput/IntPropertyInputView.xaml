@@ -15,8 +15,7 @@
                  Padding="0 -1"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
-                 Text="{Binding IntInputValue}"
-                 Cursor="/Resources/aero_drag_ew.cur" />
+                 Text="{Binding IntInputValue}"/>
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

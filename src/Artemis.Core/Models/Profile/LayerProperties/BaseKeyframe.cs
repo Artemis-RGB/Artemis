@@ -27,7 +27,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         protected BaseLayerProperty BaseProperty { get; }
-        protected internal object BaseValue { get; set; }
+        public object BaseValue { get; internal set; }
         public Easings.Functions EasingFunction { get; set; }
     }
 }

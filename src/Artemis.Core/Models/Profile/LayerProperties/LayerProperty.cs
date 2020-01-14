@@ -22,7 +22,14 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Gets the value of the property with keyframes applied
         /// </summary>
-        public T CurrentValue => KeyframeEngine != null ? (T) KeyframeEngine.GetCurrentValue() : Value;
+        public T CurrentValue
+        {
+            get
+            {
+                var currentValue = base.GetCurrentValue();
+                return currentValue == null ? default : (T)currentValue;
+            }
+        }
 
         /// <summary>
         ///     Gets a list of keyframes defining different values of the property in time, this list contains the strongly typed
@@ -36,8 +43,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <param name="keyframe">The keyframe to remove</param>
         public void AddKeyframe(Keyframe<T> keyframe)
         {
-            BaseKeyframes.Add(keyframe);
-            SortKeyframes();
+            base.AddKeyframe(keyframe);
         }
 
         /// <summary>
@@ -46,20 +52,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <param name="keyframe">The keyframe to remove</param>
         public void RemoveKeyframe(Keyframe<T> keyframe)
         {
-            BaseKeyframes.Remove(keyframe);
-            SortKeyframes();
-        }
-
-        /// <summary>
-        ///     Gets the current value using the regular value or if present, keyframes
-        /// </summary>
-        /// <returns></returns>
-        public T GetCurrentValue()
-        {
-            if (KeyframeEngine == null || !Keyframes.Any())
-                return Value;
-
-            return (T) KeyframeEngine.GetCurrentValue();
+            base.RemoveKeyframe(keyframe);
         }
     }
 }
