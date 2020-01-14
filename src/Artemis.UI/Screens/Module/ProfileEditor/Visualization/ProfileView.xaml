@@ -55,7 +55,7 @@
                     </ListBox.ItemsPanel>
                     <ListBoxItem ToolTip="Pan over different parts of the surface">
                         <materialDesign:PackIcon Kind="HandLeft" />
-                    </ListBoxItem>       
+                    </ListBoxItem>
                     <ListBoxItem ToolTip="Edit shape in layer">
                         <materialDesign:PackIcon Kind="Edit" />
                     </ListBoxItem>
@@ -171,7 +171,6 @@
                 </ItemsControl>
             </Grid>
 
-           
 
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
                 <materialDesign:Card Padding="8">

@@ -7,7 +7,8 @@ namespace Artemis.UI.Shared.Converters
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Converts <see cref="T:System.Windows.Media.Color" /> into a <see cref="T:System.Windows.Media.Color" /> with full opacity.
+    ///     Converts <see cref="T:System.Windows.Media.Color" /> into a <see cref="T:System.Windows.Media.Color" /> with full
+    ///     opacity.
     /// </summary>
     [ValueConversion(typeof(Color), typeof(string))]
     internal class ColorToSolidColorConverter : IValueConverter

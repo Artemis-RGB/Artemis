@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -62,6 +61,8 @@ namespace Artemis.UI.Shared
             set => SetValue(ColorOpacityProperty, value);
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private static void ColorPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var colorPicker = (ColorPicker) d;
@@ -72,7 +73,7 @@ namespace Artemis.UI.Shared
 
             colorPicker.SetCurrentValue(ColorOpacityProperty, ((Color) e.NewValue).A);
             colorPicker.OnPropertyChanged(nameof(Color));
-            
+
             colorPicker._inCallback = false;
         }
 
@@ -108,8 +109,6 @@ namespace Artemis.UI.Shared
         {
             PopupOpen = !PopupOpen;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

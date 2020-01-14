@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
@@ -9,8 +8,6 @@ using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
-using SkiaSharp;
-using SkiaSharp.Views.WPF;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization

@@ -10,15 +10,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         private SKColor _color;
         private float _xScale;
         private float _yScale;
-        
-        public NoiseBrushSettings()
-        {
-//            Color = new SKColor(0, 0, 0);
-//            BlendMode = SKBlendMode.Color;
-//            XScale = 0.5f;
-//            YScale = 0.5f;
-//            AnimationSpeed = 50f;
-        }
 
         public SKColor Color
         {

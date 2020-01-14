@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Diagnostics.Eventing.Reader;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
-using SkiaSharp.Views.WPF;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class EditToolViewModel : VisualizationToolViewModel
     {
-        private bool _isDragging;
-        private double _dragOffsetY;
-        private double _dragOffsetX;
-        private Point _dragStart;
         private bool _draggingHorizontally;
         private bool _draggingVertically;
+        private double _dragOffsetX;
+        private double _dragOffsetY;
+        private Point _dragStart;
+        private bool _isDragging;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
         {

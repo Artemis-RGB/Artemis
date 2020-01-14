@@ -25,7 +25,7 @@ namespace Artemis.UI.Behaviors
 
         private static void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var frameworkElement = (FrameworkElement)sender;
+            var frameworkElement = (FrameworkElement) sender;
             frameworkElement.Loaded -= OnLoaded;
 
             var window = Window.GetWindow(frameworkElement);

@@ -160,9 +160,7 @@ namespace Artemis.Core.Services.Storage
         {
             // Only instantiate engines for properties without an existing engine instance
             foreach (var layerProperty in profile.GetAllLayers().SelectMany(l => l.Properties).Where(p => p.KeyframeEngine == null))
-            {
                 _layerService.InstantiateKeyframeEngine(layerProperty);
-            }
         }
 
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)

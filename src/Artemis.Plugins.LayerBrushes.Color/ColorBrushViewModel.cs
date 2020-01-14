@@ -11,7 +11,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
             ColorBrush = element;
         }
 
-        public new ColorBrush ColorBrush { get; }
+        public ColorBrush ColorBrush { get; }
         public IEnumerable<ValueDescription> BrushTypes => EnumUtilities.GetAllValuesAndDescriptions(typeof(GradientType));
     }
 }

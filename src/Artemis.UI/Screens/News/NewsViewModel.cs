@@ -1,5 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using Stylet;
 
 namespace Artemis.UI.Screens.News
 {

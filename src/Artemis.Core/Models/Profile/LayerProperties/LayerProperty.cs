@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
@@ -26,8 +25,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         {
             get
             {
-                var currentValue = base.GetCurrentValue();
-                return currentValue == null ? default : (T)currentValue;
+                var currentValue = GetCurrentValue();
+                return currentValue == null ? default : (T) currentValue;
             }
         }
 

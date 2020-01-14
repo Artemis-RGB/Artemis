@@ -78,7 +78,7 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}"  Width="150">
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}" Width="150">
                                         SHOW DEBUGGER
                                     </Button>
                                 </StackPanel>
@@ -101,7 +101,7 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}"  Width="150">
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}" Width="150">
                                         SHOW LOGS
                                     </Button>
                                 </StackPanel>
@@ -215,10 +215,10 @@
                               materialDesign:DataGridAssist.CellPadding="13 8 8 8"
                               materialDesign:DataGridAssist.ColumnHeaderPadding="8">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Type}" Header="Type"  IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Description}" Header="Description" IsReadOnly="True" Width="*"/>
-                            <DataGridTextColumn Binding="{Binding Version}" Header="Version" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Type}" Header="Type" IsReadOnly="True" />
+                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Description}" Header="Description" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Binding="{Binding Version}" Header="Version" IsReadOnly="True" />
                             <DataGridCheckBoxColumn Header="Enabled"
                                                     Binding="{Binding IsEnabled}"
                                                     ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"

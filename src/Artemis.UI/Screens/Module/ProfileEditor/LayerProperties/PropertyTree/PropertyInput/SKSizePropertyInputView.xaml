@@ -16,7 +16,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Height"
-                 Text="{Binding Height}"/>
+                 Text="{Binding Height}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <TextBox Width="60"
                  Margin="0 2"

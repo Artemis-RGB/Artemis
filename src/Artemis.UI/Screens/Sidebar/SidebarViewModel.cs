@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
@@ -85,10 +86,10 @@ namespace Artemis.UI.Screens.Sidebar
                 return;
 
             // Icon is provided as string to avoid having to reference MaterialDesignThemes
-            var parsedIcon = System.Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out var iconEnum);
+            var parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out var iconEnum);
             if (parsedIcon == false)
                 iconEnum = PackIconKind.QuestionMarkCircle;
-            var sidebarItem = new FirstLevelNavigationItem { Icon = iconEnum, Label = module.DisplayName };
+            var sidebarItem = new FirstLevelNavigationItem {Icon = iconEnum, Label = module.DisplayName};
             SidebarItems.Add(sidebarItem);
             SidebarItemObjects.Add(sidebarItem, module);
         }
@@ -117,7 +118,7 @@ namespace Artemis.UI.Screens.Sidebar
             if (e.PluginInfo.Instance is Core.Plugins.Abstract.Module module)
                 RemoveModule(module);
         }
-        
+
         #endregion
     }
 }

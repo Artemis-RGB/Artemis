@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -31,6 +29,10 @@ namespace Artemis.UI.Screens
             SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
         }
 
+        public SidebarViewModel SidebarViewModel { get; }
+        public bool IsSidebarVisible { get; set; }
+        public bool ActiveItemReady { get; set; }
+
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem))
@@ -48,10 +50,6 @@ namespace Artemis.UI.Screens
             }
         }
 
-        public SidebarViewModel SidebarViewModel { get; }
-        public bool IsSidebarVisible { get; set; }
-        public bool ActiveItemReady { get; set; }
-
         private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
         {
             var paletteHelper = new PaletteHelper();
@@ -61,9 +59,9 @@ namespace Artemis.UI.Screens
 
             var extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
             // That's nice, then don't use it in your own examples and provide a working alternative
-            #pragma warning disable 612
+#pragma warning disable 612
             extensionsPaletteHelper.SetLightDark(windowsTheme == ThemeWatcher.WindowsTheme.Dark);
-            #pragma warning restore 612
+#pragma warning restore 612
         }
 
         public void WindowDeactivated()

@@ -14,7 +14,7 @@ namespace Artemis.UI.Screens.Module
         {
             DisplayName = module?.DisplayName;
             Module = module;
-            
+
             _profileEditorViewModelFactory = profileEditorViewModelFactory;
 
             Task.Run(AddTabsAsync);

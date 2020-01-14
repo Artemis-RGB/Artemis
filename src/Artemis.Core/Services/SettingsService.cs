@@ -16,7 +16,7 @@ namespace Artemis.Core.Services
             _pluginSettings = new PluginSettings(pluginInfo, pluginSettingRepository);
         }
 
-        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default(T))
+        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)
         {
             return _pluginSettings.GetSetting(name, defaultValue);
         }
@@ -28,6 +28,6 @@ namespace Artemis.Core.Services
     /// </summary>
     public interface ISettingsService : IProtectedArtemisService
     {
-        PluginSetting<T> GetSetting<T>(string name, T defaultValue = default(T));
+        PluginSetting<T> GetSetting<T>(string name, T defaultValue = default);
     }
 }

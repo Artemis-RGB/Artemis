@@ -6,7 +6,7 @@ namespace Artemis.Core.Extensions
     {
         public static int RoundToInt(this float number)
         {
-            return (int)Math.Round(number, MidpointRounding.AwayFromZero);
+            return (int) Math.Round(number, MidpointRounding.AwayFromZero);
         }
     }
 }

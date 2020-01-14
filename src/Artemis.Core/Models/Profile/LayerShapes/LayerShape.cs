@@ -43,7 +43,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         ///     Updates Position and Size using the provided unscaled rectangle
         /// </summary>
         /// <param name="rect">An unscaled rectangle which is relative to the layer (1.0 being full width/height, 0.5 being half).</param>
-        /// <param name="time">An optional timespan to indicate where to set the properties, if null the properties' base values will be used.</param>
+        /// <param name="time">
+        ///     An optional timespan to indicate where to set the properties, if null the properties' base values
+        ///     will be used.
+        /// </param>
         public void SetFromUnscaledRectangle(SKRect rect, TimeSpan? time)
         {
             if (!Layer.Leds.Any())

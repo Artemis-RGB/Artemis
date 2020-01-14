@@ -14,9 +14,7 @@ namespace Artemis.Core.JsonConverters
         public override SKColor ReadJson(JsonReader reader, Type objectType, SKColor existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.Value is string value && !string.IsNullOrWhiteSpace(value))
-            {
                 return SKColor.Parse(value);
-            }
 
             return SKColor.Empty;
         }

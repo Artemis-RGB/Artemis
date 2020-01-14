@@ -21,8 +21,8 @@
     </UserControl.Resources>
 
     <UserControl.InputBindings>
-        <KeyBinding Command="{s:Action Undo}" Modifiers="Control" Key="Z"></KeyBinding>
-        <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y"></KeyBinding>
+        <KeyBinding Command="{s:Action Undo}" Modifiers="Control" Key="Z" />
+        <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
     </UserControl.InputBindings>
 
     <Grid Margin="16">

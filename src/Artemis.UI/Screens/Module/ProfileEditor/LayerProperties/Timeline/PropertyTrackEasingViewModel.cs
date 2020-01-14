@@ -18,7 +18,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
             EasingFunction = easingFunction;
             Description = easingFunction.Humanize();
-            
+
             CreateGeometry();
         }
 

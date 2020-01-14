@@ -14,8 +14,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
     public abstract class TreeItemViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
-        private readonly ILayerService _layerService;
         private readonly IFolderViewModelFactory _folderViewModelFactory;
+        private readonly ILayerService _layerService;
         private readonly ILayerViewModelFactory _layerViewModelFactory;
         private readonly IProfileEditorService _profileEditorService;
 
@@ -122,7 +122,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
             var layer = new Layer(ProfileElement.Profile, ProfileElement, "New layer");
-            foreach (var baseLayerProperty in layer.Properties) 
+            foreach (var baseLayerProperty in layer.Properties)
                 _layerService.InstantiateKeyframeEngine(baseLayerProperty);
             ProfileElement.AddChild(layer);
             UpdateProfileElements();
