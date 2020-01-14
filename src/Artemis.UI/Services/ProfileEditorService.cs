@@ -88,11 +88,14 @@ namespace Artemis.UI.Services
             _profileService.UndoUpdateProfile(SelectedProfile, module);
             OnSelectedProfileChanged();
 
-            var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
-            elements.AddRange(SelectedProfile.GetAllFolders());
+            if (SelectedProfileElement != null)
+            {
+                var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
+                elements.AddRange(SelectedProfile.GetAllFolders());
+                var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
+                ChangeSelectedProfileElement(element);
+            }
 
-            var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
-            ChangeSelectedProfileElement(element);
             UpdateProfilePreview();
         }
 
@@ -101,11 +104,14 @@ namespace Artemis.UI.Services
             _profileService.RedoUpdateProfile(SelectedProfile, module);
             OnSelectedProfileChanged();
 
-            var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
-            elements.AddRange(SelectedProfile.GetAllFolders());
+            if (SelectedProfileElement != null)
+            {
+                var elements = SelectedProfile.GetAllLayers().Cast<ProfileElement>().ToList();
+                elements.AddRange(SelectedProfile.GetAllFolders());
+                var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
+                ChangeSelectedProfileElement(element);
+            }
 
-            var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
-            ChangeSelectedProfileElement(element);
             UpdateProfilePreview();
         }
 
