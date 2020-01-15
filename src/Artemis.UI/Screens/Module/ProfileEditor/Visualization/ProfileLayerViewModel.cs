@@ -83,7 +83,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             var layerGeometry = group.GetOutlinedPathGeometry();
-
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
             layerGeometry.Freeze();
             opacityGeometry.Freeze();
@@ -119,6 +118,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     shapeGeometry = new RectangleGeometry(rect);
                     break;
             }
+
+            // Apply transformation like done by the core during layer rendering
+            var anchor = Layer.LayerShape.GetUnscaledAnchor();
+            shapeGeometry.Transform = new RotateTransform(Layer.RotationProperty.CurrentValue, anchor.X, anchor.Y);
 
             shapeGeometry.Freeze();
             ShapeGeometry = shapeGeometry;

@@ -29,6 +29,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public SKRect ShapeSkRect { get; set; }
         public SKPoint AnchorSkPoint { get; set; }
+        public int RotationAngle { get; set; }
 
         private void Update()
         {
@@ -38,6 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 {
                     ShapeSkRect = layer.LayerShape.GetUnscaledRectangle();
                     AnchorSkPoint = layer.LayerShape.GetUnscaledAnchor();
+                    RotationAngle = layer.RotationProperty.CurrentValue;
                 }
             }
         }
@@ -64,15 +66,29 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             e.Handled = true;
         }
 
+        public void AnchorEditMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isDragging)
+                return;
+
+            // Use the regular mousedown
+            ShapeEditMouseDown(sender, e);
+            // Override the drag offset
+            var dragStartPosition = GetRelativePosition(sender, e);
+            _dragOffsetX = AnchorSkPoint.X - dragStartPosition.X;
+            _dragOffsetY = AnchorSkPoint.Y - dragStartPosition.Y;
+            _dragStart = dragStartPosition;
+        }
+
         public void ShapeEditMouseUp(object sender, MouseButtonEventArgs e)
         {
-            ((IInputElement) sender).ReleaseMouseCapture();
             ProfileEditorService.UpdateSelectedProfileElement();
 
             _isDragging = false;
             _draggingHorizontally = false;
             _draggingVertically = false;
 
+            ((IInputElement) sender).ReleaseMouseCapture();
             e.Handled = true;
         }
 
@@ -82,7 +98,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            layer.LayerShape.SetFromUnscaledAnchor(new SKPoint((float) position.X, (float) position.Y), ProfileEditorService.CurrentTime);
+            var x = (float) (position.X + _dragOffsetX);
+            var y = (float) (position.Y + _dragOffsetY);
+            layer.LayerShape.SetFromUnscaledAnchor(new SKPoint(x, y), ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
@@ -136,8 +154,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 skRect.Left = (float) Math.Min(position.X, skRect.Bottom);
             }
 
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void TopCenterResize(object sender, MouseEventArgs e)
@@ -149,8 +166,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var skRect = layer.LayerShape.GetUnscaledRectangle();
             skRect.Top = (float) Math.Min(position.Y, skRect.Bottom);
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void TopRightRotate(object sender, MouseEventArgs e)
@@ -175,8 +191,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 skRect.Right = (float) Math.Max(position.X, skRect.Left);
             }
 
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void CenterRightResize(object sender, MouseEventArgs e)
@@ -188,14 +203,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var skRect = layer.LayerShape.GetUnscaledRectangle();
             skRect.Right = (float) Math.Max(position.X, skRect.Left);
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
-        {
-            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
-            return mouseEventArgs.GetPosition((IInputElement) parent);
+            ApplyShapeResize(skRect);
         }
 
         public void BottomRightRotate(object sender, MouseEventArgs e)
@@ -220,8 +228,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 skRect.Right = (float) Math.Max(position.X, skRect.Left);
             }
 
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void BottomCenterResize(object sender, MouseEventArgs e)
@@ -233,8 +240,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var skRect = layer.LayerShape.GetUnscaledRectangle();
             skRect.Bottom = (float) Math.Max(position.Y, skRect.Top);
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void BottomLeftRotate(object sender, MouseEventArgs e)
@@ -259,8 +265,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 skRect.Left = (float) Math.Min(position.X, skRect.Right);
             }
 
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
-            ProfileEditorService.UpdateProfilePreview();
+            ApplyShapeResize(skRect);
         }
 
         public void CenterLeftResize(object sender, MouseEventArgs e)
@@ -272,7 +277,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var skRect = layer.LayerShape.GetUnscaledRectangle();
             skRect.Left = (float) Math.Min(position.X, skRect.Right);
-            layer.LayerShape.SetFromUnscaledRectangle(skRect, ProfileEditorService.CurrentTime);
+            ApplyShapeResize(skRect);
+        }
+
+        private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
+        {
+            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
+            return mouseEventArgs.GetPosition((IInputElement) parent);
+        }
+
+        private void ApplyShapeResize(SKRect newRect)
+        {
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            // Store the original position to create an offset for the anchor
+            var original = layer.PositionProperty.CurrentValue;
+            layer.LayerShape.SetFromUnscaledRectangle(newRect, ProfileEditorService.CurrentTime);
+            var updated = layer.PositionProperty.CurrentValue;
+            // Apply the offset to the anchor so it stays in at same spot
+            layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
+                layer.AnchorPointProperty.CurrentValue.X + (original.X - updated.X),
+                layer.AnchorPointProperty.CurrentValue.Y + (original.Y - updated.Y)
+            ), ProfileEditorService.CurrentTime);
+
+            // Update the preview
             ProfileEditorService.UpdateProfilePreview();
         }
     }

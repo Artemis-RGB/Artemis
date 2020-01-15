@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 CanvasViewModels = new ObservableCollection<CanvasViewModel>();
                 DeviceViewModels = new ObservableCollection<ProfileDeviceViewModel>();
-                PanZoomViewModel = new PanZoomViewModel();
+                PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
             });
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
