@@ -17,14 +17,17 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
             var width = Layer.AbsoluteRectangle.Width;
             var height = Layer.AbsoluteRectangle.Height;
-            var rect = SKRect.Create(shapePosition.X * width, shapePosition.Y * height, shapeSize.Width * width, shapeSize.Height * height);
-
+            var rect = SKRect.Create(
+                Layer.Rectangle.Left + shapePosition.X * width,
+                Layer.Rectangle.Top + shapePosition.Y * height,
+                shapeSize.Width * width,
+                shapeSize.Height * height
+            );
             var path = new SKPath();
             path.AddOval(rect);
-            path.Transform(SKMatrix.MakeTranslation(Layer.Rectangle.Left, Layer.Rectangle.Top));
 
             RenderPath = path;
-            RenderRectangle = path.GetRect();
+            RenderRectangle = rect;
         }
 
         public override void ApplyToEntity()

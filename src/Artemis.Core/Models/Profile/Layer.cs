@@ -132,12 +132,12 @@ namespace Artemis.Core.Models.Profile
         public LayerProperty<SKSize> SizeProperty { get; private set; }
 
         /// <summary>
-        ///     The rotation property of this layer, also found in <see cref="Properties" />
+        ///     The rotation property of this layer range 0 - 360, also found in <see cref="Properties" />
         /// </summary>
         public LayerProperty<int> RotationProperty { get; private set; }
 
         /// <summary>
-        ///     The opacity property of this layer, also found in <see cref="Properties" />
+        ///     The opacity property of this layer range 0 - 100, also found in <see cref="Properties" />
         /// </summary>
         public LayerProperty<float> OpacityProperty { get; private set; }
 
@@ -158,9 +158,19 @@ namespace Artemis.Core.Models.Profile
 
             canvas.Save();
             canvas.ClipPath(Path);
+
+            // Apply transformations
+            var rotation = RotationProperty.CurrentValue;
+            var anchor = AnchorPointProperty.CurrentValue;
+            if (rotation != 0)
+                canvas.RotateDegrees(rotation, anchor.X * AbsoluteRectangle.Width + LayerShape.RenderRectangle.Left, anchor.Y * AbsoluteRectangle.Height + LayerShape.RenderRectangle.Top);
+
             // Placeholder
             if (LayerShape?.RenderPath != null)
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Color = new SKColor(255, 0, 0)});
+            {
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Color = new SKColor(255, 0, 0,  (byte) (2.55 * OpacityProperty.CurrentValue))});
+            }
+
             LayerBrush?.Render(canvas);
             canvas.Restore();
         }
