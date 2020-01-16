@@ -222,6 +222,7 @@
     </Compile>
     <Compile Include="Screens\Sidebar\SidebarViewModel.cs" />
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
+    <Compile Include="Services\LayerShapeService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
     <Compile Include="Utilities\ThemeWatcher.cs" />
     <Compile Include="Behaviors\TreeViewSelectionBehavior.cs" />

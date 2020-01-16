@@ -15,6 +15,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         protected LayerShape(Layer layer, ShapeEntity shapeEntity)
         {
             Layer = layer;
+            ScaledRectangle = SKRect.Create(shapeEntity.X, shapeEntity.Y, shapeEntity.Width, shapeEntity.Height);
         }
 
         /// <summary>
@@ -23,7 +24,13 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         public Layer Layer { get; set; }
 
         /// <summary>
-        ///     A render rectangle relative to the layer
+        ///     A relative and scaled rectangle that defines where the shape is located in relation to the layer's size
+        ///     <para>Note: scaled means a range of 0.0 to 1.0. 1.0 being full width/height, 0.5 being half</para>
+        /// </summary>
+        public SKRect ScaledRectangle { get; set; }
+
+        /// <summary>
+        ///     An absolute and scaled render rectangle
         /// </summary>
         public SKRect RenderRectangle { get; protected set; }
 
@@ -32,56 +39,29 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         /// </summary>
         public SKPath RenderPath { get; protected set; }
 
-        public abstract void CalculateRenderProperties(SKPoint shapePosition, SKSize shapeSize);
+        public abstract void CalculateRenderProperties();
 
         public virtual void ApplyToEntity()
         {
-            Layer.LayerEntity.ShapeEntity = new ShapeEntity();
-        }
-
-        /// <summary>
-        ///     Updates Position and Size using the provided unscaled rectangle
-        /// </summary>
-        /// <param name="rect">An unscaled rectangle which is relative to the layer (1.0 being full width/height, 0.5 being half).</param>
-        /// <param name="time">
-        ///     An optional timespan to indicate where to set the properties, if null the properties' base values
-        ///     will be used.
-        /// </param>
-        public void SetFromUnscaledRectangle(SKRect rect, TimeSpan? time)
-        {
-            if (!Layer.Leds.Any())
+            Layer.LayerEntity.ShapeEntity = new ShapeEntity
             {
-                Layer.PositionProperty.SetCurrentValue(SKPoint.Empty, time);
-                Layer.SizeProperty.SetCurrentValue(SKSize.Empty, time);
-                return;
-            }
-
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
-            Layer.PositionProperty.SetCurrentValue(new SKPoint((float) (100f / width * (rect.Left - x)) / 100f, (float) (100f / height * (rect.Top - y)) / 100f), time);
-            Layer.SizeProperty.SetCurrentValue(new SKSize((float) (100f / width * rect.Width) / 100f, (float) (100f / height * rect.Height) / 100f), time);
-
-            CalculateRenderProperties(Layer.PositionProperty.CurrentValue, Layer.SizeProperty.CurrentValue);
+                X = ScaledRectangle.Left,
+                Y = ScaledRectangle.Top,
+                Width = ScaledRectangle.Width,
+                Height = ScaledRectangle.Height
+            };
         }
 
-        public SKRect GetUnscaledRectangle()
+        protected SKRect GetUnscaledRectangle()
         {
             if (!Layer.Leds.Any())
                 return SKRect.Empty;
 
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
             return SKRect.Create(
-                (float) (x + width * Layer.PositionProperty.CurrentValue.X),
-                (float) (y + height * Layer.PositionProperty.CurrentValue.Y),
-                (float) (width * Layer.SizeProperty.CurrentValue.Width),
-                (float) (height * Layer.SizeProperty.CurrentValue.Height)
+                Layer.AbsoluteRectangle.Left + Layer.AbsoluteRectangle.Width * ScaledRectangle.Left,
+                Layer.AbsoluteRectangle.Top + Layer.AbsoluteRectangle.Height * ScaledRectangle.Top,
+                Layer.AbsoluteRectangle.Width * ScaledRectangle.Width,
+                Layer.AbsoluteRectangle.Height * ScaledRectangle.Height
             );
         }
 
@@ -94,31 +74,21 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 return;
             }
 
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
             Layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
-                (float) (100f / width * (anchor.X - x - Layer.PositionProperty.CurrentValue.X)) / 100f,
-                (float) (100f / height * (anchor.Y - y - Layer.PositionProperty.CurrentValue.Y)) / 100f
+                100f / Layer.AbsoluteRectangle.Width * (anchor.X - Layer.AbsoluteRectangle.Left - Layer.PositionProperty.CurrentValue.X) / 100f,
+                100f / Layer.AbsoluteRectangle.Height * (anchor.Y - Layer.AbsoluteRectangle.Top - Layer.PositionProperty.CurrentValue.Y) / 100f
             ), time);
-            CalculateRenderProperties(Layer.PositionProperty.CurrentValue, Layer.SizeProperty.CurrentValue);
+            CalculateRenderProperties();
         }
 
         public SKPoint GetUnscaledAnchor()
         {
             if (!Layer.Leds.Any())
                 return SKPoint.Empty;
-
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
+            
             return new SKPoint(
-                (float) (x + width * (Layer.AnchorPointProperty.CurrentValue.X + Layer.PositionProperty.CurrentValue.X)),
-                (float) (y + height * (Layer.AnchorPointProperty.CurrentValue.Y + Layer.PositionProperty.CurrentValue.Y))
+                Layer.AbsoluteRectangle.Left + Layer.AbsoluteRectangle.Width * (Layer.AnchorPointProperty.CurrentValue.X + Layer.PositionProperty.CurrentValue.X),
+                Layer.AbsoluteRectangle.Top + Layer.AbsoluteRectangle.Height * (Layer.AnchorPointProperty.CurrentValue.Y + Layer.PositionProperty.CurrentValue.Y)
             );
         }
     }
