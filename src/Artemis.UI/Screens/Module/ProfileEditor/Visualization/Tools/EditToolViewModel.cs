@@ -33,9 +33,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
-        public SKRect ShapeSkRect { get; set; }
-        public SKPoint AnchorSkPoint { get; set; }
-        public TransformCollection LayerTransformChildren { get; set; }
+        public SKRect ShapeRectangle { get; set; }
+        public SKPoint ShapeAnchor { get; set; }
+        public RectangleGeometry ShapeGeometry { get; set; }
+        public TransformCollection ShapeTransformCollection { get; set; }
 
         private void Update()
         {
@@ -43,13 +44,41 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             {
                 if (layer.LayerShape != null)
                 {
-                    ShapeSkRect = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
-                    AnchorSkPoint = layer.LayerShape.GetUnscaledAnchor();
-                    Execute.PostToUIThread(() => LayerTransformChildren = _layerEditorService.GetLayerTransformGroup(layer).Children);
+                    ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
+                    ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
+
+                    Execute.PostToUIThread(() =>
+                    {
+                        var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape));
+                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
+                        shapeGeometry.Freeze();
+                        ShapeGeometry = shapeGeometry;
+                        ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
+
+                        // Get a square path to use for mutation point placement
+                        var path = _layerEditorService.GetLayerPath(layer);
+                        TopLeft = path.Points[0];
+                        TopRight = path.Points[1];
+                        BottomRight = path.Points[2];
+                        BottomLeft = path.Points[3];
+
+                        TopCenter = new SKPoint((TopLeft.X + TopRight.X) / 2, (TopLeft.Y + TopRight.Y) / 2);
+                        RightCenter = new SKPoint((TopRight.X + BottomRight.X) / 2, (TopRight.Y + BottomRight.Y) / 2);
+                        BottomCenter = new SKPoint((BottomLeft.X + BottomRight.X) / 2, (BottomLeft.Y + BottomRight.Y) / 2);
+                        LeftCenter = new SKPoint((TopLeft.X + BottomLeft.X) / 2, (TopLeft.Y + BottomLeft.Y) / 2);
+                    });
                 }
             }
         }
 
+        public SKPoint TopLeft { get; set; }
+        public SKPoint TopRight { get; set; }
+        public SKPoint BottomRight { get; set; }
+        public SKPoint BottomLeft { get; set; }
+        public SKPoint TopCenter { get; set; }
+        public SKPoint RightCenter { get; set; }
+        public SKPoint BottomCenter { get; set; }
+        public SKPoint LeftCenter { get; set; }
 
         public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -82,8 +111,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             ShapeEditMouseDown(sender, e);
             // Override the drag offset
             var dragStartPosition = GetRelativePosition(sender, e);
-            _dragOffsetX = AnchorSkPoint.X - dragStartPosition.X;
-            _dragOffsetY = AnchorSkPoint.Y - dragStartPosition.Y;
+//            _dragOffsetX = AnchorSkPoint.X - dragStartPosition.X;
+//            _dragOffsetY = AnchorSkPoint.Y - dragStartPosition.Y;
             _dragStart = dragStartPosition;
         }
 
@@ -117,25 +146,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.RenderRectangle;
+            var skRect = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
             var x = (float) (position.X + _dragOffsetX);
             var y = (float) (position.Y + _dragOffsetY);
 
-            // TODO: Update the translation
-            // if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-            //     layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-            // else
-            // {
-            //     if (_draggingVertically)
-            //         layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(skRect.Left, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-            //     else if (_draggingHorizontally)
-            //         layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, skRect.Top, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-            //     else
-            //     {
-            //         _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
-            //         _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
-            //     }
-            // }
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                if (_draggingVertically)
+                    x = skRect.Left;
+                else if (_draggingHorizontally)
+                    y = skRect.Top;
+                else
+                {
+                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
+                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
+                    return;
+                }
+            }
+
+            // Convert the desired X and Y position to a translation
+            var layerRect = _layerEditorService.GetLayerRenderRect(layer).ToSKRect();
+            var translation = layer.PositionProperty.CurrentValue;
+            var scaled = _layerEditorService.GetScaledPoint(layer, new SKPoint(x , y));
+            Console.WriteLine(scaled);
+            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }
