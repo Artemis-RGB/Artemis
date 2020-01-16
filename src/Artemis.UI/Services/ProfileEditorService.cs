@@ -74,7 +74,7 @@ namespace Artemis.UI.Services
                     baseLayerProperty.KeyframeEngine?.OverrideProgress(CurrentTime);
 
                 // Force layer shape to redraw
-                layer.LayerShape?.CalculateRenderProperties(layer.PositionProperty.CurrentValue, layer.SizeProperty.CurrentValue);
+                layer.LayerShape?.CalculateRenderProperties();
                 // Update the brush with the delta (which can now be negative ^^)
                 layer.Update(delta.TotalSeconds);
             }
