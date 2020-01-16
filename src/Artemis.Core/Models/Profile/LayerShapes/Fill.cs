@@ -13,11 +13,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
         }
 
-        public override void CalculateRenderProperties(SKPoint shapePosition, SKSize shapeSize)
+        public override void CalculateRenderProperties()
         {
-            // TODO: Scale the path? Not sure if desirable
+            RenderRectangle = GetUnscaledRectangle();
             RenderPath = Layer.Path;
-            RenderRectangle = Layer.Path.GetRect();
         }
 
         public override void ApplyToEntity()

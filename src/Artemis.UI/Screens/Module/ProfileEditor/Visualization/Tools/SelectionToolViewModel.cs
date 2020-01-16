@@ -6,6 +6,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Properties;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
 
@@ -13,8 +14,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class SelectionToolViewModel : VisualizationToolViewModel
     {
-        public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        private readonly ILayerEditorService _layerEditorService;
+
+        public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+            : base(profileViewModel, profileEditorService)
         {
+            _layerEditorService = layerEditorService;
             using (var stream = new MemoryStream(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
@@ -48,14 +53,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
                 // If the layer has a shape, save it's size
-                var shapeSize = SKRect.Empty;
+                var shapeSize = Rect.Empty;
                 if (layer.LayerShape != null)
-                    shapeSize = layer.LayerShape.GetUnscaledRectangle();
+                    shapeSize = _layerEditorService.GetShapeRenderRect(layer.LayerShape);
                 layer.ClearLeds();
                 layer.AddLeds(selectedLeds);
                 // Restore the saved size
                 if (layer.LayerShape != null)
-                    layer.LayerShape.SetFromUnscaledRectangle(shapeSize, ProfileEditorService.CurrentTime);
+                    _layerEditorService.SetShapeRenderRect(layer.LayerShape, shapeSize);
 
                 ProfileEditorService.UpdateSelectedProfileElement();
             }

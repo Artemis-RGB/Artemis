@@ -25,6 +25,7 @@ namespace Artemis.UI.Screens.Shared
         public double PanY { get; set; }
         public double CanvasWidth { get; set; }
         public double CanvasHeight { get; set; }
+        public bool LimitToZero { get; set; }
 
         public Rect BackgroundViewport => new Rect(PanX, PanY, 20, 20);
 
@@ -61,8 +62,16 @@ namespace Artemis.UI.Screens.Shared
             var position = e.GetPosition((IInputElement) sender);
             var delta = LastPanPosition - position;
 
-            PanX = Math.Min(0, PanX - delta.Value.X);
-            PanY = Math.Min(0, PanY - delta.Value.Y);
+            if (LimitToZero)
+            {
+                PanX = Math.Min(0, PanX - delta.Value.X);
+                PanY = Math.Min(0, PanY - delta.Value.Y);
+            }
+            else
+            {
+                PanX -= delta.Value.X;
+                PanY -= delta.Value.Y;
+            }
 
             LastPanPosition = position;
         }

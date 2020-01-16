@@ -14,6 +14,7 @@ using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
 using Stylet;
@@ -23,6 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly ILayerEditorService _layerEditorService;
         private readonly IProfileLayerViewModelFactory _profileLayerViewModelFactory;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
@@ -32,12 +34,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private TimerUpdateTrigger _updateTrigger;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
+            ILayerEditorService layerEditorService,
             ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
             IProfileLayerViewModelFactory profileLayerViewModelFactory)
         {
             _profileEditorService = profileEditorService;
+            _layerEditorService = layerEditorService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
             _profileLayerViewModelFactory = profileLayerViewModelFactory;
@@ -46,7 +50,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 CanvasViewModels = new ObservableCollection<CanvasViewModel>();
                 DeviceViewModels = new ObservableCollection<ProfileDeviceViewModel>();
-                PanZoomViewModel = new PanZoomViewModel();
+                PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
             });
 
             ApplySurfaceConfiguration(surfaceService.ActiveSurface);
@@ -246,16 +250,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void ActivateToolByIndex(int value)
         {
+            // Consider using DI if dependencies start to add up
             switch (value)
             {
                 case 0:
                     ActiveToolViewModel = new ViewpointMoveToolViewModel(this, _profileEditorService);
                     break;
                 case 1:
-                    ActiveToolViewModel = new EditToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new EditToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 2:
-                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 3:
                     ActiveToolViewModel = new SelectionAddToolViewModel(this, _profileEditorService);
@@ -264,10 +269,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);
                     break;
                 case 6:
-                    ActiveToolViewModel = new EllipseToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new EllipseToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 7:
-                    ActiveToolViewModel = new RectangleToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new RectangleToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 8:
                     ActiveToolViewModel = new PolygonToolViewModel(this, _profileEditorService);
