@@ -3,13 +3,17 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
+using SkiaSharp.Views.WPF;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class EditToolViewModel : VisualizationToolViewModel
     {
+        private readonly ILayerEditorService _layerEditorService;
         private bool _draggingHorizontally;
         private bool _draggingVertically;
         private double _dragOffsetX;
@@ -17,8 +21,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private Point _dragStart;
         private bool _isDragging;
 
-        public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+            : base(profileViewModel, profileEditorService)
         {
+            _layerEditorService = layerEditorService;
             Cursor = Cursors.Arrow;
             Update();
 
@@ -29,7 +35,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public SKRect ShapeSkRect { get; set; }
         public SKPoint AnchorSkPoint { get; set; }
-        public int RotationAngle { get; set; }
+        public TransformCollection LayerTransformChildren { get; set; }
 
         private void Update()
         {
@@ -37,12 +43,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             {
                 if (layer.LayerShape != null)
                 {
-                    ShapeSkRect = layer.LayerShape.GetUnscaledRectangle();
+                    ShapeSkRect = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
                     AnchorSkPoint = layer.LayerShape.GetUnscaledAnchor();
-                    RotationAngle = layer.RotationProperty.CurrentValue;
+                    Execute.PostToUIThread(() => LayerTransformChildren = _layerEditorService.GetLayerTransformGroup(layer).Children);
                 }
             }
         }
+
 
         public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -53,7 +60,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
                 var dragStartPosition = GetRelativePosition(sender, e);
-                var skRect = layer.LayerShape.GetUnscaledRectangle();
+                var skRect = layer.LayerShape.RenderRectangle;
                 _dragOffsetX = skRect.Left - dragStartPosition.X;
                 _dragOffsetY = skRect.Top - dragStartPosition.Y;
                 _dragStart = dragStartPosition;
@@ -110,24 +117,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             var x = (float) (position.X + _dragOffsetX);
             var y = (float) (position.Y + _dragOffsetY);
 
-            if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-            else
-            {
-                if (_draggingVertically)
-                    layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(skRect.Left, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-                else if (_draggingHorizontally)
-                    layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, skRect.Top, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
-                else
-                {
-                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
-                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
-                }
-            }
+            // TODO: Update the translation
+            // if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+            //     layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
+            // else
+            // {
+            //     if (_draggingVertically)
+            //         layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(skRect.Left, y, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
+            //     else if (_draggingHorizontally)
+            //         layer.LayerShape.SetFromUnscaledRectangle(SKRect.Create(x, skRect.Top, skRect.Width, skRect.Height), ProfileEditorService.CurrentTime);
+            //     else
+            //     {
+            //         _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
+            //         _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
+            //     }
+            // }
 
             ProfileEditorService.UpdateProfilePreview();
         }
@@ -142,7 +150,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 // Take the greatest difference
@@ -164,7 +172,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = GetRelativePosition(sender, e);
 
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             skRect.Top = (float) Math.Min(position.Y, skRect.Bottom);
             ApplyShapeResize(skRect);
         }
@@ -179,7 +187,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 // Take the greatest difference
@@ -201,7 +209,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = GetRelativePosition(sender, e);
 
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             skRect.Right = (float) Math.Max(position.X, skRect.Left);
             ApplyShapeResize(skRect);
         }
@@ -216,7 +224,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 // Take the greatest difference
@@ -238,7 +246,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = GetRelativePosition(sender, e);
 
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             skRect.Bottom = (float) Math.Max(position.Y, skRect.Top);
             ApplyShapeResize(skRect);
         }
@@ -253,7 +261,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
                 // Take the greatest difference
@@ -275,7 +283,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = GetRelativePosition(sender, e);
 
-            var skRect = layer.LayerShape.GetUnscaledRectangle();
+            var skRect = layer.LayerShape.RenderRectangle;
             skRect.Left = (float) Math.Min(position.X, skRect.Right);
             ApplyShapeResize(skRect);
         }
@@ -291,15 +299,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
+            // TODO: Apply the translation
             // Store the original position to create an offset for the anchor
-            var original = layer.PositionProperty.CurrentValue;
-            layer.LayerShape.SetFromUnscaledRectangle(newRect, ProfileEditorService.CurrentTime);
-            var updated = layer.PositionProperty.CurrentValue;
-            // Apply the offset to the anchor so it stays in at same spot
-            layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
-                layer.AnchorPointProperty.CurrentValue.X + (original.X - updated.X),
-                layer.AnchorPointProperty.CurrentValue.Y + (original.Y - updated.Y)
-            ), ProfileEditorService.CurrentTime);
+            // var original = layer.PositionProperty.CurrentValue;
+            // layer.LayerShape.SetFromUnscaledRectangle(newRect, ProfileEditorService.CurrentTime);
+            // var updated = layer.PositionProperty.CurrentValue;
+            // // Apply the offset to the anchor so it stays in at same spot
+            // layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
+            //     layer.AnchorPointProperty.CurrentValue.X + (original.X - updated.X),
+            //     layer.AnchorPointProperty.CurrentValue.Y + (original.Y - updated.Y)
+            // ), ProfileEditorService.CurrentTime);
 
             // Update the preview
             ProfileEditorService.UpdateProfilePreview();

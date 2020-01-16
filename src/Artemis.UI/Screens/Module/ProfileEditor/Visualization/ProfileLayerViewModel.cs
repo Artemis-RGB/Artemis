@@ -5,9 +5,13 @@ using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Services;
 using Artemis.UI.Extensions;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
+using SkiaSharp.Views.WPF;
+using Stylet;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
@@ -15,10 +19,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     public class ProfileLayerViewModel : CanvasViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly ILayerEditorService _layerEditorService;
 
-        public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService)
+        public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
         {
             _profileEditorService = profileEditorService;
+            _layerEditorService = layerEditorService;
             Layer = layer;
 
             Update();
@@ -98,33 +104,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
             }
 
-            var skRect = Layer.LayerShape.GetUnscaledRectangle();
-            var rect = new Rect(skRect.Left, skRect.Top, Math.Max(0, skRect.Width), Math.Max(0, skRect.Height));
-
-            var shapeGeometry = Geometry.Empty;
-            switch (Layer.LayerShape)
+            Execute.PostToUIThread(() =>
             {
-                case Ellipse _:
-                    shapeGeometry = new EllipseGeometry(rect);
-                    break;
-                case Fill _:
-                    shapeGeometry = LayerGeometry;
-                    break;
-                case Polygon _:
-                    // TODO
-                    shapeGeometry = new RectangleGeometry(rect);
-                    break;
-                case Rectangle _:
-                    shapeGeometry = new RectangleGeometry(rect);
-                    break;
-            }
-
-            // Apply transformation like done by the core during layer rendering
-            var anchor = Layer.LayerShape.GetUnscaledAnchor();
-            shapeGeometry.Transform = new RotateTransform(Layer.RotationProperty.CurrentValue, anchor.X, anchor.Y);
-
-            shapeGeometry.Freeze();
-            ShapeGeometry = shapeGeometry;
+                var rect = _layerEditorService.GetShapeRenderRect(Layer.LayerShape);
+                var shapeGeometry = Geometry.Empty;
+                switch (Layer.LayerShape)
+                {
+                    case Ellipse _:
+                        shapeGeometry = new EllipseGeometry(rect);
+                        break;
+                    case Fill _:
+                        shapeGeometry = LayerGeometry;
+                        break;
+                    case Polygon _:
+                        // TODO
+                        shapeGeometry = new RectangleGeometry(rect);
+                        break;
+                    case Rectangle _:
+                        shapeGeometry = new RectangleGeometry(rect);
+                        break;
+                }
+                
+                shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
+                shapeGeometry.Freeze();
+                ShapeGeometry = shapeGeometry;
+            });
         }
 
         private void CreateViewportRectangle()

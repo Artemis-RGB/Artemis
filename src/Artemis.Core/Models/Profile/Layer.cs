@@ -160,15 +160,32 @@ namespace Artemis.Core.Models.Profile
             canvas.ClipPath(Path);
 
             // Apply transformations
-            var rotation = RotationProperty.CurrentValue;
             var anchor = AnchorPointProperty.CurrentValue;
-            if (rotation != 0)
-                canvas.RotateDegrees(rotation, anchor.X * AbsoluteRectangle.Width + LayerShape.RenderRectangle.Left, anchor.Y * AbsoluteRectangle.Height + LayerShape.RenderRectangle.Top);
+            var position = PositionProperty.CurrentValue;
+            var size = SizeProperty.CurrentValue;
+            var rotation = RotationProperty.CurrentValue;
+            // Scale the anchor and make it originate from the center of the untranslated layer shape
+            anchor.X = anchor.X * AbsoluteRectangle.Width + LayerShape.RenderRectangle.MidX;
+            anchor.Y = anchor.Y * AbsoluteRectangle.Height + LayerShape.RenderRectangle.MidY;
 
+            canvas.Translate(position.X * AbsoluteRectangle.Width, position.Y * AbsoluteRectangle.Height);
+            canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
+            canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
+            
             // Placeholder
             if (LayerShape?.RenderPath != null)
             {
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Color = new SKColor(255, 0, 0,  (byte) (2.55 * OpacityProperty.CurrentValue))});
+                var testColors = new List<SKColor>();
+                for (var i = 0; i < 9; i++)
+                {
+                    if (i != 8)
+                        testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
+                    else
+                        testColors.Add(SKColor.FromHsv(0, 100, 100));
+                }
+
+                var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.RenderRectangle.MidX, LayerShape.RenderRectangle.MidY), testColors.ToArray());
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader});
             }
 
             LayerBrush?.Render(canvas);
@@ -300,7 +317,7 @@ namespace Artemis.Core.Models.Profile
             Path = path;
             // This is called here so that the shape's render properties are up to date when other code
             // responds to OnRenderPropertiesUpdated
-            LayerShape?.CalculateRenderProperties(PositionProperty.CurrentValue, SizeProperty.CurrentValue);
+            LayerShape?.CalculateRenderProperties();
 
             OnRenderPropertiesUpdated();
         }

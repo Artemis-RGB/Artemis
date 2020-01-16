@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.UI.Properties;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp.Views.WPF;
 
@@ -11,10 +12,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class EllipseToolViewModel : VisualizationToolViewModel
     {
+        private readonly ILayerEditorService _layerEditorService;
         private bool _shiftDown;
 
-        public EllipseToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        public EllipseToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+            : base(profileViewModel, profileEditorService)
         {
+            _layerEditorService = layerEditorService;
             using (var stream = new MemoryStream(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
@@ -48,7 +52,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     layer.LayerShape = new Ellipse(layer);
 
                 // Apply the drag rectangle
-                layer.LayerShape.SetFromUnscaledRectangle(DragRectangle.ToSKRect(), ProfileEditorService.CurrentTime);
+                _layerEditorService.SetShapeRenderRect(layer.LayerShape, DragRectangle);
                 ProfileEditorService.UpdateSelectedProfileElement();
             }
         }
