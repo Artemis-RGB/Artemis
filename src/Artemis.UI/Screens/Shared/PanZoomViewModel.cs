@@ -44,8 +44,16 @@ namespace Artemis.UI.Screens.Shared
             Zoom = Math.Max(0.1, Math.Min(4, Zoom));
 
             // Update the PanX/Y to enable zooming relative to cursor
-            PanX = Math.Min(0, absoluteX - relative.X * Zoom);
-            PanY = Math.Min(0, absoluteY - relative.Y * Zoom);
+            if (LimitToZero)
+            {
+                PanX = Math.Min(0, absoluteX - relative.X * Zoom);
+                PanY = Math.Min(0, absoluteY - relative.Y * Zoom);
+            }
+            else
+            {
+                PanX =  absoluteX - relative.X * Zoom;
+                PanY = absoluteY - relative.Y * Zoom;
+            }
         }
 
         public void ProcessMouseMove(object sender, MouseEventArgs e)
