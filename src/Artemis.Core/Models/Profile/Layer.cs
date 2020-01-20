@@ -160,18 +160,22 @@ namespace Artemis.Core.Models.Profile
             canvas.ClipPath(Path);
 
             // Apply transformations
-            var anchor = AnchorPointProperty.CurrentValue;
             var position = PositionProperty.CurrentValue;
             var size = SizeProperty.CurrentValue;
             var rotation = RotationProperty.CurrentValue;
-            // Scale the anchor and make it originate from the center of the untranslated layer shape
-            anchor.X = anchor.X * AbsoluteRectangle.Width + LayerShape.RenderRectangle.MidX;
-            anchor.Y = anchor.Y * AbsoluteRectangle.Height + LayerShape.RenderRectangle.MidY;
 
-            canvas.Translate(position.X * AbsoluteRectangle.Width, position.Y * AbsoluteRectangle.Height);
+            var anchor = GetLayerAnchor(true);
+            var relativeAnchor = GetLayerAnchor(false);
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = position.X * Rectangle.Width - LayerShape.RenderRectangle.Width / 2 - relativeAnchor.X;
+            var y = position.Y * Rectangle.Height - LayerShape.RenderRectangle.Height / 2 - relativeAnchor.Y;
+
+
             canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
             canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
-            
+            canvas.Translate(x, y);
+
             // Placeholder
             if (LayerShape?.RenderPath != null)
             {
@@ -190,6 +194,22 @@ namespace Artemis.Core.Models.Profile
 
             LayerBrush?.Render(canvas);
             canvas.Restore();
+        }
+
+        private SKPoint GetLayerAnchor(bool absolute)
+        {
+            if (!absolute)
+            {
+                var anchor = AnchorPointProperty.CurrentValue;
+                anchor.X = anchor.X * Rectangle.Width;
+                anchor.Y = anchor.Y * Rectangle.Height;
+                return new SKPoint(anchor.X, anchor.Y);
+            }
+
+            var position = PositionProperty.CurrentValue;
+            position.X = position.X * Rectangle.Width;
+            position.Y = position.Y * Rectangle.Height;
+            return new SKPoint(position.X + LayerShape.RenderRectangle.Left, position.Y + LayerShape.RenderRectangle.Top);
         }
 
         internal override void ApplyToEntity()

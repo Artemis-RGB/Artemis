@@ -58,10 +58,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 return SKRect.Empty;
 
             return SKRect.Create(
-                Layer.AbsoluteRectangle.Left + Layer.AbsoluteRectangle.Width * ScaledRectangle.Left,
-                Layer.AbsoluteRectangle.Top + Layer.AbsoluteRectangle.Height * ScaledRectangle.Top,
-                Layer.AbsoluteRectangle.Width * ScaledRectangle.Width,
-                Layer.AbsoluteRectangle.Height * ScaledRectangle.Height
+                Layer.Rectangle.Left + Layer.Rectangle.Width * ScaledRectangle.Left,
+                Layer.Rectangle.Top + Layer.Rectangle.Height * ScaledRectangle.Top,
+                Layer.Rectangle.Width * ScaledRectangle.Width,
+                Layer.Rectangle.Height * ScaledRectangle.Height
             );
         }
 
@@ -75,8 +75,8 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             }
 
             Layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
-                100f / Layer.AbsoluteRectangle.Width * (anchor.X - Layer.AbsoluteRectangle.Left - Layer.PositionProperty.CurrentValue.X) / 100f,
-                100f / Layer.AbsoluteRectangle.Height * (anchor.Y - Layer.AbsoluteRectangle.Top - Layer.PositionProperty.CurrentValue.Y) / 100f
+                100f / Layer.Rectangle.Width * (anchor.X - Layer.Rectangle.Left - Layer.PositionProperty.CurrentValue.X) / 100f,
+                100f / Layer.Rectangle.Height * (anchor.Y - Layer.Rectangle.Top - Layer.PositionProperty.CurrentValue.Y) / 100f
             ), time);
             CalculateRenderProperties();
         }
@@ -87,8 +87,8 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 return SKPoint.Empty;
             
             return new SKPoint(
-                Layer.AbsoluteRectangle.Left + Layer.AbsoluteRectangle.Width * (Layer.AnchorPointProperty.CurrentValue.X + Layer.PositionProperty.CurrentValue.X),
-                Layer.AbsoluteRectangle.Top + Layer.AbsoluteRectangle.Height * (Layer.AnchorPointProperty.CurrentValue.Y + Layer.PositionProperty.CurrentValue.Y)
+                Layer.Rectangle.Left + Layer.Rectangle.Width * (Layer.AnchorPointProperty.CurrentValue.X + Layer.PositionProperty.CurrentValue.X),
+                Layer.Rectangle.Top + Layer.Rectangle.Height * (Layer.AnchorPointProperty.CurrentValue.Y + Layer.PositionProperty.CurrentValue.Y)
             );
         }
     }

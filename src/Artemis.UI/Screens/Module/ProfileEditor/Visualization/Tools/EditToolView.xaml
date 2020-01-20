@@ -5,12 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:EditToolViewModel}}">
     <Canvas UseLayoutRounding="False">
-        <Canvas >
+        <Canvas>
             <!-- The part of the layer's shape that is inside the layer -->
             <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
                   Fill="Transparent"
@@ -20,8 +21,7 @@
                   Cursor="Hand"
                   MouseDown="{s:Action ShapeEditMouseDown}"
                   MouseUp="{s:Action ShapeEditMouseUp}"
-                  MouseMove="{s:Action Move}">
-            </Path>
+                  MouseMove="{s:Action Move}" />
 
             <!-- Mutation points -->
             <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopLeft.X}" Canvas.Top="{Binding TopLeft.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
@@ -34,11 +34,25 @@
             <Rectangle Width="4" Height="4" Canvas.Left="{Binding LeftCenter.X}" Canvas.Top="{Binding LeftCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
 
             <!-- Anchor point -->
+            <materialDesign:PackIcon Kind="Crosshairs"
+                                     Width="8"
+                                     Height="8"
+                                     Foreground="{DynamicResource SecondaryAccentBrush}"
+                                     Canvas.Left="{Binding ShapeAnchor.X}"
+                                     Canvas.Top="{Binding ShapeAnchor.Y}"
+                                     Margin="-4,-4,0,0" />
             <Ellipse MouseDown="{s:Action AnchorEditMouseDown}"
                      MouseUp="{s:Action ShapeEditMouseUp}"
                      MouseMove="{s:Action AnchorMove}"
-                     Width="6" Height="6" Fill="{DynamicResource SecondaryAccentBrush}" Canvas.Left="{Binding ShapeAnchor.X}" Canvas.Top="{Binding ShapeAnchor.Y}" Margin="-3,-3,0,0"
-                     Cursor="SizeAll" />
+                     Width="8"
+                     Height="8"
+                     Fill="Transparent"
+                     Canvas.Left="{Binding ShapeAnchor.X}"
+                     Canvas.Top="{Binding ShapeAnchor.Y}"
+                     Margin="-4,-4,0,0"
+                     Cursor="SizeAll">
+            </Ellipse>
+
         </Canvas>
         <Canvas>
             <Canvas.RenderTransform>
@@ -48,45 +62,45 @@
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action TopLeftRotate}"
-                       Width="15" Height="15" 
+                       Width="15" Height="15"
                        Canvas.Left="{Binding ShapeRectangle.Left}"
-                       Canvas.Top="{Binding ShapeRectangle.Top}" 
-                       Fill="Blue" 
+                       Canvas.Top="{Binding ShapeRectangle.Top}"
+                       Fill="Transparent"
                        Margin="-12,-12,0,0"
                        Cursor="/Resources/aero_rotate_tl.cur" />
             <!-- Top left resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action TopLeftResize}"
-                       Width="6" 
-                       Height="6" 
-                       Canvas.Left="{Binding ShapeRectangle.Left}" 
-                       Canvas.Top="{Binding ShapeRectangle.Top}" 
-                       Fill="Red" 
-                       Margin="-3,-3,0,0" 
+                       Width="6"
+                       Height="6"
+                       Canvas.Left="{Binding ShapeRectangle.Left}"
+                       Canvas.Top="{Binding ShapeRectangle.Top}"
+                       Fill="Transparent"
+                       Margin="-3,-3,0,0"
                        Cursor="SizeNWSE" />
-           
+
             <!-- Top center resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action TopCenterResize}"
-                       Width="10" 
-                       Height="10" 
+                       Width="10"
+                       Height="10"
                        Canvas.Left="{Binding ShapeRectangle.MidX}"
-                       Canvas.Top="{Binding ShapeRectangle.Top}" 
-                       Fill="Red" 
-                       Margin="-5,-5,0,0" 
+                       Canvas.Top="{Binding ShapeRectangle.Top}"
+                       Fill="Transparent"
+                       Margin="-5,-5,0,0"
                        Cursor="SizeNS" />
 
             <!-- Top right rotate handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action TopRightRotate}"
-                       Width="15" 
-                       Height="15" 
-                       Canvas.Left="{Binding ShapeRectangle.Right}" 
-                       Canvas.Top="{Binding ShapeRectangle.Top}" 
-                       Fill="Blue"
+                       Width="15"
+                       Height="15"
+                       Canvas.Left="{Binding ShapeRectangle.Right}"
+                       Canvas.Top="{Binding ShapeRectangle.Top}"
+                       Fill="Transparent"
                        Margin="-3,-12,0,0"
                        Cursor="/Resources/aero_rotate_tr.cur" />
             <!-- Top right resize handle -->
@@ -95,62 +109,62 @@
                        MouseMove="{s:Action TopRightResize}"
                        Width="6"
                        Height="6"
-                       Canvas.Left="{Binding ShapeRectangle.Right}" 
-                       Canvas.Top="{Binding ShapeRectangle.Top}" 
-                       Fill="Red" 
-                       Margin="-3,-3,0,0" 
+                       Canvas.Left="{Binding ShapeRectangle.Right}"
+                       Canvas.Top="{Binding ShapeRectangle.Top}"
+                       Fill="Transparent"
+                       Margin="-3,-3,0,0"
                        Cursor="SizeNESW" />
 
-          <!-- Center right resize handle -->
+            <!-- Center right resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action CenterRightResize}"
-                       Width="10" 
-                       Height="10" 
-                       Canvas.Left="{Binding ShapeRectangle.Right}" 
-                       Canvas.Top="{Binding ShapeRectangle.MidY}" 
-                       Fill="Red" 
+                       Width="10"
+                       Height="10"
+                       Canvas.Left="{Binding ShapeRectangle.Right}"
+                       Canvas.Top="{Binding ShapeRectangle.MidY}"
+                       Fill="Transparent"
                        Margin="-5,-5,0,0"
                        Cursor="SizeWE" />
 
-            
+
             <!-- Bottom right rotate handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action BottomRightRotate}"
                        Width="15"
                        Height="15"
-                       Canvas.Left="{Binding ShapeRectangle.Right}" 
-                       Canvas.Top="{Binding ShapeRectangle.Bottom}" 
-                       Fill="Blue" 
+                       Canvas.Left="{Binding ShapeRectangle.Right}"
+                       Canvas.Top="{Binding ShapeRectangle.Bottom}"
+                       Fill="Transparent"
                        Margin="-3,-3,0,0"
                        Cursor="/Resources/aero_rotate_br.cur" />
             <!-- Bottom right resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action BottomRightResize}"
-                       Width="6" 
-                       Height="6" 
-                       Canvas.Left="{Binding ShapeRectangle.Right}" 
-                       Canvas.Top="{Binding ShapeRectangle.Bottom}" 
-                       Fill="Red" 
-                       Margin="-3,-3,0,0" 
+                       Width="6"
+                       Height="6"
+                       Canvas.Left="{Binding ShapeRectangle.Right}"
+                       Canvas.Top="{Binding ShapeRectangle.Bottom}"
+                       Fill="Transparent"
+                       Margin="-3,-3,0,0"
                        Cursor="SizeNWSE" />
 
-            
+
             <!-- Bottom center resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action BottomCenterResize}"
-                       Width="10" 
+                       Width="10"
                        Height="10"
-                       Canvas.Left="{Binding ShapeRectangle.MidX}" 
+                       Canvas.Left="{Binding ShapeRectangle.MidX}"
                        Canvas.Top="{Binding ShapeRectangle.Bottom}"
-                       Fill="Red" 
-                       Margin="-5,-5,0,0" 
+                       Fill="Transparent"
+                       Margin="-5,-5,0,0"
                        Cursor="SizeNS" />
 
-            
+
             <!-- Bottom left rotate handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
@@ -158,8 +172,8 @@
                        Width="15"
                        Height="15"
                        Canvas.Left="{Binding ShapeRectangle.Left}"
-                       Canvas.Top="{Binding ShapeRectangle.Bottom}" 
-                       Fill="Blue" 
+                       Canvas.Top="{Binding ShapeRectangle.Bottom}"
+                       Fill="Transparent"
                        Margin="-12,-3,0,0"
                        Cursor="/Resources/aero_rotate_bl.cur" />
             <!-- Bottom left resize handle -->
@@ -167,26 +181,26 @@
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action BottomLeftResize}"
                        Width="6"
-                       Height="6" 
-                       Canvas.Left="{Binding ShapeRectangle.Left}" 
-                       Canvas.Top="{Binding ShapeRectangle.Bottom}" 
-                       Fill="Red"
+                       Height="6"
+                       Canvas.Left="{Binding ShapeRectangle.Left}"
+                       Canvas.Top="{Binding ShapeRectangle.Bottom}"
+                       Fill="Transparent"
                        Margin="-3, -3, 0,0"
                        Cursor="SizeNESW" />
 
-            
+
             <!-- Center left resize handle -->
             <Rectangle MouseDown="{s:Action ShapeEditMouseDown}"
                        MouseUp="{s:Action ShapeEditMouseUp}"
                        MouseMove="{s:Action CenterLeftResize}"
                        Width="10"
                        Height="10"
-                       Canvas.Left="{Binding ShapeRectangle.Left}" 
-                       Canvas.Top="{Binding ShapeRectangle.MidY}" 
-                       Fill="Red" 
-                       Margin="-5,-5,0,0" 
+                       Canvas.Left="{Binding ShapeRectangle.Left}"
+                       Canvas.Top="{Binding ShapeRectangle.MidY}"
+                       Fill="Transparent"
+                       Margin="-5,-5,0,0"
                        Cursor="SizeWE" />
         </Canvas>
     </Canvas>
-    
+
 </UserControl>
