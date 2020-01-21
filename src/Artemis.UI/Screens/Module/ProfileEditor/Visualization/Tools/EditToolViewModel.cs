@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
@@ -59,7 +60,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     Execute.PostToUIThread(() =>
                     {
                         var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape));
-                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
+//                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
                         shapeGeometry.Freeze();
                         ShapeGeometry = shapeGeometry;
                         ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
@@ -102,7 +103,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             ((IInputElement) sender).CaptureMouse();
             e.Handled = true;
         }
-        
+
         public void AnchorEditMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (_isDragging)
@@ -144,19 +145,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-            var x = (float)(position.X - _dragOffset.X + _dragStartAnchor.X);
-            var y = (float)(position.Y - _dragOffset.Y + _dragStartAnchor.Y);
-            
-            // Convert the desired X and Y position to a translation
-            var scaled = _layerEditorService.GetScaledPoint(layer, new SKPoint(x, y), false);
-            var currentAnchor = layer.AnchorPointProperty.CurrentValue;
-            var currentPos = layer.PositionProperty.CurrentValue;
 
-            layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+            var start = new SKPoint(_dragStartAnchor.X, _dragStartAnchor.Y);
+            var current =  position.ToSKPoint() - _dragOffset.ToSKPoint();
+
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(new[] {start, current}, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, start.X, start.Y));
             
-            var positionOffsetX = (scaled.X - currentAnchor.X) * layer.SizeProperty.CurrentValue.Width;
-            var positionOffsetY = (scaled.Y - currentAnchor.Y) * layer.SizeProperty.CurrentValue.Height;
-            layer.PositionProperty.SetCurrentValue(new SKPoint(currentPos.X + positionOffsetX, currentPos.Y + positionOffsetY), ProfileEditorService.CurrentTime);
+            var scaled = _layerEditorService.GetScaledPoint(layer, counterRotatePath.Points[0] + counterRotatePath.Points[1], false);
+
+            var topLeft = new SKPoint(TopLeft.X, TopLeft.Y);
+            layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+            var path = _layerEditorService.GetLayerPath(layer);
+            var difference = topLeft - path.Points[0];
+            var scaledDifference = _layerEditorService.GetScaledPoint(layer, difference, false);
+
+            layer.PositionProperty.SetCurrentValue(layer.PositionProperty.CurrentValue + scaledDifference, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
