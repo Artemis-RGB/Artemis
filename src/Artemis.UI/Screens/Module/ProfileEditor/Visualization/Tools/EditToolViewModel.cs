@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private bool _draggingVertically;
         private bool _isDragging;
         private Point _dragStart;
-        private Point _dragOffset;
+        private SKPoint _dragOffset;
         private SKPoint _dragStartAnchor;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     Execute.PostToUIThread(() =>
                     {
                         var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape));
-//                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
+                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
                         shapeGeometry.Freeze();
                         ShapeGeometry = shapeGeometry;
                         ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
@@ -92,7 +92,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 var dragStartPosition = GetRelativePosition(sender, e);
                 var anchor = _layerEditorService.GetLayerAnchor(layer, true);
 
-                _dragOffset = new Point(dragStartPosition.X - anchor.X - 1.45, dragStartPosition.Y - anchor.Y - 1.45);
+//                _dragOffset = new Point(dragStartPosition.X - anchor.X - 1.45, dragStartPosition.Y - anchor.Y - 1.45);
                 _dragStart = dragStartPosition;
             }
 
@@ -112,11 +112,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
                 // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
-                var dragStartPosition = GetRelativePosition(sender, e);
-
-                _dragOffset = new Point(TopLeft.X + (dragStartPosition.X - TopLeft.X), TopLeft.Y + (dragStartPosition.Y - TopLeft.Y));
+                var dragStartPosition = GetRelativePosition(sender, e).ToSKPoint();
+                _dragOffset = TopLeft + (dragStartPosition - TopLeft);
                 _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, false);
-                _dragStart = dragStartPosition;
             }
 
             _isDragging = true;
@@ -146,23 +144,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = GetRelativePosition(sender, e);
 
-            var start = new SKPoint(_dragStartAnchor.X, _dragStartAnchor.Y);
-            var current =  position.ToSKPoint() - _dragOffset.ToSKPoint();
-
-            var counterRotatePath = new SKPath();
-            counterRotatePath.AddPoly(new[] {start, current}, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, start.X, start.Y));
+            var start = _dragStartAnchor;
+            var current = position.ToSKPoint() - _dragOffset;
             
-            var scaled = _layerEditorService.GetScaledPoint(layer, counterRotatePath.Points[0] + counterRotatePath.Points[1], false);
+           
+            var transformedPoints = TransformPoints(new[] {start, current}, layer, start);
+            var scaled = _layerEditorService.GetScaledPoint(layer, transformedPoints[0] + transformedPoints[1], false);
 
-            var topLeft = new SKPoint(TopLeft.X, TopLeft.Y);
+            var before = TopLeft;
             layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
             var path = _layerEditorService.GetLayerPath(layer);
-            var difference = topLeft - path.Points[0];
+            var difference = before - path.Points[0];
             var scaledDifference = _layerEditorService.GetScaledPoint(layer, difference, false);
 
             layer.PositionProperty.SetCurrentValue(layer.PositionProperty.CurrentValue + scaledDifference, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
+        }
+
+        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        {
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(skPoints, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
+            counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+
+            return counterRotatePath.Points;
         }
 
         public void Move(object sender, MouseEventArgs e)
