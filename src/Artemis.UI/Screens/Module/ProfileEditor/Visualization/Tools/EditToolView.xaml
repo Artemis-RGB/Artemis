@@ -11,9 +11,8 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:EditToolViewModel}}">
     <Canvas UseLayoutRounding="False">
-        <Canvas>
-            <!-- The part of the layer's shape that is inside the layer -->
-            <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
+        <!-- The part of the layer's shape that is inside the layer -->
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
                   Fill="Transparent"
                   Stroke="{DynamicResource PrimaryHueMidBrush}"
                   StrokeThickness="1"
@@ -23,37 +22,16 @@
                   MouseUp="{s:Action ShapeEditMouseUp}"
                   MouseMove="{s:Action Move}" />
 
-            <!-- Mutation points -->
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopLeft.X}" Canvas.Top="{Binding TopLeft.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopRight.X}" Canvas.Top="{Binding TopRight.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomRight.X}" Canvas.Top="{Binding BottomRight.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomLeft.X}" Canvas.Top="{Binding BottomLeft.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopCenter.X}" Canvas.Top="{Binding TopCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding RightCenter.X}" Canvas.Top="{Binding RightCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomCenter.X}" Canvas.Top="{Binding BottomCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
-            <Rectangle Width="4" Height="4" Canvas.Left="{Binding LeftCenter.X}" Canvas.Top="{Binding LeftCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <!-- Mutation points -->
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopLeft.X}" Canvas.Top="{Binding TopLeft.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopRight.X}" Canvas.Top="{Binding TopRight.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomRight.X}" Canvas.Top="{Binding BottomRight.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomLeft.X}" Canvas.Top="{Binding BottomLeft.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding TopCenter.X}" Canvas.Top="{Binding TopCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding RightCenter.X}" Canvas.Top="{Binding RightCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding BottomCenter.X}" Canvas.Top="{Binding BottomCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
+        <Rectangle Width="4" Height="4" Canvas.Left="{Binding LeftCenter.X}" Canvas.Top="{Binding LeftCenter.Y}" Fill="{DynamicResource SecondaryAccentBrush}" Margin="-2,-2,0,0" />
 
-            <!-- Anchor point -->
-            <materialDesign:PackIcon Kind="Crosshairs"
-                                     Width="8"
-                                     Height="8"
-                                     Foreground="{DynamicResource SecondaryAccentBrush}"
-                                     Canvas.Left="{Binding ShapeAnchor.X}"
-                                     Canvas.Top="{Binding ShapeAnchor.Y}"
-                                     Margin="-4,-4,0,0" />
-            <Ellipse MouseDown="{s:Action AnchorEditMouseDown}"
-                     MouseUp="{s:Action ShapeEditMouseUp}"
-                     MouseMove="{s:Action AnchorMove}"
-                     Width="8"
-                     Height="8"
-                     Fill="Transparent"
-                     Canvas.Left="{Binding ShapeAnchor.X}"
-                     Canvas.Top="{Binding ShapeAnchor.Y}"
-                     Margin="-4,-4,0,0"
-                     Cursor="SizeAll">
-            </Ellipse>
-
-        </Canvas>
         <Canvas>
             <Canvas.RenderTransform>
                 <TransformGroup Children="{Binding ShapeTransformCollection}" />
@@ -201,6 +179,26 @@
                        Margin="-5,-5,0,0"
                        Cursor="SizeWE" />
         </Canvas>
+        
+        <!-- Anchor point -->
+        <materialDesign:PackIcon Kind="Crosshairs"
+                                 Width="8"
+                                 Height="8"
+                                 Foreground="{DynamicResource SecondaryAccentBrush}"
+                                 Canvas.Left="{Binding ShapeAnchor.X}"
+                                 Canvas.Top="{Binding ShapeAnchor.Y}"
+                                 Margin="-4,-4,0,0" />
+        <Ellipse MouseDown="{s:Action AnchorEditMouseDown}"
+                 MouseUp="{s:Action ShapeEditMouseUp}"
+                 MouseMove="{s:Action AnchorMove}"
+                 Width="8"
+                 Height="8"
+                 Fill="Transparent"
+                 Canvas.Left="{Binding ShapeAnchor.X}"
+                 Canvas.Top="{Binding ShapeAnchor.Y}"
+                 Margin="-4,-4,0,0"
+                 Cursor="SizeAll">
+        </Ellipse>
     </Canvas>
 
 </UserControl>
