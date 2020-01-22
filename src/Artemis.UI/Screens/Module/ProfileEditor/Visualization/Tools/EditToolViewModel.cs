@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -111,7 +112,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
-                // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
                 var dragStartPosition = GetRelativePosition(sender, e).ToSKPoint();
                 _dragOffset = TopLeft + (dragStartPosition - TopLeft);
                 _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, false);
@@ -143,14 +143,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var position = GetRelativePosition(sender, e);
-
             var start = _dragStartAnchor;
-            var current = position.ToSKPoint() - _dragOffset;
+            var current = start + (position.ToSKPoint() - _dragOffset);
             
-           
-            var transformedPoints = TransformPoints(new[] {start, current}, layer, start);
-            var scaled = _layerEditorService.GetScaledPoint(layer, transformedPoints[0] + transformedPoints[1], false);
-
+            var transformedPoints = UnTransformPoints(new[] {start, current}, layer, start);
+            var scaled = _layerEditorService.GetScaledPoint(layer, transformedPoints[1], false);
+            Debug.WriteLine("Current value before mousedown " + _dragStartAnchor);
+            Debug.WriteLine("Current value before move      " + layer.AnchorPointProperty.CurrentValue);
             var before = TopLeft;
             layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
             var path = _layerEditorService.GetLayerPath(layer);
@@ -161,12 +160,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             ProfileEditorService.UpdateProfilePreview();
         }
 
-        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
         {
             var counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
             counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+
+            return counterRotatePath.Points;
+        }
+
+        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        {
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(skPoints, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue , pivot.X, pivot.Y));
+            counterRotatePath.Transform(SKMatrix.MakeScale( layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height));
 
             return counterRotatePath.Points;
         }
