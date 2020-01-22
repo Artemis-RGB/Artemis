@@ -11,7 +11,7 @@
 
         public T Value
         {
-            get => (T) BaseValue;
+            get => BaseValue != null ? (T) BaseValue : default;
             set => BaseValue = value;
         }
     }

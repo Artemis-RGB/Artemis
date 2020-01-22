@@ -46,7 +46,7 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public SKPath GetLayerPath(Layer layer)
+        public SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation)
         {
             var layerRect = GetLayerRenderRect(layer).ToSKRect();
             var shapeRect = GetShapeRenderRect(layer.LayerShape).ToSKRect();
@@ -61,9 +61,12 @@ namespace Artemis.UI.Services
 
             var path = new SKPath();
             path.AddRect(shapeRect);
-            path.Transform(SKMatrix.MakeTranslation(x, y));
-            path.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchor.X, anchor.Y));
-            path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchor.X, anchor.Y));
+            if (includeTranslation)
+                path.Transform(SKMatrix.MakeTranslation(x, y));
+            if (includeScale)
+                path.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchor.X, anchor.Y));
+            if (includeRotation)
+                path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchor.X, anchor.Y));
 
             return path;
         }
@@ -207,8 +210,11 @@ namespace Artemis.UI.Services
         ///     Returns an absolute and scaled rectangular path for the given layer that is corrected for the current render scale.
         /// </summary>
         /// <param name="layer"></param>
+        /// <param name="includeTranslation"></param>
+        /// <param name="includeScale"></param>
+        /// <param name="includeRotation"></param>
         /// <returns></returns>
-        SKPath GetLayerPath(Layer layer);
+        SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation);
 
         void ReverseLayerPath(Layer layer, SKPath path);
 
