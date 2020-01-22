@@ -153,7 +153,7 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, SKCanvas canvas)
         {
-            if (Path == null)
+            if (Path == null || LayerShape == null)
                 return;
 
             canvas.Save();
@@ -198,6 +198,9 @@ namespace Artemis.Core.Models.Profile
 
         private SKPoint GetLayerAnchor(bool absolute)
         {
+            if (LayerShape == null)
+                return SKPoint.Empty;
+            
             if (!absolute)
             {
                 var anchor = AnchorPointProperty.CurrentValue;

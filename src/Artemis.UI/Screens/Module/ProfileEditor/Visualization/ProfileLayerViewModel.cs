@@ -90,8 +90,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             var layerGeometry = group.GetOutlinedPathGeometry();
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
-            layerGeometry.Freeze();
-            opacityGeometry.Freeze();
+            
             LayerGeometry = layerGeometry;
             OpacityGeometry = opacityGeometry;
         }
@@ -126,7 +125,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 }
                 
                 shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
-                shapeGeometry.Freeze();
                 ShapeGeometry = shapeGeometry;
             });
         }

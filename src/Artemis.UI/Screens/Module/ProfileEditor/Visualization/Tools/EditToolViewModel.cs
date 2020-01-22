@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
@@ -18,10 +17,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private readonly ILayerEditorService _layerEditorService;
         private bool _draggingHorizontally;
         private bool _draggingVertically;
-        private bool _isDragging;
-        private Point _dragStart;
         private SKPoint _dragOffset;
+        private Point _dragStart;
         private SKPoint _dragStartAnchor;
+        private bool _isDragging;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
             : base(profileViewModel, profileEditorService)
@@ -51,35 +50,34 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         private void Update()
         {
-            if (ProfileEditorService.SelectedProfileElement is Layer layer)
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer) || layer.LayerShape == null) 
+                return;
+
+            ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
+            ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
+
+            // Get a square path to use for mutation point placement
+            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
+            TopLeft = path.Points[0];
+            TopRight = path.Points[1];
+            BottomRight = path.Points[2];
+            BottomLeft = path.Points[3];
+
+            TopCenter = new SKPoint((TopLeft.X + TopRight.X) / 2, (TopLeft.Y + TopRight.Y) / 2);
+            RightCenter = new SKPoint((TopRight.X + BottomRight.X) / 2, (TopRight.Y + BottomRight.Y) / 2);
+            BottomCenter = new SKPoint((BottomLeft.X + BottomRight.X) / 2, (BottomLeft.Y + BottomRight.Y) / 2);
+            LeftCenter = new SKPoint((TopLeft.X + BottomLeft.X) / 2, (TopLeft.Y + BottomLeft.Y) / 2);
+
+            Execute.PostToUIThread(() =>
             {
-                if (layer.LayerShape != null)
+                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape))
                 {
-                    ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
-                    ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
-
-                    Execute.PostToUIThread(() =>
-                    {
-                        var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape));
-                        shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(layer);
-                        shapeGeometry.Freeze();
-                        ShapeGeometry = shapeGeometry;
-                        ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
-
-                        // Get a square path to use for mutation point placement
-                        var path = _layerEditorService.GetLayerPath(layer);
-                        TopLeft = path.Points[0];
-                        TopRight = path.Points[1];
-                        BottomRight = path.Points[2];
-                        BottomLeft = path.Points[3];
-
-                        TopCenter = new SKPoint((TopLeft.X + TopRight.X) / 2, (TopLeft.Y + TopRight.Y) / 2);
-                        RightCenter = new SKPoint((TopRight.X + BottomRight.X) / 2, (TopRight.Y + BottomRight.Y) / 2);
-                        BottomCenter = new SKPoint((BottomLeft.X + BottomRight.X) / 2, (BottomLeft.Y + BottomRight.Y) / 2);
-                        LeftCenter = new SKPoint((TopLeft.X + BottomLeft.X) / 2, (TopLeft.Y + BottomLeft.Y) / 2);
-                    });
-                }
-            }
+                    Transform = _layerEditorService.GetLayerTransformGroup(layer)
+                };
+                shapeGeometry.Freeze();
+                ShapeGeometry = shapeGeometry;
+                ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
+            });
         }
 
         public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
@@ -113,8 +111,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
                 var dragStartPosition = GetRelativePosition(sender, e).ToSKPoint();
-                _dragOffset = TopLeft + (dragStartPosition - TopLeft);
-                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, false);
+
+                // Mouse doesn't care about rotation so get the layer path without rotation
+                var path = _layerEditorService.GetLayerPath(layer, true, true, false);
+                var topLeft = path.Points[0];
+                // Measure from the top-left of the shape (without rotation)
+                _dragOffset = topLeft + (dragStartPosition - topLeft);
+                // Get the absolute layer anchor and make it relative to the unrotated shape
+                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, true) - topLeft;
+                // Ensure the anchor starts in the center of the shape it is now relative to
+                _dragStartAnchor.X -= path.Bounds.Width / 2f;
+                _dragStartAnchor.Y -= path.Bounds.Height / 2f;
             }
 
             _isDragging = true;
@@ -129,6 +136,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             ProfileEditorService.UpdateSelectedProfileElement();
 
+            _dragOffset = SKPoint.Empty;
+            _dragStartAnchor = SKPoint.Empty;
+            
             _isDragging = false;
             _draggingHorizontally = false;
             _draggingVertically = false;
@@ -141,43 +151,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
-
-            var position = GetRelativePosition(sender, e);
-            var start = _dragStartAnchor;
-            var current = start + (position.ToSKPoint() - _dragOffset);
             
-            var transformedPoints = UnTransformPoints(new[] {start, current}, layer, start);
-            var scaled = _layerEditorService.GetScaledPoint(layer, transformedPoints[1], false);
-            Debug.WriteLine("Current value before mousedown " + _dragStartAnchor);
-            Debug.WriteLine("Current value before move      " + layer.AnchorPointProperty.CurrentValue);
-            var before = TopLeft;
+            // The start anchor is relative to an unrotated version of the shape
+            var start = _dragStartAnchor;
+            // Add the current position to the start anchor to determine the new position
+            var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
+            // In order to keep the mouse movement unrotated, counter-act the active rotation
+            var countered = UnTransformPoints(new[] {start, current}, layer, start);
+            var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
+
+            // Update the anchor point, this causes the shape to move
             layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
-            var path = _layerEditorService.GetLayerPath(layer);
-            var difference = before - path.Points[0];
-            var scaledDifference = _layerEditorService.GetScaledPoint(layer, difference, false);
+            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
+            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
+            // Calculate the (scaled) difference between the old and now position
+            var difference = _layerEditorService.GetScaledPoint(layer, TopLeft - path.Points[0], false);
+            // Apply the difference so that the shape effectively stays in place
+            layer.PositionProperty.SetCurrentValue(layer.PositionProperty.CurrentValue + difference, ProfileEditorService.CurrentTime);
 
-            layer.PositionProperty.SetCurrentValue(layer.PositionProperty.CurrentValue + scaledDifference, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
-        }
-
-        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
-        {
-            var counterRotatePath = new SKPath();
-            counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
-            counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
-
-            return counterRotatePath.Points;
-        }
-
-        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
-        {
-            var counterRotatePath = new SKPath();
-            counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue , pivot.X, pivot.Y));
-            counterRotatePath.Transform(SKMatrix.MakeScale( layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height));
-
-            return counterRotatePath.Points;
         }
 
         public void Move(object sender, MouseEventArgs e)
@@ -355,6 +347,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var skRect = layer.LayerShape.RenderRectangle;
             skRect.Left = (float) Math.Min(position.X, skRect.Right);
             ApplyShapeResize(skRect);
+        }
+
+        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        {
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(skPoints, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
+            counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+
+            return counterRotatePath.Points;
         }
 
         private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
