@@ -61,6 +61,12 @@
                     <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipNext" />
                     </Button>
+                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}" 
+                                  ToolTip="Repeat after last keyframe"
+                                  IsChecked="{Binding RepeatAfterLastKeyframe}"
+                                  Focusable="False">
+                        <materialDesign:PackIcon Kind="Repeat" Height="24" Width="24" />
+                    </ToggleButton>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />

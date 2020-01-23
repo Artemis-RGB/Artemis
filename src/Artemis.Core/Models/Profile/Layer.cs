@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
@@ -148,6 +149,17 @@ namespace Artemis.Core.Models.Profile
 
         public override void Update(double deltaTime)
         {
+            foreach (var property in Properties)
+            {
+                property.KeyframeEngine?.Update(deltaTime);
+                // This is a placeholder method of repeating the animation until repeat modes are implemented
+                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null)
+                {
+                    Debug.WriteLine($"Reset {property} progress");
+                    property.KeyframeEngine.OverrideProgress(TimeSpan.Zero);
+                }
+            }
+
             LayerBrush?.Update(deltaTime);
         }
 
@@ -189,7 +201,7 @@ namespace Artemis.Core.Models.Profile
                 }
 
                 var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.RenderRectangle.MidX, LayerShape.RenderRectangle.MidY), testColors.ToArray());
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f)) });
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
             }
 
             LayerBrush?.Render(canvas);
@@ -200,7 +212,7 @@ namespace Artemis.Core.Models.Profile
         {
             if (LayerShape == null)
                 return SKPoint.Empty;
-            
+
             if (!absolute)
             {
                 var anchor = AnchorPointProperty.CurrentValue;
