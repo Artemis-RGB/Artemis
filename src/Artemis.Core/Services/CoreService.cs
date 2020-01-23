@@ -33,7 +33,7 @@ namespace Artemis.Core.Services
             _surfaceService = surfaceService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
-
+            
             _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();

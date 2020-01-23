@@ -19,28 +19,28 @@
                  Canvas.Left="{Binding TopLeft.X}"
                  Canvas.Top="{Binding TopLeft.Y}"
                  Fill="Transparent"
-                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action TopLeftRotate}" Cursor="Cross" />
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action Rotate}" Cursor="Cross" />
         <Ellipse Width="{Binding RotateSize}"
                  Height="{Binding RotateSize}"
                  Margin="{Binding RotateOffset}"
                  Canvas.Left="{Binding TopRight.X}"
                  Canvas.Top="{Binding TopRight.Y}"
                  Fill="Transparent"
-                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action TopRightRotate}" Cursor="Cross" />
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action Rotate}" Cursor="Cross" />
         <Ellipse Width="{Binding RotateSize}"
                  Height="{Binding RotateSize}"
                  Margin="{Binding RotateOffset}"
                  Canvas.Left="{Binding BottomRight.X}"
                  Canvas.Top="{Binding BottomRight.Y}"
                  Fill="Transparent"
-                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomRightRotate}" Cursor="Cross" />
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action Rotate}" Cursor="Cross" />
         <Ellipse Width="{Binding RotateSize}"
                  Height="{Binding RotateSize}"
                  Margin="{Binding RotateOffset}"
                  Canvas.Left="{Binding BottomLeft.X}"
                  Canvas.Top="{Binding BottomLeft.Y}"
                  Fill="Transparent"
-                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomLeftRotate}" Cursor="Cross" />
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action Rotate}" Cursor="Cross" />
         <!-- The part of the layer's shape that is inside the layer -->
         <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
               Fill="Transparent"

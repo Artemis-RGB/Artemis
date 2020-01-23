@@ -45,7 +45,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         public bool Playing { get; set; }
-
+        public bool RepeatAfterLastKeyframe { get; set; }
         public string FormattedCurrentTime => $"{Math.Floor(_profileEditorService.CurrentTime.TotalSeconds):00}.{_profileEditorService.CurrentTime.Milliseconds:000}";
 
         public int PixelsPerSecond
@@ -173,7 +173,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             Execute.PostToUIThread(() =>
             {
                 var newTime = _profileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
-                if (newTime > CalculateEndTime())
+                if (RepeatAfterLastKeyframe)
+                {
+                    if (newTime > CalculateEndTime().Subtract(TimeSpan.FromSeconds(10)))
+                        newTime = TimeSpan.Zero;
+                }
+                else if (newTime > CalculateEndTime())
                 {
                     newTime = CalculateEndTime();
                     Pause();
