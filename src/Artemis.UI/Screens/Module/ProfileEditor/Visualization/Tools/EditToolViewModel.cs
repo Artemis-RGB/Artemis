@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -18,8 +17,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private bool _draggingHorizontally;
         private bool _draggingVertically;
         private SKPoint _dragOffset;
-        private Point _dragStart;
+        private SKPoint _dragStart;
         private SKPoint _dragStartAnchor;
+        private SKSize _dragStartScale;
         private bool _isDragging;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
@@ -28,11 +28,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             _layerEditorService = layerEditorService;
             Cursor = Cursors.Arrow;
             Update();
+            UpdateControls();
 
+            ProfileViewModel.PanZoomViewModel.PropertyChanged += (sender, args) => UpdateControls();
             profileEditorService.SelectedProfileChanged += (sender, args) => Update();
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
+
+
+        public double ControlSize { get; set; }
+        public Thickness ControlOffset { get; set; }
+        public double OutlineThickness { get; set; }
 
         public SKRect ShapeRectangle { get; set; }
         public SKPoint ShapeAnchor { get; set; }
@@ -50,7 +57,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         private void Update()
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer) || layer.LayerShape == null) 
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer) || layer.LayerShape == null)
                 return;
 
             ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
@@ -77,31 +84,106 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 shapeGeometry.Freeze();
                 ShapeGeometry = shapeGeometry;
                 ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
+                ShapeTransformCollection.Freeze();
+            });
+        }
+
+        private void UpdateControls()
+        {
+            Execute.PostToUIThread(() =>
+            {
+                ControlSize = Math.Max(8 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
+                ControlOffset = new Thickness(ControlSize / 2 * -1, ControlSize / 2 * -1, 0, 0);
+                OutlineThickness = Math.Max(2 / ProfileViewModel.PanZoomViewModel.Zoom, 1);
             });
         }
 
         public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (_isDragging)
+            if (_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            if (ProfileEditorService.SelectedProfileElement is Layer layer)
-            {
-                // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
-                var dragStartPosition = GetRelativePosition(sender, e);
-                var anchor = _layerEditorService.GetLayerAnchor(layer, true);
+            // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
+            _dragStart = GetRelativePosition(sender, e).ToSKPoint();
+            _dragStartScale = layer.SizeProperty.CurrentValue;
 
-//                _dragOffset = new Point(dragStartPosition.X - anchor.X - 1.45, dragStartPosition.Y - anchor.Y - 1.45);
-                _dragStart = dragStartPosition;
-            }
+            // Store the original position and do a test to figure out the mouse offset
+            var originalPosition = layer.PositionProperty.CurrentValue;
+            var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
+            layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
+
+            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
+            // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
+            _dragOffset = TopLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
+            _dragStart += _dragOffset;
+
+            // Restore the position back to before the test was done
+            layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
 
             _isDragging = true;
-            _draggingHorizontally = false;
-            _draggingVertically = false;
-
             ((IInputElement) sender).CaptureMouse();
             e.Handled = true;
         }
+
+        public void ShapeEditMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ProfileEditorService.UpdateSelectedProfileElement();
+
+            _dragOffset = SKPoint.Empty;
+            _dragStartAnchor = SKPoint.Empty;
+
+            _isDragging = false;
+            _draggingHorizontally = false;
+            _draggingVertically = false;
+
+            ((IInputElement) sender).ReleaseMouseCapture();
+            e.Handled = true;
+        }
+
+        #region Position
+
+        public void Move(object sender, MouseEventArgs e)
+        {
+            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            // Allow the user to move the shape only horizontally or vertically when holding down shift
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                // Keep the X position static if dragging vertically
+                if (_draggingVertically)
+                    position.X = _dragStart.X;
+                // Keep the Y position static if dragging horizontally
+                else if (_draggingHorizontally)
+                    position.Y = _dragStart.Y;
+                // Snap into place only if the mouse moved atleast a full pixel
+                else if (Math.Abs(position.X - _dragStart.X) > 1 || Math.Abs(position.Y - _dragStart.Y) > 1)
+                {
+                    // Pick between X and Y by comparing which moved the furthers from the starting point
+                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
+                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
+                    return;
+                }
+            }
+            // Reset both states when shift is not held down
+            else
+            {
+                _draggingVertically = false;
+                _draggingHorizontally = false;
+            }
+
+            // Scale down the resulting position and make it relative
+            var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
+            // Update the position property
+            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+
+            ProfileEditorService.UpdateProfilePreview();
+        }
+
+        #endregion
+
+        #region Anchor
 
         public void AnchorEditMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -125,25 +207,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             }
 
             _isDragging = true;
-            _draggingHorizontally = false;
-            _draggingVertically = false;
-
             ((IInputElement) sender).CaptureMouse();
-            e.Handled = true;
-        }
-
-        public void ShapeEditMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ProfileEditorService.UpdateSelectedProfileElement();
-
-            _dragOffset = SKPoint.Empty;
-            _dragStartAnchor = SKPoint.Empty;
-            
-            _isDragging = false;
-            _draggingHorizontally = false;
-            _draggingVertically = false;
-
-            ((IInputElement) sender).ReleaseMouseCapture();
             e.Handled = true;
         }
 
@@ -151,13 +215,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
-            
+
             // The start anchor is relative to an unrotated version of the shape
             var start = _dragStartAnchor;
             // Add the current position to the start anchor to determine the new position
             var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
             // In order to keep the mouse movement unrotated, counter-act the active rotation
-            var countered = UnTransformPoints(new[] {start, current}, layer, start);
+            var countered = UnTransformPoints(new[] {start, current}, layer, start, true);
             var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
 
             // Update the anchor point, this causes the shape to move
@@ -172,58 +236,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             ProfileEditorService.UpdateProfilePreview();
         }
 
-        public void Move(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
+        #endregion
 
-            var position = GetRelativePosition(sender, e);
-            var x = (float) (position.X - _dragOffset.X);
-            var y = (float) (position.Y - _dragOffset.Y);
-
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                if (_draggingVertically)
-                    x = (float) (_dragStart.X - _dragOffset.X);
-                else if (_draggingHorizontally)
-                    y = (float) (_dragStart.Y - _dragOffset.Y);
-                else
-                {
-                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
-                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
-                    return;
-                }
-            }
-
-            var scaled = _layerEditorService.GetScaledPoint(layer, new SKPoint(x, y), true);
-            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void TopLeftRotate(object sender, MouseEventArgs e)
-        {
-        }
+        #region Size
 
         public void TopLeftResize(object sender, MouseEventArgs e)
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.RenderRectangle;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                // Take the greatest difference
-                // Base the smallest difference on the greatest difference, maintaining aspect ratio
-            }
-            else
-            {
-                skRect.Top = (float) Math.Min(position.Y, skRect.Bottom);
-                skRect.Left = (float) Math.Min(position.X, skRect.Bottom);
-            }
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
+            var height = VerticalResize(layer, position, ResizeOrigin.Top);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            ApplyShapeResize(skRect);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         public void TopCenterResize(object sender, MouseEventArgs e)
@@ -231,15 +258,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = layer.SizeProperty.CurrentValue.Width;
+            var height = VerticalResize(layer, position, ResizeOrigin.Top);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            var skRect = layer.LayerShape.RenderRectangle;
-            skRect.Top = (float) Math.Min(position.Y, skRect.Bottom);
-            ApplyShapeResize(skRect);
-        }
-
-        public void TopRightRotate(object sender, MouseEventArgs e)
-        {
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         public void TopRightResize(object sender, MouseEventArgs e)
@@ -247,36 +271,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.RenderRectangle;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                // Take the greatest difference
-                // Base the smallest difference on the greatest difference, maintaining aspect ratio
-            }
-            else
-            {
-                skRect.Top = (float) Math.Min(position.Y, skRect.Bottom);
-                skRect.Right = (float) Math.Max(position.X, skRect.Left);
-            }
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
+            var height = VerticalResize(layer, position, ResizeOrigin.Top);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            ApplyShapeResize(skRect);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
-        public void CenterRightResize(object sender, MouseEventArgs e)
+        public void RightCenterResize(object sender, MouseEventArgs e)
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
+            var height = layer.SizeProperty.CurrentValue.Height;
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            var skRect = layer.LayerShape.RenderRectangle;
-            skRect.Right = (float) Math.Max(position.X, skRect.Left);
-            ApplyShapeResize(skRect);
-        }
-
-        public void BottomRightRotate(object sender, MouseEventArgs e)
-        {
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         public void BottomRightResize(object sender, MouseEventArgs e)
@@ -284,20 +297,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.RenderRectangle;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                // Take the greatest difference
-                // Base the smallest difference on the greatest difference, maintaining aspect ratio
-            }
-            else
-            {
-                skRect.Bottom = (float) Math.Max(position.Y, skRect.Top);
-                skRect.Right = (float) Math.Max(position.X, skRect.Left);
-            }
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
+            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            ApplyShapeResize(skRect);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         public void BottomCenterResize(object sender, MouseEventArgs e)
@@ -305,15 +310,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = layer.SizeProperty.CurrentValue.Width;
+            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            var skRect = layer.LayerShape.RenderRectangle;
-            skRect.Bottom = (float) Math.Max(position.Y, skRect.Top);
-            ApplyShapeResize(skRect);
-        }
-
-        public void BottomLeftRotate(object sender, MouseEventArgs e)
-        {
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         public void BottomLeftResize(object sender, MouseEventArgs e)
@@ -321,40 +323,68 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
-            var skRect = layer.LayerShape.RenderRectangle;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                // Take the greatest difference
-                // Base the smallest difference on the greatest difference, maintaining aspect ratio
-            }
-            else
-            {
-                skRect.Bottom = (float) Math.Max(position.Y, skRect.Top);
-                skRect.Left = (float) Math.Min(position.X, skRect.Right);
-            }
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
+            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            ApplyShapeResize(skRect);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
-        public void CenterLeftResize(object sender, MouseEventArgs e)
+        public void LeftCenterResize(object sender, MouseEventArgs e)
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e);
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
+            var height = layer.SizeProperty.CurrentValue.Height;
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
 
-            var skRect = layer.LayerShape.RenderRectangle;
-            skRect.Left = (float) Math.Min(position.X, skRect.Right);
-            ApplyShapeResize(skRect);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
-        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        #endregion
+
+        #region Rotation
+
+        public void TopLeftRotate(object sender, MouseEventArgs e)
+        {
+        }
+
+        public void TopRightRotate(object sender, MouseEventArgs e)
+        {
+        }
+
+        public void BottomRightRotate(object sender, MouseEventArgs e)
+        {
+        }
+
+        public void BottomLeftRotate(object sender, MouseEventArgs e)
+        {
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        {
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(skPoints, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, pivot.X, pivot.Y));
+            // counterRotatePath.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height));
+
+            return counterRotatePath.Points;
+        }
+
+        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
         {
             var counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
-            counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+            if (includeScale)
+                counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
 
             return counterRotatePath.Points;
         }
@@ -365,24 +395,54 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             return mouseEventArgs.GetPosition((IInputElement) parent);
         }
 
-        private void ApplyShapeResize(SKRect newRect)
+        private float HorizontalResize(Layer layer, SKPoint position, ResizeOrigin origin)
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
+            // Apply rotation to the mouse
+            var points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
+            position = points[0];
+            var dragStart = points[1];
 
-            // TODO: Apply the translation
-            // Store the original position to create an offset for the anchor
-            // var original = layer.PositionProperty.CurrentValue;
-            // layer.LayerShape.SetFromUnscaledRectangle(newRect, ProfileEditorService.CurrentTime);
-            // var updated = layer.PositionProperty.CurrentValue;
-            // // Apply the offset to the anchor so it stays in at same spot
-            // layer.AnchorPointProperty.SetCurrentValue(new SKPoint(
-            //     layer.AnchorPointProperty.CurrentValue.X + (original.X - updated.X),
-            //     layer.AnchorPointProperty.CurrentValue.Y + (original.Y - updated.Y)
-            // ), ProfileEditorService.CurrentTime);
+            var shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
+            var scalePerPixel = 1f / shapePath.Bounds.Width;
+            var anchorDistance = origin == ResizeOrigin.Left
+                ? shapePath.Bounds.Left - ShapeAnchor.X
+                : shapePath.Bounds.Right - ShapeAnchor.X;
+            var anchorOffset = anchorDistance / shapePath.Bounds.Width;
 
-            // Update the preview
-            ProfileEditorService.UpdateProfilePreview();
+            var pixelsToAdd = (position - dragStart).X / anchorOffset;
+            var scaleToAdd = scalePerPixel * pixelsToAdd;
+
+            return Math.Max(0.001f, _dragStartScale.Width + scaleToAdd);
         }
+
+        private float VerticalResize(Layer layer, SKPoint position, ResizeOrigin origin)
+        {
+            // Apply rotation to the mouse
+            var points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
+            position = points[0];
+            var dragStart = points[1];
+
+            var shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
+            var scalePerPixel = 1f / shapePath.Bounds.Height;
+            var anchorDistance = origin == ResizeOrigin.Top
+                ? shapePath.Bounds.Top - ShapeAnchor.Y
+                : shapePath.Bounds.Bottom - ShapeAnchor.Y;
+            var anchorOffset = anchorDistance / shapePath.Bounds.Height;
+
+            var pixelsToAdd = (position - dragStart).Y / anchorOffset;
+            var scaleToAdd = scalePerPixel * pixelsToAdd;
+
+            return Math.Max(0.001f, _dragStartScale.Height + scaleToAdd);
+        }
+
+        #endregion
+    }
+
+    internal enum ResizeOrigin
+    {
+        Left,
+        Right,
+        Top,
+        Bottom
     }
 }
