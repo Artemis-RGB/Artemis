@@ -11,6 +11,36 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:EditToolViewModel}}">
     <Canvas UseLayoutRounding="False">
+
+        <!-- Render these first so that they are always behind the actual shape -->
+        <Ellipse Width="{Binding RotateSize}"
+                 Height="{Binding RotateSize}"
+                 Margin="{Binding RotateOffset}"
+                 Canvas.Left="{Binding TopLeft.X}"
+                 Canvas.Top="{Binding TopLeft.Y}"
+                 Fill="Transparent"
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action TopLeftRotate}" Cursor="Cross" />
+        <Ellipse Width="{Binding RotateSize}"
+                 Height="{Binding RotateSize}"
+                 Margin="{Binding RotateOffset}"
+                 Canvas.Left="{Binding TopRight.X}"
+                 Canvas.Top="{Binding TopRight.Y}"
+                 Fill="Transparent"
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action TopRightRotate}" Cursor="Cross" />
+        <Ellipse Width="{Binding RotateSize}"
+                 Height="{Binding RotateSize}"
+                 Margin="{Binding RotateOffset}"
+                 Canvas.Left="{Binding BottomRight.X}"
+                 Canvas.Top="{Binding BottomRight.Y}"
+                 Fill="Transparent"
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomRightRotate}" Cursor="Cross" />
+        <Ellipse Width="{Binding RotateSize}"
+                 Height="{Binding RotateSize}"
+                 Margin="{Binding RotateOffset}"
+                 Canvas.Left="{Binding BottomLeft.X}"
+                 Canvas.Top="{Binding BottomLeft.Y}"
+                 Fill="Transparent"
+                 MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomLeftRotate}" Cursor="Cross" />
         <!-- The part of the layer's shape that is inside the layer -->
         <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
               Fill="Transparent"
@@ -54,14 +84,15 @@
                    Height="{Binding ControlSize}"
                    Margin="{Binding ControlOffset}"
                    Canvas.Left="{Binding LeftCenter.X}"
-                   Canvas.Top="{Binding LeftCenter.Y}" 
+                   Canvas.Top="{Binding LeftCenter.Y}"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
                    StrokeThickness="0.5"
                    MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action LeftCenterResize}" />
+
         <Rectangle Width="{Binding ControlSize}"
                    Height="{Binding ControlSize}"
-                   Margin="{Binding ControlOffset}" 
+                   Margin="{Binding ControlOffset}"
                    Canvas.Left="{Binding TopLeft.X}"
                    Canvas.Top="{Binding TopLeft.Y}"
                    Fill="White"
@@ -71,7 +102,7 @@
         <Rectangle Width="{Binding ControlSize}"
                    Height="{Binding ControlSize}"
                    Margin="{Binding ControlOffset}"
-                   Canvas.Left="{Binding TopRight.X}" 
+                   Canvas.Left="{Binding TopRight.X}"
                    Canvas.Top="{Binding TopRight.Y}"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
@@ -80,37 +111,36 @@
         <Rectangle Width="{Binding ControlSize}"
                    Height="{Binding ControlSize}"
                    Margin="{Binding ControlOffset}"
-                   Canvas.Left="{Binding BottomRight.X}" 
-                   Canvas.Top="{Binding BottomRight.Y}" 
+                   Canvas.Left="{Binding BottomRight.X}"
+                   Canvas.Top="{Binding BottomRight.Y}"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
                    StrokeThickness="0.5"
                    MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomRightResize}" />
         <Rectangle Width="{Binding ControlSize}"
                    Height="{Binding ControlSize}"
-                   Margin="{Binding ControlOffset}" 
+                   Margin="{Binding ControlOffset}"
                    Canvas.Left="{Binding BottomLeft.X}"
-                   Canvas.Top="{Binding BottomLeft.Y}" 
+                   Canvas.Top="{Binding BottomLeft.Y}"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
                    StrokeThickness="0.5"
                    MouseDown="{s:Action ShapeEditMouseDown}" MouseUp="{s:Action ShapeEditMouseUp}" MouseMove="{s:Action BottomLeftResize}" />
-     
+
         <!-- Anchor point -->
-        
+
         <Ellipse MouseDown="{s:Action AnchorEditMouseDown}"
                  MouseUp="{s:Action ShapeEditMouseUp}"
                  MouseMove="{s:Action AnchorMove}"
                  Width="{Binding ControlSize}"
                  Height="{Binding ControlSize}"
-                 Margin="{Binding ControlOffset}" 
+                 Margin="{Binding ControlOffset}"
                  Fill="White"
                  Stroke="{DynamicResource SecondaryAccentBrush}"
                  StrokeThickness="0.5"
                  Canvas.Left="{Binding ShapeAnchor.X}"
                  Canvas.Top="{Binding ShapeAnchor.Y}"
-                 Cursor="SizeAll">
-        </Ellipse>
+                 Cursor="SizeAll" />
     </Canvas>
 
 </UserControl>

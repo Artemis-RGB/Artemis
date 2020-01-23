@@ -39,7 +39,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
 
         public double ControlSize { get; set; }
+        public double RotateSize { get; set; }
         public Thickness ControlOffset { get; set; }
+        public Thickness RotateOffset { get; set; }
         public double OutlineThickness { get; set; }
 
         public SKRect ShapeRectangle { get; set; }
@@ -91,12 +93,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         private void UpdateControls()
         {
-            Execute.PostToUIThread(() =>
-            {
-                ControlSize = Math.Max(10 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
-                ControlOffset = new Thickness(ControlSize / 2 * -1, ControlSize / 2 * -1, 0, 0);
-                OutlineThickness = Math.Max(2 / ProfileViewModel.PanZoomViewModel.Zoom, 1);
-            });
+            ControlSize = Math.Max(10 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
+            RotateSize = ControlSize * 8;
+            ControlOffset = new Thickness(ControlSize / 2 * -1, ControlSize / 2 * -1, 0, 0);
+            RotateOffset = new Thickness(RotateSize / 2 * -1, RotateSize / 2 * -1, 0, 0);
+            OutlineThickness = Math.Max(2 / ProfileViewModel.PanZoomViewModel.Zoom, 1);
         }
 
         public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
@@ -351,18 +352,26 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public void TopLeftRotate(object sender, MouseEventArgs e)
         {
+            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
         }
 
         public void TopRightRotate(object sender, MouseEventArgs e)
         {
+            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
         }
 
         public void BottomRightRotate(object sender, MouseEventArgs e)
         {
+            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
         }
 
         public void BottomLeftRotate(object sender, MouseEventArgs e)
         {
+            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
         }
 
         #endregion
