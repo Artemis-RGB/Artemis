@@ -32,6 +32,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             ProfileViewModel.PanZoomViewModel.PropertyChanged += (sender, args) => UpdateControls();
             profileEditorService.SelectedProfileChanged += (sender, args) => Update();
+            profileEditorService.SelectedProfileElementChanged += (sender, args) => Update();
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
@@ -57,7 +58,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         private void Update()
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer) || layer.LayerShape == null)
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
             ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
@@ -92,7 +93,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             Execute.PostToUIThread(() =>
             {
-                ControlSize = Math.Max(8 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
+                ControlSize = Math.Max(10 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
                 ControlOffset = new Thickness(ControlSize / 2 * -1, ControlSize / 2 * -1, 0, 0);
                 OutlineThickness = Math.Max(2 / ProfileViewModel.PanZoomViewModel.Zoom, 1);
             });

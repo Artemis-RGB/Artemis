@@ -146,7 +146,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnActivate()
         {
             LoadWorkspaceSettings();
-            Task.Run(() => LoadProfiles());
+            Task.Run(LoadProfiles);
             base.OnActivate();
         }
 
@@ -184,15 +184,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             profiles.Add(activeProfile);
 
             // Populate the UI collection
-            Profiles.Clear();
-            Profiles.AddRange(profiles.OrderBy(p => p.Name));
+            Execute.PostToUIThread(() =>
+            {
+                Profiles.Clear();
+                Profiles.AddRange(profiles.OrderBy(p => p.Name));
+                SelectedProfile = activeProfile;
 
-            SelectedProfile = activeProfile;
+                _profileEditorService.ChangeSelectedProfile(SelectedProfile);
+                if (!activeProfile.IsActivated)
+                    _profileService.ActivateProfile(Module, activeProfile);
+            });
 
-            _profileEditorService.ChangeSelectedProfile(SelectedProfile);
-
-            if (!activeProfile.IsActivated)
-                _profileService.ActivateProfile(Module, activeProfile);
         }
     }
 }
