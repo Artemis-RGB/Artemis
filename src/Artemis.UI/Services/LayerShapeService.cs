@@ -148,6 +148,9 @@ namespace Artemis.UI.Services
         /// <inheritdoc />
         public Rect GetShapeRenderRect(LayerShape layerShape)
         {
+            if (layerShape == null)
+                return Rect.Empty;
+            
             // Adjust the render rectangle for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             return new Rect(

@@ -189,7 +189,7 @@ namespace Artemis.Core.Models.Profile
                 }
 
                 var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.RenderRectangle.MidX, LayerShape.RenderRectangle.MidY), testColors.ToArray());
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader});
+                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f)) });
             }
 
             LayerBrush?.Render(canvas);
