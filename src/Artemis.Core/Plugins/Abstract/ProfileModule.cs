@@ -13,6 +13,11 @@ namespace Artemis.Core.Plugins.Abstract
         {
         }
 
+        public override void EnablePlugin()
+        {
+            throw new NotImplementedException();
+        }
+
         public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />

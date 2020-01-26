@@ -6,9 +6,18 @@ namespace Artemis.Core.Services.Interfaces
     public interface ICoreService : IArtemisService, IDisposable
     {
         /// <summary>
-        ///     Indicates wether or not the core has been initialized
+        ///     Gets whether the or not the core has been initialized
         /// </summary>
-        bool IsInitialized { get; set; }
+        bool IsInitialized { get; }
+
+        /// <summary>
+        /// Gets or sets whether modules are updated each frame by calling their Update method
+        /// </summary>
+        bool ModuleUpdatingDisabled { get; set; }
+        /// <summary>
+        /// Gets or sets whether modules are rendered each frame by calling their Render method
+        /// </summary>
+        bool ModuleRenderingDisabled { get; set; }
 
         /// <summary>
         ///     Occurs the core has finished initializing

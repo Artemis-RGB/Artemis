@@ -34,6 +34,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
                 throw new ArtemisUIException($"This input VM does not support the provided type {layerPropertyViewModel.LayerProperty.Type.Name}");
 
             LayerPropertyViewModel = layerPropertyViewModel;
+            layerPropertyViewModel.LayerProperty.ValueChanged += (sender, args) => Update();
             Update();
 
             Initialized = true;

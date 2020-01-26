@@ -135,7 +135,7 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     The rotation property of this layer range 0 - 360, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty<int> RotationProperty { get; private set; }
+        public LayerProperty<float> RotationProperty { get; private set; }
 
         /// <summary>
         ///     The opacity property of this layer range 0 - 100, also found in <see cref="Properties" />
@@ -153,11 +153,8 @@ namespace Artemis.Core.Models.Profile
             {
                 property.KeyframeEngine?.Update(deltaTime);
                 // This is a placeholder method of repeating the animation until repeat modes are implemented
-                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null)
-                {
-                    Debug.WriteLine($"Reset {property} progress");
+                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null) 
                     property.KeyframeEngine.OverrideProgress(TimeSpan.Zero);
-                }
             }
 
             LayerBrush?.Update(deltaTime);
@@ -421,7 +418,7 @@ namespace Artemis.Core.Models.Profile
             AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
             PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
             SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};
-            RotationProperty = new LayerProperty<int>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
+            RotationProperty = new LayerProperty<float>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
             OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
             transformProperty.Children.Add(AnchorPointProperty);
             transformProperty.Children.Add(PositionProperty);

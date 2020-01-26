@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
@@ -77,8 +78,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
                 return;
 
             var keyframes = LayerProperty.UntypedKeyframes.ToList();
-            Progress = Progress.Add(TimeSpan.FromMilliseconds(deltaTime));
-
+            Progress = Progress.Add(TimeSpan.FromSeconds(deltaTime));
             // The current keyframe is the last keyframe before the current time
             CurrentKeyframe = keyframes.LastOrDefault(k => k.Position <= Progress);
             // The next keyframe is the first keyframe that's after the current time
@@ -112,7 +112,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         public void OverrideProgress(TimeSpan progress)
         {
             Progress = TimeSpan.Zero;
-            Update(progress.TotalMilliseconds);
+            Update(progress.TotalSeconds);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Services.Interfaces;
 
@@ -9,12 +10,14 @@ namespace Artemis.UI.Services
 {
     public class ProfileEditorService : IProfileEditorService
     {
+        private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
 
-        public ProfileEditorService(IProfileService profileService)
+        public ProfileEditorService(ICoreService coreService, IProfileService profileService)
         {
+            _coreService = coreService;
             _profileService = profileService;
         }
 
@@ -75,8 +78,10 @@ namespace Artemis.UI.Services
 
                 // Force layer shape to redraw
                 layer.LayerShape?.CalculateRenderProperties();
-                // Update the brush with the delta (which can now be negative ^^)
-                layer.Update(delta.TotalSeconds);
+                // Manually update the layer's engine and brush
+                foreach (var property in layer.Properties) 
+                    property.KeyframeEngine?.Update(delta.TotalSeconds);
+                layer.LayerBrush?.Update(delta.TotalSeconds);
             }
 
             _lastUpdateTime = CurrentTime;
@@ -121,6 +126,16 @@ namespace Artemis.UI.Services
         public event EventHandler SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
         public event EventHandler ProfilePreviewUpdated;
+
+        public void StopRegularRender()
+        {
+            _coreService.ModuleUpdatingDisabled = true;
+        }
+
+        public void ResumeRegularRender()
+        {
+            _coreService.ModuleUpdatingDisabled = false;
+        }
 
         protected virtual void OnSelectedProfileElementUpdated()
         {

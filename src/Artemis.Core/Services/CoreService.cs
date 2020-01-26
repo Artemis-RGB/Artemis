@@ -23,17 +23,19 @@ namespace Artemis.Core.Services
         private readonly IPluginService _pluginService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
+        private readonly IProfileService _profileService;
         private List<Module> _modules;
 
-        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService)
+        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
         {
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
             _surfaceService = surfaceService;
+            _profileService = profileService;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
-            
+
             _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
@@ -41,6 +43,9 @@ namespace Artemis.Core.Services
             ConfigureJsonConvert();
             Task.Run(Initialize);
         }
+
+        public bool ModuleUpdatingDisabled { get; set; }
+        public bool ModuleRenderingDisabled { get; set; }
 
         public void Dispose()
         {
@@ -75,6 +80,8 @@ namespace Artemis.Core.Services
             else
                 _logger.Information("Initialized without an active surface entity");
 
+            await Task.Run(() => _profileService.ActivateDefaultProfiles());
+
             OnInitialized();
         }
 
@@ -82,11 +89,14 @@ namespace Artemis.Core.Services
         {
             try
             {
-                lock (_modules)
+                if (!ModuleUpdatingDisabled)
                 {
-                    // Update all active modules
-                    foreach (var module in _modules)
-                        module.Update(args.DeltaTime);
+                    lock (_modules)
+                    {
+                        // Update all active modules
+                        foreach (var module in _modules)
+                            module.Update(args.DeltaTime);
+                    }
                 }
 
                 // If there is no ready bitmap brush, skip the frame
@@ -102,10 +112,13 @@ namespace Artemis.Core.Services
                     using (var canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap))
                     {
                         canvas.Clear(new SKColor(0, 0, 0));
-                        lock (_modules)
+                        if (!ModuleRenderingDisabled)
                         {
-                            foreach (var module in _modules)
-                                module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas);
+                            lock (_modules)
+                            {
+                                foreach (var module in _modules)
+                                    module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas);
+                            }
                         }
 
                         OnFrameRendering(new FrameRenderingEventArgs(_modules, canvas, args.DeltaTime, _rgbService.Surface));
