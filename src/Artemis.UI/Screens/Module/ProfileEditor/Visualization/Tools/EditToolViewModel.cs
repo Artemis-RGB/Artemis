@@ -20,8 +20,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private SKPoint _dragOffset;
         private SKPoint _dragStart;
         private SKPoint _dragStartAnchor;
-        private double _dragStartAngle;
-        private double _dragAngleOffset;
+        private float _previousDragAngle;
         private SKSize _dragStartScale;
         private bool _isDragging;
 
@@ -111,8 +110,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
             _dragStart = GetRelativePosition(sender, e).ToSKPoint();
             _dragStartScale = layer.SizeProperty.CurrentValue;
-            _dragStartAngle = layer.RotationProperty.CurrentValue;
-            _dragAngleOffset = _dragStartAngle - CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), _dragStart);
+            _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), _dragStart);
+
             // Store the original position and do a test to figure out the mouse offset
             var originalPosition = layer.PositionProperty.CurrentValue;
             var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
@@ -358,15 +357,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
-
-            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e).ToSKPoint()) + _dragAngleOffset;
-            if (newRotation < 0)
-                newRotation = 360 + newRotation;
-
-            var current = layer.RotationProperty.CurrentValue;
             
-            layer.RotationProperty.SetCurrentValue((int) Math.Round(newRotation, MidpointRounding.AwayFromZero), ProfileEditorService.CurrentTime);
-            Debug.WriteLine($"New rotation: {layer.RotationProperty.CurrentValue} Difference: {(layer.RotationProperty.CurrentValue - current)}");
+            var previousDragAngle = _previousDragAngle;
+            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e).ToSKPoint());
+            _previousDragAngle = newRotation;
+
+            // Allow the user to rotate the shape in increments of 5
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                newRotation = (float)Math.Round(newRotation / 5f) * 5f;
+
+            var difference = newRotation - previousDragAngle;
+            if (difference < -350)
+                difference += 360;
+            else if (difference > 350)
+                difference -= 360;
+            newRotation = layer.RotationProperty.CurrentValue + difference;
+
+            // Round the end-result to increments of 5 as well, to avoid staying on an offset
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                newRotation = (float)Math.Round(newRotation / 5f) * 5f;
+            else
+                newRotation = (float)Math.Round(newRotation, 2, MidpointRounding.AwayFromZero);
+
+            Debug.WriteLine(newRotation);
+            layer.RotationProperty.SetCurrentValue(newRotation, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
@@ -459,12 +473,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             return Math.Max(0.001f, _dragStartScale.Height + scaleToAdd);
         }
 
-        private double CalculateAngle(SKPoint start, SKPoint arrival)
+        private float CalculateAngle(SKPoint start, SKPoint arrival)
         {
-            var radian = Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
-            var angle = radian * (180 / Math.PI);
-            if (angle < 0.0)
-                angle += 360.0;
+            var radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
+            var angle = radian * (180f / (float) Math.PI);
+            if (angle < 0f)
+                angle += 360f;
 
             return angle;
         }

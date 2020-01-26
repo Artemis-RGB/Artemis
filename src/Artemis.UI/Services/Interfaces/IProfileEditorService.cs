@@ -47,5 +47,8 @@ namespace Artemis.UI.Services.Interfaces
         ///     Occurs when the profile preview has been updated
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
+
+        void StopRegularRender();
+        void ResumeRegularRender();
     }
 }

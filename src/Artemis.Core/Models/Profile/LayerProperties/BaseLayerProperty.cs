@@ -222,6 +222,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
                 currentKeyframe.BaseValue = value;
             }
+
+            OnValueChanged();
         }
 
         /// <summary>

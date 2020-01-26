@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace Artemis.Core.Services.Storage
 {
     /// <summary>
-    ///     Provides access to profile storage
+    ///     Provides access to profile storage and is responsible for activating default profiles
     /// </summary>
     public class ProfileService : IProfileService
     {
@@ -35,6 +35,14 @@ namespace Artemis.Core.Services.Storage
             _pluginService.PluginLoaded += OnPluginLoaded;
         }
 
+        public void ActivateDefaultProfiles()
+        {
+            foreach (var profileModule in _pluginService.GetPluginsOfType<ProfileModule>())
+            {
+                var activeProfile = GetActiveProfile(profileModule);
+                ActivateProfile(profileModule, activeProfile);
+            }
+        }
 
         public List<Profile> GetProfiles(ProfileModule module)
         {
@@ -203,6 +211,11 @@ namespace Artemis.Core.Services.Storage
             {
                 ActiveProfilesInstantiateProfileLayerBrushes();
                 ActiveProfilesInstantiateKeyframeEngines();
+            }
+            else if (e.PluginInfo.Instance is ProfileModule profileModule)
+            {
+                var activeProfile = GetActiveProfile(profileModule);
+                ActivateProfile(profileModule, activeProfile);
             }
         }
 

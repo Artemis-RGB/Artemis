@@ -146,6 +146,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnActivate()
         {
             LoadWorkspaceSettings();
+            _profileEditorService.StopRegularRender();
             Task.Run(LoadProfiles);
             base.OnActivate();
         }
@@ -153,6 +154,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnDeactivate()
         {
             SaveWorkspaceSettings();
+            _profileEditorService.ResumeRegularRender();
             base.OnDeactivate();
         }
 
