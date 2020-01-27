@@ -230,15 +230,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
 
             // Update the anchor point, this causes the shape to move
-            layer.AnchorPointProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 5), ProfileEditorService.CurrentTime);
             // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
             var path = _layerEditorService.GetLayerPath(layer, true, true, true);
             // Calculate the (scaled) difference between the old and now position
             var difference = _layerEditorService.GetScaledPoint(layer, TopLeft - path.Points[0], false);
             // Apply the difference so that the shape effectively stays in place
-            layer.PositionProperty.SetCurrentValue(layer.PositionProperty.CurrentValue + difference, ProfileEditorService.CurrentTime);
+            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 5), ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
+        }
+
+        private SKPoint RoundPoint(SKPoint point, int decimals)
+        {
+            return new SKPoint((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
         }
 
         #endregion
@@ -357,14 +362,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
-            
+
             var previousDragAngle = _previousDragAngle;
             var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e).ToSKPoint());
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                newRotation = (float)Math.Round(newRotation / 5f) * 5f;
+                newRotation = (float) Math.Round(newRotation / 5f) * 5f;
 
             var difference = newRotation - previousDragAngle;
             if (difference < -350)
@@ -375,9 +380,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             // Round the end-result to increments of 5 as well, to avoid staying on an offset
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                newRotation = (float)Math.Round(newRotation / 5f) * 5f;
+                newRotation = (float) Math.Round(newRotation / 5f) * 5f;
             else
-                newRotation = (float)Math.Round(newRotation, 2, MidpointRounding.AwayFromZero);
+                newRotation = (float) Math.Round(newRotation, 2, MidpointRounding.AwayFromZero);
 
             Debug.WriteLine(newRotation);
             layer.RotationProperty.SetCurrentValue(newRotation, ProfileEditorService.CurrentTime);
