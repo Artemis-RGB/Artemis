@@ -169,6 +169,20 @@ namespace Artemis.UI.Services
                 layerShape.ScaledRectangle = SKRect.Empty;
                 return;
             }
+            var layerRect = GetLayerRenderRect(layerShape.Layer).ToSKRect();
+
+            // Compensate for the current value of the position transformation
+            rect.X += rect.Width / 2;
+            rect.X -= layerRect.Width * layerShape.Layer.PositionProperty.CurrentValue.X;
+            rect.X += layerRect.Width * layerShape.Layer.AnchorPointProperty.CurrentValue.X * layerShape.Layer.SizeProperty.CurrentValue.Width;
+
+            rect.Y += rect.Height / 2;
+            rect.Y -= layerRect.Height * layerShape.Layer.PositionProperty.CurrentValue.Y;
+            rect.Y += layerRect.Height * layerShape.Layer.AnchorPointProperty.CurrentValue.Y * layerShape.Layer.SizeProperty.CurrentValue.Height;
+            
+            // Compensate for the current value of the size transformation
+            rect.Height /= layerShape.Layer.SizeProperty.CurrentValue.Height;
+            rect.Width /= layerShape.Layer.SizeProperty.CurrentValue.Width;
 
             // Adjust the provided rect for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
