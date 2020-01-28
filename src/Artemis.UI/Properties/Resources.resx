@@ -145,14 +145,26 @@
   <data name="aero_rotate_bl" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\aero_rotate_bl.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="aero_rotate_bl_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_bl_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="aero_rotate_br" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\aero_rotate_br.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_rotate_br_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_br_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="aero_rotate_tl" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\aero_rotate_tl.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="aero_rotate_tl_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_tl_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="aero_rotate_tr" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\aero_rotate_tr.cur;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="aero_rotate_tr_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\aero_rotate_tr_ico.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="bow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bow.svg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
