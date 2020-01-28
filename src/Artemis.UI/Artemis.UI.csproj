@@ -224,6 +224,7 @@
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\LayerShapeService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
+    <Compile Include="Utilities\CursorRotator.cs" />
     <Compile Include="Utilities\ThemeWatcher.cs" />
     <Compile Include="Behaviors\TreeViewSelectionBehavior.cs" />
     <Compile Include="Utilities\TriggerTracing.cs" />
@@ -569,6 +570,18 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Ninject\Providers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aero_rotate_bl_ico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aero_rotate_br_ico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aero_rotate_tl_ico.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\aero_rotate_tr_ico.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

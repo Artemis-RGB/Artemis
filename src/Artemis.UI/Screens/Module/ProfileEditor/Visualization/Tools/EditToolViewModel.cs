@@ -4,8 +4,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Properties;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Utilities;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -60,6 +62,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         public SKPoint BottomCenter { get; set; }
         public SKPoint LeftCenter { get; set; }
 
+        public Cursor TopLeftRotateCursor { get; set; }
+        public Cursor TopRightRotateCursor { get; set; }
+        public Cursor BottomRightRotateCursor { get; set; }
+        public Cursor BottomLeftRotateCursor { get; set; }
+
         private void Update()
         {
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
@@ -80,6 +87,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             BottomCenter = new SKPoint((BottomLeft.X + BottomRight.X) / 2, (BottomLeft.Y + BottomRight.Y) / 2);
             LeftCenter = new SKPoint((TopLeft.X + BottomLeft.X) / 2, (TopLeft.Y + BottomLeft.Y) / 2);
 
+            TopLeftRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_tl_ico, layer.RotationProperty.CurrentValue);
+            TopRightRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_tr_ico, layer.RotationProperty.CurrentValue);
+            BottomRightRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_br_ico, layer.RotationProperty.CurrentValue);
+            BottomLeftRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_bl_ico, layer.RotationProperty.CurrentValue);
+
             Execute.PostToUIThread(() =>
             {
                 var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape))
@@ -92,7 +104,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 ShapeTransformCollection.Freeze();
             });
         }
-
+        
         private void UpdateControls()
         {
             ControlSize = Math.Max(10 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
