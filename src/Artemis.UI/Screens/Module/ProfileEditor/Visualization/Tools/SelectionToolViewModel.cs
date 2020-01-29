@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
@@ -27,8 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         }
 
         public Rect DragRectangle { get; set; }
-
-
+        
         public override void MouseUp(object sender, MouseButtonEventArgs e)
         {
             base.MouseUp(sender, e);
@@ -56,8 +56,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 var shapeSize = Rect.Empty;
                 if (layer.LayerShape != null)
                     shapeSize = _layerEditorService.GetShapeRenderRect(layer.LayerShape);
-                layer.ClearLeds();
-                layer.AddLeds(selectedLeds);
+
+                // If shift is held down, add to the selection instead of replacing it
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                    layer.AddLeds(selectedLeds.Except(layer.Leds));
+                else
+                {
+                    layer.ClearLeds();
+                    layer.AddLeds(selectedLeds);
+                }
+
                 // Restore the saved size
                 if (layer.LayerShape != null)
                     _layerEditorService.SetShapeRenderRect(layer.LayerShape, shapeSize);

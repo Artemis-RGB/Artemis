@@ -1,0 +1,123 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls.LayerShapeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Canvas UseLayoutRounding="False">
+        <!-- Render these first so that they are always behind the actual shape -->
+        <Ellipse x:Name="RotateTopLeft"
+                 Fill="Transparent"
+                 Cursor="/Resources/aero_rotate.cur"
+                 MouseDown="RotationOnMouseDown"
+                 MouseUp="RotationOnMouseUp"
+                 MouseMove="RotationOnMouseMove"/>
+        <Ellipse x:Name="RotateTopRight"
+                 Fill="Transparent"
+                 Cursor="/Resources/aero_rotate.cur"
+                 MouseDown="RotationOnMouseDown"
+                 MouseUp="RotationOnMouseUp"
+                 MouseMove="RotationOnMouseMove"/>
+        <Ellipse x:Name="RotateBottomRight"
+                 Fill="Transparent"
+                 Cursor="/Resources/aero_rotate.cur"
+                 MouseDown="RotationOnMouseDown"
+                 MouseUp="RotationOnMouseUp"
+                 MouseMove="RotationOnMouseMove"/>
+        <Ellipse x:Name="RotateBottomLeft"
+                 Fill="Transparent"
+                 Cursor="/Resources/aero_rotate.cur"
+                 MouseDown="RotationOnMouseDown"
+                 MouseUp="RotationOnMouseUp"
+                 MouseMove="RotationOnMouseMove"/>
+        <!-- The part of the layer's shape that is inside the layer -->
+        <Path x:Name="LayerShapeOutline"
+              Data="{Binding ShapeGeometry, Mode=OneWay}"
+              Fill="Transparent"
+              Stroke="{DynamicResource PrimaryHueMidBrush}"
+              StrokeThickness="{Binding OutlineThickness}"
+              StrokeDashArray="2 2"
+              Cursor="/Resources/aero_drag.cur"
+              MouseDown="MoveOnMouseDown"
+              MouseUp="MoveOnMouseUp"
+              MouseMove="MoveOnMouseMove" />
+
+        <!-- Mutation points -->
+        <Rectangle x:Name="ResizeTopCenter"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove"/>
+        <Rectangle x:Name="ResizeRightCenter"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+        <Rectangle x:Name="ResizeBottomCenter"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+        <Rectangle x:Name="ResizeLeftCenter"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+
+        <Rectangle x:Name="ResizeTopLeft"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+        <Rectangle x:Name="ResizeTopRight"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+        <Rectangle x:Name="ResizeBottomRight"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+        <Rectangle x:Name="ResizeBottomLeft"
+                   Fill="White"
+                   Stroke="{DynamicResource SecondaryAccentBrush}"
+                   StrokeThickness="0.5"
+                   Cursor="Hand"
+                   MouseDown="ResizeOnMouseDown"
+                   MouseUp="ResizeOnMouseUp"
+                   MouseMove="ResizeOnMouseMove" />
+
+        <!-- Anchor point -->
+        <Ellipse x:Name="AnchorPoint"
+                 Fill="White"
+                 Stroke="{DynamicResource SecondaryAccentBrush}"
+                 StrokeThickness="0.5"
+                 Cursor="SizeAll"
+                 MouseDown="MoveOnMouseDown"
+                 MouseUp="MoveOnMouseUp"
+                 MouseMove="MoveOnMouseMove"/>
+    </Canvas>
+</UserControl>

@@ -26,10 +26,10 @@ namespace Artemis.UI.Services
             // Adjust the render rectangle for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             return new Rect(
-                layer.AbsoluteRectangle.Left / renderScale * 1,
-                layer.AbsoluteRectangle.Top / renderScale * 1,
-                Math.Max(0, layer.AbsoluteRectangle.Width / renderScale * 1),
-                Math.Max(0, layer.AbsoluteRectangle.Height / renderScale * 1)
+                layer.Rectangle.Left / renderScale * 1,
+                layer.Rectangle.Top / renderScale * 1,
+                Math.Max(0, layer.Rectangle.Width / renderScale * 1),
+                Math.Max(0, layer.Rectangle.Height / renderScale * 1)
             );
         }
 
@@ -38,10 +38,10 @@ namespace Artemis.UI.Services
             // Adjust the render rectangle for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             return new Rect(
-                layer.Rectangle.Left / renderScale * 1,
-                layer.Rectangle.Top / renderScale * 1,
-                Math.Max(0, layer.Rectangle.Width / renderScale * 1),
-                Math.Max(0, layer.Rectangle.Height / renderScale * 1)
+                layer.AbsoluteRectangle.Left / renderScale * 1,
+                layer.AbsoluteRectangle.Top / renderScale * 1,
+                Math.Max(0, layer.AbsoluteRectangle.Width / renderScale * 1),
+                Math.Max(0, layer.AbsoluteRectangle.Height / renderScale * 1)
             );
         }
 
@@ -187,10 +187,10 @@ namespace Artemis.UI.Services
             // Adjust the provided rect for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             layerShape.ScaledRectangle = SKRect.Create(
-                100f / layerShape.Layer.Rectangle.Width * ((float) (rect.Left * renderScale) - layerShape.Layer.Rectangle.Left) / 100f,
-                100f / layerShape.Layer.Rectangle.Height * ((float) (rect.Top * renderScale) - layerShape.Layer.Rectangle.Top) / 100f,
-                100f / layerShape.Layer.Rectangle.Width * (float) (rect.Width * renderScale) / 100f,
-                100f / layerShape.Layer.Rectangle.Height * (float) (rect.Height * renderScale) / 100f
+                100f / layerShape.Layer.AbsoluteRectangle.Width * ((float) (rect.Left * renderScale) - layerShape.Layer.AbsoluteRectangle.Left) / 100f,
+                100f / layerShape.Layer.AbsoluteRectangle.Height * ((float) (rect.Top * renderScale) - layerShape.Layer.AbsoluteRectangle.Top) / 100f,
+                100f / layerShape.Layer.AbsoluteRectangle.Width * (float) (rect.Width * renderScale) / 100f,
+                100f / layerShape.Layer.AbsoluteRectangle.Height * (float) (rect.Height * renderScale) / 100f
             );
             layerShape.CalculateRenderProperties();
         }
@@ -202,14 +202,14 @@ namespace Artemis.UI.Services
             if (absolute)
             {
                 return  new SKPoint(
-                    100f / layer.Rectangle.Width * ((float) (point.X * renderScale) - layer.Rectangle.Left) / 100f,
-                    100f / layer.Rectangle.Height * ((float) (point.Y * renderScale) - layer.Rectangle.Top) / 100f
+                    100f / layer.AbsoluteRectangle.Width * ((float) (point.X * renderScale) - layer.AbsoluteRectangle.Left) / 100f,
+                    100f / layer.AbsoluteRectangle.Height * ((float) (point.Y * renderScale) - layer.AbsoluteRectangle.Top) / 100f
                 );
             }
 
             return new SKPoint(
-                100f / layer.Rectangle.Width * (float)(point.X * renderScale) / 100f,
-                100f / layer.Rectangle.Height * (float)(point.Y * renderScale) / 100f
+                100f / layer.AbsoluteRectangle.Width * (float)(point.X * renderScale) / 100f,
+                100f / layer.AbsoluteRectangle.Height * (float)(point.Y * renderScale) / 100f
             );
         }
     }
@@ -217,11 +217,18 @@ namespace Artemis.UI.Services
     public interface ILayerEditorService : IArtemisUIService
     {
         /// <summary>
-        ///     Returns an absolute and scaled rectangle for the given layer that is corrected for the current render scale.
+        ///     Returns an relative and scaled rectangle for the given layer that is corrected for the current render scale.
         /// </summary>
         /// <param name="layer"></param>
         /// <returns></returns>
         Rect GetLayerRenderRect(Layer layer);
+
+        /// <summary>
+        ///     Returns an absolute and scaled rectangle for the given layer that is corrected for the current render scale.
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        Rect GetLayerRect(Layer layer);
 
         /// <summary>
         ///     Returns an absolute and scaled rectangular path for the given layer that is corrected for the current render scale.

@@ -263,22 +263,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 3:
-                    ActiveToolViewModel = new SelectionAddToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
-                case 4:
-                    ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);
-                    break;
-                case 6:
+                case 5:
                     ActiveToolViewModel = new EllipseToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
-                case 7:
+                case 6:
                     ActiveToolViewModel = new RectangleToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
-                case 8:
+                case 7:
                     ActiveToolViewModel = new PolygonToolViewModel(this, _profileEditorService);
                     break;
-                case 9:
-                    ActiveToolViewModel = new FillToolViewModel(this, _profileEditorService);
+                case 8:
+                    ActiveToolViewModel = new FillToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
             }
 

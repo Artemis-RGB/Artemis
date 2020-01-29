@@ -59,14 +59,11 @@
                     <ListBoxItem ToolTip="Edit shape in layer">
                         <materialDesign:PackIcon Kind="Edit" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Change layer selection">
+                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection)">
                         <materialDesign:PackIcon Kind="SelectionDrag" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Add to layer selection">
-                        <materialDesign:PackIcon Kind="AddToPhotos" />
-                    </ListBoxItem>
                     <ListBoxItem ToolTip="Remove from layer selection">
-                        <materialDesign:PackIcon Kind="MinusBoxMultiple" />
+                        <materialDesign:PackIcon Kind="SelectOff" />
                     </ListBoxItem>
                     <Separator />
                     <ListBoxItem ToolTip="Create round shape in layer">

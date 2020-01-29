@@ -81,16 +81,16 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
 
         /// <summary>
-        ///     A rectangle relative to the surface that contains all the LEDs in this layer.
-        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
-        /// </summary>
-        public SKRect Rectangle { get; private set; }
-
-        /// <summary>
-        ///     A zero-based absolute rectangle that contains all the LEDs in this layer.
+        ///     An absolute rectangle to the surface that contains all the LEDs in this layer.
         ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
         /// </summary>
         public SKRect AbsoluteRectangle { get; private set; }
+
+        /// <summary>
+        ///     A zero-based rectangle that contains all the LEDs in this layer.
+        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
+        /// </summary>
+        public SKRect Rectangle { get; private set; }
 
         /// <summary>
         ///     A path containing all the LEDs this layer is applied to.
@@ -177,8 +177,8 @@ namespace Artemis.Core.Models.Profile
             var relativeAnchor = GetLayerAnchor(false);
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = position.X * Rectangle.Width - LayerShape.RenderRectangle.Width / 2 - relativeAnchor.X;
-            var y = position.Y * Rectangle.Height - LayerShape.RenderRectangle.Height / 2 - relativeAnchor.Y;
+            var x = position.X * AbsoluteRectangle.Width - LayerShape.RenderRectangle.Width / 2 - relativeAnchor.X;
+            var y = position.Y * AbsoluteRectangle.Height - LayerShape.RenderRectangle.Height / 2 - relativeAnchor.Y;
 
 
             canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
@@ -213,14 +213,14 @@ namespace Artemis.Core.Models.Profile
             if (!absolute)
             {
                 var anchor = AnchorPointProperty.CurrentValue;
-                anchor.X = anchor.X * Rectangle.Width;
-                anchor.Y = anchor.Y * Rectangle.Height;
+                anchor.X = anchor.X * AbsoluteRectangle.Width;
+                anchor.Y = anchor.Y * AbsoluteRectangle.Height;
                 return new SKPoint(anchor.X, anchor.Y);
             }
 
             var position = PositionProperty.CurrentValue;
-            position.X = position.X * Rectangle.Width;
-            position.Y = position.Y * Rectangle.Height;
+            position.X = position.X * AbsoluteRectangle.Width;
+            position.Y = position.Y * AbsoluteRectangle.Height;
             return new SKPoint(position.X + LayerShape.RenderRectangle.Left, position.Y + LayerShape.RenderRectangle.Top);
         }
 
@@ -326,8 +326,8 @@ namespace Artemis.Core.Models.Profile
         {
             if (!Leds.Any())
             {
-                Rectangle = SKRect.Empty;
                 AbsoluteRectangle = SKRect.Empty;
+                Rectangle = SKRect.Empty;
                 Path = new SKPath();
                 OnRenderPropertiesUpdated();
                 return;
@@ -339,8 +339,8 @@ namespace Artemis.Core.Models.Profile
             var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
             var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
 
-            Rectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
-            AbsoluteRectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
+            AbsoluteRectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
+            Rectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
 
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var artemisLed in Leds)

@@ -1,17 +1,23 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.UI.Properties;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class FillToolViewModel : VisualizationToolViewModel
     {
-        public FillToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        private readonly ILayerEditorService _layerEditorService;
+
+        public FillToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService) : base(profileViewModel, profileEditorService)
         {
+            _layerEditorService = layerEditorService;
             using (var stream = new MemoryStream(Resources.aero_fill))
             {
                 Cursor = new Cursor(stream);
@@ -34,6 +40,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (layer == null)
                 return;
             layer.LayerShape = new Fill(layer);
+
+            // Apply the full layer rectangle
+            _layerEditorService.SetShapeRenderRect(layer.LayerShape, _layerEditorService.GetLayerRect(layer));
             ProfileEditorService.UpdateSelectedProfileElement();
         }
     }

@@ -90,7 +90,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             var layerGeometry = group.GetOutlinedPathGeometry();
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
-            
+
             LayerGeometry = layerGeometry;
             OpacityGeometry = opacityGeometry;
         }
@@ -113,7 +113,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         shapeGeometry = new EllipseGeometry(rect);
                         break;
                     case Fill _:
-                        shapeGeometry = LayerGeometry;
+                        // Shape originates from the center so compensate the geometry for that, create a copy
+                        shapeGeometry = LayerGeometry.Clone();
+                        // Add a transformation
+                        shapeGeometry.Transform = new TranslateTransform(rect.Left - shapeGeometry.Bounds.Left, rect.Top - shapeGeometry.Bounds.Top);
+                        // Apply the transformation so that it won't be overridden
+                        shapeGeometry = shapeGeometry.GetOutlinedPathGeometry();
                         break;
                     case Polygon _:
                         // TODO
@@ -123,7 +128,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         shapeGeometry = new RectangleGeometry(rect);
                         break;
                 }
-                
+
                 shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
                 ShapeGeometry = shapeGeometry;
             });
