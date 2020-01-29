@@ -155,8 +155,14 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
     <Compile Include="Events\MainWindowKeyEvent.cs" />
+    <Compile Include="Events\ShapeControlEventArgs.cs" />
     <Compile Include="Events\WindowsThemeEventArgs.cs" />
     <Compile Include="Extensions\TreeViewItemExtensions.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Screens\GradientEditor\GradientEditorViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.xaml.cs">
       <DependentUpon>LayerPropertiesView.xaml</DependentUpon>
@@ -199,10 +205,6 @@
       <DependentUpon>RectangleToolView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.xaml.cs">
-      <DependentUpon>SelectionAddToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.xaml.cs">
       <DependentUpon>SelectionRemoveToolView.xaml</DependentUpon>
     </Compile>
@@ -216,6 +218,9 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\VisualizationToolViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.xaml.cs">
+      <DependentUpon>LayerShapeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Screens\Settings\Tabs\Plugins\PluginSettingsViewModel.cs" />
     <Compile Include="Screens\Sidebar\SidebarView.xaml.cs">
       <DependentUpon>SidebarView.xaml</DependentUpon>
@@ -224,7 +229,6 @@
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\LayerShapeService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />
-    <Compile Include="Utilities\CursorRotator.cs" />
     <Compile Include="Utilities\ThemeWatcher.cs" />
     <Compile Include="Behaviors\TreeViewSelectionBehavior.cs" />
     <Compile Include="Utilities\TriggerTracing.cs" />
@@ -234,11 +238,6 @@
     <Compile Include="Ninject\Factories\IViewModelFactory.cs" />
     <Compile Include="Ninject\UIModule.cs" />
     <Compile Include="Utilities\SizeObserver.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileCreateViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.xaml.cs">
       <DependentUpon>ProfileElementRenameView.xaml</DependentUpon>
@@ -390,10 +389,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -403,6 +398,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -572,16 +571,7 @@
     <Folder Include="Ninject\Providers\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate_bl_ico.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\aero_rotate_br_ico.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\aero_rotate_tl_ico.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\aero_rotate_tr_ico.ico" />
+    <Resource Include="Resources\aero_rotate.cur" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

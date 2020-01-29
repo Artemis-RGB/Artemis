@@ -3,9 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools"
-             xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -31,21 +28,6 @@
         </Style>
     </UserControl.Resources>
     <Canvas Background="Transparent" Width="50" Height="50">
-
-        <Canvas.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Ellipse action 1" Command="{s:Action CreateLayer}" CommandParameter="{Binding}">
-                    <MenuItem.Icon>
-                        <materialDesign:PackIcon Kind="LayersPlus" />
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="Ellipse action 2" Command="{s:Action ApplyToLayer}" CommandParameter="{Binding}">
-                    <MenuItem.Icon>
-                        <materialDesign:PackIcon Kind="Selection" />
-                    </MenuItem.Icon>
-                </MenuItem>
-            </ContextMenu>
-        </Canvas.ContextMenu>
         <Rectangle Style="{StaticResource ShowIfMouseDown}"
                    Width="{Binding DragRectangle.Width}"
                    Height="{Binding DragRectangle.Height}"

@@ -143,20 +143,20 @@ namespace Artemis.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] aero_rotate_bl {
+        internal static byte[] aero_rotate {
             get {
-                object obj = ResourceManager.GetObject("aero_rotate_bl", resourceCulture);
+                object obj = ResourceManager.GetObject("aero_rotate", resourceCulture);
                 return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Icon aero_rotate_bl_ico {
+        internal static byte[] aero_rotate_bl {
             get {
-                object obj = ResourceManager.GetObject("aero_rotate_bl_ico", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("aero_rotate_bl", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -171,16 +171,6 @@ namespace Artemis.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon aero_rotate_br_ico {
-            get {
-                object obj = ResourceManager.GetObject("aero_rotate_br_ico", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] aero_rotate_tl {
@@ -191,32 +181,12 @@ namespace Artemis.UI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon aero_rotate_tl_ico {
-            get {
-                object obj = ResourceManager.GetObject("aero_rotate_tl_ico", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] aero_rotate_tr {
             get {
                 object obj = ResourceManager.GetObject("aero_rotate_tr", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon aero_rotate_tr_ico {
-            get {
-                object obj = ResourceManager.GetObject("aero_rotate_tr_ico", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         

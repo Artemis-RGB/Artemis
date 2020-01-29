@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
-using Artemis.UI.Properties;
+using Artemis.UI.Events;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Utilities;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -17,14 +15,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
     public class EditToolViewModel : VisualizationToolViewModel
     {
         private readonly ILayerEditorService _layerEditorService;
-        private bool _draggingHorizontally;
-        private bool _draggingVertically;
         private SKPoint _dragOffset;
         private SKPoint _dragStart;
-        private SKPoint _dragStartAnchor;
-        private float _previousDragAngle;
         private SKSize _dragStartScale;
-        private bool _isDragging;
+        private SKPoint _topLeft;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
             : base(profileViewModel, profileEditorService)
@@ -32,66 +26,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             _layerEditorService = layerEditorService;
             Cursor = Cursors.Arrow;
             Update();
-            UpdateControls();
 
-            ProfileViewModel.PanZoomViewModel.PropertyChanged += (sender, args) => UpdateControls();
             profileEditorService.SelectedProfileChanged += (sender, args) => Update();
             profileEditorService.SelectedProfileElementChanged += (sender, args) => Update();
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
-
-        public double ControlSize { get; set; }
-        public double RotateSize { get; set; }
-        public Thickness ControlOffset { get; set; }
-        public Thickness RotateOffset { get; set; }
-        public double OutlineThickness { get; set; }
-
-        public SKRect ShapeRectangle { get; set; }
+        public SKPath ShapePath { get; set; }
         public SKPoint ShapeAnchor { get; set; }
         public RectangleGeometry ShapeGeometry { get; set; }
-        public TransformCollection ShapeTransformCollection { get; set; }
-
-        public SKPoint TopLeft { get; set; }
-        public SKPoint TopRight { get; set; }
-        public SKPoint BottomRight { get; set; }
-        public SKPoint BottomLeft { get; set; }
-        public SKPoint TopCenter { get; set; }
-        public SKPoint RightCenter { get; set; }
-        public SKPoint BottomCenter { get; set; }
-        public SKPoint LeftCenter { get; set; }
-
-        public Cursor TopLeftRotateCursor { get; set; }
-        public Cursor TopRightRotateCursor { get; set; }
-        public Cursor BottomRightRotateCursor { get; set; }
-        public Cursor BottomLeftRotateCursor { get; set; }
 
         private void Update()
         {
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            ShapeRectangle = _layerEditorService.GetShapeRenderRect(layer.LayerShape).ToSKRect();
+            ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
             ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
-
-            // Get a square path to use for mutation point placement
-            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
-            TopLeft = path.Points[0];
-            TopRight = path.Points[1];
-            BottomRight = path.Points[2];
-            BottomLeft = path.Points[3];
-
-            TopCenter = new SKPoint((TopLeft.X + TopRight.X) / 2, (TopLeft.Y + TopRight.Y) / 2);
-            RightCenter = new SKPoint((TopRight.X + BottomRight.X) / 2, (TopRight.Y + BottomRight.Y) / 2);
-            BottomCenter = new SKPoint((BottomLeft.X + BottomRight.X) / 2, (BottomLeft.Y + BottomRight.Y) / 2);
-            LeftCenter = new SKPoint((TopLeft.X + BottomLeft.X) / 2, (TopLeft.Y + BottomLeft.Y) / 2);
-
-            TopLeftRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_tl_ico, layer.RotationProperty.CurrentValue);
-            TopRightRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_tr_ico, layer.RotationProperty.CurrentValue);
-            BottomRightRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_br_ico, layer.RotationProperty.CurrentValue);
-            BottomLeftRotateCursor = CursorUtilities.GetRotatedCursor(Resources.aero_rotate_bl_ico, layer.RotationProperty.CurrentValue);
-
             Execute.PostToUIThread(() =>
             {
                 var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape))
@@ -100,283 +52,39 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 };
                 shapeGeometry.Freeze();
                 ShapeGeometry = shapeGeometry;
-                ShapeTransformCollection = _layerEditorService.GetLayerTransformGroup(layer).Children;
-                ShapeTransformCollection.Freeze();
             });
+
+            // Store the last top-left for easy later on
+            _topLeft = _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
         }
-        
-        private void UpdateControls()
-        {
-            ControlSize = Math.Max(10 / ProfileViewModel.PanZoomViewModel.Zoom, 4);
-            RotateSize = ControlSize * 8;
-            ControlOffset = new Thickness(ControlSize / 2 * -1, ControlSize / 2 * -1, 0, 0);
-            RotateOffset = new Thickness(RotateSize / 2 * -1, RotateSize / 2 * -1, 0, 0);
-            OutlineThickness = Math.Max(2 / ProfileViewModel.PanZoomViewModel.Zoom, 1);
-        }
-
-        public void ShapeEditMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
-            _dragStart = GetRelativePosition(sender, e).ToSKPoint();
-            _dragStartScale = layer.SizeProperty.CurrentValue;
-            _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), _dragStart);
-
-            // Store the original position and do a test to figure out the mouse offset
-            var originalPosition = layer.PositionProperty.CurrentValue;
-            var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
-            layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
-
-            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
-            // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
-            _dragOffset = TopLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
-            _dragStart += _dragOffset;
-
-            // Restore the position back to before the test was done
-            layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
-
-            _isDragging = true;
-            ((IInputElement) sender).CaptureMouse();
-            e.Handled = true;
-        }
-
-        public void ShapeEditMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ProfileEditorService.UpdateSelectedProfileElement();
-
-            _dragOffset = SKPoint.Empty;
-            _dragStartAnchor = SKPoint.Empty;
-
-            _isDragging = false;
-            _draggingHorizontally = false;
-            _draggingVertically = false;
-
-            ((IInputElement) sender).ReleaseMouseCapture();
-            e.Handled = true;
-        }
-
-        #region Position
-
-        public void Move(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            // Allow the user to move the shape only horizontally or vertically when holding down shift
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                // Keep the X position static if dragging vertically
-                if (_draggingVertically)
-                    position.X = _dragStart.X;
-                // Keep the Y position static if dragging horizontally
-                else if (_draggingHorizontally)
-                    position.Y = _dragStart.Y;
-                // Snap into place only if the mouse moved atleast a full pixel
-                else if (Math.Abs(position.X - _dragStart.X) > 1 || Math.Abs(position.Y - _dragStart.Y) > 1)
-                {
-                    // Pick between X and Y by comparing which moved the furthers from the starting point
-                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
-                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
-                    return;
-                }
-            }
-            // Reset both states when shift is not held down
-            else
-            {
-                _draggingVertically = false;
-                _draggingHorizontally = false;
-            }
-
-            // Scale down the resulting position and make it relative
-            var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
-            // Update the position property
-            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        #endregion
-
-        #region Anchor
-
-        public void AnchorEditMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (_isDragging)
-                return;
-
-            if (ProfileEditorService.SelectedProfileElement is Layer layer)
-            {
-                var dragStartPosition = GetRelativePosition(sender, e).ToSKPoint();
-
-                // Mouse doesn't care about rotation so get the layer path without rotation
-                var path = _layerEditorService.GetLayerPath(layer, true, true, false);
-                var topLeft = path.Points[0];
-                // Measure from the top-left of the shape (without rotation)
-                _dragOffset = topLeft + (dragStartPosition - topLeft);
-                // Get the absolute layer anchor and make it relative to the unrotated shape
-                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, true) - topLeft;
-                // Ensure the anchor starts in the center of the shape it is now relative to
-                _dragStartAnchor.X -= path.Bounds.Width / 2f;
-                _dragStartAnchor.Y -= path.Bounds.Height / 2f;
-            }
-
-            _isDragging = true;
-            ((IInputElement) sender).CaptureMouse();
-            e.Handled = true;
-        }
-
-        public void AnchorMove(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            // The start anchor is relative to an unrotated version of the shape
-            var start = _dragStartAnchor;
-            // Add the current position to the start anchor to determine the new position
-            var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
-            // In order to keep the mouse movement unrotated, counter-act the active rotation
-            var countered = UnTransformPoints(new[] {start, current}, layer, start, true);
-            var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
-
-            // Update the anchor point, this causes the shape to move
-            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 5), ProfileEditorService.CurrentTime);
-            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
-            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
-            // Calculate the (scaled) difference between the old and now position
-            var difference = _layerEditorService.GetScaledPoint(layer, TopLeft - path.Points[0], false);
-            // Apply the difference so that the shape effectively stays in place
-            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 5), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        private SKPoint RoundPoint(SKPoint point, int decimals)
-        {
-            return new SKPoint((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
-        }
-
-        #endregion
-
-        #region Size
-
-        public void TopLeftResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
-            var height = VerticalResize(layer, position, ResizeOrigin.Top);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void TopCenterResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = layer.SizeProperty.CurrentValue.Width;
-            var height = VerticalResize(layer, position, ResizeOrigin.Top);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void TopRightResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
-            var height = VerticalResize(layer, position, ResizeOrigin.Top);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void RightCenterResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
-            var height = layer.SizeProperty.CurrentValue.Height;
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void BottomRightResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Right);
-            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void BottomCenterResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = layer.SizeProperty.CurrentValue.Width;
-            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void BottomLeftResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
-            var height = VerticalResize(layer, position, ResizeOrigin.Bottom);
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        public void LeftCenterResize(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
-            var width = HorizontalResize(layer, position, ResizeOrigin.Left);
-            var height = layer.SizeProperty.CurrentValue.Height;
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
-
-            ProfileEditorService.UpdateProfilePreview();
-        }
-
-        #endregion
 
         #region Rotation
 
-        public void Rotate(object sender, MouseEventArgs e)
+        private bool _rotating;
+        private float _previousDragAngle;
+
+        public void RotateMouseDown(object sender, ShapeControlEventArgs e)
         {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+            _rotating = true;
+            if (ProfileEditorService.SelectedProfileElement is Layer layer)
+                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint());
+            else
+                _previousDragAngle = 0;
+        }
+
+        public void RotateMouseUp(object sender, ShapeControlEventArgs e)
+        {
+            ProfileEditorService.UpdateSelectedProfileElement();
+            _rotating = false;
+        }
+
+        public void RotateMouseMove(object sender, ShapeControlEventArgs e)
+        {
+            if (!_rotating || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
             var previousDragAngle = _previousDragAngle;
-            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e).ToSKPoint());
+            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint());
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
@@ -396,58 +104,92 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             else
                 newRotation = (float) Math.Round(newRotation, 2, MidpointRounding.AwayFromZero);
 
-            Debug.WriteLine(newRotation);
             layer.RotationProperty.SetCurrentValue(newRotation, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
-        public void TopRightRotate(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-        }
-
-        public void BottomRightRotate(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-        }
-
-        public void BottomLeftRotate(object sender, MouseEventArgs e)
-        {
-            if (!_isDragging || !(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return;
-        }
-
         #endregion
 
-        #region Private methods
+        #region Size
 
-        private SKPoint[] TransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot)
+        private bool _isResizing;
+
+        public void ResizeMouseDown(object sender, ShapeControlEventArgs e)
         {
-            var counterRotatePath = new SKPath();
-            counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, pivot.X, pivot.Y));
-            // counterRotatePath.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height));
+            if (_isResizing || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
 
-            return counterRotatePath.Points;
+            // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
+            _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+            _dragStartScale = layer.SizeProperty.CurrentValue;
+
+            // Store the original position and do a test to figure out the mouse offset
+            var originalPosition = layer.PositionProperty.CurrentValue;
+            var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
+            layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
+
+            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
+            // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
+            _dragOffset = _topLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
+            _dragStart += _dragOffset;
+
+            // Restore the position back to before the test was done
+            layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
+            _isResizing = true;
         }
 
-        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
+        public void ResizeMouseUp(object sender, ShapeControlEventArgs e)
         {
-            var counterRotatePath = new SKPath();
-            counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
-            if (includeScale)
-                counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
-
-            return counterRotatePath.Points;
+            _isResizing = false;
         }
 
-        private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
+        public void ResizeMouseMove(object sender, ShapeControlEventArgs e)
         {
-            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
-            return mouseEventArgs.GetPosition((IInputElement) parent);
+            if (!_isResizing || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            float width, height;
+            var position = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint() + _dragOffset;
+            switch (e.ShapeControlPoint)
+            {
+                case ShapeControlPoint.TopLeft:
+                    height = VerticalResize(layer, position, ResizeOrigin.Top);
+                    width = HorizontalResize(layer, position, ResizeOrigin.Left);
+                    break;
+                case ShapeControlPoint.TopRight:
+                    height = VerticalResize(layer, position, ResizeOrigin.Top);
+                    width = HorizontalResize(layer, position, ResizeOrigin.Right);
+                    break;
+                case ShapeControlPoint.BottomRight:
+                    height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+                    width = HorizontalResize(layer, position, ResizeOrigin.Right);
+                    break;
+                case ShapeControlPoint.BottomLeft:
+                    height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+                    width = HorizontalResize(layer, position, ResizeOrigin.Left);
+                    break;
+                case ShapeControlPoint.TopCenter:
+                    height = VerticalResize(layer, position, ResizeOrigin.Top);
+                    width = layer.SizeProperty.CurrentValue.Width;
+                    break;
+                case ShapeControlPoint.RightCenter:
+                    width = HorizontalResize(layer, position, ResizeOrigin.Right);
+                    height = layer.SizeProperty.CurrentValue.Height;
+                    break;
+                case ShapeControlPoint.BottomCenter:
+                    width = layer.SizeProperty.CurrentValue.Width;
+                    height = VerticalResize(layer, position, ResizeOrigin.Bottom);
+                    break;
+                case ShapeControlPoint.LeftCenter:
+                    width = HorizontalResize(layer, position, ResizeOrigin.Left);
+                    height = layer.SizeProperty.CurrentValue.Height;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
+            ProfileEditorService.UpdateProfilePreview();
         }
 
         private float HorizontalResize(Layer layer, SKPoint position, ResizeOrigin origin)
@@ -488,6 +230,164 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var scaleToAdd = scalePerPixel * pixelsToAdd;
 
             return Math.Max(0.001f, _dragStartScale.Height + scaleToAdd);
+        }
+
+        #endregion
+
+        #region Position
+
+        private bool _movingShape;
+        private bool _movingAnchor;
+        private bool _draggingHorizontally;
+        private bool _draggingVertically;
+        private SKPoint _dragStartAnchor;
+
+        public void MoveMouseDown(object sender, ShapeControlEventArgs e)
+        {
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            if (e.ShapeControlPoint == ShapeControlPoint.LayerShape)
+            {
+                // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
+                _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+                _dragStartScale = layer.SizeProperty.CurrentValue;
+
+                // Store the original position and do a test to figure out the mouse offset
+                var originalPosition = layer.PositionProperty.CurrentValue;
+                var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
+                layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
+
+                // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
+                // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
+                _dragOffset = _topLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
+                _dragStart += _dragOffset;
+
+                // Restore the position back to before the test was done
+                layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
+
+                _movingShape = true;
+            }
+            else if (e.ShapeControlPoint == ShapeControlPoint.Anchor)
+            {
+                var dragStartPosition = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+
+                // Mouse doesn't care about rotation so get the layer path without rotation
+                var path = _layerEditorService.GetLayerPath(layer, true, true, false);
+                var topLeft = path.Points[0];
+                // Measure from the top-left of the shape (without rotation)
+                _dragOffset = topLeft + (dragStartPosition - topLeft);
+                // Get the absolute layer anchor and make it relative to the unrotated shape
+                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, true) - topLeft;
+                // Ensure the anchor starts in the center of the shape it is now relative to
+                _dragStartAnchor.X -= path.Bounds.Width / 2f;
+                _dragStartAnchor.Y -= path.Bounds.Height / 2f;
+                _movingAnchor = true;
+            }
+        }
+
+        public void MoveMouseUp(object sender, ShapeControlEventArgs e)
+        {
+            _movingShape = false;
+            _movingAnchor = false;
+        }
+
+        public void MoveMouseMove(object sender, ShapeControlEventArgs e)
+        {
+            if (_movingShape)
+                MoveShape(sender, e.MouseEventArgs);
+            else if (_movingAnchor)
+                MoveAnchor(sender, e.MouseEventArgs);
+        }
+
+        public void MoveShape(object sender, MouseEventArgs e)
+        {
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            // Allow the user to move the shape only horizontally or vertically when holding down shift
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                // Keep the X position static if dragging vertically
+                if (_draggingVertically)
+                    position.X = _dragStart.X;
+                // Keep the Y position static if dragging horizontally
+                else if (_draggingHorizontally)
+                    position.Y = _dragStart.Y;
+                // Snap into place only if the mouse moved atleast a full pixel
+                else if (Math.Abs(position.X - _dragStart.X) > 1 || Math.Abs(position.Y - _dragStart.Y) > 1)
+                {
+                    // Pick between X and Y by comparing which moved the furthers from the starting point
+                    _draggingHorizontally = Math.Abs(position.X - _dragStart.X) > Math.Abs(position.Y - _dragStart.Y);
+                    _draggingVertically = Math.Abs(position.X - _dragStart.X) < Math.Abs(position.Y - _dragStart.Y);
+                    return;
+                }
+            }
+            // Reset both states when shift is not held down
+            else
+            {
+                _draggingVertically = false;
+                _draggingHorizontally = false;
+            }
+
+            // Scale down the resulting position and make it relative
+            var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
+            // Update the position property
+            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+
+            ProfileEditorService.UpdateProfilePreview();
+        }
+
+        public void MoveAnchor(object sender, MouseEventArgs e)
+        {
+            if (!_movingAnchor || !(ProfileEditorService.SelectedProfileElement is Layer layer))
+                return;
+
+            // The start anchor is relative to an unrotated version of the shape
+            var start = _dragStartAnchor;
+            // Add the current position to the start anchor to determine the new position
+            var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
+            // In order to keep the mouse movement unrotated, counter-act the active rotation
+            var countered = UnTransformPoints(new[] {start, current}, layer, start, true);
+            var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
+
+            // Update the anchor point, this causes the shape to move
+            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 5), ProfileEditorService.CurrentTime);
+            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
+            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
+            // Calculate the (scaled) difference between the old and now position
+            var difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
+            // Apply the difference so that the shape effectively stays in place
+            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 5), ProfileEditorService.CurrentTime);
+
+            ProfileEditorService.UpdateProfilePreview();
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private SKPoint RoundPoint(SKPoint point, int decimals)
+        {
+            return new SKPoint((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
+        }
+
+        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
+        {
+            var counterRotatePath = new SKPath();
+            counterRotatePath.AddPoly(skPoints, false);
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
+            if (includeScale)
+                counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+
+            return counterRotatePath.Points;
+        }
+
+        private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
+        {
+            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
+            return mouseEventArgs.GetPosition((IInputElement) parent);
         }
 
         private float CalculateAngle(SKPoint start, SKPoint arrival)
