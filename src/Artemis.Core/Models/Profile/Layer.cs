@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
@@ -20,6 +21,8 @@ namespace Artemis.Core.Models.Profile
         private readonly Dictionary<string, BaseLayerProperty> _properties;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
+        private SKPath _path;
+        private SKRect _bounds;
 
         public Layer(Profile profile, ProfileElement parent, string name)
         {
@@ -81,22 +84,25 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
 
         /// <summary>
-        ///     An absolute rectangle to the surface that contains all the LEDs in this layer.
-        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
+        ///     A path containing all the LEDs this layer is applied to, any rendering outside the layer Path is clipped.
+        ///     <para>For rendering, use the Path on <see cref="LayerShape" />.</para>
         /// </summary>
-        public SKRect AbsoluteRectangle { get; private set; }
+        public SKPath Path
+        {
+            get => _path;
+            private set
+            {
+                _path = value;
+                // I can't really be sure about the performance impact of calling Bounds often but
+                // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
+                _bounds = value?.Bounds ?? SKRect.Empty;
+            }
+        }
 
         /// <summary>
-        ///     A zero-based rectangle that contains all the LEDs in this layer.
-        ///     <para>For rendering, use the RenderRectangle on <see cref="LayerShape" />.</para>
+        /// The bounds of this layer
         /// </summary>
-        public SKRect Rectangle { get; private set; }
-
-        /// <summary>
-        ///     A path containing all the LEDs this layer is applied to.
-        ///     <para>For rendering, use the RenderPath on <see cref="LayerShape" />.</para>
-        /// </summary>
-        public SKPath Path { get; private set; }
+        public SKRect Bounds => _bounds;
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -153,7 +159,7 @@ namespace Artemis.Core.Models.Profile
             {
                 property.KeyframeEngine?.Update(deltaTime);
                 // This is a placeholder method of repeating the animation until repeat modes are implemented
-                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null) 
+                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null)
                     property.KeyframeEngine.OverrideProgress(TimeSpan.Zero);
             }
 
@@ -173,19 +179,18 @@ namespace Artemis.Core.Models.Profile
             var size = SizeProperty.CurrentValue;
             var rotation = RotationProperty.CurrentValue;
 
-            var anchor = GetLayerAnchor(true);
-            var relativeAnchor = GetLayerAnchor(false);
+            var anchor = GetLayerAnchor();
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = position.X * AbsoluteRectangle.Width - LayerShape.RenderRectangle.Width / 2 - relativeAnchor.X;
-            var y = position.Y * AbsoluteRectangle.Height - LayerShape.RenderRectangle.Height / 2 - relativeAnchor.Y;
-            
-            canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
-            canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
-            canvas.Translate(x, y);
+            var x = position.X * Bounds.Width - LayerShape.Bounds.Width / 2 - anchor.X;
+            var y = position.Y * Bounds.Height - LayerShape.Bounds.Height / 2 - anchor.Y;
 
+            canvas.Translate(Bounds.Left + x, Bounds.Top + y);
+            canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
+            canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
+                        
             // Placeholder
-            if (LayerShape?.RenderPath != null)
+            if (LayerShape?.Path != null)
             {
                 var testColors = new List<SKColor>();
                 for (var i = 0; i < 9; i++)
@@ -196,31 +201,23 @@ namespace Artemis.Core.Models.Profile
                         testColors.Add(SKColor.FromHsv(0, 100, 100));
                 }
 
-                var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.RenderRectangle.MidX, LayerShape.RenderRectangle.MidY), testColors.ToArray());
-                canvas.DrawPath(LayerShape.RenderPath, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
+                var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.Bounds.MidX, LayerShape.Bounds.MidY), testColors.ToArray());
+                canvas.DrawPath(LayerShape.Path, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
             }
 
             LayerBrush?.Render(canvas);
             canvas.Restore();
         }
 
-        private SKPoint GetLayerAnchor(bool absolute)
+        private SKPoint GetLayerAnchor()
         {
             if (LayerShape == null)
                 return SKPoint.Empty;
 
-            if (!absolute)
-            {
-                var anchor = AnchorPointProperty.CurrentValue;
-                anchor.X = anchor.X * AbsoluteRectangle.Width;
-                anchor.Y = anchor.Y * AbsoluteRectangle.Height;
-                return new SKPoint(anchor.X, anchor.Y);
-            }
-
-            var position = PositionProperty.CurrentValue;
-            position.X = position.X * AbsoluteRectangle.Width;
-            position.Y = position.Y * AbsoluteRectangle.Height;
-            return new SKPoint(position.X + LayerShape.RenderRectangle.Left, position.Y + LayerShape.RenderRectangle.Top);
+            var anchor = AnchorPointProperty.CurrentValue;
+            anchor.X = anchor.X * Bounds.Width;
+            anchor.Y = anchor.Y * Bounds.Height;
+            return new SKPoint(anchor.X, anchor.Y);
         }
 
         internal override void ApplyToEntity()
@@ -325,31 +322,22 @@ namespace Artemis.Core.Models.Profile
         {
             if (!Leds.Any())
             {
-                AbsoluteRectangle = SKRect.Empty;
-                Rectangle = SKRect.Empty;
                 Path = new SKPath();
+
+                LayerShape?.CalculateRenderProperties();
                 OnRenderPropertiesUpdated();
                 return;
             }
-
-            // Determine to top-left and bottom-right
-            var minX = Leds.Min(l => l.AbsoluteRenderRectangle.Left);
-            var minY = Leds.Min(l => l.AbsoluteRenderRectangle.Top);
-            var maxX = Leds.Max(l => l.AbsoluteRenderRectangle.Right);
-            var maxY = Leds.Max(l => l.AbsoluteRenderRectangle.Bottom);
-
-            AbsoluteRectangle = SKRect.Create(minX, minY, maxX - minX, maxY - minY);
-            Rectangle = SKRect.Create(0, 0, maxX - minX, maxY - minY);
 
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var artemisLed in Leds)
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             Path = path;
+
             // This is called here so that the shape's render properties are up to date when other code
             // responds to OnRenderPropertiesUpdated
             LayerShape?.CalculateRenderProperties();
-
             OnRenderPropertiesUpdated();
         }
 

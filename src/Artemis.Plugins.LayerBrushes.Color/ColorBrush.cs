@@ -35,7 +35,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateShader()
         {
-            var center = new SKPoint(Layer.AbsoluteRectangle.MidX, Layer.AbsoluteRectangle.MidY);
+            var center = new SKPoint(Layer.LayerShape.Bounds.MidX, Layer.LayerShape.Bounds.MidY);
             SKShader shader;
             switch (Settings.GradientType)
             {
@@ -43,10 +43,10 @@ namespace Artemis.Plugins.LayerBrushes.Color
                     shader = SKShader.CreateColor(_testColors.First());
                     break;
                 case GradientType.LinearGradient:
-                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(Layer.AbsoluteRectangle.Width, 0), _testColors.ToArray(), SKShaderTileMode.Repeat);
+                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(Layer.LayerShape.Bounds.Width, 0), _testColors.ToArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.RadialGradient:
-                    shader = SKShader.CreateRadialGradient(center, Math.Min(Layer.AbsoluteRectangle.Width, Layer.AbsoluteRectangle.Height), _testColors.ToArray(), SKShaderTileMode.Repeat);
+                    shader = SKShader.CreateRadialGradient(center, Math.Min(Layer.LayerShape.Bounds.Width, Layer.LayerShape.Bounds.Height), _testColors.ToArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.SweepGradient:
                     shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
@@ -70,7 +70,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void Render(SKCanvas canvas)
         {
-            canvas.DrawPath(Layer.LayerShape.RenderPath, _paint);
+            canvas.DrawPath(Layer.LayerShape.Path, _paint);
         }
     }
 }

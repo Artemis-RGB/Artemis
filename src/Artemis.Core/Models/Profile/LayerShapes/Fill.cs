@@ -15,12 +15,8 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
         public override void CalculateRenderProperties()
         {
-            RenderRectangle = GetUnscaledRectangle();
-
             // Shape originates from the center so compensate the path for that
-            var renderPath = new SKPath(Layer.Path);
-            renderPath.Transform(SKMatrix.MakeTranslation(RenderRectangle.Left - Layer.Path.Bounds.Left, RenderRectangle.Top - Layer.Path.Bounds.Top));
-            RenderPath = renderPath;
+            Path = new SKPath(Layer.Path);
         }
 
         internal override void ApplyToEntity()

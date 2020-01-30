@@ -1,12 +1,13 @@
 ﻿using System.Linq;
 using Artemis.Storage.Entities.Profile;
-using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile.LayerShapes
 {
     public abstract class LayerShape
     {
+        private SKPath _path;
+
         protected LayerShape(Layer layer)
         {
             Layer = layer;
@@ -30,19 +31,27 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         public SKRect ScaledRectangle { get; set; }
 
         /// <summary>
-        ///     An absolute and scaled render rectangle
+        ///     A path outlining the shape
         /// </summary>
-        public SKRect RenderRectangle { get; protected set; }
+        public SKPath Path
+        {
+            get => _path;
+            protected set
+            {
+                _path = value;
+                Bounds = value?.Bounds ?? SKRect.Empty;
+            }
+        }
 
         /// <summary>
-        ///     A path relative to the layer
+        ///     The bounds of this shape
         /// </summary>
-        public SKPath RenderPath { get; protected set; }
+        public SKRect Bounds { get; private set; }
 
         public abstract void CalculateRenderProperties();
 
         /// <summary>
-        /// Updates Position and Size using the provided unscaled rectangle
+        ///     Updates Position and Size using the provided unscaled rectangle
         /// </summary>
         /// <param name="rect">An unscaled rectangle where 1px = 1mm</param>
         public void SetFromUnscaledRectangle(SKRect rect)
@@ -54,10 +63,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             }
 
             ScaledRectangle = SKRect.Create(
-                100f / Layer.AbsoluteRectangle.Width * (rect.Left - Layer.AbsoluteRectangle.Left) / 100f,
-                100f / Layer.AbsoluteRectangle.Height * (rect.Top - Layer.AbsoluteRectangle.Top) / 100f,
-                100f / Layer.AbsoluteRectangle.Width * rect.Width / 100f,
-                100f / Layer.AbsoluteRectangle.Height * rect.Height / 100f
+                100f / Layer.Bounds.Width * rect.Left / 100f,
+                100f / Layer.Bounds.Height * rect.Top / 100f,
+                100f / Layer.Bounds.Width * rect.Width / 100f,
+                100f / Layer.Bounds.Height * rect.Height / 100f
             );
         }
 
@@ -67,10 +76,10 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 return SKRect.Empty;
 
             return SKRect.Create(
-                Layer.AbsoluteRectangle.Left + Layer.AbsoluteRectangle.Width * ScaledRectangle.Left,
-                Layer.AbsoluteRectangle.Top + Layer.AbsoluteRectangle.Height * ScaledRectangle.Top,
-                Layer.AbsoluteRectangle.Width * ScaledRectangle.Width,
-                Layer.AbsoluteRectangle.Height * ScaledRectangle.Height
+                Layer.Bounds.Width * ScaledRectangle.Left,
+                Layer.Bounds.Height * ScaledRectangle.Top,
+                Layer.Bounds.Width * ScaledRectangle.Width,
+                Layer.Bounds.Height * ScaledRectangle.Height
             );
         }
 

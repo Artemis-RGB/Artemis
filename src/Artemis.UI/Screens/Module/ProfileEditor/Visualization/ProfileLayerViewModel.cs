@@ -37,6 +37,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public Layer Layer { get; }
 
+        public Rect LayerBounds { get; set; }
         public Geometry LayerGeometry { get; set; }
         public Geometry OpacityGeometry { get; set; }
         public Geometry ShapeGeometry { get; set; }
@@ -55,6 +56,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             if (!Layer.Leds.Any())
             {
+                LayerBounds = Rect.Empty;
                 LayerGeometry = Geometry.Empty;
                 OpacityGeometry = Geometry.Empty;
                 ViewportRectangle = Rect.Empty;
@@ -91,6 +93,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             var layerGeometry = group.GetOutlinedPathGeometry();
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
 
+            LayerBounds = _layerEditorService.GetLayerBounds(Layer);
             LayerGeometry = layerGeometry;
             OpacityGeometry = opacityGeometry;
         }
@@ -105,27 +108,27 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             Execute.PostToUIThread(() =>
             {
-                var rect = _layerEditorService.GetShapeUntransformedRect(Layer.LayerShape);
+                var bounds = _layerEditorService.GetLayerShapeBounds(Layer.LayerShape);
                 var shapeGeometry = Geometry.Empty;
                 switch (Layer.LayerShape)
                 {
                     case Ellipse _:
-                        shapeGeometry = new EllipseGeometry(rect);
+                        shapeGeometry = new EllipseGeometry(bounds);
                         break;
                     case Fill _:
                         // Shape originates from the center so compensate the geometry for that, create a copy
                         shapeGeometry = LayerGeometry.Clone();
                         // Add a transformation
-                        shapeGeometry.Transform = new TranslateTransform(rect.Left - shapeGeometry.Bounds.Left, rect.Top - shapeGeometry.Bounds.Top);
+                        shapeGeometry.Transform = new TranslateTransform(bounds.Left - shapeGeometry.Bounds.Left, bounds.Top - shapeGeometry.Bounds.Top);
                         // Apply the transformation so that it won't be overridden
                         shapeGeometry = shapeGeometry.GetOutlinedPathGeometry();
                         break;
                     case Polygon _:
                         // TODO
-                        shapeGeometry = new RectangleGeometry(rect);
+                        shapeGeometry = new RectangleGeometry(bounds);
                         break;
                     case Rectangle _:
-                        shapeGeometry = new RectangleGeometry(rect);
+                        shapeGeometry = new RectangleGeometry(bounds);
                         break;
                 }
 
