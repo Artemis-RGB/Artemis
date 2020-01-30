@@ -23,7 +23,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             RenderPath = renderPath;
         }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
             base.ApplyToEntity();
             Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Fill;

@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     layer.LayerShape = new Ellipse(layer);
 
                 // Apply the drag rectangle
-                _layerEditorService.SetShapeRenderRect(layer.LayerShape, DragRectangle);
+                _layerEditorService.SetShapeBaseFromRectangle(layer.LayerShape, DragRectangle);
                 ProfileEditorService.UpdateSelectedProfileElement();
             }
         }

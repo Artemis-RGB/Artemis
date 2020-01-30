@@ -15,14 +15,15 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
         public override void CalculateRenderProperties()
         {
-            RenderRectangle = GetUnscaledRectangle();
-
+            var unscaled = GetUnscaledRectangle();
+            RenderRectangle = SKRect.Create(0,0 , unscaled.Width, unscaled.Height);
+            
             var path = new SKPath();
             path.AddOval(RenderRectangle);
             RenderPath = path;
         }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
             base.ApplyToEntity();
             Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Ellipse;

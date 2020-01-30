@@ -44,7 +44,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             RenderRectangle = path.GetRect();
         }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
             base.ApplyToEntity();
             Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Polygon;

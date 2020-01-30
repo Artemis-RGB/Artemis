@@ -105,7 +105,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             Execute.PostToUIThread(() =>
             {
-                var rect = _layerEditorService.GetShapeRenderRect(Layer.LayerShape);
+                var rect = _layerEditorService.GetShapeUntransformedRect(Layer.LayerShape);
                 var shapeGeometry = Geometry.Empty;
                 switch (Layer.LayerShape)
                 {

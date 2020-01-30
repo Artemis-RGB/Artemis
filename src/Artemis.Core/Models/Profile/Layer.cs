@@ -179,8 +179,7 @@ namespace Artemis.Core.Models.Profile
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = position.X * AbsoluteRectangle.Width - LayerShape.RenderRectangle.Width / 2 - relativeAnchor.X;
             var y = position.Y * AbsoluteRectangle.Height - LayerShape.RenderRectangle.Height / 2 - relativeAnchor.Y;
-
-
+            
             canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
             canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
             canvas.Translate(x, y);

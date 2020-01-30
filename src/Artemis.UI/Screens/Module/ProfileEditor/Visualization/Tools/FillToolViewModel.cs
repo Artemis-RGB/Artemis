@@ -42,7 +42,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             layer.LayerShape = new Fill(layer);
 
             // Apply the full layer rectangle
-            _layerEditorService.SetShapeRenderRect(layer.LayerShape, _layerEditorService.GetLayerRect(layer));
+            _layerEditorService.SetShapeBaseFromRectangle(layer.LayerShape, _layerEditorService.GetLayerRect(layer));
             ProfileEditorService.UpdateSelectedProfileElement();
         }
     }

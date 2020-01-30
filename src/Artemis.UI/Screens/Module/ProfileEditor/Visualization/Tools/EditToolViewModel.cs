@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
             Execute.PostToUIThread(() =>
             {
-                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeRenderRect(layer.LayerShape))
+                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeUntransformedRect(layer.LayerShape))
                 {
                     Transform = _layerEditorService.GetLayerTransformGroup(layer)
                 };
