@@ -15,11 +15,9 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
         public override void CalculateRenderProperties()
         {
-            RenderRectangle = GetUnscaledRectangle();
-
             var path = new SKPath();
-            path.AddRect(RenderRectangle);
-            RenderPath = path;
+            path.AddRect(GetUnscaledRectangle());
+            Path = path;
         }
 
         internal override void ApplyToEntity()

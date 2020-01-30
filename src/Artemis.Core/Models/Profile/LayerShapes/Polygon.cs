@@ -25,23 +25,14 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         /// </summary>
         public List<SKPoint> RenderPoints
         {
-            get
-            {
-                var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-                var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-                var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-                var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-                return Points.Select(p => new SKPoint((float) (p.X * width), (float) (p.Y * height))).ToList();
-            }
+            get { return Points.Select(p => new SKPoint(p.X * Layer.Bounds.Width, p.Y * Layer.Bounds.Height)).ToList(); }
         }
 
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();
             path.AddPoly(RenderPoints.ToArray());
-
-            RenderPath = path;
-            RenderRectangle = path.GetRect();
+            Path = path;
         }
 
         internal override void ApplyToEntity()

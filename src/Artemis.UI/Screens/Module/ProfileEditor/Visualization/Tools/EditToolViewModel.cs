@@ -33,6 +33,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
+        public Rect LayerBounds { get; set; }
         public SKPath ShapePath { get; set; }
         public SKPoint ShapeAnchor { get; set; }
         public RectangleGeometry ShapeGeometry { get; set; }
@@ -42,11 +43,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
+            LayerBounds = _layerEditorService.GetLayerBounds(layer);
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
-            ShapeAnchor = _layerEditorService.GetLayerAnchor(layer, true);
+            ShapeAnchor = _layerEditorService.GetLayerAnchor(layer).ToSKPoint();
             Execute.PostToUIThread(() =>
             {
-                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetShapeUntransformedRect(layer.LayerShape))
+                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerShapeBounds(layer.LayerShape))
                 {
                     Transform = _layerEditorService.GetLayerTransformGroup(layer)
                 };
@@ -57,7 +59,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // Store the last top-left for easy later on
             _topLeft = _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
         }
-
+        
         #region Rotation
 
         private bool _rotating;
@@ -67,7 +69,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             _rotating = true;
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
-                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint());
+                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer), GetRelativePosition(sender, e.MouseEventArgs));
             else
                 _previousDragAngle = 0;
         }
@@ -84,7 +86,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var previousDragAngle = _previousDragAngle;
-            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer, true), GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint());
+            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer), GetRelativePosition(sender, e.MouseEventArgs));
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
@@ -278,7 +280,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 // Measure from the top-left of the shape (without rotation)
                 _dragOffset = topLeft + (dragStartPosition - topLeft);
                 // Get the absolute layer anchor and make it relative to the unrotated shape
-                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer, true) - topLeft;
+                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer).ToSKPoint() - topLeft;
                 // Ensure the anchor starts in the center of the shape it is now relative to
                 _dragStartAnchor.X -= path.Bounds.Width / 2f;
                 _dragStartAnchor.Y -= path.Bounds.Height / 2f;
@@ -390,7 +392,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             return mouseEventArgs.GetPosition((IInputElement) parent);
         }
 
-        private float CalculateAngle(SKPoint start, SKPoint arrival)
+        private float CalculateAngle(Point start, Point arrival)
         {
             var radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
             var angle = radian * (180f / (float) Math.PI);

@@ -43,8 +43,8 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         public override void Render(SKCanvas canvas)
         {
             // Scale down the render path to avoid computing a value for every pixel
-            var width = (int) (Math.Max(Layer.AbsoluteRectangle.Width, Layer.AbsoluteRectangle.Height) / Scale);
-            var height = (int) (Math.Max(Layer.AbsoluteRectangle.Width, Layer.AbsoluteRectangle.Height) / Scale);
+            var width = (int) (Math.Max(Layer.Bounds.Width, Layer.Bounds.Height) / Scale);
+            var height = (int) (Math.Max(Layer.Bounds.Width, Layer.Bounds.Height) / Scale);
             var opacity = (float) Math.Round(Settings.Color.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
             using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
@@ -77,7 +77,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
                 using (var paint = new SKPaint {Shader = sh, BlendMode = Settings.BlendMode})
                 {
-                    canvas.DrawPath(Layer.LayerShape.RenderPath, paint);
+                    canvas.DrawPath(Layer.LayerShape.Path, paint);
                 }
             }
         }

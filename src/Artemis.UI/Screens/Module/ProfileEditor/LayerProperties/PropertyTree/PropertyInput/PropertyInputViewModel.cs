@@ -44,7 +44,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             LayerPropertyViewModel.LayerProperty.SetCurrentValue(value, ProfileEditorService.CurrentTime);
             // Force the keyframe engine to update, the edited keyframe might affect the current keyframe progress
-            LayerPropertyViewModel.LayerProperty.KeyframeEngine.Update(0);
+            LayerPropertyViewModel.LayerProperty.KeyframeEngine?.Update(0);
 
             ProfileEditorService.UpdateSelectedProfileElement();
         }
