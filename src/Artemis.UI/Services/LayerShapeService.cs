@@ -49,7 +49,7 @@ namespace Artemis.UI.Services
         public SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation)
         {
             var layerRect = GetLayerRenderRect(layer).ToSKRect();
-            var shapeRect = GetShapeRenderRect(layer.LayerShape).ToSKRect();
+            var shapeRect = GetShapeUntransformedRect(layer.LayerShape).ToSKRect();
 
             // Apply transformation like done by the core during layer rendering
             var anchor = GetLayerAnchor(layer, true);
@@ -74,7 +74,7 @@ namespace Artemis.UI.Services
         public void ReverseLayerPath(Layer layer, SKPath path)
         {
             var layerRect = GetLayerRenderRect(layer).ToSKRect();
-            var shapeRect = GetShapeRenderRect(layer.LayerShape).ToSKRect();
+            var shapeRect = GetShapeUntransformedRect(layer.LayerShape).ToSKRect();
 
             // Apply transformation like done by the core during layer rendering
             var anchor = GetLayerAnchor(layer, true);
@@ -100,7 +100,7 @@ namespace Artemis.UI.Services
                 var position = layer.PositionProperty.CurrentValue;
                 position.X = (float) (position.X * layerRect.Width);
                 position.Y = (float) (position.Y * layerRect.Height);
-                var shapeRect = GetShapeRenderRect(layer.LayerShape);
+                var shapeRect = GetShapeUntransformedRect(layer.LayerShape);
                 return new SKPoint((float) (position.X + shapeRect.Left), (float) (position.Y + shapeRect.Top));
             }
 
@@ -115,7 +115,7 @@ namespace Artemis.UI.Services
             var layerRect = GetLayerRect(layer);
             if (absolute)
             {
-                var shapeRect = GetShapeRenderRect(layer.LayerShape);
+                var shapeRect = GetShapeUntransformedRect(layer.LayerShape);
                 var position = new SKPoint((float) ((point.X - shapeRect.Left) / layerRect.Width), (float) ((point.Y - shapeRect.Top) / layerRect.Height));
                 layer.PositionProperty.SetCurrentValue(position, time);
             }
@@ -128,7 +128,7 @@ namespace Artemis.UI.Services
         public TransformGroup GetLayerTransformGroup(Layer layer)
         {
             var layerRect = GetLayerRenderRect(layer).ToSKRect();
-            var shapeRect = GetShapeRenderRect(layer.LayerShape).ToSKRect();
+            var shapeRect = GetShapeUntransformedRect(layer.LayerShape).ToSKRect();
 
             // Apply transformation like done by the core during layer rendering
             var anchor = GetLayerAnchor(layer, true);
@@ -146,11 +146,11 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public Rect GetShapeRenderRect(LayerShape layerShape)
+        public Rect GetShapeUntransformedRect(LayerShape layerShape)
         {
             if (layerShape == null)
                 return Rect.Empty;
-            
+
             // Adjust the render rectangle for the difference in render scale
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             return new Rect(
@@ -162,13 +162,21 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public void SetShapeRenderRect(LayerShape layerShape, Rect rect)
+        public Rect GetShapeTransformedRect(LayerShape layerShape)
+        {
+            var path = GetLayerPath(layerShape.Layer, true, true, false);
+            return path.Bounds.ToRect();
+        }
+
+        /// <inheritdoc />
+        public void SetShapeBaseFromRectangle(LayerShape layerShape, Rect rect)
         {
             if (!layerShape.Layer.Leds.Any())
             {
                 layerShape.ScaledRectangle = SKRect.Empty;
                 return;
             }
+
             var layerRect = GetLayerRenderRect(layerShape.Layer).ToSKRect();
 
             // Compensate for the current value of the position transformation
@@ -179,7 +187,7 @@ namespace Artemis.UI.Services
             rect.Y += rect.Height / 2;
             rect.Y -= layerRect.Height * layerShape.Layer.PositionProperty.CurrentValue.Y;
             rect.Y += layerRect.Height * layerShape.Layer.AnchorPointProperty.CurrentValue.Y * layerShape.Layer.SizeProperty.CurrentValue.Height;
-            
+
             // Compensate for the current value of the size transformation
             rect.Height /= layerShape.Layer.SizeProperty.CurrentValue.Height;
             rect.Width /= layerShape.Layer.SizeProperty.CurrentValue.Width;
@@ -201,15 +209,15 @@ namespace Artemis.UI.Services
             var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
             if (absolute)
             {
-                return  new SKPoint(
+                return new SKPoint(
                     100f / layer.AbsoluteRectangle.Width * ((float) (point.X * renderScale) - layer.AbsoluteRectangle.Left) / 100f,
                     100f / layer.AbsoluteRectangle.Height * ((float) (point.Y * renderScale) - layer.AbsoluteRectangle.Top) / 100f
                 );
             }
 
             return new SKPoint(
-                100f / layer.AbsoluteRectangle.Width * (float)(point.X * renderScale) / 100f,
-                100f / layer.AbsoluteRectangle.Height * (float)(point.Y * renderScale) / 100f
+                100f / layer.AbsoluteRectangle.Width * (float) (point.X * renderScale) / 100f,
+                100f / layer.AbsoluteRectangle.Height * (float) (point.Y * renderScale) / 100f
             );
         }
     }
@@ -249,7 +257,7 @@ namespace Artemis.UI.Services
         /// <param name="absolute"></param>
         /// <returns></returns>
         SKPoint GetLayerAnchor(Layer layer, bool absolute);
-        
+
         void SetLayerAnchor(Layer layer, SKPoint point, bool absolute, TimeSpan? time);
 
         /// <summary>
@@ -261,21 +269,29 @@ namespace Artemis.UI.Services
         TransformGroup GetLayerTransformGroup(Layer layer);
 
         /// <summary>
-        ///     Returns an absolute and scaled rectangle for the given shape that is corrected for the current render scale.
+        ///     Returns an absolute and scaled rectangle for the given shape that is corrected for the current render scale without
+        ///     any transformations applied.
         /// </summary>
         /// <returns></returns>
-        Rect GetShapeRenderRect(LayerShape layerShape);
+        Rect GetShapeUntransformedRect(LayerShape layerShape);
 
         /// <summary>
-        ///     Sets the render rectangle of the given shape to match the provided unscaled rectangle. The rectangle is corrected
-        ///     for the current render scale.
+        ///     Returns an absolute and scaled rectangle for the given shape that is corrected for the current render scale with
+        ///     translation and scale transformations applied.
+        /// </summary>
+        /// <returns></returns>
+        Rect GetShapeTransformedRect(LayerShape layerShape);
+
+        /// <summary>
+        ///     Sets the base properties of the given shape to match the provided unscaled rectangle. The rectangle is corrected
+        ///     for the current render scale, anchor property and size property.
         /// </summary>
         /// <param name="layerShape"></param>
         /// <param name="rect"></param>
-        void SetShapeRenderRect(LayerShape layerShape, Rect rect);
+        void SetShapeBaseFromRectangle(LayerShape layerShape, Rect rect);
 
         /// <summary>
-        /// Returns a new point scaled to the layer.
+        ///     Returns a new point scaled to the layer.
         /// </summary>
         /// <param name="layer"></param>
         /// <param name="point"></param>

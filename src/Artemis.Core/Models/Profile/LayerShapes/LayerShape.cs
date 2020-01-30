@@ -1,6 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Storage.Entities.Profile;
+using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile.LayerShapes
@@ -41,18 +41,27 @@ namespace Artemis.Core.Models.Profile.LayerShapes
 
         public abstract void CalculateRenderProperties();
 
-        public virtual void ApplyToEntity()
+        /// <summary>
+        /// Updates Position and Size using the provided unscaled rectangle
+        /// </summary>
+        /// <param name="rect">An unscaled rectangle where 1px = 1mm</param>
+        public void SetFromUnscaledRectangle(SKRect rect)
         {
-            Layer.LayerEntity.ShapeEntity = new ShapeEntity
+            if (!Layer.Leds.Any())
             {
-                X = ScaledRectangle.Left,
-                Y = ScaledRectangle.Top,
-                Width = ScaledRectangle.Width,
-                Height = ScaledRectangle.Height
-            };
+                ScaledRectangle = SKRect.Empty;
+                return;
+            }
+
+            ScaledRectangle = SKRect.Create(
+                100f / Layer.AbsoluteRectangle.Width * (rect.Left - Layer.AbsoluteRectangle.Left) / 100f,
+                100f / Layer.AbsoluteRectangle.Height * (rect.Top - Layer.AbsoluteRectangle.Top) / 100f,
+                100f / Layer.AbsoluteRectangle.Width * rect.Width / 100f,
+                100f / Layer.AbsoluteRectangle.Height * rect.Height / 100f
+            );
         }
 
-        protected SKRect GetUnscaledRectangle()
+        public SKRect GetUnscaledRectangle()
         {
             if (!Layer.Leds.Any())
                 return SKRect.Empty;
@@ -63,6 +72,17 @@ namespace Artemis.Core.Models.Profile.LayerShapes
                 Layer.AbsoluteRectangle.Width * ScaledRectangle.Width,
                 Layer.AbsoluteRectangle.Height * ScaledRectangle.Height
             );
+        }
+
+        internal virtual void ApplyToEntity()
+        {
+            Layer.LayerEntity.ShapeEntity = new ShapeEntity
+            {
+                X = ScaledRectangle.Left,
+                Y = ScaledRectangle.Top,
+                Width = ScaledRectangle.Width,
+                Height = ScaledRectangle.Height
+            };
         }
     }
 }

@@ -53,9 +53,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
             {
                 // If the layer has a shape, save it's size
-                var shapeSize = Rect.Empty;
+                var shapeSize = SKRect.Empty;
                 if (layer.LayerShape != null)
-                    shapeSize = _layerEditorService.GetShapeRenderRect(layer.LayerShape);
+                    shapeSize = layer.LayerShape.GetUnscaledRectangle();
 
                 // If shift is held down, add to the selection instead of replacing it
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -68,7 +68,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
                 // Restore the saved size
                 if (layer.LayerShape != null)
-                    _layerEditorService.SetShapeRenderRect(layer.LayerShape, shapeSize);
+                    layer.LayerShape.SetFromUnscaledRectangle(shapeSize);
 
                 ProfileEditorService.UpdateSelectedProfileElement();
             }

@@ -22,7 +22,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             RenderPath = path;
         }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
             base.ApplyToEntity();
             Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Rectangle;
