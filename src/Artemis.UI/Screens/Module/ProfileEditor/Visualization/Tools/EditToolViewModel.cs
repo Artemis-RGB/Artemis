@@ -68,7 +68,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             _rotating = true;
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
-                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchorPosition(layer), GetRelativePosition(sender, e.MouseEventArgs));
+                _previousDragAngle = CalculateAngle(layer, sender, e.MouseEventArgs);
             else
                 _previousDragAngle = 0;
         }
@@ -85,7 +85,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var previousDragAngle = _previousDragAngle;
-            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchorPosition(layer), GetRelativePosition(sender, e.MouseEventArgs));
+            var newRotation = CalculateAngle(layer, sender, e.MouseEventArgs);
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
@@ -391,8 +391,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             return mouseEventArgs.GetPosition((IInputElement) parent);
         }
 
-        private float CalculateAngle(Point start, Point arrival)
+        private float CalculateAngle(Layer layer, object mouseEventSender, MouseEventArgs mouseEvent)
         {
+            var layerBounds = _layerEditorService.GetLayerBounds(layer);
+            var start = _layerEditorService.GetLayerAnchorPosition(layer);
+            start.X += layerBounds.Left;
+            start.Y += layerBounds.Top;
+            var arrival = GetRelativePosition(mouseEventSender, mouseEvent);
+
             var radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
             var angle = radian * (180f / (float) Math.PI);
             if (angle < 0f)
