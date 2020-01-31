@@ -50,11 +50,11 @@ namespace Artemis.UI.Services
         public Point GetLayerAnchorPosition(Layer layer)
         {
             var layerBounds = GetLayerBounds(layer);
-            var shapeBounds = GetLayerShapeBounds(layer.LayerShape);
+            var shapeBounds = GetLayerShapeBounds(layer.LayerShape).ToSKRect();
             var positionProperty = layer.PositionProperty.CurrentValue;
 
             // Start at the center of the shape
-            var position = new Point(shapeBounds.Left, shapeBounds.Top);
+            var position = new Point(shapeBounds.MidX, shapeBounds.MidY);
 
             // Apply translation
             position.X += positionProperty.X * layerBounds.Width;
@@ -77,8 +77,8 @@ namespace Artemis.UI.Services
             var anchorProperty = layer.AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - shapeBounds.Width / 2 - anchorProperty.X * layerBounds.Width;
-            var y = anchorPosition.Y - shapeBounds.Height / 2 - anchorProperty.Y * layerBounds.Height;
+            var x = anchorPosition.X - shapeBounds.MidX - anchorProperty.X * layerBounds.Width;
+            var y = anchorPosition.Y - shapeBounds.MidY - anchorProperty.Y * layerBounds.Height;
 
             var transformGroup = new TransformGroup();
             transformGroup.Children.Add(new TranslateTransform(x, y));
@@ -99,8 +99,8 @@ namespace Artemis.UI.Services
             var anchorProperty = layer.AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - shapeBounds.Width / 2 - anchorProperty.X * layerBounds.Width;
-            var y = anchorPosition.Y - shapeBounds.Height / 2 - anchorProperty.Y * layerBounds.Height;
+            var x = anchorPosition.X - shapeBounds.MidX - anchorProperty.X * layerBounds.Width;
+            var y = anchorPosition.Y - shapeBounds.MidY - anchorProperty.Y * layerBounds.Height;
 
             var path = new SKPath();
             path.AddRect(shapeBounds);
@@ -114,7 +114,6 @@ namespace Artemis.UI.Services
             return path;
         }
 
-
         /// <inheritdoc />
         public void SetShapeBaseFromRectangle(LayerShape layerShape, Rect rect)
         {
@@ -125,27 +124,32 @@ namespace Artemis.UI.Services
             }
 
             var layerBounds = GetLayerBounds(layerShape.Layer).ToSKRect();
+            var shapeBounds = GetLayerShapeBounds(layerShape).ToSKRect();
 
-            // Compensate for the current value of the position transformation
-            rect.X += rect.Width / 2;
-            rect.X -= layerBounds.Width * layerShape.Layer.PositionProperty.CurrentValue.X;
-            rect.X += layerBounds.Width * layerShape.Layer.AnchorPointProperty.CurrentValue.X * layerShape.Layer.SizeProperty.CurrentValue.Width;
-
-            rect.Y += rect.Height / 2;
-            rect.Y -= layerBounds.Height * layerShape.Layer.PositionProperty.CurrentValue.Y;
-            rect.Y += layerBounds.Height * layerShape.Layer.AnchorPointProperty.CurrentValue.Y * layerShape.Layer.SizeProperty.CurrentValue.Height;
-
-            // Compensate for the current value of the size transformation
-            rect.Height /= layerShape.Layer.SizeProperty.CurrentValue.Height;
-            rect.Width /= layerShape.Layer.SizeProperty.CurrentValue.Width;
+            var rectangle = SKRect.Create(
+                (float) rect.Left - layerBounds.Left,
+                (float) rect.Top - layerBounds.Top,
+                (float) rect.Width,
+                (float) rect.Height
+            );
 
             // Adjust the provided rect for the difference in render scale
-            var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
+            var anchorPosition = GetLayerAnchorPosition(layerShape.Layer).ToSKPoint();
+            var anchorProperty = layerShape.Layer.AnchorPointProperty.CurrentValue;
+            var sizeProperty = layerShape.Layer.SizeProperty.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - shapeBounds.MidX - anchorProperty.X * layerBounds.Width;
+            var y = anchorPosition.Y - shapeBounds.MidY - anchorProperty.Y * layerBounds.Height;
+            rectangle.Offset(x * -1, y * -1);
+            
+            // TODO: Determine the new position of the anchor and scale the rectangle to the current scale
+
             layerShape.ScaledRectangle = SKRect.Create(
-                100f / layerShape.Layer.Bounds.Width * ((float) (rect.Left * renderScale) - layerShape.Layer.Bounds.Left) / 100f,
-                100f / layerShape.Layer.Bounds.Height * ((float) (rect.Top * renderScale) - layerShape.Layer.Bounds.Top) / 100f,
-                100f / layerShape.Layer.Bounds.Width * (float) (rect.Width * renderScale) / 100f,
-                100f / layerShape.Layer.Bounds.Height * (float) (rect.Height * renderScale) / 100f
+                rectangle.Left / layerBounds.Width,
+                rectangle.Top / layerBounds.Height,
+                rectangle.Width / layerBounds.Width,
+                rectangle.Height / layerBounds.Height
             );
             layerShape.CalculateRenderProperties();
         }

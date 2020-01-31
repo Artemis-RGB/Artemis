@@ -179,8 +179,8 @@ namespace Artemis.Core.Models.Profile
             var anchorProperty = AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - LayerShape.Bounds.Width / 2 - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - LayerShape.Bounds.Height / 2 - anchorProperty.Y * Bounds.Height;
+            var x = anchorPosition.X - LayerShape.Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - LayerShape.Bounds.MidY - anchorProperty.Y * Bounds.Height;
 
             // Apply these before translation because anchorPosition takes translation into account
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
@@ -213,7 +213,7 @@ namespace Artemis.Core.Models.Profile
             var positionProperty = PositionProperty.CurrentValue;
 
             // Start at the center of the shape
-            var position = new SKPoint(LayerShape.Bounds.Left, LayerShape.Bounds.Top);
+            var position = new SKPoint(LayerShape.Bounds.MidX, LayerShape.Bounds.MidY);
 
             // Apply translation
             position.X += positionProperty.X * Bounds.Width;
