@@ -79,7 +79,7 @@ namespace Artemis.UI.Services
                 // Force layer shape to redraw
                 layer.LayerShape?.CalculateRenderProperties();
                 // Manually update the layer's engine and brush
-                foreach (var property in layer.Properties) 
+                foreach (var property in layer.Properties)
                     property.KeyframeEngine?.Update(delta.TotalSeconds);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
             }

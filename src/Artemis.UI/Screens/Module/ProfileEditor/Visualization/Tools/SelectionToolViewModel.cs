@@ -7,7 +7,6 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Properties;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
 
@@ -28,7 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         }
 
         public Rect DragRectangle { get; set; }
-        
+
         public override void MouseUp(object sender, MouseButtonEventArgs e)
         {
             base.MouseUp(sender, e);

@@ -13,12 +13,12 @@ namespace Artemis.Core.Plugins.Abstract
         {
         }
 
+        public Profile ActiveProfile { get; private set; }
+
         public override void EnablePlugin()
         {
             throw new NotImplementedException();
         }
-
-        public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />
         public override void Update(double deltaTime)

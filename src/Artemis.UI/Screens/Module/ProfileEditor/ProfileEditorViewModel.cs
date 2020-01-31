@@ -196,7 +196,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 if (!activeProfile.IsActivated)
                     _profileService.ActivateProfile(Module, activeProfile);
             });
-
         }
     }
 }

@@ -12,25 +12,25 @@
                  Cursor="/Resources/aero_rotate.cur"
                  MouseDown="RotationOnMouseDown"
                  MouseUp="RotationOnMouseUp"
-                 MouseMove="RotationOnMouseMove"/>
+                 MouseMove="RotationOnMouseMove" />
         <Ellipse x:Name="RotateTopRight"
                  Fill="Transparent"
                  Cursor="/Resources/aero_rotate.cur"
                  MouseDown="RotationOnMouseDown"
                  MouseUp="RotationOnMouseUp"
-                 MouseMove="RotationOnMouseMove"/>
+                 MouseMove="RotationOnMouseMove" />
         <Ellipse x:Name="RotateBottomRight"
                  Fill="Transparent"
                  Cursor="/Resources/aero_rotate.cur"
                  MouseDown="RotationOnMouseDown"
                  MouseUp="RotationOnMouseUp"
-                 MouseMove="RotationOnMouseMove"/>
+                 MouseMove="RotationOnMouseMove" />
         <Ellipse x:Name="RotateBottomLeft"
                  Fill="Transparent"
                  Cursor="/Resources/aero_rotate.cur"
                  MouseDown="RotationOnMouseDown"
                  MouseUp="RotationOnMouseUp"
-                 MouseMove="RotationOnMouseMove"/>
+                 MouseMove="RotationOnMouseMove" />
         <!-- The part of the layer's shape that is inside the layer -->
         <Path x:Name="LayerShapeOutline"
               Data="{Binding ShapeGeometry, Mode=OneWay}"
@@ -51,7 +51,7 @@
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
-                   MouseMove="ResizeOnMouseMove"/>
+                   MouseMove="ResizeOnMouseMove" />
         <Rectangle x:Name="ResizeRightCenter"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
@@ -118,6 +118,6 @@
                  Cursor="SizeAll"
                  MouseDown="MoveOnMouseDown"
                  MouseUp="MoveOnMouseUp"
-                 MouseMove="MoveOnMouseMove"/>
+                 MouseMove="MoveOnMouseMove" />
     </Canvas>
 </UserControl>

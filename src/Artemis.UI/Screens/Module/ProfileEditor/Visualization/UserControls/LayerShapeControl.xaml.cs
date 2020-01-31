@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.UI.Events;
-using Artemis.UI.Utilities;
 using SkiaSharp;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls
@@ -38,7 +37,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls
             get => (double) GetValue(ZoomProperty);
             set => SetValue(ZoomProperty, value);
         }
-        
+
         public SKPath ShapePath
         {
             get => (SKPath) GetValue(ShapePathProperty);
@@ -64,7 +63,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls
             layerShapeControl.SetCurrentValue(ZoomProperty, e.NewValue);
             layerShapeControl.UpdateDimensions();
         }
-        
+
         private static void ShapePathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var layerShapeControl = (LayerShapeControl) d;

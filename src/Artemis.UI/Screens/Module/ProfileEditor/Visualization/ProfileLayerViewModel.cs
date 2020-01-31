@@ -5,12 +5,9 @@ using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Services;
 using Artemis.UI.Extensions;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
-using SkiaSharp.Views.WPF;
 using Stylet;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
@@ -18,8 +15,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileLayerViewModel : CanvasViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly ILayerEditorService _layerEditorService;
+        private readonly IProfileEditorService _profileEditorService;
 
         public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
         {
@@ -145,13 +142,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 return;
             }
 
-            var x = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.X);
-            var y = Layer.Leds.Min(l => l.RgbLed.AbsoluteLedRectangle.Location.Y);
-            var width = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.X + l.RgbLed.AbsoluteLedRectangle.Size.Width) - x;
-            var height = Layer.Leds.Max(l => l.RgbLed.AbsoluteLedRectangle.Location.Y + l.RgbLed.AbsoluteLedRectangle.Size.Height) - y;
-
-            var rect = new Rect(x, y, width, height);
-            ViewportRectangle = rect;
+            var rect = _layerEditorService.GetLayerBounds(Layer);
+            ViewportRectangle = new Rect(0, 0, rect.Width, rect.Height);
         }
 
         private Geometry CreateRectangleGeometry(ArtemisLed led)

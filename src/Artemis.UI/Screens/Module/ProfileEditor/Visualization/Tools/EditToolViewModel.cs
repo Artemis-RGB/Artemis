@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Events;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
@@ -45,7 +44,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             LayerBounds = _layerEditorService.GetLayerBounds(layer);
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
-            ShapeAnchor = _layerEditorService.GetLayerAnchor(layer).ToSKPoint();
+            ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
             Execute.PostToUIThread(() =>
             {
                 var shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerShapeBounds(layer.LayerShape))
@@ -59,7 +58,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // Store the last top-left for easy later on
             _topLeft = _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
         }
-        
+
         #region Rotation
 
         private bool _rotating;
@@ -69,7 +68,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             _rotating = true;
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
-                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchor(layer), GetRelativePosition(sender, e.MouseEventArgs));
+                _previousDragAngle = CalculateAngle(_layerEditorService.GetLayerAnchorPosition(layer), GetRelativePosition(sender, e.MouseEventArgs));
             else
                 _previousDragAngle = 0;
         }
@@ -86,7 +85,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 return;
 
             var previousDragAngle = _previousDragAngle;
-            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchor(layer), GetRelativePosition(sender, e.MouseEventArgs));
+            var newRotation = CalculateAngle(_layerEditorService.GetLayerAnchorPosition(layer), GetRelativePosition(sender, e.MouseEventArgs));
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
@@ -280,7 +279,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 // Measure from the top-left of the shape (without rotation)
                 _dragOffset = topLeft + (dragStartPosition - topLeft);
                 // Get the absolute layer anchor and make it relative to the unrotated shape
-                _dragStartAnchor = _layerEditorService.GetLayerAnchor(layer).ToSKPoint() - topLeft;
+                _dragStartAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint() - topLeft;
                 // Ensure the anchor starts in the center of the shape it is now relative to
                 _dragStartAnchor.X -= path.Bounds.Width / 2f;
                 _dragStartAnchor.Y -= path.Bounds.Height / 2f;

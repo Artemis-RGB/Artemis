@@ -21,9 +21,9 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
+        private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
-        private readonly IProfileService _profileService;
         private List<Module> _modules;
 
         internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)

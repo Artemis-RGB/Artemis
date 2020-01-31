@@ -226,6 +226,7 @@
       <DependentUpon>SidebarView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screens\Sidebar\SidebarViewModel.cs" />
+    <Compile Include="Services\Interfaces\ILayerEditorService.cs" />
     <Compile Include="Services\Interfaces\IProfileEditorService.cs" />
     <Compile Include="Services\LayerShapeService.cs" />
     <Compile Include="Services\ProfileEditorService.cs" />

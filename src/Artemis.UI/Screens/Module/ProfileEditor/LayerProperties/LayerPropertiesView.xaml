@@ -61,7 +61,7 @@
                     <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipNext" />
                     </Button>
-                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}" 
+                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
                                   ToolTip="Repeat after last keyframe"
                                   IsChecked="{Binding RepeatAfterLastKeyframe}"
                                   Focusable="False">

@@ -4,9 +4,7 @@ using System.Windows.Input;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.UI.Properties;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
-using SkiaSharp.Views.WPF;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
@@ -15,7 +13,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private readonly ILayerEditorService _layerEditorService;
         private bool _shiftDown;
 
-        public RectangleToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService) 
+        public RectangleToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
             : base(profileViewModel, profileEditorService)
         {
             _layerEditorService = layerEditorService;
