@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -8,10 +7,8 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Properties;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
-using SkiaSharp.Views.WPF;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
@@ -62,11 +59,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 var remainingLeds = layer.Leds.Except(selectedLeds).ToList();
                 layer.ClearLeds();
                 layer.AddLeds(remainingLeds);
-                
+
                 // Restore the saved size
                 if (layer.LayerShape != null)
                     layer.LayerShape.SetFromUnscaledRectangle(shapeSize);
-                
+
                 ProfileEditorService.UpdateSelectedProfileElement();
             }
         }

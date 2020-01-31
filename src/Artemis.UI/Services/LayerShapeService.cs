@@ -47,16 +47,20 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public Point GetLayerAnchor(Layer layer)
+        public Point GetLayerAnchorPosition(Layer layer)
         {
             var layerBounds = GetLayerBounds(layer);
+            var shapeBounds = GetLayerShapeBounds(layer.LayerShape);
+            var positionProperty = layer.PositionProperty.CurrentValue;
 
-            // TODO figure out what else is needed, position should matter here
-            var anchor = layer.AnchorPointProperty.CurrentValue;
-            anchor.X = (float) (anchor.X * layerBounds.Width);
-            anchor.Y = (float) (anchor.Y * layerBounds.Height);
+            // Start at the center of the shape
+            var position = new Point(shapeBounds.Left, shapeBounds.Top);
 
-            return new Point(anchor.X * layerBounds.Width, anchor.Y * layerBounds.Height);
+            // Apply translation
+            position.X += positionProperty.X * layerBounds.Width;
+            position.Y += positionProperty.Y * layerBounds.Height;
+
+            return position;
         }
 
         /// <inheritdoc />
@@ -65,17 +69,21 @@ namespace Artemis.UI.Services
             var layerBounds = GetLayerBounds(layer).ToSKRect();
             var shapeBounds = GetLayerShapeBounds(layer.LayerShape).ToSKRect();
 
-            // Apply transformation like done by the core during layer rendering
-            var anchor = GetLayerAnchor(layer);
+            // Apply transformation like done by the core during layer rendering.
+            // The order in which translations are applied are different because the UI renders the shape inside
+            // the layer using the structure of the XAML while the Core has to deal with that by applying the layer
+            // position to the translation
+            var anchorPosition = GetLayerAnchorPosition(layer);
+            var anchorProperty = layer.AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = layer.PositionProperty.CurrentValue.X * layerBounds.Width - shapeBounds.Width / 2 - anchor.X;
-            var y = layer.PositionProperty.CurrentValue.Y * layerBounds.Height - shapeBounds.Height / 2 - anchor.Y;
+            var x = anchorPosition.X - shapeBounds.Width / 2 - anchorProperty.X * layerBounds.Width;
+            var y = anchorPosition.Y - shapeBounds.Height / 2 - anchorProperty.Y * layerBounds.Height;
 
             var transformGroup = new TransformGroup();
             transformGroup.Children.Add(new TranslateTransform(x, y));
-            transformGroup.Children.Add(new ScaleTransform(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchor.X, anchor.Y));
-            transformGroup.Children.Add(new RotateTransform(layer.RotationProperty.CurrentValue, anchor.X, anchor.Y));
+            transformGroup.Children.Add(new ScaleTransform(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchorPosition.X, anchorPosition.Y));
+            transformGroup.Children.Add(new RotateTransform(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return transformGroup;
         }
@@ -86,21 +94,22 @@ namespace Artemis.UI.Services
             var layerBounds = GetLayerBounds(layer).ToSKRect();
             var shapeBounds = GetLayerShapeBounds(layer.LayerShape).ToSKRect();
 
-            // Apply transformation like done by the core during layer rendering
-            var anchor = GetLayerAnchor(layer).ToSKPoint();
+            // Apply transformation like done by the core during layer rendering (same differences apply as in GetLayerTransformGroup)
+            var anchorPosition = GetLayerAnchorPosition(layer).ToSKPoint();
+            var anchorProperty = layer.AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = layer.PositionProperty.CurrentValue.X * layerBounds.Width - shapeBounds.Width / 2 - anchor.X;
-            var y = layer.PositionProperty.CurrentValue.Y * layerBounds.Height - shapeBounds.Height / 2 - anchor.Y;
+            var x = anchorPosition.X - shapeBounds.Width / 2 - anchorProperty.X * layerBounds.Width;
+            var y = anchorPosition.Y - shapeBounds.Height / 2 - anchorProperty.Y * layerBounds.Height;
 
             var path = new SKPath();
             path.AddRect(shapeBounds);
             if (includeTranslation)
                 path.Transform(SKMatrix.MakeTranslation(x, y));
             if (includeScale)
-                path.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchor.X, anchor.Y));
+                path.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchorPosition.X, anchorPosition.Y));
             if (includeRotation)
-                path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchor.X, anchor.Y));
+                path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return path;
         }
@@ -158,64 +167,5 @@ namespace Artemis.UI.Services
                 100f / layer.Bounds.Height * (float) (point.Y * renderScale) / 100f
             );
         }
-    }
-
-    public interface ILayerEditorService : IArtemisUIService
-    {
-        /// <summary>
-        ///     Returns the layer's bounds, corrected for the current render scale.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
-        Rect GetLayerBounds(Layer layer);
-
-        /// <summary>
-        ///     Returns the layer's anchor, corrected for the current render scale.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
-        Point GetLayerAnchor(Layer layer);
-
-        /// <summary>
-        ///     Returns the layer shape's bounds, corrected for the current render scale.
-        /// </summary>
-        /// <param name="layerShape"></param>
-        /// <returns></returns>
-        Rect GetLayerShapeBounds(LayerShape layerShape);
-
-        /// <summary>
-        ///     Creates a WPF transform group that contains all the transformations required to render the provided layer.
-        ///     Note: Run on UI thread.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <returns></returns>
-        TransformGroup GetLayerTransformGroup(Layer layer);
-
-        /// <summary>
-        ///     Returns an absolute and scaled rectangular path for the given layer that is corrected for the current render scale.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="includeTranslation"></param>
-        /// <param name="includeScale"></param>
-        /// <param name="includeRotation"></param>
-        /// <returns></returns>
-        SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation);
-
-        /// <summary>
-        ///     Sets the base properties of the given shape to match the provided unscaled rectangle. The rectangle is corrected
-        ///     for the current render scale, anchor property and size property.
-        /// </summary>
-        /// <param name="layerShape"></param>
-        /// <param name="rect"></param>
-        void SetShapeBaseFromRectangle(LayerShape layerShape, Rect rect);
-
-        /// <summary>
-        ///     Returns a new point scaled to the layer.
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="point"></param>
-        /// <param name="absolute"></param>
-        /// <returns></returns>
-        SKPoint GetScaledPoint(Layer layer, SKPoint point, bool absolute);
     }
 }

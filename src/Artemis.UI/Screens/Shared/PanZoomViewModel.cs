@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.Shared
             }
             else
             {
-                PanX =  absoluteX - relative.X * Zoom;
+                PanX = absoluteX - relative.X * Zoom;
                 PanY = absoluteY - relative.Y * Zoom;
             }
         }

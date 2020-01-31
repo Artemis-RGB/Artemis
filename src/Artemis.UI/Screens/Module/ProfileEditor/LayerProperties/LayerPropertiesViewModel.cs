@@ -103,12 +103,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public void PlayFromStart()
         {
-            if (!IsActive)
-                return;
-            if (Playing)
-                Pause();
+            if (!Playing)
+                _profileEditorService.CurrentTime = TimeSpan.Zero;
 
-            _profileEditorService.CurrentTime = TimeSpan.Zero;
             Play();
         }
 

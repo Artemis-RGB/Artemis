@@ -14,7 +14,6 @@ using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using RGB.NET.Core;
 using Stylet;
@@ -23,8 +22,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly ILayerEditorService _layerEditorService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileLayerViewModelFactory _profileLayerViewModelFactory;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;

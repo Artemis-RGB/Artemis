@@ -1,12 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.UI.Properties;
-using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools

@@ -9,9 +9,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
 {
     public class ColorBrush : LayerBrush
     {
+        private readonly List<SKColor> _testColors;
         private SKPaint _paint;
         private SKShader _shader;
-        private readonly List<SKColor> _testColors;
 
         public ColorBrush(Layer layer, ColorBrushSettings settings, LayerBrushDescriptor descriptor) : base(layer, settings, descriptor)
         {

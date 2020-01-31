@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Sockets;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
@@ -22,7 +20,6 @@ namespace Artemis.Core.Models.Profile
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
-        private SKRect _bounds;
 
         public Layer(Profile profile, ProfileElement parent, string name)
         {
@@ -95,14 +92,14 @@ namespace Artemis.Core.Models.Profile
                 _path = value;
                 // I can't really be sure about the performance impact of calling Bounds often but
                 // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
-                _bounds = value?.Bounds ?? SKRect.Empty;
+                Bounds = value?.Bounds ?? SKRect.Empty;
             }
         }
 
         /// <summary>
-        /// The bounds of this layer
+        ///     The bounds of this layer
         /// </summary>
-        public SKRect Bounds => _bounds;
+        public SKRect Bounds { get; private set; }
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -175,20 +172,22 @@ namespace Artemis.Core.Models.Profile
             canvas.ClipPath(Path);
 
             // Apply transformations
-            var position = PositionProperty.CurrentValue;
-            var size = SizeProperty.CurrentValue;
-            var rotation = RotationProperty.CurrentValue;
+            var sizeProperty = SizeProperty.CurrentValue;
+            var rotationProperty = RotationProperty.CurrentValue;
 
-            var anchor = GetLayerAnchor();
+            var anchorPosition = GetLayerAnchorPosition() + Bounds.Location;
+            var anchorProperty = AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = position.X * Bounds.Width - LayerShape.Bounds.Width / 2 - anchor.X;
-            var y = position.Y * Bounds.Height - LayerShape.Bounds.Height / 2 - anchor.Y;
+            var x = anchorPosition.X - LayerShape.Bounds.Width / 2 - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - LayerShape.Bounds.Height / 2 - anchorProperty.Y * Bounds.Height;
 
-            canvas.Translate(Bounds.Left + x, Bounds.Top + y);
-            canvas.Scale(size.Width, size.Height, anchor.X, anchor.Y);
-            canvas.RotateDegrees(rotation, anchor.X, anchor.Y);
-                        
+            // Apply these before translation because anchorPosition takes translation into account
+            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
+            // Once the other transformations are done it is save to translate
+            canvas.Translate(x, y);
+
             // Placeholder
             if (LayerShape?.Path != null)
             {
@@ -209,15 +208,18 @@ namespace Artemis.Core.Models.Profile
             canvas.Restore();
         }
 
-        private SKPoint GetLayerAnchor()
+        private SKPoint GetLayerAnchorPosition()
         {
-            if (LayerShape == null)
-                return SKPoint.Empty;
+            var positionProperty = PositionProperty.CurrentValue;
 
-            var anchor = AnchorPointProperty.CurrentValue;
-            anchor.X = anchor.X * Bounds.Width;
-            anchor.Y = anchor.Y * Bounds.Height;
-            return new SKPoint(anchor.X, anchor.Y);
+            // Start at the center of the shape
+            var position = new SKPoint(LayerShape.Bounds.Left, LayerShape.Bounds.Top);
+
+            // Apply translation
+            position.X += positionProperty.X * Bounds.Width;
+            position.Y += positionProperty.Y * Bounds.Height;
+
+            return position;
         }
 
         internal override void ApplyToEntity()

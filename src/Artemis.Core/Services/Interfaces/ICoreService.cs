@@ -11,11 +11,12 @@ namespace Artemis.Core.Services.Interfaces
         bool IsInitialized { get; }
 
         /// <summary>
-        /// Gets or sets whether modules are updated each frame by calling their Update method
+        ///     Gets or sets whether modules are updated each frame by calling their Update method
         /// </summary>
         bool ModuleUpdatingDisabled { get; set; }
+
         /// <summary>
-        /// Gets or sets whether modules are rendered each frame by calling their Render method
+        ///     Gets or sets whether modules are rendered each frame by calling their Render method
         /// </summary>
         bool ModuleRenderingDisabled { get; set; }
 
