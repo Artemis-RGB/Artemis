@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerShapes;
 using SkiaSharp;
 
 namespace Artemis.UI.Services.Interfaces
@@ -23,13 +22,6 @@ namespace Artemis.UI.Services.Interfaces
         Point GetLayerAnchorPosition(Layer layer);
 
         /// <summary>
-        ///     Returns the layer shape's bounds, corrected for the current render scale.
-        /// </summary>
-        /// <param name="layerShape"></param>
-        /// <returns></returns>
-        Rect GetLayerShapeBounds(LayerShape layerShape);
-
-        /// <summary>
         ///     Creates a WPF transform group that contains all the transformations required to render the provided layer.
         ///     Note: Run on UI thread.
         /// </summary>
@@ -46,14 +38,6 @@ namespace Artemis.UI.Services.Interfaces
         /// <param name="includeRotation"></param>
         /// <returns></returns>
         SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation);
-
-        /// <summary>
-        ///     Sets the base properties of the given shape to match the provided unscaled rectangle. The rectangle is corrected
-        ///     for the current render scale, anchor property and size property.
-        /// </summary>
-        /// <param name="layerShape"></param>
-        /// <param name="rect"></param>
-        void SetShapeBaseFromRectangle(LayerShape layerShape, Rect rect);
 
         /// <summary>
         ///     Returns a new point scaled to the layer.

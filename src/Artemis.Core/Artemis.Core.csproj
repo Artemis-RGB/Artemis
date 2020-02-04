@@ -158,8 +158,6 @@
     <Compile Include="Models\Profile\LayerProperties\Keyframe.cs" />
     <Compile Include="Models\Profile\LayerProperties\BaseLayerProperty.cs" />
     <Compile Include="Models\Profile\LayerShapes\Ellipse.cs" />
-    <Compile Include="Models\Profile\LayerShapes\Fill.cs" />
-    <Compile Include="Models\Profile\LayerShapes\Polygon.cs" />
     <Compile Include="Models\Profile\LayerShapes\Rectangle.cs" />
     <Compile Include="Models\Profile\LayerShapes\LayerShape.cs" />
     <Compile Include="Models\Surface\ArtemisLed.cs" />

@@ -32,7 +32,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
-        public Rect LayerBounds { get; set; }
         public SKPath ShapePath { get; set; }
         public SKPoint ShapeAnchor { get; set; }
         public RectangleGeometry ShapeGeometry { get; set; }
@@ -42,12 +41,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            LayerBounds = _layerEditorService.GetLayerBounds(layer);
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
             ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
             Execute.PostToUIThread(() =>
             {
-                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerShapeBounds(layer.LayerShape))
+                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerBounds(layer))
                 {
                     Transform = _layerEditorService.GetLayerTransformGroup(layer)
                 };

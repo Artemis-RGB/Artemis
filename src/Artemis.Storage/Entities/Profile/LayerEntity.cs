@@ -23,12 +23,18 @@ namespace Artemis.Storage.Entities.Profile
         public List<PropertyEntity> PropertyEntities { get; set; }
         public List<ProfileConditionEntity> Condition { get; set; }
 
-        public ShapeEntity ShapeEntity { get; set; }
+        public ShapeEntityType ShapeType { get; set; }
         public BrushEntity BrushEntity { get; set; }
 
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
 
         public Guid ProfileId { get; set; }
+    }
+
+    public enum ShapeEntityType
+    {
+        Ellipse,
+        Rectangle
     }
 }

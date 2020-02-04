@@ -189,22 +189,6 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\Visualization\ProfileLayerViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EditToolViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml.cs">
-      <DependentUpon>EllipseToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.xaml.cs">
-      <DependentUpon>FillToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.xaml.cs">
-      <DependentUpon>PolygonToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolViewModel.cs" />
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.xaml.cs">
-      <DependentUpon>RectangleToolView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.xaml.cs">
       <DependentUpon>SelectionRemoveToolView.xaml</DependentUpon>
     </Compile>
@@ -371,22 +355,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

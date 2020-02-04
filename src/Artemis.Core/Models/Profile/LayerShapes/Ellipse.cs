@@ -9,21 +9,16 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
         }
 
-        internal Ellipse(Layer layer, ShapeEntity shapeEntity) : base(layer, shapeEntity)
-        {
-        }
-
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();
-            path.AddOval(GetUnscaledRectangle());
+            path.AddOval(Layer.Bounds);
             Path = path;
         }
 
-        internal override void ApplyToEntity()
+        public override void ApplyToEntity()
         {
-            base.ApplyToEntity();
-            Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Ellipse;
+            Layer.LayerEntity.ShapeType = ShapeEntityType.Ellipse;
         }
     }
 }

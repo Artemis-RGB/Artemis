@@ -9,21 +9,16 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         {
         }
 
-        internal Rectangle(Layer layer, ShapeEntity shapeEntity) : base(layer, shapeEntity)
-        {
-        }
-
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();
-            path.AddRect(GetUnscaledRectangle());
+            path.AddRect(Layer.Bounds);
             Path = path;
         }
 
-        internal override void ApplyToEntity()
+        public override void ApplyToEntity()
         {
-            base.ApplyToEntity();
-            Layer.LayerEntity.ShapeEntity.Type = ShapeEntityType.Rectangle;
+            Layer.LayerEntity.ShapeType = ShapeEntityType.Rectangle;
         }
     }
 }

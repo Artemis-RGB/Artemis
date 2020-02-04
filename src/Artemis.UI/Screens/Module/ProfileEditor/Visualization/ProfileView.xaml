@@ -8,7 +8,7 @@
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="510.9" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileViewModel}}">
     <UserControl.Resources>
         <Style TargetType="Grid" x:Key="InitializingFade">
@@ -65,21 +65,7 @@
                     <ListBoxItem ToolTip="Remove from layer selection">
                         <materialDesign:PackIcon Kind="SelectOff" />
                     </ListBoxItem>
-                    <Separator />
-                    <ListBoxItem ToolTip="Create round shape in layer">
-                        <materialDesign:PackIcon Kind="ShapeCirclePlus" />
-                    </ListBoxItem>
-                    <ListBoxItem ToolTip="Create rectangular shape in layer">
-                        <materialDesign:PackIcon Kind="ShapeRectanglePlus" />
-                    </ListBoxItem>
-                    <ListBoxItem ToolTip="Create polygonal shape in layer">
-                        <materialDesign:PackIcon Kind="ShapePolygonPlus" />
-                    </ListBoxItem>
-                    <ListBoxItem ToolTip="Fill entire layer">
-                        <materialDesign:PackIcon Kind="FormatColourFill" />
-                    </ListBoxItem>
                 </ListBox>
-
             </ToolBar>
         </ToolBarTray>
         <Grid Grid.Column="1"
