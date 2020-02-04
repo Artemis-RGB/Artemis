@@ -72,7 +72,7 @@ namespace Artemis.Core.Models.Profile
         public Layer AddLayer(string name)
         {
             var layer = new Layer(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
-            layer.LayerShape = new Fill(layer);
+            layer.LayerShape = new Rectangle(layer);
             AddChild(layer);
             return layer;
         }

@@ -32,35 +32,33 @@
         </Style>
     </UserControl.Resources>
     <Canvas Style="{StaticResource SelectedStyle}">
-        <!-- The shape is inside the layer's bounds -->
-        <Canvas Canvas.Left="{Binding LayerBounds.X}" Canvas.Top="{Binding LayerBounds.Y}">
-            <!-- The part of the layer's shape that falls outside the layer -->
-            <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
-                <Path.Fill>
-                    <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.05" />
-                </Path.Fill>
-                <Path.Stroke>
-                    <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
-                </Path.Stroke>
-            </Path>
 
-            <!-- The part of the layer's shape that is inside the layer -->
-            <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
-                <Path.Fill>
-                    <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
-                </Path.Fill>
-                <Path.Stroke>
-                    <SolidColorBrush Color="{StaticResource Accent700}" />
-                </Path.Stroke>
-                <Path.OpacityMask>
-                    <VisualBrush Viewport="{Binding ViewportRectangle}" ViewportUnits="Absolute">
-                        <VisualBrush.Visual>
-                            <Path Data="{Binding LayerGeometry, Mode=OneWay}" ClipToBounds="False" Fill="Black" />
-                        </VisualBrush.Visual>
-                    </VisualBrush>
-                </Path.OpacityMask>
-            </Path>
-        </Canvas>
+        <!-- The part of the layer's shape that falls outside the layer -->
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
+            <Path.Fill>
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.05" />
+            </Path.Fill>
+            <Path.Stroke>
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
+            </Path.Stroke>
+        </Path>
+
+        <!-- The part of the layer's shape that is inside the layer -->
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
+            <Path.Fill>
+                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
+            </Path.Fill>
+            <Path.Stroke>
+                <SolidColorBrush Color="{StaticResource Accent700}" />
+            </Path.Stroke>
+            <Path.OpacityMask>
+                <VisualBrush Viewport="{Binding ViewportRectangle}" ViewportUnits="Absolute">
+                    <VisualBrush.Visual>
+                        <Path Data="{Binding LayerGeometry, Mode=OneWay}" ClipToBounds="False" Fill="Black" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Path.OpacityMask>
+        </Path>
 
         <Path Data="{Binding LayerGeometry, Mode=OneWay}" ClipToBounds="False" StrokeThickness="1.5" StrokeLineJoin="Round" x:Name="LayerPath">
             <Path.Stroke>

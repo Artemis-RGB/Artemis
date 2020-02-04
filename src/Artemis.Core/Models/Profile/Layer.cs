@@ -51,22 +51,13 @@ namespace Artemis.Core.Models.Profile
 
             CreateDefaultProperties();
 
-            switch (layerEntity.ShapeEntity?.Type)
+            switch (layerEntity.ShapeType)
             {
                 case ShapeEntityType.Ellipse:
-                    LayerShape = new Ellipse(this, layerEntity.ShapeEntity);
-                    break;
-                case ShapeEntityType.Fill:
-                    LayerShape = new Fill(this, layerEntity.ShapeEntity);
-                    break;
-                case ShapeEntityType.Polygon:
-                    LayerShape = new Polygon(this, layerEntity.ShapeEntity);
+                    LayerShape = new Ellipse(this);
                     break;
                 case ShapeEntityType.Rectangle:
-                    LayerShape = new Rectangle(this, layerEntity.ShapeEntity);
-                    break;
-                case null:
-                    LayerShape = null;
+                    LayerShape = new Rectangle(this);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -175,18 +166,18 @@ namespace Artemis.Core.Models.Profile
             var sizeProperty = SizeProperty.CurrentValue;
             var rotationProperty = RotationProperty.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition() + Bounds.Location;
+            var anchorPosition = GetLayerAnchorPosition();
             var anchorProperty = AnchorPointProperty.CurrentValue;
 
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - LayerShape.Bounds.MidX - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - LayerShape.Bounds.MidY - anchorProperty.Y * Bounds.Height;
+            // Translation originates from the unscaled center of the layer and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
 
-            // Apply these before translation because anchorPosition takes translation into account
+            // Rotation is always applied on the canvas
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
+            // canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
             // Once the other transformations are done it is save to translate
-            canvas.Translate(x, y);
+            // canvas.Translate(x, y);
 
             // Placeholder
             if (LayerShape?.Path != null)
@@ -200,8 +191,12 @@ namespace Artemis.Core.Models.Profile
                         testColors.Add(SKColor.FromHsv(0, 100, 100));
                 }
 
-                var shader = SKShader.CreateSweepGradient(new SKPoint(LayerShape.Bounds.MidX, LayerShape.Bounds.MidY), testColors.ToArray());
-                canvas.DrawPath(LayerShape.Path, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
+                var path = new SKPath(LayerShape.Path);
+                path.Transform(SKMatrix.MakeTranslation(x, y));
+                path.Transform(SKMatrix.MakeScale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y));
+
+                var shader = SKShader.CreateSweepGradient(new SKPoint(path.Bounds.MidX, path.Bounds.MidY), testColors.ToArray());
+                canvas.DrawPath(path, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
             }
 
             LayerBrush?.Render(canvas);
@@ -213,7 +208,7 @@ namespace Artemis.Core.Models.Profile
             var positionProperty = PositionProperty.CurrentValue;
 
             // Start at the center of the shape
-            var position = new SKPoint(LayerShape.Bounds.MidX, LayerShape.Bounds.MidY);
+            var position = new SKPoint(Bounds.MidX, Bounds.MidY);
 
             // Apply translation
             position.X += positionProperty.X * Bounds.Width;
