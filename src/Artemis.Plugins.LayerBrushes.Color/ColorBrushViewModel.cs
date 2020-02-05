@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Utilities;
+using Artemis.UI.Shared.Utilities;
 
 namespace Artemis.Plugins.LayerBrushes.Color
 {

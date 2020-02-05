@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-	<ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -101,6 +101,10 @@
       <Project>{9b811f9b-86b9-4771-87af-72bae7078a36}</Project>
       <Name>Artemis.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Project>{adb357e6-151d-4d0d-87cb-68fd0bc29812}</Project>
+      <Name>Artemis.UI.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

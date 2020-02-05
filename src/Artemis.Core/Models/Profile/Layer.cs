@@ -50,13 +50,19 @@ namespace Artemis.Core.Models.Profile
             _properties = new Dictionary<string, BaseLayerProperty>();
 
             CreateDefaultProperties();
+            CreateShapeType();
 
-            switch (layerEntity.ShapeType)
+            ShapeTypeProperty.ValueChanged += (sender, args) => CreateShapeType();
+        }
+
+        private void CreateShapeType()
+        {
+            switch (ShapeTypeProperty.CurrentValue)
             {
-                case ShapeEntityType.Ellipse:
+                case LayerShapeType.Ellipse:
                     LayerShape = new Ellipse(this);
                     break;
-                case ShapeEntityType.Rectangle:
+                case LayerShapeType.Rectangle:
                     LayerShape = new Rectangle(this);
                     break;
                 default:
@@ -111,6 +117,12 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public ReadOnlyCollection<BaseLayerProperty> Properties => _properties.Values.ToList().AsReadOnly();
 
+        public LayerProperty<LayerShapeType> ShapeTypeProperty { get; set; }
+
+        public LayerProperty<LayerFillType> FillTypeProperty { get; set; }
+
+        public LayerProperty<SKBlendMode> BlendModeProperty { get; set; }
+
         /// <summary>
         ///     The anchor point property of this layer, also found in <see cref="Properties" />
         /// </summary>
@@ -124,7 +136,7 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     The size property of this layer, also found in <see cref="Properties" />
         /// </summary>
-        public LayerProperty<SKSize> SizeProperty { get; private set; }
+        public LayerProperty<SKSize> ScaleProperty { get; private set; }
 
         /// <summary>
         ///     The rotation property of this layer range 0 - 360, also found in <see cref="Properties" />
@@ -162,41 +174,48 @@ namespace Artemis.Core.Models.Profile
             canvas.Save();
             canvas.ClipPath(Path);
 
-            // Apply transformations
-            var sizeProperty = SizeProperty.CurrentValue;
-            var rotationProperty = RotationProperty.CurrentValue;
-
-            var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = AnchorPointProperty.CurrentValue;
-
-            // Translation originates from the unscaled center of the layer and is tied to the anchor
-            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
-
-            // Rotation is always applied on the canvas
-            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            // canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
-            // Once the other transformations are done it is save to translate
-            // canvas.Translate(x, y);
-
-            // Placeholder
-            if (LayerShape?.Path != null)
+            using (var paint = new SKPaint())
             {
-                var testColors = new List<SKColor>();
-                for (var i = 0; i < 9; i++)
+                paint.BlendMode = BlendModeProperty.CurrentValue;
+                paint.Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f));
+
+                // Apply transformations
+                var sizeProperty = ScaleProperty.CurrentValue;
+                var rotationProperty = RotationProperty.CurrentValue;
+
+                var anchorPosition = GetLayerAnchorPosition();
+                var anchorProperty = AnchorPointProperty.CurrentValue;
+
+                // Translation originates from the unscaled center of the layer and is tied to the anchor
+                var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+                var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+                // Rotation is always applied on the canvas
+                canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+                // canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
+                // Once the other transformations are done it is save to translate
+                // canvas.Translate(x, y);
+
+                // Placeholder
+                if (LayerShape?.Path != null)
                 {
-                    if (i != 8)
-                        testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
-                    else
-                        testColors.Add(SKColor.FromHsv(0, 100, 100));
+                    var testColors = new List<SKColor>();
+                    for (var i = 0; i < 9; i++)
+                    {
+                        if (i != 8)
+                            testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
+                        else
+                            testColors.Add(SKColor.FromHsv(0, 100, 100));
+                    }
+
+                    var path = new SKPath(LayerShape.Path);
+                    path.Transform(SKMatrix.MakeTranslation(x, y));
+                    path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+
+
+                    paint.Shader = SKShader.CreateSweepGradient(new SKPoint(path.Bounds.MidX, path.Bounds.MidY), testColors.ToArray());
+                    canvas.DrawPath(path, paint);
                 }
-
-                var path = new SKPath(LayerShape.Path);
-                path.Transform(SKMatrix.MakeTranslation(x, y));
-                path.Transform(SKMatrix.MakeScale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y));
-
-                var shader = SKShader.CreateSweepGradient(new SKPoint(path.Bounds.MidX, path.Bounds.MidY), testColors.ToArray());
-                canvas.DrawPath(path, new SKPaint {Shader = shader, Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f))});
             }
 
             LayerBrush?.Render(canvas);
@@ -253,9 +272,6 @@ namespace Artemis.Core.Models.Profile
                     Configuration = JsonConvert.SerializeObject(LayerBrush.Settings)
                 };
             }
-
-            // Shape
-            LayerShape?.ApplyToEntity();
         }
 
         /// <summary>
@@ -397,22 +413,43 @@ namespace Artemis.Core.Models.Profile
 
         private void CreateDefaultProperties()
         {
-            var transformProperty = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "The default properties collection every layer has, allows you to transform the shape.")
-                {ExpandByDefault = true};
-            AnchorPointProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
-            PositionProperty = new LayerProperty<SKPoint>(this, transformProperty, "Core.Position", "Position", "The position of the shape.");
-            SizeProperty = new LayerProperty<SKSize>(this, transformProperty, "Core.Size", "Size", "The size of the shape.") {InputAffix = "%"};
-            RotationProperty = new LayerProperty<float>(this, transformProperty, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
-            OpacityProperty = new LayerProperty<float>(this, transformProperty, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
-            transformProperty.Children.Add(AnchorPointProperty);
-            transformProperty.Children.Add(PositionProperty);
-            transformProperty.Children.Add(SizeProperty);
-            transformProperty.Children.Add(RotationProperty);
-            transformProperty.Children.Add(OpacityProperty);
+            var shape = new LayerProperty<object>(this, null, "Core.Shape", "Shape", "A collection of basic shape properties.");
+            ShapeTypeProperty = new LayerProperty<LayerShapeType>(this, shape, "Core.ShapeType", "Shape type", "The type of shape to draw in this layer.") {CanUseKeyframes = false};
+            FillTypeProperty = new LayerProperty<LayerFillType>(this, shape, "Core.FillType", "Fill type", "How to make the shape adjust to scale changes.") {CanUseKeyframes = false};
+            BlendModeProperty = new LayerProperty<SKBlendMode>(this, shape, "Core.BlendMode", "Blend mode", "How to blend this layer into the resulting image.") {CanUseKeyframes = false};
+            shape.Children.Add(ShapeTypeProperty);
+            shape.Children.Add(FillTypeProperty);
+            shape.Children.Add(BlendModeProperty);
 
-            AddLayerProperty(transformProperty);
-            foreach (var transformPropertyChild in transformProperty.Children)
-                AddLayerProperty(transformPropertyChild);
+            var transform = new LayerProperty<object>(this, null, "Core.Transform", "Transform", "A collection of transformation properties.") {ExpandByDefault = true};
+            AnchorPointProperty = new LayerProperty<SKPoint>(this, transform, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
+            PositionProperty = new LayerProperty<SKPoint>(this, transform, "Core.Position", "Position", "The position of the shape.");
+            ScaleProperty = new LayerProperty<SKSize>(this, transform, "Core.Scale", "Scale", "The scale of the shape.") {InputAffix = "%"};
+            RotationProperty = new LayerProperty<float>(this, transform, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
+            OpacityProperty = new LayerProperty<float>(this, transform, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
+            transform.Children.Add(AnchorPointProperty);
+            transform.Children.Add(PositionProperty);
+            transform.Children.Add(ScaleProperty);
+            transform.Children.Add(RotationProperty);
+
+            // Set default values
+            ShapeTypeProperty.Value = LayerShapeType.Rectangle;
+            FillTypeProperty.Value = LayerFillType.Stretch;
+            BlendModeProperty.Value = SKBlendMode.SrcOver;
+
+            ScaleProperty.Value = new SKSize(100, 100);
+            OpacityProperty.Value = 100;
+
+
+            transform.Children.Add(OpacityProperty);
+
+            AddLayerProperty(shape);
+            foreach (var shapeProperty in shape.Children)
+                AddLayerProperty(shapeProperty);
+
+            AddLayerProperty(transform);
+            foreach (var transformProperty in transform.Children)
+                AddLayerProperty(transformProperty);
         }
 
         #endregion
@@ -433,5 +470,18 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+    }
+
+    public enum LayerShapeType
+    {
+        Ellipse,
+        Rectangle
+    }
+
+    public enum LayerFillType
+    {
+        Stretch,
+        Clip,
+        Tile
     }
 }

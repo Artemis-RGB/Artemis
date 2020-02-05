@@ -211,7 +211,6 @@
     <Compile Include="Services\Storage\Interfaces\ISurfaceService.cs" />
     <Compile Include="Services\Storage\SurfaceService.cs" />
     <Compile Include="Utilities\Easings.cs" />
-    <Compile Include="Utilities\EnumUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

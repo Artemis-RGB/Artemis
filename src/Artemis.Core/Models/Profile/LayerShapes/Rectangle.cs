@@ -15,10 +15,5 @@ namespace Artemis.Core.Models.Profile.LayerShapes
             path.AddRect(Layer.Bounds);
             Path = path;
         }
-
-        public override void ApplyToEntity()
-        {
-            Layer.LayerEntity.ShapeType = ShapeEntityType.Rectangle;
-        }
     }
 }

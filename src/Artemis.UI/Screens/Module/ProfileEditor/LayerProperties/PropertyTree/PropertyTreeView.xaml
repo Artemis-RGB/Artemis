@@ -82,6 +82,7 @@
     <TreeView ItemsSource="{Binding PropertyTreeItemViewModels}"
               HorizontalContentAlignment="Stretch"
               Background="{DynamicResource MaterialDesignToolBarBackground}"
+              PreviewMouseWheel="{s:Action PropertyTreePreviewMouseWheel}"
               Margin="0 -1">
         <TreeView.ItemContainerStyle>
             <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">

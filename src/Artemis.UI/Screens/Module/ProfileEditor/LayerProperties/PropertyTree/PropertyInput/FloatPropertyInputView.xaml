@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:FloatPropertyInputViewModel}">
@@ -15,7 +16,8 @@
                  Padding="0 -1"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
-                 Text="{Binding FloatInputValue}" />
+                 Text="{Binding FloatInputValue}"
+                 RequestBringIntoView="{s:Action OnRequestBringIntoView}"/>
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

@@ -65,7 +65,7 @@ namespace Artemis.UI.Services
 
             var transformGroup = new TransformGroup();
             transformGroup.Children.Add(new TranslateTransform(x, y));
-            transformGroup.Children.Add(new ScaleTransform(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchorPosition.X, anchorPosition.Y));
+            transformGroup.Children.Add(new ScaleTransform(layer.ScaleProperty.CurrentValue.Width / 100f, layer.ScaleProperty.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
             transformGroup.Children.Add(new RotateTransform(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return transformGroup;
@@ -89,7 +89,7 @@ namespace Artemis.UI.Services
             if (includeTranslation)
                 path.Transform(SKMatrix.MakeTranslation(x, y));
             if (includeScale)
-                path.Transform(SKMatrix.MakeScale(layer.SizeProperty.CurrentValue.Width, layer.SizeProperty.CurrentValue.Height, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeScale(layer.ScaleProperty.CurrentValue.Width / 100f, layer.ScaleProperty.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
             if (includeRotation)
                 path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
