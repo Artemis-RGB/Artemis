@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Ninject.Factories;
@@ -58,14 +59,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             // Force the keyframe engine to update, the new keyframe is the current keyframe
             LayerProperty.IsUsingKeyframes = _keyframesEnabled;
-            LayerProperty.KeyframeEngine.Update(0);
+            LayerProperty.KeyframeEngine?.Update(0);
 
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public PropertyInputViewModel GetPropertyInputViewModel()
         {
-            var match = _kernel.Get<List<PropertyInputViewModel>>().FirstOrDefault(p => p.CompatibleTypes.Contains(LayerProperty.Type));
+            // If the type is an enum type, search for Enum instead.
+            var type = LayerProperty.Type;
+            if (type.IsEnum)
+                type = typeof(Enum);
+
+            var match = _kernel.Get<List<PropertyInputViewModel>>().FirstOrDefault(p => p.CompatibleTypes.Contains(type));
             if (match == null)
                 return null;
 

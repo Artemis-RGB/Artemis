@@ -20,7 +20,5 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         public SKPath Path { get; protected set; }
 
         public abstract void CalculateRenderProperties();
-
-        public abstract void ApplyToEntity();
     }
 }

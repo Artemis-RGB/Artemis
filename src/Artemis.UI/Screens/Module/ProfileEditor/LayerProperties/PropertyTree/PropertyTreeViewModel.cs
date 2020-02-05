@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -48,6 +51,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         {
             foreach (var viewModel in PropertyTreeItemViewModels)
                 viewModel.Update(forceUpdate);
+        }
+
+        public void PropertyTreePreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Handled || !(sender is TreeView))
+                return;
+
+            e.Handled = true;
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = UIElement.MouseWheelEvent,
+                Source = sender
+            };
+            var parent = ((Control) sender).Parent as UIElement;
+            parent?.RaiseEvent(eventArg);
         }
     }
 }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using Humanizer;
 
-namespace Artemis.Core.Utilities
+namespace Artemis.UI.Shared.Utilities
 {
     public static class EnumUtilities
     {
@@ -25,7 +26,7 @@ namespace Artemis.Core.Utilities
             if (!t.IsEnum)
                 throw new ArgumentException($"{nameof(t)} must be an enum type");
 
-            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription {Value = e, Description = e.Description()}).ToList();
+            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription {Value = e, Description = e.Humanize()}).ToList();
         }
     }
 

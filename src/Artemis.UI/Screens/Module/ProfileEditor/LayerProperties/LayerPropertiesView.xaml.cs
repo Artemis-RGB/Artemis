@@ -17,8 +17,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             if (sender == TimelineHeaderScrollViewer)
                 TimelineRailsScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
+            else if (sender == PropertyTreeScrollViewer)
+                TimelineRailsScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
             else if (sender == TimelineRailsScrollViewer)
+            {
                 TimelineHeaderScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
+                PropertyTreeScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
+            }
         }
     }
 }

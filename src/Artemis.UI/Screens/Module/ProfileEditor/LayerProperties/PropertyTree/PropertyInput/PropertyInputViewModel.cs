@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -28,16 +29,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         public void Initialize(LayerPropertyViewModel layerPropertyViewModel)
         {
+            var type = layerPropertyViewModel.LayerProperty.Type;
+            if (type.IsEnum)
+                type = typeof(Enum);
             if (Initialized)
                 throw new ArtemisUIException("Cannot initialize the same property input VM twice");
-            if (!CompatibleTypes.Contains(layerPropertyViewModel.LayerProperty.Type))
-                throw new ArtemisUIException($"This input VM does not support the provided type {layerPropertyViewModel.LayerProperty.Type.Name}");
+            if (!CompatibleTypes.Contains(type))
+                throw new ArtemisUIException($"This input VM does not support the provided type {type.Name}");
 
             LayerPropertyViewModel = layerPropertyViewModel;
             layerPropertyViewModel.LayerProperty.ValueChanged += (sender, args) => Update();
             Update();
 
             Initialized = true;
+
+            OnInitialized();
+        }
+
+        /// <summary>
+        /// Called by the view, prevents scrolling into view when scrubbing through the timeline
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private void UpdateInputValue(object value)
@@ -47,6 +63,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             LayerPropertyViewModel.LayerProperty.KeyframeEngine?.Update(0);
 
             ProfileEditorService.UpdateSelectedProfileElement();
+        }
+
+        protected virtual void OnInitialized()
+        {
         }
 
         public abstract void Update();

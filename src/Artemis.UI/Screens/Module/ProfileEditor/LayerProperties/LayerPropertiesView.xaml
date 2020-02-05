@@ -19,6 +19,43 @@
     </UserControl.InputBindings>
     <UserControl.Resources>
         <s:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <Style x:Key="SVStyle" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                            <ScrollBar Name="PART_VerticalScrollBar"
+                                       HorizontalAlignment="Right"
+                                       Opacity="0.5"
+                                       Grid.Column="1"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                            <ScrollBar Name="PART_HorizontalScrollBar"
+                                       VerticalAlignment="Bottom"
+                                       Orientation="Horizontal"
+                                       Opacity="0.5"
+                                       Grid.Row="1"
+                                       Value="{TemplateBinding HorizontalOffset}"
+                                       Maximum="{TemplateBinding ScrollableWidth}"
+                                       ViewportSize="{TemplateBinding ViewportWidth}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     <Grid x:Name="ContainerGrid">
         <Grid.RowDefinitions>
@@ -74,7 +111,11 @@
             </DockPanel>
 
             <!-- Properties tree -->
-            <ScrollViewer Grid.Row="1" x:Name="PropertyTreeScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <ScrollViewer x:Name="PropertyTreeScrollViewer"
+                          Grid.Row="1"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Hidden"
+                          ScrollChanged="TimelineScrollChanged">
                 <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
                     <ContentControl s:View.Model="{Binding PropertyTree}" />
                 </Border>
@@ -113,7 +154,12 @@
             </ScrollViewer>
 
             <!-- Timeline rails -->
-            <ScrollViewer Grid.Row="1" x:Name="TimelineRailsScrollViewer" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+            <ScrollViewer x:Name="TimelineRailsScrollViewer"
+                          Grid.Row="1"
+                          Style="{StaticResource SVStyle}"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
+                          ScrollChanged="TimelineScrollChanged">
                 <Grid>
                     <Canvas ZIndex="1"
                             Margin="{Binding TimeCaretPosition}"
@@ -125,7 +171,6 @@
                     </Canvas>
                     <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding PropertyTimeline}" />
                 </Grid>
-
             </ScrollViewer>
         </Grid>
 

@@ -120,7 +120,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
             _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
-            _dragStartScale = layer.SizeProperty.CurrentValue;
+            _dragStartScale = layer.ScaleProperty.CurrentValue;
 
             // Store the original position and do a test to figure out the mouse offset
             var originalPosition = layer.PositionProperty.CurrentValue;
@@ -169,25 +169,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     break;
                 case ShapeControlPoint.TopCenter:
                     height = VerticalResize(layer, position, ResizeOrigin.Top);
-                    width = layer.SizeProperty.CurrentValue.Width;
+                    width = layer.ScaleProperty.CurrentValue.Width;
                     break;
                 case ShapeControlPoint.RightCenter:
                     width = HorizontalResize(layer, position, ResizeOrigin.Right);
-                    height = layer.SizeProperty.CurrentValue.Height;
+                    height = layer.ScaleProperty.CurrentValue.Height;
                     break;
                 case ShapeControlPoint.BottomCenter:
-                    width = layer.SizeProperty.CurrentValue.Width;
+                    width = layer.ScaleProperty.CurrentValue.Width;
                     height = VerticalResize(layer, position, ResizeOrigin.Bottom);
                     break;
                 case ShapeControlPoint.LeftCenter:
                     width = HorizontalResize(layer, position, ResizeOrigin.Left);
-                    height = layer.SizeProperty.CurrentValue.Height;
+                    height = layer.ScaleProperty.CurrentValue.Height;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            layer.SizeProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
+            layer.ScaleProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
@@ -206,9 +206,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var anchorOffset = anchorDistance / shapePath.Bounds.Width;
 
             var pixelsToAdd = (position - dragStart).X / anchorOffset;
-            var scaleToAdd = scalePerPixel * pixelsToAdd;
+            var scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
 
-            return Math.Max(0.001f, _dragStartScale.Width + scaleToAdd);
+            return (float) Math.Round(Math.Max(0, _dragStartScale.Width + scaleToAdd), 2, MidpointRounding.AwayFromZero);
         }
 
         private float VerticalResize(Layer layer, SKPoint position, ResizeOrigin origin)
@@ -226,9 +226,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var anchorOffset = anchorDistance / shapePath.Bounds.Height;
 
             var pixelsToAdd = (position - dragStart).Y / anchorOffset;
-            var scaleToAdd = scalePerPixel * pixelsToAdd;
+            var scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
 
-            return Math.Max(0.001f, _dragStartScale.Height + scaleToAdd);
+            return (float) Math.Round(Math.Max(0, _dragStartScale.Height + scaleToAdd), 2, MidpointRounding.AwayFromZero);
         }
 
         #endregion
@@ -250,7 +250,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             {
                 // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
                 _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
-                _dragStartScale = layer.SizeProperty.CurrentValue;
+                _dragStartScale = layer.ScaleProperty.CurrentValue;
 
                 // Store the original position and do a test to figure out the mouse offset
                 var originalPosition = layer.PositionProperty.CurrentValue;
@@ -378,7 +378,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)
-                counterRotatePath.Transform(SKMatrix.MakeScale(1f / layer.SizeProperty.CurrentValue.Width, 1f / layer.SizeProperty.CurrentValue.Height));
+                counterRotatePath.Transform(SKMatrix.MakeScale(1f / (layer.ScaleProperty.CurrentValue.Width / 100f), 1f / (layer.ScaleProperty.CurrentValue.Height / 100f)));
 
             return counterRotatePath.Points;
         }

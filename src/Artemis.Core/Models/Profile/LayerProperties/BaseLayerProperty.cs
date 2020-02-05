@@ -182,7 +182,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public void ClearKeyframes()
         {
-            BaseValue = KeyframeEngine.GetCurrentValue();
+            if (KeyframeEngine != null)
+                BaseValue = KeyframeEngine.GetCurrentValue();
+
             BaseKeyframes.Clear();
         }
 
@@ -265,6 +267,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         #region Events
 
+        /// <summary>
+        ///     Occurs when this property's value was changed outside regular keyframe updates
+        /// </summary>
         public event EventHandler<EventArgs> ValueChanged;
 
         protected virtual void OnValueChanged()
