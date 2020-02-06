@@ -35,6 +35,9 @@ namespace Artemis.Core.Models.Profile
             _properties = new Dictionary<string, BaseLayerProperty>();
 
             CreateDefaultProperties();
+            CreateShapeType();
+
+            ShapeTypeProperty.ValueChanged += (sender, args) => CreateShapeType();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
