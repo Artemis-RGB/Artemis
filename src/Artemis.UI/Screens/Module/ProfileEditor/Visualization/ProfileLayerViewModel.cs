@@ -174,6 +174,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public void Dispose()
         {
             Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
         }
 
         #region Event handlers  

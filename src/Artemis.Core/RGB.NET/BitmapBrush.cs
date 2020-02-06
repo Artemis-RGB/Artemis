@@ -75,9 +75,14 @@ namespace Artemis.Core.RGB.NET
         {
             foreach (var renderTarget in renderTargets)
             {
+                if (renderTarget.Led.Id == LedId.Keyboard_W)
+                    Console.WriteLine();
                 var scaledLocation = renderTarget.Point * Scale;
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
+                {
+                    var test = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt());
                     RenderedTargets[renderTarget] = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
+                }
             }
         }
 
@@ -133,7 +138,7 @@ namespace Artemis.Core.RGB.NET
         {
             var width = Math.Min((rectangle.Location.X + rectangle.Size.Width) * Scale.Horizontal, 4096);
             var height = Math.Min((rectangle.Location.Y + rectangle.Size.Height) * Scale.Vertical, 4096);
-            Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt()));
+            Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt(), SKColorType.Rgb888x));
         }
 
         /// <inheritdoc />
