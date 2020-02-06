@@ -18,8 +18,9 @@ namespace Artemis.UI.Services.Interfaces
         ///     Returns the layer's anchor, corrected for the current render scale.
         /// </summary>
         /// <param name="layer"></param>
+        /// <param name="positionOverride"></param>
         /// <returns></returns>
-        Point GetLayerAnchorPosition(Layer layer);
+        Point GetLayerAnchorPosition(Layer layer, SKPoint? positionOverride = null);
 
         /// <summary>
         ///     Creates a WPF transform group that contains all the transformations required to render the provided layer.
@@ -36,8 +37,9 @@ namespace Artemis.UI.Services.Interfaces
         /// <param name="includeTranslation"></param>
         /// <param name="includeScale"></param>
         /// <param name="includeRotation"></param>
+        /// <param name="anchorOverride"></param>
         /// <returns></returns>
-        SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation);
+        SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation, SKPoint? anchorOverride = null);
 
         /// <summary>
         ///     Returns a new point scaled to the layer.
@@ -47,5 +49,7 @@ namespace Artemis.UI.Services.Interfaces
         /// <param name="absolute"></param>
         /// <returns></returns>
         SKPoint GetScaledPoint(Layer layer, SKPoint point, bool absolute);
+
+        SKPoint GetDragOffset(Layer layer, SKPoint dragStart);
     }
 }

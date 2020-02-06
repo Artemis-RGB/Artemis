@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
@@ -16,7 +17,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private readonly ILayerEditorService _layerEditorService;
         private SKPoint _dragOffset;
         private SKPoint _dragStart;
-        private SKSize _dragStartScale;
         private SKPoint _topLeft;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
@@ -112,33 +112,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         #region Size
 
         private bool _isResizing;
+        private SKSize _dragStartScale;
 
         public void ResizeMouseDown(object sender, ShapeControlEventArgs e)
         {
             if (_isResizing || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
-            _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+            var dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+            _dragOffset = _layerEditorService.GetDragOffset(layer, dragStart);
+            _dragStart = dragStart + _dragOffset;
             _dragStartScale = layer.ScaleProperty.CurrentValue;
 
-            // Store the original position and do a test to figure out the mouse offset
-            var originalPosition = layer.PositionProperty.CurrentValue;
-            var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
-            layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
-
-            // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
-            // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
-            _dragOffset = _topLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
-            _dragStart += _dragOffset;
-
-            // Restore the position back to before the test was done
-            layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
             _isResizing = true;
         }
 
         public void ResizeMouseUp(object sender, ShapeControlEventArgs e)
         {
+            ProfileEditorService.UpdateSelectedProfileElement();
             _isResizing = false;
         }
 
@@ -248,23 +239,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             if (e.ShapeControlPoint == ShapeControlPoint.LayerShape)
             {
-                // The path starts at 0,0 so there's no simple way to get the position relative to the top-left of the path
-                _dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
-                _dragStartScale = layer.ScaleProperty.CurrentValue;
-
-                // Store the original position and do a test to figure out the mouse offset
-                var originalPosition = layer.PositionProperty.CurrentValue;
-                var scaledDragStart = _layerEditorService.GetScaledPoint(layer, _dragStart, true);
-                layer.PositionProperty.SetCurrentValue(scaledDragStart, ProfileEditorService.CurrentTime);
-
-                // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the position
-                // GetLayerPath will return the updated position with all transformations applied, the difference is the offset
-                _dragOffset = _topLeft - _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
-                _dragStart += _dragOffset;
-
-                // Restore the position back to before the test was done
-                layer.PositionProperty.SetCurrentValue(originalPosition, ProfileEditorService.CurrentTime);
-
+                var dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+                _dragOffset = _layerEditorService.GetDragOffset(layer, dragStart);
+                _dragStart = dragStart + _dragOffset;
                 _movingShape = true;
             }
             else if (e.ShapeControlPoint == ShapeControlPoint.Anchor)
@@ -287,6 +264,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public void MoveMouseUp(object sender, ShapeControlEventArgs e)
         {
+            ProfileEditorService.UpdateSelectedProfileElement();
             _movingShape = false;
             _movingAnchor = false;
         }
@@ -393,8 +371,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             var layerBounds = _layerEditorService.GetLayerBounds(layer);
             var start = _layerEditorService.GetLayerAnchorPosition(layer);
-            start.X += layerBounds.Left;
-            start.Y += layerBounds.Top;
             var arrival = GetRelativePosition(mouseEventSender, mouseEvent);
 
             var radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);

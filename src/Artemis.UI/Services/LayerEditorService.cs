@@ -32,10 +32,12 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public Point GetLayerAnchorPosition(Layer layer)
+        public Point GetLayerAnchorPosition(Layer layer, SKPoint? positionOverride = null)
         {
             var layerBounds = GetLayerBounds(layer).ToSKRect();
             var positionProperty = layer.PositionProperty.CurrentValue;
+            if (positionOverride != null)
+                positionProperty = positionOverride.Value;
 
             // Start at the center of the shape
             var position = new Point(layerBounds.MidX, layerBounds.MidY);
@@ -72,12 +74,15 @@ namespace Artemis.UI.Services
         }
 
         /// <inheritdoc />
-        public SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation)
+        public SKPath GetLayerPath(Layer layer, bool includeTranslation, bool includeScale, bool includeRotation, SKPoint? anchorOverride = null)
         {
             var layerBounds = GetLayerBounds(layer).ToSKRect();
 
             // Apply transformation like done by the core during layer rendering (same differences apply as in GetLayerTransformGroup)
             var anchorPosition = GetLayerAnchorPosition(layer).ToSKPoint();
+            if (anchorOverride != null)
+                anchorPosition = anchorOverride.Value;
+
             var anchorProperty = layer.AnchorPointProperty.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
@@ -112,6 +117,20 @@ namespace Artemis.UI.Services
                 100f / layer.Bounds.Width * (float) (point.X * renderScale) / 100f,
                 100f / layer.Bounds.Height * (float) (point.Y * renderScale) / 100f
             );
+        }
+
+        public SKPoint GetDragOffset(Layer layer, SKPoint dragStart)
+        {
+            // Figure out what the top left will be if the shape moves to the current cursor position
+            var scaledDragStart = GetScaledPoint(layer, dragStart, true);
+            var tempAnchor = GetLayerAnchorPosition(layer, scaledDragStart).ToSKPoint();
+            var tempTopLeft = GetLayerPath(layer, true, true, true, tempAnchor)[0];
+
+            // Get the shape's position
+            var topLeft = GetLayerPath(layer, true, true, true)[0];
+
+            // The difference between the two is the offset
+            return topLeft - tempTopLeft;
         }
     }
 }

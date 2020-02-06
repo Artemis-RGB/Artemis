@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -156,11 +157,18 @@ namespace Artemis.Core.Models.Profile
         public override void Update(double deltaTime)
         {
             foreach (var property in Properties)
-            {
                 property.KeyframeEngine?.Update(deltaTime);
-                // This is a placeholder method of repeating the animation until repeat modes are implemented
-                if (property.KeyframeEngine != null && property.IsUsingKeyframes && property.KeyframeEngine.NextKeyframe == null)
-                    property.KeyframeEngine.OverrideProgress(TimeSpan.Zero);
+
+            // For now, reset all keyframe engines after the last keyframe was hit
+            // This is a placeholder method of repeating the animation until repeat modes are implemented
+            var lastKeyframe = Properties.SelectMany(p => p.UntypedKeyframes).OrderByDescending(t => t.Position).FirstOrDefault();
+            if (lastKeyframe != null)
+            {
+                if (Properties.Any(p => p.KeyframeEngine?.Progress > lastKeyframe.Position))
+                {
+                    foreach (var baseLayerProperty in Properties)
+                        baseLayerProperty.KeyframeEngine?.OverrideProgress(TimeSpan.Zero);
+                }
             }
 
             LayerBrush?.Update(deltaTime);

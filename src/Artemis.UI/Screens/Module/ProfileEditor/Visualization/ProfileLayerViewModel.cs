@@ -190,14 +190,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
         {
-            if (IsSelected)
-                Update();
+            Update();
         }
 
         private void ProfileEditorServiceOnProfilePreviewUpdated(object sender, EventArgs e)
         {
-            if (!IsSelected)
-                return;
             CreateShapeGeometry();
             CreateViewportRectangle();
         }
