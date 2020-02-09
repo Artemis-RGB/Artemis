@@ -178,6 +178,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     throw new ArgumentOutOfRangeException();
             }
 
+            // Make the sides even if shift is held down
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && e.ShapeControlPoint < ShapeControlPoint.TopCenter)
+            {
+                var bounds = _layerEditorService.GetLayerBounds(layer);
+                var smallestSide = Math.Min(bounds.Width * width, bounds.Height * height);
+                width = (float) Math.Round(1.0 / bounds.Width * smallestSide, 2, MidpointRounding.AwayFromZero);
+                height = (float) Math.Round(1.0 / bounds.Height * smallestSide, 2, MidpointRounding.AwayFromZero);
+            }
+
             layer.ScaleProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }

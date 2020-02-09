@@ -68,9 +68,10 @@ namespace Artemis.Plugins.LayerBrushes.Color
             return new ColorBrushViewModel(this);
         }
 
-        public override void Render(SKCanvas canvas)
+        public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
         {
-            canvas.DrawPath(Layer.LayerShape.Path, _paint);
+            paint.Shader = _shader;
+            canvas.DrawPath(path, paint);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -179,7 +178,7 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, SKCanvas canvas)
         {
-            if (Path == null || LayerShape == null)
+            if (Path == null || LayerShape?.Path == null)
                 return;
 
             canvas.Save();
@@ -190,47 +189,91 @@ namespace Artemis.Core.Models.Profile
                 paint.BlendMode = BlendModeProperty.CurrentValue;
                 paint.Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f));
 
-                // Apply transformations
-                var sizeProperty = ScaleProperty.CurrentValue;
-                var rotationProperty = RotationProperty.CurrentValue;
-
-                var anchorPosition = GetLayerAnchorPosition();
-                var anchorProperty = AnchorPointProperty.CurrentValue;
-
-                // Translation originates from the unscaled center of the layer and is tied to the anchor
-                var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
-                var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
-
-                // Rotation is always applied on the canvas
-                canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-                // canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
-                // Once the other transformations are done it is save to translate
-                // canvas.Translate(x, y);
-
-                // Placeholder
-                if (LayerShape?.Path != null)
+                switch (FillTypeProperty.CurrentValue)
                 {
-                    var testColors = new List<SKColor>();
-                    for (var i = 0; i < 9; i++)
-                    {
-                        if (i != 8)
-                            testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
-                        else
-                            testColors.Add(SKColor.FromHsv(0, 100, 100));
-                    }
-
-                    var path = new SKPath(LayerShape.Path);
-                    path.Transform(SKMatrix.MakeTranslation(x, y));
-                    path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
-
-
-                    paint.Shader = SKShader.CreateSweepGradient(new SKPoint(path.Bounds.MidX, path.Bounds.MidY), testColors.ToArray());
-                    canvas.DrawPath(path, paint);
+                    case LayerFillType.Stretch:
+                        StretchRender(canvas, paint);
+                        break;
+                    case LayerFillType.Clip:
+                        ClipRender(canvas, paint);
+                        break;
+                    case LayerFillType.Tile:
+                        TileRender(canvas, paint);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            LayerBrush?.Render(canvas);
             canvas.Restore();
+        }
+
+        private void StretchRender(SKCanvas canvas, SKPaint paint)
+        {
+            // Apply transformations
+            var sizeProperty = ScaleProperty.CurrentValue;
+            var rotationProperty = RotationProperty.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition();
+            var anchorProperty = AnchorPointProperty.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+            // Apply these before translation because anchorPosition takes translation into account
+            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
+            // Once the other transformations are done it is save to translate
+            canvas.Translate(x, y);
+
+            LayerBrush?.Render(canvas, LayerShape.Path, paint);
+        }
+
+        private void ClipRender(SKCanvas canvas, SKPaint paint)
+        {
+            // Apply transformations
+            var sizeProperty = ScaleProperty.CurrentValue;
+            var rotationProperty = RotationProperty.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition();
+            var anchorProperty = AnchorPointProperty.CurrentValue;
+
+            // Translation originates from the unscaled center of the layer and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+            // Rotation is always applied on the canvas
+            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+
+            var path = new SKPath(LayerShape.Path);
+            path.Transform(SKMatrix.MakeTranslation(x, y));
+            path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+
+            LayerBrush?.Render(canvas, path, paint);
+        }
+
+        private void TileRender(SKCanvas canvas, SKPaint paint)
+        {
+            // TODO
+            // Apply transformations
+            var sizeProperty = ScaleProperty.CurrentValue;
+            var rotationProperty = RotationProperty.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition();
+            var anchorProperty = AnchorPointProperty.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+            // Apply these before translation because anchorPosition takes translation into account
+            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
+            // Once the other transformations are done it is save to translate
+            canvas.Translate(x, y);
+
+            LayerBrush?.Render(canvas, LayerShape.Path, paint);
         }
 
         private SKPoint GetLayerAnchorPosition()

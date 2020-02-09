@@ -23,7 +23,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         public new NoiseBrushSettings Settings { get; }
 
-
         public override void Update(double deltaTime)
         {
             // TODO: Come up with a better way to use deltaTime
@@ -40,11 +39,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             return new NoiseBrushViewModel(this);
         }
 
-        public override void Render(SKCanvas canvas)
+        public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
         {
             // Scale down the render path to avoid computing a value for every pixel
-            var width = (int) (Math.Max(Layer.Bounds.Width, Layer.Bounds.Height) / Scale);
-            var height = (int) (Math.Max(Layer.Bounds.Width, Layer.Bounds.Height) / Scale);
+            var width = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / Scale);
+            var height = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / Scale);
             var opacity = (float) Math.Round(Settings.Color.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
             using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
@@ -75,8 +74,8 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 }
 
                 using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
-                using (var paint = new SKPaint {Shader = sh, BlendMode = Settings.BlendMode})
                 {
+                    paint.Shader = sh;
                     canvas.DrawPath(Layer.LayerShape.Path, paint);
                 }
             }
