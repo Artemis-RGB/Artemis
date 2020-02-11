@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
@@ -20,6 +21,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             PopulateKeyframes();
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
         }
+
 
         public PropertyTimelineViewModel PropertyTimelineViewModel { get; }
         public LayerPropertyViewModel LayerPropertyViewModel { get; }
