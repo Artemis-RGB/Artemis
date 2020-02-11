@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -58,6 +59,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             PropertyTrackViewModels.Add(_propertyTrackViewModelFactory.Create(this, property));
             foreach (var child in property.Children)
                 CreateViewModels(child);
+        }
+
+        public void AddLayerProperty(BaseLayerProperty layerProperty)
+        {
+            throw new NotImplementedException();
         }
 
         public void ClearProperties()

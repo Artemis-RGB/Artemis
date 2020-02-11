@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public BaseLayerProperty LayerProperty { get; }
 
         public LayerPropertyViewModel Parent { get; }
-        public List<LayerPropertyViewModel> Children { get; set; }
+        public List<LayerPropertyViewModel> Children { get; }
 
         public bool IsExpanded { get; set; }
 
@@ -77,6 +77,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             match.Initialize(this);
             return match;
+        }
+
+        public IEnumerable<LayerPropertyViewModel> GetAllChildren()
+        {
+            var children = new List<LayerPropertyViewModel>();
+            children.AddRange(Children);
+            foreach (var layerPropertyViewModel in children) 
+                children.AddRange(layerPropertyViewModel.GetAllChildren());
+
+            return children;
         }
     }
 }

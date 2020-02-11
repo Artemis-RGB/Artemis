@@ -4,13 +4,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
     public class PropertyTreeChildViewModel : PropertyTreeItemViewModel
     {
-        public PropertyTreeChildViewModel(LayerPropertyViewModel layerPropertyViewModel)
+        public PropertyTreeChildViewModel(LayerPropertyViewModel layerPropertyViewModel) : base(layerPropertyViewModel)
         {
-            LayerPropertyViewModel = layerPropertyViewModel;
             PropertyInputViewModel = layerPropertyViewModel.GetPropertyInputViewModel();
         }
 
-        public LayerPropertyViewModel LayerPropertyViewModel { get; }
         public PropertyInputViewModel PropertyInputViewModel { get; set; }
 
         public override void Update(bool forceUpdate)

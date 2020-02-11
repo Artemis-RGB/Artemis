@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -41,6 +42,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         public void ClearProperties()
         {
             PropertyTreeItemViewModels.Clear();
+        }
+
+        public void AddLayerProperty(BaseLayerProperty layerProperty)
+        {
+            
         }
 
         /// <summary>

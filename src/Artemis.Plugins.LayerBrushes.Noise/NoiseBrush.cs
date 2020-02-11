@@ -9,7 +9,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 {
     public class NoiseBrush : LayerBrush
     {
-        private const int Scale = 6;
         private static readonly Random Rand = new Random();
         private readonly OpenSimplexNoise _noise;
         private float _z;
@@ -42,12 +41,13 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
         {
+            return;
             var mainColor = MainColorProperty.CurrentValue;
             var scale = ScaleProperty.CurrentValue;
 
             // Scale down the render path to avoid computing a value for every pixel
-            var width = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / Scale);
-            var height = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / Scale);
+            var width = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / scale.Width);
+            var height = (int) (Math.Max(path.Bounds.Width, path.Bounds.Height) / scale.Height);
             var opacity = (float) Math.Round(mainColor.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
             using (var bitmap = new SKBitmap(new SKImageInfo(width, height)))
             {
@@ -55,10 +55,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 // Only compute pixels inside LEDs, due to scaling there may be some rounding issues but it's neglect-able
                 foreach (var artemisLed in Layer.Leds)
                 {
-                    var xStart = artemisLed.AbsoluteRenderRectangle.Left / Scale;
-                    var xEnd = artemisLed.AbsoluteRenderRectangle.Right / Scale;
-                    var yStart = artemisLed.AbsoluteRenderRectangle.Top / Scale;
-                    var yEnd = artemisLed.AbsoluteRenderRectangle.Bottom / Scale;
+                    var xStart = artemisLed.AbsoluteRenderRectangle.Left / scale.Width;
+                    var xEnd = artemisLed.AbsoluteRenderRectangle.Right / scale.Width;
+                    var yStart = artemisLed.AbsoluteRenderRectangle.Top / scale.Height;
+                    var yEnd = artemisLed.AbsoluteRenderRectangle.Bottom / scale.Height;
 
                     for (var x = xStart; x < xEnd; x++)
                     {
@@ -76,7 +76,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                     }
                 }
 
-                using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(Scale, Scale)))
+                using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, SKMatrix.MakeScale(scale.Width, scale.Height)))
                 {
                     paint.Shader = sh;
                     canvas.DrawPath(Layer.LayerShape.Path, paint);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
@@ -449,7 +450,7 @@ namespace Artemis.Core.Models.Profile
                 layerProperty.ApplyToProperty(propertyEntity);
 
             _properties.Add((layerProperty.PluginInfo.Guid, layerProperty.Id), layerProperty);
-            OnLayerPropertyRegistered();
+            OnLayerPropertyRegistered(new LayerPropertyEventArgs(layerProperty));
             return propertyEntity != null;
         }
 
@@ -471,12 +472,12 @@ namespace Artemis.Core.Models.Profile
         {
             if (!_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
                 throw new ArtemisCoreException($"Could not find a property with ID {layerProperty.Id}.");
-            
+
             var property = _properties[(layerProperty.PluginInfo.Guid, layerProperty.Id)];
             property.Parent?.Children.Remove(property);
             _properties.Remove((layerProperty.PluginInfo.Guid, layerProperty.Id));
 
-            OnLayerPropertyRemoved();
+            OnLayerPropertyRemoved(new LayerPropertyEventArgs(property));
         }
 
         /// <summary>
@@ -541,8 +542,8 @@ namespace Artemis.Core.Models.Profile
 
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
-        public event EventHandler LayerPropertyRegistered;
-        public event EventHandler LayerPropertyRemoved;
+        public event EventHandler<LayerPropertyEventArgs> LayerPropertyRegistered;
+        public event EventHandler<LayerPropertyEventArgs> LayerPropertyRemoved;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -561,14 +562,14 @@ namespace Artemis.Core.Models.Profile
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
-        private void OnLayerPropertyRegistered()
+        private void OnLayerPropertyRegistered(LayerPropertyEventArgs e)
         {
-            LayerPropertyRegistered?.Invoke(this, EventArgs.Empty);
+            LayerPropertyRegistered?.Invoke(this, e);
         }
 
-        private void OnLayerPropertyRemoved()
+        private void OnLayerPropertyRemoved(LayerPropertyEventArgs e)
         {
-            LayerPropertyRemoved?.Invoke(this, EventArgs.Empty);
+            LayerPropertyRemoved?.Invoke(this, e);
         }
     }
 
