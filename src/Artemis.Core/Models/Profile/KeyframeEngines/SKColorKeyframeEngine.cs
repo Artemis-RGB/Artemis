@@ -21,11 +21,16 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
             var alphaDiff = nextKeyframe.Value.Alpha - currentKeyframe.Value.Alpha;
 
             return new SKColor(
-                (byte) (currentKeyframe.Value.Red + redDiff * KeyframeProgressEased),
-                (byte) (currentKeyframe.Value.Green + greenDiff * KeyframeProgressEased),
-                (byte) (currentKeyframe.Value.Blue + blueDiff * KeyframeProgressEased),
-                (byte)(currentKeyframe.Value.Alpha + alphaDiff * KeyframeProgressEased)
+                ClampToByte(currentKeyframe.Value.Red + redDiff * KeyframeProgressEased),
+                ClampToByte(currentKeyframe.Value.Green + greenDiff * KeyframeProgressEased),
+                ClampToByte(currentKeyframe.Value.Blue + blueDiff * KeyframeProgressEased),
+                ClampToByte(currentKeyframe.Value.Alpha + alphaDiff * KeyframeProgressEased)
             );
+        }
+
+        private byte ClampToByte(float value)
+        {
+            return (byte) Math.Max(0, Math.Min(255, value));
         }
     }
 }
