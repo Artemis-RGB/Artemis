@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
 {
     /// <summary>
-    /// Interaction logic for EnumPropertyInputView.xaml
+    /// Interaction logic for BrushPropertyInputView.xaml
     /// </summary>
-    public partial class EnumPropertyInputView : UserControl
+    public partial class BrushPropertyInputView : UserControl
     {
-        public EnumPropertyInputView()
+        public BrushPropertyInputView()
         {
             InitializeComponent();
         }

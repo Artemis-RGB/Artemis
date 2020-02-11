@@ -12,10 +12,8 @@ namespace Artemis.Core.Services.Interfaces
         ///     <see cref="LayerBrushDescriptor" /> to the provided <see cref="Layer" />.
         /// </summary>
         /// <param name="layer">The layer to add the new layer element to</param>
-        /// <param name="brushDescriptor">The descriptor of the new layer brush</param>
-        /// <param name="settings">JSON settings to be deserialized and injected into the layer brush</param>
         /// <returns></returns>
-        LayerBrush InstantiateLayerBrush(Layer layer, LayerBrushDescriptor brushDescriptor, string settings = null);
+        LayerBrush InstantiateLayerBrush(Layer layer);
 
         /// <summary>
         ///     Instantiates and adds a compatible <see cref="KeyframeEngine" /> to the provided <see cref="LayerProperty{T}" />

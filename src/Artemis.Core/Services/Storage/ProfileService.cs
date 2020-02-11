@@ -148,20 +148,9 @@ namespace Artemis.Core.Services.Storage
 
         private void InstantiateProfileLayerBrushes(Profile profile)
         {
-            var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
-            var descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
-
             // Only instantiate brushes for layers without an existing brush instance
-            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null && l.LayerEntity.BrushEntity != null))
-            {
-                // Get a matching descriptor
-                var descriptor = descriptors.FirstOrDefault(d => d.LayerBrushProvider.PluginInfo.Guid == layer.LayerEntity.BrushEntity.BrushPluginGuid &&
-                                                                 d.LayerBrushType.Name == layer.LayerEntity.BrushEntity.BrushType);
-
-                // If a descriptor that matches if found, instantiate it with the GUID of the element entity
-                if (descriptor != null)
-                    _layerService.InstantiateLayerBrush(layer, descriptor, layer.LayerEntity.BrushEntity.Configuration);
-            }
+            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
+                _layerService.InstantiateLayerBrush(layer);
         }
 
         private void InstantiateProfileKeyframeEngines(Profile profile)

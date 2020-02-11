@@ -169,6 +169,10 @@
     </Compile>
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\LayerPropertyViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.xaml.cs">
+      <DependentUpon>BrushPropertyInputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.xaml.cs">
       <DependentUpon>EnumPropertyInputView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +180,10 @@
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\PropertyInputViewModel.cs" />
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.xaml.cs">
+      <DependentUpon>SKColorPropertyInputView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputViewModel.cs" />
     <Compile Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildViewModel.cs" />
@@ -302,6 +310,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,6 +323,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
