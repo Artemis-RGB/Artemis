@@ -90,8 +90,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorBrushSettings.cs" />
-    <Compile Include="ColorBrushViewModel.cs" />
     <Compile Include="ColorBrush.cs" />
     <Compile Include="ColorBrushProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -113,12 +111,6 @@
     <None Include="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ColorBrushView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

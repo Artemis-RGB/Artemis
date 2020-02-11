@@ -16,12 +16,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         public override void Update(bool forceUpdate)
         {
             if (forceUpdate)
-                PropertyInputViewModel.Update();
+                PropertyInputViewModel?.Update();
             else
             {
                 // Only update if visible and if keyframes are enabled
                 if (LayerPropertyViewModel.Parent.IsExpanded && LayerPropertyViewModel.KeyframesEnabled)
-                    PropertyInputViewModel.Update();
+                    PropertyInputViewModel?.Update();
             }
         }
     }

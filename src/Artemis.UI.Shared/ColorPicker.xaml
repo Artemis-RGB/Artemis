@@ -89,15 +89,24 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch">
+        <!-- Style="{StaticResource MaterialDesignFloatingHintTextBox}" -->
+        <!-- Padding="0 0 10 0" -->
         <TextBox x:Name="ColorCodeTextBox"
                  materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Text="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorToStringConverter}}"
                  MinWidth="95"
-                 Padding="0 0 10 0"
+                 MaxLength="9"
+                 Margin="0"
+                 Padding="-1"
                  HorizontalAlignment="Stretch" />
 
-        <Border Width="15" Height="15" CornerRadius="15" Margin="0,0,0,5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{StaticResource Checkerboard}">
+        <Border Width="15"
+                Height="15" 
+                CornerRadius="15"
+                Margin="0,0,0,2" 
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                Background="{StaticResource Checkerboard}">
             <Ellipse Stroke="{DynamicResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
                 <Ellipse.Fill>
                     <SolidColorBrush Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}" />

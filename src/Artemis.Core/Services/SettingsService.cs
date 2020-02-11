@@ -12,8 +12,7 @@ namespace Artemis.Core.Services
 
         internal SettingsService(IPluginSettingRepository pluginSettingRepository)
         {
-            var pluginInfo = new PluginInfo {Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core"};
-            _pluginSettings = new PluginSettings(pluginInfo, pluginSettingRepository);
+            _pluginSettings = new PluginSettings(Constants.CorePluginInfo, pluginSettingRepository);
         }
 
         public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)

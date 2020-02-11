@@ -41,6 +41,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PopulateProperties();
 
             _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties();
+            _profileEditorService.SelectedProfileChanged += (sender, args) => PopulateProperties();
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 

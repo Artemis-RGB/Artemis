@@ -152,8 +152,10 @@
     <Compile Include="Models\Profile\KeyframeEngines\FloatKeyframeEngine.cs" />
     <Compile Include="Models\Profile\KeyframeEngines\IntKeyframeEngine.cs" />
     <Compile Include="Models\Profile\KeyframeEngines\KeyframeEngine.cs" />
+    <Compile Include="Models\Profile\KeyframeEngines\SKColorKeyframeEngine.cs" />
     <Compile Include="Models\Profile\KeyframeEngines\SKPointKeyframeEngine.cs" />
     <Compile Include="Models\Profile\KeyframeEngines\SKSizeKeyframeEngine.cs" />
+    <Compile Include="Models\Profile\LayerBrushReference.cs" />
     <Compile Include="Models\Profile\LayerProperties\BaseKeyframe.cs" />
     <Compile Include="Models\Profile\LayerProperties\Keyframe.cs" />
     <Compile Include="Models\Profile\LayerProperties\BaseLayerProperty.cs" />
@@ -178,8 +180,6 @@
     <Compile Include="Plugins\LayerBrush\LayerBrush.cs" />
     <Compile Include="Plugins\LayerBrush\LayerBrushDescriptor.cs" />
     <Compile Include="Plugins\LayerBrush\LayerBrushProvider.cs" />
-    <Compile Include="Plugins\LayerBrush\LayerBrushSettings.cs" />
-    <Compile Include="Plugins\LayerBrush\LayerBrushViewModel.cs" />
     <Compile Include="Plugins\Models\PluginInfo.cs" />
     <Compile Include="Plugins\Models\PluginSetting.cs" />
     <Compile Include="Plugins\Models\PluginSettings.cs" />

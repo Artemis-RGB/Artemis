@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-	<ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -90,8 +90,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NoiseBrushSettings.cs" />
-    <Compile Include="NoiseBrushViewModel.cs" />
     <Compile Include="NoiseBrush.cs" />
     <Compile Include="NoiseBrushProvider.cs" />
     <Compile Include="Utilities\OpenSimplexNoise.cs" />
@@ -114,12 +112,6 @@
     <None Include="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="NoiseBrushView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

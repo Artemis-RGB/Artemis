@@ -15,11 +15,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         // Keeping the scroll viewers in sync is up to the view, not a viewmodel concern
         private void TimelineScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            if (sender == TimelineHeaderScrollViewer)
+            if (e.OriginalSource == TimelineHeaderScrollViewer)
                 TimelineRailsScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
-            else if (sender == PropertyTreeScrollViewer)
+            else if (e.OriginalSource == PropertyTreeScrollViewer)
                 TimelineRailsScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
-            else if (sender == TimelineRailsScrollViewer)
+            else if (e.OriginalSource == TimelineRailsScrollViewer)
             {
                 TimelineHeaderScrollViewer.ScrollToHorizontalOffset(e.HorizontalOffset);
                 PropertyTreeScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);

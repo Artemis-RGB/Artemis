@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
-using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
@@ -18,57 +15,38 @@ namespace Artemis.Core.Services
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
+        private readonly IPluginService _pluginService;
 
-        public LayerService(IKernel kernel, ILogger logger)
+        public LayerService(IKernel kernel, ILogger logger, IPluginService pluginService)
         {
             _kernel = kernel;
             _logger = logger;
+            _pluginService = pluginService;
         }
 
-        public LayerBrush InstantiateLayerBrush(Layer layer, LayerBrushDescriptor brushDescriptor, string settings)
+        public LayerBrush InstantiateLayerBrush(Layer layer)
         {
-            // Determine the settings type declared by the layer element
-            object settingsInstance = null;
-            var properties = brushDescriptor.LayerBrushType.GetProperties();
-            var settingsType = properties.FirstOrDefault(p => p.Name == "Settings" &&
-                                                              p.DeclaringType == brushDescriptor.LayerBrushType)?.PropertyType;
+            RemoveLayerBrush(layer);
 
-            // Deserialize the settings if provided, check for null in JSON as well
-            if (settings != null && settings != "null")
-            {
-                // Setting where provided but no settings type was found, something is wrong
-                if (settingsType == null)
-                {
-                    throw new ArtemisPluginException(
-                        brushDescriptor.LayerBrushProvider.PluginInfo,
-                        $"Settings where provided but layer element of type {brushDescriptor.LayerBrushType.Name} has no Settings property."
-                    );
-                }
+            var descriptorReference = layer.BrushReferenceProperty.CurrentValue;
+            if (descriptorReference == null)
+                return null;
 
-                try
-                {
-                    settingsInstance = JsonConvert.DeserializeObject(settings, settingsType);
-                }
-                catch (JsonSerializationException e)
-                {
-                    _logger.Warning(e, "Failed to deserialize settings for layer type {type}, resetting element settings - Plugin info: {pluginInfo}",
-                        brushDescriptor.LayerBrushType.Name,
-                        brushDescriptor.LayerBrushProvider.PluginInfo);
+            // Get a matching descriptor
+            var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
+            var descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
+            var descriptor = descriptors.FirstOrDefault(d => d.LayerBrushProvider.PluginInfo.Guid == descriptorReference.BrushPluginGuid &&
+                                                             d.LayerBrushType.Name == descriptorReference.BrushType);
 
-                    settingsInstance = Activator.CreateInstance(settingsType);
-                }
-            }
-            // If no settings found, provide a fresh instance of the settings type
-            else if (settingsType != null)
-                settingsInstance = Activator.CreateInstance(settingsType);
+            if (descriptor == null)
+                return null;
 
             var arguments = new IParameter[]
             {
                 new ConstructorArgument("layer", layer),
-                new ConstructorArgument("settings", settingsInstance),
-                new ConstructorArgument("descriptor", brushDescriptor)
+                new ConstructorArgument("descriptor", descriptor)
             };
-            var layerElement = (LayerBrush) _kernel.Get(brushDescriptor.LayerBrushType, arguments);
+            var layerElement = (LayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
             layer.LayerBrush = layerElement;
 
             return layerElement;
@@ -92,10 +70,17 @@ namespace Artemis.Core.Services
             return keyframeEngine;
         }
 
-        public void RemoveLayerBrush(Layer layer, LayerBrush layerElement)
+        public void RemoveLayerBrush(Layer layer)
         {
+            if (layer.LayerBrush == null)
+                return;
+
             var brush = layer.LayerBrush;
             layer.LayerBrush = null;
+
+            var propertiesToRemove = layer.Properties.Where(l => l.PluginInfo == brush.Descriptor.LayerBrushProvider.PluginInfo).ToList();
+            foreach (var layerProperty in propertiesToRemove)
+                layer.RemoveLayerProperty(layerProperty);
             brush.Dispose();
         }
     }

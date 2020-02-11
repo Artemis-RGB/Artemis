@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.KeyframeEngines;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
@@ -13,9 +14,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     {
         private object _baseValue;
 
-        protected BaseLayerProperty(Layer layer, BaseLayerProperty parent, string id, string name, string description, Type type)
+        protected BaseLayerProperty(Layer layer, PluginInfo pluginInfo, BaseLayerProperty parent, string id, string name, string description, Type type)
         {
             Layer = layer;
+            PluginInfo = pluginInfo;
             Parent = parent;
             Id = id;
             Name = name;
@@ -23,14 +25,25 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             Type = type;
             CanUseKeyframes = true;
 
+            // This can only be null if accessed internally
+            if (PluginInfo == null)
+                PluginInfo = Constants.CorePluginInfo;
+            
             Children = new List<BaseLayerProperty>();
             BaseKeyframes = new List<BaseKeyframe>();
+
+            parent?.Children.Add(this);
         }
 
         /// <summary>
         ///     Gets the layer this property applies to
         /// </summary>
         public Layer Layer { get; }
+
+        /// <summary>
+        ///     Info of the plugin associated with this property
+        /// </summary>
+        public PluginInfo PluginInfo { get; }
 
         /// <summary>
         ///     Gets the parent property of this property.

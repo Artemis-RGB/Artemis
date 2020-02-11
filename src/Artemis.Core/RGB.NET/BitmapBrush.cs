@@ -75,14 +75,9 @@ namespace Artemis.Core.RGB.NET
         {
             foreach (var renderTarget in renderTargets)
             {
-                if (renderTarget.Led.Id == LedId.Keyboard_W)
-                    Console.WriteLine();
                 var scaledLocation = renderTarget.Point * Scale;
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
-                {
-                    var test = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt());
                     RenderedTargets[renderTarget] = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
-                }
             }
         }
 
