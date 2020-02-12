@@ -13,62 +13,62 @@ using Artemis.UI.Screens.Settings.Tabs.Devices;
 
 namespace Artemis.UI.Ninject.Factories
 {
-    public interface IViewModelFactory
+    public interface IVmFactory
     {
     }
 
-    public interface IModuleViewModelFactory : IViewModelFactory
+    public interface IModuleVmFactory : IVmFactory
     {
         ModuleRootViewModel Create(Module module);
     }
 
-    public interface IDeviceSettingsViewModelFactory : IViewModelFactory
+    public interface IDeviceSettingsVmFactory : IVmFactory
     {
         DeviceSettingsViewModel Create(ArtemisDevice device);
     }
 
-    public interface IProfileEditorViewModelFactory : IViewModelFactory
+    public interface IProfileEditorVmFactory : IVmFactory
     {
         ProfileEditorViewModel Create(ProfileModule module);
     }
 
-    public interface IFolderViewModelFactory : IViewModelFactory
+    public interface IFolderVmFactory : IVmFactory
     {
         FolderViewModel Create(ProfileElement folder);
         FolderViewModel Create(TreeItemViewModel parent, ProfileElement folder);
     }
 
-    public interface ILayerViewModelFactory : IViewModelFactory
+    public interface ILayerVmFactory : IVmFactory
     {
         LayerViewModel Create(TreeItemViewModel parent, ProfileElement folder);
     }
 
-    public interface IProfileLayerViewModelFactory : IViewModelFactory
+    public interface IProfileLayerVmFactory : IVmFactory
     {
         ProfileLayerViewModel Create(Layer layer);
     }
 
-    public interface ILayerPropertyViewModelFactory : IViewModelFactory
+    public interface ILayerPropertyVmFactory : IVmFactory
     {
         LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
     }
 
-    public interface IPropertyTreeViewModelFactory : IViewModelFactory
+    public interface IPropertyTreeVmFactory : IVmFactory
     {
         PropertyTreeViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
     }
 
-    public interface IPropertyTimelineViewModelFactory : IViewModelFactory
+    public interface IPropertyTimelineVmFactory : IVmFactory
     {
         PropertyTimelineViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
     }
 
-    public interface IPropertyTrackViewModelFactory : IViewModelFactory
+    public interface IPropertyTrackVmFactory : IVmFactory
     {
         PropertyTrackViewModel Create(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel);
     }
 
-    public interface IPropertyTrackKeyframeViewModelFactory : IViewModelFactory
+    public interface IPropertyTrackKeyframeVmFactory : IVmFactory
     {
         PropertyTrackKeyframeViewModel Create(PropertyTrackViewModel propertyTrackViewModel, BaseKeyframe keyframe);
     }

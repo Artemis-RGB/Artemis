@@ -11,14 +11,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     public class PropertyTimelineViewModel : PropertyChangedBase
     {
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IPropertyTrackViewModelFactory _propertyTrackViewModelFactory;
+        private readonly IPropertyTrackVmFactory _propertyTrackVmFactory;
 
         public PropertyTimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel,
             IProfileEditorService profileEditorService,
-            IPropertyTrackViewModelFactory propertyTrackViewModelFactory)
+            IPropertyTrackVmFactory propertyTrackVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _propertyTrackViewModelFactory = propertyTrackViewModelFactory;
+            _propertyTrackVmFactory = propertyTrackVmFactory;
 
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyTrackViewModels = new BindableCollection<PropertyTrackViewModel>();
@@ -54,23 +54,29 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateEndTime();
         }
 
+        public void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
+        {
+            // Determine the index by flattening all the layer's properties
+            var index = layerPropertyViewModel.LayerProperty.GetFlattenedIndex();
+            if (index > PropertyTrackViewModels.Count)
+                index = PropertyTrackViewModels.Count;
+            PropertyTrackViewModels.Insert(index, _propertyTrackVmFactory.Create(this, layerPropertyViewModel));
+        }
+
+        public void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
+        {
+            var vm = PropertyTrackViewModels.FirstOrDefault(v => v.LayerPropertyViewModel == layerPropertyViewModel);
+            if (vm != null)
+                PropertyTrackViewModels.Remove(vm);
+        }
+
         private void CreateViewModels(LayerPropertyViewModel property)
         {
-            PropertyTrackViewModels.Add(_propertyTrackViewModelFactory.Create(this, property));
+            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
             foreach (var child in property.Children)
                 CreateViewModels(child);
         }
-
-        public void AddLayerProperty(BaseLayerProperty layerProperty)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ClearProperties()
-        {
-            PropertyTrackViewModels.Clear();
-        }
-
+        
         public void UpdateKeyframePositions()
         {
             foreach (var viewModel in PropertyTrackViewModels)

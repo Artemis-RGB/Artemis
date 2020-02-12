@@ -155,6 +155,7 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Events\MainWindowFocusChangedEvent.cs" />
     <Compile Include="Events\MainWindowKeyEvent.cs" />
+    <Compile Include="Events\ProfileElementEventArgs.cs" />
     <Compile Include="Events\ShapeControlEventArgs.cs" />
     <Compile Include="Events\WindowsThemeEventArgs.cs" />
     <Compile Include="Extensions\TreeViewItemExtensions.cs" />
@@ -232,7 +233,7 @@
     <Compile Include="Exceptions\ArtemisCoreException.cs" />
     <Compile Include="Extensions\RgbColorExtensions.cs" />
     <Compile Include="Extensions\RgbRectangleExtensions.cs" />
-    <Compile Include="Ninject\Factories\IViewModelFactory.cs" />
+    <Compile Include="Ninject\Factories\IVmFactory.cs" />
     <Compile Include="Ninject\UIModule.cs" />
     <Compile Include="Utilities\SizeObserver.cs" />
     <Compile Include="Screens\Module\ProfileEditor\Dialogs\ProfileCreateViewModel.cs" />

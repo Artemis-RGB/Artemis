@@ -8,14 +8,14 @@ namespace Artemis.UI.Screens.Module
 {
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
-        private readonly IProfileEditorViewModelFactory _profileEditorViewModelFactory;
+        private readonly IProfileEditorVmFactory _profileEditorVmFactory;
 
-        public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorViewModelFactory profileEditorViewModelFactory)
+        public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorVmFactory profileEditorVmFactory)
         {
             DisplayName = module?.DisplayName;
             Module = module;
 
-            _profileEditorViewModelFactory = profileEditorViewModelFactory;
+            _profileEditorVmFactory = profileEditorVmFactory;
 
             Task.Run(AddTabsAsync);
         }
@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.Module
             // Create the profile editor and module VMs
             if (Module is ProfileModule profileModule)
             {
-                var profileEditor = _profileEditorViewModelFactory.Create(profileModule);
+                var profileEditor = _profileEditorVmFactory.Create(profileModule);
                 Items.Add(profileEditor);
             }
 

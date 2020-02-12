@@ -22,5 +22,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
                     PropertyInputViewModel?.Update();
             }
         }
+
+        public override void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
+        {
+        }
+
+        public override void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
+        {
+        }
     }
 }

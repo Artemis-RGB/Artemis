@@ -1,12 +1,16 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerBrush
 {
     public abstract class LayerBrush : IDisposable
     {
+        private ILayerService _layerService;
+
         protected LayerBrush(Layer layer, LayerBrushDescriptor descriptor)
         {
             Layer = layer;
@@ -54,6 +58,8 @@ namespace Artemis.Core.Plugins.LayerBrush
         {
             var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, parent, id, name, description);
             Layer.RegisterLayerProperty(property);
+            // It's fine if this is null, it'll be picked up by SetLayerService later
+            _layerService?.InstantiateKeyframeEngine(property);
             return property;
         }
 
@@ -68,9 +74,20 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <returns>The layer property</returns>
         protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description)
         {
-            var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.BrushReferenceProperty.Parent, id, name, description);
+            var property = new LayerProperty<T>(
+                Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.BrushReferenceProperty.Parent, id, name, description
+            );
             Layer.RegisterLayerProperty(property);
+            // It's fine if this is null, it'll be picked up by SetLayerService later
+            _layerService?.InstantiateKeyframeEngine(property);
             return property;
+        }
+
+        internal void SetLayerService(ILayerService layerService)
+        {
+            _layerService = layerService;
+            foreach (var baseLayerProperty in Layer.Properties)
+                _layerService.InstantiateKeyframeEngine(baseLayerProperty);
         }
     }
 }

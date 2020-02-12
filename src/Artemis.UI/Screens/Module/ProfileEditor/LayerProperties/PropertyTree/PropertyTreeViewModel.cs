@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -27,26 +25,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public BindableCollection<PropertyTreeItemViewModel> PropertyTreeItemViewModels { get; set; }
 
-        public void PopulateProperties(List<LayerPropertyViewModel> properties)
+        public void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
-            PropertyTreeItemViewModels.Clear();
-
-            // Only put parents on the top-level, let parents populate their own children recursively
-            foreach (var property in properties)
+            // Add as a root VM
+            if (layerPropertyViewModel.Parent == null)
+                PropertyTreeItemViewModels.Add(new PropertyTreeParentViewModel(layerPropertyViewModel));
+            // Add recursively to one of the child VMs
+            else
             {
-                if (property.Children.Any())
-                    PropertyTreeItemViewModels.Add(new PropertyTreeParentViewModel(property));
+                foreach (var propertyTreeItemViewModel in PropertyTreeItemViewModels)
+                    propertyTreeItemViewModel.AddLayerProperty(layerPropertyViewModel);
             }
         }
 
-        public void ClearProperties()
+        public void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
-            PropertyTreeItemViewModels.Clear();
-        }
-
-        public void AddLayerProperty(BaseLayerProperty layerProperty)
-        {
-            
+            // Remove a root VM
+            var rootVm = PropertyTreeItemViewModels.FirstOrDefault(vm => vm.LayerPropertyViewModel == layerPropertyViewModel);
+            if (rootVm != null)
+                PropertyTreeItemViewModels.Remove(rootVm);
+            // Remove recursively from one of the child VMs
+            else
+            {
+                foreach (var propertyTreeItemViewModel in PropertyTreeItemViewModels)
+                    propertyTreeItemViewModel.RemoveLayerProperty(layerPropertyViewModel);
+            }
         }
 
         /// <summary>

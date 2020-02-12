@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
@@ -18,30 +20,32 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
         private readonly ICoreService _coreService;
-        private readonly ILayerPropertyViewModelFactory _layerPropertyViewModelFactory;
+        private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
+        private readonly List<LayerPropertyViewModel> _layerPropertyViewModels;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
             ISettingsService settingsService,
-            ILayerPropertyViewModelFactory layerPropertyViewModelFactory,
-            IPropertyTreeViewModelFactory propertyTreeViewModelFactory,
-            IPropertyTimelineViewModelFactory propertyTimelineViewModelFactory)
+            ILayerPropertyVmFactory layerPropertyVmFactory,
+            IPropertyTreeVmFactory propertyTreeVmFactory,
+            IPropertyTimelineVmFactory propertyTimelineVmFactory)
         {
             _profileEditorService = profileEditorService;
             _coreService = coreService;
             _settingsService = settingsService;
-            _layerPropertyViewModelFactory = layerPropertyViewModelFactory;
+            _layerPropertyVmFactory = layerPropertyVmFactory;
 
             PixelsPerSecond = 31;
-            PropertyTree = propertyTreeViewModelFactory.Create(this);
-            PropertyTimeline = propertyTimelineViewModelFactory.Create(this);
+            PropertyTree = propertyTreeVmFactory.Create(this);
+            PropertyTimeline = propertyTimelineVmFactory.Create(this);
 
-            PopulateProperties();
+            PopulateProperties(_profileEditorService.SelectedProfileElement, null);
 
-            _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties();
-            _profileEditorService.SelectedProfileChanged += (sender, args) => PopulateProperties();
+            _layerPropertyViewModels = new List<LayerPropertyViewModel>();
+            _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
+            _profileEditorService.SelectedProfileChanged += (sender, args) => PopulateProperties(_profileEditorService.SelectedProfileElement, null);
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 
@@ -68,26 +72,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public PropertyTreeViewModel PropertyTree { get; set; }
         public PropertyTimelineViewModel PropertyTimeline { get; set; }
 
-        private void PopulateProperties()
-        {
-            if (_profileEditorService.SelectedProfileElement is Layer selectedLayer)
-            {
-                // Only create VMs for top-level parents, let parents populate their own children recursively
-                var propertyViewModels = selectedLayer.Properties
-                    .Where(p => p.Children.Any())
-                    .Select(p => _layerPropertyViewModelFactory.Create(p, null))
-                    .ToList();
-
-                PropertyTree.PopulateProperties(propertyViewModels);
-                PropertyTimeline.PopulateProperties(propertyViewModels);
-            }
-            else
-            {
-                PropertyTree.ClearProperties();
-                PropertyTimeline.ClearProperties();
-            }
-        }
-
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(() => FormattedCurrentTime);
@@ -99,6 +83,77 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             Pause();
             base.OnDeactivate();
         }
+
+        #region View model managament
+
+        private void PopulateProperties(ProfileElement profileElement, ProfileElement previousProfileElement)
+        {
+            if (previousProfileElement is Layer previousLayer)
+            {
+                previousLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
+                previousLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
+            }
+            if (profileElement is Layer layer)
+            {
+                // Create VMs for missing properties
+                foreach (var baseLayerProperty in layer.Properties)
+                {
+                    if (_layerPropertyViewModels.All(vm => vm.LayerProperty != baseLayerProperty))
+                        CreatePropertyViewModel(baseLayerProperty);
+                }
+
+                // Remove VMs for extra properties
+                foreach (var layerPropertyViewModel in _layerPropertyViewModels.ToList())
+                {
+                    if (layer.Properties.All(p => p != layerPropertyViewModel.LayerProperty))
+                        RemovePropertyViewModel(layerPropertyViewModel);
+                }
+
+                layer.LayerPropertyRegistered += LayerOnPropertyRegistered;
+                layer.LayerPropertyRemoved += LayerOnPropertyRemoved;
+            }
+        }
+
+        private void LayerOnPropertyRegistered(object sender, LayerPropertyEventArgs e)
+        {
+            Console.WriteLine("LayerOnPropertyRegistered");
+            PopulateProperties(e.LayerProperty.Layer, e.LayerProperty.Layer);
+        }
+
+        private void LayerOnPropertyRemoved(object sender, LayerPropertyEventArgs e)
+        {
+            Console.WriteLine("LayerOnPropertyRemoved");
+            PopulateProperties(e.LayerProperty.Layer, e.LayerProperty.Layer);
+        }
+
+        private LayerPropertyViewModel CreatePropertyViewModel(BaseLayerProperty layerProperty)
+        {
+            LayerPropertyViewModel parent = null;
+            // If the property has a parent, find it's VM
+            if (layerProperty.Parent != null)
+            {
+                parent = _layerPropertyViewModels.FirstOrDefault(vm => vm.LayerProperty == layerProperty.Parent);
+                // If no VM is found, create it
+                if (parent == null)
+                    parent = CreatePropertyViewModel(layerProperty.Parent);
+            }
+
+            var createdViewModel = _layerPropertyVmFactory.Create(layerProperty, parent);
+            _layerPropertyViewModels.Add(createdViewModel);
+            PropertyTree.AddLayerProperty(createdViewModel);
+            PropertyTimeline.AddLayerProperty(createdViewModel);
+
+            return createdViewModel;
+        }
+
+        private void RemovePropertyViewModel(LayerPropertyViewModel layerPropertyViewModel)
+        {
+            PropertyTree.RemoveLayerProperty(layerPropertyViewModel);
+            PropertyTimeline.RemoveLayerProperty(layerPropertyViewModel);
+            _layerPropertyViewModels.Remove(layerPropertyViewModel);
+        }
+
+        #endregion
 
         #region Controls
 

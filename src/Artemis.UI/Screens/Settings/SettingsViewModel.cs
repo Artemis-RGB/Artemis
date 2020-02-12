@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.Settings
 {
     public class SettingsViewModel : MainScreenViewModel
     {
-        private readonly IDeviceSettingsViewModelFactory _deviceSettingsViewModelFactory;
+        private readonly IDeviceSettingsVmFactory _deviceSettingsVmFactory;
         private readonly IKernel _kernel;
         private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.Settings
             IPluginService pluginService,
             IWindowManager windowManager,
             ISettingsService settingsService,
-            IDeviceSettingsViewModelFactory deviceSettingsViewModelFactory)
+            IDeviceSettingsVmFactory deviceSettingsVmFactory)
         {
             DisplayName = "Settings";
             DisplayIcon = PackIconKind.Settings;
@@ -43,7 +43,7 @@ namespace Artemis.UI.Screens.Settings
             _pluginService = pluginService;
             _windowManager = windowManager;
             _settingsService = settingsService;
-            _deviceSettingsViewModelFactory = deviceSettingsViewModelFactory;
+            _deviceSettingsVmFactory = deviceSettingsVmFactory;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
             Plugins = new BindableCollection<PluginSettingsViewModel>();
@@ -112,7 +112,7 @@ namespace Artemis.UI.Screens.Settings
         {
             DeviceSettingsViewModels.Clear();
             foreach (var device in _surfaceService.ActiveSurface.Devices)
-                DeviceSettingsViewModels.Add(_deviceSettingsViewModelFactory.Create(device));
+                DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
 
             // TODO: GetPluginsOfType isn't ideal here as it doesn't include disabled plugins
             Plugins.Clear();

@@ -7,13 +7,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class PropertyTrackViewModel : Screen
     {
-        private readonly IPropertyTrackKeyframeViewModelFactory _propertyTrackKeyframeViewModelFactory;
+        private readonly IPropertyTrackKeyframeVmFactory _propertyTrackKeyframeVmFactory;
 
-        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel,
-            LayerPropertyViewModel layerPropertyViewModel,
-            IPropertyTrackKeyframeViewModelFactory propertyTrackKeyframeViewModelFactory)
+        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel, IPropertyTrackKeyframeVmFactory propertyTrackKeyframeVmFactory)
         {
-            _propertyTrackKeyframeViewModelFactory = propertyTrackKeyframeViewModelFactory;
+            _propertyTrackKeyframeVmFactory = propertyTrackKeyframeVmFactory;
             PropertyTimelineViewModel = propertyTimelineViewModel;
             LayerPropertyViewModel = layerPropertyViewModel;
             KeyframeViewModels = new BindableCollection<PropertyTrackKeyframeViewModel>();
@@ -41,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             {
                 if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
                     continue;
-                KeyframeViewModels.Add(_propertyTrackKeyframeViewModelFactory.Create(this, keyframe));
+                KeyframeViewModels.Add(_propertyTrackKeyframeVmFactory.Create(this, keyframe));
             }
 
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);

@@ -28,7 +28,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             // This can only be null if accessed internally
             if (PluginInfo == null)
                 PluginInfo = Constants.CorePluginInfo;
-            
+
             Children = new List<BaseLayerProperty>();
             BaseKeyframes = new List<BaseKeyframe>();
 
@@ -108,9 +108,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public IReadOnlyCollection<BaseKeyframe> UntypedKeyframes => BaseKeyframes.AsReadOnly();
 
         /// <summary>
-        ///     Gets or sets the keyframe engine instance of this property
+        ///     Gets the keyframe engine instance of this property
         /// </summary>
-        public KeyframeEngine KeyframeEngine { get; set; }
+        public KeyframeEngine KeyframeEngine { get; internal set; }
 
         protected List<BaseKeyframe> BaseKeyframes { get; set; }
 
@@ -126,50 +126,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                     _baseValue = value;
                     OnValueChanged();
                 }
-            }
-        }
-
-        internal void ApplyToEntity()
-        {
-            var propertyEntity = Layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == Id);
-            if (propertyEntity == null)
-            {
-                propertyEntity = new PropertyEntity {Id = Id};
-                Layer.LayerEntity.PropertyEntities.Add(propertyEntity);
-            }
-
-            propertyEntity.ValueType = Type.Name;
-            propertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
-            propertyEntity.IsUsingKeyframes = IsUsingKeyframes;
-
-            propertyEntity.KeyframeEntities.Clear();
-            foreach (var baseKeyframe in BaseKeyframes)
-            {
-                propertyEntity.KeyframeEntities.Add(new KeyframeEntity
-                {
-                    Position = baseKeyframe.Position,
-                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue),
-                    EasingFunction = (int) baseKeyframe.EasingFunction
-                });
-            }
-        }
-
-        internal void ApplyToProperty(PropertyEntity propertyEntity)
-        {
-            BaseValue = DeserializePropertyValue(propertyEntity.Value);
-            IsUsingKeyframes = propertyEntity.IsUsingKeyframes;
-
-            BaseKeyframes.Clear();
-            foreach (var keyframeEntity in propertyEntity.KeyframeEntities.OrderBy(e => e.Position))
-            {
-                // Create a strongly typed keyframe or else it cannot be cast later on
-                var keyframeType = typeof(Keyframe<>);
-                var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
-                keyframe.Position = keyframeEntity.Position;
-                keyframe.BaseValue = DeserializePropertyValue(keyframeEntity.Value);
-                keyframe.EasingFunction = (Easings.Functions) keyframeEntity.EasingFunction;
-
-                BaseKeyframes.Add(keyframe);
             }
         }
 
@@ -261,14 +217,93 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             SortKeyframes();
         }
 
-        internal void SortKeyframes()
+        /// <summary>
+        ///     Returns the flattened index of this property on the layer
+        /// </summary>
+        /// <returns></returns>
+        public int GetFlattenedIndex()
         {
-            BaseKeyframes = BaseKeyframes.OrderBy(k => k.Position).ToList();
+            if (Parent == null)
+                return Layer.Properties.IndexOf(this);
+
+            // Create a flattened list of all properties in their order as defined by the parent/child hierarchy
+            var properties = new List<BaseLayerProperty>();
+            // Iterate root properties (those with children)
+            foreach (var baseLayerProperty in Layer.Properties)
+            {
+                // First add self, then add all children
+                if (baseLayerProperty.Children.Any())
+                {
+                    properties.Add(baseLayerProperty);
+                    properties.AddRange(baseLayerProperty.GetAllChildren());
+                }
+            }
+
+            return properties.IndexOf(this);
         }
 
         public override string ToString()
         {
             return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(Description)}: {Description}";
+        }
+
+        internal void ApplyToEntity()
+        {
+            var propertyEntity = Layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == Id);
+            if (propertyEntity == null)
+            {
+                propertyEntity = new PropertyEntity {Id = Id};
+                Layer.LayerEntity.PropertyEntities.Add(propertyEntity);
+            }
+
+            propertyEntity.ValueType = Type.Name;
+            propertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
+            propertyEntity.IsUsingKeyframes = IsUsingKeyframes;
+
+            propertyEntity.KeyframeEntities.Clear();
+            foreach (var baseKeyframe in BaseKeyframes)
+            {
+                propertyEntity.KeyframeEntities.Add(new KeyframeEntity
+                {
+                    Position = baseKeyframe.Position,
+                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue),
+                    EasingFunction = (int) baseKeyframe.EasingFunction
+                });
+            }
+        }
+
+        internal void ApplyToProperty(PropertyEntity propertyEntity)
+        {
+            BaseValue = DeserializePropertyValue(propertyEntity.Value);
+            IsUsingKeyframes = propertyEntity.IsUsingKeyframes;
+
+            BaseKeyframes.Clear();
+            foreach (var keyframeEntity in propertyEntity.KeyframeEntities.OrderBy(e => e.Position))
+            {
+                // Create a strongly typed keyframe or else it cannot be cast later on
+                var keyframeType = typeof(Keyframe<>);
+                var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
+                keyframe.Position = keyframeEntity.Position;
+                keyframe.BaseValue = DeserializePropertyValue(keyframeEntity.Value);
+                keyframe.EasingFunction = (Easings.Functions) keyframeEntity.EasingFunction;
+
+                BaseKeyframes.Add(keyframe);
+            }
+        }
+
+        internal void SortKeyframes()
+        {
+            BaseKeyframes = BaseKeyframes.OrderBy(k => k.Position).ToList();
+        }
+
+        internal IEnumerable<BaseLayerProperty> GetAllChildren()
+        {
+            var children = new List<BaseLayerProperty>();
+            children.AddRange(Children);
+            foreach (var layerPropertyViewModel in Children)
+                children.AddRange(layerPropertyViewModel.GetAllChildren());
+
+            return children;
         }
 
         private object DeserializePropertyValue(string value)
