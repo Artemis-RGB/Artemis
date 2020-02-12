@@ -13,12 +13,12 @@ namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarViewModel : PropertyChangedBase
     {
-        private readonly IModuleViewModelFactory _moduleViewModelFactory;
+        private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginService _pluginService;
 
-        public SidebarViewModel(List<MainScreenViewModel> defaultSidebarItems, IModuleViewModelFactory moduleViewModelFactory, IPluginService pluginService)
+        public SidebarViewModel(List<MainScreenViewModel> defaultSidebarItems, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
-            _moduleViewModelFactory = moduleViewModelFactory;
+            _moduleVmFactory = moduleVmFactory;
             _pluginService = pluginService;
 
             DefaultSidebarItems = defaultSidebarItems;
@@ -76,7 +76,7 @@ namespace Artemis.UI.Screens.Sidebar
                 SelectedItem = screen;
             // Modules have a VM that must be created, use a factory and set the result as the selected item
             else if (sidebarItemObject is Core.Plugins.Abstract.Module module)
-                SelectedItem = _moduleViewModelFactory.Create(module);
+                SelectedItem = _moduleVmFactory.Create(module);
         }
 
         public void AddModule(Core.Plugins.Abstract.Module module)

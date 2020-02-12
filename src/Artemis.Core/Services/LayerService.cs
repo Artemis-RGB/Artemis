@@ -46,10 +46,13 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("layer", layer),
                 new ConstructorArgument("descriptor", descriptor)
             };
-            var layerElement = (LayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
-            layer.LayerBrush = layerElement;
+            var layerBrush = (LayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
+            // Set the layer service after the brush was created to avoid constructor clutter, SetLayerService will play catch-up for us.
+            // If layer brush implementations need the LayerService they can inject it themselves, but don't require it by default
+            layerBrush.SetLayerService(this);
+            layer.LayerBrush = layerBrush;
 
-            return layerElement;
+            return layerBrush;
         }
 
         public KeyframeEngine InstantiateKeyframeEngine<T>(LayerProperty<T> layerProperty)
@@ -59,6 +62,9 @@ namespace Artemis.Core.Services
 
         public KeyframeEngine InstantiateKeyframeEngine(BaseLayerProperty layerProperty)
         {
+            if (layerProperty.KeyframeEngine != null && layerProperty.KeyframeEngine.CompatibleTypes.Contains(layerProperty.Type))
+                return layerProperty.KeyframeEngine;
+
             // This creates an instance of each keyframe engine, which is pretty cheap since all the expensive stuff is done during
             // Initialize() call but it's not ideal
             var keyframeEngines = _kernel.Get<List<KeyframeEngine>>();

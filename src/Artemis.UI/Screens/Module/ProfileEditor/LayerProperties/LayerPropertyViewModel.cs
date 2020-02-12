@@ -16,8 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly IProfileEditorService _profileEditorService;
         private bool _keyframesEnabled;
 
-        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, ILayerPropertyViewModelFactory layerPropertyViewModelFactory, IKernel kernel,
-            IProfileEditorService profileEditorService)
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, IKernel kernel, IProfileEditorService profileEditorService)
         {
             _kernel = kernel;
             _profileEditorService = profileEditorService;
@@ -28,8 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             Children = new List<LayerPropertyViewModel>();
             IsExpanded = layerProperty.ExpandByDefault;
 
-            foreach (var child in layerProperty.Children)
-                Children.Add(layerPropertyViewModelFactory.Create(child, this));
+            Parent?.Children.Add(this);
         }
 
         public BaseLayerProperty LayerProperty { get; }
@@ -77,16 +75,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             match.Initialize(this);
             return match;
-        }
-
-        public IEnumerable<LayerPropertyViewModel> GetAllChildren()
-        {
-            var children = new List<LayerPropertyViewModel>();
-            children.AddRange(Children);
-            foreach (var layerPropertyViewModel in children) 
-                children.AddRange(layerPropertyViewModel.GetAllChildren());
-
-            return children;
         }
     }
 }

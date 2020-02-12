@@ -11,18 +11,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 {
     public class ProfileTreeViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
-        private readonly IFolderViewModelFactory _folderViewModelFactory;
+        private readonly IFolderVmFactory _folderVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
 
 
         public ProfileTreeViewModel(IProfileEditorService profileEditorService,
-            IFolderViewModelFactory folderViewModelFactory,
-            ILayerViewModelFactory layerViewModelFactory)
+            IFolderVmFactory folderVmFactory,
+            ILayerVmFactory layerVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _folderViewModelFactory = folderViewModelFactory;
+            _folderVmFactory = folderVmFactory;
 
             CreateRootFolderViewModel();
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
@@ -105,7 +105,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
                 return;
             }
 
-            RootFolder = _folderViewModelFactory.Create(folder);
+            RootFolder = _folderVmFactory.Create(folder);
             _updatingTree = false;
         }
 

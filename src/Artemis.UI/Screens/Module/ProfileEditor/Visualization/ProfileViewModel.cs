@@ -24,7 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     {
         private readonly ILayerEditorService _layerEditorService;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IProfileLayerViewModelFactory _profileLayerViewModelFactory;
+        private readonly IProfileLayerVmFactory _profileLayerVmFactory;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private int _activeToolIndex;
@@ -37,13 +37,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
-            IProfileLayerViewModelFactory profileLayerViewModelFactory)
+            IProfileLayerVmFactory profileLayerVmFactory)
         {
             _profileEditorService = profileEditorService;
             _layerEditorService = layerEditorService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
-            _profileLayerViewModelFactory = profileLayerViewModelFactory;
+            _profileLayerVmFactory = profileLayerVmFactory;
 
             Execute.OnUIThreadSync(() =>
             {
@@ -144,7 +144,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     foreach (var layer in layers)
                     {
                         if (layerViewModels.All(vm => vm.Layer != layer))
-                            CanvasViewModels.Add(_profileLayerViewModelFactory.Create(layer));
+                            CanvasViewModels.Add(_profileLayerVmFactory.Create(layer));
                     }
 
                     // Remove layers that no longer exist

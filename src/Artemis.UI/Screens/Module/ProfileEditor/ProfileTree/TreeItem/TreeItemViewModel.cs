@@ -14,9 +14,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
     public abstract class TreeItemViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
-        private readonly IFolderViewModelFactory _folderViewModelFactory;
+        private readonly IFolderVmFactory _folderVmFactory;
         private readonly ILayerService _layerService;
-        private readonly ILayerViewModelFactory _layerViewModelFactory;
+        private readonly ILayerVmFactory _layerVmFactory;
         private readonly IProfileEditorService _profileEditorService;
 
         protected TreeItemViewModel(TreeItemViewModel parent,
@@ -24,14 +24,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             ILayerService layerService,
-            IFolderViewModelFactory folderViewModelFactory,
-            ILayerViewModelFactory layerViewModelFactory)
+            IFolderVmFactory folderVmFactory,
+            ILayerVmFactory layerVmFactory)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
             _layerService = layerService;
-            _folderViewModelFactory = folderViewModelFactory;
-            _layerViewModelFactory = layerViewModelFactory;
+            _folderVmFactory = folderVmFactory;
+            _layerVmFactory = layerVmFactory;
 
             Parent = parent;
             ProfileElement = profileElement;
@@ -182,13 +182,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                     {
                         existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder);
                         if (existing == null)
-                            Children.Add(_folderViewModelFactory.Create((FolderViewModel) this, folder));
+                            Children.Add(_folderVmFactory.Create((FolderViewModel) this, folder));
                     }
                     else if (profileElement is Layer layer)
                     {
                         existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer);
                         if (existing == null)
-                            Children.Add(_layerViewModelFactory.Create((FolderViewModel) this, layer));
+                            Children.Add(_layerVmFactory.Create((FolderViewModel) this, layer));
                     }
 
                     existing?.UpdateProfileElements();

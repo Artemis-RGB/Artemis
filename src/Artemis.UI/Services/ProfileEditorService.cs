@@ -4,6 +4,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Services
@@ -39,29 +40,31 @@ namespace Artemis.UI.Services
 
         public void ChangeSelectedProfile(Profile profile)
         {
+            var profileElementEvent = new ProfileElementEventArgs(profile, SelectedProfile);
             SelectedProfile = profile;
             UpdateProfilePreview();
-            OnSelectedProfileChanged();
+            OnSelectedProfileChanged(profileElementEvent);
         }
 
         public void UpdateSelectedProfile()
         {
             _profileService.UpdateProfile(SelectedProfile, false);
             UpdateProfilePreview();
-            OnSelectedProfileElementUpdated();
+            OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfile));
         }
 
         public void ChangeSelectedProfileElement(ProfileElement profileElement)
         {
+            var profileElementEvent = new ProfileElementEventArgs(profileElement, SelectedProfileElement);
             SelectedProfileElement = profileElement;
-            OnSelectedProfileElementChanged();
+            OnSelectedProfileElementChanged(profileElementEvent);
         }
 
         public void UpdateSelectedProfileElement()
         {
             _profileService.UpdateProfile(SelectedProfile, true);
             UpdateProfilePreview();
-            OnSelectedProfileElementUpdated();
+            OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfileElement));
         }
 
 
@@ -91,7 +94,7 @@ namespace Artemis.UI.Services
         public void UndoUpdateProfile(ProfileModule module)
         {
             _profileService.UndoUpdateProfile(SelectedProfile, module);
-            OnSelectedProfileChanged();
+            OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)
             {
@@ -107,7 +110,7 @@ namespace Artemis.UI.Services
         public void RedoUpdateProfile(ProfileModule module)
         {
             _profileService.RedoUpdateProfile(SelectedProfile, module);
-            OnSelectedProfileChanged();
+            OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)
             {
@@ -120,10 +123,10 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
         }
 
-        public event EventHandler SelectedProfileChanged;
-        public event EventHandler SelectedProfileUpdated;
-        public event EventHandler SelectedProfileElementChanged;
-        public event EventHandler SelectedProfileElementUpdated;
+        public event EventHandler<ProfileElementEventArgs> SelectedProfileChanged;
+        public event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
+        public event EventHandler<ProfileElementEventArgs> SelectedProfileElementChanged;
+        public event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
         public event EventHandler ProfilePreviewUpdated;
 
@@ -137,24 +140,24 @@ namespace Artemis.UI.Services
             _coreService.ModuleUpdatingDisabled = false;
         }
 
-        protected virtual void OnSelectedProfileElementUpdated()
+        protected virtual void OnSelectedProfileChanged(ProfileElementEventArgs e)
         {
-            SelectedProfileElementUpdated?.Invoke(this, EventArgs.Empty);
+            SelectedProfileChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedProfileElementChanged()
+        protected virtual void OnSelectedProfileUpdated(ProfileElementEventArgs e)
         {
-            SelectedProfileElementChanged?.Invoke(this, EventArgs.Empty);
+            SelectedProfileUpdated?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedProfileUpdated()
+        protected virtual void OnSelectedProfileElementChanged(ProfileElementEventArgs e)
         {
-            SelectedProfileUpdated?.Invoke(this, EventArgs.Empty);
+            SelectedProfileElementChanged?.Invoke(this, e);
         }
 
-        protected virtual void OnSelectedProfileChanged()
+        protected virtual void OnSelectedProfileElementUpdated(ProfileElementEventArgs e)
         {
-            SelectedProfileChanged?.Invoke(this, EventArgs.Empty);
+            SelectedProfileElementUpdated?.Invoke(this, e);
         }
 
         protected virtual void OnCurrentTimeChanged()

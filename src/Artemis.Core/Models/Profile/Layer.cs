@@ -428,7 +428,7 @@ namespace Artemis.Core.Models.Profile
         /// <typeparam name="T">The type of value of the layer property</typeparam>
         /// <param name="layerProperty">The property to apply to the layer</param>
         /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        public bool RegisterLayerProperty<T>(LayerProperty<T> layerProperty)
+        internal bool RegisterLayerProperty<T>(LayerProperty<T> layerProperty)
         {
             return RegisterLayerProperty((BaseLayerProperty) layerProperty);
         }
@@ -439,7 +439,7 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         /// <param name="layerProperty">The property to apply to the layer</param>
         /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        public bool RegisterLayerProperty(BaseLayerProperty layerProperty)
+        internal bool RegisterLayerProperty(BaseLayerProperty layerProperty)
         {
             if (_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
                 throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");

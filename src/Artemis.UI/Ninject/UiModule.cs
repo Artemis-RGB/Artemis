@@ -45,7 +45,7 @@ namespace Artemis.UI.Ninject
             {
                 x.FromThisAssembly()
                     .SelectAllInterfaces()
-                    .InheritedFrom<IViewModelFactory>()
+                    .InheritedFrom<IVmFactory>()
                     .BindToFactory();
             });
 

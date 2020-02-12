@@ -17,7 +17,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
-            ColorProperty = RegisterLayerProperty<SKColor>("Brush.Color", "Main color", "The color of the brush.");
+            ColorProperty = RegisterLayerProperty<SKColor>("Brush.Color", "Color", "The color of the brush.");
             GradientTypeProperty = RegisterLayerProperty<GradientType>("Brush.GradientType", "Gradient type", "The scale of the noise.");
             GradientTypeProperty.CanUseKeyframes = false;
 

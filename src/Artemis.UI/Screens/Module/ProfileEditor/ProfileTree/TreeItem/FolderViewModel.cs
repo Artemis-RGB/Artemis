@@ -12,9 +12,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             ILayerService layerService,
-            IFolderViewModelFactory folderViewModelFactory,
-            ILayerViewModelFactory layerViewModelFactory) :
-            base(null, folder, profileEditorService, dialogService, layerService, folderViewModelFactory, layerViewModelFactory)
+            IFolderVmFactory folderVmFactory,
+            ILayerVmFactory layerVmFactory) :
+            base(null, folder, profileEditorService, dialogService, layerService, folderVmFactory, layerVmFactory)
         {
         }
 
@@ -23,9 +23,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             ILayerService layerService,
-            IFolderViewModelFactory folderViewModelFactory,
-            ILayerViewModelFactory layerViewModelFactory) :
-            base(parent, folder, profileEditorService, dialogService, layerService, folderViewModelFactory, layerViewModelFactory)
+            IFolderVmFactory folderVmFactory,
+            ILayerVmFactory layerVmFactory) :
+            base(parent, folder, profileEditorService, dialogService, layerService, folderVmFactory, layerVmFactory)
         {
         }
 

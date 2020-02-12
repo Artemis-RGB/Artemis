@@ -1,6 +1,7 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.UI.Events;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -21,22 +22,22 @@ namespace Artemis.UI.Services.Interfaces
         /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>
-        event EventHandler SelectedProfileChanged;
+        event EventHandler<ProfileElementEventArgs> SelectedProfileChanged;
 
         /// <summary>
         ///     Occurs then the currently selected profile is updated
         /// </summary>
-        event EventHandler SelectedProfileUpdated;
+        event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
 
         /// <summary>
         ///     Occurs when a new profile element is selected
         /// </summary>
-        event EventHandler SelectedProfileElementChanged;
+        event EventHandler<ProfileElementEventArgs> SelectedProfileElementChanged;
 
         /// <summary>
         ///     Occurs when the currently selected profile element is updated
         /// </summary>
-        event EventHandler SelectedProfileElementUpdated;
+        event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
 
         /// <summary>
         ///     Occurs when the current editor time is changed
