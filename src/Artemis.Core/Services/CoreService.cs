@@ -55,6 +55,16 @@ namespace Artemis.Core.Services
 
         public bool IsInitialized { get; set; }
 
+        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
+        {
+            FrameRendering?.Invoke(this, e);
+        }
+
+        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
+        }
+
         private void ConfigureJsonConvert()
         {
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
@@ -134,16 +144,6 @@ namespace Artemis.Core.Services
         private void SurfaceOnUpdated(UpdatedEventArgs args)
         {
             OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush, _rgbService.Surface));
-        }
-
-        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
-        {
-            FrameRendering?.Invoke(this, e);
-        }
-
-        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
-        {
-            FrameRendered?.Invoke(this, e);
         }
 
         #region Events

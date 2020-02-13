@@ -64,15 +64,6 @@ namespace Artemis.UI
             });
         }
 
-        private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)
-        {
-            Execute.OnUIThread(() =>
-            {
-                windowManager.ShowWindow(RootViewModel);
-                splashViewModel.RequestClose();
-            });
-        }
-
         protected override void ConfigureIoC(IKernel kernel)
         {
             kernel.Settings.InjectNonPublic = true;
@@ -90,6 +81,15 @@ namespace Artemis.UI
             logger.Fatal(e.Exception, "Fatal exception, shutting down.");
 
             base.OnUnhandledException(e);
+        }
+
+        private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)
+        {
+            Execute.OnUIThread(() =>
+            {
+                windowManager.ShowWindow(RootViewModel);
+                splashViewModel.RequestClose();
+            });
         }
     }
 }

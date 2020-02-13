@@ -46,11 +46,6 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public abstract void Render(double deltaTime, SKCanvas canvas);
 
-        /// <summary>
-        ///     Applies the profile element's properties to the underlying storage entity
-        /// </summary>
-        internal abstract void ApplyToEntity();
-
         public List<Folder> GetAllFolders()
         {
             var folders = new List<Folder>();
@@ -131,5 +126,10 @@ namespace Artemis.Core.Models.Profile
                 child.Parent = null;
             }
         }
+
+        /// <summary>
+        ///     Applies the profile element's properties to the underlying storage entity
+        /// </summary>
+        internal abstract void ApplyToEntity();
     }
 }

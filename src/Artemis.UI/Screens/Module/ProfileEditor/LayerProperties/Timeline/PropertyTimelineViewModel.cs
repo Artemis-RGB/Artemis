@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -70,13 +69,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 PropertyTrackViewModels.Remove(vm);
         }
 
-        private void CreateViewModels(LayerPropertyViewModel property)
-        {
-            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
-            foreach (var child in property.Children)
-                CreateViewModels(child);
-        }
-        
         public void UpdateKeyframePositions()
         {
             foreach (var viewModel in PropertyTrackViewModels)
@@ -94,6 +86,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 viewModel.PopulateKeyframes();
 
             UpdateEndTime();
+        }
+
+        private void CreateViewModels(LayerPropertyViewModel property)
+        {
+            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
+            foreach (var child in property.Children)
+                CreateViewModels(child);
         }
     }
 }

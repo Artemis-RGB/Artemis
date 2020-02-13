@@ -47,13 +47,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         }
 
         /// <summary>
-        /// Called by the view, prevents scrolling into view when scrubbing through the timeline
+        ///     Called by the view, prevents scrolling into view when scrubbing through the timeline
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
+        }
+
+        public abstract void Update();
+
+        protected virtual void OnInitialized()
+        {
         }
 
         private void UpdateInputValue(object value)
@@ -64,11 +70,5 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
             ProfileEditorService.UpdateSelectedProfileElement();
         }
-
-        protected virtual void OnInitialized()
-        {
-        }
-
-        public abstract void Update();
     }
 }

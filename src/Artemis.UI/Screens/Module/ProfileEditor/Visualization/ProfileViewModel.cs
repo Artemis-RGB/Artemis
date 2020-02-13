@@ -114,6 +114,34 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
+        protected override void OnActivate()
+        {
+            HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
+            PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
+
+            HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
+
+            _updateTrigger.Start();
+            base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            HighlightSelectedLayer.Save();
+            PauseRenderingOnFocusLoss.Save();
+
+            try
+            {
+                _updateTrigger.Stop();
+            }
+            catch (NullReferenceException)
+            {
+                // TODO: Remove when fixed in RGB.NET, or avoid double stopping
+            }
+
+            base.OnDeactivate();
+        }
+
         private void CreateUpdateTrigger()
         {
             // Borrow RGB.NET's update trigger but limit the FPS
@@ -215,34 +243,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 foreach (var led in DeviceViewModels.SelectMany(d => d.Leds))
                     led.IsDimmed = false;
             }
-        }
-
-        protected override void OnActivate()
-        {
-            HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
-            PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
-
-            HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
-
-            _updateTrigger.Start();
-            base.OnActivate();
-        }
-
-        protected override void OnDeactivate()
-        {
-            HighlightSelectedLayer.Save();
-            PauseRenderingOnFocusLoss.Save();
-
-            try
-            {
-                _updateTrigger.Stop();
-            }
-            catch (NullReferenceException)
-            {
-                // TODO: Remove when fixed in RGB.NET, or avoid double stopping
-            }
-
-            base.OnDeactivate();
         }
 
         #region Buttons

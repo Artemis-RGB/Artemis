@@ -23,7 +23,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Rand.Next(0, 4096));
         }
-        
+
         public LayerProperty<SKColor> MainColorProperty { get; set; }
         public LayerProperty<SKSize> ScaleProperty { get; set; }
         public LayerProperty<float> AnimationSpeedProperty { get; set; }

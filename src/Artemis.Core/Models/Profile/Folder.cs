@@ -77,6 +77,11 @@ namespace Artemis.Core.Models.Profile
             return layer;
         }
 
+        public override string ToString()
+        {
+            return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+        }
+
         internal override void ApplyToEntity()
         {
             FolderEntity.Id = EntityId;
@@ -88,11 +93,6 @@ namespace Artemis.Core.Models.Profile
             FolderEntity.ProfileId = Profile.EntityId;
 
             // TODO: conditions
-        }
-
-        public override string ToString()
-        {
-            return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
     }
 }

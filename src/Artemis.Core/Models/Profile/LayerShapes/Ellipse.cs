@@ -1,5 +1,4 @@
-﻿using Artemis.Storage.Entities.Profile;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile.LayerShapes
 {

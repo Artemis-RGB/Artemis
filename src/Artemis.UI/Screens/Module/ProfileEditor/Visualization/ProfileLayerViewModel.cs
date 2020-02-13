@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
         }
-        
+
         public Layer Layer { get; }
 
         public Geometry LayerGeometry { get; set; }
@@ -38,6 +38,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry ShapeGeometry { get; set; }
         public Rect ViewportRectangle { get; set; }
         public bool IsSelected { get; set; }
+
+        public void Dispose()
+        {
+            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
+        }
 
         private void Update()
         {
@@ -86,7 +94,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             var layerGeometry = group.GetOutlinedPathGeometry();
             var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
-            
+
             LayerGeometry = layerGeometry;
             OpacityGeometry = opacityGeometry;
         }
@@ -169,14 +177,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 return CreateRectangleGeometry(led);
             }
-        }
-
-        public void Dispose()
-        {
-            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
-            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
-            _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
         }
 
         #region Event handlers  

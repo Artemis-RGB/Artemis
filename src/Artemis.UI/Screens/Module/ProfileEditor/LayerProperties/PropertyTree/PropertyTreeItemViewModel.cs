@@ -4,12 +4,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
     public abstract class PropertyTreeItemViewModel : PropertyChangedBase
     {
-        public LayerPropertyViewModel LayerPropertyViewModel { get; }
-
         protected PropertyTreeItemViewModel(LayerPropertyViewModel layerPropertyViewModel)
         {
             LayerPropertyViewModel = layerPropertyViewModel;
         }
+
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
 
         /// <summary>
         ///     Updates the tree item's input if it is visible and has keyframes enabled
@@ -18,16 +18,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         public abstract void Update(bool forceUpdate);
 
         /// <summary>
-        /// Removes the layer property recursively
+        ///     Removes the layer property recursively
         /// </summary>
         /// <param name="layerPropertyViewModel"></param>
         public abstract void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel);
 
         /// <summary>
-        /// Adds the layer property recursively
+        ///     Adds the layer property recursively
         /// </summary>
         /// <param name="layerPropertyViewModel"></param>
         public abstract void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel);
-
     }
 }

@@ -78,14 +78,14 @@ namespace Artemis.Core.Plugins.Models
 
         public event EventHandler<EventArgs> SettingChanged;
 
-        protected virtual void OnSettingChanged()
-        {
-            SettingChanged?.Invoke(this, EventArgs.Empty);
-        }
-
         public override string ToString()
         {
             return $"{nameof(Name)}: {Name}, {nameof(Value)}: {Value}, {nameof(HasChanged)}: {HasChanged}";
+        }
+
+        protected virtual void OnSettingChanged()
+        {
+            SettingChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

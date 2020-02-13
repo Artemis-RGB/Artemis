@@ -18,7 +18,7 @@
                  HorizontalAlignment="Left"
                  ToolTip="X-coordinate (horizontal)"
                  Text="{Binding X}"
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}"/>
+                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <TextBox Width="60"
                  Margin="0 2"
@@ -26,8 +26,8 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Y-coordinate (vertical)"
-                 Text="{Binding Y}" 
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}"/>
+                 Text="{Binding Y}"
+                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

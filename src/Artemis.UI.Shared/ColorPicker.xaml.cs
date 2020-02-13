@@ -63,6 +63,11 @@ namespace Artemis.UI.Shared
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         private static void ColorPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var colorPicker = (ColorPicker) d;
@@ -108,11 +113,6 @@ namespace Artemis.UI.Shared
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             PopupOpen = !PopupOpen;
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

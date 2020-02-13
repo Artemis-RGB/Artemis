@@ -74,6 +74,27 @@ namespace Artemis.Core.Models.Profile
             return (Folder) Children.Single();
         }
 
+        public void ApplyToProfile()
+        {
+            Name = ProfileEntity.Name;
+
+            lock (_children)
+            {
+                _children.Clear();
+                // Populate the profile starting at the root, the rest is populated recursively
+                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
+                if (rootFolder == null)
+                    AddChild(new Folder(this, null, "Root folder"));
+                else
+                    AddChild(new Folder(this, null, rootFolder));
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(PluginInfo)}: {PluginInfo}";
+        }
+
         internal override void ApplyToEntity()
         {
             ProfileEntity.Id = EntityId;
@@ -89,22 +110,6 @@ namespace Artemis.Core.Models.Profile
 
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
-        }
-
-        public void ApplyToProfile()
-        {
-            Name = ProfileEntity.Name;
-
-            lock (_children)
-            {
-                _children.Clear();
-                // Populate the profile starting at the root, the rest is populated recursively
-                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
-                if (rootFolder == null)
-                    AddChild(new Folder(this, null, "Root folder"));
-                else
-                    AddChild(new Folder(this, null, rootFolder));
-            }
         }
 
         internal void Activate(ArtemisSurface surface)
@@ -135,11 +140,6 @@ namespace Artemis.Core.Models.Profile
         {
             foreach (var layer in GetAllLayers())
                 layer.PopulateLeds(surface);
-        }
-
-        public override string ToString()
-        {
-            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(PluginInfo)}: {PluginInfo}";
         }
 
         #region Events

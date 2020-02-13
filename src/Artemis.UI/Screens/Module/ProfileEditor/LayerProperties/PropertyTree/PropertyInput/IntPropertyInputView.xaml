@@ -16,8 +16,8 @@
                  Padding="0 -1"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
-                 Text="{Binding IntInputValue}" 
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}"/>
+                 Text="{Binding IntInputValue}"
+                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

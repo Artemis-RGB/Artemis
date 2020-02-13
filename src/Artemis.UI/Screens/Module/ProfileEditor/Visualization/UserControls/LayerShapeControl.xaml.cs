@@ -56,6 +56,34 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls
             set => SetValue(ShapeGeometryProperty, value);
         }
 
+        public void UpdateDimensions()
+        {
+            if (Zoom == 0)
+                return;
+
+            // Rotation controls
+            UpdateRotateDimensions(RotateTopLeft);
+            UpdateRotateDimensions(RotateTopRight);
+            UpdateRotateDimensions(RotateBottomRight);
+            UpdateRotateDimensions(RotateBottomLeft);
+
+            // Size controls
+            UpdateResizeDimensions(ResizeTopCenter);
+            UpdateResizeDimensions(ResizeRightCenter);
+            UpdateResizeDimensions(ResizeBottomCenter);
+            UpdateResizeDimensions(ResizeLeftCenter);
+            UpdateResizeDimensions(ResizeTopLeft);
+            UpdateResizeDimensions(ResizeTopRight);
+            UpdateResizeDimensions(ResizeBottomRight);
+            UpdateResizeDimensions(ResizeBottomLeft);
+
+            // Anchor point
+            UpdateResizeDimensions(AnchorPoint);
+
+            // Layer outline
+            LayerShapeOutline.StrokeThickness = Math.Max(2 / Zoom, 1);
+        }
+
         private static void ZoomChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var layerShapeControl = (LayerShapeControl) d;
@@ -86,34 +114,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.UserControls
 
             layerShapeControl.SetCurrentValue(ShapeGeometryProperty, e.NewValue);
             layerShapeControl.UpdateShapeGeometry();
-        }
-
-        public void UpdateDimensions()
-        {
-            if (Zoom == 0)
-                return;
-
-            // Rotation controls
-            UpdateRotateDimensions(RotateTopLeft);
-            UpdateRotateDimensions(RotateTopRight);
-            UpdateRotateDimensions(RotateBottomRight);
-            UpdateRotateDimensions(RotateBottomLeft);
-
-            // Size controls
-            UpdateResizeDimensions(ResizeTopCenter);
-            UpdateResizeDimensions(ResizeRightCenter);
-            UpdateResizeDimensions(ResizeBottomCenter);
-            UpdateResizeDimensions(ResizeLeftCenter);
-            UpdateResizeDimensions(ResizeTopLeft);
-            UpdateResizeDimensions(ResizeTopRight);
-            UpdateResizeDimensions(ResizeBottomRight);
-            UpdateResizeDimensions(ResizeBottomLeft);
-
-            // Anchor point
-            UpdateResizeDimensions(AnchorPoint);
-
-            // Layer outline
-            LayerShapeOutline.StrokeThickness = Math.Max(2 / Zoom, 1);
         }
 
         private void UpdateShapeGeometry()

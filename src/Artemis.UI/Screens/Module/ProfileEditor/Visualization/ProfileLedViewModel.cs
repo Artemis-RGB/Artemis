@@ -38,6 +38,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Geometry StrokeGeometry { get; private set; }
         public Color DisplayColor { get; private set; }
 
+        public void Update()
+        {
+            var newColor = Led.RgbLed.Color.ToMediaColor();
+            Execute.PostToUIThread(() =>
+            {
+                if (!DisplayColor.Equals(newColor))
+                    DisplayColor = newColor;
+            });
+        }
+
         private void CreateLedGeometry()
         {
             switch (Led.RgbLed.Shape)
@@ -104,16 +114,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             {
                 CreateRectangleGeometry();
             }
-        }
-
-        public void Update()
-        {
-            var newColor = Led.RgbLed.Color.ToMediaColor();
-            Execute.PostToUIThread(() =>
-            {
-                if (!DisplayColor.Equals(newColor))
-                    DisplayColor = newColor;
-            });
         }
     }
 }

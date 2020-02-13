@@ -268,13 +268,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise.Utilities
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int FastFloor(double x)
-        {
-            var xi = (int) x;
-            return x < xi ? xi - 1 : xi;
-        }
-
         public double Evaluate(double x, double y)
         {
             var stretchOffset = (x + y) * STRETCH_2D;
@@ -452,6 +445,13 @@ namespace Artemis.Plugins.LayerBrushes.Noise.Utilities
             }
 
             return value * NORM_4D;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int FastFloor(double x)
+        {
+            var xi = (int) x;
+            return x < xi ? xi - 1 : xi;
         }
 
         private class Contribution2

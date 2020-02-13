@@ -38,6 +38,24 @@ namespace Artemis.Plugins.LayerBrushes.Color
         public LayerProperty<SKColor> ColorProperty { get; set; }
         public LayerProperty<GradientType> GradientTypeProperty { get; set; }
 
+        public override void Update(double deltaTime)
+        {
+            // Only recreate the shader if the color changed
+            if (_color != ColorProperty.CurrentValue)
+            {
+                _color = ColorProperty.CurrentValue;
+                CreateShader();
+            }
+
+            base.Update(deltaTime);
+        }
+
+        public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
+        {
+            paint.Shader = _shader;
+            canvas.DrawPath(path, paint);
+        }
+
         private void CreateShader()
         {
             var center = new SKPoint(Layer.Bounds.MidX, Layer.Bounds.MidY);
@@ -66,24 +84,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
             _paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low};
             oldShader?.Dispose();
             oldPaint?.Dispose();
-        }
-
-        public override void Update(double deltaTime)
-        {
-            // Only recreate the shader if the color changed
-            if (_color != ColorProperty.CurrentValue)
-            {
-                _color = ColorProperty.CurrentValue;
-                CreateShader();
-            }
-
-            base.Update(deltaTime);
-        }
-
-        public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
-        {
-            paint.Shader = _shader;
-            canvas.DrawPath(path, paint);
         }
     }
 

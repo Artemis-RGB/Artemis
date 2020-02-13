@@ -11,9 +11,6 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
-using Ninject;
-using Ninject.Parameters;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
@@ -147,6 +144,11 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public LayerBrush LayerBrush { get; internal set; }
 
+        public override string ToString()
+        {
+            return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+        }
+
         #region Storage
 
         internal override void ApplyToEntity()
@@ -177,6 +179,35 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+
+        #region Shape management
+
+        private void ApplyShapeType()
+        {
+            switch (ShapeTypeProperty.CurrentValue)
+            {
+                case LayerShapeType.Ellipse:
+                    LayerShape = new Ellipse(this);
+                    break;
+                case LayerShapeType.Rectangle:
+                    LayerShape = new Rectangle(this);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        #endregion
+
+        private void OnLayerPropertyRegistered(LayerPropertyEventArgs e)
+        {
+            LayerPropertyRegistered?.Invoke(this, e);
+        }
+
+        private void OnLayerPropertyRemoved(LayerPropertyEventArgs e)
+        {
+            LayerPropertyRemoved?.Invoke(this, e);
+        }
 
         #region Rendering
 
@@ -277,7 +308,7 @@ namespace Artemis.Core.Models.Profile
             renderPath.AddRect(Path.Bounds);
             LayerBrush?.Render(canvas, renderPath, paint);
         }
-        
+
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
@@ -374,25 +405,6 @@ namespace Artemis.Core.Models.Profile
 
             _leds = leds;
             CalculateRenderProperties();
-        }
-
-        #endregion
-
-        #region Shape management
-
-        private void ApplyShapeType()
-        {
-            switch (ShapeTypeProperty.CurrentValue)
-            {
-                case LayerShapeType.Ellipse:
-                    LayerShape = new Ellipse(this);
-                    break;
-                case LayerShapeType.Rectangle:
-                    LayerShape = new Rectangle(this);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         #endregion
@@ -534,21 +546,6 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
-        }
-
-        private void OnLayerPropertyRegistered(LayerPropertyEventArgs e)
-        {
-            LayerPropertyRegistered?.Invoke(this, e);
-        }
-
-        private void OnLayerPropertyRemoved(LayerPropertyEventArgs e)
-        {
-            LayerPropertyRemoved?.Invoke(this, e);
-        }
     }
 
     public enum LayerShapeType

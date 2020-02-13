@@ -20,10 +20,9 @@
                   ItemsSource="{Binding Path=EnumValues}"
                   SelectedValuePath="Value"
                   DisplayMemberPath="Description"
-                  SelectedValue="{Binding Path=EnumInputValue}" 
+                  SelectedValue="{Binding Path=EnumInputValue}"
                   RequestBringIntoView="{s:Action OnRequestBringIntoView}"
-                  materialDesign:ComboBoxAssist.ClassicMode="True">
-        </ComboBox>
+                  materialDesign:ComboBoxAssist.ClassicMode="True" />
         <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

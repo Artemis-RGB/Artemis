@@ -22,14 +22,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             set => InputValue = value;
         }
 
-        protected override void OnInitialized()
-        {
-            EnumValues = EnumUtilities.GetAllValuesAndDescriptions(LayerPropertyViewModel.LayerProperty.Type);
-        }
-
         public override void Update()
         {
             NotifyOfPropertyChange(() => EnumInputValue);
+        }
+
+        protected override void OnInitialized()
+        {
+            EnumValues = EnumUtilities.GetAllValuesAndDescriptions(LayerPropertyViewModel.LayerProperty.Type);
         }
     }
 }
