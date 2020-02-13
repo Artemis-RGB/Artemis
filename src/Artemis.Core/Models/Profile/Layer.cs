@@ -219,10 +219,7 @@ namespace Artemis.Core.Models.Profile
                         StretchRender(canvas, paint);
                         break;
                     case LayerFillType.Clip:
-                        ClipRender(canvas, paint);
-                        break;
-                    case LayerFillType.Tile:
-                        TileRender(canvas, paint);
+                        ClipRender(canvas, paint, true);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -247,39 +244,14 @@ namespace Artemis.Core.Models.Profile
 
             // Apply these before translation because anchorPosition takes translation into account
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
-            // Once the other transformations are done it is save to translate
+            canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            LayerBrush?.Render(canvas, LayerShape.Path, paint);
+            LayerBrush?.Render(canvas, new SKPath(LayerShape.Path), paint);
         }
 
-        private void ClipRender(SKCanvas canvas, SKPaint paint)
+        private void ClipRender(SKCanvas canvas, SKPaint paint, bool rotatePath)
         {
-            // Apply transformations
-            var sizeProperty = ScaleProperty.CurrentValue;
-            var rotationProperty = RotationProperty.CurrentValue;
-
-            var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = AnchorPointProperty.CurrentValue;
-
-            // Translation originates from the unscaled center of the layer and is tied to the anchor
-            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
-
-            // Rotation is always applied on the canvas
-            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-
-            var path = new SKPath(LayerShape.Path);
-            path.Transform(SKMatrix.MakeTranslation(x, y));
-            path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
-
-            LayerBrush?.Render(canvas, path, paint);
-        }
-
-        private void TileRender(SKCanvas canvas, SKPaint paint)
-        {
-            // TODO
             // Apply transformations
             var sizeProperty = ScaleProperty.CurrentValue;
             var rotationProperty = RotationProperty.CurrentValue;
@@ -291,15 +263,21 @@ namespace Artemis.Core.Models.Profile
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
             var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
 
-            // Apply these before translation because anchorPosition takes translation into account
+            var clipPath = new SKPath(LayerShape.Path);
+            clipPath.Transform(SKMatrix.MakeTranslation(x, y));
+            clipPath.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+            clipPath.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
+            canvas.ClipPath(clipPath);
+
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            canvas.Scale(sizeProperty.Width, sizeProperty.Height, anchorPosition.X, anchorPosition.Y);
-            // Once the other transformations are done it is save to translate
             canvas.Translate(x, y);
 
-            LayerBrush?.Render(canvas, LayerShape.Path, paint);
+            // Render the entire layer, the clip will ensure the shape is matched
+            var renderPath = new SKPath();
+            renderPath.AddRect(Path.Bounds);
+            LayerBrush?.Render(canvas, renderPath, paint);
         }
-
+        
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
@@ -582,7 +560,6 @@ namespace Artemis.Core.Models.Profile
     public enum LayerFillType
     {
         Stretch,
-        Clip,
-        Tile
+        Clip
     }
 }

@@ -32,6 +32,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
             CreateShader();
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
+            GradientTypeProperty.ValueChanged += (sender, args) => CreateShader();
         }
 
         public LayerProperty<SKColor> ColorProperty { get; set; }
