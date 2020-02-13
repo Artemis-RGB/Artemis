@@ -36,14 +36,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _coreService = coreService;
             _settingsService = settingsService;
             _layerPropertyVmFactory = layerPropertyVmFactory;
+            _layerPropertyViewModels = new List<LayerPropertyViewModel>();
 
             PixelsPerSecond = 31;
             PropertyTree = propertyTreeVmFactory.Create(this);
             PropertyTimeline = propertyTimelineVmFactory.Create(this);
 
             PopulateProperties(_profileEditorService.SelectedProfileElement, null);
-
-            _layerPropertyViewModels = new List<LayerPropertyViewModel>();
             _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
             _profileEditorService.SelectedProfileChanged += (sender, args) => PopulateProperties(_profileEditorService.SelectedProfileElement, null);
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
