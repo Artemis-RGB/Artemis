@@ -71,22 +71,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
 
-        private void ChangeSelectedProfile(Profile profile)
-        {
-            if (profile == Module.ActiveProfile)
-                return;
-
-            var oldProfile = Module.ActiveProfile;
-            _profileService.ActivateProfile(Module, profile);
-
-            if (oldProfile != null)
-                _profileService.UpdateProfile(oldProfile, false);
-            if (profile != null)
-                _profileService.UpdateProfile(profile, false);
-
-            _profileEditorService.ChangeSelectedProfile(profile);
-        }
-
         public Profile CreateProfile(string name)
         {
             var profile = _profileService.CreateProfile(Module, name);
@@ -135,14 +119,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             _profileEditorService.RedoUpdateProfile(Module);
         }
 
-        private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
-        {
-            if (SelectedProfile == Module.ActiveProfile)
-                return;
-
-            SelectedProfile = Profiles.FirstOrDefault(p => p == Module.ActiveProfile);
-        }
-
         protected override void OnActivate()
         {
             LoadWorkspaceSettings();
@@ -156,6 +132,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             SaveWorkspaceSettings();
             _profileEditorService.ResumeRegularRender();
             base.OnDeactivate();
+        }
+
+        private void ChangeSelectedProfile(Profile profile)
+        {
+            if (profile == Module.ActiveProfile)
+                return;
+
+            var oldProfile = Module.ActiveProfile;
+            _profileService.ActivateProfile(Module, profile);
+
+            if (oldProfile != null)
+                _profileService.UpdateProfile(oldProfile, false);
+            if (profile != null)
+                _profileService.UpdateProfile(profile, false);
+
+            _profileEditorService.ChangeSelectedProfile(profile);
+        }
+
+        private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
+        {
+            if (SelectedProfile == Module.ActiveProfile)
+                return;
+
+            SelectedProfile = Profiles.FirstOrDefault(p => p == Module.ActiveProfile);
         }
 
         private void LoadWorkspaceSettings()

@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Core.Plugins.Models;
+﻿using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 

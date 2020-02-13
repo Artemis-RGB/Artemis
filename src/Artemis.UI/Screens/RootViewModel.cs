@@ -33,6 +33,35 @@ namespace Artemis.UI.Screens
         public bool IsSidebarVisible { get; set; }
         public bool ActiveItemReady { get; set; }
 
+        public void WindowDeactivated()
+        {
+            var windowState = ((Window) View).WindowState;
+            if (windowState == WindowState.Minimized)
+                return;
+
+            _lostFocus = true;
+            _eventAggregator.Publish(new MainWindowFocusChangedEvent(false));
+        }
+
+        public void WindowActivated()
+        {
+            if (!_lostFocus)
+                return;
+
+            _lostFocus = false;
+            _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
+        }
+
+        public void WindowKeyDown(object sender, KeyEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowKeyEvent(true, e));
+        }
+
+        public void WindowKeyUp(object sender, KeyEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
+        }
+
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem))
@@ -62,35 +91,6 @@ namespace Artemis.UI.Screens
 #pragma warning disable 612
             extensionsPaletteHelper.SetLightDark(windowsTheme == ThemeWatcher.WindowsTheme.Dark);
 #pragma warning restore 612
-        }
-
-        public void WindowDeactivated()
-        {
-            var windowState = ((Window) View).WindowState;
-            if (windowState == WindowState.Minimized)
-                return;
-
-            _lostFocus = true;
-            _eventAggregator.Publish(new MainWindowFocusChangedEvent(false));
-        }
-
-        public void WindowActivated()
-        {
-            if (!_lostFocus)
-                return;
-
-            _lostFocus = false;
-            _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
-        }
-
-        public void WindowKeyDown(object sender, KeyEventArgs e)
-        {
-            _eventAggregator.Publish(new MainWindowKeyEvent(true, e));
-        }
-
-        public void WindowKeyUp(object sender, KeyEventArgs e)
-        {
-            _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
         }
     }
 }

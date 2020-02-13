@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;

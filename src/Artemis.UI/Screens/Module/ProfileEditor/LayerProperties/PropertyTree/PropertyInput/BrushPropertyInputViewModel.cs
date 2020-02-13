@@ -38,12 +38,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             }
         }
 
-        protected override void OnInitialized()
-        {
-            UpdateEnumValues();
-            base.OnInitialized();
-        }
-
         public void UpdateEnumValues()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
@@ -63,6 +57,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         public override void Update()
         {
             NotifyOfPropertyChange(() => BrushInputValue);
+        }
+
+        protected override void OnInitialized()
+        {
+            UpdateEnumValues();
+            base.OnInitialized();
         }
     }
 }

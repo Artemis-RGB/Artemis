@@ -13,6 +13,19 @@ namespace Artemis.UI.Stylet
 
         protected virtual object RootViewModel => _rootViewModel ?? (_rootViewModel = GetInstance(typeof(TRootViewModel)));
 
+        public override object GetInstance(Type type)
+        {
+            return Kernel.Get(type);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            ScreenExtensions.TryDispose(_rootViewModel);
+            if (Kernel != null)
+                Kernel.Dispose();
+        }
+
         protected override void ConfigureBootstrapper()
         {
             Kernel = new StandardKernel();
@@ -49,21 +62,8 @@ namespace Artemis.UI.Stylet
         {
         }
 
-        public override object GetInstance(Type type)
-        {
-            return Kernel.Get(type);
-        }
-
         protected override void Launch()
         {
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            ScreenExtensions.TryDispose(_rootViewModel);
-            if (Kernel != null)
-                Kernel.Dispose();
         }
     }
 }

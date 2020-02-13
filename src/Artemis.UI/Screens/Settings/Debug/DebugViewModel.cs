@@ -36,6 +36,20 @@ namespace Artemis.UI.Screens.Settings.Debug
             GC.WaitForPendingFinalizers();
         }
 
+        protected override void OnActivate()
+        {
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
+            base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+            base.OnDeactivate();
+        }
+
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
             Execute.PostToUIThread(() =>
@@ -74,20 +88,6 @@ namespace Artemis.UI.Screens.Settings.Debug
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
             CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
-        }
-
-        protected override void OnActivate()
-        {
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
-            _coreService.FrameRendering += CoreServiceOnFrameRendering;
-            base.OnActivate();
-        }
-
-        protected override void OnDeactivate()
-        {
-            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
-            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
-            base.OnDeactivate();
         }
     }
 }

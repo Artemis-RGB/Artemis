@@ -76,6 +76,18 @@ namespace Artemis.Core.Models.Surface
             set => DeviceEntity.ZIndex = value;
         }
 
+        public override string ToString()
+        {
+            return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
+        }
+
+        public event EventHandler DeviceUpdated;
+
+        protected virtual void OnDeviceUpdated()
+        {
+            DeviceUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
         internal void ApplyToEntity()
         {
             // Other properties are computed
@@ -112,18 +124,6 @@ namespace Artemis.Core.Models.Surface
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             RenderPath = path;
-        }
-
-        public override string ToString()
-        {
-            return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
-        }
-
-        public event EventHandler DeviceUpdated;
-
-        protected virtual void OnDeviceUpdated()
-        {
-            DeviceUpdated?.Invoke(this, EventArgs.Empty);
         }
     }
 }

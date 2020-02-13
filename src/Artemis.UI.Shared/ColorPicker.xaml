@@ -101,9 +101,9 @@
                  HorizontalAlignment="Stretch" />
 
         <Border Width="15"
-                Height="15" 
+                Height="15"
                 CornerRadius="15"
-                Margin="0,0,0,2" 
+                Margin="0,0,0,2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 Background="{StaticResource Checkerboard}">

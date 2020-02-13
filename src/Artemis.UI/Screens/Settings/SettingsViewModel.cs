@@ -108,20 +108,6 @@ namespace Artemis.UI.Screens.Settings
             }
         }
 
-        protected override void OnActivate()
-        {
-            DeviceSettingsViewModels.Clear();
-            foreach (var device in _surfaceService.ActiveSurface.Devices)
-                DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
-
-            // TODO: GetPluginsOfType isn't ideal here as it doesn't include disabled plugins
-            Plugins.Clear();
-            foreach (var plugin in _pluginService.GetPluginsOfType<Plugin>())
-                Plugins.Add(new PluginSettingsViewModel(plugin));
-
-            base.OnActivate();
-        }
-
         public void ShowDebugger()
         {
             _windowManager.ShowWindow(_kernel.Get<DebugViewModel>());
@@ -135,6 +121,20 @@ namespace Artemis.UI.Screens.Settings
         public void ShowDataFolder()
         {
             Process.Start(Constants.DataFolder);
+        }
+
+        protected override void OnActivate()
+        {
+            DeviceSettingsViewModels.Clear();
+            foreach (var device in _surfaceService.ActiveSurface.Devices)
+                DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
+
+            // TODO: GetPluginsOfType isn't ideal here as it doesn't include disabled plugins
+            Plugins.Clear();
+            foreach (var plugin in _pluginService.GetPluginsOfType<Plugin>())
+                Plugins.Add(new PluginSettingsViewModel(plugin));
+
+            base.OnActivate();
         }
     }
 }

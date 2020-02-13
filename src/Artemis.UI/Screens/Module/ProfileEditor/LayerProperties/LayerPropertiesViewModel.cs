@@ -20,10 +20,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
         private readonly ICoreService _coreService;
+        private readonly List<LayerPropertyViewModel> _layerPropertyViewModels;
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
-        private readonly List<LayerPropertyViewModel> _layerPropertyViewModels;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
@@ -71,16 +71,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public PropertyTreeViewModel PropertyTree { get; set; }
         public PropertyTimelineViewModel PropertyTimeline { get; set; }
 
-        private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(() => FormattedCurrentTime);
-            NotifyOfPropertyChange(() => TimeCaretPosition);
-        }
-
         protected override void OnDeactivate()
         {
             Pause();
             base.OnDeactivate();
+        }
+
+        private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(() => FormattedCurrentTime);
+            NotifyOfPropertyChange(() => TimeCaretPosition);
         }
 
         #region View model managament
@@ -92,6 +92,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 previousLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
                 previousLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
             }
+
             if (profileElement is Layer layer)
             {
                 // Create VMs for missing properties

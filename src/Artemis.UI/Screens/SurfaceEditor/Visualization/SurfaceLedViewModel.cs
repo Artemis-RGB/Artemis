@@ -21,11 +21,6 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         public double Width { get; set; }
         public double Height { get; set; }
 
-        private void OnLedOnPropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            if (args.PropertyName == "Location" || args.PropertyName == "ActualSize") ApplyLedToViewModel();
-        }
-
         public void ApplyLedToViewModel()
         {
             // Don't want ActualLocation here since rotation is done in XAML
@@ -33,6 +28,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             Y = Led.Location.Y * Led.Device.Scale.Vertical;
             Width = Led.ActualSize.Width;
             Height = Led.ActualSize.Height;
+        }
+
+        private void OnLedOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == "Location" || args.PropertyName == "ActualSize") ApplyLedToViewModel();
         }
     }
 }

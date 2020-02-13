@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Artemis.Core.Events;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
@@ -9,7 +8,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     {
         private readonly IPropertyTrackKeyframeVmFactory _propertyTrackKeyframeVmFactory;
 
-        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel, IPropertyTrackKeyframeVmFactory propertyTrackKeyframeVmFactory)
+        public PropertyTrackViewModel(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel,
+            IPropertyTrackKeyframeVmFactory propertyTrackKeyframeVmFactory)
         {
             _propertyTrackKeyframeVmFactory = propertyTrackKeyframeVmFactory;
             PropertyTimelineViewModel = propertyTimelineViewModel;

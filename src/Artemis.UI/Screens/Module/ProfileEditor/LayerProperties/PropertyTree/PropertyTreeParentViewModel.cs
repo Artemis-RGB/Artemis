@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Artemis.Core.Events;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree

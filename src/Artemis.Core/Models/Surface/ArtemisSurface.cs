@@ -48,6 +48,15 @@ namespace Artemis.Core.Models.Surface
         internal SurfaceEntity SurfaceEntity { get; set; }
         internal Guid EntityId { get; set; }
 
+        public void UpdateScale(double value)
+        {
+            Scale = value;
+            foreach (var device in Devices)
+                device.CalculateRenderProperties();
+
+            OnScaleChanged();
+        }
+
         internal void ApplyToEntity()
         {
             SurfaceEntity.Id = EntityId;
@@ -60,15 +69,6 @@ namespace Artemis.Core.Models.Surface
                 if (!SurfaceEntity.DeviceEntities.Contains(deviceEntity))
                     SurfaceEntity.DeviceEntities.Add(deviceEntity);
             }
-        }
-
-        public void UpdateScale(double value)
-        {
-            Scale = value;
-            foreach (var device in Devices)
-                device.CalculateRenderProperties();
-
-            OnScaleChanged();
         }
 
         #region Events

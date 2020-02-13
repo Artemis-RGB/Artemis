@@ -45,6 +45,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             : new Rect(X, Y, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height);
 
         /// <summary>
+        ///     Update the color of all LEDs if finished adding
+        /// </summary>
+        public void Update()
+        {
+            if (!AddedLeds)
+                return;
+
+            foreach (var ledViewModel in Leds)
+                ledViewModel.Update();
+        }
+
+        /// <summary>
         ///     Adds LEDs in batches of 5 to avoid UI freezes
         /// </summary>
         /// <returns></returns>
@@ -61,18 +73,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
 
             AddedLeds = true;
-        }
-
-        /// <summary>
-        ///     Update the color of all LEDs if finished adding
-        /// </summary>
-        public void Update()
-        {
-            if (!AddedLeds)
-                return;
-
-            foreach (var ledViewModel in Leds)
-                ledViewModel.Update();
         }
     }
 }

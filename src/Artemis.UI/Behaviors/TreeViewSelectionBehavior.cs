@@ -56,6 +56,31 @@ namespace Artemis.UI.Behaviors
             set => SetValue(ExpandSelectedProperty, value);
         }
 
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+
+            AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
+            ((INotifyCollectionChanged) AssociatedObject.Items).CollectionChanged += OnTreeViewItemsChanged;
+
+            UpdateTreeViewItemStyle();
+            _modelHandled = true;
+            UpdateAllTreeViewItems();
+            _modelHandled = false;
+        }
+
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+
+            if (AssociatedObject != null)
+            {
+                AssociatedObject.ItemContainerStyle?.Setters?.Remove(_treeViewItemEventSetter);
+                AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
+                ((INotifyCollectionChanged) AssociatedObject.Items).CollectionChanged -= OnTreeViewItemsChanged;
+            }
+        }
+
         private static void OnSelectedItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             var behavior = (TreeViewSelectionBehavior) sender;
@@ -144,31 +169,6 @@ namespace Artemis.UI.Behaviors
         private void OnTreeViewItemLoaded(object sender, RoutedEventArgs args)
         {
             UpdateTreeViewItem((TreeViewItem) sender, false);
-        }
-
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-
-            AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
-            ((INotifyCollectionChanged) AssociatedObject.Items).CollectionChanged += OnTreeViewItemsChanged;
-
-            UpdateTreeViewItemStyle();
-            _modelHandled = true;
-            UpdateAllTreeViewItems();
-            _modelHandled = false;
-        }
-
-        protected override void OnDetaching()
-        {
-            base.OnDetaching();
-
-            if (AssociatedObject != null)
-            {
-                AssociatedObject.ItemContainerStyle?.Setters?.Remove(_treeViewItemEventSetter);
-                AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
-                ((INotifyCollectionChanged) AssociatedObject.Items).CollectionChanged -= OnTreeViewItemsChanged;
-            }
         }
     }
 }

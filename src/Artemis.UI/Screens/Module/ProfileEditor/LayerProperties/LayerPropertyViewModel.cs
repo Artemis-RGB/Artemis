@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Ninject;
@@ -47,21 +46,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
-        private void UpdateKeyframes()
-        {
-            // Either create a new first keyframe or clear all the keyframes
-            if (_keyframesEnabled)
-                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime, LayerProperty.GetCurrentValue());
-            else
-                LayerProperty.ClearKeyframes();
-
-            // Force the keyframe engine to update, the new keyframe is the current keyframe
-            LayerProperty.IsUsingKeyframes = _keyframesEnabled;
-            LayerProperty.KeyframeEngine?.Update(0);
-
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
         public PropertyInputViewModel GetPropertyInputViewModel()
         {
             // If the type is an enum type, search for Enum instead.
@@ -75,6 +59,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             match.Initialize(this);
             return match;
+        }
+
+        private void UpdateKeyframes()
+        {
+            // Either create a new first keyframe or clear all the keyframes
+            if (_keyframesEnabled)
+                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime, LayerProperty.GetCurrentValue());
+            else
+                LayerProperty.ClearKeyframes();
+
+            // Force the keyframe engine to update, the new keyframe is the current keyframe
+            LayerProperty.IsUsingKeyframes = _keyframesEnabled;
+            LayerProperty.KeyframeEngine?.Update(0);
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
     }
 }
