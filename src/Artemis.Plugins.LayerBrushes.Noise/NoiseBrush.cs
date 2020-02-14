@@ -9,6 +9,8 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 {
     public class NoiseBrush : LayerBrush
     {
+        private const float Scale = 0.12f;
+
         private static readonly Random Rand = new Random();
         private readonly OpenSimplexNoise _noise;
         private float _z;
@@ -44,12 +46,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         public override void Render(SKCanvas canvas, SKPath path, SKPaint paint)
         {
             var mainColor = MainColorProperty.CurrentValue;
-            var horizontalScale = ScaleProperty.CurrentValue.Width / 400f;
-            var verticalScale = ScaleProperty.CurrentValue.Height / 400f;
-
+            var scale = ScaleProperty.CurrentValue;
             // Scale down the render path to avoid computing a value for every pixel
-            var width = Math.Floor(path.Bounds.Width * horizontalScale);
-            var height = Math.Floor(path.Bounds.Height * verticalScale);
+            var width = Math.Floor(path.Bounds.Width * Scale);
+            var height = Math.Floor(path.Bounds.Height * Scale);
 
             var opacity = (float) Math.Round(mainColor.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
             using (var bitmap = new SKBitmap(new SKImageInfo((int) width, (int) height)))
@@ -59,7 +59,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 {
                     for (var y = 0; y < height; y++)
                     {
-                        var v = _noise.Evaluate(5 * x / width, 5 * y / height, _z);
+                        var v = _noise.Evaluate(0.1f * scale.Width  * x / width, 0.1f * scale.Height * y / height, _z);
                         var alpha = (byte) Math.Max(0, Math.Min(255, v * 2000));
 
 //                        var alpha = (byte) ((v + 1) * 127 * opacity);
@@ -74,7 +74,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
 
                 var makeTranslation = SKMatrix.MakeTranslation(path.Bounds.Left , path.Bounds.Top );
-                SKMatrix.Concat(ref makeTranslation, makeTranslation, SKMatrix.MakeScale(1f / horizontalScale, 1f / verticalScale));
+                SKMatrix.Concat(ref makeTranslation, makeTranslation, SKMatrix.MakeScale(1f / Scale, 1f / Scale));
                 using (var sh = SKShader.CreateBitmap(bitmap, SKShaderTileMode.Mirror, SKShaderTileMode.Mirror, makeTranslation))
                 {
                     paint.FilterQuality = SKFilterQuality.Low;
