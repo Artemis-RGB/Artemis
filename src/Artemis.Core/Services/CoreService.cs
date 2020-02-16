@@ -127,7 +127,7 @@ namespace Artemis.Core.Services
                             lock (_modules)
                             {
                                 foreach (var module in _modules)
-                                    module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas);
+                                    module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                             }
                         }
 

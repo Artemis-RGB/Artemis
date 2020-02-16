@@ -37,9 +37,10 @@ namespace Artemis.Core.Plugins.LayerBrush
         ///     <para>Called during rendering, in the order configured on the layer</para>
         /// </summary>
         /// <param name="canvas">The layer canvas</param>
+        /// <param name="canvasInfo"></param>
         /// <param name="path">The path to be filled, represents the shape</param>
         /// <param name="paint">The paint to be used to fill the shape</param>
-        public virtual void Render(SKCanvas canvas, SKPath path, SKPaint paint)
+        public virtual void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
         }
 

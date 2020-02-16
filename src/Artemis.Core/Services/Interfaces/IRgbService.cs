@@ -8,8 +8,24 @@ namespace Artemis.Core.Services.Interfaces
 {
     public interface IRgbService : IArtemisService
     {
+        /// <summary>
+        ///     Gets or sets the RGB surface rendering is performed on
+        /// </summary>
         RGBSurface Surface { get; set; }
+
+        /// <summary>
+        ///     Gets the bitmap brush used to convert the rendered frame to LED-colors
+        /// </summary>
         BitmapBrush BitmapBrush { get; }
+
+        /// <summary>
+        ///     Gets the scale the frames are rendered on, a scale of 1.0 means 1 pixel = 1mm
+        /// </summary>
+        double RenderScale { get; }
+
+        /// <summary>
+        ///     Gets all loaded RGB devices
+        /// </summary>
         IReadOnlyCollection<IRGBDevice> LoadedDevices { get; }
 
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);

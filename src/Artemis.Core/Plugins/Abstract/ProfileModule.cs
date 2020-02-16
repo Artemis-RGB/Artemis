@@ -31,12 +31,12 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas)
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, canvas);
+                ActiveProfile?.Render(deltaTime, canvas, canvasInfo);
             }
         }
 

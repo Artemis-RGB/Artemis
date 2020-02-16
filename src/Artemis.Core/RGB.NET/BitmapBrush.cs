@@ -86,32 +86,28 @@ namespace Artemis.Core.RGB.NET
             var sampleSize = _sampleSizeSetting.Value;
             var sampleDepth = Math.Sqrt(sampleSize).RoundToInt();
 
+            var bitmapWidth = Bitmap.Width;
+            var bitmapHeight = Bitmap.Height;
+
             foreach (var renderTarget in renderTargets)
             {
                 // SKRect has all the good stuff we need
-                var rect = SKRect.Create(
-                    (float) ((renderTarget.Rectangle.Location.X + 4) * Scale.Horizontal),
-                    (float) ((renderTarget.Rectangle.Location.Y + 4) * Scale.Vertical),
-                    (float) ((renderTarget.Rectangle.Size.Width - 8) * Scale.Horizontal),
-                    (float) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical)
-                );
+                var left = (int) ((renderTarget.Rectangle.Location.X + 4) * Scale.Horizontal);
+                var top = (int) ((renderTarget.Rectangle.Location.Y + 4) * Scale.Vertical);
+                var width = (int) ((renderTarget.Rectangle.Size.Width - 8) * Scale.Horizontal);
+                var height = (int) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical);
 
-                var verticalSteps = rect.Height / (sampleDepth - 1);
-                var horizontalSteps = rect.Width / (sampleDepth - 1);
+                var verticalSteps = height / (sampleDepth - 1);
+                var horizontalSteps = width / (sampleDepth - 1);
 
-                var a = 0;
-                var r = 0;
-                var g = 0;
-                var b = 0;
-
-                // TODO: Compare this with LINQ, might be quicker and cleaner
+                int a = 0, r = 0, g = 0, b = 0;
                 for (var horizontalStep = 0; horizontalStep < sampleDepth; horizontalStep++)
                 {
                     for (var verticalStep = 0; verticalStep < sampleDepth; verticalStep++)
                     {
-                        var x = (rect.Left + horizontalSteps * horizontalStep).RoundToInt();
-                        var y = (rect.Top + verticalSteps * verticalStep).RoundToInt();
-                        if (x < 0 || x > Bitmap.Width || y < 0 || y > Bitmap.Height)
+                        var x = left + horizontalSteps * horizontalStep;
+                        var y = top + verticalSteps * verticalStep;
+                        if (x < 0 || x > bitmapWidth || y < 0 || y > bitmapHeight)
                             continue;
 
                         var color = Bitmap.GetPixel(x, y);

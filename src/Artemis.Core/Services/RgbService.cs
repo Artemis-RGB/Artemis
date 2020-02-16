@@ -48,6 +48,8 @@ namespace Artemis.Core.Services
 
         public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
 
+        public double RenderScale => _renderScaleSetting.Value;
+
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
             Surface.LoadDevices(deviceProvider);
