@@ -55,11 +55,11 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Update(deltaTime);
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             // Folders don't render but their children do
             foreach (var profileElement in Children)
-                profileElement.Render(deltaTime, canvas);
+                profileElement.Render(deltaTime, canvas, canvasInfo);
         }
 
         public Folder AddFolder(string name)

@@ -44,7 +44,8 @@ namespace Artemis.Core.Plugins.Abstract
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>
         /// <param name="canvas"></param>
-        public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas);
+        /// <param name="canvasInfo"></param>
+        public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo);
 
         /// <summary>
         ///     Called when the module's view model is being show, return view models here to create tabs for them

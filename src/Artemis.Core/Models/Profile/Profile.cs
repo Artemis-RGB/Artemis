@@ -57,7 +57,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             lock (this)
             {
@@ -65,7 +65,7 @@ namespace Artemis.Core.Models.Profile
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (var profileElement in Children)
-                    profileElement.Render(deltaTime, canvas);
+                    profileElement.Render(deltaTime, canvas, canvasInfo);
             }
         }
 

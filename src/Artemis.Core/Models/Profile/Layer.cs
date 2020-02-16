@@ -72,7 +72,7 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public SKPath Path
         {
-            get => _path;
+            get => _path != null ? new SKPath(_path) : null;
             private set
             {
                 _path = value;
@@ -231,7 +231,7 @@ namespace Artemis.Core.Models.Profile
             LayerBrush?.Update(deltaTime);
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             if (Path == null || LayerShape?.Path == null)
                 return;
@@ -247,10 +247,10 @@ namespace Artemis.Core.Models.Profile
                 switch (FillTypeProperty.CurrentValue)
                 {
                     case LayerFillType.Stretch:
-                        StretchRender(canvas, paint);
+                        StretchRender(canvas, canvasInfo, paint);
                         break;
                     case LayerFillType.Clip:
-                        ClipRender(canvas, paint, true);
+                        ClipRender(canvas, canvasInfo, paint);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -260,7 +260,7 @@ namespace Artemis.Core.Models.Profile
             canvas.Restore();
         }
 
-        private void StretchRender(SKCanvas canvas, SKPaint paint)
+        private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
             var sizeProperty = ScaleProperty.CurrentValue;
@@ -278,10 +278,10 @@ namespace Artemis.Core.Models.Profile
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            LayerBrush?.Render(canvas, new SKPath(LayerShape.Path), paint);
+            LayerBrush?.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
         }
 
-        private void ClipRender(SKCanvas canvas, SKPaint paint, bool rotatePath)
+        private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
             var sizeProperty = ScaleProperty.CurrentValue;
@@ -303,10 +303,17 @@ namespace Artemis.Core.Models.Profile
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            // Render the entire layer, the clip will ensure the shape is matched
+            // Render the layer in the largest required bounds, this still creates stretching in some situations
+            // but the only alternative I see right now is always forcing brushes to render on the entire canvas
+            var boundsRect = new SKRect(
+                Math.Min(clipPath.Bounds.Left - x, Bounds.Left - x),
+                Math.Min(clipPath.Bounds.Top - y, Bounds.Top - y),
+                Math.Max(clipPath.Bounds.Right - x, Bounds.Right - x),
+                Math.Max(clipPath.Bounds.Bottom - y, Bounds.Bottom - y)
+            );
             var renderPath = new SKPath();
-            renderPath.AddRect(Path.Bounds);
-            LayerBrush?.Render(canvas, renderPath, paint);
+            renderPath.AddRect(boundsRect);
+            LayerBrush?.Render(canvas, canvasInfo, renderPath, paint);
         }
 
         internal void CalculateRenderProperties()
@@ -332,7 +339,7 @@ namespace Artemis.Core.Models.Profile
             OnRenderPropertiesUpdated();
         }
 
-        private SKPoint GetLayerAnchorPosition()
+        internal SKPoint GetLayerAnchorPosition()
         {
             var positionProperty = PositionProperty.CurrentValue;
 
