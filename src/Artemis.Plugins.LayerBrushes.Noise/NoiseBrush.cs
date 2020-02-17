@@ -31,6 +31,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             MainColorProperty = RegisterLayerProperty<SKColor>("Brush.MainColor", "Main color", "The main color of the noise.");
             SecondaryColorProperty = RegisterLayerProperty<SKColor>("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise.");
             ScaleProperty = RegisterLayerProperty<SKSize>("Brush.Scale", "Scale", "The scale of the noise.");
+            HardnessProperty = RegisterLayerProperty<float>("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines..");
             ScrollSpeedProperty = RegisterLayerProperty<SKPoint>("Brush.ScrollSpeed", "Movement speed", "The speed at which the noise moves vertically and horizontally.");
             AnimationSpeedProperty = RegisterLayerProperty<float>("Brush.AnimationSpeed", "Animation speed", "The speed at which the noise moves.");
             ScaleProperty.InputAffix = "%";
@@ -41,6 +42,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         public LayerProperty<SKColor> MainColorProperty { get; set; }
         public LayerProperty<SKColor> SecondaryColorProperty { get; set; }
         public LayerProperty<SKSize> ScaleProperty { get; set; }
+        public LayerProperty<float> HardnessProperty { get; set; }
         public LayerProperty<SKPoint> ScrollSpeedProperty { get; set; }
         public LayerProperty<float> AnimationSpeedProperty { get; set; }
 
@@ -67,29 +69,30 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             var mainColor = MainColorProperty.CurrentValue;
             var scale = ScaleProperty.CurrentValue;
             var opacity = (float) Math.Round(mainColor.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
+            var hardness = 127 + HardnessProperty.CurrentValue;
 
             // Scale down the render path to avoid computing a value for every pixel
-            var width = Math.Floor(path.Bounds.Width * _renderScale);
-            var height = Math.Floor(path.Bounds.Height * _renderScale);
+            var width = (int) Math.Floor(path.Bounds.Width * _renderScale);
+            var height = (int) Math.Floor(path.Bounds.Height * _renderScale);
 
-            CreateBitmap((int) width, (int) height);
-
-            for (var x = 0; x < width; x++)
+            CreateBitmap(width, height);
+            for (var y = 0; y < height; y++)
             {
-                var scrolledX = x + _x;
-                for (var y = 0; y < height; y++)
+                for (var x = 0; x < width; x++)
                 {
+                    var scrolledX = x + _x;
                     var scrolledY = y + _y;
                     var evalX = 0.1 * scale.Width * scrolledX / width;
                     var evalY = 0.1 * scale.Height * scrolledY / height;
-                    if (double.IsNaN(evalX) || double.IsNaN(evalY))
+                    if (double.IsInfinity(evalX) || double.IsNaN(evalX) || double.IsNaN(evalY) || double.IsInfinity(evalY))
                         continue;
 
                     var v = _noise.Evaluate(evalX, evalY, _z);
-                    var alpha = (byte) Math.Max(0, Math.Min(255, v * 1024));
+                    var alpha = (byte) Math.Max(0, Math.Min(255, v * hardness));
                     _bitmap.SetPixel(x, y, new SKColor(mainColor.Red, mainColor.Green, mainColor.Blue, (byte) (alpha * opacity)));
                 }
             }
+
 
             var bitmapTransform = SKMatrix.Concat(
                 SKMatrix.MakeTranslation(path.Bounds.Left, path.Bounds.Top),
@@ -105,6 +108,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 canvas.DrawRect(path.Bounds, paint);
             }
         }
+
 
         private void DetermineRenderScale()
         {
