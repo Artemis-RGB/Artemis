@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair Virtuoso</Name>
+  <Description>Physical layout of Corsairs Virtuoso</Description>
+  <Type>Headset</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>VIRTUOSO</Model>
+  <Width>242</Width>
+  <Height>228</Height>
+  <LedUnitWidth>35</LedUnitWidth>
+  <LedUnitHeight>85</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Headsets</ImageBasePath>
+  <DeviceImage>VOIDRGB.png</DeviceImage>
+  <Leds>
+    <Led Id="Headset1">
+      <Shape>M0.766,0.059 L0.685,0.044 L0.497,0.053 L0.326,0.123 L0.17,0.276 L0.113,0.454 L0.109,0.649 L0.142,0.822 L0.232,0.896 L0.305,0.851 L0.399,0.826 L0.468,0.809 L0.428,0.663 L0.423,0.501 L0.489,0.332 L0.64,0.148z</Shape>
+      <X>0</X>
+      <Y>105</Y>
+      <Height>1</Height>
+    </Led>
+    <Led Id="Headset2">
+      <Shape>M0.071,0.053 L0.03,0.036 L0.118,0.023 L0.316,0.027 L0.497,0.077 L0.71,0.248 L0.804,0.415 L0.877,0.586 L0.903,0.731 L0.851,0.845 L0.799,0.877 L0.721,0.838 L0.591,0.802 L0.508,0.789 L0.549,0.695 L0.539,0.558 L0.451,0.415 L0.362,0.308 L0.274,0.201 L0.149,0.104z</Shape>
+      <X>+170</X>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Headset1" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Headset2" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

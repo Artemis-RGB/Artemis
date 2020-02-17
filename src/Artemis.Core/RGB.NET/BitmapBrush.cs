@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Models;
 using RGB.NET.Core;
@@ -89,6 +90,7 @@ namespace Artemis.Core.RGB.NET
             var bitmapWidth = Bitmap.Width;
             var bitmapHeight = Bitmap.Height;
 
+            var pixmap = Bitmap.PeekPixels();
             foreach (var renderTarget in renderTargets)
             {
                 // SKRect has all the good stuff we need
@@ -110,7 +112,7 @@ namespace Artemis.Core.RGB.NET
                         if (x < 0 || x > bitmapWidth || y < 0 || y > bitmapHeight)
                             continue;
 
-                        var color = Bitmap.GetPixel(x, y);
+                        var color = pixmap.GetPixelColor(x, y);
                         a += color.Alpha;
                         r += color.Red;
                         g += color.Green;

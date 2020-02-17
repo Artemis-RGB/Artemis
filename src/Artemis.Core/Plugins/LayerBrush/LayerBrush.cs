@@ -53,10 +53,11 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <param name="id">A and ID identifying your property, must be unique within your plugin</param>
         /// <param name="name">A name for your property, this is visible in the editor</param>
         /// <param name="description">A description for your property, this is visible in the editor</param>
+        /// <param name="defaultValue">The default value of the property, if not configured by the user</param>
         /// <returns>The layer property</returns>
-        protected LayerProperty<T> RegisterLayerProperty<T>(BaseLayerProperty parent, string id, string name, string description)
+        protected LayerProperty<T> RegisterLayerProperty<T>(BaseLayerProperty parent, string id, string name, string description, T defaultValue = default)
         {
-            var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, parent, id, name, description);
+            var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, parent, id, name, description) {Value = defaultValue};
             Layer.RegisterLayerProperty(property);
             // It's fine if this is null, it'll be picked up by SetLayerService later
             _layerService?.InstantiateKeyframeEngine(property);
@@ -71,12 +72,13 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <param name="id">A and ID identifying your property, must be unique within your plugin</param>
         /// <param name="name">A name for your property, this is visible in the editor</param>
         /// <param name="description">A description for your property, this is visible in the editor</param>
+        /// <param name="defaultValue">The default value of the property, if not configured by the user</param>
         /// <returns>The layer property</returns>
-        protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description)
+        protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description, T defaultValue = default)
         {
             var property = new LayerProperty<T>(
                 Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.BrushReferenceProperty.Parent, id, name, description
-            );
+            ) {Value = defaultValue};
             Layer.RegisterLayerProperty(property);
             // It's fine if this is null, it'll be picked up by SetLayerService later
             _layerService?.InstantiateKeyframeEngine(property);

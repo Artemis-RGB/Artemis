@@ -67,8 +67,8 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
 
         /// <summary>
-        ///     A path containing all the LEDs this layer is applied to, any rendering outside the layer Path is clipped.
-        ///     <para>For rendering, use the Path on <see cref="LayerShape" />.</para>
+        ///     Gets a copy of the path containing all the LEDs this layer is applied to, any rendering outside the layer Path is
+        ///     clipped.
         /// </summary>
         public SKPath Path
         {
@@ -211,6 +211,7 @@ namespace Artemis.Core.Models.Profile
 
         #region Rendering
 
+        /// <inheritdoc />
         public override void Update(double deltaTime)
         {
             foreach (var property in Properties)
@@ -231,6 +232,7 @@ namespace Artemis.Core.Models.Profile
             LayerBrush?.Update(deltaTime);
         }
 
+        /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             if (Path == null || LayerShape?.Path == null)
