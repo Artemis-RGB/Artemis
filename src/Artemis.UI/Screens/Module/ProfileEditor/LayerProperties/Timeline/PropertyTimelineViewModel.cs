@@ -94,5 +94,63 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             foreach (var child in property.Children)
                 CreateViewModels(child);
         }
+
+        public void SelectKeyframe(PropertyTrackKeyframeViewModel clicked, bool selectBetween, bool toggle)
+        {
+            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
+            if (selectBetween)
+            {
+                var selectedIndex = keyframeViewModels.FindIndex(k => k.IsSelected);
+                // If nothing is selected, select only the clicked
+                if (selectedIndex == -1)
+                {
+                    clicked.IsSelected = true;
+                    return;
+                }
+
+                foreach (var keyframeViewModel in keyframeViewModels)
+                    keyframeViewModel.IsSelected = false;
+
+                var clickedIndex = keyframeViewModels.IndexOf(clicked);
+                if (clickedIndex < selectedIndex)
+                {
+                    foreach (var keyframeViewModel in keyframeViewModels.Skip(clickedIndex).Take(selectedIndex - clickedIndex + 1))
+                        keyframeViewModel.IsSelected = true;
+                }
+                else
+                {
+                    foreach (var keyframeViewModel in keyframeViewModels.Skip(selectedIndex).Take(clickedIndex - selectedIndex + 1))
+                        keyframeViewModel.IsSelected = true;
+                }
+            }
+            else if (toggle)
+            {
+                // Toggle only the clicked keyframe, leave others alone
+                clicked.IsSelected = !clicked.IsSelected;
+            }
+            else
+            {
+                // Only select the clicked keyframe
+                foreach (var keyframeViewModel in keyframeViewModels)
+                    keyframeViewModel.IsSelected = false;
+                clicked.IsSelected = true;
+            }
+        }
+
+        public void MoveSelectedKeyframes(TimeSpan offset)
+        {
+            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
+            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            {
+                // TODO: Not ideal as this stacks them all if they get to 0, oh well
+                if (keyframeViewModel.Keyframe.Position + offset > TimeSpan.Zero)
+                {
+                    keyframeViewModel.Keyframe.Position += offset;
+                    keyframeViewModel.Update(LayerPropertiesViewModel.PixelsPerSecond);
+                }
+            }
+
+            _profileEditorService.UpdateProfilePreview();
+        }
     }
 }
