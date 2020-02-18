@@ -59,6 +59,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => BrushInputValue);
         }
 
+        public override void ApplyInputDrag(object startValue, double dragDistance)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnInitialized()
         {
             UpdateEnumValues();
