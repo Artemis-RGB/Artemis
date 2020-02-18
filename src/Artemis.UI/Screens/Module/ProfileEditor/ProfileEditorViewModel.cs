@@ -136,9 +136,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         private void ChangeSelectedProfile(Profile profile)
         {
-            if (profile == Module.ActiveProfile)
-                return;
-
             var oldProfile = Module.ActiveProfile;
             _profileService.ActivateProfile(Module, profile);
 
@@ -147,7 +144,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             if (profile != null)
                 _profileService.UpdateProfile(profile, false);
 
-            _profileEditorService.ChangeSelectedProfile(profile);
+            if (_profileEditorService.SelectedProfile != profile)
+                _profileEditorService.ChangeSelectedProfile(profile);
         }
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
@@ -188,11 +186,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             // Populate the UI collection
             Execute.PostToUIThread(() =>
             {
-                Profiles.Clear();
-                Profiles.AddRange(profiles.OrderBy(p => p.Name));
-                SelectedProfile = activeProfile;
+                Profiles.AddRange(profiles.Except(Profiles).ToList());
+                Profiles.RemoveRange(Profiles.Except(profiles).ToList());
+                var index = 0;
+                foreach (var profile in Profiles.OrderBy(p => p.Name).ToList())
+                {
+                    Profiles.Move(Profiles.IndexOf(profile), index);
+                    index++;
+                }
 
-                _profileEditorService.ChangeSelectedProfile(SelectedProfile);
+                SelectedProfile = activeProfile;
+                if (_profileEditorService.SelectedProfile != activeProfile)
+                    _profileEditorService.ChangeSelectedProfile(activeProfile);
                 if (!activeProfile.IsActivated)
                     _profileService.ActivateProfile(Module, activeProfile);
             });

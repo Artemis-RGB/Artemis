@@ -23,5 +23,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             NotifyOfPropertyChange(() => SKColorInputValue);
         }
+
+        public override void ApplyInputDrag(object startValue, double dragDistance)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -10,15 +10,14 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:SKSizePropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Margin="0 0 5 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
+        <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
         <TextBox Width="60"
                  Margin="0 2"
                  Padding="0 -1"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Height"
-                 Text="{Binding Height}"
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
+                 Text="{Binding Height}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <TextBox Width="60"
                  Margin="0 2"
@@ -26,8 +25,7 @@
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  ToolTip="Width"
-                 Text="{Binding Width}"
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
-        <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
+                 Text="{Binding Width}" />
+        <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

@@ -22,5 +22,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             NotifyOfPropertyChange(() => IntInputValue);
         }
+
+        public override void ApplyInputDrag(object startValue, double dragDistance)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -97,7 +97,7 @@ namespace Artemis.UI.Behaviors
         // Update state of all items starting with given, with optional recursion
         private void UpdateTreeViewItem(TreeViewItem item, bool recurse)
         {
-            if (SelectedItem == null) return;
+//            if (SelectedItem == null) return;
             var model = item.DataContext;
 
             // If the selected item is this model and is not yet selected - select and return
