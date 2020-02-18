@@ -10,14 +10,41 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:FloatPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Margin="0 0 5 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
+        <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
+        <!-- Drag handle -->
+        <Border BorderThickness="0,0,0,1" Margin="0 2">
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeDashArray="2 2" Stroke="{DynamicResource SecondaryAccentBrush}" StrokeThickness="1"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+            <TextBlock Width="60"
+                       Padding="2 0"
+                       Margin="0 2 0 0"
+                       Text="{Binding FloatInputValue}"
+                       Cursor="/Resources/aero_drag_ew.cur"
+                       Foreground="{DynamicResource SecondaryAccentBrush}" 
+                       Visibility="{Binding InputFieldEnabled, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                       MouseDown="{s:Action InputMouseDown}"
+                       MouseUp="{s:Action InputMouseUp}"
+                       MouseMove="{s:Action InputMouseMove}" />
+        </Border>
+
+        <!-- Input -->
         <TextBox Width="60"
                  Margin="0 2"
                  Padding="0 -1"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
                  Text="{Binding FloatInputValue}"
-                 RequestBringIntoView="{s:Action OnRequestBringIntoView}" />
-        <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
+                 Visibility="{Binding InputFieldEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                 LostFocus="{s:Action InputLostFocus}"
+                 KeyDown="{s:Action InputKeyDown}"
+                 IsVisibleChanged="{s:Action InputIsVisibleChanged}" />
+        <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

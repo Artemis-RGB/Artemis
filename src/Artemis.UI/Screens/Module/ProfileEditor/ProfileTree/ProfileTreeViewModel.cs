@@ -16,10 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
 
-
-        public ProfileTreeViewModel(IProfileEditorService profileEditorService,
-            IFolderVmFactory folderVmFactory,
-            ILayerVmFactory layerVmFactory)
+        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderVmFactory folderVmFactory)
         {
             _profileEditorService = profileEditorService;
             _folderVmFactory = folderVmFactory;

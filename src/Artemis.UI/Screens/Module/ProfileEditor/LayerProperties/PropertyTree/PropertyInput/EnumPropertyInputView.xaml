@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:EnumPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Margin="0 0 5 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
+        <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
         <ComboBox Width="132"
                   Margin="0 2"
                   Padding="0 -1"
@@ -21,8 +21,7 @@
                   SelectedValuePath="Value"
                   DisplayMemberPath="Description"
                   SelectedValue="{Binding Path=EnumInputValue}"
-                  RequestBringIntoView="{s:Action OnRequestBringIntoView}"
                   materialDesign:ComboBoxAssist.ClassicMode="True" />
-        <TextBlock Margin="5 0 0 0" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
+        <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

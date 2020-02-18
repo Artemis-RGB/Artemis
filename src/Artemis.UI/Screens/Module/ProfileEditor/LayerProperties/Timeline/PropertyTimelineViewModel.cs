@@ -1,7 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using Artemis.Core.Models.Surface;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -24,12 +32,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
             _profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             LayerPropertiesViewModel.PixelsPerSecondChanged += (sender, args) => UpdateKeyframePositions();
+
+            Execute.PostToUIThread(() => SelectionRectangle = new RectangleGeometry());
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
 
         public double Width { get; set; }
         public BindableCollection<PropertyTrackViewModel> PropertyTrackViewModels { get; set; }
+        public RectangleGeometry SelectionRectangle { get; set; }
 
         public void UpdateEndTime()
         {
@@ -88,11 +99,53 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateEndTime();
         }
 
-        private void CreateViewModels(LayerPropertyViewModel property)
+        #region Keyframe selection
+
+        private Point _mouseDragStartPoint;
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void TimelineCanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
-            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
-            foreach (var child in property.Children)
-                CreateViewModels(child);
+            ((IInputElement) sender).CaptureMouse();
+
+            SelectionRectangle.Rect = new Rect();
+            _mouseDragStartPoint = e.GetPosition((IInputElement) sender);
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void TimelineCanvasMouseUp(object sender, MouseEventArgs e)
+        {
+            var position = e.GetPosition((IInputElement)sender);
+            var selectedRect = new Rect(_mouseDragStartPoint, position);
+            SelectionRectangle.Rect = selectedRect;
+
+            // Find all keyframes in the rectangle
+            var selectedKeyframes = new List<PropertyTrackKeyframeViewModel>();
+            var hitTestParams = new GeometryHitTestParameters(SelectionRectangle);
+            var resultCallback = new HitTestResultCallback(result => HitTestResultBehavior.Continue);
+            var filterCallback = new HitTestFilterCallback(element =>
+            {
+                if (element is Ellipse ellipse)
+                    selectedKeyframes.Add((PropertyTrackKeyframeViewModel) ellipse.DataContext);
+                return HitTestFilterBehavior.Continue;
+            });
+            VisualTreeHelper.HitTest((Visual) sender, filterCallback, resultCallback, hitTestParams);
+            
+            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
+            foreach (var keyframeViewModel in keyframeViewModels)
+                keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);
+
+            ((IInputElement) sender).ReleaseMouseCapture();
+        }
+
+        public void TimelineCanvasMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var position = e.GetPosition((IInputElement) sender);
+                var selectedRect = new Rect(_mouseDragStartPoint, position);
+                SelectionRectangle.Rect = selectedRect;
+            }
         }
 
         public void SelectKeyframe(PropertyTrackKeyframeViewModel clicked, bool selectBetween, bool toggle)
@@ -137,6 +190,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             }
         }
 
+        #endregion
+
+        #region Keyframe movement
+
         public void MoveSelectedKeyframes(TimeSpan offset)
         {
             var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
@@ -151,6 +208,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             }
 
             _profileEditorService.UpdateProfilePreview();
+        }
+
+        #endregion
+
+        private void CreateViewModels(LayerPropertyViewModel property)
+        {
+            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
+            foreach (var child in property.Children)
+                CreateViewModels(child);
         }
     }
 }

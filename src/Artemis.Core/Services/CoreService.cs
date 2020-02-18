@@ -99,7 +99,7 @@ namespace Artemis.Core.Services
         {
             try
             {
-                if (!ModuleUpdatingDisabled)
+                if (!ModuleUpdatingDisabled && _modules != null)
                 {
                     lock (_modules)
                     {

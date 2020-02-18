@@ -34,5 +34,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => Width);
             NotifyOfPropertyChange(() => Height);
         }
+
+        public override void ApplyInputDrag(object startValue, double dragDistance)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

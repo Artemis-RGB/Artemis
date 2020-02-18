@@ -44,7 +44,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             PopulateProperties(_profileEditorService.SelectedProfileElement, null);
             _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
-            _profileEditorService.SelectedProfileChanged += (sender, args) => PopulateProperties(_profileEditorService.SelectedProfileElement, null);
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 
@@ -111,6 +110,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
                 layer.LayerPropertyRegistered += LayerOnPropertyRegistered;
                 layer.LayerPropertyRemoved += LayerOnPropertyRemoved;
+            }
+            else
+            {
+                foreach (var layerPropertyViewModel in _layerPropertyViewModels.ToList())
+                    RemovePropertyViewModel(layerPropertyViewModel);
             }
         }
 

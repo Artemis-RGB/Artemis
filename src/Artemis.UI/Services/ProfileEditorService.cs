@@ -40,6 +40,8 @@ namespace Artemis.UI.Services
 
         public void ChangeSelectedProfile(Profile profile)
         {
+            ChangeSelectedProfileElement(null);
+
             var profileElementEvent = new ProfileElementEventArgs(profile, SelectedProfile);
             SelectedProfile = profile;
             UpdateProfilePreview();
