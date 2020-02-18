@@ -46,13 +46,26 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public void KeyframeMouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Released)
+                return;
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && !IsSelected)
+                PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, true, false);
+            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, false, true);
+            else if (!IsSelected)
+                PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, false, false);
+
             ((IInputElement) sender).CaptureMouse();
+            e.Handled = true;
         }
 
         public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Released)
+                return;
             ((IInputElement) sender).ReleaseMouseCapture();
             _profileEditorService.UpdateSelectedProfileElement();
+            e.Handled = true;
         }
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
@@ -71,26 +84,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 else
                     newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
 
-                if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                {
-                    Keyframe.Position = newTime;
-
-                    Update(_pixelsPerSecond);
-                    _profileEditorService.UpdateProfilePreview();
-                    return;
-                }
-
                 // If shift is held, snap to the current time
                 // Take a tolerance of 5 pixels (half a keyframe width)
-                var tolerance = 1000f / _pixelsPerSecond * 5;
-                if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance)
-                    Keyframe.Position = _profileEditorService.CurrentTime;
-                else
-                    Keyframe.Position = newTime;
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                {
+                    var tolerance = 1000f / _pixelsPerSecond * 5;
+                    if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance)
+                        newTime = _profileEditorService.CurrentTime;
+                }
 
-                Update(_pixelsPerSecond);
-                _profileEditorService.UpdateProfilePreview();
+                PropertyTrackViewModel.PropertyTimelineViewModel.MoveSelectedKeyframes(newTime - Keyframe.Position);
             }
+            e.Handled = true;
         }
 
         #endregion

@@ -12,6 +12,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(float)};
 
+
         public float FloatInputValue
         {
             get => (float?) InputValue ?? 0f;
@@ -21,6 +22,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         public override void Update()
         {
             NotifyOfPropertyChange(() => FloatInputValue);
+        }
+
+        public override void ApplyInputDrag(object startValue, double dragDistance)
+        {
+            var floatStartValue = (float) startValue;
+            FloatInputValue = (float) (floatStartValue + dragDistance);
         }
     }
 }
