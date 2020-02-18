@@ -53,7 +53,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            if (path.Bounds != _shaderBounds) 
+            if (path.Bounds != _shaderBounds)
                 CreateShader(path.Bounds);
 
             paint.Shader = _shader;

@@ -18,7 +18,6 @@ namespace Artemis.UI.Shared
         public static readonly DependencyProperty PopupOpenProperty = DependencyProperty.Register(nameof(PopupOpen), typeof(bool), typeof(ColorPicker),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PopupOpenPropertyChangedCallback));
 
-
         internal static readonly DependencyProperty ColorOpacityProperty = DependencyProperty.Register(nameof(ColorOpacity), typeof(byte), typeof(ColorPicker),
             new FrameworkPropertyMetadata((byte) 255, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorOpacityPropertyChangedCallback));
 

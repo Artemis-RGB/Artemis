@@ -19,14 +19,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         public float Width
         {
             get => ((SKSize?) InputValue)?.Width ?? 0;
-            set => InputValue = new SKSize(value, Height);
+            set => InputValue = new SKSize(ApplyInputValue(value), Height);
         }
 
         [DependsOn(nameof(InputValue))]
         public float Height
         {
             get => ((SKSize?) InputValue)?.Height ?? 0;
-            set => InputValue = new SKSize(Width, value);
+            set => InputValue = new SKSize(Width, ApplyInputValue(value));
         }
 
         public override void Update()
@@ -35,9 +35,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => Height);
         }
 
-        public override void ApplyInputDrag(object startValue, double dragDistance)
+        private float ApplyInputValue(float value)
         {
-            throw new NotImplementedException();
+            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MaxInputValue is float maxFloat)
+                value = Math.Min(value, maxFloat);
+            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MinInputValue is float minFloat)
+                value = Math.Max(value, minFloat);
+
+            return value;
         }
     }
 }

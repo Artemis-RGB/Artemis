@@ -31,9 +31,16 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             MainColorProperty = RegisterLayerProperty<SKColor>("Brush.MainColor", "Main color", "The main color of the noise.");
             SecondaryColorProperty = RegisterLayerProperty<SKColor>("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise.");
             ScaleProperty = RegisterLayerProperty<SKSize>("Brush.Scale", "Scale", "The scale of the noise.");
+            ScaleProperty.MinInputValue = 0f;
             HardnessProperty = RegisterLayerProperty<float>("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines..");
+            HardnessProperty.MinInputValue = 0f;
+            HardnessProperty.MaxInputValue = 2048f;
             ScrollSpeedProperty = RegisterLayerProperty<SKPoint>("Brush.ScrollSpeed", "Movement speed", "The speed at which the noise moves vertically and horizontally.");
+            ScrollSpeedProperty.MinInputValue = -64f;
+            ScrollSpeedProperty.MaxInputValue = 64f;
             AnimationSpeedProperty = RegisterLayerProperty<float>("Brush.AnimationSpeed", "Animation speed", "The speed at which the noise moves.");
+            AnimationSpeedProperty.MinInputValue = 0f;
+            AnimationSpeedProperty.MaxInputValue = 64f;
             ScaleProperty.InputAffix = "%";
 
             DetermineRenderScale();

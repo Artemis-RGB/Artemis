@@ -6,26 +6,19 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:SKPointPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal" KeyboardNavigation.IsTabStop="True">
         <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
-        <TextBox Width="60"
-                 Margin="0 2"
-                 Padding="0 -1"
-                 materialDesign:ValidationAssist.UsePopup="True"
-                 HorizontalAlignment="Left"
-                 ToolTip="X-coordinate (horizontal)"
-                 Text="{Binding X}" />
+        <shared:DraggableFloat ToolTip="X-coordinate (horizontal)"
+                               Value="{Binding X}"
+                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
-        <TextBox Width="60"
-                 Margin="0 2"
-                 Padding="0 -1"
-                 materialDesign:ValidationAssist.UsePopup="True"
-                 HorizontalAlignment="Left"
-                 ToolTip="Y-coordinate (vertical)"
-                 Text="{Binding Y}" />
+        <shared:DraggableFloat ToolTip="Y-coordinate (vertical)"
+                               Value="{Binding Y}"
+                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}" />
         <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

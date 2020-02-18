@@ -15,7 +15,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         public int IntInputValue
         {
             get => (int?) InputValue ?? 0;
-            set => InputValue = value;
+            set => InputValue = ApplyInputValue(value);
         }
 
         public override void Update()
@@ -23,9 +23,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => IntInputValue);
         }
 
-        public override void ApplyInputDrag(object startValue, double dragDistance)
+        private int ApplyInputValue(int value)
         {
-            throw new NotImplementedException();
+            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MaxInputValue is int maxInt)
+                value = Math.Min(value, maxInt);
+            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MinInputValue is int minInt)
+                value = Math.Max(value, minInt);
+
+            return value;
         }
     }
 }

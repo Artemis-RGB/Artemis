@@ -79,8 +79,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DraggableFloat.xaml.cs">
+      <DependentUpon>DraggableFloat.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\EnumUtilities.cs" />
     <Page Include="ColorPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DraggableFloat.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
