@@ -48,6 +48,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             if (e.LeftButton == MouseButtonState.Released)
                 return;
+
+            ((IInputElement)sender).CaptureMouse();
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && !IsSelected)
                 PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, true, false);
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
@@ -55,16 +57,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             else if (!IsSelected)
                 PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, false, false);
 
-            ((IInputElement) sender).CaptureMouse();
             e.Handled = true;
         }
 
         public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Released)
-                return;
-            ((IInputElement) sender).ReleaseMouseCapture();
             _profileEditorService.UpdateSelectedProfileElement();
+
+            ((IInputElement)sender).ReleaseMouseCapture();
             e.Handled = true;
         }
 
@@ -95,6 +95,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
                 PropertyTrackViewModel.PropertyTimelineViewModel.MoveSelectedKeyframes(newTime - Keyframe.Position);
             }
+
             e.Handled = true;
         }
 

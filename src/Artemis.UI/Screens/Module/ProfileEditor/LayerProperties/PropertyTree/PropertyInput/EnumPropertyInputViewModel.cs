@@ -27,11 +27,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => EnumInputValue);
         }
 
-        public override void ApplyInputDrag(object startValue, double dragDistance)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void OnInitialized()
         {
             EnumValues = EnumUtilities.GetAllValuesAndDescriptions(LayerPropertyViewModel.LayerProperty.Type);

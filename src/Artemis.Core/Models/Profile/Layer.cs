@@ -522,11 +522,11 @@ namespace Artemis.Core.Models.Profile
 
             // Transform
             var transform = new LayerProperty<object>(this, "Core.Transform", "Transform", "A collection of transformation properties.") {ExpandByDefault = true};
-            AnchorPointProperty = new LayerProperty<SKPoint>(this, transform, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.");
-            PositionProperty = new LayerProperty<SKPoint>(this, transform, "Core.Position", "Position", "The position of the shape.");
-            ScaleProperty = new LayerProperty<SKSize>(this, transform, "Core.Scale", "Scale", "The scale of the shape.") {InputAffix = "%"};
+            AnchorPointProperty = new LayerProperty<SKPoint>(this, transform, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position.") {InputStepSize = 0.001f};
+            PositionProperty = new LayerProperty<SKPoint>(this, transform, "Core.Position", "Position", "The position of the shape.") {InputStepSize = 0.001f};
+            ScaleProperty = new LayerProperty<SKSize>(this, transform, "Core.Scale", "Scale", "The scale of the shape.") {InputAffix = "%", MinInputValue = 0f};
             RotationProperty = new LayerProperty<float>(this, transform, "Core.Rotation", "Rotation", "The rotation of the shape in degrees.") {InputAffix = "°"};
-            OpacityProperty = new LayerProperty<float>(this, transform, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%"};
+            OpacityProperty = new LayerProperty<float>(this, transform, "Core.Opacity", "Opacity", "The opacity of the shape.") {InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f};
             ScaleProperty.Value = new SKSize(100, 100);
             OpacityProperty.Value = 100;
 

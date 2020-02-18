@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         public float FloatInputValue
         {
             get => (float?) InputValue ?? 0f;
-            set => InputValue = value;
+            set => InputValue = ApplyInputValue(value);
         }
 
         public override void Update()
@@ -24,10 +24,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => FloatInputValue);
         }
 
-        public override void ApplyInputDrag(object startValue, double dragDistance)
+        private float ApplyInputValue(float value)
         {
-            var floatStartValue = (float) startValue;
-            FloatInputValue = (float) (floatStartValue + dragDistance);
+            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MaxInputValue is float maxFloat)
+                value = Math.Min(value, maxFloat);
+            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
+                LayerPropertyViewModel.LayerProperty.MinInputValue is float minFloat)
+                value = Math.Max(value, minFloat);
+
+            return value;
         }
     }
 }

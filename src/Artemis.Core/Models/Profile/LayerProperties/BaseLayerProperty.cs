@@ -24,6 +24,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             Description = description;
             Type = type;
             CanUseKeyframes = true;
+            InputStepSize = 1;
 
             // This can only be null if accessed internally
             if (PluginInfo == null)
@@ -31,6 +32,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             Children = new List<BaseLayerProperty>();
             BaseKeyframes = new List<BaseKeyframe>();
+
 
             parent?.Children.Add(this);
         }
@@ -85,6 +87,21 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Gets or sets an optional input affix to show behind input elements in the UI.
         /// </summary>
         public string InputAffix { get; set; }
+
+        /// <summary>
+        ///     Gets or sets an optional maximum input value, only enforced in the UI.
+        /// </summary>
+        public object MaxInputValue { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the input drag step size, used in the UI.
+        /// </summary>
+        public float InputStepSize { get; set; }
+
+        /// <summary>
+        ///     Gets or sets an optional minimum input value, only enforced in the UI.
+        /// </summary>
+        public object MinInputValue { get; set; }
 
         /// <summary>
         ///     Gets or sets whether this property can use keyframes, True by default.
