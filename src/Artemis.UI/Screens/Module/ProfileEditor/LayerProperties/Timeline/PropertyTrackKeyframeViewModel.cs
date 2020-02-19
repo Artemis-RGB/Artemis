@@ -49,7 +49,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             if (e.LeftButton == MouseButtonState.Released)
                 return;
 
-            ((IInputElement)sender).CaptureMouse();
+            ((IInputElement) sender).CaptureMouse();
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && !IsSelected)
                 PropertyTrackViewModel.PropertyTimelineViewModel.SelectKeyframe(this, true, false);
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
@@ -63,40 +63,43 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
         {
             _profileEditorService.UpdateSelectedProfileElement();
+            PropertyTrackViewModel.PropertyTimelineViewModel.ReleaseSelectedKeyframes();
 
-            ((IInputElement)sender).ReleaseMouseCapture();
-            e.Handled = true;
+            ((IInputElement) sender).ReleaseMouseCapture();
         }
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                // Get the parent grid, need that for our position
-                var x = Math.Max(0, e.GetPosition(ParentView).X);
-                var newTime = TimeSpan.FromSeconds(x / _pixelsPerSecond);
-
-                // Round the time to something that fits the current zoom level
-                if (_pixelsPerSecond < 200)
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
-                else if (_pixelsPerSecond < 500)
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
-                else
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
-
-                // If shift is held, snap to the current time
-                // Take a tolerance of 5 pixels (half a keyframe width)
-                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                {
-                    var tolerance = 1000f / _pixelsPerSecond * 5;
-                    if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance)
-                        newTime = _profileEditorService.CurrentTime;
-                }
-
-                PropertyTrackViewModel.PropertyTimelineViewModel.MoveSelectedKeyframes(newTime - Keyframe.Position);
-            }
+                PropertyTrackViewModel.PropertyTimelineViewModel.MoveSelectedKeyframes(GetCursorTime(e.GetPosition(ParentView)));
 
             e.Handled = true;
+        }
+
+        private TimeSpan GetCursorTime(Point position)
+        {
+            // Get the parent grid, need that for our position
+            var x = Math.Max(0, position.X);
+            var time = TimeSpan.FromSeconds(x / _pixelsPerSecond);
+
+            // Round the time to something that fits the current zoom level
+            if (_pixelsPerSecond < 200)
+                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 5.0) * 5.0);
+            else if (_pixelsPerSecond < 500)
+                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 2.0) * 2.0);
+            else
+                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds));
+
+            // If shift is held, snap to the current time
+            // Take a tolerance of 5 pixels (half a keyframe width)
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                var tolerance = 1000f / _pixelsPerSecond * 5;
+                if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
+                    time = _profileEditorService.CurrentTime;
+            }
+
+            return time;
         }
 
         #endregion
@@ -134,6 +137,35 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 propertyTrackEasingViewModel.IsEasingModeSelected = false;
 
             _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        #endregion
+
+        #region Movement
+
+        private bool _movementReleased = true;
+        private TimeSpan _startOffset;
+
+        public void ApplyMovement(TimeSpan cursorTime)
+        {
+            if (_movementReleased)
+            {
+                _movementReleased = false;
+                _startOffset = cursorTime - Keyframe.Position;
+            }
+            else
+            {
+                Keyframe.Position = cursorTime - _startOffset;
+                if (Keyframe.Position < TimeSpan.Zero)
+                    Keyframe.Position = TimeSpan.Zero;
+
+                Update(_pixelsPerSecond);
+            }
+        }
+
+        public void ReleaseMovement()
+        {
+            _movementReleased = true;
         }
 
         #endregion

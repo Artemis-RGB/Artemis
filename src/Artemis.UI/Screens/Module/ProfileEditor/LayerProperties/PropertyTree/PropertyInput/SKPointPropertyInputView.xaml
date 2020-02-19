@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
@@ -14,11 +13,15 @@
         <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
         <shared:DraggableFloat ToolTip="X-coordinate (horizontal)"
                                Value="{Binding X}"
-                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}" />
+                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}"
+                               DragStarted="{s:Action InputDragStarted}"
+                               DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <shared:DraggableFloat ToolTip="Y-coordinate (vertical)"
                                Value="{Binding Y}"
-                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}" />
+                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}"
+                               DragStarted="{s:Action InputDragStarted}"
+                               DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

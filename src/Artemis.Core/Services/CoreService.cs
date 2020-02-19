@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
+using Artemis.Core.Ninject;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Newtonsoft.Json;
 using RGB.NET.Core;
 using Serilog;
+using Serilog.Events;
 using SkiaSharp;
 
 namespace Artemis.Core.Services
@@ -25,16 +28,21 @@ namespace Artemis.Core.Services
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
         private List<Module> _modules;
+        private PluginSetting<LogEventLevel> _loggingLevel;
 
-        internal CoreService(ILogger logger, IPluginService pluginService, IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
+        internal CoreService(ILogger logger, ISettingsService settingsService, IPluginService pluginService, IRgbService rgbService,
+            ISurfaceService surfaceService, IProfileService profileService)
         {
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
             _surfaceService = surfaceService;
             _profileService = profileService;
+            _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
+
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
+            _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
 
             _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
@@ -79,6 +87,7 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             _logger.Information("Initializing Artemis Core version {version}", typeof(CoreService).Assembly.GetName().Version);
+            ApplyLoggingLevel();
 
             // Initialize the services
             await Task.Run(() => _pluginService.CopyBuiltInPlugins());
@@ -93,6 +102,12 @@ namespace Artemis.Core.Services
             await Task.Run(() => _profileService.ActivateDefaultProfiles());
 
             OnInitialized();
+        }
+
+        private void ApplyLoggingLevel()
+        {
+            _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
+            LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
         }
 
         private void SurfaceOnUpdating(UpdatingEventArgs args)

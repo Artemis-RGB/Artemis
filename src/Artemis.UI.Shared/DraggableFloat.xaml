@@ -22,12 +22,13 @@
                        Height="17"
                        Padding="1 0"
                        Margin="0 4 0 0"
-                       Text="{Binding Value, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                       Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                        Cursor="/Resources/aero_drag_ew.cur"
                        Foreground="{DynamicResource SecondaryAccentBrush}"
                        MouseDown="InputMouseDown"
                        MouseUp="InputMouseUp"
-                       MouseMove="InputMouseMove" />
+                       MouseMove="InputMouseMove" 
+                       RequestBringIntoView="Input_OnRequestBringIntoView"/>
         </Border>
 
         <!-- Input -->
@@ -36,7 +37,7 @@
                  Height="20"
                  materialDesign:ValidationAssist.UsePopup="True"
                  HorizontalAlignment="Left"
-                 Text="{Binding Value, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                 Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                  LostFocus="InputLostFocus"
                  KeyDown="InputKeyDown"
                  RequestBringIntoView="Input_OnRequestBringIntoView" />

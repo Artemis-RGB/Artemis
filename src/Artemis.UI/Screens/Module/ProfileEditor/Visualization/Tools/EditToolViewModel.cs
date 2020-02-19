@@ -318,8 +318,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             // Scale down the resulting position and make it relative
             var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
-            // Update the position property
-            layer.PositionProperty.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
+            // Round and update the position property
+            layer.PositionProperty.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }
@@ -338,13 +338,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
 
             // Update the anchor point, this causes the shape to move
-            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 5), ProfileEditorService.CurrentTime);
+            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
             // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
             var path = _layerEditorService.GetLayerPath(layer, true, true, true);
             // Calculate the (scaled) difference between the old and now position
             var difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
             // Apply the difference so that the shape effectively stays in place
-            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 5), ProfileEditorService.CurrentTime);
+            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 3), ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }
