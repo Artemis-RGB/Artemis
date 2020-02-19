@@ -24,9 +24,13 @@ namespace Artemis.UI.Shared
                 typeof(RoutedPropertyChangedEventHandler<float>),
                 typeof(DraggableFloat));
 
+        public event EventHandler DragStarted;
+        public event EventHandler DragEnded;
+
         private bool _inCallback;
         private Point _mouseDragStartPoint;
         private float _startValue;
+        private bool _calledDragStarted;
 
         public DraggableFloat()
         {
@@ -75,22 +79,33 @@ namespace Artemis.UI.Shared
             var position = e.GetPosition((IInputElement) sender);
             if (position == _mouseDragStartPoint)
                 DisplayInput();
+            else
+            {
+                OnDragEnded();
+                _calledDragStarted = false;
+            }
 
             ((IInputElement) sender).ReleaseMouseCapture();
         }
 
         private void InputMouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton != MouseButtonState.Pressed)
+                return;
+
+            if (!_calledDragStarted)
             {
-                // Use decimals for everything to avoid floating point errors
-                var startValue = new decimal(_startValue);
-                var startX = new decimal(_mouseDragStartPoint.X);
-                var x = new decimal(e.GetPosition((IInputElement) sender).X);
-                var stepSize = new decimal(StepSize);
-                
-                Value = (float) (Math.Round(startValue + stepSize * (x - startX) / stepSize) * stepSize);
+                OnDragStarted();
+                _calledDragStarted = true;
             }
+
+            // Use decimals for everything to avoid floating point errors
+            var startValue = new decimal(_startValue);
+            var startX = new decimal(_mouseDragStartPoint.X);
+            var x = new decimal(e.GetPosition((IInputElement) sender).X);
+            var stepSize = new decimal(StepSize);
+
+            Value = (float) UltimateRoundingFunction(startValue + stepSize * (x - startX), stepSize, 0.5m);
         }
 
         private void InputLostFocus(object sender, RoutedEventArgs e)
@@ -126,6 +141,21 @@ namespace Artemis.UI.Shared
         private void Input_OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private static decimal UltimateRoundingFunction(decimal amountToRound, decimal nearstOf, decimal fairness)
+        {
+            return Math.Floor(amountToRound / nearstOf + fairness) * nearstOf;
+        }
+
+        protected virtual void OnDragStarted()
+        {
+            DragStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnDragEnded()
+        {
+            DragEnded?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -12,8 +12,10 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
+using Artemis.UI.Shared.Utilities;
 using MaterialDesignThemes.Wpf;
 using Ninject;
+using Serilog.Events;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings
@@ -26,6 +28,7 @@ namespace Artemis.UI.Screens.Settings
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private readonly IWindowManager _windowManager;
+        private object _test;
 
         public SettingsViewModel(IKernel kernel,
             ISurfaceService surfaceService,
@@ -47,6 +50,8 @@ namespace Artemis.UI.Screens.Settings
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
             Plugins = new BindableCollection<PluginSettingsViewModel>();
+
+            LogLevels = EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel));
             RenderScales = new List<Tuple<string, double>> {new Tuple<string, double>("10%", 0.1)};
             for (var i = 25; i <= 100; i += 25)
                 RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
@@ -61,6 +66,8 @@ namespace Artemis.UI.Screens.Settings
 
         public List<Tuple<string, int>> TargetFrameRates { get; set; }
         public List<Tuple<string, double>> RenderScales { get; set; }
+        public IEnumerable<ValueDescription> LogLevels { get; private set; }
+
         public List<int> SampleSizes { get; set; }
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
         public BindableCollection<PluginSettingsViewModel> Plugins { get; set; }
@@ -77,6 +84,16 @@ namespace Artemis.UI.Screens.Settings
             set => TargetFrameRate = value.Item2;
         }
 
+        public LogEventLevel SelectedLogLevel
+        {
+            get => _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value;
+            set
+            {
+                _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value = value;
+                _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Save();
+            }
+        }
+
         public double RenderScale
         {
             get => _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
@@ -86,7 +103,6 @@ namespace Artemis.UI.Screens.Settings
                 _settingsService.GetSetting("Core.RenderScale", 1.0).Save();
             }
         }
-
 
         public int TargetFrameRate
         {

@@ -36,7 +36,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Start up with Windows</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
@@ -54,7 +54,7 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Start up with Windows minimized</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows minimized</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                                     <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
@@ -72,8 +72,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Debugger</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Debugger</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
                                         Use the debugger to see the raw image Artemis is rendering on the surface.
                                     </TextBlock>
                                 </StackPanel>
@@ -95,18 +95,17 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Logs</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                        Opens the directory where logs are stored.
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Application files</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                        Opens the directory where application files like plugins and settings are stored.
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}" Width="150">
-                                        SHOW LOGS
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDataFolder}" Width="150">
+                                        SHOW APP FILES
                                     </Button>
                                 </StackPanel>
                             </Grid>
-
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
                             <Grid>
@@ -119,17 +118,39 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Application files</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                        Opens the directory where application files like plugins and settings are stored.
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Logs</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                        Opens the directory where logs are stored.
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDataFolder}" Width="150">
-                                        SHOW APP FILES
+                                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}" Width="150">
+                                        SHOW LOGS
                                     </Button>
                                 </StackPanel>
                             </Grid>
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Log level</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                        Sets the logging level, a verbose logging level will result in more log files.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <ComboBox Width="80" SelectedValue="{Binding SelectedLogLevel}" ItemsSource="{Binding LogLevels}" SelectedValuePath="Value" DisplayMemberPath="Description" />
+                                </StackPanel>
+                            </Grid>
+
                         </StackPanel>
                     </materialDesign:Card>
 
@@ -147,8 +168,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Render scale</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Render scale</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
                                         Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces.
                                     </TextBlock>
                                 </StackPanel>
@@ -168,8 +189,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">Target framerate</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Target framerate</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
                                         Sets the FPS Artemis tries to render at, higher FPS means more CPU-usage but smoother animations.
                                     </TextBlock>
                                 </StackPanel>
@@ -189,8 +210,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">LED sample size</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">LED sample size</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
                                         Sets the amount of samples that is taken to determine each LEDs color. This means a LED can be semi off if it is not completely covered by a color.
                                     </TextBlock>
                                 </StackPanel>

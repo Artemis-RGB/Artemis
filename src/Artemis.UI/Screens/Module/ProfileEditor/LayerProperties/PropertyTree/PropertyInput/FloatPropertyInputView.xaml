@@ -11,7 +11,10 @@
              d:DataContext="{d:DesignInstance local:FloatPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
         <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
-        <shared:DraggableFloat Value="{Binding FloatInputValue}" StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}" />
+        <shared:DraggableFloat Value="{Binding FloatInputValue}"
+                               StepSize="{Binding LayerPropertyViewModel.LayerProperty.InputStepSize}"
+                               DragStarted="{s:Action InputDragStarted}"
+                               DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

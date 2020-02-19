@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
@@ -95,32 +96,36 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateEndTime();
         }
 
-        #region Keyframe movement
-
-        public void MoveSelectedKeyframes(TimeSpan offset)
-        {
-            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
-            {
-                // TODO: Not ideal as this stacks them all if they get to 0, oh well
-                if (keyframeViewModel.Keyframe.Position + offset > TimeSpan.Zero)
-                {
-                    keyframeViewModel.Keyframe.Position += offset;
-                    keyframeViewModel.Update(LayerPropertiesViewModel.PixelsPerSecond);
-                }
-            }
-
-            _profileEditorService.UpdateProfilePreview();
-        }
-
-        #endregion
-
         private void CreateViewModels(LayerPropertyViewModel property)
         {
             PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
             foreach (var child in property.Children)
                 CreateViewModels(child);
         }
+
+        #region Keyframe movement
+
+        public void MoveSelectedKeyframes(TimeSpan cursorTime)
+        {
+            // Ensure the selection rectangle doesn't show, the view isn't aware of different types of dragging
+            SelectionRectangle.Rect = new Rect();
+
+            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
+            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+                keyframeViewModel.ApplyMovement(cursorTime);
+
+            _profileEditorService.UpdateProfilePreview();
+        }
+
+
+        public void ReleaseSelectedKeyframes()
+        {
+            var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
+            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+                keyframeViewModel.ReleaseMovement();
+        }
+
+        #endregion
 
         #region Keyframe selection
 
@@ -130,6 +135,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         // ReSharper disable once UnusedMember.Global - Called from view
         public void TimelineCanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Released)
+                return;
+
             ((IInputElement) sender).CaptureMouse();
 
             SelectionRectangle.Rect = new Rect();
@@ -148,18 +156,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             var selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
-            // Find all keyframes in the rectangle
-            var selectedKeyframes = new List<PropertyTrackKeyframeViewModel>();
-            var hitTestParams = new GeometryHitTestParameters(SelectionRectangle);
-            var resultCallback = new HitTestResultCallback(result => HitTestResultBehavior.Continue);
-            var filterCallback = new HitTestFilterCallback(element =>
-            {
-                if (element is Ellipse ellipse)
-                    selectedKeyframes.Add((PropertyTrackKeyframeViewModel) ellipse.DataContext);
-                return HitTestFilterBehavior.Continue;
-            });
-            VisualTreeHelper.HitTest((Visual) sender, filterCallback, resultCallback, hitTestParams);
-
+            var selectedKeyframes = HitTestUtilities.GetHitViewModels<PropertyTrackKeyframeViewModel>((Visual) sender, SelectionRectangle);
             var keyframeViewModels = PropertyTrackViewModels.SelectMany(t => t.KeyframeViewModels.OrderBy(k => k.Keyframe.Position)).ToList();
             foreach (var keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);

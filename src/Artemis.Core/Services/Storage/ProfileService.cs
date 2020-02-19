@@ -10,6 +10,7 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace Artemis.Core.Services.Storage
 {
@@ -19,12 +20,14 @@ namespace Artemis.Core.Services.Storage
     public class ProfileService : IProfileService
     {
         private readonly ILayerService _layerService;
+        private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(IPluginService pluginService, ISurfaceService surfaceService, ILayerService layerService, IProfileRepository profileRepository)
+        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, ILayerService layerService, IProfileRepository profileRepository)
         {
+            _logger = logger;
             _pluginService = pluginService;
             _surfaceService = surfaceService;
             _layerService = layerService;
@@ -121,7 +124,10 @@ namespace Artemis.Core.Services.Storage
         public void UndoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.UndoStack.Any())
+            {
+                _logger.Debug("Undo profile update - Failed, undo stack empty");
                 return;
+            }
 
             ActivateProfile(module, null);
             var top = profile.UndoStack.Pop();
@@ -130,12 +136,17 @@ namespace Artemis.Core.Services.Storage
             profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
             profile.ApplyToProfile();
             ActivateProfile(module, profile);
+
+            _logger.Debug("Undo profile update - Success");
         }
 
         public void RedoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.RedoStack.Any())
+            {
+                _logger.Debug("Redo profile update - Failed, redo empty");
                 return;
+            }
 
             ActivateProfile(module, null);
             var top = profile.RedoStack.Pop();
@@ -144,6 +155,8 @@ namespace Artemis.Core.Services.Storage
             profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
             profile.ApplyToProfile();
             ActivateProfile(module, profile);
+
+            _logger.Debug("Redo profile update - Success");
         }
 
         private void InstantiateProfileLayerBrushes(Profile profile)

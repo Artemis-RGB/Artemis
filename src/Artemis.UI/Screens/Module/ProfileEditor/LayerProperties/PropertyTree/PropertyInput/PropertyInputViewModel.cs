@@ -13,10 +13,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             ProfileEditorService = profileEditorService;
         }
 
-        protected IProfileEditorService ProfileEditorService { get; set; }
+        protected IProfileEditorService ProfileEditorService { get; }
         public abstract List<Type> CompatibleTypes { get; }
 
         public bool Initialized { get; private set; }
+        public bool InputDragging { get; private set; }
         public LayerPropertyViewModel LayerPropertyViewModel { get; private set; }
 
         protected object InputValue
@@ -56,7 +57,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             // Force the keyframe engine to update, the edited keyframe might affect the current keyframe progress
             LayerPropertyViewModel.LayerProperty.KeyframeEngine?.Update(0);
 
+            if (!InputDragging)
+                ProfileEditorService.UpdateSelectedProfileElement();
+            else
+                ProfileEditorService.UpdateProfilePreview();
+        }
+
+        #region Event handlers
+
+        public void InputDragStarted(object sender, EventArgs e)
+        {
+            InputDragging = true;
+        }
+
+        public void InputDragEnded(object sender, EventArgs e)
+        {
+            InputDragging = false;
             ProfileEditorService.UpdateSelectedProfileElement();
         }
+
+        #endregion
     }
 }
