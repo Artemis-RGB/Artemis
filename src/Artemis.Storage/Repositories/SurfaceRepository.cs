@@ -22,7 +22,7 @@ namespace Artemis.Storage.Repositories
 
         public void Remove(SurfaceEntity surfaceEntity)
         {
-            _repository.Delete<SurfaceEntity>(s => s.Id == surfaceEntity.Id);
+            _repository.Delete<SurfaceEntity>(surfaceEntity.Id);
         }
 
         public SurfaceEntity GetByName(string name)
