@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AppDomainToolkit;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
@@ -11,6 +10,7 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
@@ -198,17 +198,15 @@ namespace Artemis.Core.Services
                     throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
 
                 // Load the plugin, all types implementing Plugin and register them with DI
-                var setupInfo = new AppDomainSetup
+                pluginInfo.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile, configure =>
                 {
-                    ApplicationName = pluginInfo.Guid.ToString(),
-                    ApplicationBase = AppDomain.CurrentDomain.BaseDirectory,
-                    PrivateBinPath = pluginInfo.Directory.FullName
-                };
-                pluginInfo.Context = AppDomainContext.Create(setupInfo);
+                    configure.IsUnloadable = true;
+                    configure.PreferSharedTypes = true;
+                });
 
                 try
                 {
-                    pluginInfo.Context.LoadAssemblyWithReferences(LoadMethod.LoadFrom, mainFile);
+                    pluginInfo.Assembly = pluginInfo.PluginLoader.LoadDefaultAssembly();
                 }
                 catch (Exception e)
                 {
@@ -217,12 +215,9 @@ namespace Artemis.Core.Services
 
                 // Get the Plugin implementation from the main assembly and if there is only one, instantiate it
                 List<Type> pluginTypes;
-                var mainAssembly = pluginInfo.Context.Domain.GetAssemblies().FirstOrDefault(a => a.Location == mainFile);
-                if (mainAssembly == null)
-                    throw new ArtemisPluginException(pluginInfo, "Found no supported assembly in the plugins main file");
                 try
                 {
-                    pluginTypes = mainAssembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
+                    pluginTypes = pluginInfo.Assembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
                 }
                 catch (ReflectionTypeLoadException e)
                 {
@@ -275,7 +270,7 @@ namespace Artemis.Core.Services
                 _childKernel.Unbind(pluginInfo.Instance.GetType());
 
                 pluginInfo.Instance.Dispose();
-                pluginInfo.Context.Dispose();
+                pluginInfo.PluginLoader.Dispose();
                 _plugins.Remove(pluginInfo);
 
                 OnPluginUnloaded(new PluginEventArgs(pluginInfo));

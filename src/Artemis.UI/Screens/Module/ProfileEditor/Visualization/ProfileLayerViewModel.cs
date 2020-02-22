@@ -26,7 +26,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             Update();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
-            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
         }
@@ -42,7 +42,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public void Dispose()
         {
             Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
             _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
         }
@@ -186,7 +186,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Update();
         }
 
-        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
+        private void OnProfileElementSelected(object sender, EventArgs e)
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
         }

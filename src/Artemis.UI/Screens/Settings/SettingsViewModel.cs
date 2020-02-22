@@ -28,7 +28,6 @@ namespace Artemis.UI.Screens.Settings
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private readonly IWindowManager _windowManager;
-        private object _test;
 
         public SettingsViewModel(IKernel kernel,
             ISurfaceService surfaceService,

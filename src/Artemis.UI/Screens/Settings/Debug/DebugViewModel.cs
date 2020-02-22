@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.Settings.Debug
             _rgbService = rgbService;
 
             surfaceService.SurfaceConfigurationUpdated += (sender, args) => Execute.PostToUIThread(() => CurrentFrame = null);
-            surfaceService.ActiveSurfaceConfigurationChanged += (sender, args) => Execute.PostToUIThread(() => CurrentFrame = null);
+            surfaceService.ActiveSurfaceConfigurationSelected += (sender, args) => Execute.PostToUIThread(() => CurrentFrame = null);
         }
 
         public ImageSource CurrentFrame { get; set; }

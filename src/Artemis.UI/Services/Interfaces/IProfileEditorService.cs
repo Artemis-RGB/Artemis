@@ -22,7 +22,7 @@ namespace Artemis.UI.Services.Interfaces
         /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> SelectedProfileChanged;
+        event EventHandler<ProfileElementEventArgs> ProfileSelected;
 
         /// <summary>
         ///     Occurs then the currently selected profile is updated
@@ -32,7 +32,7 @@ namespace Artemis.UI.Services.Interfaces
         /// <summary>
         ///     Occurs when a new profile element is selected
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> SelectedProfileElementChanged;
+        event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
 
         /// <summary>
         ///     Occurs when the currently selected profile element is updated

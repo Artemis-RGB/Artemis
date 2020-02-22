@@ -22,8 +22,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             _folderVmFactory = folderVmFactory;
 
             CreateRootFolderViewModel();
-            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
-            _profileEditorService.SelectedProfileElementChanged += OnSelectedElementChanged;
+            _profileEditorService.ProfileSelected += OnProfileSelected;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
         }
 
         public FolderViewModel RootFolder { get; set; }
@@ -137,7 +137,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 
         #region Event handlers
 
-        private void OnSelectedElementChanged(object sender, EventArgs e)
+        private void OnProfileElementSelected(object sender, EventArgs e)
         {
             if (_profileEditorService.SelectedProfileElement == SelectedTreeItem?.ProfileElement)
                 return;
@@ -161,7 +161,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             }
         }
 
-        private void OnSelectedProfileChanged(object sender, EventArgs e)
+        private void OnProfileSelected(object sender, EventArgs e)
         {
             CreateRootFolderViewModel();
         }

@@ -3,6 +3,6 @@
     public class LedEntity
     {
         public string LedName { get; set; }
-        public int DeviceHash { get; set; }
+        public string DeviceIdentifier { get; set; }
     }
 }
