@@ -23,7 +23,7 @@ namespace Artemis.Storage.Repositories
 
         public void Remove(ProfileEntity profileEntity)
         {
-            _repository.Delete<ProfileEntity>(s => s.Id == profileEntity.Id);
+            _repository.Delete<ProfileEntity>(profileEntity.Id);
         }
 
         public List<ProfileEntity> GetAll()
