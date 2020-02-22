@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
-using AppDomainToolkit;
+using System.Reflection;
 using Artemis.Core.Plugins.Abstract;
+using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Plugins.Models
@@ -55,10 +56,16 @@ namespace Artemis.Core.Plugins.Models
         public bool Enabled { get; internal set; }
 
         /// <summary>
-        ///     The AppDomain context of this plugin
+        ///     The PluginLoader backing this plugin
         /// </summary>
         [JsonIgnore]
-        internal AppDomainContext<AssemblyTargetLoader, PathBasedAssemblyResolver> Context { get; set; }
+        internal PluginLoader PluginLoader { get; set; }
+
+        /// <summary>
+        /// The assembly the plugin code lives in
+        /// </summary>
+        [JsonIgnore]
+        internal Assembly Assembly { get; set; }
 
         public override string ToString()
         {

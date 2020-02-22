@@ -33,7 +33,7 @@ namespace Artemis.Core.Services.Storage
             _layerService = layerService;
             _profileRepository = profileRepository;
 
-            _surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
             _surfaceService.SurfaceConfigurationUpdated += OnSurfaceConfigurationUpdated;
             _pluginService.PluginLoaded += OnPluginLoaded;
         }
@@ -196,7 +196,7 @@ namespace Artemis.Core.Services.Storage
 
         #region Event handlers
 
-        private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
+        private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
         {
             ActiveProfilesPopulateLeds(e.Surface);
         }

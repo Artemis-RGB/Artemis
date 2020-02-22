@@ -25,8 +25,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             Cursor = Cursors.Arrow;
             Update();
 
-            profileEditorService.SelectedProfileChanged += (sender, args) => Update();
-            profileEditorService.SelectedProfileElementChanged += (sender, args) => Update();
+            profileEditorService.ProfileSelected += (sender, args) => Update();
+            profileEditorService.ProfileElementSelected += (sender, args) => Update();
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }

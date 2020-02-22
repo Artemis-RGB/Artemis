@@ -125,9 +125,9 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
         }
 
-        public event EventHandler<ProfileElementEventArgs> SelectedProfileChanged;
+        public event EventHandler<ProfileElementEventArgs> ProfileSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
-        public event EventHandler<ProfileElementEventArgs> SelectedProfileElementChanged;
+        public event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
         public event EventHandler ProfilePreviewUpdated;
@@ -144,7 +144,7 @@ namespace Artemis.UI.Services
 
         protected virtual void OnSelectedProfileChanged(ProfileElementEventArgs e)
         {
-            SelectedProfileChanged?.Invoke(this, e);
+            ProfileSelected?.Invoke(this, e);
         }
 
         protected virtual void OnSelectedProfileUpdated(ProfileElementEventArgs e)
@@ -154,7 +154,7 @@ namespace Artemis.UI.Services
 
         protected virtual void OnSelectedProfileElementChanged(ProfileElementEventArgs e)
         {
-            SelectedProfileElementChanged?.Invoke(this, e);
+            ProfileElementSelected?.Invoke(this, e);
         }
 
         protected virtual void OnSelectedProfileElementUpdated(ProfileElementEventArgs e)

@@ -4,17 +4,13 @@ namespace Artemis.Core.Extensions
 {
     public static class RgbDeviceExtensions
     {
-        public static int GetDeviceHashCode(this IRGBDevice rgbDevice)
+        public static string GetDeviceIdentifier(this IRGBDevice rgbDevice)
         {
-            unchecked
-            {
-                var hashCode = rgbDevice.DeviceInfo.DeviceName?.GetHashCode() ?? 0;
-                hashCode = (hashCode * 397) ^ (rgbDevice.DeviceInfo.Manufacturer?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (rgbDevice.DeviceInfo.Model?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (int) rgbDevice.DeviceInfo.DeviceType;
-                hashCode = (hashCode * 397) ^ (int) rgbDevice.DeviceInfo.Lighting;
-                return hashCode;
-            }
+            return rgbDevice.DeviceInfo.DeviceName +
+                   "-" + rgbDevice.DeviceInfo.Manufacturer +
+                   "-" + rgbDevice.DeviceInfo.Model +
+                   "-" + rgbDevice.DeviceInfo.DeviceType +
+                   "-" + rgbDevice.DeviceInfo.Lighting;
         }
     }
 }

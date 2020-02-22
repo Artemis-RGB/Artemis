@@ -43,7 +43,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PropertyTimeline = propertyTimelineVmFactory.Create(this);
 
             PopulateProperties(_profileEditorService.SelectedProfileElement, null);
-            _profileEditorService.SelectedProfileElementChanged += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
+            _profileEditorService.ProfileElementSelected += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 

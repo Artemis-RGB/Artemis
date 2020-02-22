@@ -1,10 +1,6 @@
 ﻿{
   "Guid": "61cbbf01-8d69-4ede-a972-f3f269da66d9",
   "Name": "Noise layer brush",
-  "Version": {
-    "Major": 1,
-    "Minor": 0,
-    "Build": 0
-  },
+  "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.LayerBrushes.Noise.dll"
 }

@@ -1,10 +1,6 @@
 ﻿{
   "Guid": "92a9d6ba-6f7a-4937-94d5-c1d715b4141a",
   "Name": "Color layer brush",
-  "Version": {
-    "Major": 1,
-    "Minor": 0,
-    "Build": 0
-  },
+  "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.LayerBrushes.Color.dll"
 }

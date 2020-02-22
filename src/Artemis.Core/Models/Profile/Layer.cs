@@ -168,7 +168,7 @@ namespace Artemis.Core.Models.Profile
             {
                 var ledEntity = new LedEntity
                 {
-                    DeviceHash = artemisLed.Device.RgbDevice.GetDeviceHashCode(),
+                    DeviceIdentifier = artemisLed.Device.RgbDevice.GetDeviceIdentifier(),
                     LedName = artemisLed.RgbLed.Id.ToString()
                 };
                 LayerEntity.Leds.Add(ledEntity);
@@ -406,7 +406,7 @@ namespace Artemis.Core.Models.Profile
             var availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
             foreach (var ledEntity in LayerEntity.Leds)
             {
-                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceHashCode() == ledEntity.DeviceHash &&
+                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
                                                               a.RgbLed.Id.ToString() == ledEntity.LedName);
                 if (match != null)
                     leds.Add(match);

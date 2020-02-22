@@ -91,7 +91,7 @@ namespace Artemis.Core.Models.Surface
         internal void ApplyToEntity()
         {
             // Other properties are computed
-            DeviceEntity.DeviceHashCode = RgbDevice.GetDeviceHashCode();
+            DeviceEntity.DeviceIdentifier = RgbDevice.GetDeviceIdentifier();
         }
 
         internal void ApplyToRgbDevice()

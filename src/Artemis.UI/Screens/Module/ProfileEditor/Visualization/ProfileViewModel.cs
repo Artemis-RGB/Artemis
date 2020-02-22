@@ -57,8 +57,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             CreateUpdateTrigger();
             ActivateToolByIndex(0);
 
-            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
-            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.ProfileSelected += OnProfileSelected;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             eventAggregator.Subscribe(this);
         }
@@ -151,10 +151,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
             _updateTrigger.Update += UpdateLeds;
 
-            _surfaceService.ActiveSurfaceConfigurationChanged += OnActiveSurfaceConfigurationChanged;
+            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
         }
 
-        private void OnActiveSurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
+        private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
         {
             ApplySurfaceConfiguration(e.Surface);
         }
@@ -349,12 +349,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             UpdateLedsDimStatus();
         }
 
-        private void OnSelectedProfileChanged(object sender, EventArgs e)
+        private void OnProfileSelected(object sender, EventArgs e)
         {
             ApplyActiveProfile();
         }
 
-        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
+        private void OnProfileElementSelected(object sender, EventArgs e)
         {
             UpdateLedsDimStatus();
             CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;

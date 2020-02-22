@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <Platforms>x64</Platforms>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>x64;AnyCPU</Platforms>
     <LangVersion>7</LangVersion>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LiteDB" Version="5.0.3" />
   </ItemGroup>
-
 </Project>

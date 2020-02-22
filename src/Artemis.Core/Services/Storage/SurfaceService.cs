@@ -139,7 +139,7 @@ namespace Artemis.Core.Services.Storage
                 var surfaceConfiguration = new ArtemisSurface(_rgbService.Surface, surfaceEntity, _renderScaleSetting.Value);
                 foreach (var position in surfaceEntity.DeviceEntities)
                 {
-                    var device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceHashCode() == position.DeviceHashCode);
+                    var device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
                     if (device != null)
                     {
                         var plugin = _pluginService.GetDevicePlugin(device);
@@ -174,14 +174,14 @@ namespace Artemis.Core.Services.Storage
 
         private void AddDeviceIfMissing(IRGBDevice rgbDevice, ArtemisSurface surface)
         {
-            var deviceHashCode = rgbDevice.GetDeviceHashCode();
-            var device = surface.Devices.FirstOrDefault(d => d.DeviceEntity.DeviceHashCode == deviceHashCode);
+            var deviceIdentifier = rgbDevice.GetDeviceIdentifier();
+            var device = surface.Devices.FirstOrDefault(d => d.DeviceEntity.DeviceIdentifier == deviceIdentifier);
 
             if (device != null)
                 return;
 
             // Find an existing device config and use that
-            var existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceHashCode == deviceHashCode);
+            var existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceIdentifier == deviceIdentifier);
             if (existingDeviceConfig != null)
             {
                 var plugin = _pluginService.GetDevicePlugin(rgbDevice);
@@ -193,7 +193,7 @@ namespace Artemis.Core.Services.Storage
                 _logger.Information(
                     "No device config found for {deviceInfo}, device hash: {deviceHashCode}. Adding a new entry.",
                     rgbDevice.DeviceInfo,
-                    deviceHashCode
+                    deviceIdentifier
                 );
                 var plugin = _pluginService.GetDevicePlugin(rgbDevice);
                 device = new ArtemisDevice(rgbDevice, plugin, surface);
@@ -230,12 +230,12 @@ namespace Artemis.Core.Services.Storage
 
         #region Events
 
-        public event EventHandler<SurfaceConfigurationEventArgs> ActiveSurfaceConfigurationChanged;
+        public event EventHandler<SurfaceConfigurationEventArgs> ActiveSurfaceConfigurationSelected;
         public event EventHandler<SurfaceConfigurationEventArgs> SurfaceConfigurationUpdated;
 
         protected virtual void OnActiveSurfaceConfigurationChanged(SurfaceConfigurationEventArgs e)
         {
-            ActiveSurfaceConfigurationChanged?.Invoke(this, e);
+            ActiveSurfaceConfigurationSelected?.Invoke(this, e);
         }
 
         protected virtual void OnSurfaceConfigurationUpdated(SurfaceConfigurationEventArgs e)

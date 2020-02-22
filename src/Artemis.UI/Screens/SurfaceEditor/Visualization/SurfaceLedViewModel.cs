@@ -11,7 +11,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             Led = led;
             ApplyLedToViewModel();
 
-            Led.PropertyChanged += OnLedOnPropertyChanged;
+            Led.PropertyChanged += ApplyViewModelOnLedChange;
         }
 
         public Led Led { get; set; }
@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             Height = Led.ActualSize.Height;
         }
 
-        private void OnLedOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+        private void ApplyViewModelOnLedChange(object sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName == "Location" || args.PropertyName == "ActualSize") ApplyLedToViewModel();
         }
