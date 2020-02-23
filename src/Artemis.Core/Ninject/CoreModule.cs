@@ -4,6 +4,7 @@ using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using LiteDB;
 using Ninject.Activation;
 using Ninject.Extensions.Conventions;
@@ -25,6 +26,16 @@ namespace Artemis.Core.Ninject
                 x.FromThisAssembly()
                     .SelectAllClasses()
                     .InheritedFrom<IArtemisService>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
+            });
+
+            // Bind all shared UI services as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromAssemblyContaining<IArtemisSharedUIService>()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisSharedUIService>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
             });

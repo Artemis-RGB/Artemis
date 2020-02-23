@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Artemis.UI.ViewModels.Dialogs;
+using Artemis.UI.Shared.Services.Dialog;
 using MaterialDesignThemes.Wpf;
 using Ninject.Parameters;
 
-namespace Artemis.UI.Services.Interfaces
+namespace Artemis.UI.Shared.Services.Interfaces
 {
-    public interface IDialogService : IArtemisUIService
+    public interface IDialogService : IArtemisSharedUIService
     {
         /// <summary>
         ///     Shows a confirm dialog on the dialog host provided in <see cref="identifier" />.
@@ -93,5 +94,13 @@ namespace Artemis.UI.Services.Interfaces
         /// <param name="parameters">An array of Ninject <see cref="IParameter" /> to pass to the view model during activation</param>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
         Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase;
+
+        /// <summary>
+        ///     Shows a dialog displaying the provided message and exception. Does not handle, log or throw the exception.
+        /// </summary>
+        /// <param name="message">The message to display in the dialog title</param>
+        /// <param name="exception">The exception to display. The exception message and stacktrace will be shown.</param>
+        /// <returns>A task resolving when the dialog is closed</returns>
+        Task ShowExceptionDialog(string message, Exception exception);
     }
 }

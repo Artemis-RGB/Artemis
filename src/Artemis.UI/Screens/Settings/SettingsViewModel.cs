@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services;
@@ -12,8 +13,10 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
+using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
 using Ninject;
 using Serilog.Events;
 using Stylet;
@@ -23,6 +26,7 @@ namespace Artemis.UI.Screens.Settings
     public class SettingsViewModel : MainScreenViewModel
     {
         private readonly IDeviceSettingsVmFactory _deviceSettingsVmFactory;
+        private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
         private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
@@ -32,6 +36,7 @@ namespace Artemis.UI.Screens.Settings
         public SettingsViewModel(IKernel kernel,
             ISurfaceService surfaceService,
             IPluginService pluginService,
+            IDialogService dialogService,
             IWindowManager windowManager,
             ISettingsService settingsService,
             IDeviceSettingsVmFactory deviceSettingsVmFactory)
@@ -43,6 +48,7 @@ namespace Artemis.UI.Screens.Settings
             _kernel = kernel;
             _surfaceService = surfaceService;
             _pluginService = pluginService;
+            _dialogService = dialogService;
             _windowManager = windowManager;
             _settingsService = settingsService;
             _deviceSettingsVmFactory = deviceSettingsVmFactory;
@@ -65,11 +71,32 @@ namespace Artemis.UI.Screens.Settings
 
         public List<Tuple<string, int>> TargetFrameRates { get; set; }
         public List<Tuple<string, double>> RenderScales { get; set; }
-        public IEnumerable<ValueDescription> LogLevels { get; private set; }
+        public IEnumerable<ValueDescription> LogLevels { get; }
 
         public List<int> SampleSizes { get; set; }
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
         public BindableCollection<PluginSettingsViewModel> Plugins { get; set; }
+
+        public bool StartWithWindows
+        {
+            get => _settingsService.GetSetting("UI.AutoRun", false).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.AutoRun", false).Value = value;
+                _settingsService.GetSetting("UI.AutoRun", false).Save();
+                Task.Run(ApplyAutorun);
+            }
+        }
+
+        public bool StartMinimized
+        {
+            get => !_settingsService.GetSetting("UI.ShowOnStartup", true).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.ShowOnStartup", true).Value = !value;
+                _settingsService.GetSetting("UI.ShowOnStartup", true).Save();
+            }
+        }
 
         public Tuple<string, double> SelectedRenderScale
         {
@@ -138,8 +165,10 @@ namespace Artemis.UI.Screens.Settings
             Process.Start(Constants.DataFolder);
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
+            Task.Run(ApplyAutorun);
+
             DeviceSettingsViewModels.Clear();
             foreach (var device in _surfaceService.ActiveSurface.Devices)
                 DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
@@ -149,7 +178,34 @@ namespace Artemis.UI.Screens.Settings
             foreach (var plugin in _pluginService.GetPluginsOfType<Plugin>())
                 Plugins.Add(new PluginSettingsViewModel(plugin));
 
-            base.OnActivate();
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            DeviceSettingsViewModels.Clear();
+            Plugins.Clear();
+            base.OnClose();
+        }
+
+        private async Task ApplyAutorun()
+        {
+            try
+            {
+                var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                if (key == null)
+                    key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+
+                if (StartWithWindows)
+                    key.SetValue("Artemis", $"\"{Process.GetCurrentProcess().MainModule.FileName}\" -autorun");
+                else
+                    key.DeleteValue("Artemis", false);
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e);
+                throw;
+            }
         }
     }
 }

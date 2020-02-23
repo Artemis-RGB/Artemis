@@ -14,7 +14,7 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
-using Artemis.UI.ViewModels.Dialogs;
+using Artemis.UI.Shared.Services.Dialog;
 using FluentValidation;
 using Stylet;
 

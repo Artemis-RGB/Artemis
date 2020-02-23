@@ -7,6 +7,7 @@ using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem

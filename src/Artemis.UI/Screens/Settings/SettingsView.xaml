@@ -39,7 +39,7 @@
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartWithWindows}"/>
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -57,7 +57,7 @@
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows minimized</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartMinimized}" IsEnabled="{Binding StartWithWindows}"/>
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />

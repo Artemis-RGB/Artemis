@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.UI.Screens.Dialogs;
-using Artemis.UI.Services.Interfaces;
-using Artemis.UI.ViewModels.Dialogs;
+using Artemis.UI.Shared.Screens.Dialogs;
+using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Ninject.Parameters;
 using Stylet;
 
-namespace Artemis.UI.Services.Dialog
+namespace Artemis.UI.Shared.Services.Dialog
 {
     public class DialogService : IDialogService
     {
@@ -87,6 +86,16 @@ namespace Artemis.UI.Services.Dialog
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             return await ShowDialog(identifier, _kernel.Get<T>(parameters));
+        }
+
+        public async Task ShowExceptionDialog(string message, Exception exception)
+        {
+            var arguments = new IParameter[]
+            {
+                new ConstructorArgument("message", message),
+                new ConstructorArgument("exception", exception)
+            };
+            await Execute.OnUIThreadAsync(async () => await ShowDialog<ExceptionDialogViewModel>(arguments));
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)

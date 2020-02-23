@@ -1,6 +1,6 @@
-﻿using Artemis.UI.ViewModels.Dialogs;
+﻿using Artemis.UI.Shared.Services.Dialog;
 
-namespace Artemis.UI.Screens.Dialogs
+namespace Artemis.UI.Shared.Screens.Dialogs
 {
     public class ConfirmDialogViewModel : DialogViewModelBase
     {

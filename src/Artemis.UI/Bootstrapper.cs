@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -14,9 +16,10 @@ using Stylet;
 
 namespace Artemis.UI
 {
-    public class Bootstrapper : NinjectBootstrapper<RootViewModel>
+    public class Bootstrapper : NinjectBootstrapper<TrayViewModel>
     {
         private ICoreService _core;
+        public static List<string> StartupArguments { get; private set; }
 
         protected override void OnExit(ExitEventArgs e)
         {
@@ -28,9 +31,10 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            var windowManager = (IWindowManager) GetInstance(typeof(IWindowManager));
-            var splashViewModel = new SplashViewModel(Kernel);
-            windowManager.ShowWindow(splashViewModel);
+            StartupArguments = Args.ToList();
+
+            var windowManager = Kernel.Get<IWindowManager>();
+            windowManager.ShowWindow(RootViewModel);
 
             Task.Run(() =>
             {
@@ -38,10 +42,6 @@ namespace Artemis.UI
                 {
                     // Start the Artemis core
                     _core = Kernel.Get<ICoreService>();
-                    // When the core is done, hide the splash and show the main window
-                    _core.Initialized += (sender, args) => ShowMainWindow(windowManager, splashViewModel);
-                    // While the core is instantiated, start listening for events on the splash
-                    splashViewModel.ListenToEvents();
                 }
                 catch (Exception e)
                 {

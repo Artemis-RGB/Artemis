@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
-using Artemis.UI.ViewModels.Dialogs;
+using Artemis.UI.Shared.Services.Dialog;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
