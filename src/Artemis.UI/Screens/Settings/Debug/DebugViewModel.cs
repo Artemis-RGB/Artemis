@@ -36,18 +36,18 @@ namespace Artemis.UI.Screens.Settings.Debug
             GC.WaitForPendingFinalizers();
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             _coreService.FrameRendered -= CoreServiceOnFrameRendered;
             _coreService.FrameRendering -= CoreServiceOnFrameRendering;
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)

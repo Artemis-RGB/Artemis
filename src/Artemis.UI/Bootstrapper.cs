@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -31,21 +32,29 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            StartupArguments = Args.ToList();
-
+            var logger = Kernel.Get<ILogger>();
             var windowManager = Kernel.Get<IWindowManager>();
-            windowManager.ShowWindow(RootViewModel);
+            var viewManager = Kernel.Get<IViewManager>();
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
+                    StartupArguments = Args.ToList();
+                    if (StartupArguments.Contains("-autorun"))
+                    {
+                        logger.Information("Sleeping for 15 seconds on auto run to allow applications like iCUE and LGS to start");
+                        await Task.Delay(TimeSpan.FromSeconds(15));
+                    }
+
+                    // Create and bind the root view, this is a tray icon so don't show it with the window manager
+                    Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));
+
                     // Start the Artemis core
                     _core = Kernel.Get<ICoreService>();
                 }
                 catch (Exception e)
                 {
-                    var logger = Kernel.Get<ILogger>();
                     logger.Fatal(e, "Fatal exception during initialization, shutting down.");
 
                     // TODO: A proper exception viewer

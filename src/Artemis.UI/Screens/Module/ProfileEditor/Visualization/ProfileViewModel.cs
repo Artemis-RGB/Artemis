@@ -114,7 +114,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
             PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
@@ -122,10 +122,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
 
             _updateTrigger.Start();
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             HighlightSelectedLayer.Save();
             PauseRenderingOnFocusLoss.Save();
@@ -139,7 +139,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 // TODO: Remove when fixed in RGB.NET, or avoid double stopping
             }
 
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void CreateUpdateTrigger()

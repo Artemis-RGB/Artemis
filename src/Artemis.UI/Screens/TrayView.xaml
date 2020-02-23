@@ -1,4 +1,4 @@
-﻿<Window x:Class="Artemis.UI.Screens.TrayView"
+﻿<controls:MaterialWindow x:Class="Artemis.UI.Screens.TrayView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
         mc:Ignorable="d" 
         Title="Artemis"
         Height="1"
@@ -33,4 +34,4 @@
             </ContextMenu>
         </tb:TaskbarIcon.ContextMenu>
     </tb:TaskbarIcon>
-</Window>
+</controls:MaterialWindow>

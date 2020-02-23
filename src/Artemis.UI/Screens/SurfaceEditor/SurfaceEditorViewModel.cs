@@ -142,17 +142,17 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         #region Overrides of Screen
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             LoadSurfaceConfigurations();
             LoadWorkspaceSettings();
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             SaveWorkspaceSettings();
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         #endregion

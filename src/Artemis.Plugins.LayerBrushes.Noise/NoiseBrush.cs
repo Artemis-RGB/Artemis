@@ -28,17 +28,17 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Rand.Next(0, 4096));
 
-            MainColorProperty = RegisterLayerProperty<SKColor>("Brush.MainColor", "Main color", "The main color of the noise.");
-            SecondaryColorProperty = RegisterLayerProperty<SKColor>("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise.");
-            ScaleProperty = RegisterLayerProperty<SKSize>("Brush.Scale", "Scale", "The scale of the noise.");
+            MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
+            SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
+            ScaleProperty = RegisterLayerProperty("Brush.Scale", "Scale", "The scale of the noise.", new SKSize(100, 100));
             ScaleProperty.MinInputValue = 0f;
-            HardnessProperty = RegisterLayerProperty<float>("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines..");
+            HardnessProperty = RegisterLayerProperty("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", 500f);
             HardnessProperty.MinInputValue = 0f;
             HardnessProperty.MaxInputValue = 2048f;
-            ScrollSpeedProperty = RegisterLayerProperty<SKPoint>("Brush.ScrollSpeed", "Movement speed", "The speed at which the noise moves vertically and horizontally.");
+            ScrollSpeedProperty = RegisterLayerProperty<SKPoint>("Brush.ScrollSpeed", "Movement speed", "The speed at which the noise moves vertically and horizontally");
             ScrollSpeedProperty.MinInputValue = -64f;
             ScrollSpeedProperty.MaxInputValue = 64f;
-            AnimationSpeedProperty = RegisterLayerProperty<float>("Brush.AnimationSpeed", "Animation speed", "The speed at which the noise moves.");
+            AnimationSpeedProperty = RegisterLayerProperty("Brush.AnimationSpeed", "Animation speed", "The speed at which the noise moves", 25f);
             AnimationSpeedProperty.MinInputValue = 0f;
             AnimationSpeedProperty.MaxInputValue = 64f;
             ScaleProperty.InputAffix = "%";
