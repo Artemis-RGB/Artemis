@@ -1,8 +1,7 @@
-﻿using Artemis.UI.ViewModels.Utilities;
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using Stylet;
 
-namespace Artemis.UI.ViewModels.Dialogs
+namespace Artemis.UI.Shared.Services.Dialog
 {
     public abstract class DialogViewModelBase : ValidatingModelBase
     {

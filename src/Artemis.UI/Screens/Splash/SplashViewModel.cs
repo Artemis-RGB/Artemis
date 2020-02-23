@@ -8,22 +8,26 @@ namespace Artemis.UI.Screens.Splash
 {
     public class SplashViewModel : Screen
     {
-        private readonly IKernel _kernel;
+        private readonly ICoreService _coreService;
+        private readonly IPluginService _pluginService;
 
-        public SplashViewModel(IKernel kernel)
+        public SplashViewModel(ICoreService coreService, IPluginService pluginService)
         {
-            _kernel = kernel;
+            _coreService = coreService;
+            _pluginService = pluginService;
             Status = "Initializing Core";
+
+            ListenToEvents();
         }
 
         public string Status { get; set; }
 
         public void ListenToEvents()
         {
-            var pluginService = _kernel.Get<IPluginService>();
-            pluginService.CopyingBuildInPlugins += (sender, args) => Status = "Updating built-in plugins";
-            pluginService.PluginLoading += (sender, args) => Status = "Loading plugin: " + args.PluginInfo.Name;
-            pluginService.PluginLoaded += (sender, args) => Status = "Initializing UI";
+            _coreService.Initialized += (sender, args) => Execute.OnUIThread(() => RequestClose());
+            _pluginService.CopyingBuildInPlugins += (sender, args) => Status = "Updating built-in plugins";
+            _pluginService.PluginLoading += (sender, args) => Status = "Loading plugin: " + args.PluginInfo.Name;
+            _pluginService.PluginLoaded += (sender, args) => Status = "Initializing UI";
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view

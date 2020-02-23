@@ -7,6 +7,7 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:screens="clr-namespace:Artemis.UI.Screens"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                    xmlns:tb="http://www.hardcodet.net/taskbar"
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Artemis.UI;component/Resources/logo-512.png"
@@ -50,15 +51,18 @@
         </Style>
     </mde:MaterialWindow.Resources>
     <materialDesign:DialogHost Identifier="RootDialog">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
-            </materialDesign:DrawerHost.LeftDrawerContent>
-            <DockPanel>
-                <mde:AppBar Type="Dense" IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}" Title="{Binding ActiveItem.DisplayName}" ShowNavigationDrawerButton="True"
-                            DockPanel.Dock="Top" />
-                <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
-            </DockPanel>
-        </materialDesign:DrawerHost>
-    </materialDesign:DialogHost>
+            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
+                </materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel>
+                    <mde:AppBar Type="Dense"
+                                IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}"
+                                Title="{Binding ActiveItem.DisplayName}"
+                                ShowNavigationDrawerButton="True"
+                                DockPanel.Dock="Top" />
+                    <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
+                </DockPanel>
+            </materialDesign:DrawerHost>
+        </materialDesign:DialogHost>
 </mde:MaterialWindow>

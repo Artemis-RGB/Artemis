@@ -14,6 +14,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor
