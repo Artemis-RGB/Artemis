@@ -120,19 +120,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             _profileEditorService.RedoUpdateProfile(Module);
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             LoadWorkspaceSettings();
             _profileEditorService.StopRegularRender();
             Task.Run(LoadProfiles);
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             SaveWorkspaceSettings();
             _profileEditorService.ResumeRegularRender();
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void ChangeSelectedProfile(Profile profile)

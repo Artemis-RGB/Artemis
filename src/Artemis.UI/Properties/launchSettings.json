@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Artemis.UI": {
-      "commandName": "Project",
-      "commandLineArgs": "-autorun"
+      "commandName": "Project"
     }
   }
 }
