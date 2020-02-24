@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
@@ -12,7 +12,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class PropertyTimelineViewModel : PropertyChangedBase
+    public class PropertyTimelineViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPropertyTrackVmFactory _propertyTrackVmFactory;
@@ -27,8 +27,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyTrackViewModels = new BindableCollection<PropertyTrackViewModel>();
 
-            _profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
-            LayerPropertiesViewModel.PixelsPerSecondChanged += (sender, args) => UpdateKeyframePositions();
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
+            LayerPropertiesViewModel.PixelsPerSecondChanged += OnPixelsPerSecondChanged;
 
             Execute.PostToUIThread(() => SelectionRectangle = new RectangleGeometry());
         }
@@ -38,6 +38,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public double Width { get; set; }
         public BindableCollection<PropertyTrackViewModel> PropertyTrackViewModels { get; set; }
         public RectangleGeometry SelectionRectangle { get; set; }
+
+        public void Dispose()
+        {
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            LayerPropertiesViewModel.PixelsPerSecondChanged -= OnPixelsPerSecondChanged;
+        }
 
         public void UpdateEndTime()
         {
@@ -94,6 +100,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 viewModel.PopulateKeyframes();
 
             UpdateEndTime();
+        }
+
+        private void OnSelectedProfileElementUpdated(object? sender, ProfileElementEventArgs e)
+        {
+            Update();
+        }
+
+        private void OnPixelsPerSecondChanged(object? sender, EventArgs e)
+        {
+            UpdateKeyframePositions();
         }
 
         private void CreateViewModels(LayerPropertyViewModel property)

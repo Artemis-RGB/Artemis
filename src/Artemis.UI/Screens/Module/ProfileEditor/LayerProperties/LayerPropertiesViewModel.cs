@@ -9,6 +9,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
@@ -43,8 +44,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PropertyTimeline = propertyTimelineVmFactory.Create(this);
 
             PopulateProperties(_profileEditorService.SelectedProfileElement, null);
-            _profileEditorService.ProfileElementSelected += (sender, args) => PopulateProperties(args.ProfileElement, args.PreviousProfileElement);
-            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
         }
 
         public bool Playing { get; set; }
@@ -70,10 +69,35 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public PropertyTreeViewModel PropertyTree { get; set; }
         public PropertyTimelineViewModel PropertyTimeline { get; set; }
 
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+
+            PropertyTree?.Dispose();
+            PropertyTimeline?.Dispose();
+            PropertyTree = null;
+            PropertyTimeline = null;
+            base.OnClose();
+        }
+
         protected override void OnDeactivate()
         {
             Pause();
             base.OnDeactivate();
+        }
+        
+        private void ProfileEditorServiceOnProfileElementSelected(object? sender, ProfileElementEventArgs e)
+        {
+            PopulateProperties(e.ProfileElement, e.PreviousProfileElement);
         }
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)

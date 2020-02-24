@@ -1,13 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
-    public class PropertyTreeViewModel : PropertyChangedBase
+    public class PropertyTreeViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
 
@@ -18,12 +20,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyTreeItemViewModels = new BindableCollection<PropertyTreeItemViewModel>();
 
-            _profileEditorService.CurrentTimeChanged += (sender, args) => Update(false);
-            _profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update(true);
+            _profileEditorService.CurrentTimeChanged += OnCurrentTimeChanged;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public BindableCollection<PropertyTreeItemViewModel> PropertyTreeItemViewModels { get; set; }
+
+        public void Dispose()
+        {
+            _profileEditorService.CurrentTimeChanged -= OnCurrentTimeChanged;
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+        }
 
         public void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
@@ -75,6 +83,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             };
             var parent = ((Control) sender).Parent as UIElement;
             parent?.RaiseEvent(eventArg);
+        }
+
+        private void OnCurrentTimeChanged(object? sender, EventArgs e)
+        {
+            Update(false);
+        }
+
+        private void OnSelectedProfileElementUpdated(object? sender, ProfileElementEventArgs e)
+        {
+            Update(true);
         }
     }
 }

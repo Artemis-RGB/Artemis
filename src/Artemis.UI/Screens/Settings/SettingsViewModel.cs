@@ -15,7 +15,6 @@ using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Ninject;
 using Serilog.Events;
@@ -42,8 +41,6 @@ namespace Artemis.UI.Screens.Settings
             IDeviceSettingsVmFactory deviceSettingsVmFactory)
         {
             DisplayName = "Settings";
-            DisplayIcon = PackIconKind.Settings;
-            DisplayOrder = 5;
 
             _kernel = kernel;
             _surfaceService = surfaceService;

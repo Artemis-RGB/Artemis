@@ -13,7 +13,7 @@
         Width="1"
         Visibility="Hidden">
     <tb:TaskbarIcon x:Name="TrayIcon"
-                    IconSource="/Resources/logo-512.ico"
+                    IconSource="/Resources/Images/Logo/logo-512.ico"
                     MenuActivation="LeftOrRightClick"
                     PopupActivation="DoubleClick"
                     ToolTipText="Artemis"

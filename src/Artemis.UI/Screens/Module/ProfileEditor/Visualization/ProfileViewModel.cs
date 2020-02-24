@@ -52,14 +52,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
             });
 
-            ApplySurfaceConfiguration(surfaceService.ActiveSurface);
+            ApplySurfaceConfiguration(_surfaceService.ActiveSurface);
             ApplyActiveProfile();
             CreateUpdateTrigger();
             ActivateToolByIndex(0);
 
-            _profileEditorService.ProfileSelected += OnProfileSelected;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             eventAggregator.Subscribe(this);
         }
 
@@ -120,6 +117,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
 
             HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
+            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
+            _profileEditorService.ProfileSelected += OnProfileSelected;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
 
             _updateTrigger.Start();
             base.OnInitialActivate();
@@ -127,6 +128,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         protected override void OnClose()
         {
+            HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
+            _surfaceService.ActiveSurfaceConfigurationSelected -= OnActiveSurfaceConfigurationSelected;
+            _profileEditorService.ProfileSelected -= OnProfileSelected;
+            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+
             HighlightSelectedLayer.Save();
             PauseRenderingOnFocusLoss.Save();
 
@@ -150,8 +157,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             var targetFps = Math.Min(targetFpsSetting.Value, editorTargetFpsSetting.Value);
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / targetFps};
             _updateTrigger.Update += UpdateLeds;
-
-            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
         }
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
