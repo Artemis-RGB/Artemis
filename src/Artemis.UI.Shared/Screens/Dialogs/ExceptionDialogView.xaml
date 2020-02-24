@@ -12,19 +12,21 @@
              d:DataContext="{d:DesignInstance dialogs:ExceptionDialogViewModel}">
     <StackPanel Margin="16">
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding Header}" TextWrapping="Wrap" />
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Exception.Message}" TextWrapping="Wrap" />
 
-        <Separator></Separator>
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace" TextWrapping="Wrap" FontWeight="Bold" Margin="20 5 0 0"/>
-        <avalonedit:TextEditor SyntaxHighlighting="C#" 
-                               FontFamily="Resources\Fonts\RobotoMono-Regular.ttf" 
-                               FontSize="10pt" 
-                               IsReadOnly="True" 
-                               Document="{Binding Document}" 
-                               HorizontalScrollBarVisibility="Auto" 
+        <Separator Margin="0 15" />
+        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" FontWeight="Bold" Margin="22 0">Exception message</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="{Binding Exception.Message}" TextWrapping="Wrap" Margin="22 5" />
+        <Separator Margin="0 15" />
+        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace" TextWrapping="Wrap" FontWeight="Bold" Margin="22 0" />
+        <avalonedit:TextEditor SyntaxHighlighting="C#"
+                               FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"
+                               FontSize="10pt"
+                               IsReadOnly="True"
+                               Document="{Binding Document}"
+                               HorizontalScrollBarVisibility="Auto"
                                VerticalScrollBarVisibility="Auto"
-                               Margin="0 10"/>
-        <Separator></Separator>
+                               Margin="0 10" />
+
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0"
