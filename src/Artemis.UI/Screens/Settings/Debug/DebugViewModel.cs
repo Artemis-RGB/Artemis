@@ -34,6 +34,7 @@ namespace Artemis.UI.Screens.Settings.Debug
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         protected override void OnInitialActivate()

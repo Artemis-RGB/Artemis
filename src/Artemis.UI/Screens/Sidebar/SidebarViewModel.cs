@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
@@ -22,7 +23,7 @@ namespace Artemis.UI.Screens.Sidebar
             _pluginService = pluginService;
 
             DefaultSidebarItems = defaultSidebarItems;
-            SidebarItemObjects = new Dictionary<INavigationItem, object>();
+            SidebarModules = new Dictionary<INavigationItem, Core.Plugins.Abstract.Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
 
             SetupSidebar();
@@ -32,22 +33,21 @@ namespace Artemis.UI.Screens.Sidebar
 
         public List<MainScreenViewModel> DefaultSidebarItems { get; set; }
         public BindableCollection<INavigationItem> SidebarItems { get; set; }
-        public Dictionary<INavigationItem, object> SidebarItemObjects { get; set; }
+        public Dictionary<INavigationItem, Core.Plugins.Abstract.Module> SidebarModules { get; set; }
         public IScreen SelectedItem { get; set; }
 
         public void SetupSidebar()
         {
             SidebarItems.Clear();
-            SidebarItemObjects.Clear();
+            SidebarModules.Clear();
 
             // Add all default sidebar items
             SidebarItems.Add(new DividerNavigationItem());
-            foreach (var screen in DefaultSidebarItems.OrderBy(d => d.DisplayOrder))
-            {
-                var sidebarItem = new FirstLevelNavigationItem {Icon = screen.DisplayIcon, Label = screen.DisplayName};
-                SidebarItems.Add(sidebarItem);
-                SidebarItemObjects.Add(sidebarItem, screen);
-            }
+            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Home, Label = "Home"});
+            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Newspaper, Label = "News"});
+            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.TestTube, Label = "Workshop"});
+            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Edit, Label = "Surface Editor"});
+            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Settings, Label = "Settings"});
 
             // Add all activated modules
             SidebarItems.Add(new DividerNavigationItem());
@@ -57,12 +57,37 @@ namespace Artemis.UI.Screens.Sidebar
                 AddModule(module);
 
             // Select the top item, which will be one of the defaults
-            SidebarItems[1].IsSelected = true;
-            SelectedItem = (IScreen) SidebarItemObjects[SidebarItems[1]];
+            Task.Run(() => SelectSidebarItem(SidebarItems[1]));
+        }
+
+        private async Task SelectSidebarItem(INavigationItem sidebarItem)
+        {
+            if (SelectedItem != null)
+            {
+                var canClose = await SelectedItem.CanCloseAsync();
+                if (!canClose)
+                    return;
+                SelectedItem.Close();
+            }
+
+            // A module was selected if the dictionary contains the selected item
+            if (SidebarModules.ContainsKey(sidebarItem))
+            {
+                SelectedItem = _moduleVmFactory.Create(SidebarModules[sidebarItem]);
+            }
+            else
+            {
+                SelectedItem = null;
+            }
+
+            // TODO: Remove this bad boy, just testing
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view
-        public void SelectItem(WillSelectNavigationItemEventArgs args)
+        public async Task SelectItem(WillSelectNavigationItemEventArgs args)
         {
             if (args.NavigationItemToSelect == null)
             {
@@ -70,19 +95,13 @@ namespace Artemis.UI.Screens.Sidebar
                 return;
             }
 
-            var sidebarItemObject = SidebarItemObjects[args.NavigationItemToSelect];
-            // The default items are singleton screens, simply set it as the selected item
-            if (sidebarItemObject is IScreen screen)
-                SelectedItem = screen;
-            // Modules have a VM that must be created, use a factory and set the result as the selected item
-            else if (sidebarItemObject is Core.Plugins.Abstract.Module module)
-                SelectedItem = _moduleVmFactory.Create(module);
+            await SelectSidebarItem(args.NavigationItemToSelect);
         }
 
         public void AddModule(Core.Plugins.Abstract.Module module)
         {
             // Ensure the module is not already in the list
-            if (SidebarItemObjects.Any(io => io.Value == module))
+            if (SidebarModules.Any(io => io.Value == module))
                 return;
 
             // Icon is provided as string to avoid having to reference MaterialDesignThemes
@@ -91,18 +110,18 @@ namespace Artemis.UI.Screens.Sidebar
                 iconEnum = PackIconKind.QuestionMarkCircle;
             var sidebarItem = new FirstLevelNavigationItem {Icon = iconEnum, Label = module.DisplayName};
             SidebarItems.Add(sidebarItem);
-            SidebarItemObjects.Add(sidebarItem, module);
+            SidebarModules.Add(sidebarItem, module);
         }
 
         public void RemoveModule(Core.Plugins.Abstract.Module module)
         {
             // If not in the list there's nothing to do
-            if (SidebarItemObjects.All(io => io.Value != module))
+            if (SidebarModules.All(io => io.Value != module))
                 return;
 
-            var existing = SidebarItemObjects.First(io => io.Value == module);
+            var existing = SidebarModules.First(io => io.Value == module);
             SidebarItems.Remove(existing.Key);
-            SidebarItemObjects.Remove(existing.Key);
+            SidebarModules.Remove(existing.Key);
         }
 
         #region Event handlers

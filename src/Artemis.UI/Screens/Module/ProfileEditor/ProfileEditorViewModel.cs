@@ -47,8 +47,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Profiles = new BindableCollection<Profile>();
 
             Items.AddRange(viewModels);
-
-            module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
         }
 
         public ProfileModule Module { get; }
@@ -124,6 +122,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         {
             LoadWorkspaceSettings();
             _profileEditorService.StopRegularRender();
+            Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
             Task.Run(LoadProfiles);
             base.OnInitialActivate();
         }
@@ -132,6 +131,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         {
             SaveWorkspaceSettings();
             _profileEditorService.ResumeRegularRender();
+            Module.ActiveProfileChanged -= ModuleOnActiveProfileChanged;
             base.OnClose();
         }
 

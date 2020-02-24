@@ -17,7 +17,7 @@
                     d:DesignHeight="800"
                     d:DesignWidth="800"
                     d:DataContext="{d:DesignInstance debug:DebugViewModel}"
-                    Icon="/Artemis.UI;component/Resources/logo-512.png">
+                    Icon="/Resources/Images/Logo/logo-512.png">
     <StackPanel Margin="10, 10, 10, 10">
         <TextBlock>
             In this window you can view the inner workings of Artemis.

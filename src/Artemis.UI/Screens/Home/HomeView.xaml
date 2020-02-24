@@ -35,7 +35,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Source="/Resources/logo-512.png" Stretch="Uniform" Width="100" Height="100" />
+            <Image Source="/Resources/Images/Logo/logo-512.png" Stretch="Uniform" Width="100" Height="100" />
             <StackPanel Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center">
                 <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to Artemis, RGB on steroids.</TextBlock>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"

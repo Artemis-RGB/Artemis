@@ -17,7 +17,7 @@
         <Separator></Separator>
         <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace" TextWrapping="Wrap" FontWeight="Bold" Margin="20 5 0 0"/>
         <avalonedit:TextEditor SyntaxHighlighting="C#" 
-                               FontFamily="Consolas" 
+                               FontFamily="Resources\Fonts\RobotoMono-Regular.ttf" 
                                FontSize="10pt" 
                                IsReadOnly="True" 
                                Document="{Binding Document}" 

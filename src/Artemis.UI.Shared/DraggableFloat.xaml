@@ -23,7 +23,7 @@
                        Padding="1 0"
                        Margin="0 4 0 0"
                        Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                       Cursor="/Resources/aero_drag_ew.cur"
+                       Cursor="/Resources/Cursors/aero_drag_ew.cur"
                        Foreground="{DynamicResource SecondaryAccentBrush}"
                        MouseDown="InputMouseDown"
                        MouseUp="InputMouseUp"

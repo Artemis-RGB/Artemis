@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\logo-512.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent />
@@ -54,60 +54,57 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Resources\RobotoMono-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
     <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\logo-512.ico" />
-    <Resource Include="Resources\logo-512.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bow.svg" />
+    <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+    <Resource Include="Resources\Images\Logo\logo-512.ico" />
+    <Resource Include="Resources\Images\Logo\logo-512.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate_tl.cur" />
+    <Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate_tr.cur" />
+    <Resource Include="Resources\Cursors\aero_rotate_tr.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate_bl.cur" />
+    <Resource Include="Resources\Cursors\aero_rotate_bl.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate_br.cur" />
+    <Resource Include="Resources\Cursors\aero_rotate_br.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_crosshair.cur" />
+    <Resource Include="Resources\Cursors\aero_crosshair.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_crosshair_minus.cur" />
+    <Resource Include="Resources\Cursors\aero_crosshair_minus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_crosshair_plus.cur" />
+    <Resource Include="Resources\Cursors\aero_crosshair_plus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_pen_min.cur" />
+    <Resource Include="Resources\Cursors\aero_pen_min.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_pen_plus.cur" />
+    <Resource Include="Resources\Cursors\aero_pen_plus.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_fill.cur" />
+    <Resource Include="Resources\Cursors\aero_fill.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_drag.cur" />
+    <Resource Include="Resources\Cursors\aero_drag.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_drag_ew.cur" />
+    <Resource Include="Resources\Cursors\aero_drag_ew.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\aero_rotate.cur" />
+    <Resource Include="Resources\Cursors\aero_rotate.cur" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.0" />
@@ -280,7 +277,8 @@
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.i.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Resources\logo-512.ico" />
+    <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+    <None Remove="Resources\Images\Logo\logo-512.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

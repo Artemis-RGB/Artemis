@@ -15,7 +15,6 @@ using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared.Services.Interfaces;
-using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor
@@ -30,8 +29,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
         {
             DisplayName = "Surface Editor";
-            DisplayIcon = PackIconKind.Edit;
-            DisplayOrder = 4;
 
             Devices = new ObservableCollection<SurfaceDeviceViewModel>();
             SurfaceConfigurations = new ObservableCollection<ArtemisSurface>();

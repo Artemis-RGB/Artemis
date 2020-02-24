@@ -1,5 +1,4 @@
 ﻿using System.Windows.Media;
-using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.Workshop
 {
@@ -8,8 +7,6 @@ namespace Artemis.UI.Screens.Workshop
         public WorkshopViewModel()
         {
             DisplayName = "Workshop";
-            DisplayIcon = PackIconKind.TestTube;
-            DisplayOrder = 3;
         }
 
         public Color TestColor { get; set; }

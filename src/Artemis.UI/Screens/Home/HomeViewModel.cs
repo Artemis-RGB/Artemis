@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.Home
 {
@@ -9,8 +8,6 @@ namespace Artemis.UI.Screens.Home
         public HomeViewModel()
         {
             DisplayName = "Home";
-            DisplayIcon = PackIconKind.Home;
-            DisplayOrder = 1;
         }
 
         public void OpenUrl(string url)
