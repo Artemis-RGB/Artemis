@@ -5,24 +5,31 @@ using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Home;
+using Artemis.UI.Screens.News;
+using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.SurfaceEditor;
+using Artemis.UI.Screens.Workshop;
 using MaterialDesignExtensions.Controls;
 using MaterialDesignExtensions.Model;
 using MaterialDesignThemes.Wpf;
+using Ninject;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarViewModel : PropertyChangedBase
     {
+        private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginService _pluginService;
 
-        public SidebarViewModel(List<MainScreenViewModel> defaultSidebarItems, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
+        public SidebarViewModel(IKernel kernel, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
+            _kernel = kernel;
             _moduleVmFactory = moduleVmFactory;
             _pluginService = pluginService;
 
-            DefaultSidebarItems = defaultSidebarItems;
             SidebarModules = new Dictionary<INavigationItem, Core.Plugins.Abstract.Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
 
@@ -31,7 +38,6 @@ namespace Artemis.UI.Screens.Sidebar
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
         }
 
-        public List<MainScreenViewModel> DefaultSidebarItems { get; set; }
         public BindableCollection<INavigationItem> SidebarItems { get; set; }
         public Dictionary<INavigationItem, Core.Plugins.Abstract.Module> SidebarModules { get; set; }
         public IScreen SelectedItem { get; set; }
@@ -62,28 +68,49 @@ namespace Artemis.UI.Screens.Sidebar
 
         private async Task SelectSidebarItem(INavigationItem sidebarItem)
         {
-            if (SelectedItem != null)
-            {
-                var canClose = await SelectedItem.CanCloseAsync();
-                if (!canClose)
-                    return;
-                SelectedItem.Close();
-            }
-
             // A module was selected if the dictionary contains the selected item
             if (SidebarModules.ContainsKey(sidebarItem))
+                await ActivateModule(sidebarItem);
+            else if (sidebarItem is FirstLevelNavigationItem navigationItem)
             {
-                SelectedItem = _moduleVmFactory.Create(SidebarModules[sidebarItem]);
+                if (navigationItem.Label == "Home")
+                    await ActivateViewModel<HomeViewModel>();
+                else if (navigationItem.Label == "News")
+                    await ActivateViewModel<NewsViewModel>();
+                else if (navigationItem.Label == "Workshop")
+                    await ActivateViewModel<WorkshopViewModel>();
+                else if (navigationItem.Label == "Surface Editor")
+                    await ActivateViewModel<SurfaceEditorViewModel>();
+                else if (navigationItem.Label == "Settings")
+                    await ActivateViewModel<SettingsViewModel>();
             }
-            else
-            {
+            else if (await CloseCurrentItem())
                 SelectedItem = null;
-            }
+        }
 
-            // TODO: Remove this bad boy, just testing
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+        private async Task<bool> CloseCurrentItem()
+        {
+            if (SelectedItem == null)
+                return true;
+
+            var canClose = await SelectedItem.CanCloseAsync();
+            if (!canClose)
+                return false;
+
+            SelectedItem.Close();
+            return true;
+        }
+
+        private async Task ActivateViewModel<T>()
+        {
+            if (await CloseCurrentItem())
+                SelectedItem = (IScreen) _kernel.Get<T>();
+        }
+
+        private async Task ActivateModule(INavigationItem sidebarItem)
+        {
+            if (await CloseCurrentItem())
+                SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view

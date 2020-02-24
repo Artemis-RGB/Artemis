@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Plugins.Abstract;
@@ -15,6 +16,7 @@ using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
+using Artemis.UI.Utilities;
 using Microsoft.Win32;
 using Ninject;
 using Serilog.Events;
@@ -152,14 +154,28 @@ namespace Artemis.UI.Screens.Settings
             _windowManager.ShowWindow(_kernel.Get<DebugViewModel>());
         }
 
-        public void ShowLogsFolder()
+        public async Task ShowLogsFolder()
         {
-            Process.Start(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
+            try
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
+            }
         }
 
-        public void ShowDataFolder()
+        public async Task ShowDataFolder()
         {
-            Process.Start(Constants.DataFolder);
+            try
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Constants.DataFolder);
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the data folder for you", e);
+            }
         }
 
         protected override void OnInitialActivate()
@@ -189,14 +205,13 @@ namespace Artemis.UI.Screens.Settings
         {
             try
             {
-                var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                if (key == null)
-                    key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+                var autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
+                var executableFile = Process.GetCurrentProcess().MainModule.FileName;
 
+                if (File.Exists(autoRunFile))
+                    File.Delete(autoRunFile);
                 if (StartWithWindows)
-                    key.SetValue("Artemis", $"\"{Process.GetCurrentProcess().MainModule.FileName}\" -autorun");
-                else
-                    key.DeleteValue("Artemis", false);
+                    ShortcutUtilities.Create(autoRunFile, executableFile, "-autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
             }
             catch (Exception e)
             {

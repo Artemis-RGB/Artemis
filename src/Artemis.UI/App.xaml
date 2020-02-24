@@ -62,6 +62,9 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
+
+            <FontFamily x:Key="RobotoMono">pack://application:,,,/Resources/Fonts/#Roboto Mono</FontFamily>
+
             <!-- Disable tab stop/focusable on all content controls -->
             <Style TargetType="ContentControl">
                 <Setter Property="IsTabStop" Value="False" />

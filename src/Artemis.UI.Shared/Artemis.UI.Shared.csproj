@@ -40,4 +40,10 @@
     <Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.i.cs" />
     <Compile Remove="obj\x64\Debug\UserControl1.g.i.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+  </ItemGroup>
 </Project>
