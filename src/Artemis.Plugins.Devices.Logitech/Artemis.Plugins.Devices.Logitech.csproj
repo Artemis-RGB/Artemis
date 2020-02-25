@@ -38,7 +38,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
     <Exec Command="echo Copying resources to plugin output directory&#xD;&#xA;XCOPY &quot;$(ProjectDir)Images&quot; &quot;$(TargetDir)Images&quot; /s /q /i /y&#xD;&#xA;XCOPY &quot;$(ProjectDir)Layouts&quot; &quot;$(TargetDir)Layouts&quot; /s /q /i /y&#xD;&#xA;echo Copying plugin to Artemis.UI output directory&#xD;&#xA;XCOPY &quot;$(TargetDir.TrimEnd('\'))&quot; &quot;$(SolutionDir)\Artemis.UI\$(OutDir)Plugins\$(ProjectName)&quot; /s /q /i /y" />
   </Target>
 </Project>
