@@ -14,10 +14,8 @@
     <Prefer32Bit>true</Prefer32Bit>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <PublishTrimmed>true</PublishTrimmed>
     <UseWPF>true</UseWPF>
-    <PostBuildEvent />
-    <PostBuildEvent />
-    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugType>full</DebugType>
