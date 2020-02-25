@@ -56,8 +56,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
-    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Private>true</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
