@@ -34,9 +34,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
-      <Private>true</Private>
+      <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.6" />

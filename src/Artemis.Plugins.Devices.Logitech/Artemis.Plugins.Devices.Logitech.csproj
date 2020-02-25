@@ -23,7 +23,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\LogitechLedEnginesWrapper.dll">

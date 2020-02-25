@@ -27,7 +27,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="plugin.json">
