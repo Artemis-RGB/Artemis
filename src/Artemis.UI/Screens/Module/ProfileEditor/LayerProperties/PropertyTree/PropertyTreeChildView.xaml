@@ -46,7 +46,8 @@
                 Width="80"
                 Height="20"
                 ToolTip="Change the property's data binding"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center"
+                IsEnabled="False">
             <TextBlock FontSize="10">DATA BINDING</TextBlock>
         </Button>
     </Grid>

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -12,6 +13,17 @@
                 Display conditions
             </TextBlock>
             <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
+                <materialDesign:PackIcon Kind="CodeNotEqual" Width="80" Height="80" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 15">
+                    Conditions are not yet implemented
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
+                    Conditions will allow you to easily configure when a layer should be shown.<LineBreak/><LineBreak/>
+                    You'll also use this to set up how a layer reacts to its conditions being matched, like play the timeline once or keep repeating the timeline until the conditions are no longer matched.
+                </TextBlock>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
