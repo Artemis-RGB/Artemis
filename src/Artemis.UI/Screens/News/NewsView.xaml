@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
-        <materialDesign:PackIcon Kind="CodeNotEqual" Width="250" Height="250" HorizontalAlignment="Center" />
+        <materialDesign:PackIcon Kind="Crane" Width="250" Height="250" HorizontalAlignment="Center" />
         <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 25">
             News is not yet implemented
         </TextBlock>

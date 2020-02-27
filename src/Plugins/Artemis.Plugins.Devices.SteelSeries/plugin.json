@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "27945704-6edd-48b4-bc0e-319cce9693fc",
+  "Name": "SteelSeries Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.SteelSeries.dll"
+}

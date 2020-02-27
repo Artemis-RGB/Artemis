@@ -35,6 +35,12 @@
     <RemoveDir Directories="@(FluentValidationExcludedCultures->'$(OutputPath)%(Filename)')" />
   </Target>
   <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+    <Page Remove="publish\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="RGB.NET.Core, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

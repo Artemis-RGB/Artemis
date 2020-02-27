@@ -25,8 +25,6 @@ namespace Artemis.Core.Plugins.Abstract
         {
             if (sender.GetType().IsGenericType(type))
             {
-                Debug.WriteLine(e.RelativePart);
-                Debug.WriteLine(e.FileName);
                 // Start from the plugin directory
                 if (e.RelativePart != null && e.FileName != null)
                     e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePart, e.FileName);

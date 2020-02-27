@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "58a3d80e-d5cb-4a40-9465-c0a5d54825d6",
+  "Name": "Razer Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.Razer.dll"
+}
