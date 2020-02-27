@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using SkiaSharp;
 

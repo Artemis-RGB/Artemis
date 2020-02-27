@@ -189,7 +189,7 @@ namespace Artemis.UI.Screens.Settings
             // TODO: GetPluginsOfType isn't ideal here as it doesn't include disabled plugins
             Plugins.Clear();
             foreach (var plugin in _pluginService.GetPluginsOfType<Plugin>())
-                Plugins.Add(new PluginSettingsViewModel(plugin));
+                Plugins.Add(new PluginSettingsViewModel(plugin, _windowManager, _dialogService));
 
             base.OnInitialActivate();
         }

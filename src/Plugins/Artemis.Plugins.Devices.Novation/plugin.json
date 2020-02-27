@@ -1,0 +1,6 @@
+{
+  "Guid": "a487332f-c4b3-43e7-b80f-f33adc6fff87",
+  "Name": "Novation Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.Novation.dll"
+}

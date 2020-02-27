@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "9177c320-1206-48a3-af52-b1749c758786",
+  "Name": "Msi Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.Msi.dll"
+}

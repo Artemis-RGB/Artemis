@@ -39,7 +39,7 @@
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartWithWindows}"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartWithWindows}" />
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -57,7 +57,7 @@
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Start up with Windows minimized</TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartMinimized}" IsEnabled="{Binding StartWithWindows}"/>
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding StartMinimized}" IsEnabled="{Binding StartWithWindows}" />
                                 </StackPanel>
                             </Grid>
                             <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -226,7 +226,7 @@
         </TabItem>
         <TabItem Header="PLUGINS" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
             <DockPanel Margin="15">
-                <TextBlock DockPanel.Dock="Top">The list below shows all loaded plugins. You can't really edit it right now. If you're missing something, view your logs folder.</TextBlock>
+                <TextBlock DockPanel.Dock="Top">The list below shows all loaded plugins. If you're missing something, view your logs folder.</TextBlock>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <DataGrid Margin="0 8 0 0"
                               ItemsSource="{Binding Plugins}"
@@ -240,6 +240,15 @@
                             <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*" />
                             <DataGridTextColumn Binding="{Binding Description}" Header="Description" IsReadOnly="True" Width="*" />
                             <DataGridTextColumn Binding="{Binding Version}" Header="Version" IsReadOnly="True" />
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate >
+                                        <Button Style="{StaticResource MaterialDesignOutlinedButton}" s:View.ActionTarget="{Binding}" Command="{s:Action OpenSettings}">
+                                            CONFIGURE
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridCheckBoxColumn Header="Enabled"
                                                     Binding="{Binding IsEnabled}"
                                                     ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"

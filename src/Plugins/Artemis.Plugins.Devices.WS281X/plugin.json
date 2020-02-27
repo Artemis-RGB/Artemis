@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "ec86de32-1010-4bf7-97d7-1dcc46659ab6",
+  "Name": "WS281X Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.WS281X.dll"
+}

@@ -1,0 +1,23 @@
+﻿<controls:MaterialWindow x:Class="Artemis.UI.Screens.Settings.Tabs.Plugins.PluginSettingsWindowView"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Plugins"
+                    xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                    xmlns:s="https://github.com/canton7/Stylet"
+                    mc:Ignorable="d"
+                    Title="{Binding Title}"
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                    UseLayoutRounding="True"
+                    Width="800"
+                    Height="800"
+                    d:DesignHeight="800"
+                    d:DesignWidth="800"
+                    d:DataContext="{d:DesignInstance local:PluginSettingsWindowViewModel}"
+                    Icon="/Resources/Images/Logo/logo-512.png">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ContentControl s:View.Model="{Binding ActiveItem}"/>
+    </ScrollViewer>
+</controls:MaterialWindow>

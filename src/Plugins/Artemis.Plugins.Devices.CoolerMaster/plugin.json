@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "b78f644b-827f-4bb4-bf03-2adaa365b58b",
+  "Name": "CoolerMaster Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.CoolerMaster.dll"
+}

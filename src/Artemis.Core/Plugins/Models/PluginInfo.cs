@@ -26,6 +26,11 @@ namespace Artemis.Core.Plugins.Models
         public string Name { get; internal set; }
 
         /// <summary>
+        ///     A short description of the plugin
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         ///     The version of the plugin
         /// </summary>
         [JsonProperty(Required = Required.Always)]
@@ -62,7 +67,7 @@ namespace Artemis.Core.Plugins.Models
         internal PluginLoader PluginLoader { get; set; }
 
         /// <summary>
-        /// The assembly the plugin code lives in
+        ///     The assembly the plugin code lives in
         /// </summary>
         [JsonIgnore]
         internal Assembly Assembly { get; set; }

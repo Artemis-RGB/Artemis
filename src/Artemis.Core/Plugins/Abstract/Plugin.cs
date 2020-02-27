@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -16,6 +17,12 @@ namespace Artemis.Core.Plugins.Abstract
 
         public PluginInfo PluginInfo { get; internal set; }
 
+        /// <summary>
+        ///     Gets or sets whether this plugin has a configuration view model.
+        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
+        /// </summary>
+        public bool HasConfigurationViewModel { get; protected set; }
+
         /// <inheritdoc />
         /// <summary>
         ///     Called when the plugin is unloaded, clean up any unmanaged resources here
@@ -31,5 +38,15 @@ namespace Artemis.Core.Plugins.Abstract
         ///     Called when the plugin is deactivated
         /// </summary>
         public abstract void DisablePlugin();
+
+        /// <summary>
+        ///     Called when the plugin's configuration window is opened from the UI. The UI will only attempt to open if
+        ///     <see cref="HasConfigurationViewModel" /> is set to True.
+        /// </summary>
+        /// <returns></returns>
+        public virtual PluginConfigurationViewModel GetConfigurationViewModel()
+        {
+            return null;
+        }
     }
 }

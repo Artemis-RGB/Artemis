@@ -1,0 +1,6 @@
+﻿{
+  "Guid": "6f073d4d-d97d-4040-9750-841fdbe06915",
+  "Name": "DMX Devices",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.Devices.DMX.dll"
+}
