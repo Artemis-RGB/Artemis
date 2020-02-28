@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -10,6 +9,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Splash;
+using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Stylet;
 using Ninject;
 using Serilog;
@@ -32,35 +32,38 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
+            StartupArguments = Args.ToList();
+
             var logger = Kernel.Get<ILogger>();
-            var windowManager = Kernel.Get<IWindowManager>();
             var viewManager = Kernel.Get<IViewManager>();
 
+            // Create the Artemis core
+            _core = Kernel.Get<ICoreService>();
+
+            // Create and bind the root view, this is a tray icon so don't show it with the window manager
+            Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));
+
+            // Initialize the core async so the UI can show the progress
             Task.Run(async () =>
             {
                 try
                 {
-                    StartupArguments = Args.ToList();
                     if (StartupArguments.Contains("-autorun"))
                     {
                         logger.Information("Sleeping for 15 seconds on auto run to allow applications like iCUE and LGS to start");
                         await Task.Delay(TimeSpan.FromSeconds(15));
                     }
 
-                    // Create and bind the root view, this is a tray icon so don't show it with the window manager
-                    Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));
-
-                    // Start the Artemis core
-                    _core = Kernel.Get<ICoreService>();
+                    _core.Initialize();
                 }
                 catch (Exception e)
                 {
                     logger.Fatal(e, "Fatal exception during initialization, shutting down.");
 
-                    // TODO: A proper exception viewer
+                    // Can't use a pretty exception dialog here since the UI might not even be visible
                     Execute.OnUIThread(() =>
                     {
-                        windowManager.ShowMessageBox(e.Message + "\n\n Please refer the log file for more details.",
+                        Kernel.Get<IWindowManager>().ShowMessageBox(e.Message + "\n\n Please refer the log file for more details.",
                             "Fatal exception during initialization",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error
@@ -87,9 +90,13 @@ namespace Artemis.UI
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
             var logger = Kernel.Get<ILogger>();
-            logger.Fatal(e.Exception, "Fatal exception, shutting down.");
+            logger.Fatal(e.Exception, "Unhandled exception");
 
-            base.OnUnhandledException(e);
+            var dialogService = Kernel.Get<IDialogService>();
+            dialogService.ShowExceptionDialog("Artemis encountered an error", e.Exception);
+
+            // Don't shut down, is that a good idea? Depends on the exception of course..
+            e.Handled = true;
         }
 
         private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)

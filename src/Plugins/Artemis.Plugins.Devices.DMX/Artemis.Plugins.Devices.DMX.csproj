@@ -29,6 +29,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MaterialDesignThemes.Wpf">
+      <HintPath>..\..\..\..\..\.nuget\materialdesignthemes\3.0.1\lib\netcoreapp3.0\MaterialDesignThemes.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="RGB.NET.Core">
       <HintPath>..\..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
     </Reference>

@@ -21,6 +21,11 @@ namespace Artemis.Core.Services.Interfaces
         bool ModuleRenderingDisabled { get; set; }
 
         /// <summary>
+        ///     Initializes the core, only call once
+        /// </summary>
+        void Initialize();
+
+        /// <summary>
         ///     Occurs the core has finished initializing
         /// </summary>
         event EventHandler Initialized;

@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Artemis.UI.Shared.GradientPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Shared"
+             xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ColorPicker.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
+            <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute" Viewport="0,0,10,10">
+                <VisualBrush.Visual>
+                    <Grid Width="10" Height="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="Gray" />
+                        <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" />
+                        <Rectangle Grid.Row="1" Grid.Column="0" Fill="White" />
+                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="Gray" />
+                    </Grid>
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Height="15"
+            CornerRadius="5"
+            Margin="0,0,0,2"
+            HorizontalAlignment="Stretch"
+            Background="{StaticResource Checkerboard}">
+        <Ellipse Stroke="{DynamicResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
+            <Ellipse.Fill>
+                <LinearGradientBrush
+                    GradientStops="{Binding ColorGradient, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
+            </Ellipse.Fill>
+        </Ellipse>
+    </Border>
+
+</UserControl>

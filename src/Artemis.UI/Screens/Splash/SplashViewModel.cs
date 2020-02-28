@@ -47,22 +47,22 @@ namespace Artemis.UI.Screens.Splash
             base.OnClose();
         }
         
-        private void OnPluginServiceOnPluginLoaded(object? sender, PluginEventArgs args)
+        private void OnPluginServiceOnPluginLoaded(object sender, PluginEventArgs args)
         {
             Status = "Initializing UI";
         }
 
-        private void OnPluginServiceOnPluginLoading(object? sender, PluginEventArgs args)
+        private void OnPluginServiceOnPluginLoading(object sender, PluginEventArgs args)
         {
             Status = "Loading plugin: " + args.PluginInfo.Name;
         }
 
-        private void OnPluginServiceOnCopyingBuildInPlugins(object? sender, EventArgs args)
+        private void OnPluginServiceOnCopyingBuildInPlugins(object sender, EventArgs args)
         {
             Status = "Updating built-in plugins";
         }
 
-        private void OnCoreServiceOnInitialized(object? sender, EventArgs args)
+        private void OnCoreServiceOnInitialized(object sender, EventArgs args)
         {
             Execute.OnUIThread(() => RequestClose());
         }

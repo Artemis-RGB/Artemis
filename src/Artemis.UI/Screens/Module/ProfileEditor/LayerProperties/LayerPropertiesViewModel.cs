@@ -95,7 +95,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             base.OnDeactivate();
         }
         
-        private void ProfileEditorServiceOnProfileElementSelected(object? sender, ProfileElementEventArgs e)
+        private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
         {
             PopulateProperties(e.ProfileElement, e.PreviousProfileElement);
         }
