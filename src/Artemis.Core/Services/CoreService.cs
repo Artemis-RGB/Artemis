@@ -49,7 +49,6 @@ namespace Artemis.Core.Services
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
 
             ConfigureJsonConvert();
-            Task.Run(Initialize);
         }
 
         public bool ModuleUpdatingDisabled { get; set; }
@@ -81,7 +80,7 @@ namespace Artemis.Core.Services
             };
         }
 
-        private async Task Initialize()
+        public void Initialize()
         {
             if (IsInitialized)
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
@@ -90,8 +89,8 @@ namespace Artemis.Core.Services
             ApplyLoggingLevel();
 
             // Initialize the services
-            await Task.Run(() => _pluginService.CopyBuiltInPlugins());
-            await Task.Run(() => _pluginService.LoadPlugins());
+            _pluginService.CopyBuiltInPlugins();
+            _pluginService.LoadPlugins();
 
             var surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
@@ -99,8 +98,8 @@ namespace Artemis.Core.Services
             else
                 _logger.Information("Initialized without an active surface entity");
 
-            await Task.Run(() => _profileService.ActivateDefaultProfiles());
-
+            _profileService.ActivateDefaultProfiles();
+            
             OnInitialized();
         }
 

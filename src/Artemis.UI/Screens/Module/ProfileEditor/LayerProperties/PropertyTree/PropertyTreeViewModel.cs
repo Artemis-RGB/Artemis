@@ -85,12 +85,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             parent?.RaiseEvent(eventArg);
         }
 
-        private void OnCurrentTimeChanged(object? sender, EventArgs e)
+        private void OnCurrentTimeChanged(object sender, EventArgs e)
         {
             Update(false);
         }
 
-        private void OnSelectedProfileElementUpdated(object? sender, ProfileElementEventArgs e)
+        private void OnSelectedProfileElementUpdated(object sender, ProfileElementEventArgs e)
         {
             Update(true);
         }

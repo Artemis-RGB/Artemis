@@ -8,7 +8,7 @@ namespace Artemis.UI.Shared.Converters
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Converts  <see cref="T:SkiaSharp.SKColor" /> into a <see cref="T:System.Windows.Media.Color" />.
+    ///     Converts <see cref="T:SkiaSharp.SKColor" /> into a <see cref="T:System.Windows.Media.Color" />.
     /// </summary>
     [ValueConversion(typeof(Color), typeof(SKColor))]
     public class SKColorToColorConverter : IValueConverter

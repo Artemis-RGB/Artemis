@@ -5,6 +5,7 @@ using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Dialog;
+using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Stylet;
 using FluentValidation;
 using Ninject.Extensions.Conventions;
@@ -85,6 +86,16 @@ namespace Artemis.UI.Ninject
                     .SelectAllClasses()
                     .InheritedFrom<IValidator>()
                     .BindAllInterfaces();
+            });
+
+            // Bind all shared UI services as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromAssemblyContaining<IArtemisSharedUIService>()
+                    .SelectAllClasses()
+                    .InheritedFrom<IArtemisSharedUIService>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
             });
         }
     }

@@ -19,6 +19,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
         public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
             ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255,0,0));
+            GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
             GradientTypeProperty = RegisterLayerProperty<GradientType>("Brush.GradientType", "Gradient type", "The type of color brush to draw");
             GradientTypeProperty.CanUseKeyframes = false;
 
@@ -36,7 +37,13 @@ namespace Artemis.Plugins.LayerBrushes.Color
             GradientTypeProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
         }
 
+        private void GradientTypePropertyOnValueChanged(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public LayerProperty<SKColor> ColorProperty { get; set; }
+        public LayerProperty<ColorGradient> GradientProperty { get; set; }
         public LayerProperty<GradientType> GradientTypeProperty { get; set; }
 
         public override void Update(double deltaTime)

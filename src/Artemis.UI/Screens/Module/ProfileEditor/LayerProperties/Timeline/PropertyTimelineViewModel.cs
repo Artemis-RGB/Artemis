@@ -102,12 +102,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateEndTime();
         }
 
-        private void OnSelectedProfileElementUpdated(object? sender, ProfileElementEventArgs e)
+        private void OnSelectedProfileElementUpdated(object sender, ProfileElementEventArgs e)
         {
             Update();
         }
 
-        private void OnPixelsPerSecondChanged(object? sender, EventArgs e)
+        private void OnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             UpdateKeyframePositions();
         }
