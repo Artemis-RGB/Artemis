@@ -21,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="Humanizer.Core" Version="2.7.9" />
+    <PackageReference Include="MaterialDesignExtensions" Version="3.0.0" />
     <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="SkiaSharp" Version="1.68.2-preview.29" />

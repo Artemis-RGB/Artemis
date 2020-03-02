@@ -18,14 +18,13 @@ namespace Artemis.Core.Services
     public class RgbService : IRgbService, IDisposable
     {
         private readonly List<IRGBDevice> _loadedDevices;
-        private readonly List<IRGBDeviceProvider> _loadedDeviceProviders;
         private readonly ILogger _logger;
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _sampleSizeSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
         private readonly TimerUpdateTrigger _updateTrigger;
         private ListLedGroup _surfaceLedGroup;
-        
+
         internal RgbService(ILogger logger, ISettingsService settingsService)
         {
             _logger = logger;
@@ -40,7 +39,6 @@ namespace Artemis.Core.Services
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
             _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
             _loadedDevices = new List<IRGBDevice>();
-            _loadedDeviceProviders = new List<IRGBDeviceProvider>();
             _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(_updateTrigger);
         }
@@ -56,15 +54,18 @@ namespace Artemis.Core.Services
 
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
-            if (_loadedDeviceProviders.Contains(deviceProvider))
-                return;
-
-            Surface.LoadDevices(deviceProvider);
-            _loadedDeviceProviders.Add(deviceProvider);
+            try
+            {
+                Surface.LoadDevices(deviceProvider, RGBDeviceType.All, false, true);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Exception during device loading for device provider {deviceProvider}", deviceProvider.GetType().Name);
+            }
 
             if (deviceProvider.Devices == null)
             {
-                _logger.Warning("RgbDevice provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
+                _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
 
@@ -78,12 +79,6 @@ namespace Artemis.Core.Services
                 else
                     OnDeviceReloaded(new DeviceEventArgs(surfaceDevice));
             }
-        }
-
-        public void RemoveDeviceProvider(IRGBDeviceProvider deviceProvider)
-        {
-            if (!_loadedDeviceProviders.Contains(deviceProvider))
-                return;
         }
 
         public void Dispose()

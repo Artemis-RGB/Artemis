@@ -24,6 +24,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
     </ProjectReference>

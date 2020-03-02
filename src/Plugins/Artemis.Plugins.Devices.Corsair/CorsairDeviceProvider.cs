@@ -27,7 +27,6 @@ namespace Artemis.Plugins.Devices.Corsair
 
         public override void DisablePlugin()
         {
-            _rgbService.RemoveDeviceProvider(RgbDeviceProvider);
         }
 
         public override void Dispose()
