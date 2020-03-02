@@ -43,6 +43,18 @@ namespace Artemis.Core.Services.Interfaces
         void UnloadPlugin(PluginInfo pluginInfo);
 
         /// <summary>
+        ///     Enables the provided plugin
+        /// </summary>
+        /// <param name="plugin"></param>
+        void EnablePlugin(Plugin plugin);
+
+        /// <summary>
+        ///     Disables the provided plugin
+        /// </summary>
+        /// <param name="plugin"></param>
+        void DisablePlugin(Plugin plugin);
+
+        /// <summary>
         ///     Finds the plugin info related to the plugin
         /// </summary>
         /// <param name="plugin">The plugin you want to find the plugin info for</param>

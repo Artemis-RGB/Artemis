@@ -10,6 +10,8 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Plugins;
+using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 using Ninject;
@@ -27,13 +29,15 @@ namespace Artemis.Core.Services
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
+        private readonly IPluginRepository _pluginRepository;
         private readonly List<PluginInfo> _plugins;
         private IKernel _childKernel;
 
-        internal PluginService(IKernel kernel, ILogger logger)
+        internal PluginService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
         {
             _kernel = kernel;
             _logger = logger;
+            _pluginRepository = pluginRepository;
             _plugins = new List<PluginInfo>();
 
             // Ensure the plugins directory exists
@@ -146,6 +150,18 @@ namespace Artemis.Core.Services
                 // Activate plugins after they are all loaded
                 foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
                 {
+                    if (!pluginInfo.PluginEntity.LastEnableSuccessful)
+                    {
+                        pluginInfo.Enabled = false;
+                        _logger.Warning("Plugin failed to load last time, disabling it now to avoid instability. Plugin info: {pluginInfo}", pluginInfo);
+                        continue;
+                    }
+
+                    // Mark this as false until the plugin enabled successfully and save it in case the plugin drags us down into a crash
+                    pluginInfo.PluginEntity.LastEnableSuccessful = false;
+                    _pluginRepository.SavePlugin(pluginInfo.PluginEntity);
+
+                    var threwException = false;
                     try
                     {
                         pluginInfo.Instance.EnablePlugin();
@@ -153,6 +169,15 @@ namespace Artemis.Core.Services
                     catch (Exception e)
                     {
                         _logger.Warning(new ArtemisPluginException(pluginInfo, "Failed to load enable plugin", e), "Plugin exception");
+                        pluginInfo.Enabled = false;
+                        threwException = true;
+                    }
+
+                    // We got this far so the plugin enabled and we didn't crash horribly, yay
+                    if (!threwException)
+                    {
+                        pluginInfo.PluginEntity.LastEnableSuccessful = true;
+                        _pluginRepository.SavePlugin(pluginInfo.PluginEntity);
                     }
 
                     OnPluginEnabled(new PluginEventArgs(pluginInfo));
@@ -191,8 +216,13 @@ namespace Artemis.Core.Services
                 if (_plugins.Contains(pluginInfo))
                     UnloadPlugin(pluginInfo);
 
-                // TODO Just temporarily until settings are in place
-                pluginInfo.Enabled = true;
+                var pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
+                if (pluginEntity == null)
+                    pluginEntity = new PluginEntity {PluginGuid = pluginInfo.Guid, IsEnabled = true, LastEnableSuccessful = true};
+                
+                pluginInfo.PluginEntity = pluginEntity;
+                pluginInfo.Enabled = pluginEntity.IsEnabled;
+
                 var mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
                 if (!File.Exists(mainFile))
                     throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
@@ -275,6 +305,49 @@ namespace Artemis.Core.Services
 
                 OnPluginUnloaded(new PluginEventArgs(pluginInfo));
             }
+        }
+
+        public void EnablePlugin(Plugin plugin)
+        {
+            plugin.PluginInfo.Enabled = true;
+            plugin.PluginInfo.PluginEntity.IsEnabled = true;
+            plugin.PluginInfo.PluginEntity.LastEnableSuccessful = false;
+            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+            var threwException = false;
+            try
+            {
+                plugin.EnablePlugin();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(new ArtemisPluginException(plugin.PluginInfo, "Failed to enable plugin", e), "Plugin exception");
+                plugin.PluginInfo.Enabled = false;
+                threwException = true;
+            }
+
+            // We got this far so the plugin enabled and we didn't crash horribly, yay
+            if (!threwException)
+            {
+                plugin.PluginInfo.PluginEntity.LastEnableSuccessful = true;
+                _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+            }
+            
+            OnPluginEnabled(new PluginEventArgs(plugin.PluginInfo));
+        }
+
+        public void DisablePlugin(Plugin plugin)
+        {
+            plugin.PluginInfo.Enabled = false;
+            plugin.PluginInfo.PluginEntity.IsEnabled = false;
+            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+            plugin.DisablePlugin();
+
+            // We got this far so the plugin enabled and we didn't crash horribly, yay
+            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+            OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }
 
         /// <inheritdoc />

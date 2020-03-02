@@ -186,10 +186,9 @@ namespace Artemis.UI.Screens.Settings
             foreach (var device in _surfaceService.ActiveSurface.Devices)
                 DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
 
-            // TODO: GetPluginsOfType isn't ideal here as it doesn't include disabled plugins
             Plugins.Clear();
-            foreach (var plugin in _pluginService.GetPluginsOfType<Plugin>())
-                Plugins.Add(new PluginSettingsViewModel(plugin, _windowManager, _dialogService));
+            foreach (var pluginInfo in _pluginService.GetAllPluginInfo())
+                Plugins.Add(new PluginSettingsViewModel(pluginInfo.Instance, _windowManager, _dialogService, _pluginService));
 
             base.OnInitialActivate();
         }

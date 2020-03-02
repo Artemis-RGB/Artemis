@@ -25,7 +25,7 @@
             </ComboBox>
         </StackPanel>
 
-        <controls:SideNavigation Items="{Binding SidebarItems}" WillSelectNavigationItemCommand="{s:Action SelectItem}" />
+        <controls:SideNavigation Items="{Binding SidebarItems}" SelectedItem="{Binding SelectedItem}" WillSelectNavigationItemCommand="{s:Action SelectItem}" />
     </StackPanel>
 
 </UserControl>

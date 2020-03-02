@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.Models;
+using Artemis.Plugins.Devices.WS281X.Settings;
 
 namespace Artemis.Plugins.Devices.WS281X.ViewModels
 {
     public class WS281XConfigurationViewModel : PluginConfigurationViewModel
     {
-        public WS281XConfigurationViewModel(Plugin plugin) : base(plugin)
+        private PluginSetting<List<DeviceDefinition>> _definitions;
+
+        public WS281XConfigurationViewModel(Plugin plugin, PluginSettings settings) : base(plugin)
         {
-            var WS281XInstance = RGB.NET.Devices.WS281X.WS281XDeviceProvider.Instance;
-            
+            _definitions = settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
         }
     }
 }

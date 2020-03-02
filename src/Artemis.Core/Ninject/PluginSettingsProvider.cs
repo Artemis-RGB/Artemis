@@ -9,11 +9,11 @@ namespace Artemis.Core.Ninject
 {
     internal class PluginSettingsProvider : Provider<PluginSettings>
     {
-        private readonly IPluginSettingRepository _pluginSettingRepository;
+        private readonly IPluginRepository _pluginRepository;
 
-        internal PluginSettingsProvider(IPluginSettingRepository pluginSettingRepository)
+        internal PluginSettingsProvider(IPluginRepository pluginRepository)
         {
-            _pluginSettingRepository = pluginSettingRepository;
+            _pluginRepository = pluginRepository;
         }
 
         protected override PluginSettings CreateInstance(IContext context)
@@ -25,7 +25,7 @@ namespace Artemis.Core.Ninject
             if (pluginInfo == null)
                 throw new ArtemisCoreException("A plugin needs to be initialized with PluginInfo as a parameter");
 
-            return new PluginSettings(pluginInfo, _pluginSettingRepository);
+            return new PluginSettings(pluginInfo, _pluginRepository);
         }
     }
 }

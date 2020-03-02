@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace Artemis.Storage.Entities
+namespace Artemis.Storage.Entities.Plugins
 {
+    /// <summary>
+    /// Represents the setting of a plugin, a plugin can have multiple settings
+    /// </summary>
     public class PluginSettingEntity
     {
         public Guid Id { get; set; }
