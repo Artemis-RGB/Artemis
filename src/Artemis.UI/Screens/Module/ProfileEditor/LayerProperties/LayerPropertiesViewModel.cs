@@ -23,6 +23,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly ICoreService _coreService;
         private readonly List<LayerPropertyViewModel> _layerPropertyViewModels;
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
+        private readonly IPropertyTreeVmFactory _propertyTreeVmFactory;
+        private readonly IPropertyTimelineVmFactory _propertyTimelineVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
 
@@ -37,14 +39,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _coreService = coreService;
             _settingsService = settingsService;
             _layerPropertyVmFactory = layerPropertyVmFactory;
+            _propertyTreeVmFactory = propertyTreeVmFactory;
+            _propertyTimelineVmFactory = propertyTimelineVmFactory;
             _layerPropertyViewModels = new List<LayerPropertyViewModel>();
 
             PixelsPerSecond = 31;
-            PropertyTree = propertyTreeVmFactory.Create(this);
-            PropertyTimeline = propertyTimelineVmFactory.Create(this);
-
-            PopulateProperties(_profileEditorService.SelectedProfileElement, null);
-        }
+            }
 
         public bool Playing { get; set; }
         public bool RepeatAfterLastKeyframe { get; set; }
@@ -71,6 +71,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         protected override void OnInitialActivate()
         {
+            PropertyTree = _propertyTreeVmFactory.Create(this);
+            PropertyTimeline = _propertyTimelineVmFactory.Create(this);
+
+            PopulateProperties(_profileEditorService.SelectedProfileElement, null);
+
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
             

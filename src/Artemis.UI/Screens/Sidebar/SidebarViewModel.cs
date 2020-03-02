@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.News;
@@ -18,13 +19,13 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarViewModel : PropertyChangedBase
+    public class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>
     {
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginService _pluginService;
 
-        public SidebarViewModel(IKernel kernel, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
+        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
             _kernel = kernel;
             _moduleVmFactory = moduleVmFactory;
@@ -36,6 +37,8 @@ namespace Artemis.UI.Screens.Sidebar
             SetupSidebar();
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
+
+            eventAggregator.Subscribe(this);
         }
 
         public BindableCollection<INavigationItem> SidebarItems { get; set; }
@@ -64,53 +67,6 @@ namespace Artemis.UI.Screens.Sidebar
 
             // Select the top item, which will be one of the defaults
             Task.Run(() => SelectSidebarItem(SidebarItems[1]));
-        }
-
-        private async Task SelectSidebarItem(INavigationItem sidebarItem)
-        {
-            // A module was selected if the dictionary contains the selected item
-            if (SidebarModules.ContainsKey(sidebarItem))
-                await ActivateModule(sidebarItem);
-            else if (sidebarItem is FirstLevelNavigationItem navigationItem)
-            {
-                if (navigationItem.Label == "Home")
-                    await ActivateViewModel<HomeViewModel>();
-                else if (navigationItem.Label == "News")
-                    await ActivateViewModel<NewsViewModel>();
-                else if (navigationItem.Label == "Workshop")
-                    await ActivateViewModel<WorkshopViewModel>();
-                else if (navigationItem.Label == "Surface Editor")
-                    await ActivateViewModel<SurfaceEditorViewModel>();
-                else if (navigationItem.Label == "Settings")
-                    await ActivateViewModel<SettingsViewModel>();
-            }
-            else if (await CloseCurrentItem())
-                SelectedItem = null;
-        }
-
-        private async Task<bool> CloseCurrentItem()
-        {
-            if (SelectedItem == null)
-                return true;
-
-            var canClose = await SelectedItem.CanCloseAsync();
-            if (!canClose)
-                return false;
-
-            SelectedItem.Close();
-            return true;
-        }
-
-        private async Task ActivateViewModel<T>()
-        {
-            if (await CloseCurrentItem())
-                SelectedItem = (IScreen) _kernel.Get<T>();
-        }
-
-        private async Task ActivateModule(INavigationItem sidebarItem)
-        {
-            if (await CloseCurrentItem())
-                SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view
@@ -151,6 +107,56 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarModules.Remove(existing.Key);
         }
 
+        private async Task SelectSidebarItem(INavigationItem sidebarItem)
+        {
+            // A module was selected if the dictionary contains the selected item
+            if (SidebarModules.ContainsKey(sidebarItem))
+                await ActivateModule(sidebarItem);
+            else if (sidebarItem is FirstLevelNavigationItem navigationItem)
+                await ActivateViewModel(navigationItem.Label);
+            else if (await CloseCurrentItem())
+                SelectedItem = null;
+        }
+
+        private async Task<bool> CloseCurrentItem()
+        {
+            if (SelectedItem == null)
+                return true;
+
+            var canClose = await SelectedItem.CanCloseAsync();
+            if (!canClose)
+                return false;
+
+            SelectedItem.Close();
+            return true;
+        }
+
+        private async Task ActivateViewModel(string label)
+        {
+            if (label == "Home")
+                await ActivateViewModel<HomeViewModel>();
+            else if (label == "News")
+                await ActivateViewModel<NewsViewModel>();
+            else if (label == "Workshop")
+                await ActivateViewModel<WorkshopViewModel>();
+            else if (label == "Surface Editor")
+                await ActivateViewModel<SurfaceEditorViewModel>();
+            else if (label == "Settings")
+                await ActivateViewModel<SettingsViewModel>();
+        }
+
+        private async Task ActivateViewModel<T>()
+        {
+            if (await CloseCurrentItem())
+                SelectedItem = (IScreen) _kernel.Get<T>();
+        }
+
+        private async Task ActivateModule(INavigationItem sidebarItem)
+        {
+            if (await CloseCurrentItem())
+                SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
+        }
+
         #region Event handlers
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
@@ -163,6 +169,11 @@ namespace Artemis.UI.Screens.Sidebar
         {
             if (e.PluginInfo.Instance is Core.Plugins.Abstract.Module module)
                 RemoveModule(module);
+        }
+
+        public void Handle(RequestSelectSidebarItemEvent message)
+        {
+            Execute.OnUIThread(async () => await ActivateViewModel(message.Label));
         }
 
         #endregion

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Utilities;

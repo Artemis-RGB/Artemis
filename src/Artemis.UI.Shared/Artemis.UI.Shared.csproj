@@ -50,11 +50,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MaterialDesignExtensions">
-      <HintPath>..\..\..\..\.nuget\materialdesignextensions\3.0.0\lib\netcoreapp3.0\MaterialDesignExtensions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
   </ItemGroup>
 </Project>

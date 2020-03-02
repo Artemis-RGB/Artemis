@@ -7,6 +7,7 @@
                          xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                          xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                         xmlns:shared="clr-namespace:Artemis.UI.Shared"
                          mc:Ignorable="d"
                          Title="Gradient Editor"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -18,7 +19,41 @@
                          Icon="/Resources/Images/Logo/logo-512.png"
                          d:DesignHeight="450"
                          d:DesignWidth="800">
-    <Grid>
+    <StackPanel>
+        <materialDesign:Card >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
+                <materialDesign:PackIcon Kind="Crane" Width="80" Height="80" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 15">
+                    Gradient saving not implemented yet
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
+                    Soon you'll be able to store different gradients for usage throughout your profiles and quickly select them
+                </TextBlock>
+            </StackPanel>
+        </materialDesign:Card>
 
-    </Grid>
+        <materialDesign:Card>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Separator Grid.Row="1" Grid.ColumnSpan="4" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0 8 0" />
+
+                <Label Grid.Row="0" Grid.Column="0">Color:</Label>
+                <shared:ColorPicker x:Name="CurrentColor" Grid.Row="0" Grid.Column="1" />
+
+                <Label Grid.Row="0" Grid.Column="2">Location:</Label>
+                <TextBox x:Name="CurrentLocation" Grid.Row="0" Grid.Column="3" />
+            </Grid>
+        </materialDesign:Card>
+    </StackPanel>
 </controls:MaterialWindow>

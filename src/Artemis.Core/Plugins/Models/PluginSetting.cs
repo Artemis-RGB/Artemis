@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 
@@ -10,13 +11,13 @@ namespace Artemis.Core.Plugins.Models
         // ReSharper disable once NotAccessedField.Local
         private readonly PluginInfo _pluginInfo;
         private readonly PluginSettingEntity _pluginSettingEntity;
-        private readonly IPluginSettingRepository _pluginSettingRepository;
+        private readonly IPluginRepository _pluginRepository;
         private T _value;
 
-        internal PluginSetting(PluginInfo pluginInfo, IPluginSettingRepository pluginSettingRepository, PluginSettingEntity pluginSettingEntity)
+        internal PluginSetting(PluginInfo pluginInfo, IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity)
         {
             _pluginInfo = pluginInfo;
-            _pluginSettingRepository = pluginSettingRepository;
+            _pluginRepository = pluginRepository;
             _pluginSettingEntity = pluginSettingEntity;
 
             Name = pluginSettingEntity.Name;
@@ -73,7 +74,7 @@ namespace Artemis.Core.Plugins.Models
                 return;
 
             _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
-            _pluginSettingRepository.Save(_pluginSettingEntity);
+            _pluginRepository.SaveSetting(_pluginSettingEntity);
         }
 
         public event EventHandler<EventArgs> SettingChanged;

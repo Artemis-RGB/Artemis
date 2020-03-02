@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
 using Ninject;
 using Stylet;
@@ -9,15 +10,16 @@ namespace Artemis.UI.Screens
 {
     public class TrayViewModel : Screen
     {
-        private readonly ICoreService _coreService;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
+        private readonly IEventAggregator _eventAggregator;
+        private SplashViewModel _splashViewModel;
 
-        public TrayViewModel(IKernel kernel, IWindowManager windowManager, ICoreService coreService, ISettingsService settingsService)
+        public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
         {
             _kernel = kernel;
             _windowManager = windowManager;
-            _coreService = coreService;
+            _eventAggregator = eventAggregator;
             CanShowRootViewModel = true;
 
             var autoRunning = Bootstrapper.StartupArguments.Contains("-autorun");
@@ -25,7 +27,7 @@ namespace Artemis.UI.Screens
             if (!autoRunning || showOnAutoRun)
             {
                 ShowSplashScreen();
-                _coreService.Initialized += (sender, args) => TrayBringToForeground();
+                coreService.Initialized += (sender, args) => TrayBringToForeground();
             }
         }
 
@@ -35,14 +37,22 @@ namespace Artemis.UI.Screens
         {
             if (!CanShowRootViewModel)
                 return;
-            CanShowRootViewModel = false;
 
+            CanShowRootViewModel = false;
             Execute.OnUIThread(() =>
             {
+                _splashViewModel?.RequestClose();
+                _splashViewModel = null;
                 var rootViewModel = _kernel.Get<RootViewModel>();
                 rootViewModel.Closed += RootViewModelOnClosed;
                 _windowManager.ShowWindow(rootViewModel);
             });
+        }
+
+        public void TrayActivateSidebarItem(string sidebarItem)
+        {
+            TrayBringToForeground();
+            _eventAggregator.Publish(new RequestSelectSidebarItemEvent(sidebarItem));
         }
 
         public void TrayExit()
@@ -54,8 +64,8 @@ namespace Artemis.UI.Screens
         {
             Execute.OnUIThread(() =>
             {
-                var splashViewModel = _kernel.Get<SplashViewModel>();
-                _windowManager.ShowWindow(splashViewModel);
+                _splashViewModel = _kernel.Get<SplashViewModel>();
+                _windowManager.ShowWindow(_splashViewModel);
             });
         }
 

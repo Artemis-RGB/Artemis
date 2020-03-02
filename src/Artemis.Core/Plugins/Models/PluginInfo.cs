@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Storage.Entities.Plugins;
 using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 
@@ -71,6 +72,12 @@ namespace Artemis.Core.Plugins.Models
         /// </summary>
         [JsonIgnore]
         internal Assembly Assembly { get; set; }
+
+        /// <summary>
+        ///     The entity representing the plugin
+        /// </summary>
+        [JsonIgnore]
+        internal PluginEntity PluginEntity { get; set; }
 
         public override string ToString()
         {

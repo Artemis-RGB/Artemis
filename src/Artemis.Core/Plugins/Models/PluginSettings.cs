@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Storage.Entities;
+using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 
@@ -12,13 +13,13 @@ namespace Artemis.Core.Plugins.Models
     public class PluginSettings
     {
         private readonly PluginInfo _pluginInfo;
-        private readonly IPluginSettingRepository _pluginSettingRepository;
+        private readonly IPluginRepository _pluginRepository;
         private readonly Dictionary<string, object> _settingEntities;
 
-        internal PluginSettings(PluginInfo pluginInfo, IPluginSettingRepository pluginSettingRepository)
+        internal PluginSettings(PluginInfo pluginInfo, IPluginRepository pluginRepository)
         {
             _pluginInfo = pluginInfo;
-            _pluginSettingRepository = pluginSettingRepository;
+            _pluginRepository = pluginRepository;
             _settingEntities = new Dictionary<string, object>();
         }
 
@@ -37,15 +38,15 @@ namespace Artemis.Core.Plugins.Models
                 if (_settingEntities.ContainsKey(name))
                     return (PluginSetting<T>) _settingEntities[name];
                 // Try to find in database
-                var settingEntity = _pluginSettingRepository.GetByNameAndPluginGuid(name, _pluginInfo.Guid);
+                var settingEntity = _pluginRepository.GetSettingByNameAndGuid(name, _pluginInfo.Guid);
                 // If not found, create a new one
                 if (settingEntity == null)
                 {
                     settingEntity = new PluginSettingEntity {Name = name, PluginGuid = _pluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
-                    _pluginSettingRepository.Add(settingEntity);
+                    _pluginRepository.AddSetting(settingEntity);
                 }
 
-                var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginSettingRepository, settingEntity);
+                var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginRepository, settingEntity);
                 _settingEntities.Add(name, pluginSetting);
                 return pluginSetting;
             }

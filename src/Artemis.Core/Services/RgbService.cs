@@ -61,6 +61,7 @@ namespace Artemis.Core.Services
             catch (Exception e)
             {
                 _logger.Error(e, "Exception during device loading for device provider {deviceProvider}", deviceProvider.GetType().Name);
+                throw e;
             }
 
             if (deviceProvider.Devices == null)
