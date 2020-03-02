@@ -33,13 +33,7 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="deviceProvider"></param>
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);
-
-        /// <summary>
-        ///     Removes the given device provider from the <see cref="Surface" /> by recreating it without the device provider
-        /// </summary>
-        /// <param name="deviceProvider"></param>
-        void RemoveDeviceProvider(IRGBDeviceProvider deviceProvider);
-
+        
         void Dispose();
 
         /// <summary>
