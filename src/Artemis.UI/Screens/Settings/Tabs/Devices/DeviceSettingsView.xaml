@@ -41,8 +41,8 @@
                 <materialDesign:PackIcon Kind="AlarmLight" />
             </Button>
             <StackPanel Grid.Row="1" Margin="8 24 8 0">
-                <TextBlock FontWeight="Bold" Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
-                <TextBlock TextWrapping="Wrap" VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
+                <TextBlock TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
                     <Run Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
                     -
                     <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType, Mode=OneWay}" />

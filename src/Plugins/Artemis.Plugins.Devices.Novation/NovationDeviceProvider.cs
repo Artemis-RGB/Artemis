@@ -21,17 +21,5 @@ namespace Artemis.Plugins.Devices.Novation
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(NovationRGBDevice<>), sender, args);
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // NovationDeviceProvider.Instance.ResetDevices();
-            // NovationDeviceProvider.Instance.Dispose();
-        }
     }
 }

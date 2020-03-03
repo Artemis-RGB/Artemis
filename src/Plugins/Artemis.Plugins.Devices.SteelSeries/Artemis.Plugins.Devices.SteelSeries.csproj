@@ -21,6 +21,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="HidSharp" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
     </ProjectReference>

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -33,18 +34,10 @@ namespace Artemis.Plugins.Devices.Logitech
             if (_logger.IsEnabled(LogEventLevel.Debug))
                 LogDeviceIds();
         }
-
-        public override void DisablePlugin()
-        {
-        }
-
-        public override void Dispose()
-        {
-        }
-
+        
         private void LogDeviceIds()
         {
-            var devices = DeviceList.Local.GetHidDevices(VENDOR_ID).ToList();
+            var devices = DeviceList.Local.GetHidDevices(VENDOR_ID).DistinctBy(d => d.ProductID).ToList();
             _logger.Debug("Found {count} Logitech device(s)", devices.Count);
             foreach (var hidDevice in devices)
                 _logger.Debug("Found Logitech device {name} with PID {pid}", hidDevice.GetFriendlyName(), hidDevice.ProductID);

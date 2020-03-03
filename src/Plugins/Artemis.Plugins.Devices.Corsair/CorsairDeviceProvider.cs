@@ -24,16 +24,5 @@ namespace Artemis.Plugins.Devices.Corsair
             RGB.NET.Devices.Corsair.CorsairDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "CUESDK_2017.dll"));
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // CorsairDeviceProvider.Instance.ResetDevices();
-            // CorsairDeviceProvider.Instance.Dispose();
-        }
     }
 }

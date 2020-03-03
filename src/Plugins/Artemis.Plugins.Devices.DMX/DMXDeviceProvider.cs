@@ -24,18 +24,6 @@ namespace Artemis.Plugins.Devices.DMX
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // DMXDeviceProvider.Instance.ResetDevices();
-            // DMXDeviceProvider.Instance.Dispose();
-        }
-
         public override PluginConfigurationViewModel GetConfigurationViewModel()
         {
             return new DMXConfigurationViewModel(this);

@@ -24,17 +24,5 @@ namespace Artemis.Plugins.Devices.Razer
             RGB.NET.Devices.Razer.RazerDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "RzChromaSDK.dll"));
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // RazerDeviceProvider.Instance.ResetDevices();
-            // RazerDeviceProvider.Instance.Dispose();
-        }
     }
 }

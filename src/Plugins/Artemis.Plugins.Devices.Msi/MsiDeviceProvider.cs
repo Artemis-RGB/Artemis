@@ -24,17 +24,5 @@ namespace Artemis.Plugins.Devices.Msi
             RGB.NET.Devices.Msi.MsiDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "MysticLight_SDK.dll"));
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // MsiDeviceProvider.Instance.ResetDevices();
-            // MsiDeviceProvider.Instance.Dispose();
-        }
     }
 }

@@ -93,7 +93,14 @@ namespace Artemis.UI
             logger.Fatal(e.Exception, "Unhandled exception");
 
             var dialogService = Kernel.Get<IDialogService>();
-            dialogService.ShowExceptionDialog("Artemis encountered an error", e.Exception);
+            try
+            {
+                dialogService.ShowExceptionDialog("Artemis encountered an error", e.Exception);
+            }
+            catch (Exception)
+            {
+                // We did our best eh.. trap exceptions during exception display here to avoid an infinite loop
+            }
 
             // Don't shut down, is that a good idea? Depends on the exception of course..
             e.Handled = true;
