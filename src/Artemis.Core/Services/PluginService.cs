@@ -348,7 +348,7 @@ namespace Artemis.Core.Services
             // Device providers cannot be disabled at runtime, restart the application
             if (plugin is DeviceProvider)
             {
-                CurrentProcessUtilities.RestartSelf();
+                CurrentProcessUtilities.Shutdown(2, true);
                 return;
             }
 
