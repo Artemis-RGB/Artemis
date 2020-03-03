@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Utilities;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
 using Ninject;
@@ -57,7 +58,7 @@ namespace Artemis.UI.Screens
 
         public void TrayExit()
         {
-            Application.Current.Shutdown();
+            CurrentProcessUtilities.Shutdown(2, false);
         }
 
         private void ShowSplashScreen()
