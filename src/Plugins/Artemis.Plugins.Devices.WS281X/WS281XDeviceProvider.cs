@@ -27,6 +27,9 @@ namespace Artemis.Plugins.Devices.WS281X
         public override void EnablePlugin()
         {
             var definitions = Settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
+            if (definitions.Value == null)
+                definitions.Value = new List<DeviceDefinition>();
+
             foreach (var deviceDefinition in definitions.Value)
             {
                 switch (deviceDefinition.Type)

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
@@ -10,6 +12,7 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
@@ -219,7 +222,7 @@ namespace Artemis.Core.Services
                 var pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
                 if (pluginEntity == null)
                     pluginEntity = new PluginEntity {PluginGuid = pluginInfo.Guid, IsEnabled = true, LastEnableSuccessful = true};
-                
+
                 pluginInfo.PluginEntity = pluginEntity;
                 pluginInfo.Enabled = pluginEntity.IsEnabled;
 
@@ -332,7 +335,7 @@ namespace Artemis.Core.Services
                 plugin.PluginInfo.PluginEntity.LastEnableSuccessful = true;
                 _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
             }
-            
+
             OnPluginEnabled(new PluginEventArgs(plugin.PluginInfo));
         }
 
@@ -342,11 +345,15 @@ namespace Artemis.Core.Services
             plugin.PluginInfo.PluginEntity.IsEnabled = false;
             _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
 
+            // Device providers cannot be disabled at runtime, restart the application
+            if (plugin is DeviceProvider)
+            {
+                CurrentProcessUtilities.RestartSelf();
+                return;
+            }
+
             plugin.DisablePlugin();
-
-            // We got this far so the plugin enabled and we didn't crash horribly, yay
-            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
-
+            
             OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }
 

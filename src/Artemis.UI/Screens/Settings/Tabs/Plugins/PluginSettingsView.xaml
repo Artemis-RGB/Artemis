@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Tabs.Plugins.PluginSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Plugins"
+             d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <materialDesign:Card Width="400">
+        <Grid Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0 10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <materialDesign:PackIcon Kind="{Binding Icon}" Width="48" Height="48" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding PluginInfo.Name}" Grid.Column="1" Grid.Row="0" />
+                <TextBlock Grid.Column="1"
+                           Grid.Row="1"
+                           TextWrapping="Wrap"
+                           Text="{Binding PluginInfo.Description}"
+                           Style="{StaticResource MaterialDesignTextBlock}"
+                           Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
+            </Grid>
+
+            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4" s:View.ActionTarget="{Binding}" Command="{s:Action OpenSettings}">
+                    Settings
+                </Button>
+                <!-- <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4"> -->
+                <!--     Details -->
+                <!-- </Button> -->
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8">
+                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
+                    Plugin enabled
+                </CheckBox>
+            </StackPanel>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>

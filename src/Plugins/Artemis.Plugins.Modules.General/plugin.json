@@ -1,6 +1,7 @@
 ﻿{
   "Guid": "0de2991a-d7b8-4f61-ae4e-6623849215b5",
   "Name": "General module",
+  "Description": "A general profile-enabled module for every-day use.",
   "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.Modules.General.dll"
 }

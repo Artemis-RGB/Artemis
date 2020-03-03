@@ -1,6 +1,7 @@
 ﻿{
   "Guid": "10049953-94c1-4102-988b-9e4f0b64c232",
   "Name": "Roccat Devices",
+  "Description": "Not yet implemented, sorry!",
   "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.Devices.Roccat.dll"
 }

@@ -1,6 +1,7 @@
 ﻿{
   "Guid": "61cbbf01-8d69-4ede-a972-f3f269da66d9",
   "Name": "Noise layer brush",
+  "Description": "An OpenSimplex noise layer-brush providing configurable randomized and animated noise.",
   "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.LayerBrushes.Noise.dll"
 }

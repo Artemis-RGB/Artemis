@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Launchpad Mini</Name>
+  <Description>Launchpad Mini (8x8-Pad Grid)</Description>
+  <Type>LedMatrix</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Novation</Vendor>
+  <Model>Launchpad S</Model>
+  <Width>185</Width>
+  <Height>185</Height>
+  <LedUnitWidth>14</LedUnitWidth>
+  <LedUnitHeight>14</LedUnitHeight>
+  <ImageBasePath>Images\Novation\Launchpads</ImageBasePath>
+  <DeviceImage>LaunchpadMini.png</DeviceImage>
+  <Leds>
+    <Led Id="Custom1">
+      <Shape>Circle</Shape>
+      <X>16</X>
+      <Y>18</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom2">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom3">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom4">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom5">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom6">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom7">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom8">
+      <Shape>Circle</Shape>
+      <X>+8</X>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="LedMatrix1">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix2">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix3">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix4">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix5">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix6">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix7">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix8">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix9">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix10">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix11">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix12">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix13">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix14">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix15">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix16">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix17">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix18">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix19">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix20">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix21">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix22">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix23">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix24">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix25">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix26">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix27">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix28">
+      <Shape>M0,0 L0,1 L0.75,1 L1,0.75 L1,0 Z</Shape>
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix29">
+      <Shape>M0,0 L0,0.75 L0.25,1 L1,1 L1,0 Z</Shape>
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix30">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix31">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix32">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix33">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix34">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix35">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix36">
+      <Shape>M0,0 L0,1 L1,1 L1,0.25 L0.75,0 Z</Shape>
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix37">
+      <Shape>M0,0.25 L0,1 L1,1 L1,0 L0.25,0 Z</Shape>
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix38">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix39">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix40">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix41">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix42">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix43">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix44">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix45">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix46">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix47">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix48">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix49">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix50">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix51">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix52">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix53">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix54">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix55">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix56">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix57">
+      <X>14</X>
+      <Y>+4</Y>
+    </Led>
+    <Led Id="LedMatrix58">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix59">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix60">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix61">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix62">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix63">
+      <X>+4</X>
+    </Led>
+    <Led Id="LedMatrix64">
+      <X>+4</X>
+    </Led>
+    <Led Id="Custom9">
+      <Shape>Circle</Shape>
+      <X>+4</X>
+      <Y>34</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom10">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom11">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom12">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom13">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom14">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom15">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+    <Led Id="Custom16">
+      <Shape>Circle</Shape>
+      <X>~</X>
+      <Y>+8</Y>
+      <Width>10mm</Width>
+      <Height>10mm</Height>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout Layout="Default">
+      <LedImages>
+        <LedImage Id="Custom1" Image="Buttons\Round.png" />
+        <LedImage Id="Custom2" Image="Buttons\Round.png" />
+        <LedImage Id="Custom3" Image="Buttons\Round.png" />
+        <LedImage Id="Custom4" Image="Buttons\Round.png" />
+        <LedImage Id="Custom5" Image="Buttons\Round.png" />
+        <LedImage Id="Custom6" Image="Buttons\Round.png" />
+        <LedImage Id="Custom7" Image="Buttons\Round.png" />
+        <LedImage Id="Custom8" Image="Buttons\Round.png" />
+        <LedImage Id="Custom9" Image="Buttons\Round.png" />
+        <LedImage Id="Custom10" Image="Buttons\Round.png" />
+        <LedImage Id="Custom11" Image="Buttons\Round.png" />
+        <LedImage Id="Custom12" Image="Buttons\Round.png" />
+        <LedImage Id="Custom13" Image="Buttons\Round.png" />
+        <LedImage Id="Custom14" Image="Buttons\Round.png" />
+        <LedImage Id="Custom15" Image="Buttons\Round.png" />
+        <LedImage Id="Custom16" Image="Buttons\Round.png" />
+        <LedImage Id="LedMatrix1" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix2" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix3" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix4" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix5" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix6" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix7" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix8" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix9" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix10" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix11" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix12" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix13" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix14" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix15" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix16" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix17" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix18" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix19" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix20" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix21" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix22" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix23" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix24" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix25" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix26" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix27" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix28" Image="Buttons\GridCenter1.png" />
+        <LedImage Id="LedMatrix29" Image="Buttons\GridCenter2.png" />
+        <LedImage Id="LedMatrix30" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix31" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix32" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix33" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix34" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix35" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix36" Image="Buttons\GridCenter3.png" />
+        <LedImage Id="LedMatrix37" Image="Buttons\GridCenter4.png" />
+        <LedImage Id="LedMatrix38" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix39" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix40" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix41" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix42" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix43" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix44" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix45" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix46" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix47" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix48" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix49" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix50" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix51" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix52" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix53" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix54" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix55" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix56" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix57" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix58" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix59" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix60" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix61" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix62" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix63" Image="Buttons\Grid.png" />
+        <LedImage Id="LedMatrix64" Image="Buttons\Grid.png" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

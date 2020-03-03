@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
@@ -10,36 +13,65 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     public class PluginSettingsViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
-        private readonly Plugin _plugin;
         private readonly IPluginService _pluginService;
         private readonly IWindowManager _windowManager;
 
         public PluginSettingsViewModel(Plugin plugin, IWindowManager windowManager, IDialogService dialogService, IPluginService pluginService)
         {
-            _plugin = plugin;
+            Plugin = plugin;
+            PluginInfo = plugin.PluginInfo;
+
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginService = pluginService;
         }
 
-        public string Type => _plugin.GetType().BaseType?.Name ?? _plugin.GetType().Name;
-        public string Name => _plugin.PluginInfo.Name;
-        public string Description => _plugin.PluginInfo.Description;
-        public Version Version => _plugin.PluginInfo.Version;
+        public Plugin Plugin { get; set; }
+        public PluginInfo PluginInfo { get; set; }
+
+        public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
+
+        public PackIconKind Icon => GetIconKind();
+
+        private PackIconKind GetIconKind()
+        {
+            if (PluginInfo.Icon != null)
+            {
+                var parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out var iconEnum);
+                if (parsedIcon == false)
+                    return PackIconKind.QuestionMarkCircle;
+            }
+
+            switch (Plugin)
+            {
+                case DataModelExpansion _:
+                    return PackIconKind.TableAdd;
+                case DeviceProvider _:
+                    return PackIconKind.Devices;
+                case ProfileModule _:
+                    return PackIconKind.VectorRectangle;
+                case Core.Plugins.Abstract.Module _:
+                    return PackIconKind.GearBox;
+                case LayerBrushProvider _:
+                    return PackIconKind.Brush;
+            }
+
+            return PackIconKind.Plugin;
+        }
 
         public bool IsEnabled
         {
-            get => _plugin.PluginInfo.Enabled;
+            get => PluginInfo.Enabled;
             set => Task.Run(() => UpdateEnabled(value));
         }
 
-        public bool CanOpenSettings => IsEnabled && _plugin.HasConfigurationViewModel;
+        public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;
 
         public async Task OpenSettings()
         {
             try
             {
-                var configurationViewModel = _plugin.GetConfigurationViewModel();
+                var configurationViewModel = Plugin.GetConfigurationViewModel();
                 if (configurationViewModel != null)
                     _windowManager.ShowDialog(new PluginSettingsWindowViewModel(configurationViewModel));
             }
@@ -50,15 +82,33 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
-        private void UpdateEnabled(in bool enable)
+        private async Task UpdateEnabled(bool enable)
         {
-            if (_plugin.PluginInfo.Enabled == enable)
+            if (PluginInfo.Enabled == enable)
+            {
+                NotifyOfPropertyChange(() => IsEnabled);
                 return;
+            }
+
+            if (!enable && Plugin is DeviceProvider)
+            {
+                var confirm = await _dialogService.ShowConfirmDialog(
+                    "Disable device provider",
+                    "You are disabling a device provider, this requires that Artemis restarts, please confirm."
+                );
+                if (!confirm)
+                {
+                    NotifyOfPropertyChange(() => IsEnabled);
+                    return;
+                }
+            }
 
             if (enable)
-                _pluginService.EnablePlugin(_plugin);
+                _pluginService.EnablePlugin(Plugin);
             else
-                _pluginService.DisablePlugin(_plugin);
+                _pluginService.DisablePlugin(Plugin);
+
+            NotifyOfPropertyChange(() => IsEnabled);
         }
     }
 }

@@ -225,56 +225,28 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="PLUGINS" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
-            <DockPanel Margin="15">
-                <TextBlock DockPanel.Dock="Top">The list below shows all loaded plugins. If you're missing something, view your logs folder.</TextBlock>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <DataGrid Margin="0 8 0 0"
-                              ItemsSource="{Binding Plugins}"
-                              CanUserSortColumns="True"
-                              CanUserAddRows="False"
-                              AutoGenerateColumns="False"
-                              materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                              materialDesign:DataGridAssist.ColumnHeaderPadding="8">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Type}" Header="Type" IsReadOnly="True" />
-                            <DataGridTextColumn Binding="{Binding Name}" Header="Name" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Description}" Header="Description" IsReadOnly="True" Width="*" />
-                            <DataGridTextColumn Binding="{Binding Version}" Header="Version" IsReadOnly="True" />
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate >
-                                        <Button Style="{StaticResource MaterialDesignOutlinedButton}" s:View.ActionTarget="{Binding}" Command="{s:Action OpenSettings}">
-                                            CONFIGURE
-                                        </Button>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridCheckBoxColumn Header="Enabled"
-                                                    Binding="{Binding IsEnabled}"
-                                                    ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-                                                    EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                                <DataGridCheckBoxColumn.HeaderStyle>
-                                    <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                        <Setter Property="HorizontalAlignment" Value="Right" />
-                                        <Setter Property="ContentTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding}" TextAlignment="Right" />
-                                                </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </DataGridCheckBoxColumn.HeaderStyle>
-                            </DataGridCheckBoxColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </ScrollViewer>
-            </DockPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">
+                <DockPanel Margin="15" MaxWidth="1230" HorizontalAlignment="Center">
+                    <TextBlock DockPanel.Dock="Top">The list below shows all loaded plugins. If you're missing something, view your logs folder.</TextBlock>
+                    <ItemsControl ItemsSource="{Binding Plugins}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl xaml:View.Model="{Binding}" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </ScrollViewer>
         </TabItem>
         <TabItem Header="DEVICES" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
-            <DockPanel Margin="15">
-                <TextBlock DockPanel.Dock="Top">Below you view and manage the devices that were detected by Artemis</TextBlock>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">
+                <DockPanel Margin="15" MaxWidth="1230" HorizontalAlignment="Center">
+                    <TextBlock DockPanel.Dock="Top">Below you view and manage the devices that were detected by Artemis</TextBlock>
                     <ItemsControl ItemsSource="{Binding DeviceSettingsViewModels}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -287,8 +259,8 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </ScrollViewer>
-            </DockPanel>
+                </DockPanel>
+            </ScrollViewer>
         </TabItem>
     </TabControl>
 </UserControl>

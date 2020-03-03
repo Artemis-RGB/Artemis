@@ -23,17 +23,5 @@ namespace Artemis.Plugins.Devices.SteelSeries
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(SteelSeriesRGBDevice), sender, args);
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // SteelSeriesDeviceProvider.Instance.ResetDevices();
-            // SteelSeriesDeviceProvider.Instance.Dispose();
-        }
     }
 }

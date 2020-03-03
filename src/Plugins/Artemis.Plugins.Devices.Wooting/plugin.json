@@ -1,6 +1,7 @@
 ﻿{
   "Guid": "e70fd5ba-9881-480a-8ff6-078ed5f747fa",
   "Name": "Wooting Devices",
+  "Description": "Allows Artemis to control lighting on Wooting keyboards. Will eventually also expose analog key data.",
   "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.Devices.Wooting.dll"
 }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -23,18 +24,6 @@ namespace Artemis.Plugins.Devices.CoolerMaster
             RGB.NET.Devices.CoolerMaster.CoolerMasterDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "CMSDK.dll"));
             RGB.NET.Devices.CoolerMaster.CoolerMasterDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "CMSDK.dll"));
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
-        }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // CoolerMasterDeviceProvider.Instance.ResetDevices();
-            // CoolerMasterDeviceProvider.Instance.Dispose();
         }
     }
 }

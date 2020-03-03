@@ -37,7 +37,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
             GradientTypeProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
         }
 
-        private void GradientTypePropertyOnValueChanged(object? sender, EventArgs e)
+        private void GradientTypePropertyOnValueChanged(object sender, EventArgs e)
         {
             throw new NotImplementedException();
         }

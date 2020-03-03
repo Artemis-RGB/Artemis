@@ -100,12 +100,19 @@ namespace Artemis.UI.Shared.Services.Dialog
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)
         {
-            var view = _viewManager.CreateViewForModel(viewModel);
-            _viewManager.BindViewToModel(view, viewModel);
+            Task<object> result = null;
+            await Execute.OnUIThreadAsync(() =>
+            {
+                var view = _viewManager.CreateViewForModel(viewModel);
+                _viewManager.BindViewToModel(view, viewModel);
+                
+                if (identifier == null)
+                    result = DialogHost.Show(view, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
+                else
+                    result = DialogHost.Show(view, identifier, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
+            });
 
-            if (identifier == null)
-                return await DialogHost.Show(view, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
-            return await DialogHost.Show(view, identifier, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
+            return await result;
         }
     }
 }

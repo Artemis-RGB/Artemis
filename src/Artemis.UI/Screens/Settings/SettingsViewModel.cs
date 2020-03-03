@@ -10,6 +10,7 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Core.Utilities;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
@@ -205,7 +206,7 @@ namespace Artemis.UI.Screens.Settings
             try
             {
                 var autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-                var executableFile = Process.GetCurrentProcess().MainModule.FileName;
+                var executableFile = CurrentProcessUtilities.GetCurrentLocation();
 
                 if (File.Exists(autoRunFile))
                     File.Delete(autoRunFile);

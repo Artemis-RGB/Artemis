@@ -29,6 +29,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Sanford.Multimedia.Midi" Version="6.6.0">
+      <NoWarn>NU1701</NoWarn>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
     </ProjectReference>

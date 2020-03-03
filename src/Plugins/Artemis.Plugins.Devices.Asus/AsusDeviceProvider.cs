@@ -21,17 +21,5 @@ namespace Artemis.Plugins.Devices.Asus
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(AsusRGBDevice<>), sender, args);
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // AsusDeviceProvider.Instance.ResetDevices();
-            // AsusDeviceProvider.Instance.Dispose();
-        }
     }
 }
