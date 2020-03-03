@@ -54,10 +54,10 @@
 
             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4" s:View.ActionTarget="{Binding}" Command="{s:Action OpenSettings}">
-                    Settings
+                    SETTINGS
                 </Button>
                 <!-- <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4"> -->
-                <!--     Details -->
+                <!--     SETTINGS -->
                 <!-- </Button> -->
             </StackPanel>
             <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8">
