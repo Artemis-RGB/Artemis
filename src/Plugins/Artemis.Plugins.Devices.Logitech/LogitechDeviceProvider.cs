@@ -49,7 +49,6 @@ namespace Artemis.Plugins.Devices.Logitech
                 catch (Exception)
                 {
                     _logger.Debug("Found Logitech device with PID {pid}", hidDevice.ProductID);
-                    throw;
                 }
             }
         }
