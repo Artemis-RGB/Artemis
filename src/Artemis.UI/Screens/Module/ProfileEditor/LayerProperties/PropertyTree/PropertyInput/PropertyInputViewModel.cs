@@ -6,7 +6,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
 {
-    public abstract class PropertyInputViewModel : PropertyChangedBase
+    public abstract class PropertyInputViewModel : PropertyChangedBase, IDisposable
     {
         protected PropertyInputViewModel(IProfileEditorService profileEditorService)
         {
@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
                 throw new ArtemisUIException($"This input VM does not support the provided type {type.Name}");
 
             LayerPropertyViewModel = layerPropertyViewModel;
-            layerPropertyViewModel.LayerProperty.ValueChanged += (sender, args) => Update();
+            LayerPropertyViewModel.LayerProperty.ValueChanged += LayerPropertyOnValueChanged;
             Update();
 
             Initialized = true;
@@ -49,6 +49,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         protected virtual void OnInitialized()
         {
+        }
+        
+        private void LayerPropertyOnValueChanged(object? sender, EventArgs e)
+        {
+            Update();
         }
 
         private void UpdateInputValue(object value)
@@ -77,5 +82,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         }
 
         #endregion
+
+        public virtual void Dispose()
+        {
+            if (LayerPropertyViewModel != null)
+                LayerPropertyViewModel.LayerProperty.ValueChanged -= LayerPropertyOnValueChanged;
+        }
     }
 }
