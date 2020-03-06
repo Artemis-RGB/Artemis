@@ -31,6 +31,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         {
             _profileEditorService.CurrentTimeChanged -= OnCurrentTimeChanged;
             _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+
+            foreach (var propertyTreeItemViewModel in PropertyTreeItemViewModels)
+                propertyTreeItemViewModel.Dispose();
         }
 
         public void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)

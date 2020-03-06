@@ -45,10 +45,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             foreach (var child in Children.ToList())
             {
                 if (child.LayerPropertyViewModel == layerPropertyViewModel)
+                {
                     Children.Remove(child);
+                    child.Dispose();
+                }
                 else
                     child.RemoveLayerProperty(layerPropertyViewModel);
             }
+        }
+
+        public override void Dispose()
+        {
+            foreach (var child in Children.ToList())
+                child.Dispose();
         }
     }
 }

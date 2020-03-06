@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
@@ -21,7 +22,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             _pluginService = pluginService;
             EnumValues = new BindableCollection<ValueDescription>();
 
-            _pluginService.PluginLoaded += (sender, args) => UpdateEnumValues();
+            _pluginService.PluginLoaded += PluginServiceOnPluginLoaded;
         }
 
         public BindableCollection<ValueDescription> EnumValues { get; }
@@ -59,10 +60,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
             NotifyOfPropertyChange(() => BrushInputValue);
         }
 
+        public override void Dispose()
+        {
+            _pluginService.PluginLoaded -= PluginServiceOnPluginLoaded;
+            base.Dispose();
+        }
+
         protected override void OnInitialized()
         {
             UpdateEnumValues();
             base.OnInitialized();
+        }
+
+        private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
+        {
+            UpdateEnumValues();
         }
     }
 }

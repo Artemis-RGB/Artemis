@@ -30,5 +30,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         public override void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
         }
+
+        public override void Dispose()
+        {
+            PropertyInputViewModel?.Dispose();
+            PropertyInputViewModel = null;
+
+            base.Dispose();
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly IPropertyTimelineVmFactory _propertyTimelineVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
+        private Layer _lastSelectedLayer;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
@@ -74,7 +75,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PropertyTree = _propertyTreeVmFactory.Create(this);
             PropertyTimeline = _propertyTimelineVmFactory.Create(this);
 
-            PopulateProperties(_profileEditorService.SelectedProfileElement, null);
+            PopulateProperties(_profileEditorService.SelectedProfileElement);
 
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
@@ -86,6 +87,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            
+            if (_lastSelectedLayer != null)
+            {
+                _lastSelectedLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
+                _lastSelectedLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
+            }
 
             PropertyTree?.Dispose();
             PropertyTimeline?.Dispose();
@@ -102,7 +109,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         
         private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
         {
-            PopulateProperties(e.ProfileElement, e.PreviousProfileElement);
+            PopulateProperties(e.ProfileElement);
         }
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
@@ -113,12 +120,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         #region View model managament
 
-        private void PopulateProperties(ProfileElement profileElement, ProfileElement previousProfileElement)
+        private void PopulateProperties(ProfileElement profileElement)
         {
-            if (previousProfileElement is Layer previousLayer)
+            if (_lastSelectedLayer != null)
             {
-                previousLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
-                previousLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
+                _lastSelectedLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
+                _lastSelectedLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
             }
 
             if (profileElement is Layer layer)
@@ -137,6 +144,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                         RemovePropertyViewModel(layerPropertyViewModel);
                 }
 
+                _lastSelectedLayer = layer;
                 layer.LayerPropertyRegistered += LayerOnPropertyRegistered;
                 layer.LayerPropertyRemoved += LayerOnPropertyRemoved;
             }
@@ -144,19 +152,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             {
                 foreach (var layerPropertyViewModel in _layerPropertyViewModels.ToList())
                     RemovePropertyViewModel(layerPropertyViewModel);
+
+                _lastSelectedLayer = null;
             }
         }
 
         private void LayerOnPropertyRegistered(object sender, LayerPropertyEventArgs e)
         {
             Console.WriteLine("LayerOnPropertyRegistered");
-            PopulateProperties(e.LayerProperty.Layer, e.LayerProperty.Layer);
+            PopulateProperties(e.LayerProperty.Layer);
         }
 
         private void LayerOnPropertyRemoved(object sender, LayerPropertyEventArgs e)
         {
             Console.WriteLine("LayerOnPropertyRemoved");
-            PopulateProperties(e.LayerProperty.Layer, e.LayerProperty.Layer);
+            PopulateProperties(e.LayerProperty.Layer);
         }
 
         private LayerPropertyViewModel CreatePropertyViewModel(BaseLayerProperty layerProperty)

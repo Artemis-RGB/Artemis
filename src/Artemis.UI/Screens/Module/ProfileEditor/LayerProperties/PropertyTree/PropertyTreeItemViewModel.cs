@@ -1,8 +1,9 @@
-﻿using Stylet;
+﻿using System;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
 {
-    public abstract class PropertyTreeItemViewModel : PropertyChangedBase
+    public abstract class PropertyTreeItemViewModel : PropertyChangedBase, IDisposable
     {
         protected PropertyTreeItemViewModel(LayerPropertyViewModel layerPropertyViewModel)
         {
@@ -28,5 +29,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
         /// </summary>
         /// <param name="layerPropertyViewModel"></param>
         public abstract void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel);
+
+        public virtual void Dispose()
+        {
+        }
     }
 }
