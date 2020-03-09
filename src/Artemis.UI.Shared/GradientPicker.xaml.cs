@@ -47,18 +47,18 @@ namespace Artemis.UI.Shared
 
         private static void ColorGradientPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var colorPicker = (GradientPicker) d;
-            if (colorPicker._inCallback)
+            var gradientPicker = (GradientPicker) d;
+            if (gradientPicker._inCallback)
                 return;
 
-            colorPicker._inCallback = true;
-            colorPicker.OnPropertyChanged(nameof(ColorGradient));
-            colorPicker._inCallback = false;
+            gradientPicker._inCallback = true;
+            gradientPicker.OnPropertyChanged(nameof(ColorGradient));
+            gradientPicker._inCallback = false;
         }
 
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            var gradientEditor = new GradientEditor(ColorGradientProperty);
+            var gradientEditor = new GradientEditor(ColorGradient);
             gradientEditor.ShowDialog();
         }
     }

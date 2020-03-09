@@ -184,13 +184,11 @@ namespace Artemis.UI.Screens.Settings
             Task.Run(ApplyAutorun);
 
             DeviceSettingsViewModels.Clear();
-            foreach (var device in _surfaceService.ActiveSurface.Devices)
-                DeviceSettingsViewModels.Add(_deviceSettingsVmFactory.Create(device));
-
+            DeviceSettingsViewModels.AddRange(_surfaceService.ActiveSurface.Devices.Select(d => _deviceSettingsVmFactory.Create(d)));
+            
             Plugins.Clear();
-            foreach (var pluginInfo in _pluginService.GetAllPluginInfo())
-                Plugins.Add(new PluginSettingsViewModel(pluginInfo.Instance, _windowManager, _dialogService, _pluginService));
-
+            Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => new PluginSettingsViewModel(p.Instance, _windowManager, _dialogService, _pluginService)));
+            
             base.OnInitialActivate();
         }
 

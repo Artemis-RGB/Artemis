@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -125,8 +126,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         private void CreateEasingViewModels()
         {
-            foreach (Easings.Functions value in Enum.GetValues(typeof(Easings.Functions)))
-                EasingViewModels.Add(new PropertyTrackEasingViewModel(this, value));
+            EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(v => new PropertyTrackEasingViewModel(this, v)));
         }
 
         public void SelectEasingMode(PropertyTrackEasingViewModel easingViewModel)

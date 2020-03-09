@@ -36,6 +36,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
                 propertyTreeItemViewModel.Dispose();
         }
 
+        // TODO: Change this to not add one by one, this raises far too many events
         public void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
             // Add as a root VM
@@ -49,6 +50,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             }
         }
 
+        // TODO: Change this to not remove one by one, this raises far too many events
         public void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
             // Remove a root VM
