@@ -90,8 +90,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             
             if (_lastSelectedLayer != null)
             {
-                _lastSelectedLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
-                _lastSelectedLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
+                _lastSelectedLayer.Properties.LayerPropertyRegistered -= LayerOnPropertyRegistered;
+                _lastSelectedLayer.Properties.LayerPropertyRemoved -= LayerOnPropertyRemoved;
             }
 
             PropertyTree?.Dispose();
@@ -124,8 +124,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             if (_lastSelectedLayer != null)
             {
-                _lastSelectedLayer.LayerPropertyRegistered -= LayerOnPropertyRegistered;
-                _lastSelectedLayer.LayerPropertyRemoved -= LayerOnPropertyRemoved;
+                _lastSelectedLayer.Properties.LayerPropertyRegistered -= LayerOnPropertyRegistered;
+                _lastSelectedLayer.Properties.LayerPropertyRemoved -= LayerOnPropertyRemoved;
             }
 
             if (profileElement is Layer layer)
@@ -145,8 +145,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 }
 
                 _lastSelectedLayer = layer;
-                layer.LayerPropertyRegistered += LayerOnPropertyRegistered;
-                layer.LayerPropertyRemoved += LayerOnPropertyRemoved;
+                layer.Properties.LayerPropertyRegistered += LayerOnPropertyRegistered;
+                layer.Properties.LayerPropertyRemoved += LayerOnPropertyRemoved;
             }
             else
             {

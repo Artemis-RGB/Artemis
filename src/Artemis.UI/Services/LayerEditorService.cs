@@ -35,7 +35,7 @@ namespace Artemis.UI.Services
         public Point GetLayerAnchorPosition(Layer layer, SKPoint? positionOverride = null)
         {
             var layerBounds = GetLayerBounds(layer).ToSKRect();
-            var positionProperty = layer.PositionProperty.CurrentValue;
+            var positionProperty = layer.Properties.Position.CurrentValue;
             if (positionOverride != null)
                 positionProperty = positionOverride.Value;
 
@@ -59,7 +59,7 @@ namespace Artemis.UI.Services
             // the layer using the structure of the XAML while the Core has to deal with that by applying the layer
             // position to the translation
             var anchorPosition = GetLayerAnchorPosition(layer);
-            var anchorProperty = layer.AnchorPointProperty.CurrentValue;
+            var anchorProperty = layer.Properties.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - layerBounds.MidX - anchorProperty.X * layerBounds.Width;
@@ -67,8 +67,8 @@ namespace Artemis.UI.Services
 
             var transformGroup = new TransformGroup();
             transformGroup.Children.Add(new TranslateTransform(x, y));
-            transformGroup.Children.Add(new ScaleTransform(layer.ScaleProperty.CurrentValue.Width / 100f, layer.ScaleProperty.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
-            transformGroup.Children.Add(new RotateTransform(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
+            transformGroup.Children.Add(new ScaleTransform(layer.Properties.Scale.CurrentValue.Width / 100f, layer.Properties.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
+            transformGroup.Children.Add(new RotateTransform(layer.Properties.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return transformGroup;
         }
@@ -83,7 +83,7 @@ namespace Artemis.UI.Services
             if (anchorOverride != null)
                 anchorPosition = anchorOverride.Value;
 
-            var anchorProperty = layer.AnchorPointProperty.CurrentValue;
+            var anchorProperty = layer.Properties.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - layerBounds.MidX - anchorProperty.X * layerBounds.Width;
@@ -94,9 +94,9 @@ namespace Artemis.UI.Services
             if (includeTranslation)
                 path.Transform(SKMatrix.MakeTranslation(x, y));
             if (includeScale)
-                path.Transform(SKMatrix.MakeScale(layer.ScaleProperty.CurrentValue.Width / 100f, layer.ScaleProperty.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeScale(layer.Properties.Scale.CurrentValue.Width / 100f, layer.Properties.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
             if (includeRotation)
-                path.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeRotationDegrees(layer.Properties.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return path;
         }

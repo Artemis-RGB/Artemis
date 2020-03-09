@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -17,7 +14,6 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Layer : ProfileElement
     {
-        private readonly Dictionary<(Guid, string), BaseLayerProperty> _properties;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
@@ -30,14 +26,12 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+            Properties = new LayerPropertyCollection(this);
 
             _leds = new List<ArtemisLed>();
-            _properties = new Dictionary<(Guid, string), BaseLayerProperty>();
 
-            CreateDefaultProperties();
             ApplyShapeType();
-
-            ShapeTypeProperty.ValueChanged += (sender, args) => ApplyShapeType();
+            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -49,14 +43,12 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = layerEntity.Name;
             Order = layerEntity.Order;
+            Properties = new LayerPropertyCollection(this);
 
             _leds = new List<ArtemisLed>();
-            _properties = new Dictionary<(Guid, string), BaseLayerProperty>();
 
-            CreateDefaultProperties();
             ApplyShapeType();
-
-            ShapeTypeProperty.ValueChanged += (sender, args) => ApplyShapeType();
+            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -102,42 +94,9 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
-        ///     A collection of all the properties on this layer
+        ///     The properties of this layer
         /// </summary>
-        public ReadOnlyCollection<BaseLayerProperty> Properties => _properties.Values.ToList().AsReadOnly();
-
-        public LayerProperty<LayerShapeType> ShapeTypeProperty { get; set; }
-
-        public LayerProperty<LayerFillType> FillTypeProperty { get; set; }
-
-        public LayerProperty<SKBlendMode> BlendModeProperty { get; set; }
-
-        public LayerProperty<LayerBrushReference> BrushReferenceProperty { get; set; }
-
-        /// <summary>
-        ///     The anchor point property of this layer, also found in <see cref="Properties" />
-        /// </summary>
-        public LayerProperty<SKPoint> AnchorPointProperty { get; private set; }
-
-        /// <summary>
-        ///     The position of this layer, also found in <see cref="Properties" />
-        /// </summary>
-        public LayerProperty<SKPoint> PositionProperty { get; private set; }
-
-        /// <summary>
-        ///     The size property of this layer, also found in <see cref="Properties" />
-        /// </summary>
-        public LayerProperty<SKSize> ScaleProperty { get; private set; }
-
-        /// <summary>
-        ///     The rotation property of this layer range 0 - 360, also found in <see cref="Properties" />
-        /// </summary>
-        public LayerProperty<float> RotationProperty { get; private set; }
-
-        /// <summary>
-        ///     The opacity property of this layer range 0 - 100, also found in <see cref="Properties" />
-        /// </summary>
-        public LayerProperty<float> OpacityProperty { get; private set; }
+        public LayerPropertyCollection Properties { get; set; }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
@@ -184,7 +143,7 @@ namespace Artemis.Core.Models.Profile
 
         private void ApplyShapeType()
         {
-            switch (ShapeTypeProperty.CurrentValue)
+            switch (Properties.ShapeType.CurrentValue)
             {
                 case LayerShapeType.Ellipse:
                     LayerShape = new Ellipse(this);
@@ -198,16 +157,6 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        private void OnLayerPropertyRegistered(LayerPropertyEventArgs e)
-        {
-            LayerPropertyRegistered?.Invoke(this, e);
-        }
-
-        private void OnLayerPropertyRemoved(LayerPropertyEventArgs e)
-        {
-            LayerPropertyRemoved?.Invoke(this, e);
-        }
 
         #region Rendering
 
@@ -243,10 +192,10 @@ namespace Artemis.Core.Models.Profile
 
             using (var paint = new SKPaint())
             {
-                paint.BlendMode = BlendModeProperty.CurrentValue;
-                paint.Color = new SKColor(0, 0, 0, (byte) (OpacityProperty.CurrentValue * 2.55f));
+                paint.BlendMode = Properties.BlendMode.CurrentValue;
+                paint.Color = new SKColor(0, 0, 0, (byte) (Properties.Opacity.CurrentValue * 2.55f));
 
-                switch (FillTypeProperty.CurrentValue)
+                switch (Properties.FillType.CurrentValue)
                 {
                     case LayerFillType.Stretch:
                         StretchRender(canvas, canvasInfo, paint);
@@ -265,11 +214,11 @@ namespace Artemis.Core.Models.Profile
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = ScaleProperty.CurrentValue;
-            var rotationProperty = RotationProperty.CurrentValue;
+            var sizeProperty = Properties.Scale.CurrentValue;
+            var rotationProperty = Properties.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = AnchorPointProperty.CurrentValue;
+            var anchorProperty = Properties.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -286,11 +235,11 @@ namespace Artemis.Core.Models.Profile
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = ScaleProperty.CurrentValue;
-            var rotationProperty = RotationProperty.CurrentValue;
+            var sizeProperty = Properties.Scale.CurrentValue;
+            var rotationProperty = Properties.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = AnchorPointProperty.CurrentValue;
+            var anchorProperty = Properties.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -343,7 +292,7 @@ namespace Artemis.Core.Models.Profile
 
         internal SKPoint GetLayerAnchorPosition()
         {
-            var positionProperty = PositionProperty.CurrentValue;
+            var positionProperty = Properties.Position.CurrentValue;
 
             // Start at the center of the shape
             var position = new SKPoint(Bounds.MidX, Bounds.MidY);
@@ -418,131 +367,10 @@ namespace Artemis.Core.Models.Profile
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        ///     Adds the provided layer property and its children to the layer.
-        ///     If found, the last stored base value and keyframes will be applied to the provided property.
-        /// </summary>
-        /// <typeparam name="T">The type of value of the layer property</typeparam>
-        /// <param name="layerProperty">The property to apply to the layer</param>
-        /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        internal bool RegisterLayerProperty<T>(LayerProperty<T> layerProperty)
-        {
-            return RegisterLayerProperty((BaseLayerProperty) layerProperty);
-        }
-
-        /// <summary>
-        ///     Adds the provided layer property to the layer.
-        ///     If found, the last stored base value and keyframes will be applied to the provided property.
-        /// </summary>
-        /// <param name="layerProperty">The property to apply to the layer</param>
-        /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        internal bool RegisterLayerProperty(BaseLayerProperty layerProperty)
-        {
-            if (_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
-                throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");
-
-            var propertyEntity = LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == layerProperty.Id && p.ValueType == layerProperty.Type.Name);
-            // TODO: Catch serialization exceptions and log them
-            if (propertyEntity != null)
-                layerProperty.ApplyToProperty(propertyEntity);
-
-            _properties.Add((layerProperty.PluginInfo.Guid, layerProperty.Id), layerProperty);
-            OnLayerPropertyRegistered(new LayerPropertyEventArgs(layerProperty));
-            return propertyEntity != null;
-        }
-
-        /// <summary>
-        ///     Removes the provided layer property from the layer.
-        /// </summary>
-        /// <typeparam name="T">The type of value of the layer property</typeparam>
-        /// <param name="layerProperty">The property to remove from the layer</param>
-        public void RemoveLayerProperty<T>(LayerProperty<T> layerProperty)
-        {
-            RemoveLayerProperty((BaseLayerProperty) layerProperty);
-        }
-
-        /// <summary>
-        ///     Removes the provided layer property from the layer.
-        /// </summary>
-        /// <param name="layerProperty">The property to remove from the layer</param>
-        public void RemoveLayerProperty(BaseLayerProperty layerProperty)
-        {
-            if (!_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
-                throw new ArtemisCoreException($"Could not find a property with ID {layerProperty.Id}.");
-
-            var property = _properties[(layerProperty.PluginInfo.Guid, layerProperty.Id)];
-            property.Parent?.Children.Remove(property);
-            _properties.Remove((layerProperty.PluginInfo.Guid, layerProperty.Id));
-
-            OnLayerPropertyRemoved(new LayerPropertyEventArgs(property));
-        }
-
-        /// <summary>
-        ///     If found, returns the <see cref="LayerProperty{T}" /> matching the provided ID
-        /// </summary>
-        /// <typeparam name="T">The type of the layer property</typeparam>
-        /// <param name="pluginInfo">The plugin this property belongs to</param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public LayerProperty<T> GetLayerPropertyById<T>(PluginInfo pluginInfo, string id)
-        {
-            if (!_properties.ContainsKey((pluginInfo.Guid, id)))
-                return null;
-
-            var property = _properties[(pluginInfo.Guid, id)];
-            if (property.Type != typeof(T))
-                throw new ArtemisCoreException($"Property type mismatch. Expected property {property} to have type {typeof(T)} but it has {property.Type} instead.");
-            return (LayerProperty<T>) _properties[(pluginInfo.Guid, id)];
-        }
-
-        private void CreateDefaultProperties()
-        {
-            // Shape
-            var shape = new LayerProperty<object>(this, "Core.Shape", "Shape", "A collection of basic shape properties");
-            ShapeTypeProperty = new LayerProperty<LayerShapeType>(this, shape, "Core.ShapeType", "Shape type", "The type of shape to draw in this layer") {CanUseKeyframes = false};
-            FillTypeProperty = new LayerProperty<LayerFillType>(this, shape, "Core.FillType", "Fill type", "How to make the shape adjust to scale changes") {CanUseKeyframes = false};
-            BlendModeProperty = new LayerProperty<SKBlendMode>(this, shape, "Core.BlendMode", "Blend mode", "How to blend this layer into the resulting image") {CanUseKeyframes = false};
-            ShapeTypeProperty.Value = LayerShapeType.Rectangle;
-            FillTypeProperty.Value = LayerFillType.Stretch;
-            BlendModeProperty.Value = SKBlendMode.SrcOver;
-
-            RegisterLayerProperty(shape);
-            foreach (var shapeProperty in shape.Children)
-                RegisterLayerProperty(shapeProperty);
-
-            // Brush
-            var brush = new LayerProperty<object>(this, "Core.Brush", "Brush", "A collection of properties that configure the selected brush");
-            BrushReferenceProperty = new LayerProperty<LayerBrushReference>(this, brush, "Core.BrushReference", "Brush type", "The type of brush to use for this layer") {CanUseKeyframes = false};
-
-            RegisterLayerProperty(brush);
-            foreach (var brushProperty in brush.Children)
-                RegisterLayerProperty(brushProperty);
-
-            // Transform
-            var transform = new LayerProperty<object>(this, "Core.Transform", "Transform", "A collection of transformation properties") {ExpandByDefault = true};
-            AnchorPointProperty = new LayerProperty<SKPoint>(this, transform, "Core.AnchorPoint", "Anchor Point", "The point at which the shape is attached to its position") {InputStepSize = 0.001f};
-            PositionProperty = new LayerProperty<SKPoint>(this, transform, "Core.Position", "Position", "The position of the shape") {InputStepSize = 0.001f};
-            ScaleProperty = new LayerProperty<SKSize>(this, transform, "Core.Scale", "Scale", "The scale of the shape") {InputAffix = "%", MinInputValue = 0f};
-            RotationProperty = new LayerProperty<float>(this, transform, "Core.Rotation", "Rotation", "The rotation of the shape in degrees") {InputAffix = "°"};
-            OpacityProperty = new LayerProperty<float>(this, transform, "Core.Opacity", "Opacity", "The opacity of the shape") {InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f};
-            ScaleProperty.Value = new SKSize(100, 100);
-            OpacityProperty.Value = 100;
-
-            RegisterLayerProperty(transform);
-            foreach (var transformProperty in transform.Children)
-                RegisterLayerProperty(transformProperty);
-        }
-
-        #endregion
-
         #region Events
 
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
-        public event EventHandler<LayerPropertyEventArgs> LayerPropertyRegistered;
-        public event EventHandler<LayerPropertyEventArgs> LayerPropertyRemoved;
 
         private void OnRenderPropertiesUpdated()
         {

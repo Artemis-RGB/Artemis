@@ -94,7 +94,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 difference += 360;
             else if (difference > 350)
                 difference -= 360;
-            newRotation = layer.RotationProperty.CurrentValue + difference;
+            newRotation = layer.Properties.Rotation.CurrentValue + difference;
 
             // Round the end-result to increments of 5 as well, to avoid staying on an offset
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -102,7 +102,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             else
                 newRotation = (float) Math.Round(newRotation, 2, MidpointRounding.AwayFromZero);
 
-            layer.RotationProperty.SetCurrentValue(newRotation, ProfileEditorService.CurrentTime);
+            layer.Properties.Rotation.SetCurrentValue(newRotation, ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
@@ -121,7 +121,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
             _dragOffset = _layerEditorService.GetDragOffset(layer, dragStart);
             _dragStart = dragStart + _dragOffset;
-            _dragStartScale = layer.ScaleProperty.CurrentValue;
+            _dragStartScale = layer.Properties.Scale.CurrentValue;
 
             _isResizing = true;
         }
@@ -159,19 +159,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                     break;
                 case ShapeControlPoint.TopCenter:
                     height = VerticalResize(layer, position, ResizeOrigin.Top);
-                    width = layer.ScaleProperty.CurrentValue.Width;
+                    width = layer.Properties.Scale.CurrentValue.Width;
                     break;
                 case ShapeControlPoint.RightCenter:
                     width = HorizontalResize(layer, position, ResizeOrigin.Right);
-                    height = layer.ScaleProperty.CurrentValue.Height;
+                    height = layer.Properties.Scale.CurrentValue.Height;
                     break;
                 case ShapeControlPoint.BottomCenter:
-                    width = layer.ScaleProperty.CurrentValue.Width;
+                    width = layer.Properties.Scale.CurrentValue.Width;
                     height = VerticalResize(layer, position, ResizeOrigin.Bottom);
                     break;
                 case ShapeControlPoint.LeftCenter:
                     width = HorizontalResize(layer, position, ResizeOrigin.Left);
-                    height = layer.ScaleProperty.CurrentValue.Height;
+                    height = layer.Properties.Scale.CurrentValue.Height;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -186,7 +186,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
                 height = (float) Math.Round(1.0 / bounds.Height * smallestSide, 2, MidpointRounding.AwayFromZero);
             }
 
-            layer.ScaleProperty.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
+            layer.Properties.Scale.SetCurrentValue(new SKSize(width, height), ProfileEditorService.CurrentTime);
             ProfileEditorService.UpdateProfilePreview();
         }
 
@@ -319,7 +319,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // Scale down the resulting position and make it relative
             var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
             // Round and update the position property
-            layer.PositionProperty.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
+            layer.Properties.Position.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }
@@ -338,13 +338,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
 
             // Update the anchor point, this causes the shape to move
-            layer.AnchorPointProperty.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
+            layer.Properties.AnchorPoint.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
             // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
             var path = _layerEditorService.GetLayerPath(layer, true, true, true);
             // Calculate the (scaled) difference between the old and now position
             var difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
             // Apply the difference so that the shape effectively stays in place
-            layer.PositionProperty.SetCurrentValue(RoundPoint(layer.PositionProperty.CurrentValue + difference, 3), ProfileEditorService.CurrentTime);
+            layer.Properties.Position.SetCurrentValue(RoundPoint(layer.Properties.Position.CurrentValue + difference, 3), ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }
@@ -362,9 +362,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         {
             var counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.RotationProperty.CurrentValue * -1, pivot.X, pivot.Y));
+            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.Properties.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)
-                counterRotatePath.Transform(SKMatrix.MakeScale(1f / (layer.ScaleProperty.CurrentValue.Width / 100f), 1f / (layer.ScaleProperty.CurrentValue.Height / 100f)));
+                counterRotatePath.Transform(SKMatrix.MakeScale(1f / (layer.Properties.Scale.CurrentValue.Width / 100f), 1f / (layer.Properties.Scale.CurrentValue.Height / 100f)));
 
             return counterRotatePath.Points;
         }
