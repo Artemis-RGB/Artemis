@@ -28,7 +28,7 @@ namespace Artemis.Core.Services
         {
             RemoveLayerBrush(layer);
 
-            var descriptorReference = layer.BrushReferenceProperty.CurrentValue;
+            var descriptorReference = layer.Properties.BrushReference.CurrentValue;
             if (descriptorReference == null)
                 return null;
 
@@ -86,7 +86,7 @@ namespace Artemis.Core.Services
 
             var propertiesToRemove = layer.Properties.Where(l => l.PluginInfo == brush.Descriptor.LayerBrushProvider.PluginInfo).ToList();
             foreach (var layerProperty in propertiesToRemove)
-                layer.RemoveLayerProperty(layerProperty);
+                layer.Properties.RemoveLayerProperty(layerProperty);
             brush.Dispose();
         }
     }

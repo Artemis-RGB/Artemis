@@ -58,7 +58,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         protected LayerProperty<T> RegisterLayerProperty<T>(BaseLayerProperty parent, string id, string name, string description, T defaultValue = default)
         {
             var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, parent, id, name, description) {Value = defaultValue};
-            Layer.RegisterLayerProperty(property);
+            Layer.Properties.RegisterLayerProperty(property);
             // It's fine if this is null, it'll be picked up by SetLayerService later
             _layerService?.InstantiateKeyframeEngine(property);
             return property;
@@ -77,9 +77,9 @@ namespace Artemis.Core.Plugins.LayerBrush
         protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description, T defaultValue = default)
         {
             var property = new LayerProperty<T>(
-                Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.BrushReferenceProperty.Parent, id, name, description
+                Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.Properties.BrushReference.Parent, id, name, description
             ) {Value = defaultValue};
-            Layer.RegisterLayerProperty(property);
+            Layer.Properties.RegisterLayerProperty(property);
             // It's fine if this is null, it'll be picked up by SetLayerService later
             _layerService?.InstantiateKeyframeEngine(property);
             return property;

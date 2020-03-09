@@ -241,7 +241,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public int GetFlattenedIndex()
         {
             if (Parent == null)
-                return Layer.Properties.IndexOf(this);
+                return Layer.Properties.ToList().IndexOf(this);
 
             // Create a flattened list of all properties in their order as defined by the parent/child hierarchy
             var properties = new List<BaseLayerProperty>();
