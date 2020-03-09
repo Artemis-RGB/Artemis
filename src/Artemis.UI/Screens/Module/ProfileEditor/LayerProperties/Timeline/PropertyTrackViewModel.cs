@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
@@ -28,20 +29,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public void PopulateKeyframes()
         {
             // Remove old keyframes
-            foreach (var viewModel in KeyframeViewModels.ToList())
-            {
-                if (!LayerPropertyViewModel.LayerProperty.UntypedKeyframes.Contains(viewModel.Keyframe))
-                    KeyframeViewModels.Remove(viewModel);
-            }
+            KeyframeViewModels.RemoveRange(KeyframeViewModels.ToList().Where(vm => !LayerPropertyViewModel.LayerProperty.UntypedKeyframes.Contains(vm.Keyframe)));
 
             // Add new keyframes
-            foreach (var keyframe in LayerPropertyViewModel.LayerProperty.UntypedKeyframes)
-            {
-                if (KeyframeViewModels.Any(k => k.Keyframe == keyframe))
-                    continue;
-                KeyframeViewModels.Add(_propertyTrackKeyframeVmFactory.Create(this, keyframe));
-            }
-
+            KeyframeViewModels.AddRange(
+                LayerPropertyViewModel.LayerProperty.UntypedKeyframes
+                    .Where(k => KeyframeViewModels.All(vm => vm.Keyframe != k))
+                    .Select(k => _propertyTrackKeyframeVmFactory.Create(this, k))
+            );
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
         }
 

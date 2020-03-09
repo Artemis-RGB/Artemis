@@ -174,27 +174,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             }
 
             // Ensure every child element has an up-to-date VM
-            if (ProfileElement.Children != null)
-            {
-                foreach (var profileElement in ProfileElement.Children.OrderBy(c => c.Order))
-                {
-                    TreeItemViewModel existing = null;
-                    if (profileElement is Folder folder)
-                    {
-                        existing = Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder);
-                        if (existing == null)
-                            Children.Add(_folderVmFactory.Create((FolderViewModel) this, folder));
-                    }
-                    else if (profileElement is Layer layer)
-                    {
-                        existing = Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer);
-                        if (existing == null)
-                            Children.Add(_layerVmFactory.Create((FolderViewModel) this, layer));
-                    }
+            if (ProfileElement.Children == null) 
+                return;
 
-                    existing?.UpdateProfileElements();
+            var newChildren = new List<TreeItemViewModel>();
+            foreach (var profileElement in ProfileElement.Children.OrderBy(c => c.Order))
+            {
+                if (profileElement is Folder folder)
+                {
+                    if (Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder) == null)
+                        newChildren.Add(_folderVmFactory.Create((FolderViewModel) this, folder));
+                }
+                else if (profileElement is Layer layer)
+                {
+                    if (Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer) == null)
+                        newChildren.Add(_layerVmFactory.Create((FolderViewModel) this, layer));
                 }
             }
+
+            if (!newChildren.Any()) 
+                return;
+
+            // Add the new children in one call, prevent extra UI events
+            Children.AddRange(newChildren);
+            foreach (var treeItemViewModel in newChildren)
+                treeItemViewModel.UpdateProfileElements();
         }
     }
 }

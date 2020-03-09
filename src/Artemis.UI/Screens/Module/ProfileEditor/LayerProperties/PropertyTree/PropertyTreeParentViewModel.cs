@@ -18,6 +18,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
                 child.Update(forceUpdate);
         }
 
+        // TODO: Change this to not add one by one, this raises far too many events
         public override void AddLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
             if (layerPropertyViewModel.Parent == LayerPropertyViewModel)
@@ -40,6 +41,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree
             }
         }
 
+        // TODO: Change this to not remove one by one, this raises far too many events
         public override void RemoveLayerProperty(LayerPropertyViewModel layerPropertyViewModel)
         {
             foreach (var child in Children.ToList())

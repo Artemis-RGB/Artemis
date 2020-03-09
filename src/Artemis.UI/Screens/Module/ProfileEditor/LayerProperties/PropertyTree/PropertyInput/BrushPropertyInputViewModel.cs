@@ -43,16 +43,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
             var descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
-            EnumValues.Clear();
+            
+            var enumValues = new List<ValueDescription>();
             foreach (var layerBrushDescriptor in descriptors)
             {
                 var brushName = layerBrushDescriptor.LayerBrushType.Name;
                 var brushGuid = layerBrushDescriptor.LayerBrushProvider.PluginInfo.Guid;
                 if (BrushInputValue != null && BrushInputValue.BrushType == brushName && BrushInputValue.BrushPluginGuid == brushGuid)
-                    EnumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = BrushInputValue});
+                    enumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = BrushInputValue});
                 else
-                    EnumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = new LayerBrushReference {BrushType = brushName, BrushPluginGuid = brushGuid}});
+                    enumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = new LayerBrushReference {BrushType = brushName, BrushPluginGuid = brushGuid}});
             }
+            EnumValues.Clear();
+            EnumValues.AddRange(enumValues);
         }
 
         public override void Update()

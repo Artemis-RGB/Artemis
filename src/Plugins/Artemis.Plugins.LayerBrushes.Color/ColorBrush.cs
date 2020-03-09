@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
@@ -10,7 +11,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
 {
     public class ColorBrush : LayerBrush
     {
-        private readonly List<SKColor> _testColors;
         private SKColor _color;
         private SKPaint _paint;
         private SKShader _shader;
@@ -18,28 +18,23 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
-            ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255,0,0));
+            ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
             GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
             GradientTypeProperty = RegisterLayerProperty<GradientType>("Brush.GradientType", "Gradient type", "The type of color brush to draw");
             GradientTypeProperty.CanUseKeyframes = false;
 
-            _testColors = new List<SKColor>();
-            for (var i = 0; i < 9; i++)
-            {
-                if (i != 8)
-                    _testColors.Add(SKColor.FromHsv(i * 32, 100, 100));
-                else
-                    _testColors.Add(SKColor.FromHsv(0, 100, 100));
-            }
-
             CreateShader(_shaderBounds);
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader(_shaderBounds);
             GradientTypeProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
-        }
 
-        private void GradientTypePropertyOnValueChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            if (!GradientProperty.Value.Colors.Any())
+            {
+                for (var i = 0; i < 9; i++)
+                {
+                    var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
+                    GradientProperty.Value.Colors.Add(new ColorGradientColor(color, 0.125f * i));
+                }
+            }
         }
 
         public LayerProperty<SKColor> ColorProperty { get; set; }
@@ -77,13 +72,13 @@ namespace Artemis.Plugins.LayerBrushes.Color
                     shader = SKShader.CreateColor(_color);
                     break;
                 case GradientType.LinearGradient:
-                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(pathBounds.Width, 0), _testColors.ToArray(), SKShaderTileMode.Repeat);
+                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(pathBounds.Width, 0), GradientProperty.Value.GetColorsArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.RadialGradient:
-                    shader = SKShader.CreateRadialGradient(center, Math.Min(pathBounds.Width, pathBounds.Height), _testColors.ToArray(), SKShaderTileMode.Repeat);
+                    shader = SKShader.CreateRadialGradient(center, Math.Min(pathBounds.Width, pathBounds.Height), GradientProperty.Value.GetColorsArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.SweepGradient:
-                    shader = SKShader.CreateSweepGradient(center, _testColors.ToArray(), null, SKShaderTileMode.Clamp, 0, 360);
+                    shader = SKShader.CreateSweepGradient(center, GradientProperty.Value.GetColorsArray(), null, SKShaderTileMode.Clamp, 0, 360);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

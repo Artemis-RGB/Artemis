@@ -1,17 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using Artemis.Core.Annotations;
+using PropertyChanged;
 using SkiaSharp;
+using Stylet;
 
 namespace Artemis.Core.Models.Profile
 {
-    public class ColorGradient
+    [DoNotNotify]
+    public class ColorGradient : INotifyPropertyChanged
     {
+        private float _rotation;
+
         public ColorGradient()
         {
-            Colors = new List<ColorGradientColor>();
+            Colors = new BindableCollection<ColorGradientColor>();
         }
 
-        public List<ColorGradientColor> Colors { get; }
-        public float Rotation { get; set; }
+        public BindableCollection<ColorGradientColor> Colors { get; }
+
+        public float Rotation
+        {
+            get => _rotation;
+            set
+            {
+                if (_rotation != value)
+                {
+                    _rotation = value;
+                    OnPropertyChanged(nameof(Rotation));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public SKColor[] GetColorsArray()
+        {
+            return Colors.Select(c => c.Color).ToArray();
+        }
     }
 
     public struct ColorGradientColor

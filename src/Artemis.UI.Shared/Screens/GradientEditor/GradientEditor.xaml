@@ -8,22 +8,27 @@
                          xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                          xmlns:shared="clr-namespace:Artemis.UI.Shared"
+                         xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters"
                          mc:Ignorable="d"
                          Title="Gradient Editor"
                          Background="{DynamicResource MaterialDesignPaper}"
                          FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                          UseLayoutRounding="True"
-                         Width="800"
-                         Height="450"
+                         Width="500"
+                         Height="600"
                          ResizeMode="NoResize"
                          Icon="/Resources/Images/Logo/logo-512.png"
+                         FadeContentIfInactive="False"
                          d:DesignHeight="450"
                          d:DesignWidth="800">
+    <controls:MaterialWindow.Resources>
+        <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
+    </controls:MaterialWindow.Resources>
     <StackPanel>
-        <materialDesign:Card >
+        <materialDesign:Card Margin="15 15 15 7" Padding="15">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
                 <materialDesign:PackIcon Kind="Crane" Width="80" Height="80" HorizontalAlignment="Center" />
-                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 15">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
                     Gradient saving not implemented yet
                 </TextBlock>
                 <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
@@ -32,28 +37,69 @@
             </StackPanel>
         </materialDesign:Card>
 
-        <materialDesign:Card>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+        <materialDesign:Card Margin="15 7 15 15" ClipToBounds="False">
+            <StackPanel ClipToBounds="False">
+                <TextBlock Margin="15 15 0 0">Gradient</TextBlock>
+                <Separator Margin="15 5" />
 
-                <Separator Grid.Row="1" Grid.ColumnSpan="4" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0 8 0" />
+                <ItemsControl ItemsSource="{Binding ColorGradient.Colors, Mode=OneWay}" ClipToBounds="False" Margin="15 0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas Height="60" Width="435" x:Name="PreviewCanvas" >
+                                <Canvas.Background>
+                                    <VisualBrush Stretch="None" AlignmentY="Top">
+                                        <VisualBrush.Visual>
+                                            <Border Width="{Binding ActualWidth, ElementName=PreviewCanvas}" Height="50">
+                                                <Rectangle x:Name="Preview" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                                    <Rectangle.Fill>
+                                                        <LinearGradientBrush GradientStops="{Binding ColorGradient, Mode=OneWay, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </Border>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Canvas.Background>
+                            </Canvas>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Top" Value="50" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <local:GradientEditorColor GradientColor="{Binding}"></local:GradientEditorColor>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                
+                <TextBlock Margin="15 15 0 0">Stops</TextBlock>
+                <Separator Margin="15 5" />
 
-                <Label Grid.Row="0" Grid.Column="0">Color:</Label>
-                <shared:ColorPicker x:Name="CurrentColor" Grid.Row="0" Grid.Column="1" />
+                <Grid Margin="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="70" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="140" />
+                    </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="2">Location:</Label>
-                <TextBox x:Name="CurrentLocation" Grid.Row="0" Grid.Column="3" />
-            </Grid>
+                    <Label Grid.Column="0" HorizontalAlignment="Right">Color:</Label>
+                    <shared:ColorPicker Grid.Row="0" Grid.Column="1" x:Name="CurrentColor" Width="85" />
+
+                    <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right">Location:</Label>
+                    <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal">
+                        <TextBox x:Name="CurrentLocation" Width="40" />
+                        <Label>%</Label>
+                    </StackPanel>
+
+                    <Button Grid.Row="0" Grid.Column="4" Style="{StaticResource MaterialDesignRaisedButton}" Width="80" Height="25">
+                        Delete
+                    </Button>
+                </Grid>
+            </StackPanel>
         </materialDesign:Card>
     </StackPanel>
 </controls:MaterialWindow>

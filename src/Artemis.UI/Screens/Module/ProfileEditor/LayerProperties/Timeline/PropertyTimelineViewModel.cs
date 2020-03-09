@@ -60,10 +60,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public void PopulateProperties(List<LayerPropertyViewModel> properties)
         {
-            PropertyTrackViewModels.Clear();
+            var newViewModels = new List<PropertyTrackViewModel>();
             foreach (var property in properties)
-                CreateViewModels(property);
+                newViewModels.AddRange(CreateViewModels(property));
 
+            PropertyTrackViewModels.Clear();
+            PropertyTrackViewModels.AddRange(newViewModels);
             UpdateEndTime();
         }
 
@@ -112,11 +114,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateKeyframePositions();
         }
 
-        private void CreateViewModels(LayerPropertyViewModel property)
+        private List<PropertyTrackViewModel> CreateViewModels(LayerPropertyViewModel property)
         {
-            PropertyTrackViewModels.Add(_propertyTrackVmFactory.Create(this, property));
+            var result = new List<PropertyTrackViewModel> {_propertyTrackVmFactory.Create(this, property)};
             foreach (var child in property.Children)
-                CreateViewModels(child);
+                result.AddRange(CreateViewModels(child));
+
+            return result;
         }
 
         #region Keyframe movement
