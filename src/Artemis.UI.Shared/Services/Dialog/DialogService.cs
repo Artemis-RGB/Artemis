@@ -95,7 +95,14 @@ namespace Artemis.UI.Shared.Services.Dialog
                 new ConstructorArgument("message", message),
                 new ConstructorArgument("exception", exception)
             };
-            await Execute.OnUIThreadAsync(async () => await ShowDialog<ExceptionDialogViewModel>(arguments));
+            try
+            {
+                await Execute.OnUIThreadAsync(async () => await ShowDialog<ExceptionDialogViewModel>(arguments));
+            }
+            catch (Exception)
+            {
+                //ignored   
+            }
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)
@@ -105,7 +112,7 @@ namespace Artemis.UI.Shared.Services.Dialog
             {
                 var view = _viewManager.CreateViewForModel(viewModel);
                 _viewManager.BindViewToModel(view, viewModel);
-                
+
                 if (identifier == null)
                     result = DialogHost.Show(view, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
                 else

@@ -1,37 +1,34 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Artemis.Core.Annotations;
-using PropertyChanged;
 using SkiaSharp;
 using Stylet;
 
 namespace Artemis.Core.Models.Profile
 {
-    [DoNotNotify]
     public class ColorGradient : INotifyPropertyChanged
     {
-        private float _rotation;
-
         public ColorGradient()
         {
             Colors = new BindableCollection<ColorGradientColor>();
         }
 
         public BindableCollection<ColorGradientColor> Colors { get; }
+        public float Rotation { get; set; }
 
-        public float Rotation
+        public SKColor[] GetColorsArray()
         {
-            get => _rotation;
-            set
-            {
-                if (_rotation != value)
-                {
-                    _rotation = value;
-                    OnPropertyChanged(nameof(Rotation));
-                }
-            }
+            return Colors.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
         }
+
+        public float[] GetColorPositionsArray()
+        {
+            return Colors.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
+        }
+
+        #region PropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -41,13 +38,15 @@ namespace Artemis.Core.Models.Profile
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public SKColor[] GetColorsArray()
+        #endregion
+
+        public void OnColorValuesUpdated()
         {
-            return Colors.Select(c => c.Color).ToArray();
+            OnPropertyChanged(nameof(Colors));
         }
     }
 
-    public struct ColorGradientColor
+    public class ColorGradientColor : INotifyPropertyChanged
     {
         public ColorGradientColor(SKColor color, float position)
         {
@@ -57,5 +56,17 @@ namespace Artemis.Core.Models.Profile
 
         public SKColor Color { get; set; }
         public float Position { get; set; }
+
+        #region PropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }
