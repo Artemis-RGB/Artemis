@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Artemis.Core.Models.Profile;
@@ -26,11 +27,12 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public GradientEditor(ColorGradient colorGradient)
         {
-            InitializeComponent();
             DataContext = this;
+
+            InitializeComponent();
             ColorGradient = colorGradient;
         }
-
+        
         public ColorGradient ColorGradient
         {
             get => (ColorGradient) GetValue(ColorGradientProperty);
