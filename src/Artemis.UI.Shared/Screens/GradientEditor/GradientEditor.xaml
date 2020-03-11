@@ -41,43 +41,41 @@
                 <TextBlock Margin="15 15 0 0">Gradient</TextBlock>
                 <Separator Margin="15 5" />
 
-                <ItemsControl ItemsSource="{Binding ColorGradient.Colors}" ClipToBounds="False" Margin="15 0">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas Height="60" Width="437" x:Name="PreviewCanvas">
-                                <Canvas.Background>
-                                    <VisualBrush Stretch="None" AlignmentY="Top">
-                                        <VisualBrush.Visual>
-                                            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="15">
-                                                <Rectangle x:Name="Preview"
-                                                           VerticalAlignment="Stretch"
-                                                           HorizontalAlignment="Stretch"
-                                                           Width="{Binding ActualWidth, ElementName=PreviewCanvas}"
-                                                           Height="35">
-                                                    <Rectangle.Fill>
-                                                        <LinearGradientBrush GradientStops="{Binding ColorGradient.Colors, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
-                                            </materialDesign:Card>
-                                        </VisualBrush.Visual>
-                                    </VisualBrush>
-                                </Canvas.Background>
-                            </Canvas>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="Canvas.Top" Value="40" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <local:GradientEditorColor
-                                ColorGradient="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:MaterialWindow}, Path=ColorGradient}"
-                                GradientColor="{Binding}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Grid>
+                    <ItemsControl ItemsSource="{Binding ColorGradient.Colors}" ClipToBounds="False" Margin="15 0" MouseLeftButtonUp="Rectangle_MouseLeftButtonUp" Cursor="Cross">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas Height="60" Width="437" x:Name="PreviewCanvas">
+                                    <Canvas.Background>
+                                        <VisualBrush Stretch="None" AlignmentY="Top">
+                                            <VisualBrush.Visual>
+                                                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="15">
+                                                    <Rectangle x:Name="Preview" Width="{Binding ActualWidth, ElementName=PreviewCanvas}">
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush GradientStops="{Binding ColorGradient.Colors, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                </materialDesign:Card>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Canvas.Background>
+                                </Canvas>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Top" Value="40" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:GradientEditorColor
+                                    ColorGradient="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=controls:MaterialWindow}, Path=ColorGradient}"
+                                    GradientColor="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
 
                 <TextBlock Margin="15 15 0 0">Stops</TextBlock>
                 <Separator Margin="15 5" />
