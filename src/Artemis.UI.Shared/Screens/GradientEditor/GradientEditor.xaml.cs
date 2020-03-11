@@ -32,7 +32,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             InitializeComponent();
             ColorGradient = colorGradient;
         }
-        
+
         public ColorGradient ColorGradient
         {
             get => (ColorGradient) GetValue(ColorGradientProperty);
@@ -56,6 +56,15 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             editor._inCallback = true;
             editor.OnPropertyChanged(nameof(ColorGradient));
             editor._inCallback = false;
+        }
+
+        private void Rectangle_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var position = e.GetPosition((IInputElement) sender);
+            // Position ranges from 0.0 to 1.0
+            var newPosition = (float) Math.Min(1, Math.Max(0, Math.Round((position.X) / 435.0, 3, MidpointRounding.AwayFromZero)));
+
+            ColorGradient.Colors.Add(new ColorGradientColor(ColorGradient.GetColor(newPosition), newPosition));
         }
     }
 }

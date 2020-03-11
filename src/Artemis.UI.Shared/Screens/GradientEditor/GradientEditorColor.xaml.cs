@@ -99,6 +99,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             }
 
             ((IInputElement) sender).ReleaseMouseCapture();
+            e.Handled = true;
         }
 
         private void ColorStop_MouseMove(object sender, MouseEventArgs e)
