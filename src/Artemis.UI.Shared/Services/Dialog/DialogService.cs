@@ -95,14 +95,18 @@ namespace Artemis.UI.Shared.Services.Dialog
                 new ConstructorArgument("message", message),
                 new ConstructorArgument("exception", exception)
             };
-            try
+
+            await Execute.OnUIThreadAsync(async () =>
             {
-                await Execute.OnUIThreadAsync(async () => await ShowDialog<ExceptionDialogViewModel>(arguments));
-            }
-            catch (Exception)
-            {
-                //ignored   
-            }
+                try
+                {
+                    await ShowDialog<ExceptionDialogViewModel>(arguments);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            });
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)

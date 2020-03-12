@@ -38,7 +38,15 @@ namespace Artemis.UI
             var viewManager = Kernel.Get<IViewManager>();
 
             // Create the Artemis core
-            _core = Kernel.Get<ICoreService>();
+            try
+            {
+                _core = Kernel.Get<ICoreService>();
+            }
+            catch (Exception e)
+            {
+                HandleFatalException(e, logger);
+                throw;
+            }
 
             // Create and bind the root view, this is a tray icon so don't show it with the window manager
             Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));
@@ -58,19 +66,7 @@ namespace Artemis.UI
                 }
                 catch (Exception e)
                 {
-                    logger.Fatal(e, "Fatal exception during initialization, shutting down.");
-
-                    // Can't use a pretty exception dialog here since the UI might not even be visible
-                    Execute.OnUIThread(() =>
-                    {
-                        Kernel.Get<IWindowManager>().ShowMessageBox(e.Message + "\n\n Please refer the log file for more details.",
-                            "Fatal exception during initialization",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Error
-                        );
-                        Environment.Exit(1);
-                    });
-
+                    HandleFatalException(e, logger);
                     throw;
                 }
             });
@@ -104,6 +100,22 @@ namespace Artemis.UI
 
             // Don't shut down, is that a good idea? Depends on the exception of course..
             e.Handled = true;
+        }
+
+        private void HandleFatalException(Exception e, ILogger logger)
+        {
+            logger.Fatal(e, "Fatal exception during initialization, shutting down.");
+
+            // Can't use a pretty exception dialog here since the UI might not even be visible
+            Execute.OnUIThread(() =>
+            {
+                Kernel.Get<IWindowManager>().ShowMessageBox(e.Message + "\n\n Please refer the log file for more details.",
+                    "Fatal exception during initialization",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+                Environment.Exit(1);
+            });
         }
 
         private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)
