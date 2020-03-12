@@ -1,9 +1,10 @@
-﻿using System.Windows;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Utilities;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Stylet;
 
@@ -11,9 +12,10 @@ namespace Artemis.UI.Screens
 {
     public class TrayViewModel : Screen
     {
+        private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
-        private readonly IEventAggregator _eventAggregator;
+        private bool _setGradientPickerService;
         private SplashViewModel _splashViewModel;
 
         public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
@@ -38,6 +40,14 @@ namespace Artemis.UI.Screens
         {
             if (!CanShowRootViewModel)
                 return;
+
+            // The gradient picker must have a reference to this service to be able to load saved gradients.
+            // To avoid wasting resources, only set the service once and not until showing the UI.
+            if (!_setGradientPickerService)
+            {
+                GradientPicker.GradientPickerService = _kernel.Get<IGradientPickerService>();
+                _setGradientPickerService = true;
+            }
 
             CanShowRootViewModel = false;
             Execute.OnUIThread(() =>
