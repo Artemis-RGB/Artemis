@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Artemis.Core.Events;
-using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;

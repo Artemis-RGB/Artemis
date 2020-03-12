@@ -39,7 +39,14 @@ namespace Artemis.Core.Ninject
                     .Configure(c => c.When(HasAccessToProtectedService).InSingletonScope());
             });
 
-            Kernel.Bind<LiteRepository>().ToMethod(t => new LiteRepository(Constants.ConnectionString)).InSingletonScope();
+            Kernel.Bind<LiteRepository>().ToMethod(t =>
+            {
+                // Ensure the data folder exists
+                if (!Directory.Exists(Constants.DataFolder))
+                    Directory.CreateDirectory(Constants.DataFolder);
+
+                return new LiteRepository(Constants.ConnectionString);
+            }).InSingletonScope();
 
             // Bind all repositories as singletons
             Kernel.Bind(x =>
