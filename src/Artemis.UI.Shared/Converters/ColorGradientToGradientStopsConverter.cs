@@ -14,12 +14,12 @@ namespace Artemis.UI.Shared.Converters
     ///     Converts  <see cref="T:Artemis.Core.Models.Profile.ColorGradient" /> into a
     ///     <see cref="T:System.Windows.Media.GradientStopCollection" />.
     /// </summary>
-    [ValueConversion(typeof(BindableCollection<ColorGradientColor>), typeof(GradientStopCollection))]
+    [ValueConversion(typeof(BindableCollection<ColorGradientStop>), typeof(GradientStopCollection))]
     public class ColorGradientToGradientStopsConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var colorGradients = (BindableCollection<ColorGradientColor>) value;
+            var colorGradients = (BindableCollection<ColorGradientStop>) value;
             var collection = new GradientStopCollection();
             if (colorGradients == null)
                 return collection;
@@ -32,12 +32,12 @@ namespace Artemis.UI.Shared.Converters
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = (GradientStopCollection) value;
-            var colorGradients = new BindableCollection<ColorGradientColor>();
+            var colorGradients = new BindableCollection<ColorGradientStop>();
             if (collection == null)
                 return colorGradients;
 
             foreach (var c in collection.OrderBy(s => s.Offset))
-                colorGradients.Add(new ColorGradientColor(new SKColor(c.Color.R, c.Color.G, c.Color.B, c.Color.A), (float) c.Offset));
+                colorGradients.Add(new ColorGradientStop(new SKColor(c.Color.R, c.Color.G, c.Color.B, c.Color.A), (float) c.Offset));
             return colorGradients;
         }
     }

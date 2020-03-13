@@ -43,7 +43,7 @@
         <Ellipse Stroke="{DynamicResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
             <Ellipse.Fill>
                 <LinearGradientBrush
-                    GradientStops="{Binding ColorGradient.Colors, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
+                    GradientStops="{Binding ColorGradient.Stops, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />
             </Ellipse.Fill>
         </Ellipse>
     </Border>

@@ -27,12 +27,12 @@ namespace Artemis.Plugins.LayerBrushes.Color
             GradientTypeProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
             GradientProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
             GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader(_shaderBounds);
-            if (!GradientProperty.Value.Colors.Any())
+            if (!GradientProperty.Value.Stops.Any())
             {
                 for (var i = 0; i < 9; i++)
                 {
                     var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
-                    GradientProperty.Value.Colors.Add(new ColorGradientColor(color, 0.125f * i));
+                    GradientProperty.Value.Stops.Add(new ColorGradientStop(color, 0.125f * i));
                 }
             }
         }
@@ -74,17 +74,17 @@ namespace Artemis.Plugins.LayerBrushes.Color
                 case GradientType.LinearGradient:
                     shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(pathBounds.Width, 0),
                         GradientProperty.Value.GetColorsArray(),
-                        GradientProperty.Value.GetColorPositionsArray(), SKShaderTileMode.Repeat);
+                        GradientProperty.Value.GetPositionsArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.RadialGradient:
                     shader = SKShader.CreateRadialGradient(center, Math.Min(pathBounds.Width, pathBounds.Height),
                         GradientProperty.Value.GetColorsArray(),
-                        GradientProperty.Value.GetColorPositionsArray(), SKShaderTileMode.Repeat);
+                        GradientProperty.Value.GetPositionsArray(), SKShaderTileMode.Repeat);
                     break;
                 case GradientType.SweepGradient:
                     shader = SKShader.CreateSweepGradient(center,
                         GradientProperty.Value.GetColorsArray(),
-                        GradientProperty.Value.GetColorPositionsArray(), SKShaderTileMode.Clamp, 0, 360);
+                        GradientProperty.Value.GetPositionsArray(), SKShaderTileMode.Clamp, 0, 360);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

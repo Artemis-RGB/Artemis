@@ -9,6 +9,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Splash;
+using Artemis.UI.Shared.Ninject;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Stylet;
 using Ninject;
@@ -76,10 +77,12 @@ namespace Artemis.UI
         {
             kernel.Settings.InjectNonPublic = true;
 
-            // Load this assembly's module
+            // Load the UI modules
             kernel.Load<UIModule>();
+            kernel.Load<SharedUIModule>();
             // Load the core assembly's module
             kernel.Load<CoreModule>();
+
             base.ConfigureIoC(kernel);
         }
 

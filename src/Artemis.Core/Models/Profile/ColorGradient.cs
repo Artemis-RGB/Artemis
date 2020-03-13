@@ -12,20 +12,20 @@ namespace Artemis.Core.Models.Profile
     {
         public ColorGradient()
         {
-            Colors = new BindableCollection<ColorGradientColor>();
+            Stops = new BindableCollection<ColorGradientStop>();
         }
 
-        public BindableCollection<ColorGradientColor> Colors { get; }
+        public BindableCollection<ColorGradientStop> Stops { get; }
         public float Rotation { get; set; }
 
         public SKColor[] GetColorsArray()
         {
-            return Colors.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
+            return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
         }
 
-        public float[] GetColorPositionsArray()
+        public float[] GetPositionsArray()
         {
-            return Colors.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
+            return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
         }
 
         #region PropertyChanged
@@ -42,18 +42,18 @@ namespace Artemis.Core.Models.Profile
 
         public void OnColorValuesUpdated()
         {
-            OnPropertyChanged(nameof(Colors));
+            OnPropertyChanged(nameof(Stops));
         }
 
         public SKColor GetColor(float position)
         {
-            var point = Colors.SingleOrDefault(f => f.Position == position);
+            var point = Stops.SingleOrDefault(f => f.Position == position);
             if (point != null) return point.Color;
 
-            var before = Colors.First(w => w.Position == Colors.Min(m => m.Position));
-            var after = Colors.First(w => w.Position == Colors.Max(m => m.Position));
+            var before = Stops.First(w => w.Position == Stops.Min(m => m.Position));
+            var after = Stops.First(w => w.Position == Stops.Max(m => m.Position));
 
-            foreach (var gs in Colors)
+            foreach (var gs in Stops)
             {
                 if (gs.Position < position && gs.Position > before.Position)
                     before = gs;
@@ -71,9 +71,9 @@ namespace Artemis.Core.Models.Profile
         }
     }
 
-    public class ColorGradientColor : INotifyPropertyChanged
+    public class ColorGradientStop : INotifyPropertyChanged
     {
-        public ColorGradientColor(SKColor color, float position)
+        public ColorGradientStop(SKColor color, float position)
         {
             Color = color;
             Position = position;
