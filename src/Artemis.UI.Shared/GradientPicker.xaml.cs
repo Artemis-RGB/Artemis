@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Shared.Annotations;
-using Artemis.UI.Shared.Screens.GradientEditor;
 using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared
@@ -16,8 +15,16 @@ namespace Artemis.UI.Shared
     /// </summary>
     public partial class GradientPicker : UserControl, INotifyPropertyChanged
     {
+        private static IGradientPickerService _gradientPickerService;
+        private bool _inCallback;
+
+        public GradientPicker()
+        {
+            InitializeComponent();
+        }
+
         /// <summary>
-        /// Used by the gradient picker to load saved gradients, do not touch or it'll just throw an exception
+        ///     Used by the gradient picker to load saved gradients, do not touch or it'll just throw an exception
         /// </summary>
         public static IGradientPickerService GradientPickerService
         {
@@ -30,25 +37,9 @@ namespace Artemis.UI.Shared
             }
         }
 
-        public static readonly DependencyProperty ColorGradientProperty = DependencyProperty.Register(nameof(ColorGradient), typeof(ColorGradient), typeof(GradientPicker),
-            new FrameworkPropertyMetadata(default(ColorGradient), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorGradientPropertyChangedCallback));
-
-        public static readonly RoutedEvent ColorGradientChangedEvent =
-            EventManager.RegisterRoutedEvent(
-                nameof(ColorGradient),
-                RoutingStrategy.Bubble,
-                typeof(RoutedPropertyChangedEventHandler<ColorGradient>),
-                typeof(GradientPicker));
-
-        private static IGradientPickerService _gradientPickerService;
-
-        private bool _inCallback;
-
-        public GradientPicker()
-        {
-            InitializeComponent();
-        }
-
+        /// <summary>
+        ///     Gets or sets the currently selected color gradient
+        /// </summary>
         public ColorGradient ColorGradient
         {
             get => (ColorGradient) GetValue(ColorGradientProperty);
@@ -76,8 +67,17 @@ namespace Artemis.UI.Shared
 
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            var gradientEditor = new GradientEditor(ColorGradient);
-            gradientEditor.ShowDialog();
+            GradientPickerService.ShowGradientPicker(ColorGradient);
         }
+
+        #region Static WPF fields
+
+        public static readonly DependencyProperty ColorGradientProperty = DependencyProperty.Register(nameof(ColorGradient), typeof(ColorGradient), typeof(GradientPicker),
+            new FrameworkPropertyMetadata(default(ColorGradient), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorGradientPropertyChangedCallback));
+
+        public static readonly RoutedEvent ColorGradientChangedEvent =
+            EventManager.RegisterRoutedEvent(nameof(ColorGradient), RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ColorGradient>), typeof(GradientPicker));
+
+        #endregion
     }
 }
