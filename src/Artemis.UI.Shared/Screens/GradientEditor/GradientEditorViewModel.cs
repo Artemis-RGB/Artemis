@@ -1,46 +1,79 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Shared.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
 {
     public class GradientEditorViewModel : Screen
     {
+        private ColorStopViewModel _selectedColorStopViewModel;
+
         public GradientEditorViewModel(ColorGradient colorGradient)
         {
             ColorGradient = colorGradient;
             ColorStopViewModels = new BindableCollection<ColorStopViewModel>();
 
-            ColorGradient.PropertyChanged += ColorGradientOnPropertyChanged;
-            UpdateColorStopViewModels();
+            foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
+                ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
         }
-        
+
         public BindableCollection<ColorStopViewModel> ColorStopViewModels { get; set; }
 
-        public ColorGradient ColorGradient { get; }
-        public double PreviewWidth => 440;
-
-        private void ColorGradientOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        public ColorStopViewModel SelectedColorStopViewModel
         {
-            if (e.PropertyName == nameof(ColorGradient.Stops))
-                UpdateColorStopViewModels();
+            get => _selectedColorStopViewModel;
+            set
+            {
+                SetAndNotify(ref _selectedColorStopViewModel, value);
+                NotifyOfPropertyChange(nameof(HasSelectedColorStopViewModel));
+            }
         }
 
-        private void UpdateColorStopViewModels()
-        {
-            while (ColorGradient.Stops.Count > ColorStopViewModels.Count)
-                ColorStopViewModels.Add(new ColorStopViewModel(this));
-            while (ColorGradient.Stops.Count < ColorStopViewModels.Count)
-                ColorStopViewModels.RemoveAt(0);
+        public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
 
-            var index = 0;
-            foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
-            {
-                var viewModel = ColorStopViewModels[index];
-                viewModel.Update(colorStop);
-                index++;
-            }
+        public ColorGradient ColorGradient { get; }
+        public double PreviewWidth => 437.5;
+
+        public void AddColorStop(object sender, MouseEventArgs e)
+        {
+            var child = VisualTreeUtilities.FindChild<Canvas>((DependencyObject) sender, null);
+            var position = (float) (e.GetPosition(child).X / PreviewWidth);
+            var stop = new ColorGradientStop(ColorGradient.GetColor(position), position);
+            ColorGradient.Stops.Add(stop);
+            ColorGradient.OnColorValuesUpdated();
+
+            var index = ColorGradient.Stops.OrderBy(s => s.Position).ToList().IndexOf(stop);
+            var viewModel = new ColorStopViewModel(this, stop);
+            ColorStopViewModels.Insert(index, viewModel);
+
+            SelectColorStop(viewModel);
+        }
+
+        public void RemoveColorStop(ColorStopViewModel colorStopViewModel)
+        {
+            ColorStopViewModels.Remove(colorStopViewModel);
+            ColorGradient.Stops.Remove(colorStopViewModel.ColorStop);
+            ColorGradient.OnColorValuesUpdated();
+
+            SelectColorStop(null);
+        }
+
+        public Point GetPositionInPreview(object sender, MouseEventArgs e)
+        {
+            var parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
+            return e.GetPosition(parent);
+        }
+
+        public void SelectColorStop(ColorStopViewModel colorStopViewModel)
+        {
+            SelectedColorStopViewModel = colorStopViewModel;
+            foreach (var stopViewModel in ColorStopViewModels)
+                stopViewModel.IsSelected = stopViewModel == SelectedColorStopViewModel;
         }
     }
 }

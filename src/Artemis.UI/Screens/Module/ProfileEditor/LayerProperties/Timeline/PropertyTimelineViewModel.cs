@@ -7,6 +7,7 @@ using System.Windows.Media;
 using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Utilities;
 using Artemis.UI.Utilities;
 using Stylet;
 
