@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace Artemis.UI.Utilities
+namespace Artemis.UI.Shared.Utilities
 {
     public static class HitTestUtilities
     {

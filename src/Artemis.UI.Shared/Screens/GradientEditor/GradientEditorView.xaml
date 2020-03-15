@@ -23,6 +23,7 @@
                          d:DataContext="{d:DesignInstance local:GradientEditorViewModel}">
     <controls:MaterialWindow.Resources>
         <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
+        <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </controls:MaterialWindow.Resources>
     <StackPanel>
         <materialDesign:Card Margin="15 15 15 7" Padding="15">
@@ -48,10 +49,10 @@
                     </Rectangle.Fill>
                 </Rectangle>
 
-                <ItemsControl ItemsSource="{Binding ColorStopViewModels}" Margin="15 0" MouseLeftButtonUp="{s:Action CanvasMouseDown}" Cursor="Cross">
+                <ItemsControl ItemsSource="{Binding ColorStopViewModels}" Margin="15 0" MouseLeftButtonUp="{s:Action AddColorStop}" Cursor="Cross">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas Height="60" Width="440" x:Name="PreviewCanvas" Background="Transparent"/>
+                            <Canvas Height="16" Width="440" x:Name="PreviewCanvas" Background="Transparent"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
@@ -79,15 +80,27 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0" HorizontalAlignment="Right">Color:</Label>
-                    <shared:ColorPicker Grid.Row="0" Grid.Column="1" x:Name="CurrentColor" Width="85" />
+                    <shared:ColorPicker 
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        x:Name="CurrentColor"
+                        Width="85" 
+                        Color="{Binding Path=SelectedColorStopViewModel.ColorStop.Color, Converter={StaticResource SKColorToColorConverter}}"
+                        IsEnabled="{Binding HasSelectedColorStopViewModel}"/>
 
                     <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right">Location:</Label>
                     <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal">
-                        <TextBox x:Name="CurrentLocation" Width="40" />
+                        <TextBox Width="40" Text="{Binding SelectedColorStopViewModel.OffsetPercent}" IsEnabled="{Binding HasSelectedColorStopViewModel}" materialDesign:HintAssist.Hint="0"/>
                         <Label>%</Label>
                     </StackPanel>
 
-                    <Button Grid.Row="0" Grid.Column="4" Style="{StaticResource MaterialDesignRaisedButton}" Width="80" Height="25">
+                    <Button Grid.Row="0" Grid.Column="4" 
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Width="80" 
+                            Height="25" 
+                            IsEnabled="{Binding HasSelectedColorStopViewModel}"
+                            Command="{s:Action RemoveColorStop}" 
+                            CommandParameter="{Binding SelectedColorStopViewModel}">
                         Delete
                     </Button>
                 </Grid>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Artemis.UI.Utilities
+namespace Artemis.UI.Shared.Utilities
 {
     public class ShortcutUtilities
     {

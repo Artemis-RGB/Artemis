@@ -6,20 +6,61 @@
              xmlns:local="clr-namespace:Artemis.UI.Shared.Screens.GradientEditor"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters"
+             xmlns:utilities="clr-namespace:Artemis.UI.Shared.Utilities"
+             xmlns:animationTimeline="clr-namespace:Artemis.UI.Shared.AnimationTimeline"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:ColorStopViewModel}">
+             d:DataContext="{d:DesignInstance local:ColorStopViewModel}" Opacity="1">
     <UserControl.Resources>
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+        <Style TargetType="Path" x:Key="ColorStopStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding WillRemoveColorStop}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="1" To="0" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="Opacity">
+                                <DoubleAnimation From="0" To="1" Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="StrokeThickness">
+                                <DoubleAnimation To="2" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard TargetProperty="StrokeThickness">
+                                <DoubleAnimation To="0" Duration="0:0:0.1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
-    <Path Data="M13.437011,33.065002 C9.7268463,29.334181 7.812011,26.379009 4.874511,23.379009 1.687011,19.566509 0.12600673,17.206803 5.6843419E-14,14.127608 0.062010996,2.0027046 11.158781,-0.062991121 13.43702,0.0014351187 M13.438011,33.065016 C17.148173,29.334199 19.063008,26.379023 22.00051,23.379017 25.188007,19.566519 26.749013,17.206806 26.875018,14.127613 26.813007,2.002704 15.716239,-0.062987381 13.438,0.0014388781"
-          Stroke="{DynamicResource NormalBorderBrush}"
-          StrokeThickness="2"
+    <Path Style="{StaticResource ColorStopStyle}"
+          Data="M13.437011,33.065002 C9.7268463,29.334181 7.812011,26.379009 4.874511,23.379009 1.687011,19.566509 0.12600673,17.206803 5.6843419E-14,14.127608 0.062010996,2.0027046 11.158781,-0.062991121 13.43702,0.0014351187 M13.438011,33.065016 C17.148173,29.334199 19.063008,26.379023 22.00051,23.379017 25.188007,19.566519 26.749013,17.206806 26.875018,14.127613 26.813007,2.002704 15.716239,-0.062987381 13.438,0.0014388781"
+          Stroke="{DynamicResource MaterialDesignBody}"
+          StrokeThickness="0"
           Cursor="Hand"
           MouseDown="{s:Action StopMouseDown}"
           MouseUp="{s:Action StopMouseUp}"
-          MouseMove="{s:Action StopMouseMove}"
-          Fill="{Binding Path=Color, Converter={StaticResource SKColorToColorConverter}}">
+          MouseMove="{s:Action StopMouseMove}">
+        <Path.Fill>
+            <SolidColorBrush Color="{Binding Path=ColorStop.Color, Converter={StaticResource SKColorToColorConverter}}" />
+        </Path.Fill>
         <Path.RenderTransform>
             <TransformGroup>
                 <RotateTransform Angle="180" />

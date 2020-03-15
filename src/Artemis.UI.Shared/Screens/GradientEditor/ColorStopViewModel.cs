@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using Artemis.Core.Models.Profile;
-using PropertyChanged;
-using SkiaSharp;
+using Artemis.UI.Shared.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
@@ -12,69 +14,107 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
     public class ColorStopViewModel : PropertyChangedBase
     {
         private readonly GradientEditorViewModel _gradientEditorViewModel;
+        private bool _isSelected;
+        private bool _willRemoveColorStop;
 
-        public ColorStopViewModel(GradientEditorViewModel gradientEditorViewModel)
+        public ColorStopViewModel(GradientEditorViewModel gradientEditorViewModel, ColorGradientStop colorStop)
         {
             _gradientEditorViewModel = gradientEditorViewModel;
+            ColorStop = colorStop;
+            ColorStop.PropertyChanged += ColorStopOnPropertyChanged;
         }
 
-        public ColorGradientStop ColorStop { get; set; }
-        public double Offset => ColorStop.Position * _gradientEditorViewModel.PreviewWidth;
-        public SKColor Color => ColorStop.Color;
+        private void ColorStopOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
+        }
+
+        public ColorGradientStop ColorStop { get; }
+
+        public double Offset
+        {
+            get => ColorStop.Position * _gradientEditorViewModel.PreviewWidth;
+            set
+            {
+                ColorStop.Position = (float) Math.Round(value / _gradientEditorViewModel.PreviewWidth, 3, MidpointRounding.AwayFromZero);
+                NotifyOfPropertyChange(nameof(Offset));
+                NotifyOfPropertyChange(nameof(OffsetPercent));
+            }
+        }
+
+        public float OffsetPercent
+        {
+            get => (float) Math.Round(ColorStop.Position * 100.0, MidpointRounding.AwayFromZero);
+            set
+            {
+                ColorStop.Position = Math.Min(100, Math.Max(0, value)) / 100f;
+                NotifyOfPropertyChange(nameof(Offset));
+                NotifyOfPropertyChange(nameof(OffsetPercent));
+            }
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
+
+        public bool WillRemoveColorStop
+        {
+            get => _willRemoveColorStop;
+            set => SetAndNotify(ref _willRemoveColorStop, value);
+        }
 
         #region Movement
-
-        private double _mouseDownOffset;
-        private DateTime _mouseDownTime;
-
+        
         public void StopMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var position = GetPositionInPreview(sender, e);
+            e.Handled = true;
+
             ((IInputElement) sender).CaptureMouse();
-            _mouseDownOffset = Offset - position.X;
-            _mouseDownTime = DateTime.Now;
+            _gradientEditorViewModel.SelectColorStop(this);
         }
 
         public void StopMouseUp(object sender, MouseButtonEventArgs e)
         {
-            // On regular click, select this color stop
-            if (DateTime.Now - _mouseDownTime <= TimeSpan.FromMilliseconds(250))
-            {
-            }
+            e.Handled = true;
 
             ((IInputElement) sender).ReleaseMouseCapture();
-            e.Handled = true;
+            if (WillRemoveColorStop)
+                _gradientEditorViewModel.RemoveColorStop(this);
         }
 
         public void StopMouseMove(object sender, MouseEventArgs e)
         {
+            e.Handled = true;
+
             if (!((IInputElement) sender).IsMouseCaptured)
                 return;
 
-            var position = GetPositionInPreview(sender, e);
-            // Scale down with a precision of 3 decimals
-            var newPosition = Math.Round((position.X + _mouseDownOffset) / _gradientEditorViewModel.PreviewWidth, 3, MidpointRounding.AwayFromZero);
-            // Limit from 0.0 to 1.0
-            newPosition = Math.Min(1, Math.Max(0, newPosition));
+            var parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
+            var position = e.GetPosition(parent);
+            if (position.Y > 50)
+            {
+                WillRemoveColorStop = true;
+                return;
+            }
 
-            ColorStop.Position = (float) newPosition;
-            NotifyOfPropertyChange(() => Offset);
-            NotifyOfPropertyChange(() => Color);
-        }
+            WillRemoveColorStop = false;
 
-        private Point GetPositionInPreview(object sender, MouseEventArgs e)
-        {
-            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
-            return e.GetPosition((IInputElement) parent);
+            var minValue = 0.0;
+            var maxValue = _gradientEditorViewModel.PreviewWidth;
+            var stops = _gradientEditorViewModel.ColorGradient.Stops.OrderBy(s => s.Position).ToList();
+            var previous = stops.IndexOf(ColorStop) >= 1 ? stops[stops.IndexOf(ColorStop) - 1] : null;
+            var next = stops.IndexOf(ColorStop) + 1 < stops.Count ? stops[stops.IndexOf(ColorStop) + 1] : null;
+            if (previous != null)
+                minValue = previous.Position * _gradientEditorViewModel.PreviewWidth;
+            if (next != null)
+                maxValue = next.Position * _gradientEditorViewModel.PreviewWidth;
+
+            Offset = Math.Max(minValue, Math.Min(maxValue, position.X));
+            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
         }
 
         #endregion
-
-        public void Update(ColorGradientStop colorStop)
-        {
-            ColorStop = colorStop;
-            NotifyOfPropertyChange(() => Offset);
-            NotifyOfPropertyChange(() => Color);
-        }
     }
 }

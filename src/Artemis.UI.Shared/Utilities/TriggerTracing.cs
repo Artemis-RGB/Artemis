@@ -20,7 +20,7 @@ using System.Windows.Media.Animation;
 //
 // As this works on anything that inherits from TriggerBase, it will also work on <MultiTrigger>.
 
-namespace Artemis.UI.Utilities
+namespace Artemis.UI.Shared.Utilities
 {
     #if DEBUG
 

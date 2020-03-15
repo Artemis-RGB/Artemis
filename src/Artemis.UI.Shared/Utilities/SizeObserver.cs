@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Artemis.UI.Utilities
+namespace Artemis.UI.Shared.Utilities
 {
     public static class SizeObserver
     {
