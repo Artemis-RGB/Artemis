@@ -41,13 +41,11 @@
     <Page Remove="publish\**" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="RGB.NET.Core, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RGB.NET.Core">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
     </Reference>
-    <Reference Include="RGB.NET.Groups, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Groups.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RGB.NET.Groups">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Groups.dll</HintPath>
     </Reference>
     <Reference Include="System.Management" />
   </ItemGroup>
