@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
@@ -24,7 +25,14 @@ namespace Artemis.Plugins.Devices.Razer
             RGB.NET.Devices.Razer.RazerDeviceProvider.PossibleX86NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x86", "RzChromaSDK.dll"));
             // RGB.NET.Devices.Razer.RazerDeviceProvider.Instance.LoadEmulatorDevices = true;
 
-            _rgbService.AddDeviceProvider(RgbDeviceProvider);
+            try
+            {
+                _rgbService.AddDeviceProvider(RgbDeviceProvider);
+            }
+            catch (RazerException e)
+            {
+                throw new ArtemisPluginException("Failed to activate Razer plugin, error code: " + e.ErrorCode, e);
+            }
         }
     }
 }
