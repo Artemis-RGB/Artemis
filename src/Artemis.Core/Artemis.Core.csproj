@@ -15,24 +15,6 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RGB.NET.Brushes, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Brushes.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="RGB.NET.Core, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="RGB.NET.Decorators, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Decorators.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="RGB.NET.Groups, Version=0.1.25.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\RGB.NET\bin\net45\RGB.NET.Groups.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
       <Private>false</Private>
     </ProjectReference>
@@ -58,5 +40,19 @@
     <PackageReference Include="System.Reflection.Metadata" Version="1.8.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="RGB.NET.Brushes">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Brushes.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Core">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Decorators">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Decorators.dll</HintPath>
+    </Reference>
+    <Reference Include="RGB.NET.Groups">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Groups.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
