@@ -16,8 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public static readonly DependencyProperty PixelsPerSecondProperty = DependencyProperty.Register(nameof(PixelsPerSecond), typeof(int), typeof(PropertyTimelineHeader),
             new FrameworkPropertyMetadata(default(int), FrameworkPropertyMetadataOptions.AffectsRender));
-
-
+        
         public static readonly DependencyProperty HorizontalOffsetProperty = DependencyProperty.Register(nameof(HorizontalOffset), typeof(double), typeof(PropertyTimelineHeader),
             new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsRender));
 

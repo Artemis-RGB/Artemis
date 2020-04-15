@@ -100,6 +100,7 @@ namespace Artemis.UI.Shared.Services.Dialog
             {
                 try
                 {
+                    DialogHost.CloseDialogCommand.Execute(new object(), null);
                     await ShowDialog<ExceptionDialogViewModel>(arguments);
                 }
                 catch (Exception)
@@ -122,7 +123,7 @@ namespace Artemis.UI.Shared.Services.Dialog
                 else
                     result = DialogHost.Show(view, identifier, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
             });
-
+            
             return await result;
         }
     }

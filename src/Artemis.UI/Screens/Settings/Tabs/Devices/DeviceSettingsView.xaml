@@ -6,6 +6,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Devices"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              d:DataContext="{d:DesignInstance devices:DeviceSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -29,8 +30,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Rectangle Grid.Row="0" Height="140" Width="196" Fill="{DynamicResource MaterialDesignPaper}" />
-            <Image Grid.Row="0" Source="{Binding Device.RgbDevice.DeviceInfo.Image}" Height="130" Width="190"
-                   RenderOptions.BitmapScalingMode="HighQuality" />
+            <controls:DeviceVisualizer Device="{Binding Device}" RenderOptions.BitmapScalingMode="HighQuality" Grid.Row="0" Height="130" Width="190" />
             <Button Grid.Row="0"
                     Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                     HorizontalAlignment="Right"
