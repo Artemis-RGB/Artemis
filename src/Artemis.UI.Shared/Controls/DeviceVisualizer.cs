@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
-using Stylet;
 
 namespace Artemis.UI.Shared.Controls
 {
-    public class DeviceVisualizer : FrameworkElement
+    public class DeviceVisualizer : FrameworkElement, IDisposable
     {
         public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(nameof(Device), typeof(ArtemisDevice), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(ArtemisDevice), FrameworkPropertyMetadataOptions.AffectsRender, DevicePropertyChangedCallback));
@@ -20,18 +17,26 @@ namespace Artemis.UI.Shared.Controls
         public static readonly DependencyProperty ShowColorsProperty = DependencyProperty.Register(nameof(ShowColors), typeof(bool), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender));
 
+        private readonly DrawingGroup _backingStore;
+        private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private BitmapImage _deviceImage;
-        private List<DeviceVisualizerLed> _deviceVisualizerLeds;
-        private DrawingGroup _backingStore;
+        private RGBSurface _subscribedSurface;
 
-        private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public DeviceVisualizer()
         {
-            var deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() =>
+            _backingStore = new DrawingGroup();
+            _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
+
+            Unloaded += (sender, args) => Dispose();
+        }
+        
+        public void Dispose()
+        {
+            if (_subscribedSurface != null)
             {
-                deviceVisualizer.SubscribeToSurfaceUpdate((ArtemisDevice) e.OldValue, (ArtemisDevice) e.NewValue);
-                deviceVisualizer.Initialize();
-            });
+                _subscribedSurface.Updated -= RgbSurfaceOnUpdated;
+                _subscribedSurface = null;
+            }
         }
 
         public ArtemisDevice Device
@@ -46,10 +51,40 @@ namespace Artemis.UI.Shared.Controls
             set => SetValue(ShowColorsProperty, value);
         }
 
-        public DeviceVisualizer()
+        protected override void OnRender(DrawingContext drawingContext)
         {
-            _backingStore = new DrawingGroup();
-            _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
+            if (Device == null)
+                return;
+
+            // Determine the scale required to fit the desired size of the control
+            var scale = Math.Min(DesiredSize.Width / Device.RgbDevice.Size.Width, DesiredSize.Height / Device.RgbDevice.Size.Height);
+            var scaledRect = new Rect(0, 0, Device.RgbDevice.Size.Width * scale, Device.RgbDevice.Size.Height * scale);
+
+            // Center and scale the visualization in the desired bounding box
+            if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
+            {
+                drawingContext.PushTransform(new TranslateTransform(DesiredSize.Width / 2 - scaledRect.Width / 2, DesiredSize.Height / 2 - scaledRect.Height / 2));
+                drawingContext.PushTransform(new ScaleTransform(scale, scale));
+            }
+
+            // Render device and LED images 
+            if (_deviceImage != null)
+                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
+
+            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                deviceVisualizerLed.Render(drawingContext, false);
+
+            drawingContext.DrawDrawing(_backingStore);
+        }
+
+        private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var deviceVisualizer = (DeviceVisualizer) d;
+            deviceVisualizer.Dispatcher.Invoke(() =>
+            {
+                deviceVisualizer.SubscribeToSurfaceUpdate((ArtemisDevice) e.NewValue);
+                deviceVisualizer.Initialize();
+            });
         }
 
 
@@ -66,28 +101,29 @@ namespace Artemis.UI.Shared.Controls
                 _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
 
             // Create all the LEDs
-            foreach (var artemisLed in Device.Leds)
-            {
-                _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
-            }
+            foreach (var artemisLed in Device.Leds) _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
         }
 
-        private void SubscribeToSurfaceUpdate(ArtemisDevice oldValue, ArtemisDevice newValue)
+        private void SubscribeToSurfaceUpdate(ArtemisDevice newValue)
         {
-            if (oldValue != null)
-                oldValue.Surface.RgbSurface.Updated -= RgbSurfaceOnUpdated;
-            if (newValue != null)
+            if (newValue.Surface.RgbSurface == _subscribedSurface)
+                return;
+
+            // Remove subscription from old surface
+            if (_subscribedSurface != null)
+                _subscribedSurface.Updated -= RgbSurfaceOnUpdated;
+            // Subscribe to new surface
+            if (newValue.Surface.RgbSurface != null)
                 newValue.Surface.RgbSurface.Updated += RgbSurfaceOnUpdated;
+
+            _subscribedSurface = newValue.Surface.RgbSurface;
         }
 
-        private void RgbSurfaceOnUpdated(UpdatedEventArgs args)
+        private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                if (ShowColors)
-                {
-                    Render();
-                }
+                if (ShowColors) Render();
             });
         }
 
@@ -99,32 +135,6 @@ namespace Artemis.UI.Shared.Controls
                 deviceVisualizerLed.Render(drawingContext, true);
 
             drawingContext.Close();
-        }
-
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            if (Device == null)
-                return;
-
-            // Determine the scale required to fit the desired size of the control
-            var scale = Math.Min(DesiredSize.Width / Device.RgbDevice.Size.Width, DesiredSize.Height / Device.RgbDevice.Size.Height);
-            var scaledRect = new Rect(0, 0, Device.RgbDevice.Size.Width * scale, Device.RgbDevice.Size.Height * scale);
-            
-            // Center and scale the visualization in the desired bounding box
-            if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
-            {
-                drawingContext.PushTransform(new TranslateTransform(DesiredSize.Width / 2 - scaledRect.Width / 2, DesiredSize.Height / 2 - scaledRect.Height / 2));
-                drawingContext.PushTransform(new ScaleTransform(scale, scale));
-            }
-
-            // Render device and LED images 
-            if (_deviceImage != null)
-                drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
-
-            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.Render(drawingContext, false);
-
-            drawingContext.DrawDrawing(_backingStore);
         }
     }
 }
