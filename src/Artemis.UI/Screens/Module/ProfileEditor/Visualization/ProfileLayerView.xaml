@@ -49,8 +49,8 @@
         <Rectangle Width="{Binding LayerRect.Width}" 
                    Height="{Binding LayerRect.Height}" 
                    Margin="{Binding LayerRectMargin}" 
-                   StrokeThickness="2" 
-                   StrokeDashArray="1 1"
+                   StrokeThickness="1" 
+                   StrokeDashArray="4 2"
                    StrokeLineJoin="Round" 
                    x:Name="LayerPath">
             <Rectangle.Stroke>
