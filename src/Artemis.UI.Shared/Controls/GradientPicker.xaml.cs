@@ -8,7 +8,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.UI.Shared.Annotations;
 using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Controls
 {
     /// <summary>
     ///     Interaction logic for GradientPicker.xaml

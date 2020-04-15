@@ -6,12 +6,13 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput"
              xmlns:artemis="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:ColorGradientPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
         <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputPrefix}" />
-        <artemis:GradientPicker Width="132"
+        <controls:GradientPicker Width="132"
                                 Margin="0 2"
                                 Padding="0 -1"
                                 ColorGradient="{Binding ColorGradientInputValue}" />

@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.Visualization"
              xmlns:utilities="clr-namespace:Artemis.UI.Shared.Utilities;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="510.9" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileEditor:ProfileViewModel}}">
@@ -107,7 +108,7 @@
                         <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                     </TransformGroup>
                 </Grid.RenderTransform>
-                <ItemsControl ItemsSource="{Binding DeviceViewModels}">
+                <ItemsControl ItemsSource="{Binding Devices}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />
@@ -121,7 +122,7 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ContentControl s:View.Model="{Binding}" />
+                            <controls:DeviceVisualizer Device="{Binding}" ShowColors="True"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -153,7 +154,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-
 
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
                 <materialDesign:Card Padding="8">

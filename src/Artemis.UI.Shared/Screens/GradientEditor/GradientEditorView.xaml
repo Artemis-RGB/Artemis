@@ -9,6 +9,7 @@
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                          xmlns:shared="clr-namespace:Artemis.UI.Shared"
                          xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls"
                          mc:Ignorable="d"
                          Title="Gradient Editor"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -80,7 +81,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0" HorizontalAlignment="Right">Color:</Label>
-                    <shared:ColorPicker 
+                    <controls1:ColorPicker 
                         Grid.Row="0"
                         Grid.Column="1"
                         x:Name="CurrentColor"

@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
-using Artemis.UI.Extensions;
 using Artemis.UI.Properties;
 using Artemis.UI.Services.Interfaces;
 
@@ -31,17 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             var selectedRect = new Rect(MouseDownStartPosition, position);
 
             // Get selected LEDs
-            var selectedLeds = new List<ArtemisLed>();
-            foreach (var device in ProfileViewModel.DeviceViewModels)
-            {
-                foreach (var ledViewModel in device.Leds)
-                {
-                    if (ledViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1).IntersectsWith(selectedRect))
-                        selectedLeds.Add(ledViewModel.Led);
-                    // Unselect everything
-                    ledViewModel.IsSelected = false;
-                }
-            }
+            var selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
             // Apply the selection to the selected layer layer
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
@@ -87,17 +74,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
             var position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
             var selectedRect = new Rect(MouseDownStartPosition, position);
+            var selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
-            foreach (var device in ProfileViewModel.DeviceViewModels)
-            {
-                foreach (var ledViewModel in device.Leds)
-                {
-                    if (ledViewModel.Led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1).IntersectsWith(selectedRect))
-                        ledViewModel.IsSelected = true;
-                    else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        ledViewModel.IsSelected = false;
-                }
-            }
+            // Unless shift is held down, clear the current selection
+            if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                ProfileViewModel.SelectedLeds.Clear();
+            ProfileViewModel.SelectedLeds.AddRange(selectedLeds.Except(ProfileViewModel.SelectedLeds));
 
             DragRectangle = selectedRect;
         }

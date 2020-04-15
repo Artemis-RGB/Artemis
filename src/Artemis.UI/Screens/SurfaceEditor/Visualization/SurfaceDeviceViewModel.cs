@@ -9,28 +9,18 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
     public class SurfaceDeviceViewModel : PropertyChangedBase
     {
-        private readonly List<SurfaceLedViewModel> _leds;
         private double _dragOffsetX;
         private double _dragOffsetY;
 
         public SurfaceDeviceViewModel(ArtemisDevice device)
         {
             Device = device;
-            _leds = new List<SurfaceLedViewModel>();
-
-            if (Device.RgbDevice != null)
-            {
-                foreach (var led in Device.RgbDevice)
-                    _leds.Add(new SurfaceLedViewModel(led));
-            }
         }
 
         public ArtemisDevice Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
-
-        public IReadOnlyCollection<SurfaceLedViewModel> Leds => _leds.AsReadOnly();
-
+        
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
             : new Rect(Device.X, Device.Y, Device.RgbDevice.DeviceRectangle.Size.Width, Device.RgbDevice.DeviceRectangle.Size.Height);

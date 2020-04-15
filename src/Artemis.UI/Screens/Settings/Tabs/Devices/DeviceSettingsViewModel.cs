@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 using Humanizer;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
@@ -8,10 +11,12 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     public class DeviceSettingsViewModel
     {
         private readonly IDeviceService _deviceService;
+        private readonly IDialogService _dialogService;
 
-        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService)
+        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService)
         {
             _deviceService = deviceService;
+            _dialogService = dialogService;
             Device = device;
 
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
@@ -36,9 +41,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         {
         }
 
-        public void OpenPluginDirectory()
+        public async void OpenPluginDirectory()
         {
-            Process.Start(Device.Plugin.PluginInfo.Directory.FullName);
+            try
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Device.Plugin.PluginInfo.Directory.FullName);
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
+            }
         }
     }
 }
