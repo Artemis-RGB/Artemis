@@ -14,23 +14,25 @@ namespace Artemis.UI.Shared.Controls
         public DeviceVisualizerLed(ArtemisLed led)
         {
             Led = led;
+            LedRect = new Rect(
+                Led.RgbLed.LedRectangle.Location.X,
+                Led.RgbLed.LedRectangle.Location.Y,
+                Led.RgbLed.LedRectangle.Size.Width,
+                Led.RgbLed.LedRectangle.Size.Height
+            );
+
             if (Led.RgbLed.Image != null && File.Exists(Led.RgbLed.Image.AbsolutePath))
                 LedImage = new BitmapImage(Led.RgbLed.Image);
+            
             CreateLedGeometry();
         }
 
+        
         public ArtemisLed Led { get; }
+        public Rect LedRect { get; set; }
         public BitmapImage LedImage { get; set; }
 
         public Geometry DisplayGeometry { get; private set; }
-
-        internal void Render(DrawingContext drawingContext, bool renderGeometry)
-        {
-            if (!renderGeometry)
-                RenderImage(drawingContext);
-            else
-                RenderGeometry(drawingContext);
-        }
 
         private void CreateLedGeometry()
         {
@@ -101,7 +103,7 @@ namespace Artemis.UI.Shared.Controls
             }
         }
 
-        private void RenderGeometry(DrawingContext drawingContext)
+        public void RenderColor(DrawingContext drawingContext)
         {
             if (DisplayGeometry == null)
                 return;
@@ -109,27 +111,29 @@ namespace Artemis.UI.Shared.Controls
             var r = Led.RgbLed.Color.GetR();
             var g = Led.RgbLed.Color.GetG();
             var b = Led.RgbLed.Color.GetB();
-            
-            var fillBrush = new SolidColorBrush(Color.FromArgb(100, r,g,b));
-            fillBrush.Freeze();
-            var penBrush = new SolidColorBrush(Color.FromArgb(255, r, g, b));
-            penBrush.Freeze();
-            
-            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1), DisplayGeometry);
+
+            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
         }
 
-        private void RenderImage(DrawingContext drawingContext)
+        public void RenderImage(DrawingContext drawingContext)
         {
             if (LedImage == null)
                 return;
 
-            var ledRect = new Rect(
-                Led.RgbLed.LedRectangle.Location.X,
-                Led.RgbLed.LedRectangle.Location.Y,
-                Led.RgbLed.LedRectangle.Size.Width,
-                Led.RgbLed.LedRectangle.Size.Height
-            );
-            drawingContext.DrawImage(LedImage, ledRect);
+            drawingContext.DrawImage(LedImage, LedRect);
+        }
+
+        public void RenderOpacityMask(DrawingContext drawingContext)
+        {
+            if (DisplayGeometry == null)
+                return;
+
+            var fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            fillBrush.Freeze();
+            var penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            penBrush.Freeze();
+
+            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1), DisplayGeometry);
         }
     }
 }

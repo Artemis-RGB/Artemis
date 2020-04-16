@@ -181,7 +181,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
         {
             Devices.Clear();
-            Devices.AddRange(surface.Devices);
+            Devices.AddRange(surface.Devices.OrderBy(d => d.ZIndex));
         }
 
         private void UpdateLedsDimStatus()

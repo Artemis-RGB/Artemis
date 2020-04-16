@@ -40,8 +40,8 @@ namespace Artemis.UI.Screens.Shared
             else
                 Zoom *= 0.9;
 
-            // Limit to a min of 0.1 and a max of 4 (10% - 400% in the view)
-            Zoom = Math.Max(0.1, Math.Min(4, Zoom));
+            // Limit to a min of 0.1 and a max of 2.5 (10% - 250% in the view)
+            Zoom = Math.Max(0.1, Math.Min(2.5, Zoom));
 
             // Update the PanX/Y to enable zooming relative to cursor
             if (LimitToZero)

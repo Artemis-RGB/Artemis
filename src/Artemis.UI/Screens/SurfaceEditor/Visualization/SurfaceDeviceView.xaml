@@ -26,7 +26,7 @@
                 <RotateTransform Angle="{Binding Device.Rotation}" />
             </Grid.LayoutTransform>
 
-            <controls:DeviceVisualizer Device="{Binding Device}"></controls:DeviceVisualizer>
+            <controls:DeviceVisualizer Device="{Binding Device}"/>
 
             <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
                        Stroke="{DynamicResource MaterialDesignTextBoxBorder}"
