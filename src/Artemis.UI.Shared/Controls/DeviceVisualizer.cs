@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
@@ -15,28 +16,19 @@ namespace Artemis.UI.Shared.Controls
             new FrameworkPropertyMetadata(default(ArtemisDevice), FrameworkPropertyMetadataOptions.AffectsRender, DevicePropertyChangedCallback));
 
         public static readonly DependencyProperty ShowColorsProperty = DependencyProperty.Register(nameof(ShowColors), typeof(bool), typeof(DeviceVisualizer),
-            new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender));
+            new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender, ShowColorsPropertyChangedCallback));
 
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private BitmapImage _deviceImage;
-        private RGBSurface _subscribedSurface;
 
         public DeviceVisualizer()
         {
             _backingStore = new DrawingGroup();
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
+            SubscribeToSurfaceUpdate();
             Unloaded += (sender, args) => Dispose();
-        }
-        
-        public void Dispose()
-        {
-            if (_subscribedSurface != null)
-            {
-                _subscribedSurface.Updated -= RgbSurfaceOnUpdated;
-                _subscribedSurface = null;
-            }
         }
 
         public ArtemisDevice Device
@@ -49,6 +41,11 @@ namespace Artemis.UI.Shared.Controls
         {
             get => (bool) GetValue(ShowColorsProperty);
             set => SetValue(ShowColorsProperty, value);
+        }
+
+        public void Dispose()
+        {
+            RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -72,7 +69,7 @@ namespace Artemis.UI.Shared.Controls
                 drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
 
             foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.Render(drawingContext, false);
+                deviceVisualizerLed.RenderImage(drawingContext);
 
             drawingContext.DrawDrawing(_backingStore);
         }
@@ -80,15 +77,16 @@ namespace Artemis.UI.Shared.Controls
         private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() =>
-            {
-                deviceVisualizer.SubscribeToSurfaceUpdate((ArtemisDevice) e.NewValue);
-                deviceVisualizer.Initialize();
-            });
+            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
         }
 
+        private static void ShowColorsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var deviceVisualizer = (DeviceVisualizer) d;
+            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
+        }
 
-        private void Initialize()
+        private void SetupForDevice()
         {
             _deviceImage = null;
             _deviceVisualizerLeds.Clear();
@@ -101,29 +99,50 @@ namespace Artemis.UI.Shared.Controls
                 _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
 
             // Create all the LEDs
-            foreach (var artemisLed in Device.Leds) _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
-        }
+            foreach (var artemisLed in Device.Leds)
+                _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
 
-        private void SubscribeToSurfaceUpdate(ArtemisDevice newValue)
-        {
-            if (newValue.Surface.RgbSurface == _subscribedSurface)
+            if (!ShowColors)
                 return;
 
-            // Remove subscription from old surface
-            if (_subscribedSurface != null)
-                _subscribedSurface.Updated -= RgbSurfaceOnUpdated;
-            // Subscribe to new surface
-            if (newValue.Surface.RgbSurface != null)
-                newValue.Surface.RgbSurface.Updated += RgbSurfaceOnUpdated;
+            // Create the opacity drawing group
+            var opacityDrawingGroup = new DrawingGroup();
+            var drawingContext = opacityDrawingGroup.Open();
+            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                deviceVisualizerLed.RenderOpacityMask(drawingContext);
+            drawingContext.Close();
 
-            _subscribedSurface = newValue.Surface.RgbSurface;
+            // Render the store as a bitmap 
+            var drawingImage = new DrawingImage(opacityDrawingGroup);
+            var image = new Image {Source = drawingImage};
+            var bitmap = new RenderTargetBitmap(
+                (int) (opacityDrawingGroup.Bounds.Width * 2.5),
+                (int) (opacityDrawingGroup.Bounds.Height * 2.5),
+                96,
+                96,
+                PixelFormats.Pbgra32
+            );
+            image.Arrange(new Rect(0, 0, bitmap.Width, bitmap.Height));
+            bitmap.Render(image);
+            bitmap.Freeze();
+
+            // Set the bitmap as the opacity mask for the colors backing store
+            var bitmapBrush = new ImageBrush(bitmap);
+            bitmapBrush.Freeze();
+            _backingStore.OpacityMask = bitmapBrush;
+        }
+
+        private void SubscribeToSurfaceUpdate()
+        {
+            RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
         }
 
         private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
         {
             Dispatcher.Invoke(() =>
             {
-                if (ShowColors) Render();
+                if (ShowColors && Visibility == Visibility.Visible)
+                    Render();
             });
         }
 
@@ -132,7 +151,7 @@ namespace Artemis.UI.Shared.Controls
             var drawingContext = _backingStore.Open();
 
             foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.Render(drawingContext, true);
+                deviceVisualizerLed.RenderColor(drawingContext);
 
             drawingContext.Close();
         }

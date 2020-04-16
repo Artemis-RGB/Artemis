@@ -173,7 +173,7 @@
                 <Slider Margin="0,0,14,0"
                         Orientation="Vertical"
                         Minimum="10"
-                        Maximum="400"
+                        Maximum="250"
                         Height="100"
                         FocusVisualStyle="{x:Null}"
                         Value="{Binding PanZoomViewModel.ZoomPercentage}"
