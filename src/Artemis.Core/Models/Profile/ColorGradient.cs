@@ -69,6 +69,18 @@ namespace Artemis.Core.Models.Profile
                 (byte) ((position - before.Position) * (after.Color.Alpha - before.Color.Alpha) / (after.Position - before.Position) + before.Color.Alpha)
             );
         }
+
+        /// <summary>
+        /// [PH] Looping through HSV, adds 8 rainbow colors
+        /// </summary>
+        public void MakeFabulous()
+        {
+            for (var i = 0; i < 9; i++)
+            {
+                var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
+                Stops.Add(new ColorGradientStop(color, 0.125f * i));
+            }
+        }
     }
 
     public class ColorGradientStop : INotifyPropertyChanged

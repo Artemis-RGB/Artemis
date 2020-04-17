@@ -15,7 +15,7 @@
                          Background="{DynamicResource MaterialDesignPaper}"
                          FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                          Width="500"
-                         Height="600"
+                         Height="500"
                          ResizeMode="NoResize"
                          Icon="/Resources/Images/Logo/logo-512.png"
                          FadeContentIfInactive="False"
@@ -26,9 +26,13 @@
         <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </controls:MaterialWindow.Resources>
-    <StackPanel>
-        <materialDesign:Card Margin="15 15 15 7" Padding="15">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <materialDesign:Card Grid.Row="0" Margin="15 15 15 7" Padding="15" >
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
                 <materialDesign:PackIcon Kind="Crane" Width="80" Height="80" HorizontalAlignment="Center" />
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
                     Gradient saving not implemented yet
@@ -39,7 +43,7 @@
             </StackPanel>
         </materialDesign:Card>
 
-        <materialDesign:Card Margin="15 7 15 15" ClipToBounds="False">
+        <materialDesign:Card Grid.Row="1" Margin="15 7 15 15" ClipToBounds="False">
             <StackPanel ClipToBounds="False">
                 <TextBlock Margin="15 15 0 0">Gradient</TextBlock>
                 <Separator Margin="15 5" />
@@ -106,6 +110,6 @@
                     </Button>
                 </Grid>
             </StackPanel>
-        </materialDesign:Card>
-    </StackPanel>
+        </materialDesign:Card >
+    </Grid>
 </controls:MaterialWindow>

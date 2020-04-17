@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
@@ -19,6 +21,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         private float _x;
         private float _y;
         private float _z;
+        private SKColor[] _colorMap;
 
         public NoiseBrush(Layer layer, LayerBrushDescriptor descriptor, IRgbService rgbService) : base(layer, descriptor)
         {
@@ -28,8 +31,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Rand.Next(0, 4096));
 
-            MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
-            SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
+            ColorTypeProperty = RegisterLayerProperty("Brush.ColorType", "Color mapping type", "The way the noise is converted to colors", ColorMappingType.Simple);
+            ColorTypeProperty.ValueChanged += (sender, args) => UpdateColorProperties();
+            UpdateColorProperties();
+
             ScaleProperty = RegisterLayerProperty("Brush.Scale", "Scale", "The scale of the noise.", new SKSize(100, 100));
             ScaleProperty.MinInputValue = 0f;
             HardnessProperty = RegisterLayerProperty("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", 500f);
@@ -46,12 +51,40 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             DetermineRenderScale();
         }
 
+
+        public LayerProperty<ColorMappingType> ColorTypeProperty { get; set; }
         public LayerProperty<SKColor> MainColorProperty { get; set; }
         public LayerProperty<SKColor> SecondaryColorProperty { get; set; }
+        public LayerProperty<ColorGradient> GradientColorProperty { get; set; }
+
         public LayerProperty<SKSize> ScaleProperty { get; set; }
         public LayerProperty<float> HardnessProperty { get; set; }
         public LayerProperty<SKPoint> ScrollSpeedProperty { get; set; }
         public LayerProperty<float> AnimationSpeedProperty { get; set; }
+
+
+        private void UpdateColorProperties()
+        {
+            UnRegisterLayerProperty(MainColorProperty);
+            UnRegisterLayerProperty(SecondaryColorProperty);
+            UnRegisterLayerProperty(GradientColorProperty);
+            if (GradientColorProperty != null)
+                GradientColorProperty.Value.PropertyChanged -= CreateColorMap;
+            if (ColorTypeProperty.Value == ColorMappingType.Simple)
+            {
+                MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
+                SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
+            }
+            else
+            {
+                GradientColorProperty = RegisterLayerProperty("Brush.GradientColor", "Noise gradient map", "The gradient the noise will map it's value to", new ColorGradient());
+                if (!GradientColorProperty.Value.Stops.Any())
+                    GradientColorProperty.Value.MakeFabulous();
+
+                GradientColorProperty.Value.PropertyChanged += CreateColorMap;
+                CreateColorMap(null, null);
+            }
+        }
 
         public override void Update(double deltaTime)
         {
@@ -73,9 +106,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            var mainColor = MainColorProperty.CurrentValue;
+            var mainColor = MainColorProperty?.CurrentValue;
+            var gradientColor = GradientColorProperty?.CurrentValue;
             var scale = ScaleProperty.CurrentValue;
-            var opacity = (float) Math.Round(mainColor.Alpha / 255.0, 2, MidpointRounding.AwayFromZero);
+            var opacity = mainColor != null ? (float) Math.Round(mainColor.Value.Alpha / 255.0, 2, MidpointRounding.AwayFromZero) : 0;
             var hardness = 127 + HardnessProperty.CurrentValue;
 
             // Scale down the render path to avoid computing a value for every pixel
@@ -96,7 +130,15 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
                     var v = _noise.Evaluate(evalX, evalY, _z);
                     var alpha = (byte) Math.Max(0, Math.Min(255, v * hardness));
-                    _bitmap.SetPixel(x, y, new SKColor(mainColor.Red, mainColor.Green, mainColor.Blue, (byte) (alpha * opacity)));
+                    if (ColorTypeProperty.Value == ColorMappingType.Simple && mainColor != null)
+                    {
+                        _bitmap.SetPixel(x, y, new SKColor(mainColor.Value.Red, mainColor.Value.Green, mainColor.Value.Blue, (byte) (alpha * opacity)));
+                    }
+                    else if (gradientColor != null && _colorMap.Length == 101)
+                    {
+                        var color = _colorMap[(int) Math.Round(alpha / 255f * 100, MidpointRounding.AwayFromZero)];
+                        _bitmap.SetPixel(x, y, new SKColor(color.Red, color.Green, color.Blue, 255));
+                    }
                 }
             }
 
@@ -105,15 +147,18 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 SKMatrix.MakeTranslation(path.Bounds.Left, path.Bounds.Top),
                 SKMatrix.MakeScale(1f / _renderScale, 1f / _renderScale)
             );
-            using (var backgroundShader = SKShader.CreateColor(SecondaryColorProperty.CurrentValue))
-            using (var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform))
+
+            canvas.ClipPath(path);
+            if (ColorTypeProperty.Value == ColorMappingType.Simple)
             {
-                canvas.ClipPath(path);
+                using var backgroundShader = SKShader.CreateColor(SecondaryColorProperty.CurrentValue);
                 paint.Shader = backgroundShader;
                 canvas.DrawRect(path.Bounds, paint);
-                paint.Shader = foregroundShader;
-                canvas.DrawRect(path.Bounds, paint);
             }
+
+            using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
+            paint.Shader = foregroundShader;
+            canvas.DrawRect(path.Bounds, paint);
         }
 
 
@@ -132,5 +177,18 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 _bitmap = new SKBitmap(new SKImageInfo(width, height));
             }
         }
+
+        private void CreateColorMap(object sender, EventArgs e)
+        {
+            _colorMap = new SKColor[101];
+            for (var i = 0; i < 101; i++)
+                _colorMap[i] = GradientColorProperty.Value.GetColor(i / 100f);
+        }
+    }
+
+    public enum ColorMappingType
+    {
+        Simple,
+        Gradient
     }
 }
