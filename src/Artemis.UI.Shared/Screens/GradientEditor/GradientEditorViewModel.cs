@@ -1,22 +1,28 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
+using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Shared.Utilities;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
 {
-    public class GradientEditorViewModel : Screen
+    public class GradientEditorViewModel : DialogViewModelBase
     {
         private ColorStopViewModel _selectedColorStopViewModel;
+        private readonly List<ColorGradientStop> _originalStops;
 
         public GradientEditorViewModel(ColorGradient colorGradient)
         {
             ColorGradient = colorGradient;
             ColorStopViewModels = new BindableCollection<ColorStopViewModel>();
+
+            _originalStops = ColorGradient.Stops.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
 
             foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
                 ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
@@ -37,7 +43,8 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
 
         public ColorGradient ColorGradient { get; }
-        public double PreviewWidth => 437.5;
+        // TODO: Find the width out from view
+        public double PreviewWidth => 408;
 
         public void AddColorStop(object sender, MouseEventArgs e)
         {
@@ -74,6 +81,23 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             SelectedColorStopViewModel = colorStopViewModel;
             foreach (var stopViewModel in ColorStopViewModels)
                 stopViewModel.IsSelected = stopViewModel == SelectedColorStopViewModel;
+        }
+
+        public void Confirm()
+        {
+            if (!Session.IsEnded)
+                Session.Close(true);
+        }
+
+        public void Cancel()
+        {
+            // Restore the saved state
+            ColorGradient.Stops.Clear();
+            ColorGradient.Stops.AddRange(_originalStops);
+            ColorGradient.OnColorValuesUpdated();
+
+            if (!Session.IsEnded)
+                Session.Close(false);
         }
     }
 }

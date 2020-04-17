@@ -77,25 +77,34 @@
             <!-- Misc controls & time display -->
             <DockPanel Grid.Row="0" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}"
+                            Focusable="False">
                         <materialDesign:PackIcon Kind="StepForward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
                         <StackPanel>
-                            <materialDesign:PackIcon Kind="Play" Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
-                            <materialDesign:PackIcon Kind="Pause" Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            <materialDesign:PackIcon Kind="Play"
+                                                     Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+                            <materialDesign:PackIcon Kind="Pause"
+                                                     Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                         </StackPanel>
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start"
+                            Command="{s:Action GoToStart}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipBackward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end"
+                            Command="{s:Action GoToEnd}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipForward" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame"
+                            Command="{s:Action GoToPreviousFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipPrevious" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame"
+                            Command="{s:Action GoToNextFrame}" Focusable="False">
                         <materialDesign:PackIcon Kind="SkipNext" />
                     </Button>
                     <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
@@ -106,20 +115,22 @@
                     </ToggleButton>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
                 </StackPanel>
             </DockPanel>
 
             <!-- Properties tree -->
-            <ScrollViewer x:Name="PropertyTreeScrollViewer"
-                          Grid.Row="1"
-                          HorizontalScrollBarVisibility="Hidden"
-                          VerticalScrollBarVisibility="Hidden"
-                          ScrollChanged="TimelineScrollChanged">
-                <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
-                    <ContentControl s:View.Model="{Binding PropertyTree}" />
-                </Border>
-            </ScrollViewer>
+            <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" CloseOnClickAway="True" Grid.Row="1">
+                <ScrollViewer x:Name="PropertyTreeScrollViewer"
+                              HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Hidden"
+                              ScrollChanged="TimelineScrollChanged">
+                    <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                        <ContentControl s:View.Model="{Binding PropertyTree}" />
+                    </Border>
+                </ScrollViewer>
+            </materialDesign:DialogHost>
         </Grid>
 
         <!-- Right side -->
@@ -131,7 +142,8 @@
             </Grid.RowDefinitions>
 
             <!-- Timeline header -->
-            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
                 <Grid Background="{DynamicResource MaterialDesignCardBackground}">
                     <!-- Caret -->
                     <Canvas ZIndex="1"
@@ -141,7 +153,8 @@
                             MouseUp="{s:Action TimelineMouseUp}"
                             MouseMove="{s:Action TimelineMouseMove}">
                         <Polygon Points="-10,0 0,20, 10,00" Fill="{StaticResource SecondaryAccentBrush}" />
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                              StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
                     <!-- Time -->
                     <timeline:PropertyTimelineHeader Margin="0 25 0 0"
@@ -167,7 +180,8 @@
                             MouseDown="{s:Action TimelineMouseDown}"
                             MouseUp="{s:Action TimelineMouseUp}"
                             MouseMove="{s:Action TimelineMouseMove}">
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                              StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
                     <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding PropertyTimeline}" />
                 </Grid>

@@ -116,17 +116,17 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.0" />
-    <PackageReference Include="FluentValidation" Version="8.6.1" />
+    <PackageReference Include="FluentValidation" Version="8.6.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="2.2.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.10" />
     <PackageReference Include="Humanizer.Core" Version="2.7.9" />
     <PackageReference Include="MaterialDesignExtensions" Version="3.0.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="3.0.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.2.6" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.8" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="1.68.2-preview.29" />
     <PackageReference Include="Stylet" Version="1.3.1" />

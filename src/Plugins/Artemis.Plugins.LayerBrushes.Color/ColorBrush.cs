@@ -28,9 +28,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void UpdateColorProperties()
         {
-            Layer.Properties.RemoveLayerProperty(ColorProperty);
+            UnRegisterLayerProperty(ColorProperty);
             ColorProperty = null;
-            Layer.Properties.RemoveLayerProperty(GradientProperty);
+            UnRegisterLayerProperty(GradientProperty);
             GradientProperty = null;
 
             if (GradientTypeProperty.Value == GradientType.Solid)
