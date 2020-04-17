@@ -27,7 +27,7 @@ namespace Artemis.UI.Shared.Controls
             _backingStore = new DrawingGroup();
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
-            SubscribeToSurfaceUpdate();
+            RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
             Unloaded += (sender, args) => Dispose();
         }
 
@@ -131,12 +131,7 @@ namespace Artemis.UI.Shared.Controls
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
         }
-
-        private void SubscribeToSurfaceUpdate()
-        {
-            RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
-        }
-
+        
         private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
         {
             Dispatcher.Invoke(() =>

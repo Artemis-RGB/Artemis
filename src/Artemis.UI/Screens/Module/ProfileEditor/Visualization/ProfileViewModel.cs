@@ -155,25 +155,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             Execute.PostToUIThread(() =>
             {
-                lock (CanvasViewModels)
+                var layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
+                var layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
+
+                // Add new layers missing a VM
+                foreach (var layer in layers)
                 {
-                    var layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
-                    var layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
+                    if (layerViewModels.All(vm => vm.Layer != layer))
+                        CanvasViewModels.Add(_profileLayerVmFactory.Create(layer));
+                }
 
-                    // Add new layers missing a VM
-                    foreach (var layer in layers)
-                    {
-                        if (layerViewModels.All(vm => vm.Layer != layer))
-                            CanvasViewModels.Add(_profileLayerVmFactory.Create(layer));
-                    }
-
-                    // Remove layers that no longer exist
-                    var toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
-                    foreach (var profileLayerViewModel in toRemove)
-                    {
-                        profileLayerViewModel.Dispose();
-                        CanvasViewModels.Remove(profileLayerViewModel);
-                    }
+                // Remove layers that no longer exist
+                var toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
+                foreach (var profileLayerViewModel in toRemove)
+                {
+                    profileLayerViewModel.Dispose();
+                    CanvasViewModels.Remove(profileLayerViewModel);
                 }
             });
         }

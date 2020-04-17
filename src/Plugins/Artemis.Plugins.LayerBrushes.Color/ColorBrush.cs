@@ -17,24 +17,37 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
-            ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
-            GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
             GradientTypeProperty = RegisterLayerProperty<GradientType>("Brush.GradientType", "Gradient type", "The type of color brush to draw");
             GradientTypeProperty.CanUseKeyframes = false;
 
-            CreateShader(_shaderBounds);
+            UpdateColorProperties();
+
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader(_shaderBounds);
-            GradientTypeProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
-            GradientProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
-            GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader(_shaderBounds);
-            if (!GradientProperty.Value.Stops.Any())
+            GradientTypeProperty.ValueChanged += (sender, args) => UpdateColorProperties();
+        }
+
+        private void UpdateColorProperties()
+        {
+            Layer.Properties.RemoveLayerProperty(ColorProperty);
+            ColorProperty = null;
+            Layer.Properties.RemoveLayerProperty(GradientProperty);
+            GradientProperty = null;
+
+            if (GradientTypeProperty.Value == GradientType.Solid)
             {
-                for (var i = 0; i < 9; i++)
-                {
-                    var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
-                    GradientProperty.Value.Stops.Add(new ColorGradientStop(color, 0.125f * i));
-                }
+                ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
+                ColorProperty.ValueChanged += (sender, args) => CreateShader(_shaderBounds);
             }
+            else
+            {
+                GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
+                GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader(_shaderBounds);
+
+                if (!GradientProperty.Value.Stops.Any()) 
+                    GradientProperty.Value.MakeFabulous();
+            }
+
+            CreateShader(_shaderBounds);
         }
 
         public LayerProperty<SKColor> ColorProperty { get; set; }
@@ -44,7 +57,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
         public override void Update(double deltaTime)
         {
             // Only recreate the shader if the color changed
-            if (_color != ColorProperty.CurrentValue)
+            if (ColorProperty != null && _color != ColorProperty.CurrentValue)
             {
                 _color = ColorProperty.CurrentValue;
                 CreateShader(_shaderBounds);

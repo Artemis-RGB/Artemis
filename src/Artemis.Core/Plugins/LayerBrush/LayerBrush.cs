@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Services.Interfaces;
@@ -76,13 +77,29 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <returns>The layer property</returns>
         protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description, T defaultValue = default)
         {
-            var property = new LayerProperty<T>(
-                Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.Properties.BrushReference.Parent, id, name, description
-            ) {Value = defaultValue};
+            var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.Properties.BrushReference.Parent, id, name, description)
+            {
+                Value = defaultValue
+            };
+
             Layer.Properties.RegisterLayerProperty(property);
             // It's fine if this is null, it'll be picked up by SetLayerService later
             _layerService?.InstantiateKeyframeEngine(property);
             return property;
+        }
+
+        /// <summary>
+        /// Allows you to remove layer properties previously added by using  <see cref="RegisterLayerProperty{T}(BaseLayerProperty,string,string,string,T)" />.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="layerProperty"></param>
+        protected void UnRegisterLayerProperty<T>(LayerProperty<T> layerProperty)
+        {
+            if (layerProperty == null)
+                return;
+
+            if (Layer.Properties.Any(p => p == layerProperty))
+                Layer.Properties.RemoveLayerProperty(layerProperty);
         }
 
         internal void SetLayerService(ILayerService layerService)
