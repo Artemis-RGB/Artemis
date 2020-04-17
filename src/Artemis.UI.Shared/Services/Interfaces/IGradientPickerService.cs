@@ -4,6 +4,6 @@ namespace Artemis.UI.Shared.Services.Interfaces
 {
     public interface IGradientPickerService : IArtemisSharedUIService
     {
-        void ShowGradientPicker(ColorGradient colorGradient);
+        void ShowGradientPicker(ColorGradient colorGradient, string dialogHost);
     }
 }

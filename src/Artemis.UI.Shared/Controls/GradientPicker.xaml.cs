@@ -46,6 +46,15 @@ namespace Artemis.UI.Shared.Controls
             set => SetValue(ColorGradientProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the currently selected color gradient
+        /// </summary>
+        public string DialogHost
+        {
+            get => (string) GetValue(DialogHostProperty);
+            set => SetValue(DialogHostProperty, value);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -67,13 +76,16 @@ namespace Artemis.UI.Shared.Controls
 
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            GradientPickerService.ShowGradientPicker(ColorGradient);
+            GradientPickerService.ShowGradientPicker(ColorGradient, DialogHost);
         }
 
         #region Static WPF fields
 
         public static readonly DependencyProperty ColorGradientProperty = DependencyProperty.Register(nameof(ColorGradient), typeof(ColorGradient), typeof(GradientPicker),
             new FrameworkPropertyMetadata(default(ColorGradient), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorGradientPropertyChangedCallback));
+
+        public static readonly DependencyProperty DialogHostProperty = DependencyProperty.Register(nameof(DialogHost), typeof(string), typeof(GradientPicker),
+            new FrameworkPropertyMetadata(default(string)));
 
         public static readonly RoutedEvent ColorGradientChangedEvent =
             EventManager.RegisterRoutedEvent(nameof(ColorGradient), RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ColorGradient>), typeof(GradientPicker));

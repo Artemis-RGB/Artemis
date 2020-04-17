@@ -88,7 +88,7 @@
                                                 x:Name="GitHubButton" Command="{s:Action OpenUrl}"
                                                 CommandParameter="https://github.com/SpoinkyNL/Artemis">
                                             <StackPanel Orientation="Horizontal">
-                                                <materialDesign:PackIcon Kind="GithubCircle" />
+                                                <materialDesign:PackIcon Kind="Github" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
                                             </StackPanel>
                                         </Button>
@@ -134,7 +134,7 @@
                                 <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <materialDesign:PackIcon Kind="GithubCircle" Width="160" Height="160"
+                            <materialDesign:PackIcon Kind="Github" Width="160" Height="160"
                                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                             <StackPanel Grid.Row="0" Grid.Column="1">
                                 <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Open Source</TextBlock>
@@ -178,7 +178,7 @@
             --><!-- add the visibility binding https://github.com/ButchersBoy/MaterialDesignInXamlToolkit/issues/723 --><!--
             <StackPanel Visibility="{Binding Path=IsPopupOpen, ElementName=MyPopupBox, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Button ToolTip="GitHub" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
-                    <materialDesign:PackIcon Kind="GithubCircle" Height="20" Width="20" />
+                    <materialDesign:PackIcon Kind="Github" Height="20" Width="20" />
                 </Button>
                 <Button ToolTip="Twitter" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
                         Background="{DynamicResource PrimaryHueMidBrush}"

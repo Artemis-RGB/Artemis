@@ -180,9 +180,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         private void CreateColorMap(object sender, EventArgs e)
         {
-            _colorMap = new SKColor[101];
+            var colorMap = new SKColor[101];
             for (var i = 0; i < 101; i++)
-                _colorMap[i] = GradientColorProperty.Value.GetColor(i / 100f);
+                colorMap[i] = GradientColorProperty.Value.GetColor(i / 100f);
+
+            _colorMap = colorMap;
         }
     }
 

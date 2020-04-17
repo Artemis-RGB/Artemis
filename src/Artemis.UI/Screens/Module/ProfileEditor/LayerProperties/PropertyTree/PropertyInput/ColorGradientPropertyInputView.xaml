@@ -15,7 +15,8 @@
         <controls:GradientPicker Width="132"
                                 Margin="0 2"
                                 Padding="0 -1"
-                                ColorGradient="{Binding ColorGradientInputValue}" />
+                                ColorGradient="{Binding ColorGradientInputValue}" 
+                                DialogHost="PropertyTreeDialogHost"/>
         <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.LayerProperty.InputAffix}" />
     </StackPanel>
 </UserControl>

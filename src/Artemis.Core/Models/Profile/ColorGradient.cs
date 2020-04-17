@@ -47,7 +47,10 @@ namespace Artemis.Core.Models.Profile
 
         public SKColor GetColor(float position)
         {
-            var point = Stops.SingleOrDefault(f => f.Position == position);
+            if (!Stops.Any())
+                return SKColor.Empty;
+
+            var point = Stops.FirstOrDefault(f => f.Position == position);
             if (point != null) return point.Color;
 
             var before = Stops.First(w => w.Position == Stops.Min(m => m.Position));

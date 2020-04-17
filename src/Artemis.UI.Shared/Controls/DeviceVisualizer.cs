@@ -21,14 +21,28 @@ namespace Artemis.UI.Shared.Controls
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private BitmapImage _deviceImage;
+        private bool _subscribed;
 
         public DeviceVisualizer()
         {
             _backingStore = new DrawingGroup();
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
-            RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
-            Unloaded += (sender, args) => Dispose();
+            Loaded += (sender, args) => SubscribeToUpdate(true);
+            Unloaded += (sender, args) => SubscribeToUpdate(false);
+        }
+
+        private void SubscribeToUpdate(bool subscribe)
+        {
+            if (_subscribed == subscribe)
+                return;
+
+            if (subscribe)
+                RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
+            else
+                RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
+
+            _subscribed = subscribe;
         }
 
         public ArtemisDevice Device
@@ -131,7 +145,7 @@ namespace Artemis.UI.Shared.Controls
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
         }
-        
+
         private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
         {
             Dispatcher.Invoke(() =>
