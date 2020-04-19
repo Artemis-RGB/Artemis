@@ -12,6 +12,7 @@
                     Background="{DynamicResource MaterialDesignPaper}"
                     FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                     UseLayoutRounding="True"
+                    FadeContentIfInactive="False"
                     Width="800"
                     Height="800"
                     d:DesignHeight="800"

@@ -77,7 +77,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateShader(SKRect pathBounds)
         {
-            var center = new SKPoint(Layer.Bounds.MidX, Layer.Bounds.MidY);
+            var center = new SKPoint(pathBounds.MidX, pathBounds.MidY);
             SKShader shader;
             switch (GradientTypeProperty.CurrentValue)
             {
@@ -85,7 +85,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
                     shader = SKShader.CreateColor(_color);
                     break;
                 case GradientType.LinearGradient:
-                    shader = SKShader.CreateLinearGradient(new SKPoint(0, 0), new SKPoint(pathBounds.Width, 0),
+                    shader = SKShader.CreateLinearGradient(new SKPoint(pathBounds.Left, pathBounds.Top), new SKPoint(pathBounds.Right, pathBounds.Bottom),
                         GradientProperty.Value.GetColorsArray(),
                         GradientProperty.Value.GetPositionsArray(), SKShaderTileMode.Repeat);
                     break;
