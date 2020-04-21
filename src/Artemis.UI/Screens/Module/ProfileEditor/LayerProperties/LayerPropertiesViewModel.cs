@@ -45,7 +45,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _layerPropertyViewModels = new List<LayerPropertyViewModel>();
 
             PixelsPerSecond = 31;
-            }
+        }
 
         public bool Playing { get; set; }
         public bool RepeatAfterLastKeyframe { get; set; }
@@ -79,7 +79,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
-            
+
             base.OnInitialActivate();
         }
 
@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
-            
+
             if (_lastSelectedLayer != null)
             {
                 _lastSelectedLayer.Properties.LayerPropertyRegistered -= LayerOnPropertyRegistered;
@@ -106,7 +106,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             Pause();
             base.OnDeactivate();
         }
-        
+
         private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
         {
             PopulateProperties(e.ProfileElement);

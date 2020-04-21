@@ -19,11 +19,18 @@ namespace Artemis.Plugins.LayerBrushes.Color
         {
             GradientTypeProperty = RegisterLayerProperty("Brush.GradientType", "Gradient type", "The type of color brush to draw", GradientType.Solid);
             GradientTypeProperty.CanUseKeyframes = false;
+            ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
+            GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
+            GradientProperty.CanUseKeyframes = false;
+            if (!GradientProperty.Value.Stops.Any())
+                GradientProperty.Value.MakeFabulous();
 
             UpdateColorProperties();
 
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
             GradientTypeProperty.ValueChanged += (sender, args) => UpdateColorProperties();
+            ColorProperty.ValueChanged += (sender, args) => CreateShader();
+            GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader();
         }
 
         public LayerProperty<SKColor> ColorProperty { get; set; }
@@ -57,23 +64,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void UpdateColorProperties()
         {
-            if (GradientTypeProperty.Value == GradientType.Solid)
-            {
-                UnRegisterLayerProperty(GradientProperty);
-                ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
-                ColorProperty.ValueChanged += (sender, args) => CreateShader();
-            }
-            else
-            {
-                UnRegisterLayerProperty(ColorProperty);
-                GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
-                GradientProperty.CanUseKeyframes = false;
-                GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader();
-
-                if (!GradientProperty.Value.Stops.Any())
-                    GradientProperty.Value.MakeFabulous();
-            }
-
+            ColorProperty.IsHidden = GradientTypeProperty.Value != GradientType.Solid;
+            GradientProperty.IsHidden = GradientTypeProperty.Value == GradientType.Solid;
+            
             CreateShader();
         }
 

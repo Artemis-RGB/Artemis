@@ -19,12 +19,44 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
             PopulateKeyframes();
             UpdateKeyframes(PropertyTimelineViewModel.LayerPropertiesViewModel.PixelsPerSecond);
+
+            LayerPropertyViewModel.ExpandedStateChanged += (sender, args) => UpdateMustDisplay();
+            LayerPropertyViewModel.LayerProperty.VisibilityChanged += (sender, args) => UpdateMustDisplay();
+            UpdateMustDisplay();
         }
 
 
         public PropertyTimelineViewModel PropertyTimelineViewModel { get; }
         public LayerPropertyViewModel LayerPropertyViewModel { get; }
         public BindableCollection<PropertyTrackKeyframeViewModel> KeyframeViewModels { get; set; }
+        public bool MustDisplay { get; set; }
+
+        private void UpdateMustDisplay()
+        {
+            var expandedTest = LayerPropertyViewModel.Parent;
+            while (expandedTest != null)
+            {
+                if (!expandedTest.IsExpanded)
+                {
+                    MustDisplay = false;
+                    return;
+                }
+                expandedTest = expandedTest.Parent;
+            }
+
+            var visibilityTest = LayerPropertyViewModel.LayerProperty;
+            while (visibilityTest != null)
+            {
+                if (visibilityTest.IsHidden)
+                {
+                    MustDisplay = false;
+                    return;
+                }
+                visibilityTest = visibilityTest.Parent;
+            }
+
+            MustDisplay = true;
+        }
 
         public void PopulateKeyframes()
         {

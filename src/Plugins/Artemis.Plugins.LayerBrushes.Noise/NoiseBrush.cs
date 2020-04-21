@@ -30,11 +30,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             _y = Rand.Next(0, 4096);
             _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Rand.Next(0, 4096));
+            DetermineRenderScale();
 
             ColorTypeProperty = RegisterLayerProperty("Brush.ColorType", "Color mapping type", "The way the noise is converted to colors", ColorMappingType.Simple);
+            ColorTypeProperty.CanUseKeyframes = false;
             ColorTypeProperty.ValueChanged += (sender, args) => UpdateColorProperties();
-            UpdateColorProperties();
-
             ScaleProperty = RegisterLayerProperty("Brush.Scale", "Scale", "The scale of the noise.", new SKSize(100, 100));
             ScaleProperty.MinInputValue = 0f;
             HardnessProperty = RegisterLayerProperty("Brush.Hardness", "Hardness", "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", 500f);
@@ -47,8 +47,16 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             AnimationSpeedProperty.MinInputValue = 0f;
             AnimationSpeedProperty.MaxInputValue = 64f;
             ScaleProperty.InputAffix = "%";
+            MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
+            SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
+            GradientColorProperty = RegisterLayerProperty("Brush.GradientColor", "Noise gradient map", "The gradient the noise will map it's value to", new ColorGradient());
+            GradientColorProperty.CanUseKeyframes = false;
+            if (!GradientColorProperty.Value.Stops.Any())
+                GradientColorProperty.Value.MakeFabulous();
+            GradientColorProperty.Value.PropertyChanged += CreateColorMap;
 
-            DetermineRenderScale();
+            UpdateColorProperties();
+            CreateColorMap(null, null);
         }
 
 
@@ -64,25 +72,9 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         private void UpdateColorProperties()
         {
-            if (GradientColorProperty != null)
-                GradientColorProperty.Value.PropertyChanged -= CreateColorMap;
-            if (ColorTypeProperty.Value == ColorMappingType.Simple)
-            {
-                UnRegisterLayerProperty(GradientColorProperty);
-                MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
-                SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
-            }
-            else
-            {
-                UnRegisterLayerProperty(MainColorProperty);
-                UnRegisterLayerProperty(SecondaryColorProperty);
-                GradientColorProperty = RegisterLayerProperty("Brush.GradientColor", "Noise gradient map", "The gradient the noise will map it's value to", new ColorGradient());
-                if (!GradientColorProperty.Value.Stops.Any())
-                    GradientColorProperty.Value.MakeFabulous();
-
-                GradientColorProperty.Value.PropertyChanged += CreateColorMap;
-                CreateColorMap(null, null);
-            }
+            GradientColorProperty.IsHidden = ColorTypeProperty.Value != ColorMappingType.Gradient;
+            MainColorProperty.IsHidden = ColorTypeProperty.Value != ColorMappingType.Simple;
+            SecondaryColorProperty.IsHidden = ColorTypeProperty.Value != ColorMappingType.Simple;
         }
 
         public override void Update(double deltaTime)
@@ -136,7 +128,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                     else if (gradientColor != null && _colorMap.Length == 101)
                     {
                         var color = _colorMap[(int) Math.Round(alpha / 255f * 100, MidpointRounding.AwayFromZero)];
-                        _bitmap.SetPixel(x, y, new SKColor(color.Red, color.Green, color.Blue, 255));
+                        _bitmap.SetPixel(x, y, color);
                     }
                 }
             }
