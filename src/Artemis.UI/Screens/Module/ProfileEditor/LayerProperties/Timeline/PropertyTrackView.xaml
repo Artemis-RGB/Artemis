@@ -12,7 +12,7 @@
     <Border Height="25"
             BorderThickness="0,0,0,1"
             BorderBrush="{DynamicResource MaterialDesignDivider}"
-            Visibility="{Binding LayerPropertyViewModel.Parent.IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+            Visibility="{Binding MustDisplay, Converter={StaticResource BoolToVisibilityConverter}}">
         <ItemsControl ItemsSource="{Binding KeyframeViewModels}"
                       Background="{DynamicResource MaterialDesignToolBarBackground}"
                       HorizontalAlignment="Left">

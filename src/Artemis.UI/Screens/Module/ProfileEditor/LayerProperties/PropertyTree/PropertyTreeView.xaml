@@ -87,6 +87,7 @@
         <TreeView.ItemContainerStyle>
             <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">
                 <Setter Property="IsExpanded" Value="{Binding LayerPropertyViewModel.IsExpanded, Mode=TwoWay}" />
+                <Setter Property="Visibility" Value="{Binding LayerPropertyViewModel.LayerProperty.IsHidden, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}" />
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>

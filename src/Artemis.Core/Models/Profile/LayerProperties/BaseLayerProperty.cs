@@ -7,12 +7,14 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
+using Stylet;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
-    public abstract class BaseLayerProperty
+    public abstract class BaseLayerProperty : PropertyChangedBase
     {
         private object _baseValue;
+        private bool _isHidden;
 
         protected BaseLayerProperty(Layer layer, PluginInfo pluginInfo, BaseLayerProperty parent, string id, string name, string description, Type type)
         {
@@ -117,6 +119,19 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Gets the type of value this layer property contains.
         /// </summary>
         public Type Type { get; protected set; }
+
+        /// <summary>
+        ///     Gets or sets whether this property is hidden in the UI.
+        /// </summary>
+        public bool IsHidden
+        {
+            get => _isHidden;
+            set
+            {
+                _isHidden = value;
+                OnVisibilityChanged();
+            }
+        }
 
         /// <summary>
         ///     Gets a list of keyframes defining different values of the property in time, this list contains the untyped
@@ -337,11 +352,23 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public event EventHandler<EventArgs> ValueChanged;
 
+        /// <summary>
+        ///     Occurs when this property or any of it's ancestors visibility is changed
+        /// </summary>
+        public event EventHandler<EventArgs> VisibilityChanged;
+
         protected virtual void OnValueChanged()
         {
             ValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        protected virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            foreach (var baseLayerProperty in Children)
+                baseLayerProperty.OnVisibilityChanged();
+        }
+        
         #endregion
     }
 }

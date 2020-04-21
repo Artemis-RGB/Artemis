@@ -14,6 +14,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private readonly IKernel _kernel;
         private readonly IProfileEditorService _profileEditorService;
         private bool _keyframesEnabled;
+        private bool _isExpanded;
 
         public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, IKernel kernel, IProfileEditorService profileEditorService)
         {
@@ -34,7 +35,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public LayerPropertyViewModel Parent { get; }
         public List<LayerPropertyViewModel> Children { get; }
 
-        public bool IsExpanded { get; set; }
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                _isExpanded = value;
+                OnExpandedStateChanged();
+            }
+        }
 
         public bool KeyframesEnabled
         {
@@ -75,5 +84,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             _profileEditorService.UpdateSelectedProfileElement();
         }
+
+        #region Events
+
+        public event EventHandler<EventArgs> ExpandedStateChanged;
+        protected virtual void OnExpandedStateChanged()
+        {
+            ExpandedStateChanged?.Invoke(this, EventArgs.Empty);
+            foreach (var layerPropertyViewModel in Children)
+                layerPropertyViewModel.OnExpandedStateChanged();
+        }
+
+        #endregion
     }
 }
