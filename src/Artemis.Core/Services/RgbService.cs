@@ -20,7 +20,6 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _sampleSizeSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private readonly TimerUpdateTrigger _updateTrigger;
         private ListLedGroup _surfaceLedGroup;
 
         internal RgbService(ILogger logger, ISettingsService settingsService)
@@ -37,17 +36,16 @@ namespace Artemis.Core.Services
             _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
             _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
             _loadedDevices = new List<IRGBDevice>();
-            _updateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
-            Surface.RegisterUpdateTrigger(_updateTrigger);
+            UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
+            Surface.RegisterUpdateTrigger(UpdateTrigger);
         }
 
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
 
+        public TimerUpdateTrigger UpdateTrigger { get; }
         public BitmapBrush BitmapBrush { get; private set; }
-
         public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
-
         public double RenderScale => _renderScaleSetting.Value;
 
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
@@ -82,9 +80,9 @@ namespace Artemis.Core.Services
 
         public void Dispose()
         {
-            Surface.UnregisterUpdateTrigger(_updateTrigger);
+            Surface.UnregisterUpdateTrigger(UpdateTrigger);
 
-            _updateTrigger.Dispose();
+            UpdateTrigger.Dispose();
             Surface.Dispose();
         }
 
@@ -95,7 +93,7 @@ namespace Artemis.Core.Services
 
         private void TargetFrameRateSettingOnSettingChanged(object sender, EventArgs e)
         {
-            _updateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
+            UpdateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
         }
 
         private void SurfaceOnException(ExceptionEventArgs args)

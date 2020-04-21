@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         {
         }
         
-        private void LayerPropertyOnValueChanged(object? sender, EventArgs e)
+        private void LayerPropertyOnValueChanged(object sender, EventArgs e)
         {
             Update();
         }

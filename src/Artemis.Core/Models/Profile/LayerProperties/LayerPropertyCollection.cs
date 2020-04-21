@@ -42,32 +42,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Removes the provided layer property from the layer.
-        /// </summary>
-        /// <typeparam name="T">The type of value of the layer property</typeparam>
-        /// <param name="layerProperty">The property to remove from the layer</param>
-        public void RemoveLayerProperty<T>(LayerProperty<T> layerProperty)
-        {
-            RemoveLayerProperty((BaseLayerProperty) layerProperty);
-        }
-
-        /// <summary>
-        ///     Removes the provided layer property from the layer.
-        /// </summary>
-        /// <param name="layerProperty">The property to remove from the layer</param>
-        public void RemoveLayerProperty(BaseLayerProperty layerProperty)
-        {
-            if (!_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
-                throw new ArtemisCoreException($"Could not find a property with ID {layerProperty.Id}.");
-
-            var property = _properties[(layerProperty.PluginInfo.Guid, layerProperty.Id)];
-            property.Parent?.Children.Remove(property);
-            _properties.Remove((layerProperty.PluginInfo.Guid, layerProperty.Id));
-
-            OnLayerPropertyRemoved(new LayerPropertyEventArgs(property));
-        }
-
-        /// <summary>
         ///     If found, returns the <see cref="LayerProperty{T}" /> matching the provided ID
         /// </summary>
         /// <typeparam name="T">The type of the layer property</typeparam>
@@ -82,7 +56,33 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             var property = _properties[(pluginInfo.Guid, id)];
             if (property.Type != typeof(T))
                 throw new ArtemisCoreException($"Property type mismatch. Expected property {property} to have type {typeof(T)} but it has {property.Type} instead.");
-            return (LayerProperty<T>) _properties[(pluginInfo.Guid, id)];
+            return (LayerProperty<T>)_properties[(pluginInfo.Guid, id)];
+        }
+
+        /// <summary>
+        ///     Removes the provided layer property from the layer.
+        /// </summary>
+        /// <typeparam name="T">The type of value of the layer property</typeparam>
+        /// <param name="layerProperty">The property to remove from the layer</param>
+        internal void RemoveLayerProperty<T>(LayerProperty<T> layerProperty)
+        {
+            RemoveLayerProperty((BaseLayerProperty) layerProperty);
+        }
+
+        /// <summary>
+        ///     Removes the provided layer property from the layer.
+        /// </summary>
+        /// <param name="layerProperty">The property to remove from the layer</param>
+        internal void RemoveLayerProperty(BaseLayerProperty layerProperty)
+        {
+            if (!_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
+                throw new ArtemisCoreException($"Could not find a property with ID {layerProperty.Id}.");
+
+            var property = _properties[(layerProperty.PluginInfo.Guid, layerProperty.Id)];
+            property.Parent?.Children.Remove(property);
+            _properties.Remove((layerProperty.PluginInfo.Guid, layerProperty.Id));
+
+            OnLayerPropertyRemoved(new LayerPropertyEventArgs(property));
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <typeparam name="T">The type of value of the layer property</typeparam>
         /// <param name="layerProperty">The property to apply to the layer</param>
         /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        public bool RegisterLayerProperty<T>(LayerProperty<T> layerProperty)
+        internal bool RegisterLayerProperty<T>(LayerProperty<T> layerProperty)
         {
             return RegisterLayerProperty((BaseLayerProperty) layerProperty);
         }
@@ -103,7 +103,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         /// <param name="layerProperty">The property to apply to the layer</param>
         /// <returns>True if an existing value was found and applied, otherwise false.</returns>
-        public bool RegisterLayerProperty(BaseLayerProperty layerProperty)
+        internal bool RegisterLayerProperty(BaseLayerProperty layerProperty)
         {
             if (_properties.ContainsKey((layerProperty.PluginInfo.Guid, layerProperty.Id)))
                 throw new ArtemisCoreException($"Duplicate property ID detected. Layer already contains a property with ID {layerProperty.Id}.");

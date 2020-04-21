@@ -261,7 +261,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             // End time is the last keyframe + 10 sec
             var lastKeyFrame = PropertyTimeline.PropertyTrackViewModels.SelectMany(r => r.KeyframeViewModels).OrderByDescending(t => t.Keyframe.Position).FirstOrDefault();
-            return lastKeyFrame?.Keyframe.Position.Add(new TimeSpan(0, 0, 0, 10)) ?? TimeSpan.FromSeconds(10);
+            return lastKeyFrame?.Keyframe.Position.Add(new TimeSpan(0, 0, 0, 10)) ?? TimeSpan.MaxValue;
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)

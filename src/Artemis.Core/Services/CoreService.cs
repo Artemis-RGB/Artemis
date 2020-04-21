@@ -38,7 +38,7 @@ namespace Artemis.Core.Services
             _rgbService = rgbService;
             _surfaceService = surfaceService;
             _profileService = profileService;
-            _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information);
+            _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
 
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;

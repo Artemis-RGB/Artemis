@@ -2,6 +2,7 @@
 using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
 
@@ -35,7 +36,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <summary>
         ///     The main method of rendering anything to the layer. The provided <see cref="SKCanvas" /> is specific to the layer
         ///     and matches it's width and height.
-        ///     <para>Called during rendering, in the order configured on the layer</para>
+        ///     <para>Called during rendering or layer preview, in the order configured on the layer</para>
         /// </summary>
         /// <param name="canvas">The layer canvas</param>
         /// <param name="canvasInfo"></param>
@@ -77,6 +78,22 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <returns>The layer property</returns>
         protected LayerProperty<T> RegisterLayerProperty<T>(string id, string name, string description, T defaultValue = default)
         {
+            // Check if the property already exists
+            var existing = Layer.Properties.FirstOrDefault(p =>
+                p.PluginInfo.Guid == Descriptor.LayerBrushProvider.PluginInfo.Guid &&
+                p.Id == id &&
+                p.Name == name &&
+                p.Description == description);
+
+            if (existing != null)
+            {
+                // If it exists and the types match, return the existing property
+                if (existing.Type == typeof(T))
+                    return (LayerProperty<T>) existing;
+                // If it exists and the types are different, something is wrong
+                throw new ArtemisPluginException($"Cannot register the property {id} with different types twice.");
+            }
+
             var property = new LayerProperty<T>(Layer, Descriptor.LayerBrushProvider.PluginInfo, Layer.Properties.BrushReference.Parent, id, name, description)
             {
                 Value = defaultValue
