@@ -28,6 +28,54 @@ namespace Artemis.Core.Models.Profile
             return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
         }
 
+        public void OnColorValuesUpdated()
+        {
+            OnPropertyChanged(nameof(Stops));
+        }
+
+        public SKColor GetColor(float position)
+        {
+            if (!Stops.Any())
+                return SKColor.Empty;
+
+            var stops = Stops.OrderBy(x => x.Position).ToArray();
+            if (position <= 0) return stops[0].Color;
+            if (position >= 1) return stops[^1].Color;
+            ColorGradientStop left = stops[0], right = null;
+            foreach (var stop in stops)
+            {
+                if (stop.Position >= position)
+                {
+                    right = stop;
+                    break;
+                }
+
+                left = stop;
+            }
+
+            if (right == null || left == right)
+                return left.Color;
+            
+            position = (float) Math.Round((position - left.Position) / (right.Position - left.Position), 2);
+            var a = (byte) ((right.Color.Alpha - left.Color.Alpha) * position + left.Color.Alpha);
+            var r = (byte) ((right.Color.Red - left.Color.Red) * position + left.Color.Red);
+            var g = (byte) ((right.Color.Green - left.Color.Green) * position + left.Color.Green);
+            var b = (byte) ((right.Color.Blue - left.Color.Blue) * position + left.Color.Blue);
+            return new SKColor(r, g, b, a);
+        }
+
+        /// <summary>
+        ///     [PH] Looping through HSV, adds 8 rainbow colors
+        /// </summary>
+        public void MakeFabulous()
+        {
+            for (var i = 0; i < 9; i++)
+            {
+                var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
+                Stops.Add(new ColorGradientStop(color, 0.125f * i));
+            }
+        }
+
         #region PropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -39,51 +87,6 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        public void OnColorValuesUpdated()
-        {
-            OnPropertyChanged(nameof(Stops));
-        }
-
-        public SKColor GetColor(float position)
-        {
-            if (!Stops.Any())
-                return SKColor.Empty;
-
-            var point = Stops.FirstOrDefault(f => f.Position == position);
-            if (point != null) return point.Color;
-
-            var before = Stops.First(w => w.Position == Stops.Min(m => m.Position));
-            var after = Stops.First(w => w.Position == Stops.Max(m => m.Position));
-
-            foreach (var gs in Stops)
-            {
-                if (gs.Position < position && gs.Position > before.Position)
-                    before = gs;
-
-                if (gs.Position >= position && gs.Position < after.Position)
-                    after = gs;
-            }
-
-            return new SKColor(
-                (byte) ((position - before.Position) * (after.Color.Red - before.Color.Red) / (after.Position - before.Position) + before.Color.Red),
-                (byte) ((position - before.Position) * (after.Color.Green - before.Color.Green) / (after.Position - before.Position) + before.Color.Green),
-                (byte) ((position - before.Position) * (after.Color.Blue - before.Color.Blue) / (after.Position - before.Position) + before.Color.Blue),
-                (byte) ((position - before.Position) * (after.Color.Alpha - before.Color.Alpha) / (after.Position - before.Position) + before.Color.Alpha)
-            );
-        }
-
-        /// <summary>
-        /// [PH] Looping through HSV, adds 8 rainbow colors
-        /// </summary>
-        public void MakeFabulous()
-        {
-            for (var i = 0; i < 9; i++)
-            {
-                var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
-                Stops.Add(new ColorGradientStop(color, 0.125f * i));
-            }
-        }
     }
 
     public class ColorGradientStop : INotifyPropertyChanged

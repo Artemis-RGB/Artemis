@@ -28,6 +28,8 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         IReadOnlyCollection<IRGBDevice> LoadedDevices { get; }
 
+        TimerUpdateTrigger UpdateTrigger { get; }
+
         /// <summary>
         ///     Adds the given device provider to the <see cref="Surface" />
         /// </summary>

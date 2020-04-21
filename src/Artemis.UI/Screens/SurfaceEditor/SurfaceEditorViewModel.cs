@@ -10,6 +10,7 @@ using System.Windows.Media;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
@@ -24,9 +25,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
+        private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
 
-        public SurfaceEditorViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, IDeviceService deviceService)
+        public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, 
+            IDeviceService deviceService)
         {
             DisplayName = "Surface Editor";
 
@@ -36,6 +39,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             PanZoomViewModel = new PanZoomViewModel();
             Cursor = null;
 
+            _rgbService = rgbService;
             _surfaceService = surfaceService;
             _dialogService = dialogService;
             _settingsService = settingsService;
@@ -90,7 +94,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 activeConfig = CreateSurfaceConfiguration("Default");
                 configs.Add(activeConfig);
+                _rgbService.UpdateTrigger.Stop();
                 _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
+                _rgbService.UpdateTrigger.Start();
             }
 
             Execute.PostToUIThread(() =>
@@ -134,7 +140,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 }
             });
 
+            _rgbService.UpdateTrigger.Stop();
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
+            _rgbService.UpdateTrigger.Start();
         }
 
         #region Overrides of Screen
@@ -195,7 +203,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            SafeUpdateSurfaceConfiguration();
         }
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -210,7 +218,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            SafeUpdateSurfaceConfiguration();
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -222,7 +230,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            SafeUpdateSurfaceConfiguration();
         }
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -236,7 +244,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            SafeUpdateSurfaceConfiguration();
         }
 
         public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -247,7 +255,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             });
 
             if ((bool) madeChanges)
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+                SafeUpdateSurfaceConfiguration();
         }
 
         #endregion
@@ -343,8 +351,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 }
             }
             else
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
-
+                SafeUpdateSurfaceConfiguration();
 
             _mouseDragStatus = MouseDragStatus.None;
         }
@@ -370,6 +377,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             foreach (var device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                 device.UpdateMouseDrag(position);
+        }
+
+        private void SafeUpdateSurfaceConfiguration()
+        {
+            _rgbService.UpdateTrigger.Stop();
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            _rgbService.UpdateTrigger.Start();
         }
 
         #endregion

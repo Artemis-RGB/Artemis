@@ -14,7 +14,10 @@ namespace Artemis.UI.Screens.Home
         {
             // Don't open anything but valid URIs
             if (Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
-                Process.Start(url);
+            {
+                url = url.Replace("&", "^&");
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") {CreateNoWindow = true});
+            }
         }
     }
 }

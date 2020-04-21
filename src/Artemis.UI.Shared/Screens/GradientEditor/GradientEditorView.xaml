@@ -10,6 +10,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:controls1="clr-namespace:Artemis.UI.Shared.Controls"
+             xmlns:utilities="clr-namespace:Artemis.UI.Shared.Utilities"
              mc:Ignorable="d"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
@@ -22,13 +23,13 @@
         <converters:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
         <converters:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
-    <Grid  Margin="16">
+    <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <materialDesign:Card Grid.Row="0" Margin="15 15 15 7" >
+        <materialDesign:Card Grid.Row="0" Margin="15 15 15 7">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
                 <materialDesign:PackIcon Kind="Crane" Width="80" Height="80" HorizontalAlignment="Center" />
                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap"
@@ -47,7 +48,9 @@
                 <TextBlock Margin="15 15 0 0">Gradient</TextBlock>
                 <Separator Margin="15 5" />
 
-                <Rectangle x:Name="Preview" Width="440" Height="40" Margin="15 0">
+                <Rectangle x:Name="Preview" Height="40" Margin="15 0"
+                           utilities:SizeObserver.Observe="True"
+                           utilities:SizeObserver.ObservedWidth="{Binding PreviewWidth, Mode=OneWayToSource}">
                     <Rectangle.Fill>
                         <LinearGradientBrush
                             GradientStops="{Binding ColorGradient.Stops, Converter={StaticResource ColorGradientToGradientStopsConverter}}" />

@@ -7,15 +7,14 @@ using System.Windows.Input;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Shared.Utilities;
-using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
 {
     public class GradientEditorViewModel : DialogViewModelBase
     {
-        private ColorStopViewModel _selectedColorStopViewModel;
         private readonly List<ColorGradientStop> _originalStops;
+        private ColorStopViewModel _selectedColorStopViewModel;
 
         public GradientEditorViewModel(ColorGradient colorGradient)
         {
@@ -24,8 +23,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
             _originalStops = ColorGradient.Stops.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
 
-            foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
-                ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
+            PropertyChanged += UpdateColorStopViewModels;
         }
 
         public BindableCollection<ColorStopViewModel> ColorStopViewModels { get; set; }
@@ -43,8 +41,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
 
         public ColorGradient ColorGradient { get; }
-        // TODO: Find the width out from view
-        public double PreviewWidth => 408;
+        public double PreviewWidth { get; set; }
 
         public void AddColorStop(object sender, MouseEventArgs e)
         {
@@ -98,6 +95,13 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
             if (!Session.IsEnded)
                 Session.Close(false);
+        }
+
+        private void UpdateColorStopViewModels(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(PreviewWidth)) return;
+            foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
+                ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
         }
     }
 }

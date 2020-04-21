@@ -62,21 +62,20 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         public LayerProperty<SKPoint> ScrollSpeedProperty { get; set; }
         public LayerProperty<float> AnimationSpeedProperty { get; set; }
 
-
         private void UpdateColorProperties()
         {
-            UnRegisterLayerProperty(MainColorProperty);
-            UnRegisterLayerProperty(SecondaryColorProperty);
-            UnRegisterLayerProperty(GradientColorProperty);
             if (GradientColorProperty != null)
                 GradientColorProperty.Value.PropertyChanged -= CreateColorMap;
             if (ColorTypeProperty.Value == ColorMappingType.Simple)
             {
+                UnRegisterLayerProperty(GradientColorProperty);
                 MainColorProperty = RegisterLayerProperty("Brush.MainColor", "Main color", "The main color of the noise", new SKColor(255, 0, 0));
                 SecondaryColorProperty = RegisterLayerProperty("Brush.SecondaryColor", "Secondary color", "The secondary color of the noise", new SKColor(0, 0, 255));
             }
             else
             {
+                UnRegisterLayerProperty(MainColorProperty);
+                UnRegisterLayerProperty(SecondaryColorProperty);
                 GradientColorProperty = RegisterLayerProperty("Brush.GradientColor", "Noise gradient map", "The gradient the noise will map it's value to", new ColorGradient());
                 if (!GradientColorProperty.Value.Stops.Any())
                     GradientColorProperty.Value.MakeFabulous();
