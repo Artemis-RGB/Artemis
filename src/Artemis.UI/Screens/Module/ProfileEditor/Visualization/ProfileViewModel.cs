@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
                 CanvasViewModels = new BindableCollection<CanvasViewModel>();
                 Devices = new BindableCollection<ArtemisDevice>();
-                DimmedLeds = new BindableCollection<ArtemisLed>();
+                HighlightedLeds = new BindableCollection<ArtemisLed>();
                 SelectedLeds = new BindableCollection<ArtemisLed>();
             });
 
@@ -64,21 +64,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
 
         public bool IsInitializing { get; private set; }
+        public bool CanSelectEditTool { get; set; }
 
         public PanZoomViewModel PanZoomViewModel { get; set; }
 
         public BindableCollection<CanvasViewModel> CanvasViewModels { get; set; }
         public BindableCollection<ArtemisDevice> Devices { get; set; }
-        public BindableCollection<ArtemisLed> DimmedLeds { get; set; }
+        public BindableCollection<ArtemisLed> HighlightedLeds { get; set; }
         public BindableCollection<ArtemisLed> SelectedLeds { get; set; }
 
+        public PluginSetting<bool> OnlyShowSelectedShape { get; set; }
         public PluginSetting<bool> HighlightSelectedLayer { get; set; }
-        public PluginSetting<bool> PauseRenderingOnFocusLoss { get; set; }
 
         public VisualizationToolViewModel ActiveToolViewModel
         {
             get => _activeToolViewModel;
-            set
+            private set
             {
                 // Remove the tool from the canvas
                 if (_activeToolViewModel != null)
@@ -120,8 +121,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         protected override void OnInitialActivate()
         {
+            OnlyShowSelectedShape = _settingsService.GetSetting("ProfileEditor.OnlyShowSelectedShape", true);
             HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
-            PauseRenderingOnFocusLoss = _settingsService.GetSetting("ProfileEditor.PauseRenderingOnFocusLoss", true);
 
             HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
             _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
@@ -131,7 +132,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             base.OnInitialActivate();
         }
-
+        
         protected override void OnClose()
         {
             HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
@@ -140,8 +141,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
 
+            OnlyShowSelectedShape.Save();
             HighlightSelectedLayer.Save();
-            PauseRenderingOnFocusLoss.Save();
 
             base.OnClose();
         }
@@ -183,9 +184,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void UpdateLedsDimStatus()
         {
-            DimmedLeds.Clear();
+            HighlightedLeds.Clear();
             if (HighlightSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
-                DimmedLeds.AddRange(layer.Leds);
+                HighlightedLeds.AddRange(layer.Leds);
         }
 
         #region Buttons
@@ -300,14 +301,38 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void OnProfileElementSelected(object sender, EventArgs e)
         {
             UpdateLedsDimStatus();
-            CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+            {
+                CanApplyToLayer = true;
+                CanSelectEditTool = layer.Leds.Any();
+            }
+            else
+            {
+                CanApplyToLayer = false;
+                CanSelectEditTool = false;
+            }
+            if (CanSelectEditTool == false && ActiveToolIndex == 1)
+                ActivateToolByIndex(2);
         }
+
+        
 
         private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
         {
             ApplyActiveProfile();
             UpdateLedsDimStatus();
-            CanApplyToLayer = _profileEditorService.SelectedProfileElement is Layer;
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+            {
+                CanApplyToLayer = true;
+                CanSelectEditTool = layer.Leds.Any();
+            }
+            else
+            {
+                CanApplyToLayer = false;
+                CanSelectEditTool = false;
+            }
+            if (CanSelectEditTool == false && ActiveToolIndex == 1)
+                ActivateToolByIndex(2);
         }
 
         public void Handle(MainWindowFocusChangedEvent message)

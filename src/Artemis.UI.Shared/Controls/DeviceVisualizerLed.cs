@@ -23,11 +23,11 @@ namespace Artemis.UI.Shared.Controls
 
             if (Led.RgbLed.Image != null && File.Exists(Led.RgbLed.Image.AbsolutePath))
                 LedImage = new BitmapImage(Led.RgbLed.Image);
-            
+
             CreateLedGeometry();
         }
 
-        
+
         public ArtemisLed Led { get; }
         public Rect LedRect { get; set; }
         public BitmapImage LedImage { get; set; }
@@ -60,7 +60,6 @@ namespace Artemis.UI.Shared.Controls
             // Stroke geometry is the display geometry excluding the inner geometry
             DisplayGeometry.Transform = new TranslateTransform(Led.RgbLed.LedRectangle.Location.X, Led.RgbLed.LedRectangle.Location.Y);
             // Try to gain some performance
-            DisplayGeometry = DisplayGeometry.GetFlattenedPathGeometry();
             DisplayGeometry.Freeze();
         }
 
@@ -103,7 +102,7 @@ namespace Artemis.UI.Shared.Controls
             }
         }
 
-        public void RenderColor(DrawingContext drawingContext)
+        public void RenderColor(DrawingContext drawingContext, bool isDimmed)
         {
             if (DisplayGeometry == null)
                 return;
@@ -111,8 +110,10 @@ namespace Artemis.UI.Shared.Controls
             var r = Led.RgbLed.Color.GetR();
             var g = Led.RgbLed.Color.GetG();
             var b = Led.RgbLed.Color.GetB();
-
-            drawingContext.DrawRectangle(new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
+            
+            drawingContext.DrawRectangle(isDimmed
+                ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
+                : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
         }
 
         public void RenderImage(DrawingContext drawingContext)

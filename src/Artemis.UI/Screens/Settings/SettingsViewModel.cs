@@ -57,6 +57,7 @@ namespace Artemis.UI.Screens.Settings
             Plugins = new BindableCollection<PluginSettingsViewModel>();
 
             LogLevels = EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel));
+            ColorSchemes = EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme));
             RenderScales = new List<Tuple<string, double>> {new Tuple<string, double>("10%", 0.1)};
             for (var i = 25; i <= 100; i += 25)
                 RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
@@ -72,6 +73,7 @@ namespace Artemis.UI.Screens.Settings
         public List<Tuple<string, int>> TargetFrameRates { get; set; }
         public List<Tuple<string, double>> RenderScales { get; set; }
         public IEnumerable<ValueDescription> LogLevels { get; }
+        public IEnumerable<ValueDescription> ColorSchemes { get; }
 
         public List<int> SampleSizes { get; set; }
         public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
@@ -117,6 +119,16 @@ namespace Artemis.UI.Screens.Settings
             {
                 _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value = value;
                 _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Save();
+            }
+        }      
+        
+        public ApplicationColorScheme SelectedColorScheme
+        {
+            get => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Value = value;
+                _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Save();
             }
         }
 
@@ -217,5 +229,12 @@ namespace Artemis.UI.Screens.Settings
                 throw;
             }
         }
+    }
+
+    public enum ApplicationColorScheme
+    {
+        Light,
+        Dark,
+        Automatic
     }
 }

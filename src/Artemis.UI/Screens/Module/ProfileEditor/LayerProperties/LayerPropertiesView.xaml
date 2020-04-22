@@ -121,7 +121,7 @@
             </DockPanel>
 
             <!-- Properties tree -->
-            <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" CloseOnClickAway="True" Grid.Row="1">
+            <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" DialogTheme="Inherit" CloseOnClickAway="True" Grid.Row="1">
                 <ScrollViewer x:Name="PropertyTreeScrollViewer"
                               HorizontalScrollBarVisibility="Hidden"
                               VerticalScrollBarVisibility="Hidden"
