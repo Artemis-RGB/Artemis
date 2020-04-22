@@ -78,7 +78,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
                 GradientType.Solid => SKShader.CreateColor(_color),
                 GradientType.LinearGradient => SKShader.CreateLinearGradient(
                     new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
-                    new SKPoint(_shaderBounds.Right, _shaderBounds.Bottom),
+                    new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
                     GradientProperty.Value.GetColorsArray(),
                     GradientProperty.Value.GetPositionsArray(),
                     SKShaderTileMode.Repeat),

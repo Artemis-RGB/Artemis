@@ -40,26 +40,29 @@ namespace Artemis.Core.Models.Profile
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
             _children = _children.OrderBy(c => c.Order).ToList();
             for (var index = 0; index < _children.Count; index++)
-            {
-                var profileElement = _children[index];
-                profileElement.Order = index + 1;
-            }
+                _children[index].Order = index + 1;
         }
 
         internal FolderEntity FolderEntity { get; set; }
 
         public override void Update(double deltaTime)
         {
-            // Folders don't update but their children do
-            foreach (var profileElement in Children)
+            // Iterate the children in reverse because that's how they must be rendered too
+            for (var index = Children.Count - 1; index > -1; index--)
+            {
+                var profileElement = Children[index];
                 profileElement.Update(deltaTime);
+            }
         }
 
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            // Folders don't render but their children do
-            foreach (var profileElement in Children)
+            // Iterate the children in reverse because the first layer must be rendered last to end up on top
+            for (var index = Children.Count - 1; index > -1; index--)
+            {
+                var profileElement = Children[index];
                 profileElement.Render(deltaTime, canvas, canvasInfo);
+            }
         }
 
         public Folder AddFolder(string name)

@@ -190,7 +190,7 @@
         <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" />
 
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Grid.Column="2" VerticalAlignment="Stretch" Margin="5,0,0,0">
-            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" CloseOnClickAway="True">
+            <materialDesign:DialogHost Identifier="SurfaceListDialogHost" DialogTheme="Inherit" CloseOnClickAway="True">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />

@@ -71,6 +71,27 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Color scheme</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                       Pick between a light and dark color scheme, the automatic option copies your Windows settings.
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <ComboBox Width="80" SelectedValue="{Binding SelectedColorScheme}" ItemsSource="{Binding ColorSchemes}" SelectedValuePath="Value" DisplayMemberPath="Description" />
+                                </StackPanel>
+                            </Grid>
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Debugger</TextBlock>
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
@@ -143,7 +164,7 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Log level</TextBlock>
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                        Sets the logging level, a verbose logging level will result in more log files.
+                                        Sets the logging level, a higher logging level will result in more log files.
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">

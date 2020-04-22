@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
+using Stylet;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -17,6 +19,9 @@ namespace Artemis.UI.Shared.Controls
 
         public static readonly DependencyProperty ShowColorsProperty = DependencyProperty.Register(nameof(ShowColors), typeof(bool), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender, ShowColorsPropertyChangedCallback));
+
+        public static readonly DependencyProperty HighlightedLedsProperty = DependencyProperty.Register(nameof(HighlightedLeds), typeof(IEnumerable<ArtemisLed>), typeof(DeviceVisualizer),
+            new FrameworkPropertyMetadata(default(IEnumerable<ArtemisLed>)));
 
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
@@ -55,6 +60,12 @@ namespace Artemis.UI.Shared.Controls
         {
             get => (bool) GetValue(ShowColorsProperty);
             set => SetValue(ShowColorsProperty, value);
+        }
+
+        public IEnumerable<ArtemisLed> HighlightedLeds
+        {
+            get => (IEnumerable<ArtemisLed>) GetValue(HighlightedLedsProperty);
+            set => SetValue(HighlightedLedsProperty, value);
         }
 
         public void Dispose()
@@ -159,8 +170,17 @@ namespace Artemis.UI.Shared.Controls
         {
             var drawingContext = _backingStore.Open();
 
-            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
-                deviceVisualizerLed.RenderColor(drawingContext);
+            if (HighlightedLeds.Any())
+            {
+                foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                    deviceVisualizerLed.RenderColor(drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
+            }
+            else
+            {
+                foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                    deviceVisualizerLed.RenderColor(drawingContext, false);
+            }
+            
 
             drawingContext.Close();
         }

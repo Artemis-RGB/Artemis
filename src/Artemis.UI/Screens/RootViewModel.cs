@@ -1,8 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Utilities;
 using MaterialDesignThemes.Wpf;
@@ -14,15 +18,19 @@ namespace Artemis.UI.Screens
     {
         private readonly IEventAggregator _eventAggregator;
         private bool _lostFocus;
+        private PluginSetting<ApplicationColorScheme> _colorScheme;
+        private ThemeWatcher _themeWatcher;
 
-        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel)
+        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService)
         {
             SidebarViewModel = sidebarViewModel;
             _eventAggregator = eventAggregator;
 
-            var themeWatcher = new ThemeWatcher();
-            themeWatcher.ThemeChanged += (sender, args) => ApplyWindowsTheme(args.Theme);
-            ApplyWindowsTheme(themeWatcher.GetWindowsTheme());
+            _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+            _colorScheme.SettingChanged += (sender, args) => ApplyColorSchemeSetting();
+            _themeWatcher = new ThemeWatcher();
+            _themeWatcher.ThemeChanged += (sender, args) => ApplyWindowsTheme(args.Theme);
+            ApplyColorSchemeSetting();
 
             ActiveItem = SidebarViewModel.SelectedItem;
             ActiveItemReady = true;
@@ -79,18 +87,34 @@ namespace Artemis.UI.Screens
             }
         }
 
+        private void ApplyColorSchemeSetting()
+        {
+            if (_colorScheme.Value == ApplicationColorScheme.Automatic)
+                ApplyWindowsTheme(_themeWatcher.GetWindowsTheme());
+            else
+                ChangeMaterialColors(_colorScheme.Value);
+        }
+
         private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
+        {
+            if (_colorScheme.Value != ApplicationColorScheme.Automatic)
+                return;
+
+            if (windowsTheme == ThemeWatcher.WindowsTheme.Dark)
+                ChangeMaterialColors(ApplicationColorScheme.Dark);
+            else
+                ChangeMaterialColors(ApplicationColorScheme.Light);
+        }
+
+        private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
         {
             var paletteHelper = new PaletteHelper();
             var theme = paletteHelper.GetTheme();
-            theme.SetBaseTheme(windowsTheme == ThemeWatcher.WindowsTheme.Dark ? Theme.Dark : Theme.Light);
+            theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
             paletteHelper.SetTheme(theme);
 
             var extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
-            // That's nice, then don't use it in your own examples and provide a working alternative
-#pragma warning disable 612
-            extensionsPaletteHelper.SetLightDark(windowsTheme == ThemeWatcher.WindowsTheme.Dark);
-#pragma warning restore 612
+            extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
     }
 }

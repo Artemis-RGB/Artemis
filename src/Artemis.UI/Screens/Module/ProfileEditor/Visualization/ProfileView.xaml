@@ -57,7 +57,7 @@
                     <ListBoxItem ToolTip="Pan over different parts of the surface">
                         <materialDesign:PackIcon Kind="HandLeft" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Edit shape in layer">
+                    <ListBoxItem ToolTip="Edit shape in layer" IsEnabled="{Binding CanSelectEditTool}">
                         <materialDesign:PackIcon Kind="Edit" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection)">
@@ -122,7 +122,9 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:DeviceVisualizer Device="{Binding}" ShowColors="True"/>
+                            <controls:DeviceVisualizer Device="{Binding}" 
+                                                       ShowColors="True" 
+                                                       HighlightedLeds="{Binding DataContext.HighlightedLeds, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -158,11 +160,11 @@
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding HighlightSelectedLayer.Value}">
-                            Dim LEDs outside selected layer
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding OnlyShowSelectedShape.Value}" IsEnabled="False">
+                            Only show shape of selected layer (NYI)
                         </CheckBox>
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding PauseRenderingOnFocusLoss.Value}">
-                            Pause visualization on focus loss
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding HighlightSelectedLayer.Value}">
+                            Highlight LEDs of selected layer
                         </CheckBox>
                     </StackPanel>
                 </materialDesign:Card>

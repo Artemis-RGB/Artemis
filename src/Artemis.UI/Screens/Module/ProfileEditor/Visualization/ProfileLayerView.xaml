@@ -10,22 +10,42 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:ProfileLayerViewModel}}">
     <UserControl.Resources>
-        <Style TargetType="{x:Type Canvas}" x:Key="SelectedStyle">
+        <Style TargetType="{x:Type Path}" x:Key="SelectedShapeStyle">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsSelected}" Value="False">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Opacity)" To="0.8"
-                                                 Duration="0:0:0.25" />
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="Gray" Duration="0:0:0.5"/>
+                                <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="0.5" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(Canvas.Opacity)" To="1"
-                                                 Duration="0:0:0.25" />
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="{StaticResource Accent700}" Duration="0:0:0.5"/>
+                                <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="1" Duration="0:0:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type Path}" x:Key="SelectedLayerStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(Path.Opacity)" To="0" Duration="0:0:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(Path.Opacity)" To="1" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -33,29 +53,23 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Canvas Style="{StaticResource SelectedStyle}">
-
-
-        <!-- The part of the layer's shape that is inside the layer -->
-        <Path Data="{Binding ShapeGeometry, Mode=OneWay}">
-            <Path.Fill>
-                <SolidColorBrush Color="{StaticResource Accent700}" Opacity="0.15" />
-            </Path.Fill>
+    <Canvas>
+        <!-- The part of the layer's shape that falls outside the layer -->
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}" 
+              StrokeThickness="0.5" 
+              Style="{StaticResource SelectedShapeStyle}">
             <Path.Stroke>
-                <SolidColorBrush Color="{StaticResource Accent700}" />
+                <SolidColorBrush Color="{StaticResource Primary700}" />
             </Path.Stroke>
         </Path>
 
-        <Rectangle Width="{Binding LayerRect.Width}" 
-                   Height="{Binding LayerRect.Height}" 
-                   Margin="{Binding LayerRectMargin}" 
-                   StrokeThickness="1" 
-                   StrokeDashArray="4 2"
-                   StrokeLineJoin="Round" 
-                   x:Name="LayerPath">
-            <Rectangle.Stroke>
-                <SolidColorBrush Color="{StaticResource Accent400}" />
-            </Rectangle.Stroke>
-        </Rectangle>
+        <Path Data="{Binding LayerGeometry, Mode=OneWay}" 
+              ClipToBounds="False" 
+              Stroke="#A7A7A7"
+              StrokeThickness="1"
+              StrokeLineJoin="Round"
+              x:Name="LayerPath"
+              Style="{StaticResource SelectedLayerStyle}">            
+        </Path>
     </Canvas>
 </UserControl>
