@@ -94,9 +94,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 activeConfig = CreateSurfaceConfiguration("Default");
                 configs.Add(activeConfig);
-                _rgbService.UpdateTrigger.Stop();
                 _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
-                _rgbService.UpdateTrigger.Start();
             }
 
             Execute.PostToUIThread(() =>
@@ -140,9 +138,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 }
             });
 
-            _rgbService.UpdateTrigger.Stop();
             _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
-            _rgbService.UpdateTrigger.Start();
         }
 
         #region Overrides of Screen
@@ -203,7 +199,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            SafeUpdateSurfaceConfiguration();
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -218,7 +214,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            SafeUpdateSurfaceConfiguration();
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -230,7 +226,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            SafeUpdateSurfaceConfiguration();
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -244,7 +240,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            SafeUpdateSurfaceConfiguration();
+            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
@@ -255,7 +251,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             });
 
             if ((bool) madeChanges)
-                SafeUpdateSurfaceConfiguration();
+                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
         #endregion
@@ -351,7 +347,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 }
             }
             else
-                SafeUpdateSurfaceConfiguration();
+                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
 
             _mouseDragStatus = MouseDragStatus.None;
         }
@@ -377,13 +373,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             foreach (var device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                 device.UpdateMouseDrag(position);
-        }
-
-        private void SafeUpdateSurfaceConfiguration()
-        {
-            _rgbService.UpdateTrigger.Stop();
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
-            _rgbService.UpdateTrigger.Start();
         }
 
         #endregion
@@ -426,6 +415,18 @@ namespace Artemis.UI.Screens.SurfaceEditor
         }
 
         #endregion
+
+        protected override void OnActivate()
+        {
+            _rgbService.UpdateTrigger.Stop();
+            base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _rgbService.UpdateTrigger.Start();
+            base.OnDeactivate();
+        }
     }
 
     internal enum MouseDragStatus
