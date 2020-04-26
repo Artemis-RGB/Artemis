@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Abstract;
 using Artemis.Core.Utilities;
 using Artemis.UI.Services.Interfaces;
 using Stylet;

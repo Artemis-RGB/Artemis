@@ -17,10 +17,11 @@ namespace Artemis.Plugins.Modules.General
             DisplayName = "General";
             DisplayIcon = "AllInclusive";
             ExpandsMainDataModel = true;
+            DataModel = new GeneralDataModel(this);
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
-
+        
         public override void EnablePlugin()
         {
         }

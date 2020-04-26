@@ -56,4 +56,7 @@
       <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Groups.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Attributes\" />
+  </ItemGroup>
 </Project>
