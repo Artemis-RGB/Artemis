@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
 using SkiaSharp;

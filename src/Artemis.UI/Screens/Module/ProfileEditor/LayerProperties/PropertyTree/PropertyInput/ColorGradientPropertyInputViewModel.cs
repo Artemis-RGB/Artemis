@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
