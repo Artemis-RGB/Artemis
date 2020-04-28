@@ -13,22 +13,9 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="layer">The layer to instantiate the brush for</param>
         /// <returns></returns>
-        LayerBrush InstantiateLayerBrush(Layer layer);
+        ILayerBrush InstantiateLayerBrush(Layer layer);
 
-        /// <summary>
-        ///     Instantiates and adds a compatible <see cref="KeyframeEngine" /> to the provided <see cref="LayerProperty{T}" />.
-        ///     If the property already has a compatible keyframe engine, nothing happens.
-        /// </summary>
-        /// <param name="layerProperty">The layer property to apply the keyframe engine to.</param>
-        /// <returns>The resulting keyframe engine, if a compatible engine was found.</returns>
-        KeyframeEngine InstantiateKeyframeEngine<T>(LayerProperty<T> layerProperty);
-
-        /// <summary>
-        ///     Instantiates and adds a compatible <see cref="KeyframeEngine" /> to the provided <see cref="BaseLayerProperty" />.
-        ///     If the property already has a compatible keyframe engine, nothing happens.
-        /// </summary>
-        /// <param name="layerProperty">The layer property to apply the keyframe engine to.</param>
-        /// <returns>The resulting keyframe engine, if a compatible engine was found.</returns>
-        KeyframeEngine InstantiateKeyframeEngine(BaseLayerProperty layerProperty);
+        void LoadPropertyBaseValue(Layer layer, string path, object layerProperty);
+        void LoadPropertyKeyframes(Layer layer, string path, object layerProperty);
     }
 }

@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
+    /// <summary>
+    ///     Represents a layer on a profile. To create new layers use the <see cref="LayerService" /> by injecting
+    ///     <see cref="ILayerService" /> into your code
+    /// </summary>
     public sealed class Layer : ProfileElement
     {
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
 
-        public Layer(Profile profile, ProfileElement parent, string name)
+        internal Layer(Profile profile, ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
@@ -26,12 +32,10 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
-            Properties = new LayerPropertyCollection(this);
+            General = new LayerGeneralProperties();
+            Transform = new LayerTransformProperties();
 
             _leds = new List<ArtemisLed>();
-
-            ApplyShapeType();
-            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -43,12 +47,10 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = layerEntity.Name;
             Order = layerEntity.Order;
-            Properties = new LayerPropertyCollection(this);
+            General = new LayerGeneralProperties();
+            Transform = new LayerTransformProperties();
 
             _leds = new List<ArtemisLed>();
-
-            ApplyShapeType();
-            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -93,15 +95,16 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        /// <summary>
-        ///     The properties of this layer
-        /// </summary>
-        public LayerPropertyCollection Properties { get; set; }
+        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties", ExpandByDefault = true)]
+        public LayerGeneralProperties General { get; set; }
+
+        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties", ExpandByDefault = true)]
+        public LayerTransformProperties Transform { get; set; }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
-        public LayerBrush LayerBrush { get; internal set; }
+        public ILayerBrush LayerBrush { get; internal set; }
 
         public override string ToString()
         {
@@ -155,6 +158,19 @@ namespace Artemis.Core.Models.Profile
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        internal void InitializeProperties(ILayerService layerService)
+        {
+            PropertiesInitialized = true;
+
+            ApplyShapeType();
+        }
+
+        public bool PropertiesInitialized { get; private set; }
 
         #endregion
 

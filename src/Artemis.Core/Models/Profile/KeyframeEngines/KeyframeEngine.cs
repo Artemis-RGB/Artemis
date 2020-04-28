@@ -17,7 +17,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         /// <summary>
         ///     The layer property this keyframe engine applies to.
         /// </summary>
-        public BaseLayerProperty LayerProperty { get; private set; }
+        public LayerProperty LayerProperty { get; private set; }
 
         /// <summary>
         ///     The total progress
@@ -55,7 +55,7 @@ namespace Artemis.Core.Models.Profile.KeyframeEngines
         ///     Associates the keyframe engine with the provided layer property.
         /// </summary>
         /// <param name="layerProperty"></param>
-        public void Initialize(BaseLayerProperty layerProperty)
+        public void Initialize(LayerProperty layerProperty)
         {
             if (Initialized)
                 throw new ArtemisCoreException("Cannot initialize the same keyframe engine twice");

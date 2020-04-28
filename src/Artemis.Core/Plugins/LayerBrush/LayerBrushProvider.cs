@@ -20,7 +20,7 @@ namespace Artemis.Core.Plugins.LayerBrush
 
         public ReadOnlyCollection<LayerBrushDescriptor> LayerBrushDescriptors => _layerBrushDescriptors.AsReadOnly();
 
-        protected void AddLayerBrushDescriptor<T>(string displayName, string description, string icon) where T : LayerBrush
+        protected void AddLayerBrushDescriptor<T>(string displayName, string description, string icon) where T : ILayerBrush
         {
             _layerBrushDescriptors.Add(new LayerBrushDescriptor(displayName, description, icon, typeof(T), this));
         }

@@ -1,6 +1,5 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Abstract;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
@@ -51,7 +50,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface ILayerPropertyVmFactory : IVmFactory
     {
-        LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
+        LayerPropertyViewModel Create(LayerProperty layerProperty, LayerPropertyViewModel parent);
     }
 
     public interface IPropertyTreeVmFactory : IVmFactory

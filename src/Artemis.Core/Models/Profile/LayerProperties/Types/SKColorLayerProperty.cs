@@ -1,11 +1,15 @@
 ﻿using System;
-using Artemis.Core.Models.Profile.LayerProperties.Abstract;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    public class SKColorLayerProperty : LayerProperty<SKColor>
+    /// <inheritdoc/>
+    public class SKColorLayerProperty : GenericLayerProperty<SKColor>
     {
+        internal SKColorLayerProperty()
+        {
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             var redDiff = NextKeyframe.Value.Red - CurrentKeyframe.Value.Red;
