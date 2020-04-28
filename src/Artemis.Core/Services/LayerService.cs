@@ -4,7 +4,9 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
@@ -24,11 +26,25 @@ namespace Artemis.Core.Services
             _pluginService = pluginService;
         }
 
-        public LayerBrush InstantiateLayerBrush(Layer layer)
+        public Layer CreateLayer(Profile profile, ProfileElement parent, string name)
+        {
+            var layer = new Layer(profile, parent, name);
+
+            // Layers have two hardcoded property groups, instantiate them
+            layer.General.InitializeProperties(this, layer, null, null);
+            layer.Transform.InitializeProperties(this, layer, null, null);
+
+            // With the properties loaded, the layer brush can be instantiated
+            InstantiateLayerBrush(layer);
+
+            return layer;
+        }
+
+        public ILayerBrush InstantiateLayerBrush(Layer layer)
         {
             RemoveLayerBrush(layer);
 
-            var descriptorReference = layer.Properties.BrushReference.CurrentValue;
+            var descriptorReference = layer.General.BrushReference.CurrentValue;
             if (descriptorReference == null)
                 return null;
 
@@ -46,34 +62,11 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("layer", layer),
                 new ConstructorArgument("descriptor", descriptor)
             };
-            var layerBrush = (LayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
-            // Set the layer service after the brush was created to avoid constructor clutter, SetLayerService will play catch-up for us.
-            // If layer brush implementations need the LayerService they can inject it themselves, but don't require it by default
-            layerBrush.SetLayerService(this);
+            var layerBrush = (ILayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
+            layerBrush.InitializeProperties(this, null);
             layer.LayerBrush = layerBrush;
 
             return layerBrush;
-        }
-
-        public KeyframeEngine InstantiateKeyframeEngine<T>(LayerProperty<T> layerProperty)
-        {
-            return InstantiateKeyframeEngine((BaseLayerProperty) layerProperty);
-        }
-
-        public KeyframeEngine InstantiateKeyframeEngine(BaseLayerProperty layerProperty)
-        {
-            if (layerProperty.KeyframeEngine != null && layerProperty.KeyframeEngine.CompatibleTypes.Contains(layerProperty.Type))
-                return layerProperty.KeyframeEngine;
-
-            // This creates an instance of each keyframe engine, which is pretty cheap since all the expensive stuff is done during
-            // Initialize() call but it's not ideal
-            var keyframeEngines = _kernel.Get<List<KeyframeEngine>>();
-            var keyframeEngine = keyframeEngines.FirstOrDefault(k => k.CompatibleTypes.Contains(layerProperty.Type));
-            if (keyframeEngine == null)
-                return null;
-
-            keyframeEngine.Initialize(layerProperty);
-            return keyframeEngine;
         }
 
         public void RemoveLayerBrush(Layer layer)

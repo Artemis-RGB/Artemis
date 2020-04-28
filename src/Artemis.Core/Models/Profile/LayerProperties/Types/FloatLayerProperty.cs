@@ -1,9 +1,12 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties.Abstract;
-
-namespace Artemis.Core.Models.Profile.LayerProperties
+﻿namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    public class FloatLayerProperty : LayerProperty<float>
+    /// <inheritdoc/>
+    public class FloatLayerProperty : GenericLayerProperty<float>
     {
+        internal FloatLayerProperty()
+        {
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             var diff = NextKeyframe.Value - CurrentKeyframe.Value;

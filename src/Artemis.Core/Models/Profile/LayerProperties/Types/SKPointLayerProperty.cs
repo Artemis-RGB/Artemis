@@ -1,10 +1,14 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties.Abstract;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    public class SKPointLayerProperty : LayerProperty<SKPoint>
+    /// <inheritdoc/>
+    public class SKPointLayerProperty : GenericLayerProperty<SKPoint>
     {
+        internal SKPointLayerProperty()
+        {
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             var xDiff = NextKeyframe.Value.X - CurrentKeyframe.Value.X;

@@ -1,10 +1,14 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties.Abstract;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    public class SKSizeLayerProperty : LayerProperty<SKSize>
+    /// <inheritdoc/>
+    public class SKSizeLayerProperty : GenericLayerProperty<SKSize>
     {
+        internal SKSizeLayerProperty()
+        {
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             var widthDiff = NextKeyframe.Value.Width - CurrentKeyframe.Value.Width;

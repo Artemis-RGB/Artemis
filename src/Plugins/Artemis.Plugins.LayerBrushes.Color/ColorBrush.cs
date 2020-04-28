@@ -1,15 +1,11 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Linq;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerBrushes.Color
 {
-    public class ColorBrush : LayerBrush
+    public class ColorBrush : LayerBrush<ColorBrushProperties>
     {
         private SKColor _color;
         private SKPaint _paint;
@@ -18,33 +14,16 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
-            GradientTypeProperty = RegisterLayerProperty("Brush.GradientType", "Gradient type", "The type of color brush to draw", GradientType.Solid);
-            GradientTypeProperty.CanUseKeyframes = false;
-            ColorProperty = RegisterLayerProperty("Brush.Color", "Color", "The color of the brush", new SKColor(255, 0, 0));
-            GradientProperty = RegisterLayerProperty("Brush.Gradient", "Gradient", "The gradient of the brush", new ColorGradient());
-            GradientProperty.CanUseKeyframes = false;
-            if (!GradientProperty.Value.Stops.Any())
-                GradientProperty.Value.MakeFabulous();
-
-            UpdateColorProperties();
-
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
-            GradientTypeProperty.ValueChanged += (sender, args) => UpdateColorProperties();
-            ColorProperty.ValueChanged += (sender, args) => CreateShader();
-            GradientProperty.Value.PropertyChanged += (sender, args) => CreateShader();
         }
-
-        public LayerProperty<SKColor> ColorProperty { get; set; }
-        public LayerProperty<ColorGradient> GradientProperty { get; set; }
-        public LayerProperty<GradientType> GradientTypeProperty { get; set; }
 
         public override void Update(double deltaTime)
         {
             // Only check if a solid is being drawn, because that can be changed by keyframes
-            if (GradientTypeProperty.Value == GradientType.Solid && _color != ColorProperty.CurrentValue)
+            if (Properties.GradientType.BaseValue == GradientType.Solid && _color != Properties.Color.CurrentValue)
             {
                 // If the color was changed since the last frame, recreate the shader
-                _color = ColorProperty.CurrentValue;
+                _color = Properties.Color.CurrentValue;
                 CreateShader();
             }
 
@@ -63,36 +42,35 @@ namespace Artemis.Plugins.LayerBrushes.Color
             canvas.DrawPath(path, paint);
         }
 
-        private void UpdateColorProperties()
+        protected override void OnPropertiesInitialized()
         {
-            ColorProperty.IsHidden = GradientTypeProperty.Value != GradientType.Solid;
-            GradientProperty.IsHidden = GradientTypeProperty.Value == GradientType.Solid;
-            
-            CreateShader();
+            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
         }
 
         private void CreateShader()
         {
             var center = new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY);
-            var shader = GradientTypeProperty.CurrentValue switch
+            var shader = Properties.GradientType.CurrentValue switch
             {
                 GradientType.Solid => SKShader.CreateColor(_color),
                 GradientType.LinearGradient => SKShader.CreateLinearGradient(
                     new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
                     new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
-                    GradientProperty.Value.GetColorsArray(),
-                    GradientProperty.Value.GetPositionsArray(),
+                    Properties.Gradient.BaseValue.GetColorsArray(),
+                    Properties.Gradient.BaseValue.GetPositionsArray(),
                     SKShaderTileMode.Repeat),
                 GradientType.RadialGradient => SKShader.CreateRadialGradient(
                     center,
                     Math.Min(_shaderBounds.Width, _shaderBounds.Height),
-                    GradientProperty.Value.GetColorsArray(),
-                    GradientProperty.Value.GetPositionsArray(),
+                    Properties.Gradient.BaseValue.GetColorsArray(),
+                    Properties.Gradient.BaseValue.GetPositionsArray(),
                     SKShaderTileMode.Repeat),
                 GradientType.SweepGradient => SKShader.CreateSweepGradient(
                     center,
-                    GradientProperty.Value.GetColorsArray(),
-                    GradientProperty.Value.GetPositionsArray(),
+                    Properties.Gradient.BaseValue.GetColorsArray(),
+                    Properties.Gradient.BaseValue.GetPositionsArray(),
                     SKShaderTileMode.Clamp,
                     0,
                     360),
@@ -106,20 +84,5 @@ namespace Artemis.Plugins.LayerBrushes.Color
             oldShader?.Dispose();
             oldPaint?.Dispose();
         }
-    }
-
-    public enum GradientType
-    {
-        [Description("Solid")]
-        Solid,
-
-        [Description("Linear Gradient")]
-        LinearGradient,
-
-        [Description("Radial Gradient")]
-        RadialGradient,
-
-        [Description("Sweep Gradient")]
-        SweepGradient
     }
 }
