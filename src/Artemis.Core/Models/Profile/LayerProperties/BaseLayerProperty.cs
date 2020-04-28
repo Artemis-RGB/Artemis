@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.KeyframeEngines;
+using Artemis.Core.Models.Profile.LayerProperties.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
@@ -28,7 +29,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             CanUseKeyframes = true;
             InputStepSize = 1;
 
-            // This can only be null if accessed internally
+            // This can only be null if accessed internally, all public ways of creating enforce a plugin info
             if (PluginInfo == null)
                 PluginInfo = Constants.CorePluginInfo;
 
