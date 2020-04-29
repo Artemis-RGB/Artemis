@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Exceptions;
@@ -10,12 +13,30 @@ namespace Artemis.Core.Models.Profile
 {
     public class LayerPropertyGroup
     {
+        private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
+
+        protected LayerPropertyGroup()
+        {
+            LayerProperties = new List<BaseLayerProperty>();
+            LayerPropertyGroups = new List<LayerPropertyGroup>();
+        }
+
         public bool PropertiesInitialized { get; private set; }
 
         /// <summary>
-        /// Used to declare that this property group doesn't belong to a plugin and should use the core plugin GUID
+        ///     Used to declare that this property group doesn't belong to a plugin and should use the core plugin GUID
         /// </summary>
         internal bool IsCorePropertyGroup { get; set; }
+
+        /// <summary>
+        ///     A list of all layer properties in this group
+        /// </summary>
+        internal List<BaseLayerProperty> LayerProperties { get; set; }
+
+        /// <summary>
+        ///     A list of al child groups in this group
+        /// </summary>
+        internal List<LayerPropertyGroup> LayerPropertyGroups { get; set; }
 
         /// <summary>
         ///     Called when all layer properties in this property group have been initialized
@@ -26,6 +47,10 @@ namespace Artemis.Core.Models.Profile
 
         internal void InitializeProperties(ILayerService layerService, Layer layer, string path)
         {
+            // Doubt this will happen but let's make sure
+            if (PropertiesInitialized)
+                throw new ArtemisCoreException("Layer property group already initialized, wut");
+
             // Get all properties with a PropertyDescriptionAttribute
             foreach (var propertyInfo in GetType().GetProperties())
             {
@@ -38,6 +63,7 @@ namespace Artemis.Core.Models.Profile
                     var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType);
                     InitializeProperty(layer, path, instance);
                     propertyInfo.SetValue(this, instance);
+                    LayerProperties.Add(instance);
                 }
                 else
                 {
@@ -50,6 +76,7 @@ namespace Artemis.Core.Models.Profile
                         var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
                         propertyInfo.SetValue(this, instance);
+                        LayerPropertyGroups.Add(instance);
                     }
                 }
             }
@@ -88,6 +115,25 @@ namespace Artemis.Core.Models.Profile
         {
             // Same as above, but now the progress is overridden
             OnPropertyGroupOverriding(new PropertyGroupUpdatingEventArgs(overrideTime));
+        }
+
+        /// <summary>
+        ///     Recursively gets all layer properties on this group and any subgroups
+        /// </summary>
+        /// <returns></returns>
+        internal IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        {
+            if (!PropertiesInitialized)
+                return new List<BaseLayerProperty>();
+            if (_allLayerProperties != null)
+                return _allLayerProperties;
+
+            var result = new List<BaseLayerProperty>(LayerProperties);
+            foreach (var layerPropertyGroup in LayerPropertyGroups)
+                result.AddRange(layerPropertyGroup.GetAllLayerProperties());
+
+            _allLayerProperties = result.AsReadOnly();
+            return _allLayerProperties;
         }
 
         private void InitializeProperty(Layer layer, string path, BaseLayerProperty instance)

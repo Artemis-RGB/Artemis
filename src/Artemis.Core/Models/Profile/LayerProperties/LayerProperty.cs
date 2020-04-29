@@ -53,38 +53,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             get => !KeyframesEnabled || !KeyframesSupported ? BaseValue : _currentValue;
             internal set => _currentValue = value;
         }
-
-        /// <summary>
-        ///     Gets whether keyframes are supported on this property
-        /// </summary>
-        public bool KeyframesSupported { get; internal set; }
-
-        /// <summary>
-        ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
-        ///     False
-        /// </summary>
-        public bool KeyframesEnabled { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether the property is hidden in the UI
-        /// </summary>
-        public bool IsHidden { get; set; }
-
-        /// <summary>
-        ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
-        /// </summary>
-        public bool IsLoadedFromStorage { get; internal set; }
-
+        
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
         /// </summary>
         public IReadOnlyList<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
-
-        /// <summary>
-        ///     Gets the total progress on the timeline
-        /// </summary>
-        public TimeSpan TimelineProgress { get; private set; }
-
+        
         /// <summary>
         ///     Gets the current keyframe in the timeline according to the current progress
         /// </summary>
@@ -94,10 +68,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Gets the next keyframe in the timeline according to the current progress
         /// </summary>
         public LayerPropertyKeyframe<T> NextKeyframe { get; protected set; }
-
-        internal PropertyEntity PropertyEntity { get; set; }
-        internal LayerPropertyGroup LayerPropertyGroup { get; set; }
-
+        
         /// <summary>
         ///     Adds a keyframe to the layer property
         /// </summary>
@@ -230,6 +201,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));
+        }
+
+        internal override List<TimeSpan> GetKeyframePositions()
+        {
+            return Keyframes.Select(k => k.Position).ToList();
+        }
+
+        internal override TimeSpan GetLastKeyframePosition()
+        {
+            return Keyframes.LastOrDefault()?.Position ?? TimeSpan.Zero;
         }
 
         #region Events

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
@@ -65,6 +67,15 @@ namespace Artemis.Core.Plugins.LayerBrush
 
         internal virtual void UpdateProperties(double deltaTime)
         {
+        }
+
+        internal virtual void OverrideProperties(TimeSpan overrideTime)
+        {
+        }
+
+        internal virtual IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        {
+            return new List<BaseLayerProperty>();
         }
     }
 }
