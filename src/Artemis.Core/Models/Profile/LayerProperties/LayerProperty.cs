@@ -12,7 +12,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// <summary>
     ///     Represents a property on a layer. Properties are saved in storage and can optionally be modified from the UI.
     ///     <para>
-    ///         Note: You cannot initialize layer properties yourself. If properly placed and annotated, the Artemis core will initialize
+    ///         Note: You cannot initialize layer properties yourself. If properly placed and annotated, the Artemis core will
+    ///         initialize
     ///         these for you.
     ///     </para>
     /// </summary>
@@ -53,12 +54,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             get => !KeyframesEnabled || !KeyframesSupported ? BaseValue : _currentValue;
             internal set => _currentValue = value;
         }
-        
+
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
         /// </summary>
         public IReadOnlyList<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
-        
+
         /// <summary>
         ///     Gets the current keyframe in the timeline according to the current progress
         /// </summary>
@@ -68,7 +69,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Gets the next keyframe in the timeline according to the current progress
         /// </summary>
         public LayerPropertyKeyframe<T> NextKeyframe { get; protected set; }
-        
+
+        internal override IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes => _keyframes.Cast<BaseLayerPropertyKeyframe>().ToList().AsReadOnly();
+
         /// <summary>
         ///     Adds a keyframe to the layer property
         /// </summary>
@@ -91,6 +94,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             keyframe.LayerProperty = null;
             SortKeyframes();
             OnKeyframeRemoved();
+        }
+
+        /// <summary>
+        ///     Removes all keyframes from the layer property
+        /// </summary>
+        public void ClearKeyframes()
+        {
+            var keyframes = new List<LayerPropertyKeyframe<T>>(_keyframes);
+            foreach (var layerPropertyKeyframe in keyframes)
+                RemoveKeyframe(layerPropertyKeyframe);
         }
 
         /// <summary>
@@ -167,6 +180,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 IsLoadedFromStorage = true;
                 BaseValue = JsonConvert.DeserializeObject<T>(entity.Value);
                 CurrentValue = BaseValue;
+                KeyframesEnabled = entity.KeyframesEnabled;
 
                 _keyframes.Clear();
                 _keyframes.AddRange(entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
@@ -194,6 +208,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
             PropertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
+            PropertyEntity.KeyframesEnabled = KeyframesEnabled;
             PropertyEntity.KeyframeEntities.Clear();
             PropertyEntity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
             {
@@ -201,16 +216,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));
-        }
-
-        internal override List<TimeSpan> GetKeyframePositions()
-        {
-            return Keyframes.Select(k => k.Position).ToList();
-        }
-
-        internal override TimeSpan GetLastKeyframePosition()
-        {
-            return Keyframes.LastOrDefault()?.Position ?? TimeSpan.Zero;
         }
 
         #region Events

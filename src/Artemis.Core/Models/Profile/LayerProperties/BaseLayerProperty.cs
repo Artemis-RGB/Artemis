@@ -9,12 +9,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// </summary>
     public abstract class BaseLayerProperty
     {
-        /// <summary>
-        ///     Used to declare that this property doesn't belong to a plugin and should use the core plugin GUID
-        /// </summary>
-        internal bool IsCoreProperty { get; set; }
-        internal PropertyEntity PropertyEntity { get; set; }
-        internal LayerPropertyGroup LayerPropertyGroup { get; set; }
+        internal BaseLayerProperty()
+        {
+        }
 
         /// <summary>
         ///     Gets whether keyframes are supported on this property
@@ -43,6 +40,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public TimeSpan TimelineProgress { get; internal set; }
 
         /// <summary>
+        ///     Used to declare that this property doesn't belong to a plugin and should use the core plugin GUID
+        /// </summary>
+        internal bool IsCoreProperty { get; set; }
+
+        internal PropertyEntity PropertyEntity { get; set; }
+        internal LayerPropertyGroup LayerPropertyGroup { get; set; }
+        internal abstract IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes { get; }
+
+        /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
         /// <param name="entity"></param>
@@ -54,8 +60,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     <see cref="ApplyToLayerProperty" />
         /// </summary>
         internal abstract void ApplyToEntity();
-
-        internal abstract List<TimeSpan> GetKeyframePositions();
-        internal abstract TimeSpan GetLastKeyframePosition();
     }
 }

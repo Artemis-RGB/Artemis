@@ -29,6 +29,8 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// </summary>
         public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
 
+        internal virtual LayerPropertyGroup BaseProperties => null;
+
         /// <summary>
         ///     Called when the brush is being removed from the layer
         /// </summary>

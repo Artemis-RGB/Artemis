@@ -14,7 +14,7 @@ namespace Artemis.Storage.Entities.Profile
         public string Path { get; set; }
 
         public string Value { get; set; }
-        public bool IsUsingKeyframes { get; set; }
+        public bool KeyframesEnabled { get; set; }
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
     }

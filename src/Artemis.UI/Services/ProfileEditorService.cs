@@ -74,18 +74,11 @@ namespace Artemis.UI.Services
         {
             if (SelectedProfile == null)
                 return;
+
             var delta = CurrentTime - _lastUpdateTime;
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
-                // Override keyframe progress
-                foreach (var baseLayerProperty in layer.Properties)
-                    baseLayerProperty.KeyframeEngine?.OverrideProgress(CurrentTime);
-
-                // Force layer shape to redraw
-                layer.LayerShape?.CalculateRenderProperties();
-                // Manually update the layer's engine and brush
-                foreach (var property in layer.Properties)
-                    property.KeyframeEngine?.Update(delta.TotalSeconds);
+                layer.OverrideProgress(CurrentTime);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
             }
 

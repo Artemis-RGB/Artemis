@@ -122,6 +122,7 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
+
             General.ApplyToEntity();
             Transform.ApplyToEntity();
             LayerBrush.ApplyToEntity();
@@ -184,25 +185,34 @@ namespace Artemis.Core.Models.Profile
             if (LayerBrush == null)
                 return;
 
-            General.Update(deltaTime);
-            Transform.Update(deltaTime);
-            LayerBrush.UpdateProperties(deltaTime);
-
             var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties());
             properties.AddRange(Transform.GetAllLayerProperties());
             properties.AddRange(LayerBrush.GetAllLayerProperties());
 
             // For now, reset all keyframe engines after the last keyframe was hit
             // This is a placeholder method of repeating the animation until repeat modes are implemented
-            var timeLineEnd = properties.Max(p => p.GetLastKeyframePosition());
+            var timeLineEnd = properties.Max(p => p.BaseKeyframes.Max(k => k.Position));
             if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
             {
                 General.Override(TimeSpan.Zero);
                 Transform.Override(TimeSpan.Zero);
                 LayerBrush.OverrideProperties(TimeSpan.Zero);
             }
+            else
+            {
+                General.Update(deltaTime);
+                Transform.Update(deltaTime);
+                LayerBrush.UpdateProperties(deltaTime);
+            }
 
             LayerBrush.Update(deltaTime);
+        }
+
+        public void OverrideProgress(TimeSpan timeOverride)
+        {
+            General.Override(timeOverride);
+            Transform.Override(timeOverride);
+            LayerBrush.OverrideProperties(timeOverride);
         }
 
         /// <inheritdoc />
