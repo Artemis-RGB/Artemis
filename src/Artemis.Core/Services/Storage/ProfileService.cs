@@ -94,7 +94,6 @@ namespace Artemis.Core.Services.Storage
             if (profile != null)
             {
                 InstantiateProfileLayerBrushes(profile);
-                InstantiateProfileKeyframeEngines(profile);
             }
         }
 
@@ -165,14 +164,7 @@ namespace Artemis.Core.Services.Storage
             foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
                 _layerService.InstantiateLayerBrush(layer);
         }
-
-        private void InstantiateProfileKeyframeEngines(Profile profile)
-        {
-            // Only instantiate engines for properties without an existing engine instance
-            foreach (var layerProperty in profile.GetAllLayers().SelectMany(l => l.Properties).Where(p => p.KeyframeEngine == null))
-                _layerService.InstantiateKeyframeEngine(layerProperty);
-        }
-
+        
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
@@ -186,14 +178,7 @@ namespace Artemis.Core.Services.Storage
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 InstantiateProfileLayerBrushes(profileModule.ActiveProfile);
         }
-
-        private void ActiveProfilesInstantiateKeyframeEngines()
-        {
-            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
-            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateProfileKeyframeEngines(profileModule.ActiveProfile);
-        }
-
+        
         #region Event handlers
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
@@ -212,7 +197,6 @@ namespace Artemis.Core.Services.Storage
             if (e.PluginInfo.Instance is LayerBrushProvider)
             {
                 ActiveProfilesInstantiateProfileLayerBrushes();
-                ActiveProfilesInstantiateKeyframeEngines();
             }
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {

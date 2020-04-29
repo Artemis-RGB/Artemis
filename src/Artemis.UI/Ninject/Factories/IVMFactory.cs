@@ -50,7 +50,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface ILayerPropertyVmFactory : IVmFactory
     {
-        LayerPropertyViewModel Create(LayerProperty layerProperty, LayerPropertyViewModel parent);
+        LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
     }
 
     public interface IPropertyTreeVmFactory : IVmFactory

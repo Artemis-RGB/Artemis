@@ -4,7 +4,7 @@ using Artemis.Core.Models.Profile.Colors;
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class ColorGradientLayerProperty : GenericLayerProperty<ColorGradient>
+    public class ColorGradientLayerProperty : LayerProperty<ColorGradient>
     {
         internal ColorGradientLayerProperty()
         {

@@ -3,7 +3,7 @@
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class SKPointLayerProperty : GenericLayerProperty<SKPoint>
+    public class SKPointLayerProperty : LayerProperty<SKPoint>
     {
         internal SKPointLayerProperty()
         {

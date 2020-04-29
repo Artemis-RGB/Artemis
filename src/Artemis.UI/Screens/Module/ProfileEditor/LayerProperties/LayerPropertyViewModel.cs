@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private bool _keyframesEnabled;
         private bool _isExpanded;
 
-        public LayerPropertyViewModel(LayerProperty layerProperty, LayerPropertyViewModel parent, IKernel kernel, IProfileEditorService profileEditorService)
+        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, IKernel kernel, IProfileEditorService profileEditorService)
         {
             _kernel = kernel;
             _profileEditorService = profileEditorService;
@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             Parent?.Children.Add(this);
         }
 
-        public LayerProperty LayerProperty { get; }
+        public BaseLayerProperty LayerProperty { get; }
 
         public LayerPropertyViewModel Parent { get; }
         public List<LayerPropertyViewModel> Children { get; }

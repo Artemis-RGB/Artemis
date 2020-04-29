@@ -1,11 +1,10 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
-using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerBrush
 {
-    public abstract class LayerBrush<T> : ILayerBrush where T : LayerPropertyGroup
+    public abstract class LayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
     {
         private T _properties;
 
@@ -13,27 +12,6 @@ namespace Artemis.Core.Plugins.LayerBrush
         {
             Layer = layer;
             Descriptor = descriptor;
-        }
-
-        /// <inheritdoc />
-        public Layer Layer { get; }
-
-        /// <inheritdoc />
-        public LayerBrushDescriptor Descriptor { get; }
-
-        /// <inheritdoc />
-        public virtual void Dispose()
-        {
-        }
-
-        /// <inheritdoc />
-        public virtual void Update(double deltaTime)
-        {
-        }
-
-        /// <inheritdoc />
-        public virtual void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
-        {
         }
 
         #region Properties
@@ -52,12 +30,12 @@ namespace Artemis.Core.Plugins.LayerBrush
             }
             internal set => _properties = value;
         }
-        
+
         /// <summary>
         ///     Gets whether all properties on this brush are initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
-        
+
         /// <summary>
         ///     Called when all layer properties in this brush have been initialized
         /// </summary>
@@ -65,11 +43,21 @@ namespace Artemis.Core.Plugins.LayerBrush
         {
         }
 
-        public void InitializeProperties(ILayerService layerService, string path)
+        internal override void InitializeProperties(ILayerService layerService, string path)
         {
-            Properties.InitializeProperties(layerService, Descriptor.LayerBrushProvider.PluginInfo, path);
+            Properties.InitializeProperties(layerService, Layer, path);
             OnPropertiesInitialized();
             PropertiesInitialized = true;
+        }
+
+        internal override void ApplyToEntity()
+        {
+            Properties.ApplyToEntity();
+        }
+
+        internal override void UpdateProperties(double deltaTime)
+        {
+            Properties.Update(deltaTime);
         }
 
         #endregion

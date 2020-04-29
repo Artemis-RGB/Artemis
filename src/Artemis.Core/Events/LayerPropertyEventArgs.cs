@@ -5,11 +5,11 @@ namespace Artemis.Core.Events
 {
     public class LayerPropertyEventArgs : EventArgs
     {
-        public LayerPropertyEventArgs(LayerProperty layerProperty)
+        public LayerPropertyEventArgs(BaseLayerProperty layerProperty)
         {
             LayerProperty = layerProperty;
         }
 
-        public LayerProperty LayerProperty { get; }
+        public BaseLayerProperty LayerProperty { get; }
     }
 }

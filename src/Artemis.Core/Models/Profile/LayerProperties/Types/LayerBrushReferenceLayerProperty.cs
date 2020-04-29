@@ -5,7 +5,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
     /// <summary>
     /// A special layer property used to configure the selected layer brush
     /// </summary>
-    public class LayerBrushReferenceLayerProperty : GenericLayerProperty<LayerBrushReference>
+    public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference>
     {
         internal LayerBrushReferenceLayerProperty()
         {

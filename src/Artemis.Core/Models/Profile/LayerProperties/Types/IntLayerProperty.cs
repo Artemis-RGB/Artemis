@@ -3,7 +3,7 @@
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class IntLayerProperty : GenericLayerProperty<int>
+    public class IntLayerProperty : LayerProperty<int>
     {
         internal IntLayerProperty()
         {

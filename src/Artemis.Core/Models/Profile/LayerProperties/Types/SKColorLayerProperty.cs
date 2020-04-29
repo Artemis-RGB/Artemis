@@ -4,7 +4,7 @@ using SkiaSharp;
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class SKColorLayerProperty : GenericLayerProperty<SKColor>
+    public class SKColorLayerProperty : LayerProperty<SKColor>
     {
         internal SKColorLayerProperty()
         {

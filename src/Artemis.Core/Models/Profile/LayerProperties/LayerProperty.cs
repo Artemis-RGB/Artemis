@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
@@ -10,18 +12,19 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// <summary>
     ///     Represents a property on a layer. Properties are saved in storage and can optionally be modified from the UI.
     ///     <para>
-    ///         Note: You cannot initialize layer properties yourself. If properly placed, the Artemis core will initialize
+    ///         Note: You cannot initialize layer properties yourself. If properly placed and annotated, the Artemis core will initialize
     ///         these for you.
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public abstract class GenericLayerProperty<T> : LayerProperty
+    public abstract class LayerProperty<T> : BaseLayerProperty
     {
-        private T _currentValue;
-        private List<LayerPropertyKeyframe<T>> _keyframes;
         private T _baseValue;
+        private T _currentValue;
+        private bool _isInitialized;
+        private List<LayerPropertyKeyframe<T>> _keyframes;
 
-        protected GenericLayerProperty()
+        protected LayerProperty()
         {
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
@@ -92,47 +95,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public LayerPropertyKeyframe<T> NextKeyframe { get; protected set; }
 
-        /// <summary>
-        ///     Updates the property, moving the timeline forwards by the provided <paramref name="deltaTime" />
-        /// </summary>
-        /// <param name="deltaTime">The amount of time to move the timeline forwards</param>
-        public void Update(double deltaTime)
-        {
-            TimelineProgress = TimelineProgress.Add(TimeSpan.FromSeconds(deltaTime));
-            if (!KeyframesSupported || !KeyframesEnabled)
-                return;
-
-            // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= TimelineProgress);
-            // The next keyframe is the first keyframe that's after the current time
-            NextKeyframe = _keyframes.FirstOrDefault(k => k.Position > TimelineProgress);
-
-            // No need to update the current value if either of the keyframes are null
-            if (CurrentKeyframe == null)
-                CurrentValue = BaseValue;
-            else if (NextKeyframe == null)
-                CurrentValue = CurrentKeyframe.Value;
-            // Only determine progress and current value if both keyframes are present
-            else
-            {
-                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float) ((TimelineProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
-                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
-                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
-            }
-
-            OnUpdated();
-        }
-
-        /// <summary>
-        ///     Overrides the timeline progress to match the provided <paramref name="progress" />
-        /// </summary>
-        /// <param name="progress">The new progress to set the layer property timeline to.</param>
-        public void OverrideProgress(TimeSpan progress)
-        {
-            TimelineProgress = TimeSpan.Zero;
-            Update(progress.TotalSeconds);
-        }
+        internal PropertyEntity PropertyEntity { get; set; }
+        internal LayerPropertyGroup LayerPropertyGroup { get; set; }
 
         /// <summary>
         ///     Adds a keyframe to the layer property
@@ -166,24 +130,106 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <param name="keyframeProgressEased">The current keyframe progress, eased with the current easing function</param>
         protected abstract void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased);
 
+        /// <summary>
+        ///     Updates the property, moving the timeline forwards by the provided <paramref name="deltaTime" />
+        /// </summary>
+        /// <param name="deltaTime">The amount of time to move the timeline forwards</param>
+        internal void Update(double deltaTime)
+        {
+            TimelineProgress = TimelineProgress.Add(TimeSpan.FromSeconds(deltaTime));
+            if (!KeyframesSupported || !KeyframesEnabled)
+                return;
+
+            // The current keyframe is the last keyframe before the current time
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= TimelineProgress);
+            // The next keyframe is the first keyframe that's after the current time
+            NextKeyframe = _keyframes.FirstOrDefault(k => k.Position > TimelineProgress);
+
+            // No need to update the current value if either of the keyframes are null
+            if (CurrentKeyframe == null)
+                CurrentValue = BaseValue;
+            else if (NextKeyframe == null)
+                CurrentValue = CurrentKeyframe.Value;
+            // Only determine progress and current value if both keyframes are present
+            else
+            {
+                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
+                var keyframeProgress = (float) ((TimelineProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
+                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
+            }
+
+            OnUpdated();
+        }
+
+        /// <summary>
+        ///     Overrides the timeline progress to match the provided <paramref name="overrideTime" />
+        /// </summary>
+        /// <param name="overrideTime">The new progress to set the layer property timeline to.</param>
+        internal void OverrideProgress(TimeSpan overrideTime)
+        {
+            TimelineProgress = TimeSpan.Zero;
+            Update(overrideTime.TotalSeconds);
+        }
+
+        /// <summary>
+        ///     Sorts the keyframes in ascending order by position
+        /// </summary>
         internal void SortKeyframes()
         {
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
 
-        internal override void LoadFromEntity(PropertyEntity entity)
+        internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup)
         {
-            BaseValue = JsonConvert.DeserializeObject<T>(entity.Value);
-            CurrentValue = BaseValue;
+            // Doubt this will happen but let's make sure
+            if (_isInitialized)
+                throw new ArtemisCoreException("Layer property already initialized, wut");
 
-            _keyframes.Clear();
-            foreach (var keyframeEntity in entity.KeyframeEntities)
+            PropertyEntity = entity;
+            LayerPropertyGroup = layerPropertyGroup;
+            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
+            LayerPropertyGroup.PropertyGroupOverriding += (sender, args) => OverrideProgress(args.OverrideTime);
+
+            try
             {
-                var value = JsonConvert.DeserializeObject<T>(keyframeEntity.Value);
-                var keyframe = new LayerPropertyKeyframe<T>(value, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction);
-                _keyframes.Add(keyframe);
+                IsLoadedFromStorage = true;
+                BaseValue = JsonConvert.DeserializeObject<T>(entity.Value);
+                CurrentValue = BaseValue;
+
+                _keyframes.Clear();
+                _keyframes.AddRange(entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
+                    JsonConvert.DeserializeObject<T>(k.Value),
+                    k.Position,
+                    (Easings.Functions) k.EasingFunction)
+                ));
             }
-            SortKeyframes();
+            catch (JsonException e)
+            {
+                // TODO: Properly log the JSON exception
+                Debug.WriteLine($"JSON exception while deserializing: {e}");
+                IsLoadedFromStorage = false;
+            }
+            finally
+            {
+                SortKeyframes();
+                _isInitialized = true;
+            }
+        }
+
+        internal override void ApplyToEntity()
+        {
+            if (_isInitialized)
+                throw new ArtemisCoreException("Layer property is not yet initialized");
+
+            PropertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
+            PropertyEntity.KeyframeEntities.Clear();
+            PropertyEntity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
+            {
+                Value = JsonConvert.SerializeObject(k.Value),
+                Position = k.Position,
+                EasingFunction = (int) k.EasingFunction
+            }));
         }
 
         #region Events
@@ -214,10 +260,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         #endregion
-    }
-
-    public abstract class LayerProperty
-    {
-        internal abstract void LoadFromEntity(PropertyEntity entity);
     }
 }

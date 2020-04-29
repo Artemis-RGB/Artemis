@@ -14,7 +14,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             EasingFunction = easingFunction;
         }
 
-        public GenericLayerProperty<T> LayerProperty { get; internal set; }
+        public LayerProperty<T> LayerProperty { get; internal set; }
         public T Value { get; set; }
 
         public TimeSpan Position

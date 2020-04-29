@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.KeyframeEngines;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
@@ -53,14 +51,13 @@ namespace Artemis.Core.Ninject
                 catch (LiteException e)
                 {
                     // I don't like this way of error reporting, now I need to use reflection if I want a meaningful error code
-                    if (e.ErrorCode != LiteException.INVALID_DATABASE) 
+                    if (e.ErrorCode != LiteException.INVALID_DATABASE)
                         throw new ArtemisCoreException($"LiteDB threw error code {e.ErrorCode}. See inner exception for more details", e);
 
                     // If the DB is invalid it's probably LiteDB v4 (TODO: we'll have to do something better later)
                     File.Delete($"{Constants.DataFolder}\\database.db");
                     return new LiteRepository(Constants.ConnectionString);
                 }
-                
             }).InSingletonScope();
 
             // Bind all repositories as singletons
@@ -71,15 +68,6 @@ namespace Artemis.Core.Ninject
                     .InheritedFrom<IRepository>()
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
-            });
-
-            // Bind all keyframe engines
-            Kernel.Bind(x =>
-            {
-                x.FromAssemblyContaining<KeyframeEngine>()
-                    .SelectAllClasses()
-                    .InheritedFrom<KeyframeEngine>()
-                    .BindAllBaseClasses();
             });
 
             Kernel.Bind<PluginSettings>().ToProvider<PluginSettingsProvider>();

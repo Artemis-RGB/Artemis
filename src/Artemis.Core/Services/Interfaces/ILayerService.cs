@@ -1,6 +1,4 @@
 ﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.KeyframeEngines;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
 
 namespace Artemis.Core.Services.Interfaces
@@ -8,14 +6,27 @@ namespace Artemis.Core.Services.Interfaces
     public interface ILayerService : IArtemisService
     {
         /// <summary>
-        ///     Instantiates and adds the <see cref="LayerBrush" /> described by the provided <see cref="LayerBrushDescriptor" />
+        /// Creates a new layer
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="parent"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Layer CreateLayer(Profile profile, ProfileElement parent, string name);
+
+        /// <summary>
+        ///     Instantiates and adds the <see cref="BaseLayerBrush" /> described by the provided
+        ///     <see cref="LayerBrushDescriptor" />
         ///     to the <see cref="Layer" />.
         /// </summary>
         /// <param name="layer">The layer to instantiate the brush for</param>
         /// <returns></returns>
-        ILayerBrush InstantiateLayerBrush(Layer layer);
+        BaseLayerBrush InstantiateLayerBrush(Layer layer);
 
-        void LoadPropertyBaseValue(Layer layer, string path, object layerProperty);
-        void LoadPropertyKeyframes(Layer layer, string path, object layerProperty);
+        /// <summary>
+        /// Removes the layer brush from the provided layer and disposes it
+        /// </summary>
+        /// <param name="layer"></param>
+        void RemoveLayerBrush(Layer layer);
     }
 }
