@@ -169,7 +169,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PopulateProperties(e.LayerProperty.Layer);
         }
 
-        private LayerPropertyViewModel CreatePropertyViewModel(LayerProperty layerProperty)
+        private LayerPropertyViewModel CreatePropertyViewModel(BaseLayerProperty layerProperty)
         {
             LayerPropertyViewModel parent = null;
             // If the property has a parent, find it's VM

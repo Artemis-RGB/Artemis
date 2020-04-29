@@ -3,7 +3,7 @@
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class SKSizeLayerProperty : GenericLayerProperty<SKSize>
+    public class SKSizeLayerProperty : LayerProperty<SKSize>
     {
         internal SKSizeLayerProperty()
         {

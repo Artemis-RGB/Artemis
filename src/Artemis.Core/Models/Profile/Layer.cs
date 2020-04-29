@@ -32,8 +32,8 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
-            General = new LayerGeneralProperties();
-            Transform = new LayerTransformProperties();
+            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
+            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
         }
@@ -47,8 +47,8 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = layerEntity.Name;
             Order = layerEntity.Order;
-            General = new LayerGeneralProperties();
-            Transform = new LayerTransformProperties();
+            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
+            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
         }
@@ -104,7 +104,7 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
-        public ILayerBrush LayerBrush { get; internal set; }
+        public BaseLayerBrush LayerBrush { get; internal set; }
 
         public override string ToString()
         {
@@ -121,8 +121,9 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
-            foreach (var layerProperty in Properties)
-                layerProperty.ApplyToEntity();
+            General.ApplyToEntity();
+            Transform.ApplyToEntity();
+            LayerBrush.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -146,7 +147,7 @@ namespace Artemis.Core.Models.Profile
 
         private void ApplyShapeType()
         {
-            switch (Properties.ShapeType.CurrentValue)
+            switch (General.ShapeType.CurrentValue)
             {
                 case LayerShapeType.Ellipse:
                     LayerShape = new Ellipse(this);
@@ -179,20 +180,11 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            foreach (var property in Properties)
-                property.KeyframeEngine?.Update(deltaTime);
+            General.Update(deltaTime);
+            Transform.Update(deltaTime);
 
-            // For now, reset all keyframe engines after the last keyframe was hit
-            // This is a placeholder method of repeating the animation until repeat modes are implemented
-            var lastKeyframe = Properties.SelectMany(p => p.UntypedKeyframes).OrderByDescending(t => t.Position).FirstOrDefault();
-            if (lastKeyframe != null)
-            {
-                if (Properties.Any(p => p.KeyframeEngine?.Progress > lastKeyframe.Position))
-                {
-                    foreach (var baseLayerProperty in Properties)
-                        baseLayerProperty.KeyframeEngine?.OverrideProgress(TimeSpan.Zero);
-                }
-            }
+            LayerBrush?.UpdateProperties(deltaTime);
+            // TODO: Find the last keyframe and if required, reset the properties
 
             LayerBrush?.Update(deltaTime);
         }
@@ -208,10 +200,10 @@ namespace Artemis.Core.Models.Profile
 
             using (var paint = new SKPaint())
             {
-                paint.BlendMode = Properties.BlendMode.CurrentValue;
-                paint.Color = new SKColor(0, 0, 0, (byte) (Properties.Opacity.CurrentValue * 2.55f));
+                paint.BlendMode = General.BlendMode.CurrentValue;
+                paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                switch (Properties.FillType.CurrentValue)
+                switch (General.FillType.CurrentValue)
                 {
                     case LayerFillType.Stretch:
                         StretchRender(canvas, canvasInfo, paint);
@@ -230,11 +222,11 @@ namespace Artemis.Core.Models.Profile
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = Properties.Scale.CurrentValue;
-            var rotationProperty = Properties.Rotation.CurrentValue;
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = Properties.AnchorPoint.CurrentValue;
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -251,11 +243,11 @@ namespace Artemis.Core.Models.Profile
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = Properties.Scale.CurrentValue;
-            var rotationProperty = Properties.Rotation.CurrentValue;
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = Properties.AnchorPoint.CurrentValue;
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -308,7 +300,7 @@ namespace Artemis.Core.Models.Profile
 
         internal SKPoint GetLayerAnchorPosition()
         {
-            var positionProperty = Properties.Position.CurrentValue;
+            var positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
             var position = new SKPoint(Bounds.MidX, Bounds.MidY);

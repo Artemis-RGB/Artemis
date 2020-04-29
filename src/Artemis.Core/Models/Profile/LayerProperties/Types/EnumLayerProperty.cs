@@ -3,7 +3,7 @@
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class EnumLayerProperty<T> : GenericLayerProperty<T> where T : System.Enum
+    public class EnumLayerProperty<T> : LayerProperty<T> where T : System.Enum
     {
         public EnumLayerProperty()
         {

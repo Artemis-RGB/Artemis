@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.KeyframeEngines;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
-using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
@@ -31,8 +26,8 @@ namespace Artemis.Core.Services
             var layer = new Layer(profile, parent, name);
 
             // Layers have two hardcoded property groups, instantiate them
-            layer.General.InitializeProperties(this, layer, null, null);
-            layer.Transform.InitializeProperties(this, layer, null, null);
+            layer.General.InitializeProperties(this, layer, null);
+            layer.Transform.InitializeProperties(this, layer, null);
 
             // With the properties loaded, the layer brush can be instantiated
             InstantiateLayerBrush(layer);
@@ -40,7 +35,7 @@ namespace Artemis.Core.Services
             return layer;
         }
 
-        public ILayerBrush InstantiateLayerBrush(Layer layer)
+        public BaseLayerBrush InstantiateLayerBrush(Layer layer)
         {
             RemoveLayerBrush(layer);
 
@@ -62,7 +57,7 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("layer", layer),
                 new ConstructorArgument("descriptor", descriptor)
             };
-            var layerBrush = (ILayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
+            var layerBrush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
             layerBrush.InitializeProperties(this, null);
             layer.LayerBrush = layerBrush;
 
@@ -76,11 +71,9 @@ namespace Artemis.Core.Services
 
             var brush = layer.LayerBrush;
             layer.LayerBrush = null;
-
-            var propertiesToRemove = layer.Properties.Where(l => l.PluginInfo == brush.Descriptor.LayerBrushProvider.PluginInfo).ToList();
-            foreach (var layerProperty in propertiesToRemove)
-                layer.Properties.RemoveLayerProperty(layerProperty);
             brush.Dispose();
+
+            layer.LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
         }
     }
 }

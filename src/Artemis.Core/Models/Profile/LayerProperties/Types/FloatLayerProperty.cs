@@ -1,7 +1,7 @@
 ﻿namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <inheritdoc/>
-    public class FloatLayerProperty : GenericLayerProperty<float>
+    public class FloatLayerProperty : LayerProperty<float>
     {
         internal FloatLayerProperty()
         {
