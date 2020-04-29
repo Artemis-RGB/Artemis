@@ -46,6 +46,9 @@ namespace Artemis.Core.Plugins.LayerBrush
         {
         }
 
+        /// <inheritdoc/>
+        internal override LayerPropertyGroup BaseProperties => Properties;
+
         internal override void InitializeProperties(ILayerService layerService, string path)
         {
             Properties.InitializeProperties(layerService, Layer, path);

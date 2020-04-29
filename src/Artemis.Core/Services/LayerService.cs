@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
@@ -74,6 +75,11 @@ namespace Artemis.Core.Services
             brush.Dispose();
 
             layer.LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
+        }
+
+        public void GetLayerPropertyGroups(Layer layer)
+        {
+            var groups = new List<LayerPropertyGroup> {layer.General, layer.Transform, layer.LayerBrush.BrushProperties};
         }
     }
 }

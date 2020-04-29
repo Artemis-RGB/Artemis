@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -10,12 +9,12 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class PropertyTrackKeyframeViewModel : PropertyChangedBase
+    public class PropertyTrackKeyframeViewModel<T> : PropertyTrackKeyframeViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
         private int _pixelsPerSecond;
 
-        public PropertyTrackKeyframeViewModel(PropertyTrackViewModel propertyTrackViewModel, BaseKeyframe keyframe, IProfileEditorService profileEditorService)
+        public PropertyTrackKeyframeViewModel(PropertyTrackViewModel propertyTrackViewModel, LayerPropertyKeyframe<T> keyframe, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
 
@@ -27,7 +26,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public bool IsSelected { get; set; }
         public PropertyTrackViewModel PropertyTrackViewModel { get; }
-        public BaseKeyframe Keyframe { get; }
+        public LayerPropertyKeyframe<T> Keyframe { get; }
         public BindableCollection<PropertyTrackEasingViewModel> EasingViewModels { get; set; }
         public double X { get; set; }
         public string Timestamp { get; set; }
@@ -169,5 +168,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         #endregion
+    }
+
+    public abstract class PropertyTrackKeyframeViewModel : PropertyChangedBase
+    {
     }
 }
