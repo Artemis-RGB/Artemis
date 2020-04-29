@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
@@ -180,13 +181,28 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
+            if (LayerBrush == null)
+                return;
+
             General.Update(deltaTime);
             Transform.Update(deltaTime);
+            LayerBrush.UpdateProperties(deltaTime);
 
-            LayerBrush?.UpdateProperties(deltaTime);
-            // TODO: Find the last keyframe and if required, reset the properties
+            var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties());
+            properties.AddRange(Transform.GetAllLayerProperties());
+            properties.AddRange(LayerBrush.GetAllLayerProperties());
 
-            LayerBrush?.Update(deltaTime);
+            // For now, reset all keyframe engines after the last keyframe was hit
+            // This is a placeholder method of repeating the animation until repeat modes are implemented
+            var timeLineEnd = properties.Max(p => p.GetLastKeyframePosition());
+            if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
+            {
+                General.Override(TimeSpan.Zero);
+                Transform.Override(TimeSpan.Zero);
+                LayerBrush.OverrideProperties(TimeSpan.Zero);
+            }
+
+            LayerBrush.Update(deltaTime);
         }
 
         /// <inheritdoc />

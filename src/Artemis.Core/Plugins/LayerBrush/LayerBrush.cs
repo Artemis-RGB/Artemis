@@ -1,4 +1,7 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System;
+using System.Collections.Generic;
+using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
 
@@ -58,6 +61,16 @@ namespace Artemis.Core.Plugins.LayerBrush
         internal override void UpdateProperties(double deltaTime)
         {
             Properties.Update(deltaTime);
+        }
+
+        internal override void OverrideProperties(TimeSpan overrideTime)
+        {
+            Properties.Override(overrideTime);
+        }
+
+        internal override IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        {
+            return Properties.GetAllLayerProperties();
         }
 
         #endregion
