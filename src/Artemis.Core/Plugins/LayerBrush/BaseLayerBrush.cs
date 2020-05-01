@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
@@ -29,7 +27,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// </summary>
         public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
 
-        internal virtual LayerPropertyGroup BaseProperties => null;
+        public virtual LayerPropertyGroup BaseProperties => null;
 
         /// <summary>
         ///     Called when the brush is being removed from the layer
@@ -61,23 +59,6 @@ namespace Artemis.Core.Plugins.LayerBrush
 
         internal virtual void InitializeProperties(ILayerService layerService, string path)
         {
-        }
-
-        internal virtual void ApplyToEntity()
-        {
-        }
-
-        internal virtual void UpdateProperties(double deltaTime)
-        {
-        }
-
-        internal virtual void OverrideProperties(TimeSpan overrideTime)
-        {
-        }
-
-        internal virtual IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
-        {
-            return new List<BaseLayerProperty>();
         }
     }
 }

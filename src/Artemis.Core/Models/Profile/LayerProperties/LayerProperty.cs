@@ -70,7 +70,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public LayerPropertyKeyframe<T> NextKeyframe { get; protected set; }
 
-        internal override IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes => _keyframes.Cast<BaseLayerPropertyKeyframe>().ToList().AsReadOnly();
+        public override IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes => _keyframes.Cast<BaseLayerPropertyKeyframe>().ToList().AsReadOnly();
 
         /// <summary>
         ///     Adds a keyframe to the layer property
