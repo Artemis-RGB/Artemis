@@ -7,6 +7,7 @@ using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
@@ -21,28 +22,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
         private readonly ICoreService _coreService;
-        private readonly List<LayerPropertyViewModel> _layerPropertyViewModels;
-        private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private readonly IPropertyTreeVmFactory _propertyTreeVmFactory;
         private readonly IPropertyTimelineVmFactory _propertyTimelineVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
-        private Layer _lastSelectedLayer;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
             ISettingsService settingsService,
-            ILayerPropertyVmFactory layerPropertyVmFactory,
             IPropertyTreeVmFactory propertyTreeVmFactory,
             IPropertyTimelineVmFactory propertyTimelineVmFactory)
         {
             _profileEditorService = profileEditorService;
             _coreService = coreService;
             _settingsService = settingsService;
-            _layerPropertyVmFactory = layerPropertyVmFactory;
             _propertyTreeVmFactory = propertyTreeVmFactory;
             _propertyTimelineVmFactory = propertyTimelineVmFactory;
-            _layerPropertyViewModels = new List<LayerPropertyViewModel>();
 
             PixelsPerSecond = 31;
         }
@@ -67,6 +62,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             set => _profileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / PixelsPerSecond);
         }
 
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
         public PropertyTreeViewModel PropertyTree { get; set; }
         public PropertyTimelineViewModel PropertyTimeline { get; set; }
 
@@ -87,12 +83,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
-
-            if (_lastSelectedLayer != null)
-            {
-                _lastSelectedLayer.Properties.LayerPropertyRegistered -= LayerOnPropertyRegistered;
-                _lastSelectedLayer.Properties.LayerPropertyRemoved -= LayerOnPropertyRemoved;
-            }
 
             PropertyTree?.Dispose();
             PropertyTimeline?.Dispose();
@@ -122,78 +112,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void PopulateProperties(ProfileElement profileElement)
         {
-            if (_lastSelectedLayer != null)
-            {
-                _lastSelectedLayer.Properties.LayerPropertyRegistered -= LayerOnPropertyRegistered;
-                _lastSelectedLayer.Properties.LayerPropertyRemoved -= LayerOnPropertyRemoved;
-            }
-
+            LayerPropertyGroups.Clear();
             if (profileElement is Layer layer)
             {
-                // Create VMs for missing properties
-                foreach (var baseLayerProperty in layer.Properties)
+                // Add the built-in root groups of the layer
+                var generalAttribute = Attribute.GetCustomAttribute(
+                    layer.GetType().GetProperty(nameof(layer.General)),
+                    typeof(PropertyGroupDescriptionAttribute)
+                );
+                var transformAttribute = Attribute.GetCustomAttribute(
+                    layer.GetType().GetProperty(nameof(layer.Transform)),
+                    typeof(PropertyGroupDescriptionAttribute)
+                );
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
+
+                // Add the rout group of the brush
+                // The root group of the brush has no attribute so let's pull one out of our sleeve
+                var brushDescription = new PropertyGroupDescriptionAttribute
                 {
-                    if (_layerPropertyViewModels.All(vm => vm.LayerProperty != baseLayerProperty))
-                        CreatePropertyViewModel(baseLayerProperty);
-                }
-
-                // Remove VMs for extra properties
-                foreach (var layerPropertyViewModel in _layerPropertyViewModels.ToList())
-                {
-                    if (layer.Properties.All(p => p != layerPropertyViewModel.LayerProperty))
-                        RemovePropertyViewModel(layerPropertyViewModel);
-                }
-
-                _lastSelectedLayer = layer;
-                layer.Properties.LayerPropertyRegistered += LayerOnPropertyRegistered;
-                layer.Properties.LayerPropertyRemoved += LayerOnPropertyRemoved;
+                    Name = layer.LayerBrush.Descriptor.DisplayName,
+                    Description = layer.LayerBrush.Descriptor.Description
+                };
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.LayerBrush.BaseProperties, brushDescription));
             }
-            else
-            {
-                foreach (var layerPropertyViewModel in _layerPropertyViewModels.ToList())
-                    RemovePropertyViewModel(layerPropertyViewModel);
-
-                _lastSelectedLayer = null;
-            }
-        }
-
-        private void LayerOnPropertyRegistered(object sender, LayerPropertyEventArgs e)
-        {
-            Console.WriteLine("LayerOnPropertyRegistered");
-            PopulateProperties(e.LayerProperty.Layer);
-        }
-
-        private void LayerOnPropertyRemoved(object sender, LayerPropertyEventArgs e)
-        {
-            Console.WriteLine("LayerOnPropertyRemoved");
-            PopulateProperties(e.LayerProperty.Layer);
-        }
-
-        private LayerPropertyViewModel CreatePropertyViewModel(BaseLayerProperty layerProperty)
-        {
-            LayerPropertyViewModel parent = null;
-            // If the property has a parent, find it's VM
-            if (layerProperty.Parent != null)
-            {
-                parent = _layerPropertyViewModels.FirstOrDefault(vm => vm.LayerProperty == layerProperty.Parent);
-                // If no VM is found, create it
-                if (parent == null)
-                    parent = CreatePropertyViewModel(layerProperty.Parent);
-            }
-
-            var createdViewModel = _layerPropertyVmFactory.Create(layerProperty, parent);
-            _layerPropertyViewModels.Add(createdViewModel);
-            PropertyTree.AddLayerProperty(createdViewModel);
-            PropertyTimeline.AddLayerProperty(createdViewModel);
-
-            return createdViewModel;
-        }
-
-        private void RemovePropertyViewModel(LayerPropertyViewModel layerPropertyViewModel)
-        {
-            PropertyTree.RemoveLayerProperty(layerPropertyViewModel);
-            PropertyTimeline.RemoveLayerProperty(layerPropertyViewModel);
-            _layerPropertyViewModels.Remove(layerPropertyViewModel);
         }
 
         #endregion
@@ -259,9 +201,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private TimeSpan CalculateEndTime()
         {
-            // End time is the last keyframe + 10 sec
-            var lastKeyFrame = PropertyTimeline.PropertyTrackViewModels.SelectMany(r => r.KeyframeViewModels).OrderByDescending(t => t.Keyframe.Position).FirstOrDefault();
-            return lastKeyFrame?.Keyframe.Position.Add(new TimeSpan(0, 0, 0, 10)) ?? TimeSpan.MaxValue;
+            if (!(_profileEditorService.SelectedProfileElement is Layer layer))
+                return TimeSpan.MaxValue;
+
+            var keyframes = GetKeyframes(false);
+
+            // If there are no keyframes, don't stop at all
+            if (!keyframes.Any())
+                return TimeSpan.MaxValue;
+            // If there are keyframes, stop after the last keyframe + 10 sec
+            return keyframes.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -323,17 +272,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     return;
                 }
 
-                // If shift is held, snap to closest keyframe
-                var visibleKeyframes = PropertyTimeline.PropertyTrackViewModels
-                    .Where(t => t.LayerPropertyViewModel.Parent != null && t.LayerPropertyViewModel.Parent.IsExpanded)
-                    .SelectMany(t => t.KeyframeViewModels);
+                var visibleKeyframes = GetKeyframes(true);
+
                 // Take a tolerance of 5 pixels (half a keyframe width)
                 var tolerance = 1000f / PixelsPerSecond * 5;
-                var closeKeyframe = visibleKeyframes.FirstOrDefault(
-                    kf => Math.Abs(kf.Keyframe.Position.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance
-                );
-                _profileEditorService.CurrentTime = closeKeyframe?.Keyframe.Position ?? newTime;
+                var closeKeyframe = visibleKeyframes.FirstOrDefault(k => Math.Abs(k.Position.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance);
+                _profileEditorService.CurrentTime = closeKeyframe?.Position ?? newTime;
             }
+        }
+
+        private List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
+        {
+            var result = new List<BaseLayerPropertyKeyframe>();
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
+
+            return result;
         }
 
         #endregion

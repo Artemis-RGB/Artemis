@@ -14,29 +14,34 @@ namespace Artemis.Core.Models.Profile
     public class LayerPropertyGroup
     {
         private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
+        private readonly List<BaseLayerProperty> _layerProperties;
+        private readonly List<LayerPropertyGroup> _layerPropertyGroups;
 
         protected LayerPropertyGroup()
         {
-            LayerProperties = new List<BaseLayerProperty>();
-            LayerPropertyGroups = new List<LayerPropertyGroup>();
+            _layerProperties = new List<BaseLayerProperty>();
+            _layerPropertyGroups = new List<LayerPropertyGroup>();
         }
 
+        /// <summary>
+        /// Gets whether this property group's properties are all initialized
+        /// </summary>
         public bool PropertiesInitialized { get; private set; }
 
         /// <summary>
         ///     Used to declare that this property group doesn't belong to a plugin and should use the core plugin GUID
         /// </summary>
-        internal bool IsCorePropertyGroup { get; set; }
+        public bool IsCorePropertyGroup { get; internal set; }
 
         /// <summary>
         ///     A list of all layer properties in this group
         /// </summary>
-        internal List<BaseLayerProperty> LayerProperties { get; set; }
+        public ReadOnlyCollection<BaseLayerProperty> LayerProperties => _layerProperties.AsReadOnly();
 
         /// <summary>
         ///     A list of al child groups in this group
         /// </summary>
-        internal List<LayerPropertyGroup> LayerPropertyGroups { get; set; }
+        public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
 
         /// <summary>
         ///     Called when all layer properties in this property group have been initialized
@@ -63,7 +68,7 @@ namespace Artemis.Core.Models.Profile
                     var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType);
                     InitializeProperty(layer, path, instance);
                     propertyInfo.SetValue(this, instance);
-                    LayerProperties.Add(instance);
+                    _layerProperties.Add(instance);
                 }
                 else
                 {
@@ -76,7 +81,7 @@ namespace Artemis.Core.Models.Profile
                         var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
                         propertyInfo.SetValue(this, instance);
-                        LayerPropertyGroups.Add(instance);
+                        _layerPropertyGroups.Add(instance);
                     }
                 }
             }
@@ -121,7 +126,7 @@ namespace Artemis.Core.Models.Profile
         ///     Recursively gets all layer properties on this group and any subgroups
         /// </summary>
         /// <returns></returns>
-        internal IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        public IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
         {
             if (!PropertiesInitialized)
                 return new List<BaseLayerProperty>();

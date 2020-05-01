@@ -76,10 +76,5 @@ namespace Artemis.Core.Services
 
             layer.LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
         }
-
-        public void GetLayerPropertyGroups(Layer layer)
-        {
-            var groups = new List<LayerPropertyGroup> {layer.General, layer.Transform, layer.LayerBrush.BrushProperties};
-        }
     }
 }

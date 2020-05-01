@@ -47,7 +47,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         }
 
         /// <inheritdoc/>
-        internal override LayerPropertyGroup BaseProperties => Properties;
+        public override LayerPropertyGroup BaseProperties => Properties;
 
         internal override void InitializeProperties(ILayerService layerService, string path)
         {
@@ -56,22 +56,17 @@ namespace Artemis.Core.Plugins.LayerBrush
             PropertiesInitialized = true;
         }
 
-        internal override void ApplyToEntity()
+        internal virtual void ApplyToEntity()
         {
             Properties.ApplyToEntity();
         }
 
-        internal override void UpdateProperties(double deltaTime)
-        {
-            Properties.Update(deltaTime);
-        }
-
-        internal override void OverrideProperties(TimeSpan overrideTime)
+        internal virtual void OverrideProperties(TimeSpan overrideTime)
         {
             Properties.Override(overrideTime);
         }
 
-        internal override IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        internal virtual IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
         {
             return Properties.GetAllLayerProperties();
         }

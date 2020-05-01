@@ -125,7 +125,7 @@ namespace Artemis.Core.Models.Profile
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
-            LayerBrush.ApplyToEntity();
+            LayerBrush.BaseProperties.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -187,7 +187,7 @@ namespace Artemis.Core.Models.Profile
 
             var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties());
             properties.AddRange(Transform.GetAllLayerProperties());
-            properties.AddRange(LayerBrush.GetAllLayerProperties());
+            properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
 
             // For now, reset all keyframe engines after the last keyframe was hit
             // This is a placeholder method of repeating the animation until repeat modes are implemented
@@ -196,13 +196,13 @@ namespace Artemis.Core.Models.Profile
             {
                 General.Override(TimeSpan.Zero);
                 Transform.Override(TimeSpan.Zero);
-                LayerBrush.OverrideProperties(TimeSpan.Zero);
+                LayerBrush.BaseProperties.Override(TimeSpan.Zero);
             }
             else
             {
                 General.Update(deltaTime);
                 Transform.Update(deltaTime);
-                LayerBrush.UpdateProperties(deltaTime);
+                LayerBrush.BaseProperties.Update(deltaTime);
             }
 
             LayerBrush.Update(deltaTime);
@@ -212,7 +212,7 @@ namespace Artemis.Core.Models.Profile
         {
             General.Override(timeOverride);
             Transform.Override(timeOverride);
-            LayerBrush.OverrideProperties(timeOverride);
+            LayerBrush.BaseProperties.Override(timeOverride);
         }
 
         /// <inheritdoc />

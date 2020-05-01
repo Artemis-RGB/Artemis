@@ -5,7 +5,7 @@ using Artemis.Storage.Entities.Profile;
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
     /// <summary>
-    /// For internal use only, to implement your own layer property type, extend <see cref="LayerProperty{T}"/> instead.
+    ///     For internal use only, to implement your own layer property type, extend <see cref="LayerProperty{T}" /> instead.
     /// </summary>
     public abstract class BaseLayerProperty
     {
@@ -42,11 +42,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Used to declare that this property doesn't belong to a plugin and should use the core plugin GUID
         /// </summary>
-        internal bool IsCoreProperty { get; set; }
+        public bool IsCoreProperty { get; internal set; }
+
+        /// <summary>
+        ///     Gets a list of all the keyframes in their non-generic base form, without their values being available
+        /// </summary>
+        public abstract IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes { get; }
 
         internal PropertyEntity PropertyEntity { get; set; }
         internal LayerPropertyGroup LayerPropertyGroup { get; set; }
-        internal abstract IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes { get; }
 
         /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
