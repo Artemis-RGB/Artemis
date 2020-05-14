@@ -47,29 +47,4 @@ namespace Artemis.UI.Ninject.Factories
     {
         ProfileLayerViewModel Create(Layer layer);
     }
-
-    public interface ILayerPropertyVmFactory : IVmFactory
-    {
-        LayerPropertyViewModel Create(BaseLayerProperty layerProperty, LayerPropertyViewModel parent);
-    }
-
-    public interface IPropertyTreeVmFactory : IVmFactory
-    {
-        PropertyTreeViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
-    }
-
-    public interface IPropertyTimelineVmFactory : IVmFactory
-    {
-        PropertyTimelineViewModel Create(LayerPropertiesViewModel layerPropertiesViewModel);
-    }
-
-    public interface IPropertyTrackVmFactory : IVmFactory
-    {
-        PropertyTrackViewModel Create(PropertyTimelineViewModel propertyTimelineViewModel, LayerPropertyViewModel layerPropertyViewModel);
-    }
-
-    public interface IPropertyTrackKeyframeVmFactory : IVmFactory
-    {
-        PropertyTrackKeyframeViewModel<T> Create<T>(PropertyTrackViewModel propertyTrackViewModel, LayerPropertyKeyframe<T> keyframe);
-    }
 }

@@ -18,7 +18,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         public object EnumInputValue
         {
-            get => InputValue ?? Enum.GetValues(LayerPropertyViewModel.LayerProperty.Type).Cast<object>().First();
+            get => InputValue ?? Enum.GetValues(GetLayerPropertyEnumType()).Cast<object>().First();
             set => InputValue = value;
         }
 
@@ -29,7 +29,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
 
         protected override void OnInitialized()
         {
-            EnumValues = EnumUtilities.GetAllValuesAndDescriptions(LayerPropertyViewModel.LayerProperty.Type);
+            EnumValues = EnumUtilities.GetAllValuesAndDescriptions(GetLayerPropertyEnumType());
+        }
+
+
+        private Type GetLayerPropertyEnumType()
+        {
+            return LayerPropertyViewModel.BaseLayerProperty.GetType().GetGenericTypeDefinition();
         }
     }
 }

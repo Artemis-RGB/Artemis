@@ -1,14 +1,16 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyTreeView"
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.TreeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:abstract="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract"
+             xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type local:TreeViewModel}}">
     <UserControl.Resources>
         <Style x:Key="PropertyTreeStyle" TargetType="{x:Type TreeViewItem}">
             <Setter Property="Background" Value="Transparent" />
@@ -33,7 +35,8 @@
                                     BorderThickness="0,0,0,1"
                                     Height="25"
                                     Padding="{TemplateBinding Padding}">
-                                <Grid Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Grid
+                                    Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="19" />
                                         <ColumnDefinition />
@@ -79,30 +82,30 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <TreeView ItemsSource="{Binding PropertyTreeItemViewModels}"
+    <TreeView ItemsSource="{Binding LayerPropertyGroups}"
               HorizontalContentAlignment="Stretch"
               Background="{DynamicResource MaterialDesignToolBarBackground}"
               PreviewMouseWheel="{s:Action PropertyTreePreviewMouseWheel}"
               Margin="0 -1">
         <TreeView.ItemContainerStyle>
             <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">
-                <Setter Property="IsExpanded" Value="{Binding LayerPropertyViewModel.IsExpanded, Mode=TwoWay}" />
-                <Setter Property="Visibility" Value="{Binding LayerPropertyViewModel.LayerProperty.IsHidden, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}" />
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="Visibility" Value="{Binding IsVisible}" />
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-            <!-- Parents only show their name and children -->
-            <HierarchicalDataTemplate DataType="{x:Type local:PropertyTreeParentViewModel}" ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}"
+                                      ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding LayerPropertyViewModel.LayerProperty.Name}"
-                               ToolTip="{Binding LayerPropertyViewModel.LayerProperty.Description}"
-                               Margin="5 0"
+                    <TextBlock Text="{Binding PropertyGroupDescription.Name}"
+                               ToolTip="{Binding PropertyGroupDescription.Description}" Margin="5 0"
                                VerticalAlignment="Center" />
                 </StackPanel>
             </HierarchicalDataTemplate>
-            <!-- Children show their full view -->
-            <DataTemplate DataType="{x:Type local:PropertyTreeChildViewModel}">
-                <ContentControl s:View.Model="{Binding}" />
+            <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
+                <!-- <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" /> -->
+                <TextBlock Text="{Binding PropertyDescription.Name}"
+                           ToolTip="{Binding PropertyDescription.Description}" Margin="5 0" VerticalAlignment="Center" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

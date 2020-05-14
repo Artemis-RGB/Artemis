@@ -11,9 +11,8 @@ using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
-using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
 
@@ -22,22 +21,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
         private readonly ICoreService _coreService;
-        private readonly IPropertyTreeVmFactory _propertyTreeVmFactory;
-        private readonly IPropertyTimelineVmFactory _propertyTimelineVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
-            ICoreService coreService,
-            ISettingsService settingsService,
-            IPropertyTreeVmFactory propertyTreeVmFactory,
-            IPropertyTimelineVmFactory propertyTimelineVmFactory)
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService)
         {
             _profileEditorService = profileEditorService;
             _coreService = coreService;
             _settingsService = settingsService;
-            _propertyTreeVmFactory = propertyTreeVmFactory;
-            _propertyTimelineVmFactory = propertyTimelineVmFactory;
 
             PixelsPerSecond = 31;
         }
@@ -63,13 +54,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
-        public PropertyTreeViewModel PropertyTree { get; set; }
-        public PropertyTimelineViewModel PropertyTimeline { get; set; }
+        public TreeViewModel TreeViewModel { get; set; }
+        public TimelineViewModel TimelineViewModel { get; set; }
 
         protected override void OnInitialActivate()
         {
-            PropertyTree = _propertyTreeVmFactory.Create(this);
-            PropertyTimeline = _propertyTimelineVmFactory.Create(this);
+            TreeViewModel = new TreeViewModel(LayerPropertyGroups);
+            TimelineViewModel = new TimelineViewModel(LayerPropertyGroups);
 
             PopulateProperties(_profileEditorService.SelectedProfileElement);
 
@@ -84,10 +75,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
 
-            PropertyTree?.Dispose();
-            PropertyTimeline?.Dispose();
-            PropertyTree = null;
-            PropertyTimeline = null;
             base.OnClose();
         }
 
@@ -124,8 +111,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     layer.GetType().GetProperty(nameof(layer.Transform)),
                     typeof(PropertyGroupDescriptionAttribute)
                 );
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
 
                 // Add the rout group of the brush
                 // The root group of the brush has no attribute so let's pull one out of our sleeve
@@ -134,7 +121,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     Name = layer.LayerBrush.Descriptor.DisplayName,
                     Description = layer.LayerBrush.Descriptor.Description
                 };
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(layer.LayerBrush.BaseProperties, brushDescription));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
             }
         }
 

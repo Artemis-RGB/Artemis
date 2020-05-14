@@ -57,7 +57,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             ColorType.BaseValueChanged += ColorTypeOnBaseValueChanged;
         }
 
-        private void ColorTypeOnBaseValueChanged(object? sender, EventArgs e)
+        private void ColorTypeOnBaseValueChanged(object sender, EventArgs e)
         {
             GradientColor.IsHidden = ColorType.BaseValue != ColorMappingType.Gradient;
             MainColor.IsHidden = ColorType.BaseValue != ColorMappingType.Simple;

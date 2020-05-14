@@ -35,7 +35,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
             GradientType.BaseValueChanged += GradientTypeOnBaseValueChanged;
         }
 
-        private void GradientTypeOnBaseValueChanged(object? sender, EventArgs e)
+        private void GradientTypeOnBaseValueChanged(object sender, EventArgs e)
         {
             Color.IsHidden = GradientType.BaseValue != LayerBrushes.Color.GradientType.Solid;
             Gradient.IsHidden = GradientType.BaseValue == LayerBrushes.Color.GradientType.Solid;

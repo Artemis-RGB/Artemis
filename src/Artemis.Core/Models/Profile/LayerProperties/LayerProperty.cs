@@ -73,6 +73,33 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public override IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes => _keyframes.Cast<BaseLayerPropertyKeyframe>().ToList().AsReadOnly();
 
         /// <summary>
+        ///     Sets the current value, using either keyframes if enabled or the base value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <param name="time">
+        ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
+        ///     or existing keyframe.
+        /// </param>
+        public void SetCurrentValue(T value, TimeSpan? time)
+        {
+            if (time == null || !KeyframesEnabled || !KeyframesSupported)
+                BaseValue = value;
+            else
+            {
+                // If on a keyframe, update the keyframe
+                var currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
+                // Create a new keyframe if none found
+                if (currentKeyframe == null)
+                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear));
+                else
+                    currentKeyframe.Value = value;
+
+                // Update the property so that the new keyframe is reflected on the current value
+                Update(0);
+            }
+        }
+
+        /// <summary>
         ///     Adds a keyframe to the layer property
         /// </summary>
         /// <param name="keyframe">The keyframe to add</param>
@@ -220,9 +247,24 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         #region Events
 
+        /// <summary>
+        ///     Occurs once every frame when the layer property is updated
+        /// </summary>
         public event EventHandler Updated;
+
+        /// <summary>
+        ///     Occurs when the base value of the layer property was updated
+        /// </summary>
         public event EventHandler BaseValueChanged;
+
+        /// <summary>
+        ///     Occurs when a new keyframe was added to the layer property
+        /// </summary>
         public event EventHandler KeyframeAdded;
+
+        /// <summary>
+        ///     Occurs when a keyframe was removed from the layer property
+        /// </summary>
         public event EventHandler KeyframeRemoved;
 
         protected virtual void OnUpdated()

@@ -122,9 +122,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            var layer = new Layer(ProfileElement.Profile, ProfileElement, "New layer");
-            foreach (var baseLayerProperty in layer.Properties)
-                _layerService.InstantiateKeyframeEngine(baseLayerProperty);
+            var layer = _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
             ProfileElement.AddChild(layer);
             UpdateProfileElements();
             _profileEditorService.UpdateSelectedProfile();
@@ -174,7 +172,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             }
 
             // Ensure every child element has an up-to-date VM
-            if (ProfileElement.Children == null) 
+            if (ProfileElement.Children == null)
                 return;
 
             var newChildren = new List<TreeItemViewModel>();
@@ -192,7 +190,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
                 }
             }
 
-            if (!newChildren.Any()) 
+            if (!newChildren.Any())
                 return;
 
             // Add the new children in one call, prevent extra UI events
