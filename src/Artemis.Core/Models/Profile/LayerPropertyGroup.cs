@@ -34,6 +34,11 @@ namespace Artemis.Core.Models.Profile
         public bool IsCorePropertyGroup { get; internal set; }
 
         /// <summary>
+        ///     Gets or sets whether the property is hidden in the UI
+        /// </summary>
+        public bool IsHidden { get; set; }
+
+        /// <summary>
         ///     A list of all layer properties in this group
         /// </summary>
         public ReadOnlyCollection<BaseLayerProperty> LayerProperties => _layerProperties.AsReadOnly();

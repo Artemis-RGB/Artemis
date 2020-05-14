@@ -5,18 +5,20 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
 {
-    public class BrushPropertyInputViewModel : PropertyInputViewModel
+    public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
         private readonly ILayerService _layerService;
         private readonly IPluginService _pluginService;
 
-        public BrushPropertyInputViewModel(IProfileEditorService profileEditorService, ILayerService layerService, IPluginService pluginService) : base(profileEditorService)
+        public BrushPropertyInputViewModel(LayerPropertyViewModel<LayerBrushReference> layerPropertyViewModel, ILayerService layerService, IPluginService pluginService)
+            : base(layerPropertyViewModel)
         {
             _layerService = layerService;
             _pluginService = pluginService;
@@ -26,9 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.P
         }
 
         public BindableCollection<ValueDescription> EnumValues { get; }
-
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(LayerBrushReference)};
-
+        
         public LayerBrushReference BrushInputValue
         {
             get => (LayerBrushReference) InputValue;

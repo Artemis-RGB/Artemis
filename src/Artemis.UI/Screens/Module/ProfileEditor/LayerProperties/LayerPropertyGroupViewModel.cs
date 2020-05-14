@@ -4,27 +4,37 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertyGroupViewModel : LayerPropertyBaseViewModel
     {
-        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription)
+        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription)
         {
+            ProfileEditorService = profileEditorService;
+
             LayerPropertyGroup = layerPropertyGroup;
             PropertyGroupDescription = propertyGroupDescription;
-
             IsExpanded = PropertyGroupDescription.ExpandByDefault;
 
-            Children = new List<LayerPropertyBaseViewModel>();
+            TreePropertyGroupViewModel = new TreePropertyGroupViewModel(this);
+            TimelinePropertyGroupViewModel = new TimelinePropertyGroupViewModel(this);
+
             PopulateChildren();
         }
 
+        public override bool IsVisible => !LayerPropertyGroup.IsHidden;
+
+        public IProfileEditorService ProfileEditorService { get; }
+
         public LayerPropertyGroup LayerPropertyGroup { get; }
         public PropertyGroupDescriptionAttribute PropertyGroupDescription { get; }
-        public bool IsExpanded { get; set; }
 
-        public List<LayerPropertyBaseViewModel> Children { get; set; }
+        public TreePropertyGroupViewModel TreePropertyGroupViewModel { get; set; }
+        public TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel { get; set; }
 
         private void PopulateChildren()
         {
@@ -36,18 +46,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 var value = propertyInfo.GetValue(LayerPropertyGroup);
 
                 // Create VMs for properties on the group
-                if (propertyAttribute != null && value is BaseLayerProperty)
+                if (propertyAttribute != null && value is BaseLayerProperty baseLayerProperty)
                 {
-                    // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
-                    var genericType = propertyInfo.PropertyType.GetGenericArguments()[0];
-                    var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
-                    var instance = Activator.CreateInstance(genericViewModel, value, propertyAttribute);
-                    Children.Add((LayerPropertyBaseViewModel) instance);
+                    var viewModel = ProfileEditorService.CreateLayerPropertyViewModel(baseLayerProperty, propertyAttribute);
+                    if (viewModel != null)
+                        Children.Add(viewModel);
                 }
                 // Create VMs for child groups on this group, resulting in a nested structure
                 else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
                 {
-                    Children.Add(new LayerPropertyGroupViewModel(layerPropertyGroup, groupAttribute));
+                    Children.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layerPropertyGroup, groupAttribute));
                 }
             }
         }
@@ -62,6 +70,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 result.AddRange(layerPropertyBaseViewModel.GetKeyframes(visibleOnly));
 
             return result;
+        }
+
+        public override void Dispose()
+        {
+            foreach (var layerPropertyBaseViewModel in Children)
+                layerPropertyBaseViewModel.Dispose();
         }
     }
 }

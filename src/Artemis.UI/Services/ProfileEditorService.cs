@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Services.Interfaces;
+using Ninject;
+using Ninject.Parameters;
 
 namespace Artemis.UI.Services
 {
@@ -13,14 +22,20 @@ namespace Artemis.UI.Services
     {
         private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
+        private readonly IKernel _kernel;
+        private readonly List<Type> _registeredProfileEditors;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
 
-        public ProfileEditorService(ICoreService coreService, IProfileService profileService)
+        public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel)
         {
             _coreService = coreService;
             _profileService = profileService;
+            _kernel = kernel;
+            _registeredProfileEditors = new List<Type>();
         }
+
+        public ReadOnlyCollection<Type> RegisteredPropertyEditors => _registeredProfileEditors.AsReadOnly();
 
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
@@ -36,6 +51,23 @@ namespace Artemis.UI.Services
                 UpdateProfilePreview();
                 OnCurrentTimeChanged();
             }
+        }
+
+        public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
+        {
+            // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
+            var genericType = baseLayerProperty.GetType().GetGenericArguments()[0];
+            // Only create entries for types supported by a tree input VM
+            if (!TreePropertyViewModel.IsPropertySupported(genericType)) 
+                return null;
+            var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("layerProperty", baseLayerProperty),
+                new ConstructorArgument("propertyDescription", propertyDescription)
+            };
+
+            return (LayerPropertyBaseViewModel) _kernel.Get(genericViewModel, parameters);
         }
 
         public void ChangeSelectedProfile(Profile profile)

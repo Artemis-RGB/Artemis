@@ -1,7 +1,10 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -11,6 +14,7 @@ namespace Artemis.UI.Services.Interfaces
         ProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
 
+        LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription);
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(ProfileElement profileElement);
@@ -18,6 +22,8 @@ namespace Artemis.UI.Services.Interfaces
         void UpdateProfilePreview();
         void UndoUpdateProfile(ProfileModule module);
         void RedoUpdateProfile(ProfileModule module);
+        void StopRegularRender();
+        void ResumeRegularRender();
 
         /// <summary>
         ///     Occurs when a new profile is selected
@@ -48,8 +54,5 @@ namespace Artemis.UI.Services.Interfaces
         ///     Occurs when the profile preview has been updated
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
-
-        void StopRegularRender();
-        void ResumeRegularRender();
     }
 }
