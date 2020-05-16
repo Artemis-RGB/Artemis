@@ -1,27 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 using SkiaSharp;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class SKColorPropertyInputViewModel : PropertyInputViewModel
+    public class SKColorPropertyInputViewModel : PropertyInputViewModel<SKColor>
     {
-        public SKColorPropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public SKColorPropertyInputViewModel(LayerPropertyViewModel<SKColor> layerPropertyViewModel) : base(layerPropertyViewModel)
         {
-        }
-
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(SKColor)};
-
-        public SKColor SKColorInputValue
-        {
-            get => (SKColor?) InputValue ?? new SKColor();
-            set => InputValue = value;
-        }
-
-        public override void Update()
-        {
-            NotifyOfPropertyChange(() => SKColorInputValue);
         }
     }
 }

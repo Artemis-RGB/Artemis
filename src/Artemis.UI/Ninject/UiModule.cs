@@ -2,7 +2,6 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Module.ProfileEditor;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Stylet;
@@ -57,16 +56,7 @@ namespace Artemis.UI.Ninject
                     .InheritedFrom<ProfileEditorPanelViewModel>()
                     .BindAllBaseClasses();
             });
-
-            // Bind property input VMs
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom<PropertyInputViewModel>()
-                    .BindAllBaseClasses();
-            });
-
+            
             // Bind all UI services as singletons
             Kernel.Bind(x =>
             {

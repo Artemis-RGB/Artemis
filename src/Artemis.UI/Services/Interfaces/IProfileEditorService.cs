@@ -5,6 +5,7 @@ using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -54,5 +55,7 @@ namespace Artemis.UI.Services.Interfaces
         ///     Occurs when the profile preview has been updated
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
+
+        TreePropertyViewModel<T> CreateTreePropertyViewModel<T>();
     }
 }

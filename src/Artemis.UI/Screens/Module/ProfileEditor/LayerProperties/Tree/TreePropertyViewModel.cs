@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Artemis.Core.Models.Profile;
-using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
     public class TreePropertyViewModel<T> : TreePropertyViewModel
     {
-        public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel) : base(layerPropertyBaseViewModel)
+        public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, PropertyInputViewModel<T> propertyInputViewModel) : base(layerPropertyBaseViewModel)
         {
             LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
-            PropertyInputViewModel = CreatePropertyInputViewModel();
+            PropertyInputViewModel = propertyInputViewModel;
         }
 
         public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
@@ -24,36 +19,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
         {
             PropertyInputViewModel.Dispose();
         }
-
-        private PropertyInputViewModel<T> CreatePropertyInputViewModel()
-        {
-            if (!IsPropertySupported(typeof(T)))
-                throw new ArtemisUIException($"Failed to create a property input view model, type {typeof(T).Name} is not supported.");
-
-            return (PropertyInputViewModel<T>) Activator.CreateInstance(SupportedTypes[typeof(T)], this);
-        }
     }
 
     public abstract class TreePropertyViewModel : IDisposable
     {
-        public static ReadOnlyDictionary<Type, Type> SupportedTypes = new ReadOnlyDictionary<Type, Type>(new Dictionary<Type, Type>
-        {
-            {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
-            {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
-            {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
-            {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)}
-        });
-
-        public static void RegisterPropertyInputViewModel()
-        {
-
-        }
-
-        public static bool IsPropertySupported(Type type)
-        {
-            return SupportedTypes.ContainsKey(type);
-        }
-
         protected TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
             LayerPropertyBaseViewModel = layerPropertyBaseViewModel;
@@ -61,5 +30,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
         public abstract void Dispose();
+
+        public static void RegisterPropertyInputViewModel()
+        {
+        }
     }
 }

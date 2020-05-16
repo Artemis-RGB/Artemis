@@ -1,28 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.Core.Models.Profile.Colors;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class ColorGradientPropertyInputViewModel : PropertyInputViewModel
+    public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorGradient>
     {
-        public ColorGradientPropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public ColorGradientPropertyInputViewModel(LayerPropertyViewModel<ColorGradient> layerPropertyViewModel) : base(layerPropertyViewModel)
         {
-        }
-
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(ColorGradient)};
-
-        public ColorGradient ColorGradientInputValue
-        {
-            get => (ColorGradient) InputValue ?? new ColorGradient();
-            set => InputValue = value;
-        }
-
-        public override void Update()
-        {
-            NotifyOfPropertyChange(() => ColorGradientInputValue);
         }
     }
 }

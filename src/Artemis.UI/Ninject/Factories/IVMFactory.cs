@@ -1,12 +1,8 @@
 ﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
 using Artemis.UI.Screens.Module.ProfileEditor;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
