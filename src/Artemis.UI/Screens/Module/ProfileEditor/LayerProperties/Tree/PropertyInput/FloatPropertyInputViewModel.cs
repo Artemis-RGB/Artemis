@@ -1,39 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using FluentValidation;
+using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class FloatPropertyInputViewModel : PropertyInputViewModel
+    public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
     {
-        public FloatPropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public FloatPropertyInputViewModel(LayerPropertyViewModel<float> layerPropertyViewModel, IModelValidator<FloatPropertyInputViewModel> validator)
+            : base(layerPropertyViewModel, validator)
         {
         }
+    }
 
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(float)};
-
-
-        public float FloatInputValue
+    public class FloatPropertyInputViewModelValidator : AbstractValidator<FloatPropertyInputViewModel>
+    {
+        public FloatPropertyInputViewModelValidator()
         {
-            get => (float?) InputValue ?? 0f;
-            set => InputValue = ApplyInputValue(value);
-        }
+            RuleFor(vm => vm.InputValue)
+                .LessThanOrEqualTo(vm => (float) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is float);
 
-        public override void Update()
-        {
-            NotifyOfPropertyChange(() => FloatInputValue);
-        }
-
-        private float ApplyInputValue(float value)
-        {
-            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MaxInputValue is float maxFloat)
-                value = Math.Min(value, maxFloat);
-            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MinInputValue is float minFloat)
-                value = Math.Max(value, minFloat);
-
-            return value;
+            RuleFor(vm => vm.InputValue)
+                .GreaterThanOrEqualTo(vm => (float) vm.LayerPropertyViewModel.PropertyDescription.MinInputValue)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MinInputValue is float);
         }
     }
 }

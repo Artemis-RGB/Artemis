@@ -1,38 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using FluentValidation;
+using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class IntPropertyInputViewModel : PropertyInputViewModel
+    public class IntPropertyInputViewModel : PropertyInputViewModel<int>
     {
-        public IntPropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public IntPropertyInputViewModel(LayerPropertyViewModel<int> layerPropertyViewModel, IModelValidator<IntPropertyInputViewModel> validator)
+            : base(layerPropertyViewModel, validator)
         {
         }
+    }
 
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(int)};
-
-        public int IntInputValue
+    public class IntPropertyInputViewModelValidator : AbstractValidator<IntPropertyInputViewModel>
+    {
+        public IntPropertyInputViewModelValidator()
         {
-            get => (int?) InputValue ?? 0;
-            set => InputValue = ApplyInputValue(value);
-        }
+            RuleFor(vm => vm.InputValue)
+                .LessThanOrEqualTo(vm => (int) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is int);
 
-        public override void Update()
-        {
-            NotifyOfPropertyChange(() => IntInputValue);
-        }
-
-        private int ApplyInputValue(int value)
-        {
-            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MaxInputValue is int maxInt)
-                value = Math.Min(value, maxInt);
-            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MinInputValue is int minInt)
-                value = Math.Max(value, minInt);
-
-            return value;
+            RuleFor(vm => vm.InputValue)
+                .GreaterThanOrEqualTo(vm => (int) vm.LayerPropertyViewModel.PropertyDescription.MinInputValue)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MinInputValue is int);
         }
     }
 }

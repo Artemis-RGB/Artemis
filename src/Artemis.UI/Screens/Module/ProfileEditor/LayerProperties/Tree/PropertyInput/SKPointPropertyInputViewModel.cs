@@ -1,50 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using FluentValidation;
 using PropertyChanged;
 using SkiaSharp;
+using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class SKPointPropertyInputViewModel : PropertyInputViewModel
+    public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
-        public SKPointPropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public SKPointPropertyInputViewModel(LayerPropertyViewModel<SKPoint> layerPropertyViewModel, IModelValidator validator) : base(layerPropertyViewModel, validator)
         {
         }
-
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(SKPoint)};
 
         // Since SKPoint is immutable we need to create properties that replace the SKPoint entirely
         [DependsOn(nameof(InputValue))]
         public float X
         {
-            get => ((SKPoint?) InputValue)?.X ?? 0;
-            set => InputValue = new SKPoint(ApplyInputValue(value), Y);
+            get => InputValue.X;
+            set => InputValue = new SKPoint(value, Y);
         }
 
         [DependsOn(nameof(InputValue))]
         public float Y
         {
-            get => ((SKPoint?) InputValue)?.Y ?? 0;
-            set => InputValue = new SKPoint(X, ApplyInputValue(value));
+            get => InputValue.Y;
+            set => InputValue = new SKPoint(X, value);
         }
 
-        public override void Update()
+        protected override void OnInputValueChanged()
         {
-            NotifyOfPropertyChange(() => X);
-            NotifyOfPropertyChange(() => Y);
+            NotifyOfPropertyChange(nameof(X));
+            NotifyOfPropertyChange(nameof(Y));
         }
+    }
 
-        private float ApplyInputValue(float value)
+    public class SKPointPropertyInputViewModelValidator : AbstractValidator<SKPointPropertyInputViewModel>
+    {
+        public SKPointPropertyInputViewModelValidator()
         {
-            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MaxInputValue is float maxFloat)
-                value = Math.Min(value, maxFloat);
-            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MinInputValue is float minFloat)
-                value = Math.Max(value, minFloat);
+            RuleFor(vm => vm.X)
+                .LessThanOrEqualTo(vm => ((SKPoint) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).X)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKPoint);
+            RuleFor(vm => vm.X)
+                .GreaterThanOrEqualTo(vm => ((SKPoint) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).X)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKPoint);
 
-            return value;
+            RuleFor(vm => vm.Y)
+                .LessThanOrEqualTo(vm => ((SKPoint) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Y)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKPoint);
+            RuleFor(vm => vm.Y)
+                .GreaterThanOrEqualTo(vm => ((SKPoint) vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Y)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKPoint);
         }
     }
 }

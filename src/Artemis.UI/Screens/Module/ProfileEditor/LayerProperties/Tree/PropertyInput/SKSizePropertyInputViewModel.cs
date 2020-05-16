@@ -1,50 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using Artemis.UI.Services.Interfaces;
+﻿using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using FluentValidation;
 using PropertyChanged;
 using SkiaSharp;
+using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput
+namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
 {
-    public class SKSizePropertyInputViewModel : PropertyInputViewModel
+    public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
-        public SKSizePropertyInputViewModel(IProfileEditorService profileEditorService) : base(profileEditorService)
+        public SKSizePropertyInputViewModel(LayerPropertyViewModel<SKSize> layerPropertyViewModel, IModelValidator validator) : base(layerPropertyViewModel, validator)
         {
         }
 
-        public sealed override List<Type> CompatibleTypes { get; } = new List<Type> {typeof(SKSize)};
-
-        // Since SKSize is immutable we need to create properties that replace the SKPoint entirely
+        // Since SKSize is immutable we need to create properties that replace the SKSize entirely
         [DependsOn(nameof(InputValue))]
         public float Width
         {
-            get => ((SKSize?) InputValue)?.Width ?? 0;
-            set => InputValue = new SKSize(ApplyInputValue(value), Height);
+            get => InputValue.Width;
+            set => InputValue = new SKSize(value, Height);
         }
 
         [DependsOn(nameof(InputValue))]
         public float Height
         {
-            get => ((SKSize?) InputValue)?.Height ?? 0;
-            set => InputValue = new SKSize(Width, ApplyInputValue(value));
+            get => InputValue.Height;
+            set => InputValue = new SKSize(Width, value);
         }
 
-        public override void Update()
+        protected override void OnInputValueChanged()
         {
-            NotifyOfPropertyChange(() => Width);
-            NotifyOfPropertyChange(() => Height);
+            NotifyOfPropertyChange(nameof(Width));
+            NotifyOfPropertyChange(nameof(Height));
         }
+    }
 
-        private float ApplyInputValue(float value)
+    public class SKSizePropertyInputViewModelValidator : AbstractValidator<SKSizePropertyInputViewModel>
+    {
+        public SKSizePropertyInputViewModelValidator()
         {
-            if (LayerPropertyViewModel.LayerProperty.MaxInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MaxInputValue is float maxFloat)
-                value = Math.Min(value, maxFloat);
-            if (LayerPropertyViewModel.LayerProperty.MinInputValue != null &&
-                LayerPropertyViewModel.LayerProperty.MinInputValue is float minFloat)
-                value = Math.Max(value, minFloat);
+            RuleFor(vm => vm.Width)
+                .LessThanOrEqualTo(vm => ((SKSize)vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Width)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKSize);
+            RuleFor(vm => vm.Width)
+                .GreaterThanOrEqualTo(vm => ((SKSize)vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Width)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKSize);
 
-            return value;
+            RuleFor(vm => vm.Height)
+                .LessThanOrEqualTo(vm => ((SKSize)vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Height)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKSize);
+            RuleFor(vm => vm.Height)
+                .GreaterThanOrEqualTo(vm => ((SKSize)vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue).Height)
+                .When(vm => vm.LayerPropertyViewModel.PropertyDescription.MaxInputValue is SKSize);
         }
     }
 }
