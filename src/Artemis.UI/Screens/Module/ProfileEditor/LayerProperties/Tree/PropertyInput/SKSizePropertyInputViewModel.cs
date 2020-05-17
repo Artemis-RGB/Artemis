@@ -8,7 +8,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
 {
     public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
-        public SKSizePropertyInputViewModel(LayerPropertyViewModel<SKSize> layerPropertyViewModel, IModelValidator validator) : base(layerPropertyViewModel, validator)
+        public SKSizePropertyInputViewModel(LayerPropertyViewModel<SKSize> layerPropertyViewModel, IModelValidator<SKSizePropertyInputViewModel> validator) 
+            : base(layerPropertyViewModel, validator)
         {
         }
 

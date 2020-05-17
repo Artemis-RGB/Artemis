@@ -50,7 +50,7 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
                     continue;
 
                 // If the a nested datamodel, ensure the properties on there are valid
-                if (propertyInfo.PropertyType == typeof(DataModel))
+                if (typeof(DataModel).IsAssignableFrom(propertyInfo.PropertyType))
                     ValidateType(propertyInfo.PropertyType);
                 else if (!SupportedTypes.Contains(propertyInfo.PropertyType))
                 {

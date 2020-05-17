@@ -14,6 +14,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
+        ///     The parent group of this layer property, set after construction
+        /// </summary>
+        public LayerPropertyGroup Parent { get; internal set; }
+
+        /// <summary>
         ///     Gets whether keyframes are supported on this property
         /// </summary>
         public bool KeyframesSupported { get; protected set; }

@@ -1,4 +1,7 @@
-﻿using Stylet;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
@@ -10,5 +13,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
         }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+
+        public void PropertyTreePreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Handled || !(sender is TreeView))
+                return;
+
+            e.Handled = true;
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = UIElement.MouseWheelEvent,
+                Source = sender
+            };
+            var parent = ((Control) sender).Parent as UIElement;
+            parent?.RaiseEvent(eventArg);
+        }
     }
 }

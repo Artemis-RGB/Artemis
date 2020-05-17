@@ -125,7 +125,7 @@ namespace Artemis.Core.Models.Profile
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
-            LayerBrush.BaseProperties.ApplyToEntity();
+            LayerBrush?.BaseProperties.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -212,7 +212,7 @@ namespace Artemis.Core.Models.Profile
         {
             General.Override(timeOverride);
             Transform.Override(timeOverride);
-            LayerBrush.BaseProperties.Override(timeOverride);
+            LayerBrush?.BaseProperties.Override(timeOverride);
         }
 
         /// <inheritdoc />

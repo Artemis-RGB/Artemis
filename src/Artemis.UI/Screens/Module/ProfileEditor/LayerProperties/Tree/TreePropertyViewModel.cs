@@ -30,9 +30,5 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
         public abstract void Dispose();
-
-        public static void RegisterPropertyInputViewModel()
-        {
-        }
     }
 }
