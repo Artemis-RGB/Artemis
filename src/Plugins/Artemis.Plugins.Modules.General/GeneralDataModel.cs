@@ -9,6 +9,7 @@ namespace Artemis.Plugins.Modules.General
     {
         public GeneralDataModel(Module module) : base(module)
         {
+            PlayerInfo = new PlayerInfo(module);
         }
 
         [DataModelProperty(Name = "A test string", Description = "This is a test string that's not of any use outside testing!")]
@@ -21,7 +22,7 @@ namespace Artemis.Plugins.Modules.General
         public PlayerInfo PlayerInfo { get; set; }
     }
 
-    public class PlayerInfo
+    public class PlayerInfo : DataModel
     {
         [DataModelProperty(Name = "A test string", Description = "This is a test string that's not of any use outside testing!")]
         public string TestString { get; set; }
@@ -29,7 +30,8 @@ namespace Artemis.Plugins.Modules.General
         [DataModelProperty(Name = "A test boolean", Description = "This is a test boolean that's not of any use outside testing!")]
         public bool TestBoolean { get; set; }
 
-        [DataModelProperty()]
-        public SKRect SkRect { get; set; }
+        public PlayerInfo(Module module) : base(module)
+        {
+        }
     }
 }

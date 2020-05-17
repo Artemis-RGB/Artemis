@@ -40,7 +40,7 @@ namespace Artemis.Core.Services
         {
             RemoveLayerBrush(layer);
 
-            var descriptorReference = layer.General.BrushReference.CurrentValue;
+            var descriptorReference = layer.General.BrushReference?.CurrentValue;
             if (descriptorReference == null)
                 return null;
 

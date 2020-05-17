@@ -93,6 +93,7 @@ namespace Artemis.Core.Services.Storage
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
             {
+                InitializeCoreProperties(profile);
                 InstantiateProfileLayerBrushes(profile);
             }
         }
@@ -156,6 +157,17 @@ namespace Artemis.Core.Services.Storage
             ActivateProfile(module, profile);
 
             _logger.Debug("Redo profile update - Success");
+        }
+
+        private void InitializeCoreProperties(Profile profile)
+        {
+            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
+            {
+                if (!layer.General.PropertiesInitialized)
+                    layer.General.InitializeProperties(_layerService, layer, null);
+                if (!layer.Transform.PropertiesInitialized)
+                    layer.Transform.InitializeProperties(_layerService, layer, null);
+            };
         }
 
         private void InstantiateProfileLayerBrushes(Profile profile)

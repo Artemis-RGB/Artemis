@@ -8,7 +8,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
 {
     public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
-        public SKPointPropertyInputViewModel(LayerPropertyViewModel<SKPoint> layerPropertyViewModel, IModelValidator validator) : base(layerPropertyViewModel, validator)
+        public SKPointPropertyInputViewModel(LayerPropertyViewModel<SKPoint> layerPropertyViewModel, IModelValidator<SKPointPropertyInputViewModel> validator) 
+            : base(layerPropertyViewModel, validator)
         {
         }
 

@@ -24,6 +24,11 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
+        ///     The parent group of this layer property group, set after construction
+        /// </summary>
+        public LayerPropertyGroup Parent { get; internal set; }
+
+        /// <summary>
         /// Gets whether this property group's properties are all initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
@@ -67,10 +72,11 @@ namespace Artemis.Core.Models.Profile
                 var propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 if (propertyDescription != null)
                 {
-                    if (!typeof(LayerProperty<>).IsAssignableFrom(propertyInfo.PropertyType))
+                    if (!typeof(BaseLayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
                         throw new ArtemisPluginException("Layer property with PropertyDescription attribute must be of type LayerProperty");
 
-                    var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType);
+                    var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
+                    instance.Parent = this;
                     InitializeProperty(layer, path, instance);
                     propertyInfo.SetValue(this, instance);
                     _layerProperties.Add(instance);
@@ -84,6 +90,7 @@ namespace Artemis.Core.Models.Profile
                             throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
 
                         var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
+                        instance.Parent = this;
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
                         propertyInfo.SetValue(this, instance);
                         _layerPropertyGroups.Add(instance);

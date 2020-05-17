@@ -18,8 +18,7 @@
         <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space" />
     </UserControl.InputBindings>
     <UserControl.Resources>
-        <s:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <Style x:Key="SVStyle" TargetType="{x:Type ScrollViewer}">
+        <Style x:Key="SvStyle" TargetType="{x:Type ScrollViewer}">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -37,6 +36,7 @@
                             <ScrollBar Name="PART_VerticalScrollBar"
                                        HorizontalAlignment="Right"
                                        Opacity="0.5"
+                                       Grid.Row="0" 
                                        Grid.Column="1"
                                        Value="{TemplateBinding VerticalOffset}"
                                        Maximum="{TemplateBinding ScrollableHeight}"
@@ -46,7 +46,8 @@
                                        VerticalAlignment="Bottom"
                                        Orientation="Horizontal"
                                        Opacity="0.5"
-                                       Grid.Row="1"
+                                       Grid.Row="1" 
+                                       Grid.Column="0"
                                        Value="{TemplateBinding HorizontalOffset}"
                                        Maximum="{TemplateBinding ScrollableWidth}"
                                        ViewportSize="{TemplateBinding ViewportWidth}"
@@ -127,14 +128,14 @@
                               VerticalScrollBarVisibility="Hidden"
                               ScrollChanged="TimelineScrollChanged">
                     <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
-                        <ContentControl s:View.Model="{Binding PropertyTree}" />
+                        <ContentControl s:View.Model="{Binding TreeViewModel}" />
                     </Border>
                 </ScrollViewer>
             </materialDesign:DialogHost>
         </Grid>
 
         <!-- Right side -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Row="0" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
                 <RowDefinition Height="*" />
@@ -169,7 +170,7 @@
             <!-- Timeline rails -->
             <ScrollViewer x:Name="TimelineRailsScrollViewer"
                           Grid.Row="1"
-                          Style="{StaticResource SVStyle}"
+                          Style="{StaticResource SvStyle}"
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto"
                           ScrollChanged="TimelineScrollChanged">
@@ -183,7 +184,7 @@
                         <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
                               StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
-                    <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding PropertyTimeline}" />
+                    <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding TimelineViewModel}" />
                 </Grid>
             </ScrollViewer>
         </Grid>

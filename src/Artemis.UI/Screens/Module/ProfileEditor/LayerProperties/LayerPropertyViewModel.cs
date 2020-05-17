@@ -6,6 +6,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Services.Interfaces;
+using Humanizer;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
@@ -17,11 +18,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             LayerProperty = layerProperty;
             PropertyDescription = propertyDescription;
 
-            TreePropertyViewModel = new TreePropertyViewModel<T>(this);
+            TreePropertyViewModel = ProfileEditorService.CreateTreePropertyViewModel(this);
             TimelinePropertyViewModel = new TimelinePropertyViewModel<T>(this);
 
             TreePropertyBaseViewModel = TreePropertyViewModel;
             TimelinePropertyBaseViewModel = TimelinePropertyViewModel;
+
+            // Generate a fallback name if the description does not contain one
+            if (PropertyDescription.Name == null)
+            {
+                var propertyInfo = LayerProperty.Parent?.GetType().GetProperties().FirstOrDefault(p => ReferenceEquals(p.GetValue(LayerProperty.Parent), LayerProperty));
+                if (propertyInfo != null)
+                    PropertyDescription.Name = propertyInfo.Name.Humanize();
+                else
+                    PropertyDescription.Name = $"Unknown {typeof(T).Name} property";
+            }
         }
 
         public override bool IsVisible => !LayerProperty.IsHidden;
@@ -54,14 +65,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
     public abstract class LayerPropertyViewModel : LayerPropertyBaseViewModel
     {
-        public IProfileEditorService ProfileEditorService { get; }
-        public BaseLayerProperty BaseLayerProperty { get; }
-
         protected LayerPropertyViewModel(IProfileEditorService profileEditorService, BaseLayerProperty baseLayerProperty)
         {
             ProfileEditorService = profileEditorService;
             BaseLayerProperty = baseLayerProperty;
         }
+
+        public IProfileEditorService ProfileEditorService { get; }
+        public BaseLayerProperty BaseLayerProperty { get; }
 
         public PropertyDescriptionAttribute PropertyDescription { get; protected set; }
         public TreePropertyViewModel TreePropertyBaseViewModel { get; set; }

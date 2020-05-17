@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
@@ -12,9 +13,12 @@ using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 using Artemis.UI.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
+using SkiaSharp;
 
 namespace Artemis.UI.Services
 {
@@ -23,7 +27,6 @@ namespace Artemis.UI.Services
         private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
         private readonly IKernel _kernel;
-        private readonly List<Type> _registeredProfileEditors;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
 
@@ -32,10 +35,20 @@ namespace Artemis.UI.Services
             _coreService = coreService;
             _profileService = profileService;
             _kernel = kernel;
-            _registeredProfileEditors = new List<Type>();
+
+            RegisteredPropertyEditors = new Dictionary<Type, Type>
+            {
+                {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
+                {typeof(ColorGradient), typeof(ColorGradientPropertyInputViewModel)},
+                {typeof(float), typeof(FloatPropertyInputViewModel)},
+                {typeof(int), typeof(IntPropertyInputViewModel)},
+                {typeof(SKColor), typeof(SKColorPropertyInputViewModel)},
+                {typeof(SKPoint), typeof(SKPointPropertyInputViewModel)},
+                {typeof(SKSize), typeof(SKSizePropertyInputViewModel)}
+            };
         }
 
-        public ReadOnlyCollection<Type> RegisteredPropertyEditors => _registeredProfileEditors.AsReadOnly();
+        public Dictionary<Type, Type> RegisteredPropertyEditors { get; set; }
 
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
@@ -56,9 +69,9 @@ namespace Artemis.UI.Services
         public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
         {
             // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
-            var genericType = baseLayerProperty.GetType().GetGenericArguments()[0];
+            var genericType = baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
             // Only create entries for types supported by a tree input VM
-            if (!TreePropertyViewModel.IsPropertySupported(genericType)) 
+            if (!genericType.IsEnum && !RegisteredPropertyEditors.ContainsKey(genericType))
                 return null;
             var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
             var parameters = new IParameter[]
@@ -68,6 +81,19 @@ namespace Artemis.UI.Services
             };
 
             return (LayerPropertyBaseViewModel) _kernel.Get(genericViewModel, parameters);
+        }
+
+        public TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel)
+        {
+            var type = typeof(T).IsEnum
+                ? typeof(EnumPropertyInputViewModel<>).MakeGenericType(typeof(T))
+                : RegisteredPropertyEditors[typeof(T)];
+
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("layerPropertyViewModel", layerPropertyViewModel)
+            };
+            return new TreePropertyViewModel<T>(layerPropertyViewModel, (PropertyInputViewModel<T>) _kernel.Get(type, parameters));
         }
 
         public void ChangeSelectedProfile(Profile profile)

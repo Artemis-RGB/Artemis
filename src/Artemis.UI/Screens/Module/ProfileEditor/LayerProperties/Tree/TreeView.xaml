@@ -103,9 +103,7 @@
                 </StackPanel>
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
-                <!-- <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" /> -->
-                <TextBlock Text="{Binding PropertyDescription.Name}"
-                           ToolTip="{Binding PropertyDescription.Description}" Margin="5 0" VerticalAlignment="Center" />
+                <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

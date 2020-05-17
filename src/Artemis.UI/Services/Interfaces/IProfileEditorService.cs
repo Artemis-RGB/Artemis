@@ -4,8 +4,10 @@ using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -56,6 +58,6 @@ namespace Artemis.UI.Services.Interfaces
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
 
-        TreePropertyViewModel<T> CreateTreePropertyViewModel<T>();
+        TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel);
     }
 }

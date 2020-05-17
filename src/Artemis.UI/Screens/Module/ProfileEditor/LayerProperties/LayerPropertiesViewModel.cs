@@ -31,6 +31,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _settingsService = settingsService;
 
             PixelsPerSecond = 31;
+            LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
         }
 
         public bool Playing { get; set; }
@@ -59,9 +60,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         protected override void OnInitialActivate()
         {
-            TreeViewModel = new TreeViewModel(LayerPropertyGroups);
-            TimelineViewModel = new TimelineViewModel(LayerPropertyGroups);
-
             PopulateProperties(_profileEditorService.SelectedProfileElement);
 
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
@@ -114,6 +112,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
 
+                if (layer.LayerBrush == null)
+                    return;
+
                 // Add the rout group of the brush
                 // The root group of the brush has no attribute so let's pull one out of our sleeve
                 var brushDescription = new PropertyGroupDescriptionAttribute
@@ -123,6 +124,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 };
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
             }
+            TreeViewModel = new TreeViewModel(LayerPropertyGroups);
+            TimelineViewModel = new TimelineViewModel(LayerPropertyGroups);
         }
 
         #endregion
