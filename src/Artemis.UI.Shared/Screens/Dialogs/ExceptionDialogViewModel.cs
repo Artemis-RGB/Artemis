@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.UI.Shared.Services.Dialog;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 
 namespace Artemis.UI.Shared.Screens.Dialogs
@@ -10,18 +10,35 @@ namespace Artemis.UI.Shared.Screens.Dialogs
         public ExceptionDialogViewModel(string message, Exception exception)
         {
             Header = message;
-            Exception = exception;
-            Document = new TextDocument(new StringTextSource(exception.StackTrace));
+            Exceptions = new List<DialogException>();
+
+            var currentException = exception;
+            while (currentException != null)
+            {
+                Exceptions.Add(new DialogException(currentException));
+                currentException = currentException.InnerException;
+            }
         }
 
         public string Header { get; }
-        public Exception Exception { get; }
+        public List<DialogException> Exceptions { get; set; }
 
-        public IDocument Document { get; set; }
 
         public void Close()
         {
             Session.Close();
+        }
+    }
+
+    public class DialogException
+    {
+        public Exception Exception { get; }
+        public IDocument Document { get; set; }
+
+        public DialogException(Exception exception)
+        {
+            Exception = exception;
+            Document = new TextDocument(new StringTextSource($"{exception.Message}\r\n\r\n{exception.StackTrace}"));
         }
     }
 }

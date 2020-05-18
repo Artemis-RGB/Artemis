@@ -77,5 +77,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             foreach (var layerPropertyBaseViewModel in Children)
                 layerPropertyBaseViewModel.Dispose();
         }
+
+        public List<LayerPropertyBaseViewModel> GetAllChildren()
+        {
+            var result = new List<LayerPropertyBaseViewModel>();
+            foreach (var layerPropertyBaseViewModel in Children)
+            {
+                result.Add(layerPropertyBaseViewModel);
+                if (layerPropertyBaseViewModel is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    result.AddRange(layerPropertyGroupViewModel.GetAllChildren());
+            }
+
+            return result;
+        }
     }
 }

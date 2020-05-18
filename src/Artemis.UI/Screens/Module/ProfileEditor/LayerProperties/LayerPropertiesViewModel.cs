@@ -20,38 +20,27 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
-        private readonly ICoreService _coreService;
-        private readonly IProfileEditorService _profileEditorService;
-        private readonly ISettingsService _settingsService;
-
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService)
         {
-            _profileEditorService = profileEditorService;
-            _coreService = coreService;
-            _settingsService = settingsService;
+            ProfileEditorService = profileEditorService;
+            CoreService = coreService;
+            SettingsService = settingsService;
 
-            PixelsPerSecond = 31;
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
         }
 
+        public IProfileEditorService ProfileEditorService { get; }
+        public ICoreService CoreService { get; }
+        public ISettingsService SettingsService { get; }
+
         public bool Playing { get; set; }
         public bool RepeatAfterLastKeyframe { get; set; }
-        public string FormattedCurrentTime => $"{Math.Floor(_profileEditorService.CurrentTime.TotalSeconds):00}.{_profileEditorService.CurrentTime.Milliseconds:000}";
-
-        public int PixelsPerSecond
-        {
-            get => _pixelsPerSecond;
-            set
-            {
-                _pixelsPerSecond = value;
-                OnPixelsPerSecondChanged();
-            }
-        }
+        public string FormattedCurrentTime => $"{Math.Floor(ProfileEditorService.CurrentTime.TotalSeconds):00}.{ProfileEditorService.CurrentTime.Milliseconds:000}";
 
         public Thickness TimeCaretPosition
         {
-            get => new Thickness(_profileEditorService.CurrentTime.TotalSeconds * PixelsPerSecond, 0, 0, 0);
-            set => _profileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / PixelsPerSecond);
+            get => new Thickness(ProfileEditorService.CurrentTime.TotalSeconds * ProfileEditorService.PixelsPerSecond, 0, 0, 0);
+            set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / ProfileEditorService.PixelsPerSecond);
         }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
@@ -60,18 +49,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         protected override void OnInitialActivate()
         {
-            PopulateProperties(_profileEditorService.SelectedProfileElement);
+            PopulateProperties(ProfileEditorService.SelectedProfileElement);
 
-            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
-            _profileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
 
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
-            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
-            _profileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
 
             base.OnClose();
         }
@@ -109,23 +98,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     layer.GetType().GetProperty(nameof(layer.Transform)),
                     typeof(PropertyGroupDescriptionAttribute)
                 );
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
 
-                if (layer.LayerBrush == null)
-                    return;
-
-                // Add the rout group of the brush
-                // The root group of the brush has no attribute so let's pull one out of our sleeve
-                var brushDescription = new PropertyGroupDescriptionAttribute
+                if (layer.LayerBrush != null)
                 {
-                    Name = layer.LayerBrush.Descriptor.DisplayName,
-                    Description = layer.LayerBrush.Descriptor.Description
-                };
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(_profileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
+                    // Add the rout group of the brush
+                    // The root group of the brush has no attribute so let's pull one out of our sleeve
+                    var brushDescription = new PropertyGroupDescriptionAttribute
+                    {
+                        Name = layer.LayerBrush.Descriptor.DisplayName,
+                        Description = layer.LayerBrush.Descriptor.Description
+                    };
+                    LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
+                }
             }
-            TreeViewModel = new TreeViewModel(LayerPropertyGroups);
-            TimelineViewModel = new TimelineViewModel(LayerPropertyGroups);
+
+            TreeViewModel = new TreeViewModel(this, LayerPropertyGroups);
+            TimelineViewModel = new TimelineViewModel(this, LayerPropertyGroups);
         }
 
         #endregion
@@ -135,7 +125,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public void PlayFromStart()
         {
             if (!Playing)
-                _profileEditorService.CurrentTime = TimeSpan.Zero;
+                ProfileEditorService.CurrentTime = TimeSpan.Zero;
 
             Play();
         }
@@ -150,7 +140,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 return;
             }
 
-            _coreService.FrameRendering += CoreServiceOnFrameRendering;
+            CoreService.FrameRendering += CoreServiceOnFrameRendering;
             Playing = true;
         }
 
@@ -159,39 +149,39 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             if (!Playing)
                 return;
 
-            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+            CoreService.FrameRendering -= CoreServiceOnFrameRendering;
             Playing = false;
         }
 
 
         public void GoToStart()
         {
-            _profileEditorService.CurrentTime = TimeSpan.Zero;
+            ProfileEditorService.CurrentTime = TimeSpan.Zero;
         }
 
         public void GoToEnd()
         {
-            _profileEditorService.CurrentTime = CalculateEndTime();
+            ProfileEditorService.CurrentTime = CalculateEndTime();
         }
 
         public void GoToPreviousFrame()
         {
-            var frameTime = 1000.0 / _settingsService.GetSetting("Core.TargetFrameRate", 25).Value;
-            var newTime = Math.Max(0, Math.Round((_profileEditorService.CurrentTime.TotalMilliseconds - frameTime) / frameTime) * frameTime);
-            _profileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
+            var frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            var newTime = Math.Max(0, Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds - frameTime) / frameTime) * frameTime);
+            ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
 
         public void GoToNextFrame()
         {
-            var frameTime = 1000.0 / _settingsService.GetSetting("Core.TargetFrameRate", 25).Value;
-            var newTime = Math.Round((_profileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
+            var frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            var newTime = Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
             newTime = Math.Min(newTime, CalculateEndTime().TotalMilliseconds);
-            _profileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
+            ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
 
         private TimeSpan CalculateEndTime()
         {
-            if (!(_profileEditorService.SelectedProfileElement is Layer layer))
+            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return TimeSpan.MaxValue;
 
             var keyframes = GetKeyframes(false);
@@ -207,7 +197,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             Execute.PostToUIThread(() =>
             {
-                var newTime = _profileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
+                var newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
                 if (RepeatAfterLastKeyframe)
                 {
                     if (newTime > CalculateEndTime().Subtract(TimeSpan.FromSeconds(10)))
@@ -219,15 +209,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     Pause();
                 }
 
-                _profileEditorService.CurrentTime = newTime;
+                ProfileEditorService.CurrentTime = newTime;
             });
         }
 
         #endregion
 
         #region Caret movement
-
-        private int _pixelsPerSecond;
 
         public void TimelineMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -246,28 +234,28 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 // Get the parent grid, need that for our position
                 var parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
                 var x = Math.Max(0, e.GetPosition(parent).X);
-                var newTime = TimeSpan.FromSeconds(x / PixelsPerSecond);
+                var newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
 
                 // Round the time to something that fits the current zoom level
-                if (PixelsPerSecond < 200)
+                if (ProfileEditorService.PixelsPerSecond < 200)
                     newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
-                else if (PixelsPerSecond < 500)
+                else if (ProfileEditorService.PixelsPerSecond < 500)
                     newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
                 else
                     newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
 
                 if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    _profileEditorService.CurrentTime = newTime;
+                    ProfileEditorService.CurrentTime = newTime;
                     return;
                 }
 
                 var visibleKeyframes = GetKeyframes(true);
 
                 // Take a tolerance of 5 pixels (half a keyframe width)
-                var tolerance = 1000f / PixelsPerSecond * 5;
+                var tolerance = 1000f / ProfileEditorService.PixelsPerSecond * 5;
                 var closeKeyframe = visibleKeyframes.FirstOrDefault(k => Math.Abs(k.Position.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance);
-                _profileEditorService.CurrentTime = closeKeyframe?.Position ?? newTime;
+                ProfileEditorService.CurrentTime = closeKeyframe?.Position ?? newTime;
             }
         }
 
@@ -278,17 +266,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
 
             return result;
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler PixelsPerSecondChanged;
-
-        protected virtual void OnPixelsPerSecondChanged()
-        {
-            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

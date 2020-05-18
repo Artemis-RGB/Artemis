@@ -90,7 +90,7 @@
         <TreeView.ItemContainerStyle>
             <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="Visibility" Value="{Binding IsVisible}" />
+                <Setter Property="Visibility" Value="{Binding IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>

@@ -7,7 +7,6 @@ using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -16,6 +15,7 @@ namespace Artemis.UI.Services.Interfaces
         Profile SelectedProfile { get; }
         ProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
+        int PixelsPerSecond { get; set; }
 
         LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription);
         void ChangeSelectedProfile(Profile profile);
@@ -52,6 +52,11 @@ namespace Artemis.UI.Services.Interfaces
         ///     Occurs when the current editor time is changed
         /// </summary>
         event EventHandler CurrentTimeChanged;
+
+        /// <summary>
+        ///     Occurs when the pixels per second (zoom level) is changed
+        /// </summary>
+        event EventHandler PixelsPerSecondChanged;
 
         /// <summary>
         ///     Occurs when the profile preview has been updated

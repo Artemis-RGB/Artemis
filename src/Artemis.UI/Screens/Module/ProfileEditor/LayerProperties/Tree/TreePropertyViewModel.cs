@@ -1,13 +1,18 @@
 ﻿using System;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using Artemis.UI.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
     public class TreePropertyViewModel<T> : TreePropertyViewModel
     {
-        public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, PropertyInputViewModel<T> propertyInputViewModel) : base(layerPropertyBaseViewModel)
+        private readonly IProfileEditorService _profileEditorService;
+
+        public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, PropertyInputViewModel<T> propertyInputViewModel,
+            IProfileEditorService profileEditorService) : base(layerPropertyBaseViewModel)
         {
+            _profileEditorService = profileEditorService;
             LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
             PropertyInputViewModel = propertyInputViewModel;
         }

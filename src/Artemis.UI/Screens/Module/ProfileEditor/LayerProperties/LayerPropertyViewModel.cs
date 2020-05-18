@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             PropertyDescription = propertyDescription;
 
             TreePropertyViewModel = ProfileEditorService.CreateTreePropertyViewModel(this);
-            TimelinePropertyViewModel = new TimelinePropertyViewModel<T>(this);
+            TimelinePropertyViewModel = new TimelinePropertyViewModel<T>(this, profileEditorService);
 
             TreePropertyBaseViewModel = TreePropertyViewModel;
             TimelinePropertyBaseViewModel = TimelinePropertyViewModel;
@@ -50,7 +50,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public override void Dispose()
         {
             TreePropertyViewModel.Dispose();
-            TimelinePropertyViewModel.Dispose();
         }
 
         public void SetCurrentValue(T value, bool saveChanges)

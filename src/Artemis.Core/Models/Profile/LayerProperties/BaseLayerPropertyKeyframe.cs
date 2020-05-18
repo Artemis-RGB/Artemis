@@ -8,9 +8,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// </summary>
     public abstract class BaseLayerPropertyKeyframe
     {
-        internal BaseLayerPropertyKeyframe()
+        internal BaseLayerPropertyKeyframe(BaseLayerProperty baseLayerProperty)
         {
+            BaseLayerProperty = baseLayerProperty;
         }
+
+        /// <summary>
+        ///     The base class of the layer property this keyframe is applied to
+        /// </summary>
+        public BaseLayerProperty BaseLayerProperty { get; internal set; }
 
         /// <summary>
         ///     The position of this keyframe in the timeline
@@ -20,8 +26,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     The easing function applied on the value of the keyframe
         /// </summary>
-        public abstract Easings.Functions EasingFunction { get; set; }
-
-        internal abstract BaseLayerProperty BaseLayerProperty { get; }
+        public Easings.Functions EasingFunction { get; set; }
     }
 }

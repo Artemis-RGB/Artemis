@@ -29,6 +29,7 @@ namespace Artemis.UI.Services
         private readonly IKernel _kernel;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
+        private int _pixelsPerSecond;
 
         public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel)
         {
@@ -46,6 +47,7 @@ namespace Artemis.UI.Services
                 {typeof(SKPoint), typeof(SKPointPropertyInputViewModel)},
                 {typeof(SKSize), typeof(SKSizePropertyInputViewModel)}
             };
+            PixelsPerSecond = 31;
         }
 
         public Dictionary<Type, Type> RegisteredPropertyEditors { get; set; }
@@ -65,6 +67,17 @@ namespace Artemis.UI.Services
                 OnCurrentTimeChanged();
             }
         }
+
+        public int PixelsPerSecond
+        {
+            get => _pixelsPerSecond;
+            set
+            {
+                _pixelsPerSecond = value;
+                OnPixelsPerSecondChanged();
+            }
+        }
+
 
         public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
         {
@@ -93,7 +106,7 @@ namespace Artemis.UI.Services
             {
                 new ConstructorArgument("layerPropertyViewModel", layerPropertyViewModel)
             };
-            return new TreePropertyViewModel<T>(layerPropertyViewModel, (PropertyInputViewModel<T>) _kernel.Get(type, parameters));
+            return new TreePropertyViewModel<T>(layerPropertyViewModel, (PropertyInputViewModel<T>) _kernel.Get(type, parameters), this);
         }
 
         public void ChangeSelectedProfile(Profile profile)
@@ -181,8 +194,9 @@ namespace Artemis.UI.Services
         public event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
+        public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
-
+        
         public void StopRegularRender()
         {
             _coreService.ModuleUpdatingDisabled = true;
@@ -216,6 +230,11 @@ namespace Artemis.UI.Services
         protected virtual void OnCurrentTimeChanged()
         {
             CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPixelsPerSecondChanged()
+        {
+            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnProfilePreviewUpdated()
