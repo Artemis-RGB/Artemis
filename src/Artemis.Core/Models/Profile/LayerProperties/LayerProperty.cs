@@ -90,7 +90,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 var currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
                 // Create a new keyframe if none found
                 if (currentKeyframe == null)
-                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear));
+                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this));
                 else
                     currentKeyframe.Value = value;
 
@@ -105,7 +105,13 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <param name="keyframe">The keyframe to add</param>
         public void AddKeyframe(LayerPropertyKeyframe<T> keyframe)
         {
+            if (_keyframes.Contains(keyframe))
+                return;
+
+            keyframe.LayerProperty?.RemoveKeyframe(keyframe);
+
             keyframe.LayerProperty = this;
+            keyframe.BaseLayerProperty = this;
             _keyframes.Add(keyframe);
             SortKeyframes();
             OnKeyframeAdded();
@@ -115,10 +121,31 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     Removes a keyframe from the layer property
         /// </summary>
         /// <param name="keyframe">The keyframe to remove</param>
+        public LayerPropertyKeyframe<T> CopyKeyframe(LayerPropertyKeyframe<T> keyframe)
+        {
+            var newKeyframe = new LayerPropertyKeyframe<T>(
+                keyframe.Value,
+                keyframe.Position,
+                keyframe.EasingFunction,
+                keyframe.LayerProperty
+            );
+            AddKeyframe(newKeyframe);
+
+            return newKeyframe;
+        }
+
+        /// <summary>
+        ///     Removes a keyframe from the layer property
+        /// </summary>
+        /// <param name="keyframe">The keyframe to remove</param>
         public void RemoveKeyframe(LayerPropertyKeyframe<T> keyframe)
         {
+            if (!_keyframes.Contains(keyframe))
+                return;
+
             _keyframes.Remove(keyframe);
             keyframe.LayerProperty = null;
+            keyframe.BaseLayerProperty = null;
             SortKeyframes();
             OnKeyframeRemoved();
         }
@@ -213,8 +240,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 _keyframes.AddRange(entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
                     JsonConvert.DeserializeObject<T>(k.Value),
                     k.Position,
-                    (Easings.Functions) k.EasingFunction)
-                ));
+                    (Easings.Functions) k.EasingFunction,
+                    this
+                )));
             }
             catch (JsonException e)
             {

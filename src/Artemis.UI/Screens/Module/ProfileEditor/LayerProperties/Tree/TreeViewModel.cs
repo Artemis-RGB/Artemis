@@ -7,8 +7,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
     public class TreeViewModel
     {
-        public TreeViewModel(BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
+        private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
+
+        public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
         {
+            _layerPropertiesViewModel = layerPropertiesViewModel;
             LayerPropertyGroups = layerPropertyGroups;
         }
 

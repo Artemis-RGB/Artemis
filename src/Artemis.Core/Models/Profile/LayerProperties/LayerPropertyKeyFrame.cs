@@ -7,10 +7,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     {
         private TimeSpan _position;
 
-        public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction)
+        public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction, LayerProperty<T> layerProperty) : base(layerProperty)
         {
             _position = position;
             Value = value;
+            LayerProperty = layerProperty;
             EasingFunction = easingFunction;
         }
 
@@ -34,10 +35,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 LayerProperty.SortKeyframes();
             }
         }
-
-        /// <inheritdoc />
-        public sealed override Easings.Functions EasingFunction { get; set; }
-
-        internal override BaseLayerProperty BaseLayerProperty => LayerProperty;
     }
 }
