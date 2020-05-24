@@ -35,8 +35,7 @@
                                     BorderThickness="0,0,0,1"
                                     Height="25"
                                     Padding="{TemplateBinding Padding}">
-                                <Grid
-                                    Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
+                                <Grid Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="19" />
                                         <ColumnDefinition />
@@ -94,8 +93,7 @@
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}"
-                                      ItemsSource="{Binding Children}">
+            <HierarchicalDataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding PropertyGroupDescription.Name}"
                                ToolTip="{Binding PropertyGroupDescription.Description}" Margin="5 0"

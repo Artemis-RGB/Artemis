@@ -9,9 +9,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// </summary>
     public abstract class BaseLayerProperty
     {
+        private bool _keyframesEnabled;
+
         internal BaseLayerProperty()
         {
         }
+
+        /// <summary>
+        /// The layer this property applies to
+        /// </summary>
+        public Layer Layer { get; internal set; }
 
         /// <summary>
         ///     The parent group of this layer property, set after construction
@@ -21,13 +28,22 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Gets whether keyframes are supported on this property
         /// </summary>
-        public bool KeyframesSupported { get; protected set; }
+        public bool KeyframesSupported { get; protected set; } = true;
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
         ///     False
         /// </summary>
-        public bool KeyframesEnabled { get; set; }
+        public bool KeyframesEnabled
+        {
+            get => _keyframesEnabled;
+            set
+            {
+                if (_keyframesEnabled == value) return;
+                _keyframesEnabled = value;
+                OnKeyframesToggled();
+            }
+        }
 
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
@@ -57,17 +73,73 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         internal PropertyEntity PropertyEntity { get; set; }
         internal LayerPropertyGroup LayerPropertyGroup { get; set; }
 
+
         /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="layerPropertyGroup"></param>
-        internal abstract void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup);
+        /// <param name="fromStorage"></param>
+        internal abstract void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage);
 
         /// <summary>
         ///     Saves the property to the underlying property entity that was configured when calling
         ///     <see cref="ApplyToLayerProperty" />
         /// </summary>
         internal abstract void ApplyToEntity();
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs once every frame when the layer property is updated
+        /// </summary>
+        public event EventHandler Updated;
+
+        /// <summary>
+        ///     Occurs when the base value of the layer property was updated
+        /// </summary>
+        public event EventHandler BaseValueChanged;
+
+        /// <summary>
+        /// Occurs when keyframes are enabled/disabled
+        /// </summary>
+        public event EventHandler KeyframesToggled;
+
+        /// <summary>
+        ///     Occurs when a new keyframe was added to the layer property
+        /// </summary>
+        public event EventHandler KeyframeAdded;
+
+        /// <summary>
+        ///     Occurs when a keyframe was removed from the layer property
+        /// </summary>
+        public event EventHandler KeyframeRemoved;
+
+        protected virtual void OnUpdated()
+        {
+            Updated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnBaseValueChanged()
+        {
+            BaseValueChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnKeyframesToggled()
+        {
+            KeyframesToggled?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnKeyframeAdded()
+        {
+            KeyframeAdded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnKeyframeRemoved()
+        {
+            KeyframeRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

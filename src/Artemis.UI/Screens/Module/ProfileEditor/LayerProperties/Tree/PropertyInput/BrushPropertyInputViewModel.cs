@@ -27,7 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
         }
 
         public BindableCollection<ValueDescription> ComboboxValues { get; }
-        
+
         public void UpdateEnumValues()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
@@ -47,7 +47,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
             ComboboxValues.Clear();
             ComboboxValues.AddRange(enumValues);
         }
-        
+
         public override void Dispose()
         {
             _pluginService.PluginLoaded -= PluginServiceOnPluginLoaded;
@@ -57,6 +57,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
         private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
         {
             UpdateEnumValues();
+        }
+
+        protected override void OnInputValueApplied()
+        {
+            _layerService.InstantiateLayerBrush(LayerPropertyViewModel.LayerProperty.Layer);
         }
     }
 }

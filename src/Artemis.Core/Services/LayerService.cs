@@ -27,8 +27,8 @@ namespace Artemis.Core.Services
             var layer = new Layer(profile, parent, name);
 
             // Layers have two hardcoded property groups, instantiate them
-            layer.General.InitializeProperties(this, layer, null);
-            layer.Transform.InitializeProperties(this, layer, null);
+            layer.General.InitializeProperties(this, layer, "General.");
+            layer.Transform.InitializeProperties(this, layer, "Transform.");
 
             // With the properties loaded, the layer brush can be instantiated
             InstantiateLayerBrush(layer);
@@ -58,11 +58,10 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("layer", layer),
                 new ConstructorArgument("descriptor", descriptor)
             };
-            var layerBrush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
-            layerBrush.InitializeProperties(this, null);
-            layer.LayerBrush = layerBrush;
-
-            return layerBrush;
+            layer.LayerBrush = (BaseLayerBrush)_kernel.Get(descriptor.LayerBrushType, arguments); ;
+            layer.LayerBrush.InitializeProperties(this, "LayerBrush.");
+            layer.OnLayerBrushUpdated();
+            return layer.LayerBrush;
         }
 
         public void RemoveLayerBrush(Layer layer)

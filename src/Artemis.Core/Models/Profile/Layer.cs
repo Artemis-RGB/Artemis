@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media.Animation;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -37,6 +38,7 @@ namespace Artemis.Core.Models.Profile
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -52,6 +54,7 @@ namespace Artemis.Core.Models.Profile
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -147,6 +150,18 @@ namespace Artemis.Core.Models.Profile
 
         #region Shape management
 
+        private void GeneralOnPropertyGroupInitialized(object sender, EventArgs e)
+        {
+            ApplyShapeType();
+            General.ShapeType.BaseValueChanged -= ShapeTypeOnBaseValueChanged;
+            General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
+        }
+
+        private void ShapeTypeOnBaseValueChanged(object sender, EventArgs e)
+        {
+            ApplyShapeType();
+        }
+
         private void ApplyShapeType()
         {
             switch (General.ShapeType.CurrentValue)
@@ -164,34 +179,21 @@ namespace Artemis.Core.Models.Profile
 
         #endregion
 
-        #region Properties
-
-        internal void InitializeProperties(ILayerService layerService)
-        {
-            PropertiesInitialized = true;
-
-            ApplyShapeType();
-        }
-
-        public bool PropertiesInitialized { get; private set; }
-
-        #endregion
-
         #region Rendering
 
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            if (LayerBrush == null)
+            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
-            var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties());
-            properties.AddRange(Transform.GetAllLayerProperties());
-            properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
+            var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
+            properties.AddRange(Transform.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
+            properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
 
             // For now, reset all keyframe engines after the last keyframe was hit
             // This is a placeholder method of repeating the animation until repeat modes are implemented
-            var timeLineEnd = properties.Max(p => p.BaseKeyframes.Max(k => k.Position));
+            var timeLineEnd = properties.Any() ? properties.Max(p => p.BaseKeyframes.Max(k => k.Position)) : TimeSpan.MaxValue;
             if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
             {
                 General.Override(TimeSpan.Zero);
@@ -218,7 +220,7 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (Path == null || LayerShape?.Path == null)
+            if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
 
             canvas.Save();
@@ -263,7 +265,8 @@ namespace Artemis.Core.Models.Profile
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            LayerBrush?.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            if (LayerBrush != null && LayerBrush.BaseProperties.PropertiesInitialized)
+                LayerBrush.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
         }
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
@@ -405,6 +408,7 @@ namespace Artemis.Core.Models.Profile
 
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
+        public event EventHandler LayerBrushUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -414,6 +418,11 @@ namespace Artemis.Core.Models.Profile
         private void OnShapePropertiesUpdated()
         {
             ShapePropertiesUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnLayerBrushUpdated()
+        {
+            LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

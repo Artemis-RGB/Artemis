@@ -18,7 +18,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             EasingFunction = easingFunction;
             Description = easingFunction.Humanize();
 
-            CreateGeometry();
+            CreateEasingPoints();
         }
 
         public Easings.Functions EasingFunction { get; }
@@ -36,7 +36,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        private void CreateGeometry()
+        private void CreateEasingPoints()
         {
             EasingPoints = new PointCollection();
             for (var i = 1; i <= 10; i++)

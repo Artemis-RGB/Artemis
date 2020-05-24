@@ -51,6 +51,7 @@ namespace Artemis.Core.Plugins.LayerBrush
 
         internal override void InitializeProperties(ILayerService layerService, string path)
         {
+            Properties = Activator.CreateInstance<T>();
             Properties.InitializeProperties(layerService, Layer, path);
             OnPropertiesInitialized();
             PropertiesInitialized = true;

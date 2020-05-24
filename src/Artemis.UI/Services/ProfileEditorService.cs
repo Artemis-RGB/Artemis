@@ -139,8 +139,7 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
             OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfileElement));
         }
-
-
+        
         public void UpdateProfilePreview()
         {
             if (SelectedProfile == null)

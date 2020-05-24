@@ -12,72 +12,82 @@
              d:DataContext="{d:DesignInstance local:TimelinePropertyGroupViewModel}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25" />
+            <RowDefinition Height="24" />
+            <RowDefinition Height="1" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Border Height="25" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}" Grid.Row="0">
-            <ItemsControl ItemsSource="{Binding TimelineKeyframeViewModels}"
+
+        <ItemsControl Grid.Row="0"
+                      Height="24"
+                      Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                      ItemsSource="{Binding TimelineKeyframeViewModels}"
                       Background="{DynamicResource MaterialDesignToolBarBackground}"
                       HorizontalAlignment="Left">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style TargetType="{x:Type ContentPresenter}">
-                        <Setter Property="Canvas.Left" Value="{Binding X}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Ellipse Fill="{StaticResource PrimaryHueMidBrush}"
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type ContentPresenter}">
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Fill="{StaticResource PrimaryHueMidBrush}"
                              Stroke="White"
                              StrokeThickness="0"
                              Width="10"
                              Height="10"
                              Margin="-5,6,0,0"
                              s:View.ActionTarget="{Binding}">
-                            <Ellipse.Style>
-                                <Style TargetType="{x:Type Ellipse}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                            <DataTrigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetProperty="StrokeThickness" To="1" Duration="0:0:0.25" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </DataTrigger.EnterActions>
-                                            <DataTrigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation Storyboard.TargetProperty="StrokeThickness" To="0" Duration="0:0:0.25" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </DataTrigger.ExitActions>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Ellipse.Style>
-                        </Ellipse>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Border>
-        <ItemsControl ItemsSource="{Binding LayerPropertyGroupViewModel.Children}" Grid.Row="1">
+                        <Ellipse.Style>
+                            <Style TargetType="{x:Type Ellipse}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="StrokeThickness"
+                                                                     To="1" Duration="0:0:0.25" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                        <DataTrigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="StrokeThickness"
+                                                                     To="0" Duration="0:0:0.25" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.ExitActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource MaterialDesignDivider}" Height="1" />
+
+        <ItemsControl Grid.Row="2"
+                      Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                      ItemsSource="{Binding LayerPropertyGroupViewModel.Children}">
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}">
                     <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}"
-                                    VerticalContentAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False" />
+                                        VerticalContentAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        IsTabStop="False" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
                     <ContentControl s:View.Model="{Binding TimelinePropertyBaseViewModel}"
-                                    VerticalContentAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False" />
+                                        VerticalContentAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch"
+                                        IsTabStop="False" />
                 </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>

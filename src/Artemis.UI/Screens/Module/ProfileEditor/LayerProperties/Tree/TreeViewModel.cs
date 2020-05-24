@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Stylet;
@@ -19,7 +20,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 
         public void PropertyTreePreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Handled || !(sender is TreeView))
+            if (e.Handled || !(sender is System.Windows.Controls.TreeView))
                 return;
 
             e.Handled = true;

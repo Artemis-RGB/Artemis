@@ -104,6 +104,8 @@ namespace Artemis.UI.Shared.Controls
             var startX = new decimal(_mouseDragStartPoint.X);
             var x = new decimal(e.GetPosition((IInputElement) sender).X);
             var stepSize = new decimal(StepSize);
+            if (stepSize == 0)
+                stepSize = 0.1m;
 
             Value = (float) UltimateRoundingFunction(startValue + stepSize * (x - startX), stepSize, 0.5m);
         }

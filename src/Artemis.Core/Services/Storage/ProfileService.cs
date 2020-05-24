@@ -93,8 +93,8 @@ namespace Artemis.Core.Services.Storage
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
             {
-                InitializeCoreProperties(profile);
-                InstantiateProfileLayerBrushes(profile);
+                InitializeLayerProperties(profile);
+                InstantiateLayerBrushes(profile);
             }
         }
 
@@ -159,18 +159,18 @@ namespace Artemis.Core.Services.Storage
             _logger.Debug("Redo profile update - Success");
         }
 
-        private void InitializeCoreProperties(Profile profile)
+        private void InitializeLayerProperties(Profile profile)
         {
             foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
             {
                 if (!layer.General.PropertiesInitialized)
-                    layer.General.InitializeProperties(_layerService, layer, null);
+                    layer.General.InitializeProperties(_layerService, layer, "General.");
                 if (!layer.Transform.PropertiesInitialized)
-                    layer.Transform.InitializeProperties(_layerService, layer, null);
+                    layer.Transform.InitializeProperties(_layerService, layer, "Transform.");
             };
         }
 
-        private void InstantiateProfileLayerBrushes(Profile profile)
+        private void InstantiateLayerBrushes(Profile profile)
         {
             // Only instantiate brushes for layers without an existing brush instance
             foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
@@ -188,7 +188,7 @@ namespace Artemis.Core.Services.Storage
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateProfileLayerBrushes(profileModule.ActiveProfile);
+                InstantiateLayerBrushes(profileModule.ActiveProfile);
         }
         
         #region Event handlers
