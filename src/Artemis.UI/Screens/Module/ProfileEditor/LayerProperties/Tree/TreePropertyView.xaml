@@ -7,7 +7,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type local:TreePropertyViewModel}}">
     <Grid Height="22">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -20,7 +21,7 @@
                       ToolTip="Toggle key-framing"
                       Width="18"
                       Height="18"
-                      IsChecked="{Binding LayerPropertyViewModel.LayerProperty.KeyframesEnabled}"
+                      IsChecked="{Binding KeyframesEnabled}"
                       IsEnabled="{Binding LayerPropertyViewModel.LayerProperty.KeyframesSupported}"
                       VerticalAlignment="Center" Padding="-25">
             <materialDesign:PackIcon Kind="Stopwatch" Height="13" Width="13" />

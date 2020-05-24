@@ -43,6 +43,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / ProfileEditorService.PixelsPerSecond);
         }
 
+        public Layer SelectedLayer { get; set; }
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
         public TreeViewModel TreeViewModel { get; set; }
         public TimelineViewModel TimelineViewModel { get; set; }
@@ -86,9 +87,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void PopulateProperties(ProfileElement profileElement)
         {
+            if (SelectedLayer != null)
+            {
+                SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
+                SelectedLayer = null;
+            }
+
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.Dispose();
             LayerPropertyGroups.Clear();
+
             if (profileElement is Layer layer)
             {
+                SelectedLayer = layer;
+                SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
+
                 // Add the built-in root groups of the layer
                 var generalAttribute = Attribute.GetCustomAttribute(
                     layer.GetType().GetProperty(nameof(layer.General)),
@@ -113,9 +126,33 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
                 }
             }
+            else
+                SelectedLayer = null;
 
             TreeViewModel = new TreeViewModel(this, LayerPropertyGroups);
             TimelineViewModel = new TimelineViewModel(this, LayerPropertyGroups);
+        }
+
+        private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
+        {
+            // Get rid of the old layer properties group
+            if (LayerPropertyGroups.Count == 3)
+            {
+                LayerPropertyGroups[2].Dispose();
+                LayerPropertyGroups.RemoveAt(2);
+            }
+
+            if (SelectedLayer.LayerBrush != null)
+            {
+                // Add the rout group of the brush
+                // The root group of the brush has no attribute so let's pull one out of our sleeve
+                var brushDescription = new PropertyGroupDescriptionAttribute
+                {
+                    Name = SelectedLayer.LayerBrush.Descriptor.DisplayName,
+                    Description = SelectedLayer.LayerBrush.Descriptor.Description
+                };
+                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, SelectedLayer.LayerBrush.BaseProperties, brushDescription));
+            }
         }
 
         #endregion

@@ -35,7 +35,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
                 {
                     if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)
-                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes(this);
+                    {
+                        layerPropertyViewModel.TimelinePropertyBaseViewModel.TimelineViewModel = this;
+                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
+                    }
                 }
             }
         }

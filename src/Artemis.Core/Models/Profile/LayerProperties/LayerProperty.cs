@@ -180,12 +180,13 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             // The current keyframe is the last keyframe before the current time
             CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= TimelineProgress);
-            // The next keyframe is the first keyframe that's after the current time
-            NextKeyframe = _keyframes.FirstOrDefault(k => k.Position > TimelineProgress);
+            // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
+            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
+            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
 
             // No need to update the current value if either of the keyframes are null
             if (CurrentKeyframe == null)
-                CurrentValue = BaseValue;
+                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
             else if (NextKeyframe == null)
                 CurrentValue = CurrentKeyframe.Value;
             // Only determine progress and current value if both keyframes are present
@@ -218,7 +219,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
 
-        internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup)
+        internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage)
         {
             // Doubt this will happen but let's make sure
             if (_isInitialized)
@@ -231,8 +232,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             try
             {
-                IsLoadedFromStorage = true;
-                BaseValue = JsonConvert.DeserializeObject<T>(entity.Value);
+                if (entity.Value != null)
+                    BaseValue = JsonConvert.DeserializeObject<T>(entity.Value);
+
+                IsLoadedFromStorage = fromStorage;
                 CurrentValue = BaseValue;
                 KeyframesEnabled = entity.KeyframesEnabled;
 
@@ -259,7 +262,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         internal override void ApplyToEntity()
         {
-            if (_isInitialized)
+            if (!_isInitialized)
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
             PropertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
@@ -272,49 +275,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 EasingFunction = (int) k.EasingFunction
             }));
         }
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs once every frame when the layer property is updated
-        /// </summary>
-        public event EventHandler Updated;
-
-        /// <summary>
-        ///     Occurs when the base value of the layer property was updated
-        /// </summary>
-        public event EventHandler BaseValueChanged;
-
-        /// <summary>
-        ///     Occurs when a new keyframe was added to the layer property
-        /// </summary>
-        public event EventHandler KeyframeAdded;
-
-        /// <summary>
-        ///     Occurs when a keyframe was removed from the layer property
-        /// </summary>
-        public event EventHandler KeyframeRemoved;
-
-        protected virtual void OnUpdated()
-        {
-            Updated?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnBaseValueChanged()
-        {
-            BaseValueChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnKeyframeAdded()
-        {
-            KeyframeAdded?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnKeyframeRemoved()
-        {
-            KeyframeRemoved?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
     }
 }

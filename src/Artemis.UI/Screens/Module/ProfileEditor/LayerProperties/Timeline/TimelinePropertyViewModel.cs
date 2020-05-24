@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Services.Interfaces;
 using Stylet;
@@ -13,27 +15,53 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             _profileEditorService = profileEditorService;
             LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
+
+            LayerPropertyViewModel.LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeModified;
+            LayerPropertyViewModel.LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeModified;
+            LayerPropertyViewModel.LayerProperty.KeyframesToggled += LayerPropertyOnKeyframeModified;
+        }
+
+        private void LayerPropertyOnKeyframeModified(object sender, EventArgs e)
+        {
+            UpdateKeyframes();
         }
 
         public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
 
-        public override void UpdateKeyframes(TimelineViewModel timelineViewModel)
+        public override void UpdateKeyframes()
         {
-            var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
-            TimelineKeyframeViewModels.RemoveRange(
-                TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe))
-            );
-            TimelineKeyframeViewModels.AddRange(
-                keyframes.Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
-                    .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, timelineViewModel, k))
-            );
+            if (TimelineViewModel == null)
+                throw new ArtemisUIException("Timeline view model must be set before keyframes can be updated");
+
+            // Only show keyframes if they are enabled
+            if (LayerPropertyViewModel.LayerProperty.KeyframesEnabled)
+            {
+                var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
+                var toRemove = TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe)).ToList();
+                TimelineKeyframeViewModels.RemoveRange(toRemove);
+                TimelineKeyframeViewModels.AddRange(
+                    keyframes.Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
+                        .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, TimelineViewModel, k))
+                );
+            }
+            else
+            {
+                TimelineKeyframeViewModels.Clear();
+            }
 
             foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
                 timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);
         }
+
+        public override void Dispose()
+        {
+            LayerPropertyViewModel.LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeModified;
+            LayerPropertyViewModel.LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeModified;
+            LayerPropertyViewModel.LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframeModified;
+        }
     }
 
-    public abstract class TimelinePropertyViewModel
+    public abstract class TimelinePropertyViewModel : IDisposable
     {
         protected TimelinePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
@@ -42,8 +70,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
+        public TimelineViewModel TimelineViewModel { get; set; }
         public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels { get; set; }
 
-        public abstract void UpdateKeyframes(TimelineViewModel timelineViewModel);
+        public abstract void UpdateKeyframes();
+
+        public abstract void Dispose();
     }
 }

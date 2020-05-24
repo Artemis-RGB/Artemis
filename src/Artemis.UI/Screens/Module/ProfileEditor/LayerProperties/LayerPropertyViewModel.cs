@@ -50,6 +50,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public override void Dispose()
         {
             TreePropertyViewModel.Dispose();
+            TimelinePropertyViewModel.Dispose();
         }
 
         public void SetCurrentValue(T value, bool saveChanges)

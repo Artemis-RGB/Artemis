@@ -45,7 +45,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         #endregion
     }
 
-    public abstract class TimelineKeyframeViewModel
+    public abstract class TimelineKeyframeViewModel : PropertyChangedBase
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly TimelineViewModel _timelineViewModel;
@@ -56,6 +56,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             _profileEditorService = profileEditorService;
             _timelineViewModel = timelineViewModel;
             BaseLayerPropertyKeyframe = baseLayerPropertyKeyframe;
+            EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
         }
 
         public BaseLayerPropertyKeyframe BaseLayerPropertyKeyframe { get; }
@@ -138,6 +139,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         #endregion
 
         #region Easing
+
+        public void ContextMenuOpening()
+        {
+            CreateEasingViewModels();
+        }
+
+        public void ContextMenuClosing()
+        {
+            EasingViewModels.Clear();
+        }
 
         private void CreateEasingViewModels()
         {

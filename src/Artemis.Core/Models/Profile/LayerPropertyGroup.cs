@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.Annotations;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
@@ -22,6 +24,11 @@ namespace Artemis.Core.Models.Profile
             _layerProperties = new List<BaseLayerProperty>();
             _layerPropertyGroups = new List<LayerPropertyGroup>();
         }
+
+        /// <summary>
+        /// The layer this property group applies to
+        /// </summary>
+        public Layer Layer { get; internal set; }
 
         /// <summary>
         ///     The parent group of this layer property group, set after construction
@@ -60,11 +67,15 @@ namespace Artemis.Core.Models.Profile
         {
         }
 
-        internal void InitializeProperties(ILayerService layerService, Layer layer, string path)
+        internal void InitializeProperties(ILayerService layerService, Layer layer, [NotNull] string path)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
             // Doubt this will happen but let's make sure
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
+
+            Layer = layer;
 
             // Get all properties with a PropertyDescriptionAttribute
             foreach (var propertyInfo in GetType().GetProperties())
@@ -77,7 +88,8 @@ namespace Artemis.Core.Models.Profile
 
                     var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
                     instance.Parent = this;
-                    InitializeProperty(layer, path, instance);
+                    instance.Layer = layer;
+                    InitializeProperty(layer, path + propertyInfo.Name, instance);
                     propertyInfo.SetValue(this, instance);
                     _layerProperties.Add(instance);
                 }
@@ -100,6 +112,8 @@ namespace Artemis.Core.Models.Profile
 
             OnPropertiesInitialized();
             PropertiesInitialized = true;
+
+            OnPropertyGroupInitialized();
         }
 
         internal void ApplyToEntity()
@@ -110,12 +124,16 @@ namespace Artemis.Core.Models.Profile
                 var propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 if (propertyDescription != null)
                 {
+                    var layerProperty = (BaseLayerProperty) propertyInfo.GetValue(this);
+                    layerProperty.ApplyToEntity();
                 }
                 else
                 {
                     var propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
                     if (propertyGroupDescription != null)
                     {
+                        var layerPropertyGroup = (LayerPropertyGroup) propertyInfo.GetValue(this);
+                        layerPropertyGroup.ApplyToEntity();
                     }
                 }
             }
@@ -157,14 +175,22 @@ namespace Artemis.Core.Models.Profile
         {
             var pluginGuid = IsCorePropertyGroup || instance.IsCoreProperty ? Constants.CorePluginInfo.Guid : layer.LayerBrush.PluginInfo.Guid;
             var entity = layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
-            if (entity != null)
-                instance.ApplyToLayerProperty(entity, this);
+            var fromStorage = true;
+            if (entity == null)
+            {
+                fromStorage = false;
+                entity = new PropertyEntity {PluginGuid = pluginGuid, Path = path};
+                layer.LayerEntity.PropertyEntities.Add(entity);
+            }
+
+            instance.ApplyToLayerProperty(entity, this, fromStorage);
         }
 
         #region Events
 
         internal event EventHandler<PropertyGroupUpdatingEventArgs> PropertyGroupUpdating;
         internal event EventHandler<PropertyGroupUpdatingEventArgs> PropertyGroupOverriding;
+        public event EventHandler PropertyGroupInitialized;
 
         internal virtual void OnPropertyGroupUpdating(PropertyGroupUpdatingEventArgs e)
         {
@@ -177,5 +203,10 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+
+        protected virtual void OnPropertyGroupInitialized()
+        {
+            PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
+        }
     }
 }
