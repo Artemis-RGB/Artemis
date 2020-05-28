@@ -18,12 +18,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             LayerPropertyGroup = layerPropertyGroup;
             PropertyGroupDescription = propertyGroupDescription;
-            IsExpanded = PropertyGroupDescription.ExpandByDefault;
 
             TreePropertyGroupViewModel = new TreePropertyGroupViewModel(this);
             TimelinePropertyGroupViewModel = new TimelinePropertyGroupViewModel(this);
 
             PopulateChildren();
+        }
+
+        public override bool IsExpanded
+        {
+            get => LayerPropertyGroup.Layer.IsPropertyGroupExpanded(LayerPropertyGroup);
+            set => LayerPropertyGroup.Layer.SetPropertyGroupExpanded(LayerPropertyGroup, value);
         }
 
         public override bool IsVisible => !LayerPropertyGroup.IsHidden;

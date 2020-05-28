@@ -56,6 +56,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
+        ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property has no
+        ///     value in storage
+        /// </summary>
+        public T DefaultValue { get; set; }
+
+        /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
         /// </summary>
         public IReadOnlyList<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
@@ -274,6 +280,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));
+        }
+
+        public override void ApplyDefaultValue()
+        {
+            CurrentValue = DefaultValue;
         }
     }
 }

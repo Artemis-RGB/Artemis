@@ -1,7 +1,6 @@
 ﻿using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
-using SkiaSharp;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -24,14 +23,14 @@ namespace Artemis.Plugins.Modules.General
 
     public class PlayerInfo : DataModel
     {
+        public PlayerInfo(Module module) : base(module)
+        {
+        }
+
         [DataModelProperty(Name = "A test string", Description = "This is a test string that's not of any use outside testing!")]
         public string TestString { get; set; }
 
         [DataModelProperty(Name = "A test boolean", Description = "This is a test boolean that's not of any use outside testing!")]
         public bool TestBoolean { get; set; }
-
-        public PlayerInfo(Module module) : base(module)
-        {
-        }
     }
 }

@@ -160,7 +160,7 @@
                     <!-- Time -->
                     <timeline:PropertyTimelineHeader Margin="0 25 0 0"
                                                      Fill="{DynamicResource MaterialDesignBody}"
-                                                     PixelsPerSecond="{Binding PixelsPerSecond}"
+                                                     PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
                                                      HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
                                                      VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
                                                      Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
@@ -198,13 +198,12 @@
                     Background="{DynamicResource MaterialDesignCardBackground}">
             <!-- Zoom control -->
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <TextBlock Text="{Binding PixelsPerSecond}" VerticalAlignment="Center" />
                 <Slider Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="10"
                         Minimum="31"
                         Maximum="350"
-                        Value="{Binding PixelsPerSecond}"
+                        Value="{Binding ProfileEditorService.PixelsPerSecond}"
                         Width="319" />
             </StackPanel>
         </StackPanel>

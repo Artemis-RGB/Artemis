@@ -77,8 +77,7 @@ namespace Artemis.UI.Services
                 OnPixelsPerSecondChanged();
             }
         }
-
-
+        
         public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
         {
             // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line

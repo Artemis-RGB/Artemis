@@ -1,5 +1,6 @@
 ﻿using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.Colors;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
@@ -9,6 +10,18 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
         internal ColorGradientLayerProperty()
         {
             KeyframesSupported = false;
+        }
+
+        internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage)
+        {
+            base.ApplyToLayerProperty(entity, layerPropertyGroup, fromStorage);
+            
+            // Don't allow color gradients to be null
+            if (BaseValue == null)
+            {
+                BaseValue = DefaultValue ?? new ColorGradient();
+            }
+            
         }
 
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)

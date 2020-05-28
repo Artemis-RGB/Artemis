@@ -34,26 +34,18 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         [PropertyDescription(Description = "The speed at which the noise moves", MinInputValue = 0f, MaxInputValue = 64f)]
         public FloatLayerProperty AnimationSpeed { get; set; }
 
+        protected override void PopulateDefaults()
+        {
+            MainColor.DefaultValue = new SKColor(255, 0, 0);
+            SecondaryColor.DefaultValue = new SKColor(0, 0, 255);
+            GradientColor.DefaultValue = ColorGradient.GetUnicornBarf();
+            Scale.DefaultValue = new SKSize(100, 100);
+            Hardness.DefaultValue = 500f;
+            AnimationSpeed.DefaultValue = 25f;
+        }
+
         protected override void OnPropertiesInitialized()
         {
-            // Populate defaults
-            if (!MainColor.IsLoadedFromStorage)
-                MainColor.BaseValue = new SKColor(255, 0, 0);
-            if (!SecondaryColor.IsLoadedFromStorage)
-                SecondaryColor.BaseValue = new SKColor(0, 0, 255);
-            if (!GradientColor.IsLoadedFromStorage)
-            {
-                GradientColor.BaseValue = new ColorGradient();
-                GradientColor.BaseValue.MakeFabulous();
-            }
-
-            if (!Scale.IsLoadedFromStorage)
-                Scale.BaseValue = new SKSize(100, 100);
-            if (!Hardness.IsLoadedFromStorage)
-                Hardness.BaseValue = 500f;
-            if (!AnimationSpeed.IsLoadedFromStorage)
-                AnimationSpeed.BaseValue = 25f;
-
             ColorType.BaseValueChanged += ColorTypeOnBaseValueChanged;
         }
 
