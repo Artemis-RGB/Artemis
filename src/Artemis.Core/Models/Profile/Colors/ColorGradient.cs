@@ -55,7 +55,7 @@ namespace Artemis.Core.Models.Profile.Colors
 
             if (right == null || left == right)
                 return left.Color;
-            
+
             position = (float) Math.Round((position - left.Position) / (right.Position - left.Position), 2);
             var a = (byte) ((right.Color.Alpha - left.Color.Alpha) * position + left.Color.Alpha);
             var r = (byte) ((right.Color.Red - left.Color.Red) * position + left.Color.Red);
@@ -65,15 +65,19 @@ namespace Artemis.Core.Models.Profile.Colors
         }
 
         /// <summary>
-        ///     [PH] Looping through HSV, adds 8 rainbow colors
+        ///     Gets a new ColorGradient with colors looping through the HSV-spectrum
         /// </summary>
-        public void MakeFabulous()
+        /// <returns></returns>
+        public static ColorGradient GetUnicornBarf()
         {
+            var gradient = new ColorGradient();
             for (var i = 0; i < 9; i++)
             {
                 var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
-                Stops.Add(new ColorGradientStop(color, 0.125f * i));
+                gradient.Stops.Add(new ColorGradientStop(color, 0.125f * i));
             }
+
+            return gradient;
         }
 
         #region PropertyChanged

@@ -21,7 +21,7 @@ namespace Artemis.Plugins.Modules.General
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
-        
+
         public override void EnablePlugin()
         {
         }

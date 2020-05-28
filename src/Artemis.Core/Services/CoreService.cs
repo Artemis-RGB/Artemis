@@ -9,6 +9,8 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Storage;
+using Artemis.Storage.Migrations.Interfaces;
 using Newtonsoft.Json;
 using RGB.NET.Core;
 using Serilog;
@@ -30,8 +32,9 @@ namespace Artemis.Core.Services
         private List<Module> _modules;
         private PluginSetting<LogEventLevel> _loggingLevel;
 
-        internal CoreService(ILogger logger, ISettingsService settingsService, IPluginService pluginService, IRgbService rgbService,
-            ISurfaceService surfaceService, IProfileService profileService)
+        // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
+        internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService, 
+            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
         {
             _logger = logger;
             _pluginService = pluginService;
@@ -48,6 +51,7 @@ namespace Artemis.Core.Services
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
 
+            
             ConfigureJsonConvert();
         }
 
@@ -99,7 +103,7 @@ namespace Artemis.Core.Services
                 _logger.Information("Initialized without an active surface entity");
 
             _profileService.ActivateDefaultProfiles();
-            
+
             OnInitialized();
         }
 

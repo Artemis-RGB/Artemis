@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Media.Animation;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -22,6 +21,7 @@ namespace Artemis.Core.Models.Profile
     /// </summary>
     public sealed class Layer : ProfileElement
     {
+        private readonly List<string> _expandedPropertyGroups;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
@@ -38,6 +38,8 @@ namespace Artemis.Core.Models.Profile
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            _expandedPropertyGroups = new List<string>();
+
             General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
@@ -54,6 +56,9 @@ namespace Artemis.Core.Models.Profile
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            _expandedPropertyGroups = new List<string>();
+            _expandedPropertyGroups.AddRange(layerEntity.ExpandedPropertyGroups);
+
             General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
@@ -99,10 +104,10 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties", ExpandByDefault = true)]
+        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
         public LayerGeneralProperties General { get; set; }
 
-        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties", ExpandByDefault = true)]
+        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
         public LayerTransformProperties Transform { get; set; }
 
         /// <summary>
@@ -115,6 +120,19 @@ namespace Artemis.Core.Models.Profile
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
+        public bool IsPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup)
+        {
+            return _expandedPropertyGroups.Contains(layerPropertyGroup.Path);
+        }
+
+        public void SetPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup, bool expanded)
+        {
+            if (!expanded && IsPropertyGroupExpanded(layerPropertyGroup))
+                _expandedPropertyGroups.Remove(layerPropertyGroup.Path);
+            else if (expanded && !IsPropertyGroupExpanded(layerPropertyGroup))
+                _expandedPropertyGroups.Add(layerPropertyGroup.Path);
+        }
+
         #region Storage
 
         internal override void ApplyToEntity()
@@ -125,6 +143,8 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
+            LayerEntity.ExpandedPropertyGroups.Clear();
+            LayerEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();

@@ -12,7 +12,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract
             Children = new List<LayerPropertyBaseViewModel>();
         }
 
-        public bool IsExpanded { get; set; }
+        public virtual bool IsExpanded { get; set; }
         public abstract bool IsVisible { get; }
 
         public List<LayerPropertyBaseViewModel> Children { get; set; }

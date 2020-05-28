@@ -82,6 +82,8 @@
         </Style>
     </UserControl.Resources>
     <TreeView ItemsSource="{Binding LayerPropertyGroups}"
+              VirtualizingStackPanel.IsVirtualizing="True"
+              VirtualizingStackPanel.VirtualizationMode="Recycling"
               HorizontalContentAlignment="Stretch"
               Background="{DynamicResource MaterialDesignToolBarBackground}"
               PreviewMouseWheel="{s:Action PropertyTreePreviewMouseWheel}"

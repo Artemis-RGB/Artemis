@@ -1,5 +1,4 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+﻿using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerProperties.Types;
 using SkiaSharp;
 
@@ -19,17 +18,15 @@ namespace Artemis.Core.Models.Profile
         [PropertyDescription(Name = "Brush type", Description = "The type of brush to use for this layer")]
         public LayerBrushReferenceLayerProperty BrushReference { get; set; }
 
+        protected override void PopulateDefaults()
+        {
+            ShapeType.DefaultValue = LayerShapeType.Rectangle;
+            FillType.DefaultValue = LayerFillType.Stretch;
+            BlendMode.DefaultValue = SKBlendMode.SrcOver;
+        }
+
         protected override void OnPropertiesInitialized()
         {
-            // Populate defaults
-            if (!ShapeType.IsLoadedFromStorage)
-                ShapeType.BaseValue = LayerShapeType.Rectangle;
-            if (!FillType.IsLoadedFromStorage)
-                FillType.BaseValue = LayerFillType.Stretch;
-            if (!BlendMode.IsLoadedFromStorage)
-                BlendMode.BaseValue = SKBlendMode.SrcOver;
-
-            // TODO: SpoinkyNL 28-4-2020: Select preferred default brush type with a fallback to the first available
         }
     }
 }

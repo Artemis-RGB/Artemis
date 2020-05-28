@@ -19,19 +19,15 @@ namespace Artemis.Plugins.LayerBrushes.Color
         [PropertyDescription(Description = "The gradient of the brush")]
         public ColorGradientLayerProperty Gradient { get; set; }
 
+        protected override void PopulateDefaults()
+        {
+            GradientType.DefaultValue = LayerBrushes.Color.GradientType.Solid;
+            Color.DefaultValue = new SKColor(255, 0, 0);
+            Gradient.DefaultValue = ColorGradient.GetUnicornBarf();
+        }
+
         protected override void OnPropertiesInitialized()
         {
-            // Populate defaults
-            if (!GradientType.IsLoadedFromStorage)
-                GradientType.BaseValue = LayerBrushes.Color.GradientType.Solid;
-            if (!Color.IsLoadedFromStorage)
-                Color.BaseValue = new SKColor(255, 0, 0);
-            if (!Gradient.IsLoadedFromStorage)
-            {
-                Gradient.BaseValue = new ColorGradient();
-                Gradient.BaseValue.MakeFabulous();
-            }
-
             GradientType.BaseValueChanged += GradientTypeOnBaseValueChanged;
         }
 

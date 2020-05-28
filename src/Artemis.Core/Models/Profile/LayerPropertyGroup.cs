@@ -13,11 +13,11 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
-    public class LayerPropertyGroup
+    public abstract class LayerPropertyGroup
     {
-        private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
         private readonly List<BaseLayerProperty> _layerProperties;
         private readonly List<LayerPropertyGroup> _layerPropertyGroups;
+        private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
 
         protected LayerPropertyGroup()
         {
@@ -26,9 +26,14 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
-        /// The layer this property group applies to
+        ///     The layer this property group applies to
         /// </summary>
         public Layer Layer { get; internal set; }
+
+        /// <summary>
+        ///     The path of this property group
+        /// </summary>
+        public string Path { get; internal set; }
 
         /// <summary>
         ///     The parent group of this layer property group, set after construction
@@ -36,7 +41,7 @@ namespace Artemis.Core.Models.Profile
         public LayerPropertyGroup Parent { get; internal set; }
 
         /// <summary>
-        /// Gets whether this property group's properties are all initialized
+        ///     Gets whether this property group's properties are all initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
 
@@ -61,10 +66,39 @@ namespace Artemis.Core.Models.Profile
         public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
 
         /// <summary>
-        ///     Called when all layer properties in this property group have been initialized
+        ///     Recursively gets all layer properties on this group and any subgroups
         /// </summary>
-        protected virtual void OnPropertiesInitialized()
+        /// <returns></returns>
+        public IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
         {
+            if (!PropertiesInitialized)
+                return new List<BaseLayerProperty>();
+            if (_allLayerProperties != null)
+                return _allLayerProperties;
+
+            var result = new List<BaseLayerProperty>(LayerProperties);
+            foreach (var layerPropertyGroup in LayerPropertyGroups)
+                result.AddRange(layerPropertyGroup.GetAllLayerProperties());
+
+            _allLayerProperties = result.AsReadOnly();
+            return _allLayerProperties;
+        }
+
+        /// <summary>
+        ///     Called before properties are fully initialized to allow you to populate
+        ///     <see cref="LayerProperty{T}.DefaultValue" /> on the properties you want
+        /// </summary>
+        protected abstract void PopulateDefaults();
+
+        /// <summary>
+        ///     Called when all layer properties in this property group have been initialized, you may access all properties on the
+        ///     group here
+        /// </summary>
+        protected abstract void OnPropertiesInitialized();
+
+        protected virtual void OnPropertyGroupInitialized()
+        {
+            PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         internal void InitializeProperties(ILayerService layerService, Layer layer, [NotNull] string path)
@@ -76,6 +110,7 @@ namespace Artemis.Core.Models.Profile
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
             Layer = layer;
+            Path = path.TrimEnd('.');
 
             // Get all properties with a PropertyDescriptionAttribute
             foreach (var propertyInfo in GetType().GetProperties())
@@ -110,9 +145,12 @@ namespace Artemis.Core.Models.Profile
                 }
             }
 
+            PopulateDefaults();
+            foreach (var layerProperty in _layerProperties.Where(p => !p.IsLoadedFromStorage))
+                layerProperty.ApplyDefaultValue();
+
             OnPropertiesInitialized();
             PropertiesInitialized = true;
-
             OnPropertyGroupInitialized();
         }
 
@@ -152,25 +190,6 @@ namespace Artemis.Core.Models.Profile
             OnPropertyGroupOverriding(new PropertyGroupUpdatingEventArgs(overrideTime));
         }
 
-        /// <summary>
-        ///     Recursively gets all layer properties on this group and any subgroups
-        /// </summary>
-        /// <returns></returns>
-        public IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
-        {
-            if (!PropertiesInitialized)
-                return new List<BaseLayerProperty>();
-            if (_allLayerProperties != null)
-                return _allLayerProperties;
-
-            var result = new List<BaseLayerProperty>(LayerProperties);
-            foreach (var layerPropertyGroup in LayerPropertyGroups)
-                result.AddRange(layerPropertyGroup.GetAllLayerProperties());
-
-            _allLayerProperties = result.AsReadOnly();
-            return _allLayerProperties;
-        }
-
         private void InitializeProperty(Layer layer, string path, BaseLayerProperty instance)
         {
             var pluginGuid = IsCorePropertyGroup || instance.IsCoreProperty ? Constants.CorePluginInfo.Guid : layer.LayerBrush.PluginInfo.Guid;
@@ -203,10 +222,5 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        protected virtual void OnPropertyGroupInitialized()
-        {
-            PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
-        }
     }
 }

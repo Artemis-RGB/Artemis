@@ -2,6 +2,8 @@
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Storage;
+using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using LiteDB;
 using Ninject.Activation;
@@ -59,6 +61,18 @@ namespace Artemis.Core.Ninject
                     return new LiteRepository(Constants.ConnectionString);
                 }
             }).InSingletonScope();
+
+            Kernel.Bind<StorageMigrationService>().ToSelf().InSingletonScope();
+            
+            // Bind all migrations as singletons
+            Kernel.Bind(x =>
+            {
+                x.FromAssemblyContaining<IStorageMigration>()
+                    .SelectAllClasses()
+                    .InheritedFrom<IStorageMigration>()
+                    .BindAllInterfaces()
+                    .Configure(c => c.InSingletonScope());
+            });
 
             // Bind all repositories as singletons
             Kernel.Bind(x =>

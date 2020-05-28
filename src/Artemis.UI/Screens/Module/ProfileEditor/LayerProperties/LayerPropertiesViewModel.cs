@@ -54,6 +54,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
             base.OnInitialActivate();
         }
@@ -62,6 +63,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             base.OnClose();
         }
@@ -81,6 +83,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             NotifyOfPropertyChange(() => FormattedCurrentTime);
             NotifyOfPropertyChange(() => TimeCaretPosition);
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
 
         #region View model managament

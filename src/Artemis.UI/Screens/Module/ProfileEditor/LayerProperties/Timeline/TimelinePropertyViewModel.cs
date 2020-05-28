@@ -19,11 +19,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             LayerPropertyViewModel.LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframesToggled += LayerPropertyOnKeyframeModified;
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
         }
 
         private void LayerPropertyOnKeyframeModified(object sender, EventArgs e)
         {
             UpdateKeyframes();
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        {
+            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
+                timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);
         }
 
         public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
@@ -55,6 +62,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public override void Dispose()
         {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyViewModel.LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframeModified;

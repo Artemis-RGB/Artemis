@@ -1,5 +1,4 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+﻿using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerProperties.Types;
 using SkiaSharp;
 
@@ -22,13 +21,14 @@ namespace Artemis.Core.Models.Profile
         [PropertyDescription(Description = "The opacity of the shape", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 100f)]
         public FloatLayerProperty Opacity { get; set; }
 
+        protected override void PopulateDefaults()
+        {
+            Scale.DefaultValue = new SKSize(100, 100);
+            Opacity.DefaultValue = 100;
+        }
+
         protected override void OnPropertiesInitialized()
         {
-            // Populate defaults
-            if (!Scale.IsLoadedFromStorage)
-                Scale.BaseValue = new SKSize(100, 100);
-            if (!Opacity.IsLoadedFromStorage)
-                Opacity.BaseValue = 100;
         }
     }
 }

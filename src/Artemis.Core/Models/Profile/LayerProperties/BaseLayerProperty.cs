@@ -141,5 +141,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         #endregion
+
+        public abstract void ApplyDefaultValue();
     }
 }

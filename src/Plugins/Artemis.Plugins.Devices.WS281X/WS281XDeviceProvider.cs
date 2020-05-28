@@ -14,7 +14,6 @@ namespace Artemis.Plugins.Devices.WS281X
     // ReSharper disable once UnusedMember.Global
     public class WS281XDeviceProvider : DeviceProvider
     {
-        public PluginSettings Settings { get; }
         private readonly IRgbService _rgbService;
 
         public WS281XDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService, PluginSettings settings) : base(pluginInfo, RGB.NET.Devices.WS281X.WS281XDeviceProvider.Instance)
@@ -23,6 +22,8 @@ namespace Artemis.Plugins.Devices.WS281X
             _rgbService = rgbService;
             HasConfigurationViewModel = true;
         }
+
+        public PluginSettings Settings { get; }
 
         public override void EnablePlugin()
         {

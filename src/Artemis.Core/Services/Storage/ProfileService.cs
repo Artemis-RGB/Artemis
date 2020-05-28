@@ -100,11 +100,13 @@ namespace Artemis.Core.Services.Storage
 
         public void DeleteProfile(Profile profile)
         {
+            _logger.Debug("Removing profile " + profile);
             _profileRepository.Remove(profile.ProfileEntity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
+            _logger.Debug("Updating profile " + profile);
             var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
