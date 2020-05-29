@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using SkiaSharp;
@@ -26,6 +27,11 @@ namespace Artemis.Core.Plugins.Abstract
         ///     icons
         /// </summary>
         public string DisplayIcon { get; set; }
+
+        /// <summary>
+        ///     The optional datamodel driving this module
+        /// </summary>
+        public DataModel DataModel { get; set; }
 
         /// <summary>
         ///     Whether or not this module expands upon the main data model. If set to true any data in main data model can be

@@ -22,9 +22,9 @@
     <Grid>
         <!-- Content -->
         <Grid Width="{Binding Device.RgbDevice.ActualSize.Width}" Height="{Binding Device.RgbDevice.ActualSize.Height}">
-            <Grid.LayoutTransform>
+            <Grid.RenderTransform>
                 <RotateTransform Angle="{Binding Device.Rotation}" />
-            </Grid.LayoutTransform>
+            </Grid.RenderTransform>
 
             <controls:DeviceVisualizer Device="{Binding Device}"/>
 

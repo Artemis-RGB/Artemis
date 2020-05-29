@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using SkiaSharp;
 using Stylet;
 

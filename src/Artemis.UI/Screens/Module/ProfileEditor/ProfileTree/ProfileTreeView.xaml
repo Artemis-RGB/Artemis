@@ -25,7 +25,7 @@
             </TextBlock>
             <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
         </StackPanel>
-
+        
         <TreeView Grid.Row="1"
                   ItemsSource="{Binding RootFolder.Children}"
                   HorizontalContentAlignment="Stretch"
@@ -39,6 +39,7 @@
                 <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
+                <!-- TODO: Ensure this item source is required -->
                 <HierarchicalDataTemplate DataType="{x:Type treeItem:LayerViewModel}" ItemsSource="{Binding Children}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>

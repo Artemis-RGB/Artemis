@@ -10,29 +10,38 @@
              mc:Ignorable="d"
              d:DesignHeight="163.274" d:DesignWidth="254.425"
              d:DataContext="{d:DesignInstance dialogs:ExceptionDialogViewModel}">
-    <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding Header}" TextWrapping="Wrap" />
-
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Margin="16">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding Header}"
+                   TextWrapping="Wrap" />
         <Separator Margin="0 15" />
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" FontWeight="Bold" Margin="22 0">Exception message</TextBlock>
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" HorizontalAlignment="Left" Text="{Binding Exception.Message}" TextWrapping="Wrap" Margin="22 5" MaxWidth="1000" />
-        <Separator Margin="0 15" />
-        <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace" TextWrapping="Wrap" FontWeight="Bold" Margin="22 0" />
+        <ScrollViewer MaxHeight="500">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Exceptions}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace"
+                                           TextWrapping="Wrap" FontWeight="Bold"/>
 
-        <avalonedit:TextEditor SyntaxHighlighting="C#"
-                               FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"
-                               FontSize="10pt"
-                               IsReadOnly="True"
-                               Document="{Binding Document}"
-                               HorizontalScrollBarVisibility="Auto"
-                               VerticalScrollBarVisibility="Auto"
-                               MaxWidth="1000"
-                               Margin="0 10" />
+                                <avalonedit:TextEditor SyntaxHighlighting="C#"
+                                                       FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"
+                                                       FontSize="10pt"
+                                                       IsReadOnly="True"
+                                                       Document="{Binding Document}"
+                                                       HorizontalScrollBarVisibility="Auto"
+                                                       VerticalScrollBarVisibility="Auto"
+                                                       MaxWidth="1000"
+                                                       Margin="0 10 10 0" 
+                                                       Padding="10"/>
 
-
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0"
-                    Command="{s:Action Close}" Content="Close" />
-        </StackPanel>
+                                <Separator Margin="0 15" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+        <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0"
+                Command="{s:Action Close}" Content="Close" HorizontalAlignment="Right" />
     </StackPanel>
 </UserControl>

@@ -11,6 +11,7 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Services.Interfaces;
@@ -110,12 +111,28 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
         public void Undo()
         {
+            // Expanded status is also undone because undoing works a bit crude, that's annoying
+            var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
+            var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+
             _profileEditorService.UndoUpdateProfile(Module);
+
+            // Restore the expanded status
+            foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
+                allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
         }
 
         public void Redo()
         {
+            // Expanded status is also undone because undoing works a bit crude, that's annoying
+            var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
+            var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+
             _profileEditorService.RedoUpdateProfile(Module);
+
+            // Restore the expanded status
+            foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
+                allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
         }
 
         protected override void OnInitialActivate()

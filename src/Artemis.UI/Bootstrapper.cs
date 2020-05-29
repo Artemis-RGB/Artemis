@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject;
@@ -33,6 +34,8 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
+            var test = new LayerCondition();
+
             StartupArguments = Args.ToList();
 
             var logger = Kernel.Get<ILogger>();

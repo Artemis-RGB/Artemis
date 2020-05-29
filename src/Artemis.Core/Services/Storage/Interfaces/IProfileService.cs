@@ -26,13 +26,13 @@ namespace Artemis.Core.Services.Storage.Interfaces
         /// </summary>
         /// <param name="selectedProfile"></param>
         /// <param name="module"></param>
-        void UndoUpdateProfile(Profile selectedProfile, ProfileModule module);
+        bool UndoUpdateProfile(Profile selectedProfile, ProfileModule module);
 
         /// <summary>
         ///     Attempts to restore the profile to the state it had before the last <see cref="UndoUpdateProfile" /> call.
         /// </summary>
         /// <param name="selectedProfile"></param>
         /// <param name="module"></param>
-        void RedoUpdateProfile(Profile selectedProfile, ProfileModule module);
+        bool RedoUpdateProfile(Profile selectedProfile, ProfileModule module);
     }
 }
