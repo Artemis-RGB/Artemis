@@ -10,6 +10,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     public abstract class BaseLayerProperty
     {
         private bool _keyframesEnabled;
+        private bool _isHidden;
 
         internal BaseLayerProperty()
         {
@@ -48,7 +49,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
         /// </summary>
-        public bool IsHidden { get; set; }
+        public bool IsHidden
+        {
+            get => _isHidden;
+            set
+            {
+                _isHidden = value;
+                OnVisibilityChanged();
+            }
+        }
 
         /// <summary>
         ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
@@ -101,6 +110,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public event EventHandler BaseValueChanged;
 
         /// <summary>
+        ///     Occurs when the <see cref="IsHidden"/> value of the layer property was updated
+        /// </summary>
+        public event EventHandler VisibilityChanged;
+
+        /// <summary>
         /// Occurs when keyframes are enabled/disabled
         /// </summary>
         public event EventHandler KeyframesToggled;
@@ -125,6 +139,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             BaseValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        protected virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         protected virtual void OnKeyframesToggled()
         {
             KeyframesToggled?.Invoke(this, EventArgs.Empty);
@@ -143,5 +162,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         #endregion
 
         public abstract void ApplyDefaultValue();
+
+
     }
 }

@@ -18,6 +18,7 @@ namespace Artemis.Core.Models.Profile
         private readonly List<BaseLayerProperty> _layerProperties;
         private readonly List<LayerPropertyGroup> _layerPropertyGroups;
         private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
+        private bool _isHidden;
 
         protected LayerPropertyGroup()
         {
@@ -53,7 +54,15 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
         /// </summary>
-        public bool IsHidden { get; set; }
+        public bool IsHidden
+        {
+            get => _isHidden;
+            set
+            {
+                _isHidden = value;
+                OnVisibilityChanged();
+            }
+        }
 
         /// <summary>
         ///     A list of all layer properties in this group
@@ -211,6 +220,11 @@ namespace Artemis.Core.Models.Profile
         internal event EventHandler<PropertyGroupUpdatingEventArgs> PropertyGroupOverriding;
         public event EventHandler PropertyGroupInitialized;
 
+        /// <summary>
+        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
+        /// </summary>
+        public event EventHandler VisibilityChanged;
+
         internal virtual void OnPropertyGroupUpdating(PropertyGroupUpdatingEventArgs e)
         {
             PropertyGroupUpdating?.Invoke(this, e);
@@ -219,6 +233,11 @@ namespace Artemis.Core.Models.Profile
         protected virtual void OnPropertyGroupOverriding(PropertyGroupUpdatingEventArgs e)
         {
             PropertyGroupOverriding?.Invoke(this, e);
+        }
+
+        protected virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

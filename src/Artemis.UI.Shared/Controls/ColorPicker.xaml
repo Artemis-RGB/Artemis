@@ -9,10 +9,6 @@
     d:DesignHeight="101.848" d:DesignWidth="242.956">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ColorPicker.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             <converters:ColorToStringConverter x:Key="ColorToStringConverter" />
             <converters:ColorToSolidColorConverter x:Key="ColorToSolidColorConverter" />
             <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute" Viewport="0,0,10,10">
@@ -62,14 +58,14 @@
                             Grid.Row="1"
                             OpacityMask="{x:Null}">
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
+                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{DynamicResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
                             </Track.DecreaseRepeatButton>
                             <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
+                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{DynamicResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
                             </Track.IncreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb x:Name="Thumb" Width="20" Height="20" VerticalAlignment="Center" Focusable="False" OverridesDefaultStyle="True"
-                                       Template="{StaticResource MaterialDesignColorSliderThumb}">
+                                       Template="{DynamicResource MaterialDesignColorSliderThumb}">
                                     <Thumb.Foreground>
                                         <SolidColorBrush
                                             Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay, Converter={StaticResource ColorToSolidColorConverter}}" />
@@ -124,7 +120,7 @@
                     <Slider Grid.Row="1" Margin="8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"
-                            Style="{StaticResource MaterialDesignColorSlider}"
+                            Style="{DynamicResource MaterialDesignColorSlider}"
                             Template="{StaticResource MaterialDesignOpacitySlider}"
                             Value="{Binding ColorOpacity, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                             Maximum="255" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -33,6 +34,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 else
                     PropertyDescription.Name = $"Unknown {typeof(T).Name} property";
             }
+
+            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
         }
 
         public override bool IsVisible => !LayerProperty.IsHidden;
@@ -51,6 +54,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             TreePropertyViewModel.Dispose();
             TimelinePropertyViewModel.Dispose();
+
+            LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
         }
 
         public void SetCurrentValue(T value, bool saveChanges)
@@ -60,6 +65,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 ProfileEditorService.UpdateSelectedProfileElement();
             else
                 ProfileEditorService.UpdateProfilePreview();
+        }
+
+        private void LayerPropertyOnVisibilityChanged(object? sender, EventArgs e)
+        {
+           NotifyOfPropertyChange(nameof(IsVisible));
         }
     }
 

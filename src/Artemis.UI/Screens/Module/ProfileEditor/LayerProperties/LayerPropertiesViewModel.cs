@@ -92,6 +92,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         #region View model managament
 
+        public List<LayerPropertyGroupViewModel> GetAllLayerPropertyGroupViewModels()
+        {
+            var groups = LayerPropertyGroups.ToList();
+            groups.AddRange(groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>());
+            return groups;
+        }
+
         private void PopulateProperties(ProfileElement profileElement)
         {
             if (SelectedLayer != null)

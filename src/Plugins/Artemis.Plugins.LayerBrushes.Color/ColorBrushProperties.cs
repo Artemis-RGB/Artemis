@@ -28,10 +28,11 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         protected override void OnPropertiesInitialized()
         {
-            GradientType.BaseValueChanged += GradientTypeOnBaseValueChanged;
+            GradientType.BaseValueChanged += (sender, args) => UpdateVisibility();
+            UpdateVisibility();
         }
 
-        private void GradientTypeOnBaseValueChanged(object sender, EventArgs e)
+        private void UpdateVisibility()
         {
             Color.IsHidden = GradientType.BaseValue != LayerBrushes.Color.GradientType.Solid;
             Gradient.IsHidden = GradientType.BaseValue == LayerBrushes.Color.GradientType.Solid;
