@@ -2,99 +2,90 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.PropertyTree.PropertyInput;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Services.Interfaces;
-using Ninject;
-using Stylet;
+using Humanizer;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
-    public class LayerPropertyViewModel : PropertyChangedBase
+    public class LayerPropertyViewModel<T> : LayerPropertyViewModel
     {
-        private readonly IKernel _kernel;
-        private readonly IProfileEditorService _profileEditorService;
-        private bool _keyframesEnabled;
-        private bool _isExpanded;
-
-        public LayerPropertyViewModel(BaseLayerProperty layerProperty, LayerPropertyViewModel parent, IKernel kernel, IProfileEditorService profileEditorService)
+        public LayerPropertyViewModel(IProfileEditorService profileEditorService, LayerProperty<T> layerProperty, PropertyDescriptionAttribute propertyDescription)
+            : base(profileEditorService, layerProperty)
         {
-            _kernel = kernel;
-            _profileEditorService = profileEditorService;
-            _keyframesEnabled = layerProperty.IsUsingKeyframes;
-
             LayerProperty = layerProperty;
-            Parent = parent;
-            Children = new List<LayerPropertyViewModel>();
-            IsExpanded = layerProperty.ExpandByDefault;
+            PropertyDescription = propertyDescription;
 
-            Parent?.Children.Add(this);
-        }
+            TreePropertyViewModel = ProfileEditorService.CreateTreePropertyViewModel(this);
+            TimelinePropertyViewModel = new TimelinePropertyViewModel<T>(this, profileEditorService);
 
-        public BaseLayerProperty LayerProperty { get; }
+            TreePropertyBaseViewModel = TreePropertyViewModel;
+            TimelinePropertyBaseViewModel = TimelinePropertyViewModel;
 
-        public LayerPropertyViewModel Parent { get; }
-        public List<LayerPropertyViewModel> Children { get; }
-
-        public bool IsExpanded
-        {
-            get => _isExpanded;
-            set
+            // Generate a fallback name if the description does not contain one
+            if (PropertyDescription.Name == null)
             {
-                _isExpanded = value;
-                OnExpandedStateChanged();
+                var propertyInfo = LayerProperty.Parent?.GetType().GetProperties().FirstOrDefault(p => ReferenceEquals(p.GetValue(LayerProperty.Parent), LayerProperty));
+                if (propertyInfo != null)
+                    PropertyDescription.Name = propertyInfo.Name.Humanize();
+                else
+                    PropertyDescription.Name = $"Unknown {typeof(T).Name} property";
             }
+
+            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
         }
 
-        public bool KeyframesEnabled
+        public override bool IsVisible => !LayerProperty.IsHidden;
+
+        public LayerProperty<T> LayerProperty { get; }
+
+        public TreePropertyViewModel<T> TreePropertyViewModel { get; set; }
+        public TimelinePropertyViewModel<T> TimelinePropertyViewModel { get; set; }
+
+        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
         {
-            get => _keyframesEnabled;
-            set
-            {
-                _keyframesEnabled = value;
-                UpdateKeyframes();
-            }
+            return LayerProperty.BaseKeyframes.ToList();
         }
 
-        public PropertyInputViewModel GetPropertyInputViewModel()
+        public override void Dispose()
         {
-            // If the type is an enum type, search for Enum instead.
-            var type = LayerProperty.Type;
-            if (type.IsEnum)
-                type = typeof(Enum);
+            TreePropertyViewModel.Dispose();
+            TimelinePropertyViewModel.Dispose();
 
-            var match = _kernel.Get<List<PropertyInputViewModel>>().FirstOrDefault(p => p.CompatibleTypes.Contains(type));
-            if (match == null)
-                return null;
-
-            match.Initialize(this);
-            return match;
+            LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
         }
 
-        private void UpdateKeyframes()
+        public void SetCurrentValue(T value, bool saveChanges)
         {
-            // Either create a new first keyframe or clear all the keyframes
-            if (_keyframesEnabled)
-                LayerProperty.CreateNewKeyframe(_profileEditorService.CurrentTime, LayerProperty.GetCurrentValue());
+            LayerProperty.SetCurrentValue(value, ProfileEditorService.CurrentTime);
+            if (saveChanges)
+                ProfileEditorService.UpdateSelectedProfileElement();
             else
-                LayerProperty.ClearKeyframes();
-
-            // Force the keyframe engine to update, the new keyframe is the current keyframe
-            LayerProperty.IsUsingKeyframes = _keyframesEnabled;
-            LayerProperty.KeyframeEngine?.Update(0);
-
-            _profileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.UpdateProfilePreview();
         }
 
-        #region Events
-
-        public event EventHandler<EventArgs> ExpandedStateChanged;
-        protected virtual void OnExpandedStateChanged()
+        private void LayerPropertyOnVisibilityChanged(object? sender, EventArgs e)
         {
-            ExpandedStateChanged?.Invoke(this, EventArgs.Empty);
-            foreach (var layerPropertyViewModel in Children)
-                layerPropertyViewModel.OnExpandedStateChanged();
+           NotifyOfPropertyChange(nameof(IsVisible));
+        }
+    }
+
+    public abstract class LayerPropertyViewModel : LayerPropertyBaseViewModel
+    {
+        protected LayerPropertyViewModel(IProfileEditorService profileEditorService, BaseLayerProperty baseLayerProperty)
+        {
+            ProfileEditorService = profileEditorService;
+            BaseLayerProperty = baseLayerProperty;
         }
 
-        #endregion
+        public IProfileEditorService ProfileEditorService { get; }
+        public BaseLayerProperty BaseLayerProperty { get; }
+
+        public PropertyDescriptionAttribute PropertyDescription { get; protected set; }
+        public TreePropertyViewModel TreePropertyBaseViewModel { get; set; }
+        public TimelinePropertyViewModel TimelinePropertyBaseViewModel { get; set; }
     }
 }

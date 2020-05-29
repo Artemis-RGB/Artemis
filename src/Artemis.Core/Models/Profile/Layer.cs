@@ -4,21 +4,29 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
+    /// <summary>
+    ///     Represents a layer on a profile. To create new layers use the <see cref="LayerService" /> by injecting
+    ///     <see cref="ILayerService" /> into your code
+    /// </summary>
     public sealed class Layer : ProfileElement
     {
+        private readonly List<string> _expandedPropertyGroups;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
 
-        public Layer(Profile profile, ProfileElement parent, string name)
+        internal Layer(Profile profile, ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
@@ -26,12 +34,13 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
-            Properties = new LayerPropertyCollection(this);
+            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
+            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            _expandedPropertyGroups = new List<string>();
 
-            ApplyShapeType();
-            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
+            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -43,12 +52,14 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = layerEntity.Name;
             Order = layerEntity.Order;
-            Properties = new LayerPropertyCollection(this);
+            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
+            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
             _leds = new List<ArtemisLed>();
+            _expandedPropertyGroups = new List<string>();
+            _expandedPropertyGroups.AddRange(layerEntity.ExpandedPropertyGroups);
 
-            ApplyShapeType();
-            Properties.ShapeType.ValueChanged += (sender, args) => ApplyShapeType();
+            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -93,19 +104,33 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        /// <summary>
-        ///     The properties of this layer
-        /// </summary>
-        public LayerPropertyCollection Properties { get; set; }
+        [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
+        public LayerGeneralProperties General { get; set; }
+
+        [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
+        public LayerTransformProperties Transform { get; set; }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
-        public LayerBrush LayerBrush { get; internal set; }
+        public BaseLayerBrush LayerBrush { get; internal set; }
 
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+        }
+
+        public bool IsPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup)
+        {
+            return _expandedPropertyGroups.Contains(layerPropertyGroup.Path);
+        }
+
+        public void SetPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup, bool expanded)
+        {
+            if (!expanded && IsPropertyGroupExpanded(layerPropertyGroup))
+                _expandedPropertyGroups.Remove(layerPropertyGroup.Path);
+            else if (expanded && !IsPropertyGroupExpanded(layerPropertyGroup))
+                _expandedPropertyGroups.Add(layerPropertyGroup.Path);
         }
 
         #region Storage
@@ -118,8 +143,12 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Order = Order;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
-            foreach (var layerProperty in Properties)
-                layerProperty.ApplyToEntity();
+            LayerEntity.ExpandedPropertyGroups.Clear();
+            LayerEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
+
+            General.ApplyToEntity();
+            Transform.ApplyToEntity();
+            LayerBrush?.BaseProperties.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -141,9 +170,21 @@ namespace Artemis.Core.Models.Profile
 
         #region Shape management
 
+        private void GeneralOnPropertyGroupInitialized(object sender, EventArgs e)
+        {
+            ApplyShapeType();
+            General.ShapeType.BaseValueChanged -= ShapeTypeOnBaseValueChanged;
+            General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
+        }
+
+        private void ShapeTypeOnBaseValueChanged(object sender, EventArgs e)
+        {
+            ApplyShapeType();
+        }
+
         private void ApplyShapeType()
         {
-            switch (Properties.ShapeType.CurrentValue)
+            switch (General.ShapeType.CurrentValue)
             {
                 case LayerShapeType.Ellipse:
                     LayerShape = new Ellipse(this);
@@ -163,28 +204,43 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            foreach (var property in Properties)
-                property.KeyframeEngine?.Update(deltaTime);
+            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized)
+                return;
+
+            var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
+            properties.AddRange(Transform.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
+            properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
 
             // For now, reset all keyframe engines after the last keyframe was hit
             // This is a placeholder method of repeating the animation until repeat modes are implemented
-            var lastKeyframe = Properties.SelectMany(p => p.UntypedKeyframes).OrderByDescending(t => t.Position).FirstOrDefault();
-            if (lastKeyframe != null)
+            var timeLineEnd = properties.Any() ? properties.Max(p => p.BaseKeyframes.Max(k => k.Position)) : TimeSpan.MaxValue;
+            if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
             {
-                if (Properties.Any(p => p.KeyframeEngine?.Progress > lastKeyframe.Position))
-                {
-                    foreach (var baseLayerProperty in Properties)
-                        baseLayerProperty.KeyframeEngine?.OverrideProgress(TimeSpan.Zero);
-                }
+                General.Override(TimeSpan.Zero);
+                Transform.Override(TimeSpan.Zero);
+                LayerBrush.BaseProperties.Override(TimeSpan.Zero);
+            }
+            else
+            {
+                General.Update(deltaTime);
+                Transform.Update(deltaTime);
+                LayerBrush.BaseProperties.Update(deltaTime);
             }
 
-            LayerBrush?.Update(deltaTime);
+            LayerBrush.Update(deltaTime);
+        }
+
+        public void OverrideProgress(TimeSpan timeOverride)
+        {
+            General.Override(timeOverride);
+            Transform.Override(timeOverride);
+            LayerBrush?.BaseProperties.Override(timeOverride);
         }
 
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (Path == null || LayerShape?.Path == null)
+            if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
 
             canvas.Save();
@@ -192,10 +248,10 @@ namespace Artemis.Core.Models.Profile
 
             using (var paint = new SKPaint())
             {
-                paint.BlendMode = Properties.BlendMode.CurrentValue;
-                paint.Color = new SKColor(0, 0, 0, (byte) (Properties.Opacity.CurrentValue * 2.55f));
+                paint.BlendMode = General.BlendMode.CurrentValue;
+                paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                switch (Properties.FillType.CurrentValue)
+                switch (General.FillType.CurrentValue)
                 {
                     case LayerFillType.Stretch:
                         StretchRender(canvas, canvasInfo, paint);
@@ -214,11 +270,11 @@ namespace Artemis.Core.Models.Profile
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = Properties.Scale.CurrentValue;
-            var rotationProperty = Properties.Rotation.CurrentValue;
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = Properties.AnchorPoint.CurrentValue;
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -229,17 +285,18 @@ namespace Artemis.Core.Models.Profile
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            LayerBrush?.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            if (LayerBrush != null && LayerBrush.BaseProperties.PropertiesInitialized)
+                LayerBrush.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
         }
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Apply transformations
-            var sizeProperty = Properties.Scale.CurrentValue;
-            var rotationProperty = Properties.Rotation.CurrentValue;
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
 
             var anchorPosition = GetLayerAnchorPosition();
-            var anchorProperty = Properties.AnchorPoint.CurrentValue;
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
@@ -292,7 +349,7 @@ namespace Artemis.Core.Models.Profile
 
         internal SKPoint GetLayerAnchorPosition()
         {
-            var positionProperty = Properties.Position.CurrentValue;
+            var positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
             var position = new SKPoint(Bounds.MidX, Bounds.MidY);
@@ -371,6 +428,7 @@ namespace Artemis.Core.Models.Profile
 
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
+        public event EventHandler LayerBrushUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -380,6 +438,11 @@ namespace Artemis.Core.Models.Profile
         private void OnShapePropertiesUpdated()
         {
             ShapePropertiesUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnLayerBrushUpdated()
+        {
+            LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

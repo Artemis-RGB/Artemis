@@ -1,11 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
+using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 using Artemis.UI.Services.Interfaces;
+using Ninject;
+using Ninject.Parameters;
+using SkiaSharp;
 
 namespace Artemis.UI.Services
 {
@@ -13,14 +26,31 @@ namespace Artemis.UI.Services
     {
         private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
+        private readonly IKernel _kernel;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
+        private int _pixelsPerSecond;
 
-        public ProfileEditorService(ICoreService coreService, IProfileService profileService)
+        public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel)
         {
             _coreService = coreService;
             _profileService = profileService;
+            _kernel = kernel;
+
+            RegisteredPropertyEditors = new Dictionary<Type, Type>
+            {
+                {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
+                {typeof(ColorGradient), typeof(ColorGradientPropertyInputViewModel)},
+                {typeof(float), typeof(FloatPropertyInputViewModel)},
+                {typeof(int), typeof(IntPropertyInputViewModel)},
+                {typeof(SKColor), typeof(SKColorPropertyInputViewModel)},
+                {typeof(SKPoint), typeof(SKPointPropertyInputViewModel)},
+                {typeof(SKSize), typeof(SKSizePropertyInputViewModel)}
+            };
+            PixelsPerSecond = 31;
         }
+
+        public Dictionary<Type, Type> RegisteredPropertyEditors { get; set; }
 
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
@@ -36,6 +66,46 @@ namespace Artemis.UI.Services
                 UpdateProfilePreview();
                 OnCurrentTimeChanged();
             }
+        }
+
+        public int PixelsPerSecond
+        {
+            get => _pixelsPerSecond;
+            set
+            {
+                _pixelsPerSecond = value;
+                OnPixelsPerSecondChanged();
+            }
+        }
+        
+        public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
+        {
+            // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
+            var genericType = baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
+            // Only create entries for types supported by a tree input VM
+            if (!genericType.IsEnum && !RegisteredPropertyEditors.ContainsKey(genericType))
+                return null;
+            var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("layerProperty", baseLayerProperty),
+                new ConstructorArgument("propertyDescription", propertyDescription)
+            };
+
+            return (LayerPropertyBaseViewModel) _kernel.Get(genericViewModel, parameters);
+        }
+
+        public TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel)
+        {
+            var type = typeof(T).IsEnum
+                ? typeof(EnumPropertyInputViewModel<>).MakeGenericType(typeof(T))
+                : RegisteredPropertyEditors[typeof(T)];
+
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("layerPropertyViewModel", layerPropertyViewModel)
+            };
+            return new TreePropertyViewModel<T>(layerPropertyViewModel, (PropertyInputViewModel<T>) _kernel.Get(type, parameters), this);
         }
 
         public void ChangeSelectedProfile(Profile profile)
@@ -68,24 +138,16 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
             OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfileElement));
         }
-
-
+        
         public void UpdateProfilePreview()
         {
             if (SelectedProfile == null)
                 return;
+
             var delta = CurrentTime - _lastUpdateTime;
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
-                // Override keyframe progress
-                foreach (var baseLayerProperty in layer.Properties)
-                    baseLayerProperty.KeyframeEngine?.OverrideProgress(CurrentTime);
-
-                // Force layer shape to redraw
-                layer.LayerShape?.CalculateRenderProperties();
-                // Manually update the layer's engine and brush
-                foreach (var property in layer.Properties)
-                    property.KeyframeEngine?.Update(delta.TotalSeconds);
+                layer.OverrideProgress(CurrentTime);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
             }
 
@@ -95,7 +157,10 @@ namespace Artemis.UI.Services
 
         public void UndoUpdateProfile(ProfileModule module)
         {
-            _profileService.UndoUpdateProfile(SelectedProfile, module);
+            var undid = _profileService.UndoUpdateProfile(SelectedProfile, module);
+            if (!undid)
+                return;
+
             OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)
@@ -111,7 +176,10 @@ namespace Artemis.UI.Services
 
         public void RedoUpdateProfile(ProfileModule module)
         {
-            _profileService.RedoUpdateProfile(SelectedProfile, module);
+            var redid = _profileService.RedoUpdateProfile(SelectedProfile, module);
+            if (!redid)
+                return;
+
             OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)
@@ -130,8 +198,9 @@ namespace Artemis.UI.Services
         public event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
+        public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
-
+        
         public void StopRegularRender()
         {
             _coreService.ModuleUpdatingDisabled = true;
@@ -165,6 +234,11 @@ namespace Artemis.UI.Services
         protected virtual void OnCurrentTimeChanged()
         {
             CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPixelsPerSecondChanged()
+        {
+            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnProfilePreviewUpdated()

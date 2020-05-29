@@ -1,127 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.KeyframeEngines;
-using Artemis.Core.Plugins.Models;
-using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
-using Stylet;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
-    public abstract class BaseLayerProperty : PropertyChangedBase
+    /// <summary>
+    ///     For internal use only, to implement your own layer property type, extend <see cref="LayerProperty{T}" /> instead.
+    /// </summary>
+    public abstract class BaseLayerProperty
     {
-        private object _baseValue;
+        private bool _keyframesEnabled;
         private bool _isHidden;
 
-        protected BaseLayerProperty(Layer layer, PluginInfo pluginInfo, BaseLayerProperty parent, string id, string name, string description, Type type)
+        internal BaseLayerProperty()
         {
-            Layer = layer;
-            PluginInfo = pluginInfo;
-            Parent = parent;
-            Id = id;
-            Name = name;
-            Description = description;
-            Type = type;
-            CanUseKeyframes = true;
-            InputStepSize = 1;
-
-            // This can only be null if accessed internally
-            if (PluginInfo == null)
-                PluginInfo = Constants.CorePluginInfo;
-
-            Children = new List<BaseLayerProperty>();
-            BaseKeyframes = new List<BaseKeyframe>();
-
-
-            parent?.Children.Add(this);
         }
 
         /// <summary>
-        ///     Gets the layer this property applies to
+        /// The layer this property applies to
         /// </summary>
-        public Layer Layer { get; }
+        public Layer Layer { get; internal set; }
 
         /// <summary>
-        ///     Info of the plugin associated with this property
+        ///     The parent group of this layer property, set after construction
         /// </summary>
-        public PluginInfo PluginInfo { get; }
+        public LayerPropertyGroup Parent { get; internal set; }
 
         /// <summary>
-        ///     Gets the parent property of this property.
+        ///     Gets whether keyframes are supported on this property
         /// </summary>
-        public BaseLayerProperty Parent { get; }
+        public bool KeyframesSupported { get; protected set; } = true;
 
         /// <summary>
-        ///     Gets or sets the child properties of this property.
-        ///     <remarks>If the layer has children it cannot contain a value or keyframes.</remarks>
+        ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
+        ///     False
         /// </summary>
-        public List<BaseLayerProperty> Children { get; set; }
+        public bool KeyframesEnabled
+        {
+            get => _keyframesEnabled;
+            set
+            {
+                if (_keyframesEnabled == value) return;
+                _keyframesEnabled = value;
+                OnKeyframesToggled();
+            }
+        }
 
         /// <summary>
-        ///     Gets or sets a unique identifier for this property, a layer may not contain two properties with the same ID.
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the user-friendly name for this property, shown in the UI.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the user-friendly description for this property, shown in the UI.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether to expand this property by default, this is useful for important parent properties.
-        /// </summary>
-        public bool ExpandByDefault { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the an optional input prefix to show before input elements in the UI.
-        /// </summary>
-        public string InputPrefix { get; set; }
-
-        /// <summary>
-        ///     Gets or sets an optional input affix to show behind input elements in the UI.
-        /// </summary>
-        public string InputAffix { get; set; }
-
-        /// <summary>
-        ///     Gets or sets an optional maximum input value, only enforced in the UI.
-        /// </summary>
-        public object MaxInputValue { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the input drag step size, used in the UI.
-        /// </summary>
-        public float InputStepSize { get; set; }
-
-        /// <summary>
-        ///     Gets or sets an optional minimum input value, only enforced in the UI.
-        /// </summary>
-        public object MinInputValue { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether this property can use keyframes, True by default.
-        /// </summary>
-        public bool CanUseKeyframes { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether this property is using keyframes.
-        /// </summary>
-        public bool IsUsingKeyframes { get; set; }
-
-        /// <summary>
-        ///     Gets the type of value this layer property contains.
-        /// </summary>
-        public Type Type { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets whether this property is hidden in the UI.
+        ///     Gets or sets whether the property is hidden in the UI
         /// </summary>
         public bool IsHidden
         {
@@ -134,241 +60,109 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Gets a list of keyframes defining different values of the property in time, this list contains the untyped
-        ///     <see cref="BaseKeyframe" />.
+        ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
         /// </summary>
-        public IReadOnlyCollection<BaseKeyframe> UntypedKeyframes => BaseKeyframes.AsReadOnly();
+        public bool IsLoadedFromStorage { get; internal set; }
 
         /// <summary>
-        ///     Gets the keyframe engine instance of this property
+        ///     Gets the total progress on the timeline
         /// </summary>
-        public KeyframeEngine KeyframeEngine { get; internal set; }
-
-        protected List<BaseKeyframe> BaseKeyframes { get; set; }
-
-        public object BaseValue
-        {
-            get => _baseValue;
-            internal set
-            {
-                if (value != null && value.GetType() != Type)
-                    throw new ArtemisCoreException($"Cannot set value of type {value.GetType()} on property {this}, expected type is {Type}.");
-                if (!Equals(_baseValue, value))
-                {
-                    _baseValue = value;
-                    OnValueChanged();
-                }
-            }
-        }
+        public TimeSpan TimelineProgress { get; internal set; }
 
         /// <summary>
-        ///     Creates a new keyframe for this base property without knowing the type
+        ///     Used to declare that this property doesn't belong to a plugin and should use the core plugin GUID
         /// </summary>
-        /// <returns></returns>
-        public BaseKeyframe CreateNewKeyframe(TimeSpan position, object value)
-        {
-            // Create a strongly typed keyframe or else it cannot be cast later on
-            var keyframeType = typeof(Keyframe<>);
-            var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
-            keyframe.Position = position;
-            keyframe.BaseValue = value;
-            BaseKeyframes.Add(keyframe);
-            SortKeyframes();
-
-            return keyframe;
-        }
+        public bool IsCoreProperty { get; internal set; }
 
         /// <summary>
-        ///     Removes all keyframes from the property and sets the base value to the current value.
+        ///     Gets a list of all the keyframes in their non-generic base form, without their values being available
         /// </summary>
-        public void ClearKeyframes()
-        {
-            if (KeyframeEngine != null)
-                BaseValue = KeyframeEngine.GetCurrentValue();
+        public abstract IReadOnlyList<BaseLayerPropertyKeyframe> BaseKeyframes { get; }
 
-            BaseKeyframes.Clear();
-        }
+        internal PropertyEntity PropertyEntity { get; set; }
+        internal LayerPropertyGroup LayerPropertyGroup { get; set; }
+
 
         /// <summary>
-        ///     Gets the current value using the regular value or if present, keyframes
+        ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
-        public object GetCurrentValue()
-        {
-            if (KeyframeEngine == null || !UntypedKeyframes.Any())
-                return BaseValue;
-
-            return KeyframeEngine.GetCurrentValue();
-        }
+        /// <param name="entity"></param>
+        /// <param name="layerPropertyGroup"></param>
+        /// <param name="fromStorage"></param>
+        internal abstract void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage);
 
         /// <summary>
-        ///     Gets the current value using the regular value or keyframes.
+        ///     Saves the property to the underlying property entity that was configured when calling
+        ///     <see cref="ApplyToLayerProperty" />
         /// </summary>
-        /// <param name="value">The value to set.</param>
-        /// <param name="time">
-        ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
-        ///     or existing keyframe.
-        /// </param>
-        public void SetCurrentValue(object value, TimeSpan? time)
-        {
-            if (value != null && value.GetType() != Type)
-                throw new ArtemisCoreException($"Cannot set value of type {value.GetType()} on property {this}, expected type is {Type}.");
-
-            if (time == null || !CanUseKeyframes || !IsUsingKeyframes)
-                BaseValue = value;
-            else
-            {
-                // If on a keyframe, update the keyframe
-                var currentKeyframe = UntypedKeyframes.FirstOrDefault(k => k.Position == time.Value);
-                // Create a new keyframe if none found
-                if (currentKeyframe == null)
-                    currentKeyframe = CreateNewKeyframe(time.Value, value);
-
-                currentKeyframe.BaseValue = value;
-            }
-
-            OnValueChanged();
-        }
-
-        /// <summary>
-        ///     Adds a keyframe to the property.
-        /// </summary>
-        /// <param name="keyframe">The keyframe to remove</param>
-        public void AddKeyframe(BaseKeyframe keyframe)
-        {
-            BaseKeyframes.Add(keyframe);
-            SortKeyframes();
-        }
-
-        /// <summary>
-        ///     Removes a keyframe from the property.
-        /// </summary>
-        /// <param name="keyframe">The keyframe to remove</param>
-        public void RemoveKeyframe(BaseKeyframe keyframe)
-        {
-            BaseKeyframes.Remove(keyframe);
-            SortKeyframes();
-        }
-
-        /// <summary>
-        ///     Returns the flattened index of this property on the layer
-        /// </summary>
-        /// <returns></returns>
-        public int GetFlattenedIndex()
-        {
-            if (Parent == null)
-                return Layer.Properties.ToList().IndexOf(this);
-
-            // Create a flattened list of all properties in their order as defined by the parent/child hierarchy
-            var properties = new List<BaseLayerProperty>();
-            // Iterate root properties (those with children)
-            foreach (var baseLayerProperty in Layer.Properties)
-            {
-                // First add self, then add all children
-                if (baseLayerProperty.Children.Any())
-                {
-                    properties.Add(baseLayerProperty);
-                    properties.AddRange(baseLayerProperty.GetAllChildren());
-                }
-            }
-
-            return properties.IndexOf(this);
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(Description)}: {Description}";
-        }
-
-        internal void ApplyToEntity()
-        {
-            var propertyEntity = Layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.Id == Id);
-            if (propertyEntity == null)
-            {
-                propertyEntity = new PropertyEntity {Id = Id};
-                Layer.LayerEntity.PropertyEntities.Add(propertyEntity);
-            }
-
-            propertyEntity.ValueType = Type.Name;
-            propertyEntity.Value = JsonConvert.SerializeObject(BaseValue);
-            propertyEntity.IsUsingKeyframes = IsUsingKeyframes;
-
-            propertyEntity.KeyframeEntities.Clear();
-            foreach (var baseKeyframe in BaseKeyframes)
-            {
-                propertyEntity.KeyframeEntities.Add(new KeyframeEntity
-                {
-                    Position = baseKeyframe.Position,
-                    Value = JsonConvert.SerializeObject(baseKeyframe.BaseValue),
-                    EasingFunction = (int) baseKeyframe.EasingFunction
-                });
-            }
-        }
-
-        internal void ApplyToProperty(PropertyEntity propertyEntity)
-        {
-            BaseValue = DeserializePropertyValue(propertyEntity.Value);
-            IsUsingKeyframes = propertyEntity.IsUsingKeyframes;
-
-            BaseKeyframes.Clear();
-            foreach (var keyframeEntity in propertyEntity.KeyframeEntities.OrderBy(e => e.Position))
-            {
-                // Create a strongly typed keyframe or else it cannot be cast later on
-                var keyframeType = typeof(Keyframe<>);
-                var keyframe = (BaseKeyframe) Activator.CreateInstance(keyframeType.MakeGenericType(Type), Layer, this);
-                keyframe.Position = keyframeEntity.Position;
-                keyframe.BaseValue = DeserializePropertyValue(keyframeEntity.Value);
-                keyframe.EasingFunction = (Easings.Functions) keyframeEntity.EasingFunction;
-
-                BaseKeyframes.Add(keyframe);
-            }
-        }
-
-        internal void SortKeyframes()
-        {
-            BaseKeyframes = BaseKeyframes.OrderBy(k => k.Position).ToList();
-        }
-
-        internal IEnumerable<BaseLayerProperty> GetAllChildren()
-        {
-            var children = new List<BaseLayerProperty>();
-            children.AddRange(Children);
-            foreach (var layerPropertyViewModel in Children)
-                children.AddRange(layerPropertyViewModel.GetAllChildren());
-
-            return children;
-        }
-
-        private object DeserializePropertyValue(string value)
-        {
-            if (value == "null")
-                return Type.IsValueType ? Activator.CreateInstance(Type) : null;
-            return JsonConvert.DeserializeObject(value, Type);
-        }
+        internal abstract void ApplyToEntity();
 
         #region Events
 
         /// <summary>
-        ///     Occurs when this property's value was changed outside regular keyframe updates
+        ///     Occurs once every frame when the layer property is updated
         /// </summary>
-        public event EventHandler<EventArgs> ValueChanged;
+        public event EventHandler Updated;
 
         /// <summary>
-        ///     Occurs when this property or any of it's ancestors visibility is changed
+        ///     Occurs when the base value of the layer property was updated
         /// </summary>
-        public event EventHandler<EventArgs> VisibilityChanged;
+        public event EventHandler BaseValueChanged;
 
-        protected virtual void OnValueChanged()
+        /// <summary>
+        ///     Occurs when the <see cref="IsHidden"/> value of the layer property was updated
+        /// </summary>
+        public event EventHandler VisibilityChanged;
+
+        /// <summary>
+        /// Occurs when keyframes are enabled/disabled
+        /// </summary>
+        public event EventHandler KeyframesToggled;
+
+        /// <summary>
+        ///     Occurs when a new keyframe was added to the layer property
+        /// </summary>
+        public event EventHandler KeyframeAdded;
+
+        /// <summary>
+        ///     Occurs when a keyframe was removed from the layer property
+        /// </summary>
+        public event EventHandler KeyframeRemoved;
+
+        protected virtual void OnUpdated()
         {
-            ValueChanged?.Invoke(this, EventArgs.Empty);
+            Updated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnBaseValueChanged()
+        {
+            BaseValueChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnVisibilityChanged()
         {
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
-            foreach (var baseLayerProperty in Children)
-                baseLayerProperty.OnVisibilityChanged();
         }
-        
+
+        protected virtual void OnKeyframesToggled()
+        {
+            KeyframesToggled?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnKeyframeAdded()
+        {
+            KeyframeAdded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnKeyframeRemoved()
+        {
+            KeyframeRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
         #endregion
+
+        public abstract void ApplyDefaultValue();
+
+
     }
 }

@@ -20,8 +20,8 @@ namespace Artemis.UI.Shared.Utilities
             var resultCallback = new HitTestResultCallback(r => HitTestResultBehavior.Continue);
             var filterCallback = new HitTestFilterCallback(e =>
             {
-                if (e is FrameworkElement fe && fe.DataContext.GetType() == typeof(T) && !result.Contains((T) fe.DataContext))
-                    result.Add((T) fe.DataContext);
+                if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context))
+                    result.Add(context);
                 return HitTestFilterBehavior.Continue;
             });
             VisualTreeHelper.HitTest(container, filterCallback, resultCallback, hitTestParams);

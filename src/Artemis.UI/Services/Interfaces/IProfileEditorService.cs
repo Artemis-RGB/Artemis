@@ -1,7 +1,12 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 
 namespace Artemis.UI.Services.Interfaces
 {
@@ -10,7 +15,9 @@ namespace Artemis.UI.Services.Interfaces
         Profile SelectedProfile { get; }
         ProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
+        int PixelsPerSecond { get; set; }
 
+        LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription);
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(ProfileElement profileElement);
@@ -18,6 +25,8 @@ namespace Artemis.UI.Services.Interfaces
         void UpdateProfilePreview();
         void UndoUpdateProfile(ProfileModule module);
         void RedoUpdateProfile(ProfileModule module);
+        void StopRegularRender();
+        void ResumeRegularRender();
 
         /// <summary>
         ///     Occurs when a new profile is selected
@@ -45,11 +54,15 @@ namespace Artemis.UI.Services.Interfaces
         event EventHandler CurrentTimeChanged;
 
         /// <summary>
+        ///     Occurs when the pixels per second (zoom level) is changed
+        /// </summary>
+        event EventHandler PixelsPerSecondChanged;
+
+        /// <summary>
         ///     Occurs when the profile preview has been updated
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
 
-        void StopRegularRender();
-        void ResumeRegularRender();
+        TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel);
     }
 }

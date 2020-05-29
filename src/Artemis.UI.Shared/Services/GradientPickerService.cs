@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Shared.Screens.GradientEditor;
 using Artemis.UI.Shared.Services.Interfaces;
 

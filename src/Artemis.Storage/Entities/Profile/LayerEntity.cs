@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
@@ -11,6 +12,7 @@ namespace Artemis.Storage.Entities.Profile
             Leds = new List<LedEntity>();
             PropertyEntities = new List<PropertyEntity>();
             Condition = new List<ProfileConditionEntity>();
+            ExpandedPropertyGroups = new List<string>();
         }
 
         public Guid Id { get; set; }
@@ -22,6 +24,7 @@ namespace Artemis.Storage.Entities.Profile
         public List<LedEntity> Leds { get; set; }
         public List<PropertyEntity> PropertyEntities { get; set; }
         public List<ProfileConditionEntity> Condition { get; set; }
+        public List<string> ExpandedPropertyGroups { get; set; }
 
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }

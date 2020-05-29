@@ -103,19 +103,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             OpacityGeometry = opacityGeometry;
 
             // Render the store as a bitmap 
-            var drawingImage = new DrawingImage(new GeometryDrawing(new SolidColorBrush(Colors.Black), null, LayerGeometry));
-            var image = new Image {Source = drawingImage};
-            var bitmap = new RenderTargetBitmap(
-                (int) (LayerGeometry.Bounds.Width * 2.5),
-                (int) (LayerGeometry.Bounds.Height * 2.5),
-                96,
-                96,
-                PixelFormats.Pbgra32
-            );
-            image.Arrange(new Rect(0, 0, bitmap.Width, bitmap.Height));
-            bitmap.Render(image);
-            bitmap.Freeze();
-            LayerGeometryBitmap = bitmap;
+            Execute.OnUIThread(() =>
+            {
+                var drawingImage = new DrawingImage(new GeometryDrawing(new SolidColorBrush(Colors.Black), null, LayerGeometry));
+                var image = new Image { Source = drawingImage };
+                var bitmap = new RenderTargetBitmap(
+                    (int)(LayerGeometry.Bounds.Width * 2.5),
+                    (int)(LayerGeometry.Bounds.Height * 2.5),
+                    96,
+                    96,
+                    PixelFormats.Pbgra32
+                );
+                image.Arrange(new Rect(0, 0, bitmap.Width, bitmap.Height));
+                bitmap.Render(image);
+                bitmap.Freeze();
+                LayerGeometryBitmap = bitmap;
+            });
+            
         }
 
         private void CreateShapeGeometry()

@@ -93,18 +93,20 @@ namespace Artemis.Core.Services.Storage
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
             {
-                InstantiateProfileLayerBrushes(profile);
-                InstantiateProfileKeyframeEngines(profile);
+                InitializeLayerProperties(profile);
+                InstantiateLayerBrushes(profile);
             }
         }
 
         public void DeleteProfile(Profile profile)
         {
+            _logger.Debug("Removing profile " + profile);
             _profileRepository.Remove(profile.ProfileEntity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
+            _logger.Debug("Updating profile " + profile);
             var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
@@ -121,12 +123,12 @@ namespace Artemis.Core.Services.Storage
             _profileRepository.Save(profile.ProfileEntity);
         }
 
-        public void UndoUpdateProfile(Profile profile, ProfileModule module)
+        public bool UndoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.UndoStack.Any())
             {
                 _logger.Debug("Undo profile update - Failed, undo stack empty");
-                return;
+                return false;
             }
 
             ActivateProfile(module, null);
@@ -138,14 +140,15 @@ namespace Artemis.Core.Services.Storage
             ActivateProfile(module, profile);
 
             _logger.Debug("Undo profile update - Success");
+            return true;
         }
 
-        public void RedoUpdateProfile(Profile profile, ProfileModule module)
+        public bool RedoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.RedoStack.Any())
             {
                 _logger.Debug("Redo profile update - Failed, redo empty");
-                return;
+                return false;
             }
 
             ActivateProfile(module, null);
@@ -157,20 +160,27 @@ namespace Artemis.Core.Services.Storage
             ActivateProfile(module, profile);
 
             _logger.Debug("Redo profile update - Success");
+            return true;
         }
 
-        private void InstantiateProfileLayerBrushes(Profile profile)
+        private void InitializeLayerProperties(Profile profile)
+        {
+            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
+            {
+                if (!layer.General.PropertiesInitialized)
+                    layer.General.InitializeProperties(_layerService, layer, "General.");
+                if (!layer.Transform.PropertiesInitialized)
+                    layer.Transform.InitializeProperties(_layerService, layer, "Transform.");
+            }
+
+            ;
+        }
+
+        private void InstantiateLayerBrushes(Profile profile)
         {
             // Only instantiate brushes for layers without an existing brush instance
             foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
                 _layerService.InstantiateLayerBrush(layer);
-        }
-
-        private void InstantiateProfileKeyframeEngines(Profile profile)
-        {
-            // Only instantiate engines for properties without an existing engine instance
-            foreach (var layerProperty in profile.GetAllLayers().SelectMany(l => l.Properties).Where(p => p.KeyframeEngine == null))
-                _layerService.InstantiateKeyframeEngine(layerProperty);
         }
 
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
@@ -184,14 +194,7 @@ namespace Artemis.Core.Services.Storage
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateProfileLayerBrushes(profileModule.ActiveProfile);
-        }
-
-        private void ActiveProfilesInstantiateKeyframeEngines()
-        {
-            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
-            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateProfileKeyframeEngines(profileModule.ActiveProfile);
+                InstantiateLayerBrushes(profileModule.ActiveProfile);
         }
 
         #region Event handlers
@@ -212,7 +215,6 @@ namespace Artemis.Core.Services.Storage
             if (e.PluginInfo.Instance is LayerBrushProvider)
             {
                 ActiveProfilesInstantiateProfileLayerBrushes();
-                ActiveProfilesInstantiateKeyframeEngines();
             }
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {
