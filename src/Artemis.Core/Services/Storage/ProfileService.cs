@@ -123,12 +123,12 @@ namespace Artemis.Core.Services.Storage
             _profileRepository.Save(profile.ProfileEntity);
         }
 
-        public void UndoUpdateProfile(Profile profile, ProfileModule module)
+        public bool UndoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.UndoStack.Any())
             {
                 _logger.Debug("Undo profile update - Failed, undo stack empty");
-                return;
+                return false;
             }
 
             ActivateProfile(module, null);
@@ -140,14 +140,15 @@ namespace Artemis.Core.Services.Storage
             ActivateProfile(module, profile);
 
             _logger.Debug("Undo profile update - Success");
+            return true;
         }
 
-        public void RedoUpdateProfile(Profile profile, ProfileModule module)
+        public bool RedoUpdateProfile(Profile profile, ProfileModule module)
         {
             if (!profile.RedoStack.Any())
             {
                 _logger.Debug("Redo profile update - Failed, redo empty");
-                return;
+                return false;
             }
 
             ActivateProfile(module, null);
@@ -159,6 +160,7 @@ namespace Artemis.Core.Services.Storage
             ActivateProfile(module, profile);
 
             _logger.Debug("Redo profile update - Success");
+            return true;
         }
 
         private void InitializeLayerProperties(Profile profile)
@@ -169,7 +171,9 @@ namespace Artemis.Core.Services.Storage
                     layer.General.InitializeProperties(_layerService, layer, "General.");
                 if (!layer.Transform.PropertiesInitialized)
                     layer.Transform.InitializeProperties(_layerService, layer, "Transform.");
-            };
+            }
+
+            ;
         }
 
         private void InstantiateLayerBrushes(Profile profile)
@@ -178,7 +182,7 @@ namespace Artemis.Core.Services.Storage
             foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
                 _layerService.InstantiateLayerBrush(layer);
         }
-        
+
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
@@ -192,7 +196,7 @@ namespace Artemis.Core.Services.Storage
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 InstantiateLayerBrushes(profileModule.ActiveProfile);
         }
-        
+
         #region Event handlers
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)

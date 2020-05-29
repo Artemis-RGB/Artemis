@@ -61,7 +61,7 @@
     <Grid x:Name="ContainerGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="28" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -196,16 +196,15 @@
                     HorizontalAlignment="Stretch"
                     ZIndex="2"
                     Background="{DynamicResource MaterialDesignCardBackground}">
+
             <!-- Zoom control -->
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Slider Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Margin="10"
-                        Minimum="31"
-                        Maximum="350"
-                        Value="{Binding ProfileEditorService.PixelsPerSecond}"
-                        Width="319" />
-            </StackPanel>
+            <Slider Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="10 5"
+                    Minimum="31"
+                    Maximum="350"
+                    Value="{Binding ProfileEditorService.PixelsPerSecond}"
+                    Width="319" />
         </StackPanel>
     </Grid>
 </UserControl>

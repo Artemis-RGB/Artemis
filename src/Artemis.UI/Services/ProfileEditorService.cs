@@ -157,7 +157,10 @@ namespace Artemis.UI.Services
 
         public void UndoUpdateProfile(ProfileModule module)
         {
-            _profileService.UndoUpdateProfile(SelectedProfile, module);
+            var undid = _profileService.UndoUpdateProfile(SelectedProfile, module);
+            if (!undid)
+                return;
+
             OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)
@@ -173,7 +176,10 @@ namespace Artemis.UI.Services
 
         public void RedoUpdateProfile(ProfileModule module)
         {
-            _profileService.RedoUpdateProfile(SelectedProfile, module);
+            var redid = _profileService.RedoUpdateProfile(SelectedProfile, module);
+            if (!redid)
+                return;
+
             OnSelectedProfileChanged(new ProfileElementEventArgs(SelectedProfile, SelectedProfile));
 
             if (SelectedProfileElement != null)

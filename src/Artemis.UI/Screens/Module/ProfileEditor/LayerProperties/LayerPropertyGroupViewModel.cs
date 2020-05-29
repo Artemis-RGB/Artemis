@@ -23,7 +23,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             TimelinePropertyGroupViewModel = new TimelinePropertyGroupViewModel(this);
 
             PopulateChildren();
+            LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
         }
+
 
         public override bool IsExpanded
         {
@@ -68,7 +70,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
         {
             var result = new List<BaseLayerPropertyKeyframe>();
-            if (!IsExpanded)
+            if (visibleOnly && !IsExpanded)
                 return result;
 
             foreach (var layerPropertyBaseViewModel in Children)
@@ -81,6 +83,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             foreach (var layerPropertyBaseViewModel in Children)
                 layerPropertyBaseViewModel.Dispose();
+
+            LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
+            TimelinePropertyGroupViewModel.Dispose();
         }
 
         public List<LayerPropertyBaseViewModel> GetAllChildren()
@@ -94,6 +99,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
 
             return result;
+        }
+
+        private void LayerPropertyGroupOnVisibilityChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(IsVisible));
         }
     }
 }

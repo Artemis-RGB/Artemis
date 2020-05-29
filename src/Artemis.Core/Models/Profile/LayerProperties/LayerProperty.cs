@@ -284,6 +284,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         public override void ApplyDefaultValue()
         {
+            BaseValue = DefaultValue;
             CurrentValue = DefaultValue;
         }
     }

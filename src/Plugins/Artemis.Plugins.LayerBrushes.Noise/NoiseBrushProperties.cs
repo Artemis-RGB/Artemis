@@ -46,10 +46,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         protected override void OnPropertiesInitialized()
         {
-            ColorType.BaseValueChanged += ColorTypeOnBaseValueChanged;
+            ColorType.BaseValueChanged += (sender, args) => UpdateVisibility();
+            UpdateVisibility();
         }
 
-        private void ColorTypeOnBaseValueChanged(object sender, EventArgs e)
+        private void UpdateVisibility()
         {
             GradientColor.IsHidden = ColorType.BaseValue != ColorMappingType.Gradient;
             MainColor.IsHidden = ColorType.BaseValue != ColorMappingType.Simple;
