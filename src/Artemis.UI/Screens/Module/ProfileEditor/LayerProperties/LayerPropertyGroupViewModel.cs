@@ -67,14 +67,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
-        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
+        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
         {
             var result = new List<BaseLayerPropertyKeyframe>();
-            if (visibleOnly && !IsExpanded)
+            if (expandedOnly && !IsExpanded || LayerPropertyGroup.IsHidden)
                 return result;
-
+            
             foreach (var layerPropertyBaseViewModel in Children)
-                result.AddRange(layerPropertyBaseViewModel.GetKeyframes(visibleOnly));
+                result.AddRange(layerPropertyBaseViewModel.GetKeyframes(expandedOnly));
 
             return result;
         }
@@ -101,7 +101,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             return result;
         }
 
-        private void LayerPropertyGroupOnVisibilityChanged(object? sender, EventArgs e)
+        private void LayerPropertyGroupOnVisibilityChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(IsVisible));
         }

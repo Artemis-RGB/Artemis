@@ -45,9 +45,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public TreePropertyViewModel<T> TreePropertyViewModel { get; set; }
         public TimelinePropertyViewModel<T> TimelinePropertyViewModel { get; set; }
 
-        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
+        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
         {
-            return LayerProperty.BaseKeyframes.ToList();
+            if (LayerProperty.KeyframesEnabled && !LayerProperty.IsHidden)
+                return LayerProperty.BaseKeyframes.ToList();
+            return new List<BaseLayerPropertyKeyframe>();
         }
 
         public override void Dispose()
@@ -67,9 +69,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 ProfileEditorService.UpdateProfilePreview();
         }
 
-        private void LayerPropertyOnVisibilityChanged(object? sender, EventArgs e)
+        private void LayerPropertyOnVisibilityChanged(object sender, EventArgs e)
         {
-           NotifyOfPropertyChange(nameof(IsVisible));
+            NotifyOfPropertyChange(nameof(IsVisible));
         }
     }
 

@@ -1,77 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
+using RGB.NET.Core;
+using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerBrush
 {
-    public abstract class LayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
+    public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
-        private T _properties;
-
-        protected LayerBrush(Layer layer, LayerBrushDescriptor descriptor)
+        protected LayerBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
-            Layer = layer;
-            Descriptor = descriptor;
-        }
-
-        #region Properties
-
-        /// <summary>
-        ///     Gets the properties of this brush.
-        /// </summary>
-        public T Properties
-        {
-            get
-            {
-                // I imagine a null reference here can be confusing, so lets throw an exception explaining what to do
-                if (_properties == null)
-                    throw new ArtemisPluginException("Cannot access brush properties until OnPropertiesInitialized has been called");
-                return _properties;
-            }
-            internal set => _properties = value;
+            BrushType = LayerBrushType.Regular;
         }
 
         /// <summary>
-        ///     Gets whether all properties on this brush are initialized
+        ///     The main method of rendering anything to the layer. The provided <see cref="SKCanvas" /> is specific to the layer
+        ///     and matches it's width and height.
+        ///     <para>Called during rendering or layer preview, in the order configured on the layer</para>
         /// </summary>
-        public bool PropertiesInitialized { get; private set; }
+        /// <param name="canvas">The layer canvas</param>
+        /// <param name="canvasInfo"></param>
+        /// <param name="path">The path to be filled, represents the shape</param>
+        /// <param name="paint">The paint to be used to fill the shape</param>
+        public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
+        
+        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        {
+            Render(canvas, canvasInfo, path, paint);
+        }
 
-        /// <summary>
-        ///     Called when all layer properties in this brush have been initialized
-        /// </summary>
-        protected virtual void OnPropertiesInitialized()
+        internal override IBrush InternalGetBrush()
+        {
+            throw new NotImplementedException("Regular layer brushes do not implement InternalGetBrush");
+        }
+
+        internal override void Initialize(ILayerService layerService)
+        {
+            InitializeProperties(layerService);
+        }
+
+        protected virtual void Dispose(bool disposing)
         {
         }
 
-        /// <inheritdoc/>
-        public override LayerPropertyGroup BaseProperties => Properties;
-
-        internal override void InitializeProperties(ILayerService layerService, string path)
+        public sealed override void Dispose()
         {
-            Properties = Activator.CreateInstance<T>();
-            Properties.InitializeProperties(layerService, Layer, path);
-            OnPropertiesInitialized();
-            PropertiesInitialized = true;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
-
-        internal virtual void ApplyToEntity()
-        {
-            Properties.ApplyToEntity();
-        }
-
-        internal virtual void OverrideProperties(TimeSpan overrideTime)
-        {
-            Properties.Override(overrideTime);
-        }
-
-        internal virtual IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
-        {
-            return Properties.GetAllLayerProperties();
-        }
-
-        #endregion
     }
 }

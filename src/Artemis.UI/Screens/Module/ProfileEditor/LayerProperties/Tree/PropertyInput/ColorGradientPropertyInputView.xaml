@@ -5,16 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:propertyInput="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance propertyInput:ColorGradientPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
         <TextBlock Margin="0 0 5 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.PropertyDescription.InputPrefix}" />
         <controls:GradientPicker Width="132"
-                                Margin="0 2"
-                                Padding="0 -1"
-                                ColorGradient="{Binding InputValue}" 
-                                DialogHost="PropertyTreeDialogHost"/>
+                                 Margin="0 2"
+                                 Padding="0 -1"
+                                 ColorGradient="{Binding InputValue}"
+                                 DialogClosed="{s:Action DialogClosed}"
+                                 DialogHost="PropertyTreeDialogHost" />
         <TextBlock Margin="5 0 0 4" Width="10" VerticalAlignment="Bottom" Text="{Binding LayerPropertyViewModel.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

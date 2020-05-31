@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -16,7 +16,6 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services.Interfaces;
-using RGB.NET.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
@@ -30,6 +29,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private readonly ISurfaceService _surfaceService;
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
+        private Layer _previousSelectedLayer;
         private int _previousTool;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
@@ -119,6 +119,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
+        public List<ArtemisLed> GetLedsInRectangle(Rect selectedRect)
+        {
+            return Devices.SelectMany(d => d.Leds)
+                .Where(led => led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1).IntersectsWith(selectedRect))
+                .ToList();
+        }
+
         protected override void OnInitialActivate()
         {
             OnlyShowSelectedShape = _settingsService.GetSetting("ProfileEditor.OnlyShowSelectedShape", true);
@@ -132,7 +139,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             base.OnInitialActivate();
         }
-        
+
         protected override void OnClose()
         {
             HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
@@ -187,6 +194,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             HighlightedLeds.Clear();
             if (HighlightSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
                 HighlightedLeds.AddRange(layer.Leds);
+        }
+
+        private void UpdateCanSelectEditTool()
+        {
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+            {
+                CanApplyToLayer = true;
+                CanSelectEditTool = (layer.LayerBrush == null || layer.LayerBrush.BrushType == LayerBrushType.Regular) && layer.Leds.Any();
+            }
+            else
+            {
+                CanApplyToLayer = false;
+                CanSelectEditTool = false;
+            }
+
+            if (CanSelectEditTool == false && ActiveToolIndex == 1)
+                ActivateToolByIndex(2);
         }
 
         #region Buttons
@@ -300,22 +324,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void OnProfileElementSelected(object sender, EventArgs e)
         {
-            UpdateLedsDimStatus();
+            if (_previousSelectedLayer != null)
+                _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
             if (_profileEditorService.SelectedProfileElement is Layer layer)
             {
-                CanApplyToLayer = true;
-                CanSelectEditTool = layer.Leds.Any();
+                _previousSelectedLayer = layer;
+                _previousSelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
             }
             else
-            {
-                CanApplyToLayer = false;
-                CanSelectEditTool = false;
-            }
-            if (CanSelectEditTool == false && ActiveToolIndex == 1)
-                ActivateToolByIndex(2);
+                _previousSelectedLayer = null;
+
+            UpdateLedsDimStatus();
+            UpdateCanSelectEditTool();
         }
 
-        
+        private void SelectedLayerOnLayerBrushUpdated(object? sender, EventArgs e)
+        {
+            UpdateCanSelectEditTool();
+        }
 
         private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
         {
@@ -331,6 +357,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 CanApplyToLayer = false;
                 CanSelectEditTool = false;
             }
+
             if (CanSelectEditTool == false && ActiveToolIndex == 1)
                 ActivateToolByIndex(2);
         }
@@ -376,12 +403,5 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         }
 
         #endregion
-
-        public List<ArtemisLed> GetLedsInRectangle(Rect selectedRect)
-        {
-            return Devices.SelectMany(d => d.Leds)
-                .Where(led => led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1).IntersectsWith(selectedRect))
-                .ToList();
-        }
     }
 }

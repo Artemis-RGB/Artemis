@@ -27,7 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdateKeyframes();
         }
 
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
                 timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);

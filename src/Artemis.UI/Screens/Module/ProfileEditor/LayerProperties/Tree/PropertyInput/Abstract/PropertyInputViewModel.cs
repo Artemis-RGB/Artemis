@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
                 Validate();
         }
 
-        private void ApplyInputValue()
+        protected void ApplyInputValue()
         {
             // Force the validator to run
             if (Validator != null)

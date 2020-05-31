@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
@@ -85,7 +87,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(() => TimeCaretPosition);
         }
 
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
@@ -128,17 +130,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
 
-                if (layer.LayerBrush != null)
-                {
-                    // Add the rout group of the brush
-                    // The root group of the brush has no attribute so let's pull one out of our sleeve
-                    var brushDescription = new PropertyGroupDescriptionAttribute
-                    {
-                        Name = layer.LayerBrush.Descriptor.DisplayName,
-                        Description = layer.LayerBrush.Descriptor.Description
-                    };
-                    LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.LayerBrush.BaseProperties, brushDescription));
-                }
+                ApplyLayerBrush();
             }
             else
                 SelectedLayer = null;
@@ -149,6 +141,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
         {
+            ApplyLayerBrush();
+        }
+
+        public void ApplyLayerBrush()
+        {
+            var hideRenderRelatedProperties = SelectedLayer.LayerBrush != null && SelectedLayer.LayerBrush.BrushType == LayerBrushType.RgbNet;
+            SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
+            SelectedLayer.General.FillType.IsHidden = hideRenderRelatedProperties;
+            SelectedLayer.General.BlendMode.IsHidden = hideRenderRelatedProperties;
+            SelectedLayer.Transform.IsHidden = hideRenderRelatedProperties;
+
             // Get rid of the old layer properties group
             if (LayerPropertyGroups.Count == 3)
             {
@@ -167,6 +170,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 };
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, SelectedLayer.LayerBrush.BaseProperties, brushDescription));
             }
+
+            TimelineViewModel.UpdateKeyframes();
         }
 
         #endregion

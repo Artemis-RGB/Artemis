@@ -1,17 +1,25 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using RGB.NET.Core;
+using RGB.NET.Groups;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerBrush
 {
     /// <summary>
-    ///     A basic layer brush that does not implement any layer property, to use properties with persistent storage,
-    ///     implement <see cref="LayerBrush{T}" /> instead
+    ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
     /// </summary>
     public abstract class BaseLayerBrush : IDisposable
     {
+        protected BaseLayerBrush(Layer layer, LayerBrushDescriptor descriptor)
+        {
+            Layer = layer;
+            Descriptor = descriptor;
+        }
+
         /// <summary>
         ///     Gets the layer this brush is applied to
         /// </summary>
@@ -27,38 +35,43 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// </summary>
         public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
 
-        public virtual LayerPropertyGroup BaseProperties => null;
+        /// <summary>
+        ///     Gets the type of layer brush
+        /// </summary>
+        public LayerBrushType BrushType { get; internal set; }
 
+        /// <summary>
+        ///     Gets a reference to the layer property group without knowing it's type
+        /// </summary>
+        public virtual LayerPropertyGroup BaseProperties => null;
+        
         /// <summary>
         ///     Called when the brush is being removed from the layer
         /// </summary>
-        public virtual void Dispose()
-        {
-        }
+        public abstract void Dispose();
 
         /// <summary>
         ///     Called before rendering every frame, write your update logic here
         /// </summary>
         /// <param name="deltaTime"></param>
-        public virtual void Update(double deltaTime)
-        {
-        }
+        public abstract void Update(double deltaTime);
+
+        // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
+        // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
+        internal abstract void Initialize(ILayerService layerService);
+
+        internal abstract void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
 
         /// <summary>
-        ///     The main method of rendering anything to the layer. The provided <see cref="SKCanvas" /> is specific to the layer
-        ///     and matches it's width and height.
-        ///     <para>Called during rendering or layer preview, in the order configured on the layer</para>
+        ///     Called when Artemis needs an instance of the RGB.NET brush you are implementing
         /// </summary>
-        /// <param name="canvas">The layer canvas</param>
-        /// <param name="canvasInfo"></param>
-        /// <param name="path">The path to be filled, represents the shape</param>
-        /// <param name="paint">The paint to be used to fill the shape</param>
-        public virtual void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
-        {
-        }
+        /// <returns>Your RGB.NET brush</returns>
+        internal abstract IBrush InternalGetBrush();
+    }
 
-        internal virtual void InitializeProperties(ILayerService layerService, string path)
-        {
-        }
+    public enum LayerBrushType
+    {
+        Regular,
+        RgbNet
     }
 }
