@@ -26,8 +26,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
                 _color = Properties.Color.CurrentValue;
                 CreateShader();
             }
-
-            base.Update(deltaTime);
         }
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
@@ -42,6 +40,17 @@ namespace Artemis.Plugins.LayerBrushes.Color
             canvas.DrawPath(path, paint);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _paint?.Dispose();
+                _shader?.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+        
         protected override void OnPropertiesInitialized()
         {
             Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Shared.Screens.GradientEditor;
@@ -15,12 +16,11 @@ namespace Artemis.UI.Shared.Services
             _dialogService = dialogService;
         }
 
-        public void ShowGradientPicker(ColorGradient colorGradient, string dialogHost)
+        public Task<object> ShowGradientPicker(ColorGradient colorGradient, string dialogHost)
         {
             if (!string.IsNullOrWhiteSpace(dialogHost))
-                _dialogService.ShowDialogAt<GradientEditorViewModel>(dialogHost, new Dictionary<string, object> {{"colorGradient", colorGradient}});
-            else
-                _dialogService.ShowDialog<GradientEditorViewModel>(new Dictionary<string, object> {{"colorGradient", colorGradient}});
+                return _dialogService.ShowDialogAt<GradientEditorViewModel>(dialogHost, new Dictionary<string, object> {{"colorGradient", colorGradient}});
+            return _dialogService.ShowDialog<GradientEditorViewModel>(new Dictionary<string, object> {{"colorGradient", colorGradient}});
         }
     }
 }

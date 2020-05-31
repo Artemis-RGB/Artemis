@@ -58,8 +58,8 @@ namespace Artemis.Core.Services
                 new ConstructorArgument("layer", layer),
                 new ConstructorArgument("descriptor", descriptor)
             };
-            layer.LayerBrush = (BaseLayerBrush)_kernel.Get(descriptor.LayerBrushType, arguments); ;
-            layer.LayerBrush.InitializeProperties(this, "LayerBrush.");
+            layer.LayerBrush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
+            layer.LayerBrush.Initialize(this);
             layer.OnLayerBrushUpdated();
             return layer.LayerBrush;
         }

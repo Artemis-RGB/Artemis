@@ -204,7 +204,7 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized)
+            if (LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
             var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
@@ -269,6 +269,9 @@ namespace Artemis.Core.Models.Profile
 
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
+            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized || LayerBrush.BrushType != LayerBrushType.Regular) 
+                return;
+
             // Apply transformations
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
@@ -285,12 +288,14 @@ namespace Artemis.Core.Models.Profile
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            if (LayerBrush != null && LayerBrush.BaseProperties.PropertiesInitialized)
-                LayerBrush.Render(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
         }
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
+            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized || LayerBrush.BrushType != LayerBrushType.Regular)
+                return;
+
             // Apply transformations
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
@@ -321,7 +326,8 @@ namespace Artemis.Core.Models.Profile
             );
             var renderPath = new SKPath();
             renderPath.AddRect(boundsRect);
-            LayerBrush?.Render(canvas, canvasInfo, renderPath, paint);
+
+            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         internal void CalculateRenderProperties()

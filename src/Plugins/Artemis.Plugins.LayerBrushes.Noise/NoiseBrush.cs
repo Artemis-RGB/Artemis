@@ -47,7 +47,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 _z = 0;
 
             DetermineRenderScale();
-            base.Update(deltaTime);
         }
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
@@ -103,6 +102,16 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
             paint.Shader = foregroundShader;
             canvas.DrawRect(path.Bounds, paint);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _bitmap?.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         protected override void OnPropertiesInitialized()

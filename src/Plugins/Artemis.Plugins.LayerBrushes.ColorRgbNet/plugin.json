@@ -1,0 +1,7 @@
+﻿{
+  "Guid": "0bbf931b-87ad-4809-9cd9-bda33f4d4695",
+  "Name": "RGB.NET Color layer brush",
+  "Description": "A basic RGB.NET-based color layer-brush providing solid colors and several types of gradients.",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.LayerBrushes.ColorRgbNet.dll"
+}

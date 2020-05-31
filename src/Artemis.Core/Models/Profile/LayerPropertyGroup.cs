@@ -165,6 +165,9 @@ namespace Artemis.Core.Models.Profile
 
         internal void ApplyToEntity()
         {
+            if (!PropertiesInitialized)
+                return;
+
             // Get all properties with a PropertyDescriptionAttribute
             foreach (var propertyInfo in GetType().GetProperties())
             {
