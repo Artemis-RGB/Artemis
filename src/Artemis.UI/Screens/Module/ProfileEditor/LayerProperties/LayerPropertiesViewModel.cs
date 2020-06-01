@@ -129,14 +129,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 );
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
                 LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
-
-                ApplyLayerBrush();
             }
             else
                 SelectedLayer = null;
 
             TreeViewModel = new TreeViewModel(this, LayerPropertyGroups);
             TimelineViewModel = new TimelineViewModel(this, LayerPropertyGroups);
+
+            ApplyLayerBrush();
         }
 
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
@@ -146,6 +146,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public void ApplyLayerBrush()
         {
+            if (SelectedLayer == null)
+                return;
+
             var hideRenderRelatedProperties = SelectedLayer.LayerBrush != null && SelectedLayer.LayerBrush.BrushType == LayerBrushType.RgbNet;
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.FillType.IsHidden = hideRenderRelatedProperties;

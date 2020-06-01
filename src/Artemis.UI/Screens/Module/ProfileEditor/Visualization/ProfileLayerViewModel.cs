@@ -61,55 +61,57 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void CreateLayerGeometry()
         {
-            if (!Layer.Leds.Any())
-            {
-                LayerGeometry = Geometry.Empty;
-                OpacityGeometry = Geometry.Empty;
-                ViewportRectangle = Rect.Empty;
-                return;
-            }
-
-            var group = new GeometryGroup();
-            group.FillRule = FillRule.Nonzero;
-
-            foreach (var led in Layer.Leds)
-            {
-                Geometry geometry;
-                switch (led.RgbLed.Shape)
-                {
-                    case Shape.Custom:
-                        if (led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
-                            geometry = CreateCustomGeometry(led, 2);
-                        else
-                            geometry = CreateCustomGeometry(led, 1);
-                        break;
-                    case Shape.Rectangle:
-                        geometry = CreateRectangleGeometry(led);
-                        break;
-                    case Shape.Circle:
-                        geometry = CreateCircleGeometry(led);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                group.Children.Add(geometry);
-            }
-
-            var layerGeometry = group.GetOutlinedPathGeometry();
-            var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
-
-            LayerGeometry = layerGeometry;
-            OpacityGeometry = opacityGeometry;
-
-            // Render the store as a bitmap 
             Execute.OnUIThread(() =>
             {
+                if (!Layer.Leds.Any())
+                {
+                    LayerGeometry = Geometry.Empty;
+                    OpacityGeometry = Geometry.Empty;
+                    ViewportRectangle = Rect.Empty;
+                    return;
+                }
+
+                var group = new GeometryGroup();
+                group.FillRule = FillRule.Nonzero;
+
+                foreach (var led in Layer.Leds)
+                {
+                    Geometry geometry;
+                    switch (led.RgbLed.Shape)
+                    {
+                        case Shape.Custom:
+                            if (led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
+                                geometry = CreateCustomGeometry(led, 2);
+                            else
+                                geometry = CreateCustomGeometry(led, 1);
+                            break;
+                        case Shape.Rectangle:
+                            geometry = CreateRectangleGeometry(led);
+                            break;
+                        case Shape.Circle:
+                            geometry = CreateCircleGeometry(led);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    group.Children.Add(geometry);
+                }
+
+
+                var layerGeometry = group.GetOutlinedPathGeometry();
+                var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
+
+                LayerGeometry = layerGeometry;
+                OpacityGeometry = opacityGeometry;
+
+                // Render the store as a bitmap 
+
                 var drawingImage = new DrawingImage(new GeometryDrawing(new SolidColorBrush(Colors.Black), null, LayerGeometry));
-                var image = new Image { Source = drawingImage };
+                var image = new Image {Source = drawingImage};
                 var bitmap = new RenderTargetBitmap(
-                    (int)(LayerGeometry.Bounds.Width * 2.5),
-                    (int)(LayerGeometry.Bounds.Height * 2.5),
+                    (int) (LayerGeometry.Bounds.Width * 2.5),
+                    (int) (LayerGeometry.Bounds.Height * 2.5),
                     96,
                     96,
                     PixelFormats.Pbgra32
@@ -119,7 +121,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 bitmap.Freeze();
                 LayerGeometryBitmap = bitmap;
             });
-            
         }
 
         private void CreateShapeGeometry()
