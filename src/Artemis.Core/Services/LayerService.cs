@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
@@ -25,6 +26,7 @@ namespace Artemis.Core.Services
         public Layer CreateLayer(Profile profile, ProfileElement parent, string name)
         {
             var layer = new Layer(profile, parent, name);
+            parent.AddChild(layer);
 
             // Layers have two hardcoded property groups, instantiate them
             layer.General.InitializeProperties(this, layer, "General.");
@@ -60,6 +62,7 @@ namespace Artemis.Core.Services
             };
             layer.LayerBrush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
             layer.LayerBrush.Initialize(this);
+            layer.LayerBrush.Update(0);
             layer.OnLayerBrushUpdated();
             return layer.LayerBrush;
         }

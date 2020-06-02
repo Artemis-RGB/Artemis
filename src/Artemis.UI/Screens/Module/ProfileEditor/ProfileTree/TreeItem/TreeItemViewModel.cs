@@ -122,8 +122,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            var layer = _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
-            ProfileElement.AddChild(layer);
+            _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
             UpdateProfileElements();
             _profileEditorService.UpdateSelectedProfile();
         }

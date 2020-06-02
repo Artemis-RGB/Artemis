@@ -9,6 +9,7 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Extensions;
@@ -24,6 +25,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly ILayerEditorService _layerEditorService;
+        private readonly ILayerService _layerService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileLayerVmFactory _profileLayerVmFactory;
         private readonly ISettingsService _settingsService;
@@ -35,6 +37,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
             ILayerEditorService layerEditorService,
+            ILayerService layerService,
             ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
@@ -42,6 +45,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         {
             _profileEditorService = profileEditorService;
             _layerEditorService = layerEditorService;
+            _layerService = layerService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
             _profileLayerVmFactory = profileLayerVmFactory;
@@ -228,7 +232,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                     ActiveToolViewModel = new EditToolViewModel(this, _profileEditorService, _layerEditorService);
                     break;
                 case 2:
-                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService, _layerService);
                     break;
                 case 3:
                     ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);

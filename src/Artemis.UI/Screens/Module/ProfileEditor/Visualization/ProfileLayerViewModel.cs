@@ -55,6 +55,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void Update()
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
+
             CreateLayerGeometry();
             CreateShapeGeometry();
             CreateViewportRectangle();
@@ -223,6 +224,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         private void ProfileEditorServiceOnProfilePreviewUpdated(object sender, EventArgs e)
         {
+            if (!Layer.Transform.PropertiesInitialized || !Layer.General.PropertiesInitialized)
+                return;
+
             CreateShapeGeometry();
             CreateViewportRectangle();
         }
