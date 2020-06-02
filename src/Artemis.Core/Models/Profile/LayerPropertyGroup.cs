@@ -130,14 +130,17 @@ namespace Artemis.Core.Models.Profile
                 if (propertyDescription != null)
                 {
                     if (!typeof(BaseLayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
-                        throw new ArtemisPluginException("Layer property with PropertyDescription attribute must be of type LayerProperty");
+                        throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path + propertyInfo.Name}");
 
                     var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
-                    instance.Parent = this;
-                    instance.PropertyDescription = (PropertyDescriptionAttribute)propertyDescription;
+                    if (instance == null)
+                        throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
+
                     instance.Layer = layer;
-                    
+                    instance.Parent = this;
+                    instance.PropertyDescription = (PropertyDescriptionAttribute) propertyDescription;
                     InitializeProperty(layer, path + propertyInfo.Name, instance);
+
                     propertyInfo.SetValue(this, instance);
                     _layerProperties.Add(instance);
                 }
@@ -150,16 +153,23 @@ namespace Artemis.Core.Models.Profile
                             throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
 
                         var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
+                        if (instance == null)
+                            throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
+
                         instance.Parent = this;
-                        instance.GroupDescription = (PropertyGroupDescriptionAttribute)propertyGroupDescription;
+                        instance.GroupDescription = (PropertyGroupDescriptionAttribute) propertyGroupDescription;
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
+
                         propertyInfo.SetValue(this, instance);
                         _layerPropertyGroups.Add(instance);
                     }
                 }
             }
 
+            // Request the property group to populate defaults
             PopulateDefaults();
+
+            // Apply the newly populated defaults
             foreach (var layerProperty in _layerProperties.Where(p => !p.IsLoadedFromStorage))
                 layerProperty.ApplyDefaultValue();
 
@@ -167,7 +177,7 @@ namespace Artemis.Core.Models.Profile
             PropertiesInitialized = true;
             OnPropertyGroupInitialized();
         }
-        
+
         internal void ApplyToEntity()
         {
             if (!PropertiesInitialized)

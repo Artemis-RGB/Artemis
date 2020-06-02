@@ -72,14 +72,6 @@ namespace Artemis.Core.Models.Profile
             return folder;
         }
 
-        public Layer AddLayer(string name)
-        {
-            var layer = new Layer(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
-            layer.LayerShape = new Rectangle(layer);
-            AddChild(layer);
-            return layer;
-        }
-
         public override string ToString()
         {
             return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";

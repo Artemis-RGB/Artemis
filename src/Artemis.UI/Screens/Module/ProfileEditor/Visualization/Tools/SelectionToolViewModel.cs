@@ -3,6 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Properties;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -11,8 +13,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public class SelectionToolViewModel : VisualizationToolViewModel
     {
-        public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        private readonly ILayerService _layerService;
+
+        public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerService layerService)
+            : base(profileViewModel, profileEditorService)
         {
+            _layerService = layerService;
             using (var stream = new MemoryStream(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
@@ -48,19 +54,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             // If no layer selected, apply it to a new layer in the selected folder
             else if (ProfileEditorService.SelectedProfileElement is Folder folder)
             {
-                var newLayer = folder.AddLayer("New layer");
+                var newLayer = _layerService.CreateLayer(folder.Profile, folder, "New layer");
                 newLayer.AddLeds(selectedLeds);
                 ProfileEditorService.ChangeSelectedProfileElement(newLayer);
                 ProfileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.UpdateSelectedProfile();
             }
             // If no folder selected, apply it to a new layer in the root folder
             else
             {
                 var rootFolder = ProfileEditorService.SelectedProfile.GetRootFolder();
-                var newLayer = rootFolder.AddLayer("New layer");
+                var newLayer = _layerService.CreateLayer(rootFolder.Profile, rootFolder, "New layer");
                 newLayer.AddLeds(selectedLeds);
                 ProfileEditorService.ChangeSelectedProfileElement(newLayer);
                 ProfileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.UpdateSelectedProfile();
             }
         }
 

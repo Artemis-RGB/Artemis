@@ -141,8 +141,8 @@ namespace Artemis.UI.Shared.Controls
             var drawingImage = new DrawingImage(opacityDrawingGroup);
             var image = new Image {Source = drawingImage};
             var bitmap = new RenderTargetBitmap(
-                (int) (opacityDrawingGroup.Bounds.Width * 2.5),
-                (int) (opacityDrawingGroup.Bounds.Height * 2.5),
+                Math.Max(1, (int) (opacityDrawingGroup.Bounds.Width * 2.5)),
+                Math.Max(1, (int) (opacityDrawingGroup.Bounds.Height * 2.5)),
                 96,
                 96,
                 PixelFormats.Pbgra32
@@ -181,7 +181,6 @@ namespace Artemis.UI.Shared.Controls
                     deviceVisualizerLed.RenderColor(drawingContext, false);
             }
             
-
             drawingContext.Close();
         }
     }
