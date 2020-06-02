@@ -16,7 +16,7 @@ namespace Artemis.Plugins.Devices.Novation
             _rgbService = rgbService;
         }
 
-        public override void EnablePlugin()
+        protected override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(NovationRGBDevice<>), sender, args);
             _rgbService.AddDeviceProvider(RgbDeviceProvider);

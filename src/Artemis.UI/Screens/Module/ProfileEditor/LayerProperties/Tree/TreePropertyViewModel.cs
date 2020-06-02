@@ -3,8 +3,8 @@ using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Utilities;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.PropertyInput;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
@@ -47,7 +47,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
                 ));
             }
             // If disabling keyframes, set the base value to the current value
-            else if (!enable && LayerPropertyViewModel.LayerProperty.Keyframes.Any()) 
+            else if (!enable && LayerPropertyViewModel.LayerProperty.Keyframes.Any())
                 LayerPropertyViewModel.LayerProperty.BaseValue = LayerPropertyViewModel.LayerProperty.CurrentValue;
 
             LayerPropertyViewModel.LayerProperty.KeyframesEnabled = enable;

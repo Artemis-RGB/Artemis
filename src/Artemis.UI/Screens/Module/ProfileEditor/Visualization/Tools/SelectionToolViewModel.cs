@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Properties;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {

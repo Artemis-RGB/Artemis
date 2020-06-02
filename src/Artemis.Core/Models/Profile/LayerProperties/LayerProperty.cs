@@ -18,7 +18,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public abstract class LayerProperty<T> : BaseLayerProperty
+    public class LayerProperty<T> : BaseLayerProperty
     {
         private T _baseValue;
         private T _currentValue;
@@ -172,7 +172,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         /// <param name="keyframeProgress">The linear current keyframe progress</param>
         /// <param name="keyframeProgressEased">The current keyframe progress, eased with the current easing function</param>
-        protected abstract void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased);
+        protected virtual void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         ///     Updates the property, moving the timeline forwards by the provided <paramref name="deltaTime" />

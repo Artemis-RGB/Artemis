@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
@@ -74,6 +75,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public bool IsCoreProperty { get; internal set; }
 
+        public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
+
         /// <summary>
         ///     Gets a list of all the keyframes in their non-generic base form, without their values being available
         /// </summary>
@@ -81,7 +84,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         internal PropertyEntity PropertyEntity { get; set; }
         internal LayerPropertyGroup LayerPropertyGroup { get; set; }
-
+        
 
         /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values

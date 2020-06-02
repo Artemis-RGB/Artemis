@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
+using Artemis.Core;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Services;
+using Artemis.UI.PropertyInput;
+using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 
@@ -12,10 +17,24 @@ namespace Artemis.UI.Services
     public class LayerEditorService : ILayerEditorService
     {
         private readonly ISettingsService _settingsService;
+        private readonly IProfileEditorService _profileEditorService;
 
-        public LayerEditorService(ISettingsService settingsService)
+        public LayerEditorService(ISettingsService settingsService, IProfileEditorService profileEditorService)
         {
             _settingsService = settingsService;
+            _profileEditorService = profileEditorService;
+            RegisterBuiltInPropertyEditors();
+        }
+
+        private void RegisterBuiltInPropertyEditors()
+        {
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(BrushPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(ColorGradientPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(FloatPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(IntPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKColorPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKPointPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKSizePropertyInputViewModel));
         }
 
         /// <inheritdoc />

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Utilities;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline

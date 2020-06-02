@@ -18,29 +18,34 @@ namespace Artemis.Core.Plugins.Abstract
         public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
+        ///     Gets whether the plugin is enabled
+        /// </summary>
+        public bool Enabled { get; private set; }
+
+        /// <summary>
         ///     Gets or sets whether this plugin has a configuration view model.
         ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
         /// </summary>
         public bool HasConfigurationViewModel { get; protected set; }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Called when the plugin is unloaded, clean up any unmanaged resources here
-        /// </summary>
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <summary>
         ///     Called when the plugin is activated
         /// </summary>
-        public abstract void EnablePlugin();
+        protected abstract void EnablePlugin();
 
         /// <summary>
         ///     Called when the plugin is deactivated
         /// </summary>
-        public abstract void DisablePlugin();
+        protected abstract void DisablePlugin();
 
         /// <summary>
-        ///     Called when the plugin's configuration window is opened from the UI. The UI will only attempt to open if
+        ///     Called when the plugins configuration window is opened from the UI. The UI will only attempt to open if
         ///     <see cref="HasConfigurationViewModel" /> is set to True.
         /// </summary>
         /// <returns></returns>
@@ -48,5 +53,49 @@ namespace Artemis.Core.Plugins.Abstract
         {
             return null;
         }
+
+        /// <summary>
+        ///     Called when Artemis shuts down
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        internal void SetEnabled(bool enable)
+        {
+            if (enable && !Enabled)
+            {
+                EnablePlugin();
+                OnPluginEnabled();
+            }
+            else if (!enable && Enabled)
+            {
+                DisablePlugin();
+                OnPluginDisabled();
+            }
+
+            Enabled = enable;
+        }
+
+        #region Events
+
+        public event EventHandler PluginEnabled;
+        public event EventHandler PluginDisabled;
+
+        protected virtual void OnPluginEnabled()
+        {
+            PluginEnabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPluginDisabled()
+        {
+            PluginDisabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

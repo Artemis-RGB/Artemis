@@ -17,7 +17,7 @@ namespace Artemis.Plugins.Devices.DMX
             HasConfigurationViewModel = true;
         }
 
-        public override void EnablePlugin()
+        protected override void EnablePlugin()
         {
             // TODO: Load from configuration
             // RGB.NET.Devices.DMX.DMXDeviceProvider.Instance.AddDeviceDefinition();

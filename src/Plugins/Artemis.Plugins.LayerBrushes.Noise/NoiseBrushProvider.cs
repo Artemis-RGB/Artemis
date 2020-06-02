@@ -10,15 +10,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             AddLayerBrushDescriptor<NoiseBrush>("Noise", "A brush of that shows an animated random noise", "ScatterPlot");
         }
 
-        public override void EnablePlugin()
+        protected override void EnablePlugin()
         {
         }
 
-        public override void DisablePlugin()
-        {
-        }
-
-        public override void Dispose()
+        protected override void DisablePlugin()
         {
         }
     }

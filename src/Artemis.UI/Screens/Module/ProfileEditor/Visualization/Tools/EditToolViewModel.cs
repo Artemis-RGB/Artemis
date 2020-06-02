@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
