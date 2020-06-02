@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.UI.Events;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.Core.Plugins.Models;
+using Artemis.UI.Shared.Events;
+using Artemis.UI.Shared.PropertyInput;
+using Ninject;
 
-namespace Artemis.UI.Services.Interfaces
+namespace Artemis.UI.Shared.Services.Interfaces
 {
-    public interface IProfileEditorService : IArtemisUIService
+    public interface IProfileEditorService : IArtemisSharedUIService
     {
         Profile SelectedProfile { get; }
         ProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
+        IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
+        IKernel Kernel { get; }
 
-        LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription);
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(ProfileElement profileElement);
@@ -63,6 +63,7 @@ namespace Artemis.UI.Services.Interfaces
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
 
-        TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel);
+        PropertyInputRegistration RegisterPropertyInput(PluginInfo pluginInfo, Type viewModelType);
+        void RemovePropertyInput(PropertyInputRegistration registration);
     }
 }

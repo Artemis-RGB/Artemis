@@ -16,6 +16,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
@@ -338,7 +339,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             UpdateCanSelectEditTool();
         }
 
-        private void SelectedLayerOnLayerBrushUpdated(object? sender, EventArgs e)
+        private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
         {
             UpdateCanSelectEditTool();
         }

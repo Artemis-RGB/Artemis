@@ -1,0 +1,565 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AssemblyTitle>Artemis</AssemblyTitle>
+    <Product>Artemis</Product>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>Adds third-party support for RGB keyboards to games.</Description>
+    <Copyright>Copyright © Robert Beekman - 2019</Copyright>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent />
+  </PropertyGroup>
+  <Target Name="SkiaCleanUpAfterBuild" AfterTargets="AfterBuild">
+    <Delete Files="$(OutputPath)\libSkiaSharp.dylib" />
+  </Target>
+  <Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
+    <RemoveDir Directories="@(FluentValidationExcludedCultures-&gt;'$(OutputPath)%(Filename)')" />
+  </Target>
+  <ItemGroup>
+    <Compile Remove="publish\**" />
+    <EmbeddedResource Remove="publish\**" />
+    <None Remove="publish\**" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+      <Private>true</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4.1" />
+    <PackageReference Include="FluentValidation" Version="8.6.2" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="2.2.0" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.10" />
+    <PackageReference Include="Humanizer.Core" Version="2.8.11" />
+    <PackageReference Include="MaterialDesignExtensions" Version="3.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="Ninject" Version="3.3.4" />
+    <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.2.8" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="1.68.3" />
+    <PackageReference Include="Stylet" Version="1.3.2" />
+    <PackageReference Include="System.Buffers" Version="4.5.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.Management" Version="4.7.0" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="obj\x64\Debug\App.g.cs" />
+    <Compile Remove="obj\x64\Debug\App.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.cs" />
+    <Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.i.cs" />
+    <Compile Remove="obj\x64\Release\App.g.cs" />
+    <Compile Remove="obj\x64\Release\GeneratedInternalTypeHelper.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\RootView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\RootView.g.i.cs" />
+    <Compile Remove="obj\x64\Release\Screens\RootView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.i.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Dialogs\ConfirmDialogView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Home\HomeView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ModuleRootView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\News\NewsView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Settings\SettingsView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Splash\SplashView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Workshop\WorkshopView.g.cs" />
+    <Compile Remove="Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyRailItemView.xaml.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.i.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Settings\Debug\DebugView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.i.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyRailItemView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePartView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineTimeView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView - Copy.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.i.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+    <None Remove="Resources\Images\Logo\logo-512.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\Accessibility.dll" />
+    <ReferencePath Include="C:\Repos\Artemis\src\Artemis.Core\bin\AnyCPU\Debug\netcoreapp3.1\Artemis.Core.dll" />
+    <ReferencePath Include="C:\Repos\Artemis\src\Artemis.Storage\bin\Debug\netcoreapp3.1\Artemis.Storage.dll" />
+    <ReferencePath Include="C:\Repos\Artemis\src\Artemis.UI.Shared\bin\AnyCPU\Debug\netcoreapp3.1\Artemis.UI.Shared.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\ben.demystifier\0.1.6\lib\netstandard2.0\Ben.Demystifier.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\castle.core\4.4.1\lib\netstandard1.5\Castle.Core.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\fastmember\1.5.0\lib\netcoreapp2.0\FastMember.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\fluentvalidation\8.6.2\lib\netstandard2.0\FluentValidation.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\gong-wpf-dragdrop\2.2.0\lib\netcoreapp3.1\GongSolutions.WPF.DragDrop.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\hardcodet.notifyicon.wpf.netcore\1.0.10\lib\netcoreapp3.0\Hardcodet.Wpf.TaskbarNotification.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\hidsharp\2.1.0\lib\netstandard2.0\HidSharp.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\humanizer.core\2.8.11\lib\netstandard2.0\Humanizer.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\avalonedit\6.0.1\lib\netcoreapp3.0\ICSharpCode.AvalonEdit.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\litedb\5.0.8\lib\netstandard2.0\LiteDB.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\materialdesigncolors\1.2.6\lib\netcoreapp3.1\MaterialDesignColors.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\materialdesignextensions\3.1.0\lib\netcoreapp3.1\MaterialDesignExtensions.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\materialdesignthemes\3.1.3\lib\netcoreapp3.1\MaterialDesignThemes.Wpf.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\mcmaster.netcore.plugins\1.3.0\lib\netcoreapp3.0\McMaster.NETCore.Plugins.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.CSharp.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\microsoft.dotnet.platformabstractions\3.1.0\lib\netstandard2.0\Microsoft.DotNet.PlatformAbstractions.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\microsoft.extensions.dependencymodel\3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyModel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.Core.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.VisualBasic.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Win32.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Win32.Registry.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Win32.Registry.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\microsoft.xaml.behaviors.wpf\1.1.19\lib\netcoreapp3.0\Microsoft.Xaml.Behaviors.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\mscorlib.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\netstandard.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\newtonsoft.json\12.0.3\lib\netstandard2.0\Newtonsoft.Json.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\ninject\3.3.4\lib\netstandard2.0\Ninject.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\ninject.extensions.childkernel\3.3.0\lib\netstandard2.0\Ninject.Extensions.ChildKernel.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\ninject.extensions.conventions\3.3.0\lib\netstandard2.0\Ninject.Extensions.Conventions.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\ninject.extensions.factory\3.3.2\lib\netstandard2.0\Ninject.Extensions.Factory.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.Aero.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.Aero2.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.AeroLite.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.Classic.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.Luna.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationFramework.Royale.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\PresentationUI.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\propertychanged.fody\3.2.8\lib\netstandard1.0\PropertyChanged.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\ReachFramework.dll" />
+    <ReferencePath Include="C:\Repos\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll" />
+    <ReferencePath Include="C:\Repos\RGB.NET\bin\netstandard2.0\RGB.NET.Groups.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\serilog\2.9.0\lib\netstandard2.0\Serilog.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\serilog.enrichers.demystify\1.0.0-dev-00019\lib\netstandard2.0\Serilog.Enrichers.Demystify.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\serilog.sinks.debug\1.0.1\lib\netstandard2.0\Serilog.Sinks.Debug.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\serilog.sinks.file\4.1.0\lib\netstandard2.0\Serilog.Sinks.File.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\skiasharp\1.68.3\lib\netstandard2.0\SkiaSharp.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\skiasharp.views.desktop.common\1.68.3\lib\netcoreapp3.0\SkiaSharp.Views.Desktop.Common.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\skiasharp.views.wpf\1.68.3\lib\netcoreapp3.0\SkiaSharp.Views.WPF.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\stylet\1.3.2\lib\netcoreapp3.0\Stylet.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.AppContext.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Buffers.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.CodeDom.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.Concurrent.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.Immutable.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.NonGeneric.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Collections.Specialized.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.Annotations.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.DataAnnotations.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.EventBasedAsync.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ComponentModel.TypeConverter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Configuration.ConfigurationManager.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Configuration.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Console.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Data.Common.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.Contracts.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.Debug.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.EventLog.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.FileVersionInfo.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.PerformanceCounter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.Process.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.StackTrace.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.TextWriterTraceListener.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.Tools.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.TraceSource.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Diagnostics.Tracing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.DirectoryServices.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Drawing.Common.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Drawing.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Drawing.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Dynamic.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Globalization.Calendars.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Globalization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Globalization.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Compression.Brotli.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Compression.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Compression.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Compression.ZipFile.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.FileSystem.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.FileSystem.DriveInfo.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.FileSystem.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.FileSystem.Watcher.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.IsolatedStorage.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.MemoryMappedFiles.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Packaging.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Pipes.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.Pipes.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.IO.UnmanagedMemoryStream.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Linq.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Linq.Expressions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Linq.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Linq.Queryable.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\system.management\4.7.0\ref\netstandard2.0\System.Management.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Memory.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Http.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.HttpListener.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Mail.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.NameResolution.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.NetworkInformation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Ping.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Requests.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Security.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.ServicePoint.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.Sockets.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.WebClient.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.WebHeaderCollection.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.WebProxy.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.WebSockets.Client.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Net.WebSockets.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Numerics.Vectors.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ObjectModel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Printing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.DispatchProxy.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Emit.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Emit.ILGeneration.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Emit.Lightweight.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Metadata.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Reflection.TypeExtensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Resources.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Resources.Reader.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Resources.ResourceManager.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Resources.Writer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.CompilerServices.Unsafe.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.CompilerServices.VisualC.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Handles.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.InteropServices.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.InteropServices.WindowsRuntime.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Intrinsics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Loader.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Formatters.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Json.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Runtime.Serialization.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Claims.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Algorithms.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Cng.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Csp.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Pkcs.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.ProtectedData.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.X509Certificates.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Cryptography.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Permissions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Principal.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.Principal.Windows.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Security.SecureString.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ServiceModel.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ServiceProcess.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.Encoding.CodePages.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.Encoding.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.Encodings.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.Json.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Text.RegularExpressions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Channels.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Overlapped.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Tasks.Dataflow.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Tasks.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Tasks.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Tasks.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Thread.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.ThreadPool.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Threading.Timer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Transactions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Transactions.Local.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.ValueTuple.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Web.HttpUtility.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Controls.Ribbon.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Forms.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Forms.Design.Editors.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Forms.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Input.Manipulations.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Windows.Presentation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.Linq.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.ReaderWriter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.XDocument.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.XmlDocument.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.XmlSerializer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.XPath.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\3.1.0\ref\netcoreapp3.1\System.Xml.XPath.XDocument.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\UIAutomationClient.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\UIAutomationClientSideProviders.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\UIAutomationProvider.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\UIAutomationTypes.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\WindowsBase.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\3.1.0\ref\netcoreapp3.1\WindowsFormsIntegration.dll" />
+    <ReferencePath Include="C:\Users\Robert\.nuget\packages\writeablebitmapex\1.6.5\lib\netcoreapp3.0\WriteableBitmapEx.Wpf.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\BrushPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\ColorGradientPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\EnumPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\FloatPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\IntPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\SKColorPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\SKPointPropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\PropertyInput\SKSizePropertyInputView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Home\HomeView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ModuleRootView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyGroupView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\Tree\TreePropertyView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\LayerProperties\Tree\TreeView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\News\NewsView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\RootView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Settings\Debug\DebugView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Settings\SettingsView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Settings\Tabs\Plugins\PluginSettingsView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Settings\Tabs\Plugins\PluginSettingsWindowView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Sidebar\SidebarView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Splash\SplashView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\SurfaceEditor\SurfaceEditorView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\TrayView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\Screens\Workshop\WorkshopView.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\App.g.cs" />
+    <Compile Include="C:\Repos\Artemis\src\Artemis.UI\obj\Debug\netcoreapp3.1\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+</Project>

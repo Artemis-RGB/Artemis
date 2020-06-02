@@ -2,21 +2,23 @@
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
+using Artemis.UI.Shared.PropertyInput;
+using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
 using Stylet;
 
-namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput
+namespace Artemis.UI.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
         private readonly ILayerService _layerService;
         private readonly IPluginService _pluginService;
 
-        public BrushPropertyInputViewModel(LayerPropertyViewModel<LayerBrushReference> layerPropertyViewModel, ILayerService layerService, IPluginService pluginService)
-            : base(layerPropertyViewModel)
+        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService,
+            ILayerService layerService, IPluginService pluginService) : base(layerProperty, profileEditorService)
         {
             _layerService = layerService;
             _pluginService = pluginService;
@@ -54,14 +56,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyI
             base.Dispose();
         }
 
+        protected override void OnInputValueApplied()
+        {
+            _layerService.InstantiateLayerBrush(LayerProperty.Layer);
+        }
+
         private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
         {
             UpdateEnumValues();
-        }
-
-        protected override void OnInputValueApplied()
-        {
-            _layerService.InstantiateLayerBrush(LayerPropertyViewModel.LayerProperty.Layer);
         }
     }
 }

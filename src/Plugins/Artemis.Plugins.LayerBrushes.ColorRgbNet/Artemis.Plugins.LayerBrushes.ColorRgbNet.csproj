@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Artemis.UI.Shared\Artemis.UI.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="RGB.NET.Brushes">

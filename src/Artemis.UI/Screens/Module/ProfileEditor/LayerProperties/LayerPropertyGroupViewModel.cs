@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
+using Ninject;
+using Ninject.Parameters;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertyGroupViewModel : LayerPropertyBaseViewModel
     {
-        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription)
+        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup, 
+            PropertyGroupDescriptionAttribute propertyGroupDescription)
         {
             ProfileEditorService = profileEditorService;
 
@@ -43,36 +47,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public TreePropertyGroupViewModel TreePropertyGroupViewModel { get; set; }
         public TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel { get; set; }
 
-        private void PopulateChildren()
-        {
-            // Get all properties and property groups and create VMs for them
-            foreach (var propertyInfo in LayerPropertyGroup.GetType().GetProperties())
-            {
-                var propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
-                var groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                var value = propertyInfo.GetValue(LayerPropertyGroup);
-
-                // Create VMs for properties on the group
-                if (propertyAttribute != null && value is BaseLayerProperty baseLayerProperty)
-                {
-                    var viewModel = ProfileEditorService.CreateLayerPropertyViewModel(baseLayerProperty, propertyAttribute);
-                    if (viewModel != null)
-                        Children.Add(viewModel);
-                }
-                // Create VMs for child groups on this group, resulting in a nested structure
-                else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
-                {
-                    Children.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layerPropertyGroup, groupAttribute));
-                }
-            }
-        }
-
         public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
         {
             var result = new List<BaseLayerPropertyKeyframe>();
             if (expandedOnly && !IsExpanded || LayerPropertyGroup.IsHidden)
                 return result;
-            
+
             foreach (var layerPropertyBaseViewModel in Children)
                 result.AddRange(layerPropertyBaseViewModel.GetKeyframes(expandedOnly));
 
@@ -99,6 +79,48 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
 
             return result;
+        }
+
+        private void PopulateChildren()
+        {
+            // Get all properties and property groups and create VMs for them
+            foreach (var propertyInfo in LayerPropertyGroup.GetType().GetProperties())
+            {
+                var propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
+                var groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
+                var value = propertyInfo.GetValue(LayerPropertyGroup);
+
+                // Create VMs for properties on the group
+                if (propertyAttribute != null && value is BaseLayerProperty baseLayerProperty)
+                {
+                    var viewModel = CreateLayerPropertyViewModel(baseLayerProperty, propertyAttribute);
+                    if (viewModel != null)
+                        Children.Add(viewModel);
+                }
+                // Create VMs for child groups on this group, resulting in a nested structure
+                else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
+                    Children.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layerPropertyGroup, groupAttribute));
+            }
+        }
+
+        private LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
+        {
+            // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
+            var genericType = baseLayerProperty.GetType().Name == typeof(LayerProperty<>).Name 
+                ? baseLayerProperty.GetType().GetGenericArguments()[0] 
+                : baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
+            
+            // Only create entries for types supported by a tree input VM
+            if (!genericType.IsEnum && ProfileEditorService.RegisteredPropertyEditors.All(r => r.SupportedType != genericType))
+                return null;
+            var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("layerProperty", baseLayerProperty),
+                new ConstructorArgument("propertyDescription", propertyDescription)
+            };
+
+            return (LayerPropertyBaseViewModel) ProfileEditorService.Kernel.Get(genericViewModel, parameters);
         }
 
         private void LayerPropertyGroupOnVisibilityChanged(object sender, EventArgs e)

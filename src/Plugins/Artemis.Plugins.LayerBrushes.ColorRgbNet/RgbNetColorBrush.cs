@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Extensions;
+﻿using System;
+using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using RGB.NET.Brushes;

@@ -2,8 +2,8 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Module.ProfileEditor;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Stylet;
 using FluentValidation;
@@ -76,14 +76,6 @@ namespace Artemis.UI.Ninject
                     .SelectAllClasses()
                     .InheritedFrom<IValidator>()
                     .BindAllInterfaces();
-            });
-
-            Kernel.Bind(x =>
-            {
-                x.FromThisAssembly()
-                    .SelectAllClasses()
-                    .InheritedFrom(typeof(PropertyInputViewModel<>))
-                    .BindToSelf();
             });
         }
     }

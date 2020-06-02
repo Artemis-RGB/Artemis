@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Models;
@@ -44,12 +43,7 @@ namespace Artemis.Core.Plugins.Abstract
             }
         }
 
-        public override void Dispose()
-        {
-            // Does not happen with device providers, they require Artemis to restart
-        }
-
-        public override void DisablePlugin()
+        protected override void DisablePlugin()
         {
             // Does not happen with device providers, they require Artemis to restart
         }

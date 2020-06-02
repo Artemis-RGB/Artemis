@@ -22,20 +22,16 @@ namespace Artemis.Plugins.Modules.General
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
 
-        public override void EnablePlugin()
-        {
-        }
-
-        public override void DisablePlugin()
-        {
-        }
-
         public override IEnumerable<ModuleViewModel> GetViewModels()
         {
             return new List<ModuleViewModel> {new GeneralViewModel(this)};
         }
 
-        public override void Dispose()
+        protected override void EnablePlugin()
+        {
+        }
+
+        protected override void DisablePlugin()
         {
         }
     }

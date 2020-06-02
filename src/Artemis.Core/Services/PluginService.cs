@@ -167,7 +167,7 @@ namespace Artemis.Core.Services
                     var threwException = false;
                     try
                     {
-                        pluginInfo.Instance.EnablePlugin();
+                        pluginInfo.Instance.SetEnabled(true);
                     }
                     catch (Exception e)
                     {
@@ -289,7 +289,7 @@ namespace Artemis.Core.Services
             {
                 try
                 {
-                    pluginInfo.Instance.DisablePlugin();
+                    pluginInfo.Instance.SetEnabled(false);
                 }
                 catch (Exception)
                 {
@@ -320,7 +320,7 @@ namespace Artemis.Core.Services
             var threwException = false;
             try
             {
-                plugin.EnablePlugin();
+                plugin.SetEnabled(true);
             }
             catch (Exception e)
             {
@@ -352,7 +352,7 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            plugin.DisablePlugin();
+            plugin.SetEnabled(false);
             
             OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }

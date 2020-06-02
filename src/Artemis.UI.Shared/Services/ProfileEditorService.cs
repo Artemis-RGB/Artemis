@@ -1,32 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Exceptions;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Events;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.PropertyInput.Abstract;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Events;
+using Artemis.UI.Shared.PropertyInput;
+using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
-using Ninject.Parameters;
-using SkiaSharp;
 
-namespace Artemis.UI.Services
+namespace Artemis.UI.Shared.Services
 {
     public class ProfileEditorService : IProfileEditorService
     {
         private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
-        private readonly IKernel _kernel;
+        private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
         private int _pixelsPerSecond;
@@ -35,23 +27,14 @@ namespace Artemis.UI.Services
         {
             _coreService = coreService;
             _profileService = profileService;
-            _kernel = kernel;
+            _registeredPropertyEditors = new List<PropertyInputRegistration>();
 
-            RegisteredPropertyEditors = new Dictionary<Type, Type>
-            {
-                {typeof(LayerBrushReference), typeof(BrushPropertyInputViewModel)},
-                {typeof(ColorGradient), typeof(ColorGradientPropertyInputViewModel)},
-                {typeof(float), typeof(FloatPropertyInputViewModel)},
-                {typeof(int), typeof(IntPropertyInputViewModel)},
-                {typeof(SKColor), typeof(SKColorPropertyInputViewModel)},
-                {typeof(SKPoint), typeof(SKPointPropertyInputViewModel)},
-                {typeof(SKSize), typeof(SKSizePropertyInputViewModel)}
-            };
+            Kernel = kernel;
             PixelsPerSecond = 31;
         }
 
-        public Dictionary<Type, Type> RegisteredPropertyEditors { get; set; }
-
+        public IKernel Kernel { get; }
+        public IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public ProfileElement SelectedProfileElement { get; private set; }
 
@@ -76,36 +59,6 @@ namespace Artemis.UI.Services
                 _pixelsPerSecond = value;
                 OnPixelsPerSecondChanged();
             }
-        }
-        
-        public LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
-        {
-            // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
-            var genericType = baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
-            // Only create entries for types supported by a tree input VM
-            if (!genericType.IsEnum && !RegisteredPropertyEditors.ContainsKey(genericType))
-                return null;
-            var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
-            var parameters = new IParameter[]
-            {
-                new ConstructorArgument("layerProperty", baseLayerProperty),
-                new ConstructorArgument("propertyDescription", propertyDescription)
-            };
-
-            return (LayerPropertyBaseViewModel) _kernel.Get(genericViewModel, parameters);
-        }
-
-        public TreePropertyViewModel<T> CreateTreePropertyViewModel<T>(LayerPropertyViewModel<T> layerPropertyViewModel)
-        {
-            var type = typeof(T).IsEnum
-                ? typeof(EnumPropertyInputViewModel<>).MakeGenericType(typeof(T))
-                : RegisteredPropertyEditors[typeof(T)];
-
-            var parameters = new IParameter[]
-            {
-                new ConstructorArgument("layerPropertyViewModel", layerPropertyViewModel)
-            };
-            return new TreePropertyViewModel<T>(layerPropertyViewModel, (PropertyInputViewModel<T>) _kernel.Get(type, parameters), this);
         }
 
         public void ChangeSelectedProfile(Profile profile)
@@ -138,7 +91,7 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
             OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfileElement));
         }
-        
+
         public void UpdateProfilePreview()
         {
             if (SelectedProfile == null)
@@ -193,6 +146,44 @@ namespace Artemis.UI.Services
             UpdateProfilePreview();
         }
 
+        public PropertyInputRegistration RegisterPropertyInput(PluginInfo pluginInfo, Type viewModelType)
+        {
+            // Bit ugly to do a name comparison but I don't know a nicer way right now
+            if (viewModelType.BaseType == null || viewModelType.BaseType.Name != typeof(PropertyInputViewModel<>).Name)
+                throw new ArtemisPluginException($"{nameof(viewModelType)} base type must be of type PropertyInputViewModel<T>");
+
+            lock (_registeredPropertyEditors)
+            {
+                var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                var existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
+                if (existing != null)
+                {
+                    if (existing.PluginInfo != pluginInfo)
+                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already registered by {pluginInfo.Name}");
+                    return existing;
+                }
+
+                Kernel.Bind(viewModelType).ToSelf();
+                var registration = new PropertyInputRegistration(this, pluginInfo, supportedType, viewModelType);
+                _registeredPropertyEditors.Add(registration);
+                return registration;
+            }
+        }
+
+        public void RemovePropertyInput(PropertyInputRegistration registration)
+        {
+            lock (_registeredPropertyEditors)
+            {
+                if (_registeredPropertyEditors.Contains(registration))
+                {
+                    registration.Unsubscribe();
+                    _registeredPropertyEditors.Remove(registration);
+
+                    Kernel.Unbind(registration.ViewModelType);
+                }
+            }
+        }
+
         public event EventHandler<ProfileElementEventArgs> ProfileSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
         public event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
@@ -200,7 +191,7 @@ namespace Artemis.UI.Services
         public event EventHandler CurrentTimeChanged;
         public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
-        
+
         public void StopRegularRender()
         {
             _coreService.ModuleUpdatingDisabled = true;

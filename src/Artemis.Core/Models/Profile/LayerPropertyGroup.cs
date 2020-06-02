@@ -51,6 +51,8 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public bool IsCorePropertyGroup { get; internal set; }
 
+        public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
+
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
         /// </summary>
@@ -132,7 +134,9 @@ namespace Artemis.Core.Models.Profile
 
                     var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
                     instance.Parent = this;
+                    instance.PropertyDescription = (PropertyDescriptionAttribute)propertyDescription;
                     instance.Layer = layer;
+                    
                     InitializeProperty(layer, path + propertyInfo.Name, instance);
                     propertyInfo.SetValue(this, instance);
                     _layerProperties.Add(instance);
@@ -147,6 +151,7 @@ namespace Artemis.Core.Models.Profile
 
                         var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
                         instance.Parent = this;
+                        instance.GroupDescription = (PropertyGroupDescriptionAttribute)propertyGroupDescription;
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
                         propertyInfo.SetValue(this, instance);
                         _layerPropertyGroups.Add(instance);
@@ -162,7 +167,7 @@ namespace Artemis.Core.Models.Profile
             PropertiesInitialized = true;
             OnPropertyGroupInitialized();
         }
-
+        
         internal void ApplyToEntity()
         {
             if (!PropertiesInitialized)

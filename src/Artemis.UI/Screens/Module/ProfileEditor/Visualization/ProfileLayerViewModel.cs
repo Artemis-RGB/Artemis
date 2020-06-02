@@ -9,6 +9,7 @@ using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using RGB.NET.Core;
 using Stylet;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;

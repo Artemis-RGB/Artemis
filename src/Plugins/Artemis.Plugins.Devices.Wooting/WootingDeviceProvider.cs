@@ -17,7 +17,7 @@ namespace Artemis.Plugins.Devices.Wooting
             _rgbService = rgbService;
         }
 
-        public override void EnablePlugin()
+        protected override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(WootingRGBDevice<>), sender, args);
             RGB.NET.Devices.Wooting.WootingDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "wooting-rgb-sdk64.dll"));
@@ -25,16 +25,9 @@ namespace Artemis.Plugins.Devices.Wooting
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
-        public override void DisablePlugin()
+        protected override void DisablePlugin()
         {
             // TODO: Remove the device provider from the surface
-        }
-
-        public override void Dispose()
-        {
-            // TODO: This will probably not go well without first removing the device provider
-            // WootingDeviceProvider.Instance.ResetDevices();
-            // WootingDeviceProvider.Instance.Dispose();
         }
     }
 }

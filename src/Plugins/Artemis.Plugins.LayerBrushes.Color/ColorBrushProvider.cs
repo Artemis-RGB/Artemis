@@ -10,15 +10,11 @@ namespace Artemis.Plugins.LayerBrushes.Color
             AddLayerBrushDescriptor<ColorBrush>("Color", "A color with an (optional) gradient", "Brush");
         }
 
-        public override void EnablePlugin()
+        protected override void EnablePlugin()
         {
         }
 
-        public override void DisablePlugin()
-        {
-        }
-
-        public override void Dispose()
+        protected override void DisablePlugin()
         {
         }
     }
