@@ -36,6 +36,10 @@ namespace Artemis.UI.Shared.Controls
 
         private void CreateLedGeometry()
         {
+            // The minimum required size for geometry to be created
+            if (Led.RgbLed.Size.Width < 2 || Led.RgbLed.Size.Height < 2)
+                return;
+
             switch (Led.RgbLed.Shape)
             {
                 case Shape.Custom:
@@ -110,7 +114,7 @@ namespace Artemis.UI.Shared.Controls
             var r = Led.RgbLed.Color.GetR();
             var g = Led.RgbLed.Color.GetG();
             var b = Led.RgbLed.Color.GetB();
-            
+
             drawingContext.DrawRectangle(isDimmed
                 ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
                 : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
