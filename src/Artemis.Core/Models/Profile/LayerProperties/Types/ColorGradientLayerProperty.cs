@@ -24,5 +24,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             // Don't allow color gradients to be null
             BaseValue ??= DefaultValue ?? new ColorGradient();
         }
+
+        public static implicit operator ColorGradient(ColorGradientLayerProperty p) => p.CurrentValue;
     }
 }

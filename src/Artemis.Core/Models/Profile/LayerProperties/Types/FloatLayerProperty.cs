@@ -12,5 +12,8 @@
             var diff = NextKeyframe.Value - CurrentKeyframe.Value;
             CurrentValue = CurrentKeyframe.Value + diff * keyframeProgressEased;
         }
+
+        public static implicit operator float(FloatLayerProperty p) => p.CurrentValue;
+        public static implicit operator double(FloatLayerProperty p) => p.CurrentValue;
     }
 }

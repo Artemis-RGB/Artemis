@@ -29,5 +29,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
         {
             return (byte) Math.Max(0, Math.Min(255, value));
         }
+
+        public static implicit operator SKColor(SKColorLayerProperty p) => p.CurrentValue;
     }
 }

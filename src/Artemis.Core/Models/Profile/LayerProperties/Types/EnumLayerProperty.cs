@@ -15,5 +15,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
         {
             throw new ArtemisCoreException("Enum properties do not support keyframes.");
         }
+
+        public static implicit operator T(EnumLayerProperty<T> p) => p.CurrentValue;
+        public static implicit operator int(EnumLayerProperty<T> p) => Convert.ToInt32(p.CurrentValue);
     }
 }
