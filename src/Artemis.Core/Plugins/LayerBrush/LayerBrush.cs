@@ -26,6 +26,11 @@ namespace Artemis.Core.Plugins.LayerBrush
         
         internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
+            // Move the canvas to the top-left of the render path
+            canvas.Translate(path.Bounds.Left, path.Bounds.Top);
+            // Pass the render path to the layer brush positioned at 0,0
+            path.Transform(SKMatrix.MakeTranslation(path.Bounds.Left * -1, path.Bounds.Top * -1));
+
             Render(canvas, canvasInfo, path, paint);
         }
 

@@ -207,12 +207,12 @@ namespace Artemis.Core.Models.Profile
             if (LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
+            // TODO: Remove, this is slow and stupid
+            // For now, reset all keyframe engines after the last keyframe was hit
+            // This is a placeholder method of repeating the animation until repeat modes are implemented
             var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
             properties.AddRange(Transform.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
             properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
-
-            // For now, reset all keyframe engines after the last keyframe was hit
-            // This is a placeholder method of repeating the animation until repeat modes are implemented
             var timeLineEnd = properties.Any() ? properties.Max(p => p.BaseKeyframes.Max(k => k.Position)) : TimeSpan.MaxValue;
             if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
             {
@@ -240,7 +240,11 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            // Ensure the layer is ready
             if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
+                return;
+            // Ensure the brush is ready
+            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
             canvas.Save();
@@ -269,9 +273,6 @@ namespace Artemis.Core.Models.Profile
 
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
-            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized || LayerBrush.BrushType != LayerBrushType.Regular) 
-                return;
-
             // Apply transformations
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
@@ -293,9 +294,6 @@ namespace Artemis.Core.Models.Profile
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
-            if (LayerBrush == null || !LayerBrush.BaseProperties.PropertiesInitialized || LayerBrush.BrushType != LayerBrushType.Regular)
-                return;
-
             // Apply transformations
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
