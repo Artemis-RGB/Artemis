@@ -15,5 +15,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             var heightDiff = NextKeyframe.Value.Height - CurrentKeyframe.Value.Height;
             CurrentValue = new SKSize(CurrentKeyframe.Value.Width + widthDiff * keyframeProgressEased, CurrentKeyframe.Value.Height + heightDiff * keyframeProgressEased);
         }
+
+        public static implicit operator SKSize(SKSizeLayerProperty p) => p.CurrentValue;
     }
 }

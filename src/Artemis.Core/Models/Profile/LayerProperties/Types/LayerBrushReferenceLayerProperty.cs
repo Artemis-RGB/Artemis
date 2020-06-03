@@ -16,5 +16,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
         {
             throw new ArtemisCoreException("Layer brush references do not support keyframes.");
         }
+
+        public static implicit operator LayerBrushReference(LayerBrushReferenceLayerProperty p) => p.CurrentValue;
     }
 }
