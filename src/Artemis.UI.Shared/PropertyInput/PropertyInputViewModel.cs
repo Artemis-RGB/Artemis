@@ -14,6 +14,7 @@ namespace Artemis.UI.Shared.PropertyInput
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
+            LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
             UpdateInputValue();
         }
 
@@ -22,6 +23,7 @@ namespace Artemis.UI.Shared.PropertyInput
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
+            LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
             UpdateInputValue();
         }
 
@@ -43,6 +45,7 @@ namespace Artemis.UI.Shared.PropertyInput
         public virtual void Dispose()
         {
             LayerProperty.Updated -= LayerPropertyOnUpdated;
+            LayerProperty.BaseValueChanged -= LayerPropertyOnUpdated;
         }
 
         protected virtual void OnInputValueApplied()

@@ -17,7 +17,6 @@ namespace Artemis.Core.Plugins.LayerBrush
 
             Layer = layer;
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
-            UpdateLedGroup();
         }
 
         /// <summary>
@@ -59,6 +58,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         internal override void Initialize(ILayerService layerService)
         {
             InitializeProperties(layerService);
+            UpdateLedGroup();
         }
 
         // Not used in this brush type
