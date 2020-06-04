@@ -1,6 +1,7 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerBrushes.Color
@@ -72,7 +73,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
                     SKShaderTileMode.Repeat),
                 GradientType.RadialGradient => SKShader.CreateRadialGradient(
                     center,
-                    Math.Min(_shaderBounds.Width, _shaderBounds.Height),
+                    Math.Max(_shaderBounds.Width, _shaderBounds.Height),
                     Properties.Gradient.BaseValue.GetColorsArray(),
                     Properties.Gradient.BaseValue.GetPositionsArray(),
                     SKShaderTileMode.Repeat),

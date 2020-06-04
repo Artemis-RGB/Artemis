@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush
+namespace Artemis.Core.Plugins.LayerBrush.Abstract
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead

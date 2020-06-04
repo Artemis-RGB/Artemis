@@ -2,6 +2,7 @@
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
 
