@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.LayerBrushes.Noise.Utilities;
 using SkiaSharp;

@@ -1,6 +1,5 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
 
 namespace Artemis.Core.Services.Interfaces
 {

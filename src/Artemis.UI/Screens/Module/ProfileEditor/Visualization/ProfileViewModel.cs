@@ -7,7 +7,6 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;

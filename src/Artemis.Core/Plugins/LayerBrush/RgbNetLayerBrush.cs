@@ -6,7 +6,7 @@ using RGB.NET.Core;
 using RGB.NET.Groups;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush.Abstract
+namespace Artemis.Core.Plugins.LayerBrush
 {
     public abstract class RgbNetLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
