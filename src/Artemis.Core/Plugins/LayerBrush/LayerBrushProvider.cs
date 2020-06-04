@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.LayerBrush
