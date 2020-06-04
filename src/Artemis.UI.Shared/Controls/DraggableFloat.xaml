@@ -21,12 +21,12 @@
                         <Rectangle x:Name="BorderVisual"
                                    StrokeDashArray="2 2" Stroke="{DynamicResource SecondaryAccentBrush}" StrokeThickness="1"
                                    Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
-                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}">
+                        </Rectangle>
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Border.BorderBrush>
-            <TextBlock Style="{x:Null}"
-                       Width="60"
+            <TextBlock Width="60"
                        Height="17"
                        Padding="1 0"
                        Margin="0 4 0 0"

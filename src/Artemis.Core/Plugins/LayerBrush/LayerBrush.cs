@@ -4,7 +4,7 @@ using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush.Abstract
+namespace Artemis.Core.Plugins.LayerBrush
 {
     public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {

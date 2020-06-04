@@ -10,7 +10,6 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
