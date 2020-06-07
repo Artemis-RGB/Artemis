@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.LayerBrushes.Noise.Utilities;
 using SkiaSharp;
@@ -11,25 +10,36 @@ namespace Artemis.Plugins.LayerBrushes.Noise
     public class NoiseBrush : LayerBrush<NoiseBrushProperties>
     {
         private static readonly Random Rand = new Random();
-        private readonly OpenSimplexNoise _noise;
         private readonly IRgbService _rgbService;
         private SKBitmap _bitmap;
         private SKColor[] _colorMap;
-
+        private OpenSimplexNoise _noise;
         private float _renderScale;
         private float _x;
         private float _y;
         private float _z;
 
-        public NoiseBrush(Layer layer, LayerBrushDescriptor descriptor, IRgbService rgbService) : base(layer, descriptor)
+        public NoiseBrush(IRgbService rgbService)
         {
             _rgbService = rgbService;
+        }
+
+        public override void EnableLayerBrush()
+        {
             _x = Rand.Next(0, 4096);
             _y = Rand.Next(0, 4096);
             _z = Rand.Next(0, 4096);
             _noise = new OpenSimplexNoise(Rand.Next(0, 4096));
 
+            Properties.GradientColor.BaseValue.PropertyChanged += GradientColorChanged;
+            CreateColorMap();
             DetermineRenderScale();
+        }
+
+        public override void DisableLayerBrush()
+        {
+            _bitmap?.Dispose();
+            _bitmap = null;
         }
 
         public override void Update(double deltaTime)
@@ -102,22 +112,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
             paint.Shader = foregroundShader;
             canvas.DrawRect(path.Bounds, paint);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _bitmap?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        protected override void OnPropertiesInitialized()
-        {
-            Properties.GradientColor.BaseValue.PropertyChanged += GradientColorChanged;
-            CreateColorMap();
         }
 
         private void GradientColorChanged(object sender, PropertyChangedEventArgs e)

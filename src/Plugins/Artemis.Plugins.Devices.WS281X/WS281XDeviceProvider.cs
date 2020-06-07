@@ -15,19 +15,20 @@ namespace Artemis.Plugins.Devices.WS281X
     public class WS281XDeviceProvider : DeviceProvider
     {
         private readonly IRgbService _rgbService;
+        private readonly PluginSettings _settings;
 
-        public WS281XDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService, PluginSettings settings) : base(pluginInfo, RGB.NET.Devices.WS281X.WS281XDeviceProvider.Instance)
+        public WS281XDeviceProvider(IRgbService rgbService, PluginSettings settings) : base(RGB.NET.Devices.WS281X.WS281XDeviceProvider.Instance)
         {
-            Settings = settings;
+            _settings = settings;
             _rgbService = rgbService;
-            HasConfigurationViewModel = true;
         }
 
-        public PluginSettings Settings { get; }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
-            var definitions = Settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
+            HasConfigurationViewModel = true;
+
+            var definitions = _settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
             if (definitions.Value == null)
                 definitions.Value = new List<DeviceDefinition>();
 
@@ -49,14 +50,14 @@ namespace Artemis.Plugins.Devices.WS281X
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
             // TODO: Remove the device provider from the surface
         }
-        
+
         public override PluginConfigurationViewModel GetConfigurationViewModel()
         {
-            return new WS281XConfigurationViewModel(this, Settings);
+            return new WS281XConfigurationViewModel(this, _settings);
         }
     }
 }

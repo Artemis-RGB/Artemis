@@ -8,6 +8,7 @@ using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
@@ -406,6 +407,23 @@ namespace Artemis.Core.Models.Profile
         {
             _leds.Clear();
             CalculateRenderProperties();
+        }
+
+        internal void Deactivate()
+        {
+            DeactivateLayerBrush();
+        }
+
+        internal void DeactivateLayerBrush()
+        {
+            if (LayerBrush == null)
+                return;
+
+            var brush = LayerBrush;
+            LayerBrush = null;
+            brush.Dispose();
+
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
         }
 
         internal void PopulateLeds(ArtemisSurface surface)

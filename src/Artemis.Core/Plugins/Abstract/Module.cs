@@ -2,7 +2,6 @@
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.ViewModels;
-using Artemis.Core.Plugins.Models;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -13,10 +12,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Module : Plugin
     {
-        protected Module(PluginInfo pluginInfo) : base(pluginInfo)
-        {
-        }
-
         /// <summary>
         ///     The modules display name that's shown in the menu
         /// </summary>

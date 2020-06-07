@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Plugins.Abstract;
 
 namespace Artemis.Core.Plugins.LayerBrush
 {

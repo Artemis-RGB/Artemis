@@ -6,42 +6,25 @@ using RGB.NET.Core;
 using RGB.NET.Groups;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush
+namespace Artemis.Core.Plugins.LayerBrush.Abstract
 {
     public abstract class RgbNetLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
-        protected RgbNetLayerBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
+        protected RgbNetLayerBrush()
         {
             BrushType = LayerBrushType.RgbNet;
-            LedGroup = new ListLedGroup();
-
-            Layer = layer;
-            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
         }
 
         /// <summary>
-        ///     The LED group this layer brush is applied to
+        ///     The LED group this layer effect is applied to
         /// </summary>
         public ListLedGroup LedGroup { get; internal set; }
 
         /// <summary>
-        ///     Called when Artemis needs an instance of the RGB.NET brush you are implementing
+        ///     Called when Artemis needs an instance of the RGB.NET effect you are implementing
         /// </summary>
-        /// <returns>Your RGB.NET brush</returns>
+        /// <returns>Your RGB.NET effect</returns>
         public abstract IBrush GetBrush();
-
-        public sealed override void Dispose()
-        {
-            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-            LedGroup.Detach();
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-        }
 
         internal void UpdateLedGroup()
         {
@@ -57,19 +40,28 @@ namespace Artemis.Core.Plugins.LayerBrush
 
         internal override void Initialize(ILayerService layerService)
         {
+            LedGroup = new ListLedGroup();
+            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
+
             InitializeProperties(layerService);
             UpdateLedGroup();
         }
 
-        // Not used in this brush type
-        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        internal override void Dispose(bool disposing)
         {
-            throw new NotImplementedException("RGB.NET layer brushes do not implement InternalRender");
+            if (disposing)
+            {
+                Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+                LedGroup.Detach();
+            }
+
+            base.Dispose(disposing);
         }
 
-        internal override IBrush InternalGetBrush()
+        // Not used in this effect type
+        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            return GetBrush();
+            throw new NotImplementedException("RGB.NET layer effectes do not implement InternalRender");
         }
 
         private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
