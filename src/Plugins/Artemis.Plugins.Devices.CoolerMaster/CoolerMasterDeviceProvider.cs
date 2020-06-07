@@ -17,7 +17,7 @@ namespace Artemis.Plugins.Devices.CoolerMaster
             _rgbService = rgbService;
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(CoolerMasterRGBDevice<>), sender, args);
             RGB.NET.Devices.CoolerMaster.CoolerMasterDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "CMSDK.dll"));

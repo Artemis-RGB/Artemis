@@ -408,6 +408,23 @@ namespace Artemis.Core.Models.Profile
             CalculateRenderProperties();
         }
 
+        internal void Deactivate()
+        {
+            DeactivateLayerBrush();
+        }
+        
+        internal void DeactivateLayerBrush()
+        {
+            if (LayerBrush == null)
+                return;
+
+            var brush = LayerBrush;
+            LayerBrush = null;
+            brush.Dispose();
+
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
+        }
+
         internal void PopulateLeds(ArtemisSurface surface)
         {
             var leds = new List<ArtemisLed>();

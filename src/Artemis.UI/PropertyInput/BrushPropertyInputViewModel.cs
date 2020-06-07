@@ -3,6 +3,7 @@ using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.PropertyInput;

@@ -22,11 +22,5 @@ namespace Artemis.Core.Services.Interfaces
         /// <param name="layer">The layer to instantiate the brush for</param>
         /// <returns></returns>
         BaseLayerBrush InstantiateLayerBrush(Layer layer);
-
-        /// <summary>
-        /// Removes the layer brush from the provided layer and disposes it
-        /// </summary>
-        /// <param name="layer"></param>
-        void RemoveLayerBrush(Layer layer);
     }
 }

@@ -17,6 +17,21 @@ namespace Artemis.Plugins.LayerBrushes.Color
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
         }
 
+        public override void EnableLayerBrush()
+        {
+            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
+        }
+
+        public override void DisableLayerBrush()
+        {
+            _paint?.Dispose();
+            _shader?.Dispose();
+            _paint = null;
+            _shader = null;
+        }
+
         public override void Update(double deltaTime)
         {
             // Only check if a solid is being drawn, because that can be changed by keyframes
@@ -38,24 +53,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
             paint.Shader = _shader;
             canvas.DrawPath(path, paint);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _paint?.Dispose();
-                _shader?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-        
-        protected override void OnPropertiesInitialized()
-        {
-            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
         }
 
         private void CreateShader()

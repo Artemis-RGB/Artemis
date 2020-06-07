@@ -27,11 +27,11 @@ namespace Artemis.Plugins.Modules.General
             return new List<ModuleViewModel> {new GeneralViewModel(this)};
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
         }
     }

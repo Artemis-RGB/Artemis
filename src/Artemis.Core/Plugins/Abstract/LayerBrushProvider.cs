@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 
-namespace Artemis.Core.Plugins.LayerBrush
+namespace Artemis.Core.Plugins.Abstract
 {
     /// <inheritdoc />
     /// <summary>

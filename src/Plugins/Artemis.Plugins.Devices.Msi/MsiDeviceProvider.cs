@@ -17,7 +17,7 @@ namespace Artemis.Plugins.Devices.Msi
             _rgbService = rgbService;
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(MsiRGBDevice<>), sender, args);
             RGB.NET.Devices.Msi.MsiDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "MysticLight_SDK.dll"));

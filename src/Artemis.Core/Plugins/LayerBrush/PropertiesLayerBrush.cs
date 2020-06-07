@@ -39,18 +39,11 @@ namespace Artemis.Core.Plugins.LayerBrush
             internal set => _properties = value;
         }
 
-        /// <summary>
-        ///     Called when all layer properties in this brush have been initialized
-        /// </summary>
-        protected virtual void OnPropertiesInitialized()
-        {
-        }
-
         internal void InitializeProperties(ILayerService layerService)
         {
             Properties = Activator.CreateInstance<T>();
             Properties.InitializeProperties(layerService, Layer, "LayerBrush.");
-            OnPropertiesInitialized();
+            EnableLayerBrush();
             PropertiesInitialized = true;
         }
     }

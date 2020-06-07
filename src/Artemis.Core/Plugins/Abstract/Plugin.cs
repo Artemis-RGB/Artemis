@@ -30,19 +30,18 @@ namespace Artemis.Core.Plugins.Abstract
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            DisablePlugin();
         }
 
         /// <summary>
         ///     Called when the plugin is activated
         /// </summary>
-        protected abstract void EnablePlugin();
+        public abstract void EnablePlugin();
 
         /// <summary>
-        ///     Called when the plugin is deactivated
+        ///     Called when the plugin is deactivated or when Artemis shuts down
         /// </summary>
-        protected abstract void DisablePlugin();
+        public abstract void DisablePlugin();
 
         /// <summary>
         ///     Called when the plugins configuration window is opened from the UI. The UI will only attempt to open if
@@ -53,18 +52,7 @@ namespace Artemis.Core.Plugins.Abstract
         {
             return null;
         }
-
-        /// <summary>
-        ///     Called when Artemis shuts down
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
+        
         internal void SetEnabled(bool enable)
         {
             if (enable && !Enabled)
