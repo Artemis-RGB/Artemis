@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Storage.Entities;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -10,8 +9,8 @@ namespace Artemis.Core.Plugins.Models
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly PluginInfo _pluginInfo;
-        private readonly PluginSettingEntity _pluginSettingEntity;
         private readonly IPluginRepository _pluginRepository;
+        private readonly PluginSettingEntity _pluginSettingEntity;
         private T _value;
 
         internal PluginSetting(PluginInfo pluginInfo, IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity)

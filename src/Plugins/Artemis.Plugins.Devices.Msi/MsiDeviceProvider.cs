@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using RGB.NET.Devices.Msi;
@@ -12,7 +11,7 @@ namespace Artemis.Plugins.Devices.Msi
     {
         private readonly IRgbService _rgbService;
 
-        public MsiDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Msi.MsiDeviceProvider.Instance)
+        public MsiDeviceProvider(IRgbService rgbService) : base(RGB.NET.Devices.Msi.MsiDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }

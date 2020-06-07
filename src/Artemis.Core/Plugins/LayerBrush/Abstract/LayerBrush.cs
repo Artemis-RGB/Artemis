@@ -1,14 +1,12 @@
-﻿using System;
-using Artemis.Core.Models.Profile;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Services.Interfaces;
-using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush
+namespace Artemis.Core.Plugins.LayerBrush.Abstract
 {
     public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
-        protected LayerBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
+        protected LayerBrush()
         {
             BrushType = LayerBrushType.Regular;
         }
@@ -23,7 +21,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <param name="path">The path to be filled, represents the shape</param>
         /// <param name="paint">The paint to be used to fill the shape</param>
         public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
-        
+
         internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
             // Move the canvas to the top-left of the render path
@@ -32,11 +30,6 @@ namespace Artemis.Core.Plugins.LayerBrush
             path.Transform(SKMatrix.MakeTranslation(path.Bounds.Left * -1, path.Bounds.Top * -1));
 
             Render(canvas, canvasInfo, path, paint);
-        }
-
-        internal override IBrush InternalGetBrush()
-        {
-            throw new NotImplementedException("Regular layer brushes do not implement InternalGetBrush");
         }
 
         internal override void Initialize(ILayerService layerService)

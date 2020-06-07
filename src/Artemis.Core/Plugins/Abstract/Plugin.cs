@@ -10,11 +10,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Plugin : IDisposable
     {
-        internal Plugin(PluginInfo pluginInfo)
-        {
-            PluginInfo = pluginInfo ?? throw new ArgumentNullException(nameof(pluginInfo));
-        }
-
         public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
@@ -27,11 +22,6 @@ namespace Artemis.Core.Plugins.Abstract
         ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
         /// </summary>
         public bool HasConfigurationViewModel { get; protected set; }
-
-        public void Dispose()
-        {
-            DisablePlugin();
-        }
 
         /// <summary>
         ///     Called when the plugin is activated
@@ -52,21 +42,26 @@ namespace Artemis.Core.Plugins.Abstract
         {
             return null;
         }
-        
+
         internal void SetEnabled(bool enable)
         {
             if (enable && !Enabled)
             {
+                Enabled = true;
                 EnablePlugin();
                 OnPluginEnabled();
             }
             else if (!enable && Enabled)
             {
+                Enabled = false;
                 DisablePlugin();
                 OnPluginDisabled();
             }
+        }
 
-            Enabled = enable;
+        public void Dispose()
+        {
+            DisablePlugin();
         }
 
         #region Events

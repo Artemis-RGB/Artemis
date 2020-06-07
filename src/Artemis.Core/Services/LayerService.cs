@@ -4,6 +4,7 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
@@ -42,7 +43,7 @@ namespace Artemis.Core.Services
         public BaseLayerBrush InstantiateLayerBrush(Layer layer)
         {
             layer.DeactivateLayerBrush();
-           
+
             var descriptorReference = layer.General.BrushReference?.CurrentValue;
             if (descriptorReference == null)
                 return null;
@@ -56,16 +57,16 @@ namespace Artemis.Core.Services
             if (descriptor == null)
                 return null;
 
-            var arguments = new IParameter[]
-            {
-                new ConstructorArgument("layer", layer),
-                new ConstructorArgument("descriptor", descriptor)
-            };
-            layer.LayerBrush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType, arguments);
-            layer.LayerBrush.Initialize(this);
-            layer.LayerBrush.Update(0);
+            var brush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType);
+            brush.Layer = layer;
+            brush.Descriptor = descriptor;
+            layer.LayerBrush = brush;
+
+            brush.Initialize(this);
+            brush.Update(0);
             layer.OnLayerBrushUpdated();
-            return layer.LayerBrush;
+
+            return brush;
         }
     }
 }

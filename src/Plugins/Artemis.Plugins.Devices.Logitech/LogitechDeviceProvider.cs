@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using HidSharp;
 using RGB.NET.Core;
@@ -19,7 +18,7 @@ namespace Artemis.Plugins.Devices.Logitech
         private readonly ILogger _logger;
         private readonly IRgbService _rgbService;
 
-        public LogitechDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService, ILogger logger) : base(pluginInfo, RGB.NET.Devices.Logitech.LogitechDeviceProvider.Instance)
+        public LogitechDeviceProvider(IRgbService rgbService, ILogger logger) : base(RGB.NET.Devices.Logitech.LogitechDeviceProvider.Instance)
         {
             _rgbService = rgbService;
             _logger = logger;

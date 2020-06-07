@@ -1,5 +1,4 @@
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using RGB.NET.Devices.Novation;
@@ -11,7 +10,7 @@ namespace Artemis.Plugins.Devices.Novation
     {
         private readonly IRgbService _rgbService;
 
-        public NovationDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Novation.NovationDeviceProvider.Instance)
+        public NovationDeviceProvider(IRgbService rgbService) : base(RGB.NET.Devices.Novation.NovationDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }

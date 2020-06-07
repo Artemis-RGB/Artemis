@@ -2,17 +2,12 @@
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Models;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
 {
     public abstract class ProfileModule : Module
     {
-        protected ProfileModule(PluginInfo pluginInfo) : base(pluginInfo)
-        {
-        }
-
         public Profile ActiveProfile { get; private set; }
 
         /// <inheritdoc />

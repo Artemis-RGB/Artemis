@@ -32,7 +32,8 @@ namespace Artemis.Core.Plugins.Models
         public string Description { get; set; }
 
         /// <summary>
-        ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for available
+        ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
+        ///     available
         ///     icons
         /// </summary>
         public string Icon { get; set; }
@@ -84,7 +85,7 @@ namespace Artemis.Core.Plugins.Models
         /// </summary>
         [JsonIgnore]
         internal PluginEntity PluginEntity { get; set; }
-        
+
         public override string ToString()
         {
             return $"{nameof(Guid)}: {Guid}, {nameof(Name)}: {Name}, {nameof(Version)}: {Version}";

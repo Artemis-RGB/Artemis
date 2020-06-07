@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Models;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -14,7 +13,7 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class DeviceProvider : Plugin
     {
-        protected DeviceProvider(PluginInfo pluginInfo, IRGBDeviceProvider rgbDeviceProvider) : base(pluginInfo)
+        protected DeviceProvider(IRGBDeviceProvider rgbDeviceProvider)
         {
             RgbDeviceProvider = rgbDeviceProvider ?? throw new ArgumentNullException(nameof(rgbDeviceProvider));
         }
@@ -23,6 +22,11 @@ namespace Artemis.Core.Plugins.Abstract
 
         [Inject]
         public ILogger Logger { get; set; }
+
+        public override void DisablePlugin()
+        {
+            // Does not happen with device providers, they require Artemis to restart
+        }
 
         protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)
         {
@@ -41,11 +45,6 @@ namespace Artemis.Core.Plugins.Abstract
                         deviceInfo.DeviceName, deviceInfo.Model, e.FinalPath);
                 }
             }
-        }
-
-        public override void DisablePlugin()
-        {
-            // Does not happen with device providers, they require Artemis to restart
         }
     }
 }
