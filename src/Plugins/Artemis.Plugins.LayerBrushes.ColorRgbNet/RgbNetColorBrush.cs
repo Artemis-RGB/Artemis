@@ -1,6 +1,5 @@
 ﻿using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
 
@@ -8,19 +7,16 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
 {
     public class RgbNetColorBrush : RgbNetLayerBrush<RgbNetColorBrushProperties>
     {
-        private readonly SolidColorBrush _solidBrush;
+        private SolidColorBrush _solidBrush;
 
-        public RgbNetColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
+        public override void EnableLayerBrush()
         {
             _solidBrush = new SolidColorBrush(Color.Transparent);
         }
 
-        public override void EnableLayerBrush()
-        {
-        }
-
         public override void DisableLayerBrush()
         {
+            _solidBrush = null;
         }
 
         public override void Update(double deltaTime)

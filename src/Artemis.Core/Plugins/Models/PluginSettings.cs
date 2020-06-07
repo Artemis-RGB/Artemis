@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Artemis.Storage.Entities;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;

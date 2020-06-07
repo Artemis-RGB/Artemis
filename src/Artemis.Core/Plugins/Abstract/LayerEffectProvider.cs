@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -11,10 +8,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public class LayerEffectProvider : Plugin
     {
-        public LayerEffectProvider(PluginInfo pluginInfo) : base(pluginInfo)
-        {
-        }
-
         public override void EnablePlugin()
         {
             throw new NotImplementedException();

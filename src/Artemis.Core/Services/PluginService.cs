@@ -267,10 +267,10 @@ namespace Artemis.Core.Services
                 {
                     var parameters = new IParameter[]
                     {
-                        new ConstructorArgument("pluginInfo", pluginInfo),
                         new Parameter("PluginInfo", pluginInfo, false)
                     };
                     pluginInfo.Instance = (Plugin) _childKernel.Get(pluginType, constraint: null, parameters: parameters);
+                    pluginInfo.Instance.PluginInfo = pluginInfo;
                 }
                 catch (Exception e)
                 {
@@ -353,7 +353,7 @@ namespace Artemis.Core.Services
             }
 
             plugin.SetEnabled(false);
-            
+
             OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }
 

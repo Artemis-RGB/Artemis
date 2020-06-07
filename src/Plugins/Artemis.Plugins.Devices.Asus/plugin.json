@@ -1,7 +1,8 @@
 ﻿{
   "Guid": "c20e876f-7cb0-4fa1-b0cc-ae1afb5865d1",
   "Name": "Asus Devices",
-  "Description": "Allows Artemis to control lighting on different ASUS devices such as motherboards, GPUs, headsets, RAM, keyboards and PC cases.",
+  "Description":
+    "Allows Artemis to control lighting on different ASUS devices such as motherboards, GPUs, headsets, RAM, keyboards and PC cases.",
   "Version": "1.0.0.0",
   "Main": "Artemis.Plugins.Devices.Asus.dll"
 }

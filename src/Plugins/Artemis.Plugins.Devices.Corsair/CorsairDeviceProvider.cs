@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using RGB.NET.Devices.Corsair;
@@ -12,7 +11,7 @@ namespace Artemis.Plugins.Devices.Corsair
     {
         private readonly IRgbService _rgbService;
 
-        public CorsairDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Corsair.CorsairDeviceProvider.Instance)
+        public CorsairDeviceProvider(IRgbService rgbService) : base(RGB.NET.Devices.Corsair.CorsairDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }

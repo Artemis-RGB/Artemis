@@ -1,5 +1,4 @@
 ﻿using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Plugins.LayerBrushes.ColorRgbNet.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 
@@ -9,15 +8,15 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
     {
         private readonly IProfileEditorService _profileEditorService;
 
-        public RgbNetColorBrushProvider(PluginInfo pluginInfo, IProfileEditorService profileEditorService) : base(pluginInfo)
+        public RgbNetColorBrushProvider(IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
-            AddLayerBrushDescriptor<RgbNetColorBrush>("RGB.NET Color", "A RGB.NET based color", "Brush");
         }
 
         public override void EnablePlugin()
         {
             _profileEditorService.RegisterPropertyInput(PluginInfo, typeof(StringPropertyInputViewModel));
+            AddLayerBrushDescriptor<RgbNetColorBrush>("RGB.NET Color", "A RGB.NET based color", "Brush");
         }
 
         public override void DisablePlugin()

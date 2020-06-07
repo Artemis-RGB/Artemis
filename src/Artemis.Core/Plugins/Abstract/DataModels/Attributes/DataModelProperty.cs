@@ -2,7 +2,7 @@
 
 namespace Artemis.Core.Plugins.Abstract.DataModels.Attributes
 {
-    [AttributeUsage(System.AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class DataModelPropertyAttribute : Attribute
     {
         /// <summary>

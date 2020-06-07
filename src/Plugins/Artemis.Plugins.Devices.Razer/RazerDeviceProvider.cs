@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using RGB.NET.Devices.Razer;
@@ -13,7 +12,7 @@ namespace Artemis.Plugins.Devices.Razer
     {
         private readonly IRgbService _rgbService;
 
-        public RazerDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Razer.RazerDeviceProvider.Instance)
+        public RazerDeviceProvider(IRgbService rgbService) : base(RGB.NET.Devices.Razer.RazerDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }

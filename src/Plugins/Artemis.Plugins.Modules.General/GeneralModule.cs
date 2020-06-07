@@ -11,15 +11,9 @@ namespace Artemis.Plugins.Modules.General
     {
         private readonly PluginSettings _settings;
 
-        public GeneralModule(PluginInfo pluginInfo, PluginSettings settings) : base(pluginInfo)
+        public GeneralModule(PluginSettings settings)
         {
             _settings = settings;
-            DisplayName = "General";
-            DisplayIcon = "AllInclusive";
-            ExpandsMainDataModel = true;
-            DataModel = new GeneralDataModel(this);
-
-            var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
 
         public override IEnumerable<ModuleViewModel> GetViewModels()
@@ -29,6 +23,12 @@ namespace Artemis.Plugins.Modules.General
 
         public override void EnablePlugin()
         {
+            DisplayName = "General";
+            DisplayIcon = "AllInclusive";
+            ExpandsMainDataModel = true;
+            DataModel = new GeneralDataModel(this);
+
+            var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
 
         public override void DisablePlugin()
