@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Core.Models.Profile;
+﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerProperties.Types;

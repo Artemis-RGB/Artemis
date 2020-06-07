@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.LayerBrush;
+﻿using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Plugins.LayerBrushes.Color
@@ -10,11 +11,11 @@ namespace Artemis.Plugins.LayerBrushes.Color
             AddLayerBrushDescriptor<ColorBrush>("Color", "A color with an (optional) gradient", "Brush");
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
         }
     }

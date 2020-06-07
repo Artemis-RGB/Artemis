@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.LayerBrush;
+﻿using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Plugins.LayerBrushes.Noise
@@ -10,11 +11,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             AddLayerBrushDescriptor<NoiseBrush>("Noise", "A brush of that shows an animated random noise", "ScatterPlot");
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
         }
     }

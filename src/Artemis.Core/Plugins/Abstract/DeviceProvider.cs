@@ -43,7 +43,7 @@ namespace Artemis.Core.Plugins.Abstract
             }
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
             // Does not happen with device providers, they require Artemis to restart
         }

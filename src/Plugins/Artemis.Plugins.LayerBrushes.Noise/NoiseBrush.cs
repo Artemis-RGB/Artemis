@@ -32,6 +32,18 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             DetermineRenderScale();
         }
 
+        public override void EnableLayerBrush()
+        {
+            Properties.GradientColor.BaseValue.PropertyChanged += GradientColorChanged;
+            CreateColorMap();
+        }
+
+        public override void DisableLayerBrush()
+        {
+            _bitmap?.Dispose();
+            _bitmap = null;
+        }
+
         public override void Update(double deltaTime)
         {
             _x += Properties.ScrollSpeed.CurrentValue.X / 500f / (float) deltaTime;
@@ -103,23 +115,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             paint.Shader = foregroundShader;
             canvas.DrawRect(path.Bounds, paint);
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _bitmap?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        protected override void OnPropertiesInitialized()
-        {
-            Properties.GradientColor.BaseValue.PropertyChanged += GradientColorChanged;
-            CreateColorMap();
-        }
-
+        
         private void GradientColorChanged(object sender, PropertyChangedEventArgs e)
         {
             CreateColorMap();

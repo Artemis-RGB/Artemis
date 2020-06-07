@@ -15,7 +15,7 @@ namespace Artemis.Plugins.Devices.Roccat
             _rgbService = rgbService;
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             // TODO: Find out why this is missing, Roccat seems unimplemented
             // PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(RoccatRGBDevice<>), sender, args);

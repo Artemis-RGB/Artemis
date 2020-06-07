@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrush
+namespace Artemis.Core.Plugins.LayerEffect
 {
     /// <summary>
-    ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
+    ///     For internal use only, please use <see cref="LayerEffect" /> instead
     /// </summary>
-    public abstract class BaseLayerBrush : IDisposable
+    public abstract class BaseLayerEffect : IDisposable
     {
-        protected BaseLayerBrush(Layer layer, LayerBrushDescriptor descriptor)
+        protected BaseLayerEffect(Layer layer, LayerEffectDescriptor descriptor)
         {
             Layer = layer;
             Descriptor = descriptor;
@@ -28,32 +26,22 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// <summary>
         ///     Gets the descriptor of this brush
         /// </summary>
-        public LayerBrushDescriptor Descriptor { get; internal set; }
+        public LayerEffectDescriptor Descriptor { get; internal set; }
 
         /// <summary>
         ///     Gets the plugin info that defined this brush
         /// </summary>
-        public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
-
-        /// <summary>
-        ///     Gets the type of layer brush
-        /// </summary>
-        public LayerBrushType BrushType { get; internal set; }
+        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider.PluginInfo;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
         public virtual LayerPropertyGroup BaseProperties => null;
-
+        
         /// <summary>
-        ///     Called when the layer brush is activated
+        ///     Called when the brush is being removed from the layer
         /// </summary>
-        public abstract void EnableLayerBrush();
-
-        /// <summary>
-        ///     Called when the layer brush is deactivated
-        /// </summary>
-        public abstract void DisableLayerBrush();
+        public abstract void Dispose();
 
         /// <summary>
         ///     Called before rendering every frame, write your update logic here
@@ -62,7 +50,7 @@ namespace Artemis.Core.Plugins.LayerBrush
         public abstract void Update(double deltaTime);
 
         // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
-        // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
+        // but LayerEffect<T> and RgbNetLayerEffect<T> outside the core
         internal abstract void Initialize(ILayerService layerService);
 
         internal abstract void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
@@ -72,16 +60,5 @@ namespace Artemis.Core.Plugins.LayerBrush
         /// </summary>
         /// <returns>Your RGB.NET brush</returns>
         internal abstract IBrush InternalGetBrush();
-
-        public void Dispose()
-        {
-            DisableLayerBrush();
-        }
-    }
-
-    public enum LayerBrushType
-    {
-        Regular,
-        RgbNet
     }
 }

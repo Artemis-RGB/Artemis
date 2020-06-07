@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Core.Extensions;
+﻿using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using RGB.NET.Brushes;
@@ -14,6 +13,14 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
         public RgbNetColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
         {
             _solidBrush = new SolidColorBrush(Color.Transparent);
+        }
+
+        public override void EnableLayerBrush()
+        {
+        }
+
+        public override void DisableLayerBrush()
+        {
         }
 
         public override void Update(double deltaTime)

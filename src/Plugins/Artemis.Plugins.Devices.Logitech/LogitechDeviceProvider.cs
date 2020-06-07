@@ -25,7 +25,7 @@ namespace Artemis.Plugins.Devices.Logitech
             _logger = logger;
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(LogitechRGBDevice<>), sender, args);
             RGB.NET.Devices.Logitech.LogitechDeviceProvider.PossibleX64NativePaths.Add(Path.Combine(PluginInfo.Directory.FullName, "x64", "LogitechLedEnginesWrapper.dll"));

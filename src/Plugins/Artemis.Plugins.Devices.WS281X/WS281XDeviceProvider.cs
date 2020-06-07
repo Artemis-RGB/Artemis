@@ -25,7 +25,7 @@ namespace Artemis.Plugins.Devices.WS281X
 
         public PluginSettings Settings { get; }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             var definitions = Settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
             if (definitions.Value == null)
@@ -49,7 +49,7 @@ namespace Artemis.Plugins.Devices.WS281X
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
         }
 
-        protected override void DisablePlugin()
+        public override void DisablePlugin()
         {
             // TODO: Remove the device provider from the surface
         }

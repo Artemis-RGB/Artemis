@@ -43,15 +43,5 @@ namespace Artemis.Core.Plugins.LayerBrush
         {
             InitializeProperties(layerService);
         }
-
-        protected virtual void Dispose(bool disposing)
-        {
-        }
-
-        public sealed override void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
     }
 }
