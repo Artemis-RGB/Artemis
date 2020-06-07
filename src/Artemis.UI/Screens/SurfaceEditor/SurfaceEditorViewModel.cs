@@ -306,6 +306,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             var device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
             if (device != null)
             {
+                _rgbService.UpdateTrigger.Stop();
                 _mouseDragStatus = MouseDragStatus.Dragging;
                 // If the device is not selected, deselect others and select only this one (if shift not held)
                 if (device.SelectionStatus != SelectionStatus.Selected)
@@ -350,6 +351,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
 
             _mouseDragStatus = MouseDragStatus.None;
+            _rgbService.UpdateTrigger.Start();
         }
 
         private void UpdateSelection(Point position)
@@ -415,18 +417,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
         }
 
         #endregion
-
-        protected override void OnActivate()
-        {
-            _rgbService.UpdateTrigger.Stop();
-            base.OnActivate();
-        }
-
-        protected override void OnDeactivate()
-        {
-            _rgbService.UpdateTrigger.Start();
-            base.OnDeactivate();
-        }
     }
 
     internal enum MouseDragStatus

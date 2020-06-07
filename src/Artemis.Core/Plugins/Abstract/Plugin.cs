@@ -10,11 +10,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Plugin : IDisposable
     {
-        internal Plugin(PluginInfo pluginInfo)
-        {
-            PluginInfo = pluginInfo ?? throw new ArgumentNullException(nameof(pluginInfo));
-        }
-
         public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
@@ -28,21 +23,15 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         public bool HasConfigurationViewModel { get; protected set; }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         ///     Called when the plugin is activated
         /// </summary>
-        protected abstract void EnablePlugin();
+        public abstract void EnablePlugin();
 
         /// <summary>
-        ///     Called when the plugin is deactivated
+        ///     Called when the plugin is deactivated or when Artemis shuts down
         /// </summary>
-        protected abstract void DisablePlugin();
+        public abstract void DisablePlugin();
 
         /// <summary>
         ///     Called when the plugins configuration window is opened from the UI. The UI will only attempt to open if
@@ -54,31 +43,25 @@ namespace Artemis.Core.Plugins.Abstract
             return null;
         }
 
-        /// <summary>
-        ///     Called when Artemis shuts down
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
         internal void SetEnabled(bool enable)
         {
             if (enable && !Enabled)
             {
+                Enabled = true;
                 EnablePlugin();
                 OnPluginEnabled();
             }
             else if (!enable && Enabled)
             {
+                Enabled = false;
                 DisablePlugin();
                 OnPluginDisabled();
             }
+        }
 
-            Enabled = enable;
+        public void Dispose()
+        {
+            DisablePlugin();
         }
 
         #region Events

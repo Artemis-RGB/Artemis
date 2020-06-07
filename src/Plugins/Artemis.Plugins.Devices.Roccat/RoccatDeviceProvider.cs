@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 
 namespace Artemis.Plugins.Devices.Roccat
@@ -10,12 +9,12 @@ namespace Artemis.Plugins.Devices.Roccat
     {
         private readonly IRgbService _rgbService;
 
-        public RoccatDeviceProvider(PluginInfo pluginInfo, IRgbService rgbService) : base(pluginInfo, RGB.NET.Devices.Roccat.RoccatDeviceProvider.Instance)
+        public RoccatDeviceProvider(IRgbService rgbService) : base(RGB.NET.Devices.Roccat.RoccatDeviceProvider.Instance)
         {
             _rgbService = rgbService;
         }
 
-        protected override void EnablePlugin()
+        public override void EnablePlugin()
         {
             // TODO: Find out why this is missing, Roccat seems unimplemented
             // PathHelper.ResolvingAbsolutePath += (sender, args) => ResolveAbsolutePath(typeof(RoccatRGBDevice<>), sender, args);

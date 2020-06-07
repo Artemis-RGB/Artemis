@@ -1,6 +1,4 @@
-﻿using Artemis.Core.Plugins.Models;
-
-namespace Artemis.Core.Plugins.Abstract
+﻿namespace Artemis.Core.Plugins.Abstract
 {
     /// <inheritdoc />
     /// <summary>
@@ -8,10 +6,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class DataModelExpansion : Plugin
     {
-        protected DataModelExpansion(PluginInfo pluginInfo) : base(pluginInfo)
-        {
-        }
-
         public abstract void Update(double deltaTime);
     }
 }

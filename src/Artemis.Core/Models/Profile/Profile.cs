@@ -129,7 +129,11 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
-                if (!IsActivated) return;
+                if (!IsActivated)
+                    return;
+
+                foreach (var layer in GetAllLayers())
+                    layer.Deactivate();
 
                 IsActivated = false;
                 OnDeactivated();

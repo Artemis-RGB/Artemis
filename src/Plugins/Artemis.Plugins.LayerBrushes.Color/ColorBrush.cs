@@ -1,6 +1,5 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerBrushes.Color
@@ -12,9 +11,20 @@ namespace Artemis.Plugins.LayerBrushes.Color
         private SKShader _shader;
         private SKRect _shaderBounds;
 
-        public ColorBrush(Layer layer, LayerBrushDescriptor descriptor) : base(layer, descriptor)
+        public override void EnableLayerBrush()
         {
             Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
+            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
+            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
+        }
+
+        public override void DisableLayerBrush()
+        {
+            _paint?.Dispose();
+            _shader?.Dispose();
+            _paint = null;
+            _shader = null;
         }
 
         public override void Update(double deltaTime)
@@ -40,24 +50,6 @@ namespace Artemis.Plugins.LayerBrushes.Color
             canvas.DrawPath(path, paint);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _paint?.Dispose();
-                _shader?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-        
-        protected override void OnPropertiesInitialized()
-        {
-            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
-        }
-
         private void CreateShader()
         {
             var center = new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY);
@@ -69,13 +61,13 @@ namespace Artemis.Plugins.LayerBrushes.Color
                     new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
                     Properties.Gradient.BaseValue.GetColorsArray(),
                     Properties.Gradient.BaseValue.GetPositionsArray(),
-                    SKShaderTileMode.Repeat),
+                    SKShaderTileMode.Clamp),
                 GradientType.RadialGradient => SKShader.CreateRadialGradient(
                     center,
-                    Math.Min(_shaderBounds.Width, _shaderBounds.Height),
+                    Math.Max(_shaderBounds.Width, _shaderBounds.Height) / 2f,
                     Properties.Gradient.BaseValue.GetColorsArray(),
                     Properties.Gradient.BaseValue.GetPositionsArray(),
-                    SKShaderTileMode.Repeat),
+                    SKShaderTileMode.Clamp),
                 GradientType.SweepGradient => SKShader.CreateSweepGradient(
                     center,
                     Properties.Gradient.BaseValue.GetColorsArray(),
