@@ -8,8 +8,6 @@ using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Utilities;
-using Stylet;
 
 namespace Artemis.UI.PropertyInput
 {
@@ -23,43 +21,43 @@ namespace Artemis.UI.PropertyInput
         {
             _layerService = layerService;
             _pluginService = pluginService;
-            ComboboxValues = new BindableCollection<ValueDescription>();
 
-            _pluginService.PluginLoaded += PluginServiceOnPluginLoaded;
+            _pluginService.PluginEnabled += PluginServiceOnPluginLoaded;
+            _pluginService.PluginDisabled += PluginServiceOnPluginLoaded;
             UpdateEnumValues();
         }
 
-        public BindableCollection<ValueDescription> ComboboxValues { get; }
+        public List<LayerBrushDescriptor> Descriptors { get; set; }
+
+        public LayerBrushDescriptor SelectedDescriptor
+        {
+            get => Descriptors.FirstOrDefault(d => d.LayerBrushProvider.PluginInfo.Guid == InputValue?.BrushPluginGuid && d.LayerBrushType.Name == InputValue?.BrushType);
+            set => SetBrushByDescriptor(value);
+        }
 
         public void UpdateEnumValues()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
-            var descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
-
-            var enumValues = new List<ValueDescription>();
-            foreach (var layerBrushDescriptor in descriptors)
-            {
-                var brushName = layerBrushDescriptor.LayerBrushType.Name;
-                var brushGuid = layerBrushDescriptor.LayerBrushProvider.PluginInfo.Guid;
-                if (InputValue != null && InputValue.BrushType == brushName && InputValue.BrushPluginGuid == brushGuid)
-                    enumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = InputValue});
-                else
-                    enumValues.Add(new ValueDescription {Description = layerBrushDescriptor.DisplayName, Value = new LayerBrushReference {BrushType = brushName, BrushPluginGuid = brushGuid}});
-            }
-
-            ComboboxValues.Clear();
-            ComboboxValues.AddRange(enumValues);
+            Descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
+            NotifyOfPropertyChange(nameof(SelectedDescriptor));
         }
+
 
         public override void Dispose()
         {
-            _pluginService.PluginLoaded -= PluginServiceOnPluginLoaded;
+            _pluginService.PluginEnabled -= PluginServiceOnPluginLoaded;
+            _pluginService.PluginDisabled -= PluginServiceOnPluginLoaded;
             base.Dispose();
         }
 
         protected override void OnInputValueApplied()
         {
             _layerService.InstantiateLayerBrush(LayerProperty.Layer);
+        }
+
+        private void SetBrushByDescriptor(LayerBrushDescriptor value)
+        {
+            InputValue = new LayerBrushReference {BrushPluginGuid = value.LayerBrushProvider.PluginInfo.Guid, BrushType = value.LayerBrushType.Name};
         }
 
         private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
