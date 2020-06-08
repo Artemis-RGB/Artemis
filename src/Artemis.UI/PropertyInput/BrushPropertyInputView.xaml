@@ -5,21 +5,53 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:propertyInput="clr-namespace:Artemis.UI.PropertyInput"
+             xmlns:layerBrush="clr-namespace:Artemis.Core.Plugins.LayerBrush;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type propertyInput:BrushPropertyInputViewModel}}">
+    <UserControl.Resources>
+        <ControlTemplate x:Key="SimpleTemplate">
+            <StackPanel d:DataContext="{d:DesignInstance {x:Type layerBrush:LayerBrushDescriptor}}" Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="{Binding Icon}" Height="13" Width="13" Margin="0 1 3 0" />
+                <TextBlock Text="{Binding DisplayName}" />
+            </StackPanel>
+        </ControlTemplate>
+        <ControlTemplate x:Key="ExtendedTemplate">
+            <Grid d:DataContext="{d:DesignInstance {x:Type layerBrush:LayerBrushDescriptor}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <materialDesign:PackIcon Grid.Row="0" Grid.RowSpan="2" Kind="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="350" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
+            </Grid>
+        </ControlTemplate>
+        <DataTemplate x:Key="DescriptorTemplate">
+            <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource ExtendedTemplate}" />
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ComboBoxItem}}, Path=IsSelected}" Value="{x:Null}">
+                    <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource SimpleTemplate}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <ComboBox Width="132"
                   Margin="0 2"
                   Padding="0 -1"
                   Height="15"
+                  materialDesign:ComboBoxAssist.ClassicMode="True"
                   materialDesign:ValidationAssist.UsePopup="True"
                   HorizontalAlignment="Left"
-                  ItemsSource="{Binding Path=ComboboxValues}"
-                  SelectedValuePath="Value"
-                  DisplayMemberPath="Description"
-                  SelectedValue="{Binding Path=InputValue}" />
+                  ItemsSource="{Binding Path=Descriptors}"
+                  SelectedValue="{Binding Path=SelectedDescriptor}"
+                  ItemTemplate="{StaticResource DescriptorTemplate}" />
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

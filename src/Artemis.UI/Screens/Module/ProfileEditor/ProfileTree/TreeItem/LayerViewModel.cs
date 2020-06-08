@@ -19,6 +19,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
         {
         }
 
+        public Layer Layer => ProfileElement as Layer;
+        public bool ShowIcons => Layer?.LayerBrush != null;
         public override bool SupportsChildren => false;
+        
     }
 }
