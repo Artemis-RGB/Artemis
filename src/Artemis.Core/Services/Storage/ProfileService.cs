@@ -94,7 +94,7 @@ namespace Artemis.Core.Services.Storage
             if (profile != null)
             {
                 InitializeLayerProperties(profile);
-                InstantiateLayerBrushes(profile);
+                InstantiateLayers(profile);
             }
         }
 
@@ -165,22 +165,25 @@ namespace Artemis.Core.Services.Storage
 
         private void InitializeLayerProperties(Profile profile)
         {
-            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
+            foreach (var layer in profile.GetAllLayers())
             {
                 if (!layer.General.PropertiesInitialized)
                     layer.General.InitializeProperties(_layerService, layer, "General.");
                 if (!layer.Transform.PropertiesInitialized)
                     layer.Transform.InitializeProperties(_layerService, layer, "Transform.");
             }
-
-            ;
         }
 
-        private void InstantiateLayerBrushes(Profile profile)
+        private void InstantiateLayers(Profile profile)
         {
-            // Only instantiate brushes for layers without an existing brush instance
-            foreach (var layer in profile.GetAllLayers().Where(l => l.LayerBrush == null))
-                _layerService.InstantiateLayerBrush(layer);
+            // Only instantiate brushes for layers without an existing brush/effect instance
+            foreach (var layer in profile.GetAllLayers())
+            {
+                if (layer.LayerBrush == null)
+                    _layerService.InstantiateLayerBrush(layer);
+                if (layer.LayerEffect == null)
+                    _layerService.InstantiateLayerEffect(layer);
+            }
         }
 
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
@@ -194,7 +197,7 @@ namespace Artemis.Core.Services.Storage
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                InstantiateLayerBrushes(profileModule.ActiveProfile);
+                InstantiateLayers(profileModule.ActiveProfile);
         }
 
         #region Event handlers

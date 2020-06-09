@@ -35,19 +35,14 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
             internal set => _properties = value;
         }
 
-        /// <summary>
-        ///     Called when all layer properties in this effect have been initialized
-        /// </summary>
-        protected virtual void OnPropertiesInitialized()
-        {
-        }
-
         internal void InitializeProperties(ILayerService layerService)
         {
             Properties = Activator.CreateInstance<T>();
+            Properties.LayerEffect = this;
             Properties.InitializeProperties(layerService, Layer, "LayerEffect.");
-            OnPropertiesInitialized();
             PropertiesInitialized = true;
+
+            EnableLayerEffect();
         }
 
         internal override void Initialize(ILayerService layerService)

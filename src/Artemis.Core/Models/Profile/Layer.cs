@@ -116,6 +116,11 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public BaseLayerBrush LayerBrush { get; internal set; }
 
+        /// <summary>
+        ///     The layer effect that will apply pre- and/or post-processing to the layer
+        /// </summary>
+        public BaseLayerEffect LayerEffect { get; set; }
+
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
@@ -150,6 +155,7 @@ namespace Artemis.Core.Models.Profile
             General.ApplyToEntity();
             Transform.ApplyToEntity();
             LayerBrush?.BaseProperties.ApplyToEntity();
+            LayerEffect?.BaseProperties.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -220,22 +226,26 @@ namespace Artemis.Core.Models.Profile
                 General.Override(TimeSpan.Zero);
                 Transform.Override(TimeSpan.Zero);
                 LayerBrush.BaseProperties.Override(TimeSpan.Zero);
+                LayerEffect?.BaseProperties?.Override(TimeSpan.Zero);
             }
             else
             {
                 General.Update(deltaTime);
                 Transform.Update(deltaTime);
                 LayerBrush.BaseProperties.Update(deltaTime);
+                LayerEffect?.BaseProperties?.Update(deltaTime);
             }
 
             LayerBrush.Update(deltaTime);
+            LayerEffect?.Update(deltaTime);
         }
 
         public void OverrideProgress(TimeSpan timeOverride)
         {
             General.Override(timeOverride);
             Transform.Override(timeOverride);
-            LayerBrush?.BaseProperties.Override(timeOverride);
+            LayerBrush?.BaseProperties?.Override(timeOverride);
+            LayerEffect?.BaseProperties?.Override(timeOverride);
         }
 
         /// <inheritdoc />
@@ -256,20 +266,24 @@ namespace Artemis.Core.Models.Profile
                 paint.BlendMode = General.BlendMode.CurrentValue;
                 paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                switch (General.FillType.CurrentValue)
-                {
-                    case LayerFillType.Stretch:
-                        StretchRender(canvas, canvasInfo, paint);
-                        break;
-                    case LayerFillType.Clip:
-                        ClipRender(canvas, canvasInfo, paint);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                LayerEffect?.PreProcess(canvas, canvasInfo, Path, paint);
+
+                if (!LayerBrush.SupportsTransformation)
+                    SimpleRender(canvas, canvasInfo, paint);
+                else if (General.FillType.CurrentValue == LayerFillType.Stretch)
+                    StretchRender(canvas, canvasInfo, paint);
+                else if (General.FillType.CurrentValue == LayerFillType.Clip)
+                    ClipRender(canvas, canvasInfo, paint);
+
+                LayerEffect?.PostProcess(canvas, canvasInfo, Path, paint);
             }
 
             canvas.Restore();
+        }
+
+        private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
+        {
+            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
         }
 
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
@@ -295,7 +309,7 @@ namespace Artemis.Core.Models.Profile
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
-            // Apply transformations
+            // Apply transformation
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
 
@@ -412,6 +426,7 @@ namespace Artemis.Core.Models.Profile
         internal void Deactivate()
         {
             DeactivateLayerBrush();
+            DeactivateLayerEffect();
         }
 
         internal void DeactivateLayerBrush()
@@ -423,7 +438,19 @@ namespace Artemis.Core.Models.Profile
             LayerBrush = null;
             brush.Dispose();
 
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid);
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
+        }
+
+        internal void DeactivateLayerEffect()
+        {
+            if (LayerEffect == null)
+                return;
+
+            var effect = LayerEffect;
+            LayerEffect = null;
+            effect.Dispose();
+
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == effect.PluginInfo.Guid && p.Path.StartsWith("LayerEffect."));
         }
 
         internal void PopulateLeds(ArtemisSurface surface)
@@ -451,6 +478,7 @@ namespace Artemis.Core.Models.Profile
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
         public event EventHandler LayerBrushUpdated;
+        public event EventHandler LayerEffectUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -465,6 +493,11 @@ namespace Artemis.Core.Models.Profile
         internal void OnLayerBrushUpdated()
         {
             LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnLayerEffectUpdated()
+        {
+            LayerEffectUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

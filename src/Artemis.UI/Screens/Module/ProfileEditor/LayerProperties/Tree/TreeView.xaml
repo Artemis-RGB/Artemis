@@ -96,11 +96,7 @@
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding PropertyGroupDescription.Name}"
-                               ToolTip="{Binding PropertyGroupDescription.Description}" Margin="5 0"
-                               VerticalAlignment="Center" />
-                </StackPanel>
+                <ContentControl s:View.Model="{Binding TreePropertyGroupViewModel}" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
                 <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" />

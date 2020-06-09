@@ -13,10 +13,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Attributes
         ///     The user-friendly description for this property, shown in the UI.
         /// </summary>
         public string Description { get; set; }
-
-        /// <summary>
-        ///     Whether to expand this property by default, this is useful for important parent properties.
-        /// </summary>
-        public bool ExpandByDefault { get; set; }
     }
 }

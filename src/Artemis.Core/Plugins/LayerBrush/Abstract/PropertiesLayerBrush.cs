@@ -38,6 +38,7 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         internal void InitializeProperties(ILayerService layerService)
         {
             Properties = Activator.CreateInstance<T>();
+            Properties.LayerBrush = this;
             Properties.InitializeProperties(layerService, Layer, "LayerBrush.");
             PropertiesInitialized = true;
 

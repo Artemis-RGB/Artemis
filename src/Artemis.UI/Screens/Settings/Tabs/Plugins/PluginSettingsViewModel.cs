@@ -53,7 +53,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 case Core.Plugins.Abstract.Module _:
                     return PackIconKind.GearBox;
                 case LayerBrushProvider _:
-                    return PackIconKind.Brush;
+                    return PackIconKind.Brush;        
+                case LayerEffectProvider _:
+                    return PackIconKind.AutoAwesome;
             }
 
             return PackIconKind.Plugin;
