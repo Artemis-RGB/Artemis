@@ -1,0 +1,119 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree.TreePropertyGroupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance local:TreePropertyGroupViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <!-- Type: None -->
+        <TextBlock
+            Text="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Name}"
+            ToolTip="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Description}"
+            VerticalAlignment="Center"
+            Margin="0 5">
+            <TextBlock.Style>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LayerPropertyGroupViewModel.GroupType}" Value="None">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <!-- Type: General -->
+        <StackPanel Orientation="Horizontal" Margin="0 5">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LayerPropertyGroupViewModel.GroupType}" Value="General">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <materialDesign:PackIcon Kind="HammerWrench" Margin="0 -1 5 0" />
+            <TextBlock ToolTip="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Description}">General</TextBlock>
+        </StackPanel>
+
+        <!-- Type: Transform -->
+        <StackPanel Orientation="Horizontal" Margin="0 5">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LayerPropertyGroupViewModel.GroupType}" Value="Transform">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <materialDesign:PackIcon Kind="TransitConnectionVariant" Margin="0 -1 5 0" />
+            <TextBlock ToolTip="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Description}">Transform</TextBlock>
+        </StackPanel>
+
+        <!-- Type: LayerBrushRoot -->
+        <StackPanel Orientation="Horizontal" Margin="0 5">
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LayerPropertyGroupViewModel.GroupType}" Value="LayerBrushRoot">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <materialDesign:PackIcon Grid.Column="0" Kind="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.Descriptor.Icon}" Margin="0 -1 5 0" />
+            <TextBlock ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.Descriptor.Description}">Brush -&#160;</TextBlock>
+            <TextBlock Text="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.Descriptor.DisplayName}"
+                       ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.Descriptor.Description}" />
+        </StackPanel>
+
+        <!-- Type: LayerEffectRoot -->
+        <Grid Height="22">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LayerPropertyGroupViewModel.GroupType}" Value="LayerEffectRoot">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            <materialDesign:PackIcon Grid.Column="0" Kind="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Icon}" Margin="0 5 5 0" />
+            <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5">
+                Effect -&#160;
+            </TextBlock>
+            <TextBlock Grid.Column="2"
+                       Text="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.DisplayName}"
+                       ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}"
+                       Margin="0 5" />
+
+            <Button Grid.Column="3"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0 1"
+                    Padding="0"
+                    Width="80"
+                    Height="20"
+                    ToolTip="Change the property's data binding"
+                    VerticalAlignment="Center">
+                <TextBlock FontSize="10">DELETE EFFECT</TextBlock>
+            </Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

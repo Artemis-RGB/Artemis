@@ -15,7 +15,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertyGroupViewModel : LayerPropertyBaseViewModel
     {
-        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup, 
+        public enum ViewModelType
+        {
+            General,
+            Transform,
+            LayerBrushRoot,
+            LayerEffectRoot,
+            None
+        }
+
+        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup,
             PropertyGroupDescriptionAttribute propertyGroupDescription)
         {
             ProfileEditorService = profileEditorService;
@@ -26,10 +35,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             TreePropertyGroupViewModel = new TreePropertyGroupViewModel(this);
             TimelinePropertyGroupViewModel = new TimelinePropertyGroupViewModel(this);
 
-            PopulateChildren();
             LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
+            PopulateChildren();
+            DetermineType();
         }
-
 
         public override bool IsExpanded
         {
@@ -38,6 +47,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         public override bool IsVisible => !LayerPropertyGroup.IsHidden;
+        public ViewModelType GroupType { get; set; }
 
         public IProfileEditorService ProfileEditorService { get; }
 
@@ -81,6 +91,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             return result;
         }
 
+        private void DetermineType()
+        {
+            if (LayerPropertyGroup is LayerGeneralProperties)
+                GroupType = ViewModelType.General;
+            else if (LayerPropertyGroup is LayerTransformProperties)
+                GroupType = ViewModelType.Transform;
+            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
+                GroupType = ViewModelType.LayerBrushRoot;
+            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
+                GroupType = ViewModelType.LayerEffectRoot;
+            else
+                GroupType = ViewModelType.None;
+        }
+
         private void PopulateChildren()
         {
             // Get all properties and property groups and create VMs for them
@@ -106,10 +130,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
         {
             // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
-            var genericType = baseLayerProperty.GetType().Name == typeof(LayerProperty<>).Name 
-                ? baseLayerProperty.GetType().GetGenericArguments()[0] 
+            var genericType = baseLayerProperty.GetType().Name == typeof(LayerProperty<>).Name
+                ? baseLayerProperty.GetType().GetGenericArguments()[0]
                 : baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
-            
+
             // Only create entries for types supported by a tree input VM
             if (!genericType.IsEnum && ProfileEditorService.RegisteredPropertyEditors.All(r => r.SupportedType != genericType))
                 return null;

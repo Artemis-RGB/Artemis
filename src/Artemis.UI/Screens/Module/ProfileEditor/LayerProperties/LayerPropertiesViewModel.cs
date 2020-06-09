@@ -21,6 +21,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
     {
+        private LayerPropertyGroupViewModel _brushPropertyGroup;
+
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService)
         {
             ProfileEditorService = profileEditorService;
@@ -111,6 +113,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.Dispose();
             LayerPropertyGroups.Clear();
+            _brushPropertyGroup = null;
 
             if (profileElement is Layer layer)
             {
@@ -148,17 +151,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             if (SelectedLayer == null)
                 return;
 
-            var hideRenderRelatedProperties = SelectedLayer.LayerBrush != null && SelectedLayer.LayerBrush.BrushType == LayerBrushType.RgbNet;
+            var hideRenderRelatedProperties = SelectedLayer?.LayerBrush?.BrushType == LayerBrushType.Regular && SelectedLayer.LayerBrush.SupportsTransformation;
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.FillType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.BlendMode.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.Transform.IsHidden = hideRenderRelatedProperties;
 
-            // Get rid of the old layer properties group
-            if (LayerPropertyGroups.Count == 3)
+            if (_brushPropertyGroup != null)
             {
-                LayerPropertyGroups[2].Dispose();
-                LayerPropertyGroups.RemoveAt(2);
+                LayerPropertyGroups.Remove(_brushPropertyGroup);
+                _brushPropertyGroup = null;
             }
 
             if (SelectedLayer.LayerBrush != null)
@@ -170,7 +172,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                     Name = SelectedLayer.LayerBrush.Descriptor.DisplayName,
                     Description = SelectedLayer.LayerBrush.Descriptor.Description
                 };
-                LayerPropertyGroups.Add(new LayerPropertyGroupViewModel(ProfileEditorService, SelectedLayer.LayerBrush.BaseProperties, brushDescription));
+                _brushPropertyGroup = new LayerPropertyGroupViewModel(ProfileEditorService, SelectedLayer.LayerBrush.BaseProperties, brushDescription);
+                LayerPropertyGroups.Add(_brushPropertyGroup);
             }
 
             TimelineViewModel.UpdateKeyframes();

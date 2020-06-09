@@ -36,6 +36,11 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         /// </summary>
         public virtual LayerPropertyGroup BaseProperties => null;
 
+        /// <summary>
+        ///     Gets whether the brush supports transformations, RGB.NET brushes never support transformation
+        /// </summary>
+        public bool SupportsTransformation { get; protected set; }
+
         public void Dispose()
         {
             DisableLayerBrush();

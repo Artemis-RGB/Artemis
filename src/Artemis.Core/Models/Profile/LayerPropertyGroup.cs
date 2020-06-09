@@ -8,6 +8,8 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Exceptions;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
+using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 
@@ -52,6 +54,16 @@ namespace Artemis.Core.Models.Profile
         public bool IsCorePropertyGroup { get; internal set; }
 
         public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
+
+        /// <summary>
+        ///     The layer brush this property group belongs to
+        /// </summary>
+        public BaseLayerBrush LayerBrush { get; internal set; }
+
+        /// <summary>
+        ///     The layer effect this property group belongs to
+        /// </summary>
+        public BaseLayerEffect LayerEffect { get; internal set; }
 
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
@@ -158,6 +170,8 @@ namespace Artemis.Core.Models.Profile
 
                         instance.Parent = this;
                         instance.GroupDescription = (PropertyGroupDescriptionAttribute) propertyGroupDescription;
+                        instance.LayerBrush = LayerBrush;
+                        instance.LayerEffect = LayerEffect;
                         instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
 
                         propertyInfo.SetValue(this, instance);

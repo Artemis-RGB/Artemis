@@ -5,6 +5,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
+using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
@@ -34,8 +35,9 @@ namespace Artemis.Core.Services
             layer.General.InitializeProperties(this, layer, "General.");
             layer.Transform.InitializeProperties(this, layer, "Transform.");
 
-            // With the properties loaded, the layer brush can be instantiated
+            // With the properties loaded, the layer brush and effect can be instantiated
             InstantiateLayerBrush(layer);
+            InstantiateLayerEffect(layer);
 
             return layer;
         }
@@ -67,6 +69,35 @@ namespace Artemis.Core.Services
             layer.OnLayerBrushUpdated();
 
             return brush;
+        }
+
+        public BaseLayerEffect InstantiateLayerEffect(Layer layer)
+        {
+            layer.DeactivateLayerEffect();
+
+            var descriptorReference = layer.General.EffectReference?.CurrentValue;
+            if (descriptorReference == null)
+                return null;
+
+            // Get a matching descriptor
+            var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
+            var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
+            var descriptor = descriptors.FirstOrDefault(d => d.LayerEffectProvider.PluginInfo.Guid == descriptorReference.EffectPluginGuid &&
+                                                             d.LayerEffectType.Name == descriptorReference.EffectType);
+
+            if (descriptor == null)
+                return null;
+
+            var effect = (BaseLayerEffect)_kernel.Get(descriptor.LayerEffectType);
+            effect.Layer = layer;
+            effect.Descriptor = descriptor;
+            layer.LayerEffect = effect;
+
+            effect.Initialize(this);
+            effect.Update(0);
+            layer.OnLayerEffectUpdated();
+
+            return effect;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
+using Artemis.Core.Plugins.LayerEffect;
+using Artemis.Core.Plugins.LayerEffect.Abstract;
 
 namespace Artemis.Core.Services.Interfaces
 {
@@ -23,5 +25,14 @@ namespace Artemis.Core.Services.Interfaces
         /// <param name="layer">The layer to instantiate the brush for</param>
         /// <returns></returns>
         BaseLayerBrush InstantiateLayerBrush(Layer layer);
+
+        /// <summary>
+        ///     Instantiates and adds the <see cref="BaseLayerEffect" /> described by the provided
+        ///     <see cref="LayerEffectDescriptor" />
+        ///     to the <see cref="Layer" />.
+        /// </summary>
+        /// <param name="layer">The layer to instantiate the effect for</param>
+        /// <returns></returns>
+        BaseLayerEffect InstantiateLayerEffect(Layer layer);
     }
 }
