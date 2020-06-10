@@ -45,7 +45,7 @@
                 <!-- Bottom panels resize -->
                 <RowDefinition Height="Auto" />
                 <!-- Bottom panels -->
-                <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="100" />
+                <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="108" />
             </Grid.RowDefinitions>
 
             <!-- Introduction -->

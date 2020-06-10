@@ -9,26 +9,12 @@
     d:DesignHeight="101.848" d:DesignWidth="242.956">
     <UserControl.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/Resources/ArtemisShared.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ColorPicker.xaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:ColorToStringConverter x:Key="ColorToStringConverter" />
             <converters:ColorToSolidColorConverter x:Key="ColorToSolidColorConverter" />
-            <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute" Viewport="0,0,10,10">
-                <VisualBrush.Visual>
-                    <Grid Width="10" Height="10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="Gray" />
-                        <Rectangle Grid.Row="0" Grid.Column="1" Fill="White" />
-                        <Rectangle Grid.Row="1" Grid.Column="0" Fill="White" />
-                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="Gray" />
-                    </Grid>
-                </VisualBrush.Visual>
-            </VisualBrush>
             <ControlTemplate x:Key="MaterialDesignOpacitySlider" TargetType="{x:Type Slider}">
                 <Border
                     x:Name="border"
