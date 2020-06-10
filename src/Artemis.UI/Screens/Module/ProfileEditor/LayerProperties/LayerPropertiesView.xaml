@@ -36,7 +36,7 @@
                             <ScrollBar Name="PART_VerticalScrollBar"
                                        HorizontalAlignment="Right"
                                        Opacity="0.5"
-                                       Grid.Row="0" 
+                                       Grid.Row="0"
                                        Grid.Column="1"
                                        Value="{TemplateBinding VerticalOffset}"
                                        Maximum="{TemplateBinding ScrollableHeight}"
@@ -46,7 +46,7 @@
                                        VerticalAlignment="Bottom"
                                        Orientation="Horizontal"
                                        Opacity="0.5"
-                                       Grid.Row="1" 
+                                       Grid.Row="1"
                                        Grid.Column="0"
                                        Value="{TemplateBinding HorizontalOffset}"
                                        Maximum="{TemplateBinding ScrollableWidth}"
@@ -190,21 +190,53 @@
         </Grid>
 
         <!-- Bottom row, a bit hacky but has a ZIndex of 2 to cut off the time caret that overlaps the entire timeline -->
-        <StackPanel Grid.Row="1"
-                    Grid.ColumnSpan="2"
-                    Grid.Column="0"
-                    HorizontalAlignment="Stretch"
-                    ZIndex="2"
-                    Background="{DynamicResource MaterialDesignCardBackground}">
+        <Grid Grid.Row="1"
+              Grid.ColumnSpan="2"
+              Grid.Column="0"
+              HorizontalAlignment="Stretch"
+              ZIndex="2"
+              Background="{DynamicResource MaterialDesignCardBackground}">
+            <!-- Selected layer controls -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="6">
+                    <materialDesign:PackIcon Kind="Layers" Width="16" />
+                    <materialDesign:PackIcon Kind="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
+                                             Width="16"
+                                             Margin="5 0 0 0"
+                                             ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                             Background="Transparent" />
+                    <TextBlock Text="{Binding SelectedLayer.Name}" Margin="5 0 0 0" />
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                        Margin="0 -2"
+                        Padding="10 0"
+                        Height="20"
+                        Width="82"
+                        ToolTip="Change the property's data binding"
+                        
+                        VerticalAlignment="Center">
+                    <TextBlock FontSize="10">ADD EFFECT</TextBlock>
+                </Button>
+            </Grid>
 
             <!-- Zoom control -->
-            <Slider Orientation="Horizontal"
+            <Slider Grid.Column="1"
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10 5"
                     Minimum="31"
                     Maximum="350"
                     Value="{Binding ProfileEditorService.PixelsPerSecond}"
                     Width="319" />
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
