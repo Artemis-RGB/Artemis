@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
@@ -11,6 +12,8 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
     /// </summary>
     public abstract class BaseLayerBrush : IDisposable
     {
+        private bool _supportsTransformation = true;
+
         /// <summary>
         ///     Gets the layer this brush is applied to
         /// </summary>
@@ -37,9 +40,19 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         public virtual LayerPropertyGroup BaseProperties => null;
 
         /// <summary>
-        ///     Gets whether the brush supports transformations, RGB.NET brushes never support transformation
+        ///     Gets or sets whether the brush supports transformations
+        ///     <para>Note: RGB.NET brushes can never be transformed and setting this to true will throw an exception</para>
         /// </summary>
-        public bool SupportsTransformation { get; protected set; }
+        public bool SupportsTransformation
+        {
+            get => _supportsTransformation;
+            protected set
+            {
+                if (BrushType == LayerBrushType.RgbNet)
+                    throw new ArtemisPluginException(PluginInfo, "An RGB.NET brush cannot support transformation");
+                _supportsTransformation = value;
+            }
+        }
 
         public void Dispose()
         {

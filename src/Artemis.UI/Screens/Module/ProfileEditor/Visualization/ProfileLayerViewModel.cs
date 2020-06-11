@@ -7,6 +7,7 @@ using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -147,7 +148,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                         break;
                 }
 
-                shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
+                if (Layer.LayerBrush == null || Layer.LayerBrush.SupportsTransformation) 
+                    shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
+
                 ShapeGeometry = shapeGeometry;
             });
         }

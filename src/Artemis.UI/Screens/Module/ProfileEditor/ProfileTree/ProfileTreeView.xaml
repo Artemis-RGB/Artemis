@@ -47,21 +47,23 @@
         </TreeView>
 
         <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
-            <Button Style="{StaticResource MaterialDesignToolButton}"
-                    Width="30"
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                     Padding="2 0 2 0"
+                    Width="30"
+                    Height="30"
                     materialDesign:RippleAssist.IsCentered="True"
                     ToolTip="Add new folder to root"
                     Command="{s:Action AddFolder}">
-                <materialDesign:PackIcon Kind="CreateNewFolder" />
+                <materialDesign:PackIcon Kind="CreateNewFolder" Width="15"/>
             </Button>
-            <Button Style="{StaticResource MaterialDesignToolButton}"
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                     Width="30"
+                    Height="30"
                     Padding="2 0 2 0"
                     materialDesign:RippleAssist.IsCentered="True"
                     ToolTip="Add new layer to root"
                     Command="{s:Action AddLayer}">
-                <materialDesign:PackIcon Kind="LayersPlus" />
+                <materialDesign:PackIcon Kind="LayersPlus" Width="15"/>
             </Button>
         </StackPanel>
     </Grid>
