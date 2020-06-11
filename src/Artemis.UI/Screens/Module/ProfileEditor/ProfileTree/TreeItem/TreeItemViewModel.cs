@@ -114,7 +114,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             ProfileElement.AddChild(new Folder(ProfileElement.Profile, ProfileElement, "New folder"));
             UpdateProfileElements();
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.UpdateSelectedProfile(true);
         }
 
         public void AddLayer()
@@ -124,7 +124,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
             UpdateProfileElements();
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.UpdateSelectedProfile(true);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -136,7 +136,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (result is string newName)
             {
                 ProfileElement.Name = newName;
-                _profileEditorService.UpdateSelectedProfile();
+                _profileEditorService.UpdateSelectedProfile(true);
             }
         }
 
@@ -153,11 +153,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             // Farewell, cruel world
             var parent = Parent;
-            ProfileElement.Parent.RemoveChild(ProfileElement);
+            ProfileElement.Parent?.RemoveChild(ProfileElement);
             parent.RemoveExistingElement(this);
             parent.UpdateProfileElements();
 
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.UpdateSelectedProfile(true);
         }
 
         public void UpdateProfileElements()

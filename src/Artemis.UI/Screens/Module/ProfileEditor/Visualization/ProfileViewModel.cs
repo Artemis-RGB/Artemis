@@ -207,7 +207,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             if (_profileEditorService.SelectedProfileElement is Layer layer)
             {
                 CanApplyToLayer = true;
-                CanSelectEditTool = (layer.LayerBrush == null || layer.LayerBrush.BrushType == LayerBrushType.Regular) && layer.Leds.Any();
+                CanSelectEditTool = (layer.LayerBrush == null || layer.LayerBrush.SupportsTransformation) && layer.Leds.Any();
             }
             else
             {

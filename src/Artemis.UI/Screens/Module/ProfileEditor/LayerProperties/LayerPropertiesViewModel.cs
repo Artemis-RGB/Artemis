@@ -47,6 +47,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         public Layer SelectedLayer { get; set; }
+        public Folder SelectedFolder { get; set; }
+
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
         public TreeViewModel TreeViewModel { get; set; }
         public TimelineViewModel TimelineViewModel { get; set; }
@@ -104,6 +106,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void PopulateProperties(ProfileElement profileElement)
         {
+            if (SelectedFolder != null)
+            {
+                SelectedFolder = null;
+            }
             if (SelectedLayer != null)
             {
                 SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
@@ -115,7 +121,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             LayerPropertyGroups.Clear();
             _brushPropertyGroup = null;
 
-            if (profileElement is Layer layer)
+            if (profileElement is Folder folder)
+            {
+                SelectedFolder = folder;
+            }
+            else if (profileElement is Layer layer)
             {
                 SelectedLayer = layer;
                 SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
@@ -151,7 +161,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             if (SelectedLayer == null)
                 return;
 
-            var hideRenderRelatedProperties = SelectedLayer?.LayerBrush?.BrushType == LayerBrushType.Regular && SelectedLayer.LayerBrush.SupportsTransformation;
+            var hideRenderRelatedProperties = SelectedLayer?.LayerBrush != null && !SelectedLayer.LayerBrush.SupportsTransformation;
+
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.FillType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.BlendMode.IsHidden = hideRenderRelatedProperties;

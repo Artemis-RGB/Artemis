@@ -13,6 +13,7 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         protected RgbNetLayerBrush()
         {
             BrushType = LayerBrushType.RgbNet;
+            SupportsTransformation = false;
         }
 
         /// <summary>
