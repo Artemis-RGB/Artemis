@@ -6,13 +6,15 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
 {
-    public class ProfileElementRenameViewModel : DialogViewModelBase
+    public class RenameViewModel : DialogViewModelBase
     {
-        public ProfileElementRenameViewModel(IModelValidator<ProfileElementRenameViewModel> validator, ProfileElement profileElement) : base(validator)
+        public RenameViewModel(IModelValidator<RenameViewModel> validator, string subject, string currentName) : base(validator)
         {
-            ElementName = profileElement.Name;
+            Subject = subject;
+            ElementName = currentName;
         }
 
+        public string Subject { get; }
         public string ElementName { get; set; }
 
         public async Task Accept()
@@ -31,7 +33,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
         }
     }
 
-    public class ProfileElementRenameViewModelValidator : AbstractValidator<ProfileElementRenameViewModel>
+    public class ProfileElementRenameViewModelValidator : AbstractValidator<RenameViewModel>
     {
         public ProfileElementRenameViewModelValidator()
         {

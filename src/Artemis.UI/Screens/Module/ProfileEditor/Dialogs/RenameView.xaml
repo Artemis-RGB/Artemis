@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.Dialogs.ProfileElementRenameView"
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.Dialogs.RenameView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,7 +9,8 @@
              d:DesignHeight="213.053" d:DesignWidth="254.425">
     <StackPanel Margin="16">
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-            Rename profile element
+            <Run Text="Rename"></Run>
+            <Run Text="{Binding Subject, Mode=OneWay}"></Run>
         </TextBlock>
 
         <TextBox materialDesign:HintAssist.Hint="Element name"

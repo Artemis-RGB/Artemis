@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerShapes;
+using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -8,6 +10,8 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Folder : ProfileElement
     {
+        private readonly List<BaseLayerEffect> _layerEffects;
+
         public Folder(Profile profile, ProfileElement parent, string name)
         {
             FolderEntity = new FolderEntity();
@@ -16,6 +20,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+            _layerEffects = new List<BaseLayerEffect>();
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
@@ -27,6 +32,7 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = folderEntity.Name;
             Order = folderEntity.Order;
+            _layerEffects = new List<BaseLayerEffect>();
 
             // TODO: Load conditions
 
@@ -44,6 +50,11 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal FolderEntity FolderEntity { get; set; }
+
+        /// <summary>
+        ///     Gets a read-only collection of the layer effects on this layer
+        /// </summary>
+        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
 
         public override void Update(double deltaTime)
         {

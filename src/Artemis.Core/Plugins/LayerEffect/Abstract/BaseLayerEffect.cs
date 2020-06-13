@@ -3,13 +3,14 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
+using Stylet;
 
 namespace Artemis.Core.Plugins.LayerEffect.Abstract
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect" /> instead
     /// </summary>
-    public abstract class BaseLayerEffect : IDisposable
+    public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
         /// <summary>
         ///     Gets the layer this effect is applied to
@@ -20,6 +21,22 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         ///     Gets the folder this effect is applied to
         /// </summary>
         public Folder Folder { get; internal set; }
+
+        /// <summary>
+        ///     The name which appears in the editor
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     Gets or sets whether the effect has been renamed by the user, if true consider refraining from changing the name
+        ///     programatically
+        /// </summary>
+        public bool HasBeenRenamed { get; set; }
+
+        /// <summary>
+        ///     Gets the order in which this effect appears in the update loop and editor
+        /// </summary>
+        public int Order { get; internal set; }
 
         /// <summary>
         ///     Gets the descriptor of this effect
@@ -35,6 +52,8 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
         public virtual LayerPropertyGroup BaseProperties => null;
+
+        internal string PropertyRootPath => $"LayerEffect.{Order}.{GetType().Name}.";
 
         public void Dispose()
         {
@@ -66,6 +85,16 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         ///     Called after the layer of folder has been rendered
         /// </summary>
         public abstract void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
+
+        public void UpdateOrder(int newOrder)
+        {
+            if (newOrder == Order)
+                return;
+
+            var oldOrder = Order;
+            Order = newOrder;
+            BaseProperties.UpdateOrder(oldOrder);
+        }
 
         internal void InternalPreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {

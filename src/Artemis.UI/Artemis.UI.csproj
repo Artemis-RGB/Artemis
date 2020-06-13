@@ -8,7 +8,7 @@
     <Product>Artemis</Product>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Description>Adds third-party support for RGB keyboards to games.</Description>
-    <Copyright>Copyright © Robert Beekman - 2019</Copyright>
+    <Copyright>Copyright © Robert Beekman - 2020</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <Prefer32Bit>true</Prefer32Bit>
@@ -117,6 +117,10 @@
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="FluentValidation" Version="8.6.2" />
+    <PackageReference Include="Fody" Version="6.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="gong-wpf-dragdrop" Version="2.2.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.10" />
     <PackageReference Include="Humanizer.Core" Version="2.8.11" />

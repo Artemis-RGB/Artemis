@@ -30,7 +30,6 @@ namespace Artemis.UI.Services
         {
             _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(BrushPropertyInputViewModel));
             _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(ColorGradientPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(EffectPropertyInputViewModel));
             _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(FloatPropertyInputViewModel));
             _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(IntPropertyInputViewModel));
             _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKColorPropertyInputViewModel));

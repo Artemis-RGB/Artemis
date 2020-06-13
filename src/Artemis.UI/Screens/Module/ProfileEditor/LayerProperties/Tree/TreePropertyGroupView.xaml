@@ -5,9 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance local:TreePropertyGroupViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </UserControl.Resources>
     <StackPanel>
         <!-- Type: None -->
         <TextBlock
@@ -78,11 +83,14 @@
         </StackPanel>
 
         <!-- Type: LayerEffectRoot -->
-        <Grid Height="22">
+        <Grid Height="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.Style>
@@ -96,24 +104,47 @@
                 </Style>
             </Grid.Style>
             <materialDesign:PackIcon Grid.Column="0" Kind="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Icon}" Margin="0 5 5 0" />
-            <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5">
-                Effect -&#160;
+            <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5 0 0">
+                Effect
             </TextBlock>
             <TextBlock Grid.Column="2"
+                       ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}"
+                       Margin="3 5">
+                -
+            </TextBlock>
+
+            <!-- Show either the descriptors display name or, if set, the effect name -->
+            <TextBlock Grid.Column="3"
                        Text="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.DisplayName}"
                        ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}"
-                       Margin="0 5" />
+                       Margin="0 5"
+                       Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+            <TextBlock Grid.Column="4"
+                       Text="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name}"
+                       ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}"
+                       Margin="0 5"
+                       Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name, Converter={StaticResource NullToVisibilityConverter}}" />
 
-            <Button Grid.Column="3"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Margin="0 1"
-                    Padding="0"
-                    Width="80"
-                    Height="20"
-                    ToolTip="Change the property's data binding"
-                    VerticalAlignment="Center">
-                <TextBlock FontSize="10">DELETE EFFECT</TextBlock>
+            <Button Grid.Column="5"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Rename"
+                    Width="24"
+                    Height="24"
+                    VerticalAlignment="Center" 
+                    Command="{s:Action RenameEffect}">
+                <materialDesign:PackIcon Kind="RenameBox" Height="16" Width="16" />
             </Button>
+
+            <Button Grid.Column="6"
+                    Style="{StaticResource MaterialDesignIconButton}"
+                    ToolTip="Remove"
+                    Width="24"
+                    Height="24"
+                    VerticalAlignment="Center" 
+                    Command="{s:Action DeleteEffect}">
+                <materialDesign:PackIcon Kind="TrashCan" Height="16" Width="16" />
+            </Button>
+            
         </Grid>
     </StackPanel>
 </UserControl>

@@ -5,11 +5,11 @@ using System.Windows.Input;
 namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
 {
     /// <summary>
-    ///     Interaction logic for ProfileElementRenameView.xaml
+    ///     Interaction logic for RenameView.xaml
     /// </summary>
-    public partial class ProfileElementRenameView : UserControl
+    public partial class RenameView : UserControl
     {
-        public ProfileElementRenameView()
+        public RenameView()
         {
             InitializeComponent();
         }

@@ -130,8 +130,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task RenameElement()
         {
-            var result = await _dialogService.ShowDialog<ProfileElementRenameViewModel>(
-                new Dictionary<string, object> {{"profileElement", ProfileElement}}
+            var result = await _dialogService.ShowDialog<RenameViewModel>(
+                new Dictionary<string, object>
+                {
+                    {"subject", ProfileElement is Folder ? "folder" : "layer"},
+                    {"currentName", ProfileElement.Name}
+                }
             );
             if (result is string newName)
             {

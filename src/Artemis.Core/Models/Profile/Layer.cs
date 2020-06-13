@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.Annotations;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -23,6 +24,7 @@ namespace Artemis.Core.Models.Profile
     public sealed class Layer : ProfileElement
     {
         private readonly List<string> _expandedPropertyGroups;
+        private readonly List<BaseLayerEffect> _layerEffects;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
         private SKPath _path;
@@ -38,6 +40,7 @@ namespace Artemis.Core.Models.Profile
             General = new LayerGeneralProperties {IsCorePropertyGroup = true};
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
+            _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
 
@@ -56,6 +59,7 @@ namespace Artemis.Core.Models.Profile
             General = new LayerGeneralProperties {IsCorePropertyGroup = true};
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
+            _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
             _expandedPropertyGroups.AddRange(layerEntity.ExpandedPropertyGroups);
@@ -64,6 +68,11 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal LayerEntity LayerEntity { get; set; }
+
+        /// <summary>
+        ///     Gets a read-only collection of the layer effects on this layer
+        /// </summary>
+        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
 
         /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
@@ -116,11 +125,6 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public BaseLayerBrush LayerBrush { get; internal set; }
 
-        /// <summary>
-        ///     The layer effect that will apply pre- and/or post-processing to the layer
-        /// </summary>
-        public BaseLayerEffect LayerEffect { get; set; }
-
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
@@ -155,7 +159,22 @@ namespace Artemis.Core.Models.Profile
             General.ApplyToEntity();
             Transform.ApplyToEntity();
             LayerBrush?.BaseProperties.ApplyToEntity();
-            LayerEffect?.BaseProperties.ApplyToEntity();
+
+            // Effects
+            LayerEntity.LayerEffects.Clear();
+            foreach (var layerEffect in LayerEffects)
+            {
+                var layerEffectEntity = new LayerEffectEntity()
+                {
+                    PluginGuid = layerEffect.PluginInfo.Guid,
+                    EffectType = layerEffect.GetType().Name,
+                    Name = layerEffect.Name,
+                    HasBeenRenamed = layerEffect.HasBeenRenamed,
+                    Order = layerEffect.Order
+                };
+                LayerEntity.LayerEffects.Add(layerEffectEntity);
+                layerEffect.BaseProperties.ApplyToEntity();
+            }
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -226,18 +245,21 @@ namespace Artemis.Core.Models.Profile
                 General.Override(TimeSpan.Zero);
                 Transform.Override(TimeSpan.Zero);
                 LayerBrush.BaseProperties.Override(TimeSpan.Zero);
-                LayerEffect?.BaseProperties?.Override(TimeSpan.Zero);
+                foreach (var baseLayerEffect in LayerEffects)
+                    baseLayerEffect.BaseProperties?.Override(TimeSpan.Zero);
             }
             else
             {
                 General.Update(deltaTime);
                 Transform.Update(deltaTime);
                 LayerBrush.BaseProperties.Update(deltaTime);
-                LayerEffect?.BaseProperties?.Update(deltaTime);
+                foreach (var baseLayerEffect in LayerEffects)
+                    baseLayerEffect.BaseProperties?.Update(deltaTime);
             }
 
             LayerBrush.Update(deltaTime);
-            LayerEffect?.Update(deltaTime);
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Update(deltaTime);
         }
 
         public void OverrideProgress(TimeSpan timeOverride)
@@ -245,7 +267,8 @@ namespace Artemis.Core.Models.Profile
             General.Override(timeOverride);
             Transform.Override(timeOverride);
             LayerBrush?.BaseProperties?.Override(timeOverride);
-            LayerEffect?.BaseProperties?.Override(timeOverride);
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.BaseProperties?.Override(timeOverride);
         }
 
         /// <inheritdoc />
@@ -266,7 +289,8 @@ namespace Artemis.Core.Models.Profile
                 paint.BlendMode = General.BlendMode.CurrentValue;
                 paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                LayerEffect?.PreProcess(canvas, canvasInfo, Path, paint);
+                foreach (var baseLayerEffect in LayerEffects)
+                    baseLayerEffect.PreProcess(canvas, canvasInfo, Path, paint);
 
                 if (!LayerBrush.SupportsTransformation)
                     SimpleRender(canvas, canvasInfo, paint);
@@ -275,7 +299,8 @@ namespace Artemis.Core.Models.Profile
                 else if (General.FillType.CurrentValue == LayerFillType.Clip)
                     ClipRender(canvas, canvasInfo, paint);
 
-                LayerEffect?.PostProcess(canvas, canvasInfo, Path, paint);
+                foreach (var baseLayerEffect in LayerEffects)
+                    baseLayerEffect.PostProcess(canvas, canvasInfo, Path, paint);
             }
 
             canvas.Restore();
@@ -382,6 +407,10 @@ namespace Artemis.Core.Models.Profile
 
         #endregion
 
+        #region Effect management
+
+        #endregion
+
         #region LED management
 
         /// <summary>
@@ -423,36 +452,6 @@ namespace Artemis.Core.Models.Profile
             CalculateRenderProperties();
         }
 
-        internal void Deactivate()
-        {
-            DeactivateLayerBrush();
-            DeactivateLayerEffect();
-        }
-
-        internal void DeactivateLayerBrush()
-        {
-            if (LayerBrush == null)
-                return;
-
-            var brush = LayerBrush;
-            LayerBrush = null;
-            brush.Dispose();
-
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
-        }
-
-        internal void DeactivateLayerEffect()
-        {
-            if (LayerEffect == null)
-                return;
-
-            var effect = LayerEffect;
-            LayerEffect = null;
-            effect.Dispose();
-
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == effect.PluginInfo.Guid && p.Path.StartsWith("LayerEffect."));
-        }
-
         internal void PopulateLeds(ArtemisSurface surface)
         {
             var leds = new List<ArtemisLed>();
@@ -473,12 +472,80 @@ namespace Artemis.Core.Models.Profile
 
         #endregion
 
+        #region Activation
+
+        internal void Deactivate()
+        {
+            DeactivateLayerBrush();
+            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
+            foreach (var baseLayerEffect in layerEffects)
+                DeactivateLayerEffect(baseLayerEffect);
+        }
+
+        private void DeactivateLayerBrush()
+        {
+            if (LayerBrush == null)
+                return;
+
+            var brush = LayerBrush;
+            LayerBrush = null;
+            brush.Dispose();
+        }
+
+        private void DeactivateLayerEffect([NotNull] BaseLayerEffect effect)
+        {
+            if (effect == null) throw new ArgumentNullException(nameof(effect));
+
+            // Remove the effect from the layer and dispose it
+            _layerEffects.Remove(effect);
+            effect.Dispose();
+        }
+
+        internal void RemoveLayerBrush()
+        {
+            if (LayerBrush == null)
+                return;
+            
+            var brush = LayerBrush;
+            DeactivateLayerBrush();
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
+        }
+
+        internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
+        {
+            if (effect == null) throw new ArgumentNullException(nameof(effect));
+
+            DeactivateLayerEffect(effect);
+
+            // Clean up properties
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == effect.PluginInfo.Guid && p.Path.StartsWith(effect.PropertyRootPath));
+
+            // Update the order on the remaining effects
+            var index = 0;
+            foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
+            {
+                baseLayerEffect.UpdateOrder(index + 1);
+                index++;
+            }
+
+            OnLayerEffectsUpdated();
+        }
+
+        internal void AddLayerEffect([NotNull] BaseLayerEffect effect)
+        {
+            if (effect == null) throw new ArgumentNullException(nameof(effect));
+            _layerEffects.Add(effect);
+            OnLayerEffectsUpdated();
+        }
+
+        #endregion
+
         #region Events
 
         public event EventHandler RenderPropertiesUpdated;
         public event EventHandler ShapePropertiesUpdated;
         public event EventHandler LayerBrushUpdated;
-        public event EventHandler LayerEffectUpdated;
+        public event EventHandler LayerEffectsUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -495,9 +562,9 @@ namespace Artemis.Core.Models.Profile
             LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void OnLayerEffectUpdated()
+        internal void OnLayerEffectsUpdated()
         {
-            LayerEffectUpdated?.Invoke(this, EventArgs.Empty);
+            LayerEffectsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

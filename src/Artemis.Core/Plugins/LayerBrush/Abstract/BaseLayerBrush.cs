@@ -4,13 +4,14 @@ using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
+using Stylet;
 
 namespace Artemis.Core.Plugins.LayerBrush.Abstract
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
     /// </summary>
-    public abstract class BaseLayerBrush : IDisposable
+    public abstract class BaseLayerBrush : PropertyChangedBase, IDisposable
     {
         private bool _supportsTransformation = true;
 
@@ -48,7 +49,7 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             get => _supportsTransformation;
             protected set
             {
-                if (BrushType == LayerBrushType.RgbNet)
+                if (value && BrushType == LayerBrushType.RgbNet)
                     throw new ArtemisPluginException(PluginInfo, "An RGB.NET brush cannot support transformation");
                 _supportsTransformation = value;
             }

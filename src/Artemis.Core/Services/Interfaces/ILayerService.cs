@@ -3,13 +3,14 @@ using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Services.Interfaces
 {
     public interface ILayerService : IArtemisService
     {
         /// <summary>
-        /// Creates a new layer
+        ///     Creates a new layer
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="parent"></param>
@@ -28,11 +29,20 @@ namespace Artemis.Core.Services.Interfaces
 
         /// <summary>
         ///     Instantiates and adds the <see cref="BaseLayerEffect" /> described by the provided
-        ///     <see cref="LayerEffectDescriptor" />
-        ///     to the <see cref="Layer" />.
+        ///     <see cref="LayerEffectDescriptor" /> to the <see cref="Layer" />.
         /// </summary>
         /// <param name="layer">The layer to instantiate the effect for</param>
+        void InstantiateLayerEffects(Layer layer);
+
+        /// <summary>
+        ///     Adds the <see cref="BaseLayerEffect" /> described by the provided <see cref="LayerEffectDescriptor" /> to the
+        ///     <see cref="Layer" />.
+        /// </summary>
+        /// <param name="layer">The layer to instantiate the effect for</param>
+        /// <param name="layerEffectDescriptor"></param>
         /// <returns></returns>
-        BaseLayerEffect InstantiateLayerEffect(Layer layer);
+        BaseLayerEffect AddLayerEffect(Layer layer, LayerEffectDescriptor layerEffectDescriptor);
+
+        void RemoveLayerEffect(BaseLayerEffect layerEffect);
     }
 }
