@@ -7,7 +7,8 @@ namespace Artemis.UI.Shared.Utilities
     public static class HitTestUtilities
     {
         /// <summary>
-        /// Runs a hit test on children of the container within the rectangle matching all elements that have a data context of <see cref="T"/>.
+        ///     Runs a hit test on children of the container within the rectangle matching all elements that have a data context of
+        ///     <see cref="T" />.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="container"></param>

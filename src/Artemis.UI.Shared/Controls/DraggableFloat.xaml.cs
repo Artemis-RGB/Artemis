@@ -24,13 +24,11 @@ namespace Artemis.UI.Shared.Controls
                 typeof(RoutedPropertyChangedEventHandler<float>),
                 typeof(DraggableFloat));
 
-        public event EventHandler DragStarted;
-        public event EventHandler DragEnded;
+        private bool _calledDragStarted;
 
         private bool _inCallback;
         private Point _mouseDragStartPoint;
         private float _startValue;
-        private bool _calledDragStarted;
 
         public DraggableFloat()
         {
@@ -51,9 +49,22 @@ namespace Artemis.UI.Shared.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event EventHandler DragStarted;
+        public event EventHandler DragEnded;
+
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void OnDragStarted()
+        {
+            DragStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnDragEnded()
+        {
+            DragEnded?.Invoke(this, EventArgs.Empty);
         }
 
         private static void FloatPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -148,16 +159,6 @@ namespace Artemis.UI.Shared.Controls
         private static decimal UltimateRoundingFunction(decimal amountToRound, decimal nearstOf, decimal fairness)
         {
             return Math.Floor(amountToRound / nearstOf + fairness) * nearstOf;
-        }
-
-        protected virtual void OnDragStarted()
-        {
-            DragStarted?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnDragEnded()
-        {
-            DragEnded?.Invoke(this, EventArgs.Empty);
         }
     }
 }

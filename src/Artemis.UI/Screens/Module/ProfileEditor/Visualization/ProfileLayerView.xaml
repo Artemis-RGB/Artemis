@@ -16,7 +16,7 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="Gray" Duration="0:0:0.5"/>
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="Gray" Duration="0:0:0.5" />
                                 <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="0.5" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
@@ -24,7 +24,7 @@
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="{StaticResource Accent700}" Duration="0:0:0.5"/>
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="{StaticResource Accent700}" Duration="0:0:0.5" />
                                 <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="1" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
@@ -55,21 +55,20 @@
     </UserControl.Resources>
     <Canvas>
         <!-- The part of the layer's shape that falls outside the layer -->
-        <Path Data="{Binding ShapeGeometry, Mode=OneWay}" 
-              StrokeThickness="0.5" 
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
+              StrokeThickness="0.5"
               Style="{StaticResource SelectedShapeStyle}">
             <Path.Stroke>
                 <SolidColorBrush Color="{StaticResource Primary700}" />
             </Path.Stroke>
         </Path>
 
-        <Path Data="{Binding LayerGeometry, Mode=OneWay}" 
-              ClipToBounds="False" 
+        <Path Data="{Binding LayerGeometry, Mode=OneWay}"
+              ClipToBounds="False"
               Stroke="#A7A7A7"
               StrokeThickness="1"
               StrokeLineJoin="Round"
               x:Name="LayerPath"
-              Style="{StaticResource SelectedLayerStyle}">            
-        </Path>
+              Style="{StaticResource SelectedLayerStyle}" />
     </Canvas>
 </UserControl>

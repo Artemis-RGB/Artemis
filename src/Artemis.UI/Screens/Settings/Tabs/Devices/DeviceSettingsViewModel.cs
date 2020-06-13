@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Shared.Annotations;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -20,9 +18,6 @@ namespace Artemis.UI.Shared.Controls
     {
         private static IGradientPickerService _gradientPickerService;
         private bool _inCallback;
-
-        public event EventHandler DialogOpened;
-        public event EventHandler DialogClosed;
 
         public GradientPicker()
         {
@@ -63,10 +58,23 @@ namespace Artemis.UI.Shared.Controls
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public event EventHandler DialogOpened;
+        public event EventHandler DialogClosed;
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void OnDialogOpened()
+        {
+            DialogOpened?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnDialogClosed()
+        {
+            DialogClosed?.Invoke(this, EventArgs.Empty);
         }
 
         private static void ColorGradientPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -102,15 +110,5 @@ namespace Artemis.UI.Shared.Controls
             EventManager.RegisterRoutedEvent(nameof(ColorGradient), RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ColorGradient>), typeof(GradientPicker));
 
         #endregion
-
-        protected virtual void OnDialogOpened()
-        {
-            DialogOpened?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnDialogClosed()
-        {
-            DialogClosed?.Invoke(this, EventArgs.Empty);
-        }
     }
 }

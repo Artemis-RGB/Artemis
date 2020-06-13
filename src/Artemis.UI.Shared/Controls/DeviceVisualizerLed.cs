@@ -34,6 +34,41 @@ namespace Artemis.UI.Shared.Controls
 
         public Geometry DisplayGeometry { get; private set; }
 
+        public void RenderColor(DrawingContext drawingContext, bool isDimmed)
+        {
+            if (DisplayGeometry == null)
+                return;
+
+            var r = Led.RgbLed.Color.GetR();
+            var g = Led.RgbLed.Color.GetG();
+            var b = Led.RgbLed.Color.GetB();
+
+            drawingContext.DrawRectangle(isDimmed
+                ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
+                : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
+        }
+
+        public void RenderImage(DrawingContext drawingContext)
+        {
+            if (LedImage == null)
+                return;
+
+            drawingContext.DrawImage(LedImage, LedRect);
+        }
+
+        public void RenderOpacityMask(DrawingContext drawingContext)
+        {
+            if (DisplayGeometry == null)
+                return;
+
+            var fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            fillBrush.Freeze();
+            var penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            penBrush.Freeze();
+
+            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1), DisplayGeometry);
+        }
+
         private void CreateLedGeometry()
         {
             // The minimum required size for geometry to be created
@@ -104,41 +139,6 @@ namespace Artemis.UI.Shared.Controls
             {
                 CreateRectangleGeometry();
             }
-        }
-
-        public void RenderColor(DrawingContext drawingContext, bool isDimmed)
-        {
-            if (DisplayGeometry == null)
-                return;
-
-            var r = Led.RgbLed.Color.GetR();
-            var g = Led.RgbLed.Color.GetG();
-            var b = Led.RgbLed.Color.GetB();
-
-            drawingContext.DrawRectangle(isDimmed
-                ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
-                : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
-        }
-
-        public void RenderImage(DrawingContext drawingContext)
-        {
-            if (LedImage == null)
-                return;
-
-            drawingContext.DrawImage(LedImage, LedRect);
-        }
-
-        public void RenderOpacityMask(DrawingContext drawingContext)
-        {
-            if (DisplayGeometry == null)
-                return;
-
-            var fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
-            fillBrush.Freeze();
-            var penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-            penBrush.Freeze();
-
-            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1), DisplayGeometry);
         }
     }
 }

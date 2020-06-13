@@ -2,11 +2,11 @@
 {
     public class RequestSelectSidebarItemEvent
     {
-        public string Label { get; }
-
         public RequestSelectSidebarItemEvent(string label)
         {
             Label = label;
         }
+
+        public string Label { get; }
     }
 }

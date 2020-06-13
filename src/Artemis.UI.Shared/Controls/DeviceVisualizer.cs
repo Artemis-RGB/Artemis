@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
-using Stylet;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -35,19 +34,6 @@ namespace Artemis.UI.Shared.Controls
 
             Loaded += (sender, args) => SubscribeToUpdate(true);
             Unloaded += (sender, args) => SubscribeToUpdate(false);
-        }
-
-        private void SubscribeToUpdate(bool subscribe)
-        {
-            if (_subscribed == subscribe)
-                return;
-
-            if (subscribe)
-                RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
-            else
-                RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
-
-            _subscribed = subscribe;
         }
 
         public ArtemisDevice Device
@@ -97,6 +83,19 @@ namespace Artemis.UI.Shared.Controls
                 deviceVisualizerLed.RenderImage(drawingContext);
 
             drawingContext.DrawDrawing(_backingStore);
+        }
+
+        private void SubscribeToUpdate(bool subscribe)
+        {
+            if (_subscribed == subscribe)
+                return;
+
+            if (subscribe)
+                RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
+            else
+                RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
+
+            _subscribed = subscribe;
         }
 
         private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -180,7 +179,7 @@ namespace Artemis.UI.Shared.Controls
                 foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, false);
             }
-            
+
             drawingContext.Close();
         }
     }

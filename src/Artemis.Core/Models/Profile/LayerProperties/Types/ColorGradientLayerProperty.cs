@@ -12,6 +12,11 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             KeyframesSupported = false;
         }
 
+        public static implicit operator ColorGradient(ColorGradientLayerProperty p)
+        {
+            return p.CurrentValue;
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             throw new ArtemisCoreException("Color Gradients do not support keyframes.");
@@ -24,7 +29,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             // Don't allow color gradients to be null
             BaseValue ??= DefaultValue ?? new ColorGradient();
         }
-
-        public static implicit operator ColorGradient(ColorGradientLayerProperty p) => p.CurrentValue;
     }
 }

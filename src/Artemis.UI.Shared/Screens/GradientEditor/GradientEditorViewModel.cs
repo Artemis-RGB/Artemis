@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Shared.Utilities;

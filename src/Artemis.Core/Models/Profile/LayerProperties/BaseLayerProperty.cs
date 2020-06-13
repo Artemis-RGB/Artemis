@@ -10,15 +10,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     /// </summary>
     public abstract class BaseLayerProperty
     {
-        private bool _keyframesEnabled;
         private bool _isHidden;
+        private bool _keyframesEnabled;
 
         internal BaseLayerProperty()
         {
         }
 
         /// <summary>
-        /// The layer this property applies to
+        ///     The layer this property applies to
         /// </summary>
         public Layer Layer { get; internal set; }
 
@@ -84,7 +84,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
         internal PropertyEntity PropertyEntity { get; set; }
         internal LayerPropertyGroup LayerPropertyGroup { get; set; }
-        
+
+        public abstract void ApplyDefaultValue();
+
 
         /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
@@ -113,12 +115,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public event EventHandler BaseValueChanged;
 
         /// <summary>
-        ///     Occurs when the <see cref="IsHidden"/> value of the layer property was updated
+        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
         /// </summary>
         public event EventHandler VisibilityChanged;
 
         /// <summary>
-        /// Occurs when keyframes are enabled/disabled
+        ///     Occurs when keyframes are enabled/disabled
         /// </summary>
         public event EventHandler KeyframesToggled;
 
@@ -163,9 +165,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         #endregion
-
-        public abstract void ApplyDefaultValue();
-
-
     }
 }

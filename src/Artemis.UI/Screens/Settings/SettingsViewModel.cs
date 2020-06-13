@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -17,8 +15,6 @@ using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
-using Artemis.UI.Utilities;
-using Microsoft.Win32;
 using Ninject;
 using Serilog.Events;
 using Stylet;
@@ -120,8 +116,8 @@ namespace Artemis.UI.Screens.Settings
                 _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Value = value;
                 _settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Information).Save();
             }
-        }      
-        
+        }
+
         public ApplicationColorScheme SelectedColorScheme
         {
             get => _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic).Value;
@@ -197,10 +193,10 @@ namespace Artemis.UI.Screens.Settings
 
             DeviceSettingsViewModels.Clear();
             DeviceSettingsViewModels.AddRange(_surfaceService.ActiveSurface.Devices.Select(d => _deviceSettingsVmFactory.Create(d)));
-            
+
             Plugins.Clear();
             Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => new PluginSettingsViewModel(p.Instance, _windowManager, _dialogService, _pluginService)));
-            
+
             base.OnInitialActivate();
         }
 

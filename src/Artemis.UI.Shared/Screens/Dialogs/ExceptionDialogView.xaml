@@ -21,7 +21,7 @@
                         <DataTemplate>
                             <StackPanel>
                                 <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace"
-                                           TextWrapping="Wrap" FontWeight="Bold"/>
+                                           TextWrapping="Wrap" FontWeight="Bold" />
 
                                 <avalonedit:TextEditor SyntaxHighlighting="C#"
                                                        FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"
@@ -31,8 +31,8 @@
                                                        HorizontalScrollBarVisibility="Auto"
                                                        VerticalScrollBarVisibility="Auto"
                                                        MaxWidth="1000"
-                                                       Margin="0 10 10 0" 
-                                                       Padding="10"/>
+                                                       Margin="0 10 10 0"
+                                                       Padding="10" />
 
                                 <Separator Margin="0 15" />
                             </StackPanel>

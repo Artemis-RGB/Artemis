@@ -23,6 +23,11 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         public bool HasConfigurationViewModel { get; protected set; }
 
+        public void Dispose()
+        {
+            DisablePlugin();
+        }
+
         /// <summary>
         ///     Called when the plugin is activated
         /// </summary>
@@ -57,11 +62,6 @@ namespace Artemis.Core.Plugins.Abstract
                 DisablePlugin();
                 OnPluginDisabled();
             }
-        }
-
-        public void Dispose()
-        {
-            DisablePlugin();
         }
 
         #region Events

@@ -24,11 +24,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
-        private readonly ISettingsService _settingsService;
         private readonly IRgbService _rgbService;
+        private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
 
-        public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService, 
+        public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService,
             IDeviceService deviceService)
         {
             DisplayName = "Surface Editor";

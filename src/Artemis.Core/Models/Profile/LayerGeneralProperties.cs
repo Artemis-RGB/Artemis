@@ -17,7 +17,7 @@ namespace Artemis.Core.Models.Profile
 
         [PropertyDescription(Name = "Brush type", Description = "The type of brush to use for this layer")]
         public LayerBrushReferenceLayerProperty BrushReference { get; set; }
-        
+
         protected override void PopulateDefaults()
         {
             ShapeType.DefaultValue = LayerShapeType.Rectangle;

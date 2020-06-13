@@ -164,7 +164,7 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.LayerEffects.Clear();
             foreach (var layerEffect in LayerEffects)
             {
-                var layerEffectEntity = new LayerEffectEntity()
+                var layerEffectEntity = new LayerEffectEntity
                 {
                     PluginGuid = layerEffect.PluginInfo.Guid,
                     EffectType = layerEffect.GetType().Name,
@@ -505,7 +505,7 @@ namespace Artemis.Core.Models.Profile
         {
             if (LayerBrush == null)
                 return;
-            
+
             var brush = LayerBrush;
             DeactivateLayerBrush();
             LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));

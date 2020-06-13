@@ -23,7 +23,7 @@ namespace Artemis.UI.Shared.PropertyInput
         public PluginInfo PluginInfo { get; }
         public Type SupportedType { get; }
         public Type ViewModelType { get; }
-        
+
         internal void Unsubscribe()
         {
             if (PluginInfo != Constants.CorePluginInfo)

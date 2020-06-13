@@ -130,7 +130,7 @@
                     ToolTip="Rename"
                     Width="24"
                     Height="24"
-                    VerticalAlignment="Center" 
+                    VerticalAlignment="Center"
                     Command="{s:Action RenameEffect}">
                 <materialDesign:PackIcon Kind="RenameBox" Height="16" Width="16" />
             </Button>
@@ -140,11 +140,11 @@
                     ToolTip="Remove"
                     Width="24"
                     Height="24"
-                    VerticalAlignment="Center" 
+                    VerticalAlignment="Center"
                     Command="{s:Action DeleteEffect}">
                 <materialDesign:PackIcon Kind="TrashCan" Height="16" Width="16" />
             </Button>
-            
+
         </Grid>
     </StackPanel>
 </UserControl>

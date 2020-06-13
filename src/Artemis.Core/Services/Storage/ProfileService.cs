@@ -4,7 +4,6 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Entities.Profile;
@@ -214,9 +213,7 @@ namespace Artemis.Core.Services.Storage
         private void OnPluginLoaded(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is LayerBrushProvider)
-            {
                 ActiveProfilesInstantiateProfileLayerBrushes();
-            }
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {
                 var activeProfile = GetActiveProfile(profileModule);

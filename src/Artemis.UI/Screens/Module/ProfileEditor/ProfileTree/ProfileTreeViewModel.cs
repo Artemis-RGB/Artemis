@@ -4,7 +4,6 @@ using System.Windows;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
 

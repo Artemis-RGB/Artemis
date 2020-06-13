@@ -122,9 +122,9 @@
                     </ItemsControl.ItemContainerStyle>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:DeviceVisualizer Device="{Binding}" 
-                                                       ShowColors="True" 
-                                                       HighlightedLeds="{Binding DataContext.HighlightedLeds, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"/>
+                            <controls:DeviceVisualizer Device="{Binding}"
+                                                       ShowColors="True"
+                                                       HighlightedLeds="{Binding DataContext.HighlightedLeds, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

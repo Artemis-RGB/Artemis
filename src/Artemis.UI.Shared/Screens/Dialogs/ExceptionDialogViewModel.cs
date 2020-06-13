@@ -32,13 +32,13 @@ namespace Artemis.UI.Shared.Screens.Dialogs
 
     public class DialogException
     {
-        public Exception Exception { get; }
-        public IDocument Document { get; set; }
-
         public DialogException(Exception exception)
         {
             Exception = exception;
             Document = new TextDocument(new StringTextSource($"{exception.Message}\r\n\r\n{exception.StackTrace}"));
         }
+
+        public Exception Exception { get; }
+        public IDocument Document { get; set; }
     }
 }

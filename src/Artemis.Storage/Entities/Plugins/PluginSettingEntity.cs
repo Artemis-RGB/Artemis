@@ -3,7 +3,7 @@
 namespace Artemis.Storage.Entities.Plugins
 {
     /// <summary>
-    /// Represents the setting of a plugin, a plugin can have multiple settings
+    ///     Represents the setting of a plugin, a plugin can have multiple settings
     /// </summary>
     public class PluginSettingEntity
     {

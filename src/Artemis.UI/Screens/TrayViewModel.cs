@@ -3,11 +3,10 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Utilities;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
-using Artemis.UI.Shared;
+using Artemis.UI.Shared.Controls;
 using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Stylet;
-using GradientPicker = Artemis.UI.Shared.Controls.GradientPicker;
 
 namespace Artemis.UI.Screens
 {

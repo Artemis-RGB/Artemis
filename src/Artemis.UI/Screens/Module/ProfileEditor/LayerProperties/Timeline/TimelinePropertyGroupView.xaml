@@ -41,8 +41,7 @@
                              StrokeThickness="0"
                              Width="10"
                              Height="10"
-                             Margin="-5,6,0,0">
-                    </Ellipse>
+                             Margin="-5,6,0,0" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -55,15 +54,15 @@
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}">
                     <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}"
-                                        VerticalContentAlignment="Stretch"
-                                        HorizontalContentAlignment="Stretch"
-                                        IsTabStop="False" />
+                                    VerticalContentAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsTabStop="False" />
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
                     <ContentControl s:View.Model="{Binding TimelinePropertyBaseViewModel}"
-                                        VerticalContentAlignment="Stretch"
-                                        HorizontalContentAlignment="Stretch"
-                                        IsTabStop="False" />
+                                    VerticalContentAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsTabStop="False" />
                 </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>
