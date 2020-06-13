@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.LayerEffect;
@@ -17,6 +18,7 @@ namespace Artemis.Core.Plugins.Abstract
         protected LayerEffectProvider()
         {
             _layerEffectDescriptors = new List<LayerEffectDescriptor>();
+            PluginDisabled += OnPluginDisabled;
         }
 
         /// <summary>
@@ -41,6 +43,11 @@ namespace Artemis.Core.Plugins.Abstract
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer effect descriptor when the plugin is enabled");
 
             _layerEffectDescriptors.Add(new LayerEffectDescriptor(displayName, description, icon, typeof(T), this));
+        }
+
+        private void OnPluginDisabled(object sender, EventArgs e)
+        {
+            _layerEffectDescriptors.Clear();
         }
     }
 }

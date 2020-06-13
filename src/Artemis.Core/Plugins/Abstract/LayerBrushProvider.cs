@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.LayerBrush;
@@ -17,6 +18,7 @@ namespace Artemis.Core.Plugins.Abstract
         protected LayerBrushProvider()
         {
             _layerBrushDescriptors = new List<LayerBrushDescriptor>();
+            PluginDisabled += OnPluginDisabled;
         }
 
         /// <summary>
@@ -41,6 +43,11 @@ namespace Artemis.Core.Plugins.Abstract
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer brush descriptor when the plugin is enabled");
 
             _layerBrushDescriptors.Add(new LayerBrushDescriptor(displayName, description, icon, typeof(T), this));
+        }
+
+        private void OnPluginDisabled(object sender, EventArgs e)
+        {
+            _layerBrushDescriptors.Clear();
         }
     }
 }

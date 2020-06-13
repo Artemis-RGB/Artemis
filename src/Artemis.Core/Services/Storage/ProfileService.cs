@@ -179,10 +179,8 @@ namespace Artemis.Core.Services.Storage
             // Only instantiate brushes for layers without an existing brush/effect instance
             foreach (var layer in profile.GetAllLayers())
             {
-                if (layer.LayerBrush == null)
-                    _layerService.InstantiateLayerBrush(layer);
-                if (layer.LayerEffect == null)
-                    _layerService.InstantiateLayerEffect(layer);
+                _layerService.InstantiateLayerBrush(layer);
+                _layerService.InstantiateLayerEffects(layer);
             }
         }
 

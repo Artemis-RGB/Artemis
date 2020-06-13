@@ -4,6 +4,7 @@ using System.Linq;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
@@ -24,16 +25,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             None
         }
 
-        public LayerPropertyGroupViewModel(IProfileEditorService profileEditorService, LayerPropertyGroup layerPropertyGroup,
-            PropertyGroupDescriptionAttribute propertyGroupDescription)
+        private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
+
+        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription,
+            IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
         {
+            _layerPropertyVmFactory = layerPropertyVmFactory;
             ProfileEditorService = profileEditorService;
 
             LayerPropertyGroup = layerPropertyGroup;
             PropertyGroupDescription = propertyGroupDescription;
 
-            TreePropertyGroupViewModel = new TreePropertyGroupViewModel(this);
-            TimelinePropertyGroupViewModel = new TimelinePropertyGroupViewModel(this);
+            TreePropertyGroupViewModel = _layerPropertyVmFactory.TreePropertyGroupViewModel(this);
+            TimelinePropertyGroupViewModel = _layerPropertyVmFactory.TimelinePropertyGroupViewModel(this);
 
             LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
             PopulateChildren();
@@ -123,7 +127,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 }
                 // Create VMs for child groups on this group, resulting in a nested structure
                 else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
-                    Children.Add(new LayerPropertyGroupViewModel(ProfileEditorService, layerPropertyGroup, groupAttribute));
+                    Children.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup, groupAttribute));
             }
         }
 

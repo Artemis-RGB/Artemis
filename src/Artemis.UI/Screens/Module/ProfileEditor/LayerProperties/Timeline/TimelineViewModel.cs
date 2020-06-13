@@ -10,7 +10,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineViewModel
+    public class TimelineViewModel : PropertyChangedBase
     {
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
 
@@ -34,7 +34,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             {
                 layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.TimelineViewModel = this;
                 layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.UpdateKeyframes();
-                
+
                 foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
                 {
                     if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)

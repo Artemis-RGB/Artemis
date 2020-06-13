@@ -1,12 +1,11 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
-    public class TreeViewModel
+    public class TreeViewModel : PropertyChangedBase
     {
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
 
