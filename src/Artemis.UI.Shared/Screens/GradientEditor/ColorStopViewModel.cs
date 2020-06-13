@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.UI.Shared.Utilities;
 using Stylet;
@@ -23,11 +21,6 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             _gradientEditorViewModel = gradientEditorViewModel;
             ColorStop = colorStop;
             ColorStop.PropertyChanged += ColorStopOnPropertyChanged;
-        }
-
-        private void ColorStopOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
         }
 
         public ColorGradientStop ColorStop { get; }
@@ -66,8 +59,13 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             set => SetAndNotify(ref _willRemoveColorStop, value);
         }
 
+        private void ColorStopOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
+        }
+
         #region Movement
-        
+
         public void StopMouseDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;

@@ -9,8 +9,8 @@ namespace Artemis.Storage
     public class StorageMigrationService
     {
         private readonly ILogger _logger;
-        private readonly LiteRepository _repository;
         private readonly List<IStorageMigration> _migrations;
+        private readonly LiteRepository _repository;
 
         public StorageMigrationService(ILogger logger, LiteRepository repository, List<IStorageMigration> migrations)
         {

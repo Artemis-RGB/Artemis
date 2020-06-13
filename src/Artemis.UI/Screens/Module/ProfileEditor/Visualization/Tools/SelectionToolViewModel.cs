@@ -3,10 +3,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Properties;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools

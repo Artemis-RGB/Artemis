@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -33,34 +32,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public PackIconKind Icon => GetIconKind();
 
-        private PackIconKind GetIconKind()
-        {
-            if (PluginInfo.Icon != null)
-            {
-                var parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out var iconEnum);
-                if (parsedIcon == false)
-                    return PackIconKind.QuestionMarkCircle;
-            }
-
-            switch (Plugin)
-            {
-                case DataModelExpansion _:
-                    return PackIconKind.TableAdd;
-                case DeviceProvider _:
-                    return PackIconKind.Devices;
-                case ProfileModule _:
-                    return PackIconKind.VectorRectangle;
-                case Core.Plugins.Abstract.Module _:
-                    return PackIconKind.GearBox;
-                case LayerBrushProvider _:
-                    return PackIconKind.Brush;        
-                case LayerEffectProvider _:
-                    return PackIconKind.AutoAwesome;
-            }
-
-            return PackIconKind.Plugin;
-        }
-
         public bool IsEnabled
         {
             get => PluginInfo.Enabled;
@@ -82,6 +53,34 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 await _dialogService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
                 throw;
             }
+        }
+
+        private PackIconKind GetIconKind()
+        {
+            if (PluginInfo.Icon != null)
+            {
+                var parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out var iconEnum);
+                if (parsedIcon == false)
+                    return PackIconKind.QuestionMarkCircle;
+            }
+
+            switch (Plugin)
+            {
+                case DataModelExpansion _:
+                    return PackIconKind.TableAdd;
+                case DeviceProvider _:
+                    return PackIconKind.Devices;
+                case ProfileModule _:
+                    return PackIconKind.VectorRectangle;
+                case Core.Plugins.Abstract.Module _:
+                    return PackIconKind.GearBox;
+                case LayerBrushProvider _:
+                    return PackIconKind.Brush;
+                case LayerEffectProvider _:
+                    return PackIconKind.AutoAwesome;
+            }
+
+            return PackIconKind.Plugin;
         }
 
         private async Task UpdateEnabled(bool enable)

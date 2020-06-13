@@ -30,7 +30,7 @@
                  Visibility="{Binding HasLayerEffectDescriptors, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type layerEffect:LayerEffectDescriptor}">
-                    <Border Padding="8" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Stretch" 
+                    <Border Padding="8" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Stretch"
                             behaviors:MouseBehaviour.MouseUpCommand="{x:Static materialDesign:Transitioner.MoveFirstCommand}">
                         <Grid>
                             <Grid.ColumnDefinitions>

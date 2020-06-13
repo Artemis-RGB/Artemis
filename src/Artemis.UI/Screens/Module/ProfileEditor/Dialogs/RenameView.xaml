@@ -9,8 +9,8 @@
              d:DesignHeight="213.053" d:DesignWidth="254.425">
     <StackPanel Margin="16">
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-            <Run Text="Rename"></Run>
-            <Run Text="{Binding Subject, Mode=OneWay}"></Run>
+            <Run Text="Rename" />
+            <Run Text="{Binding Subject, Mode=OneWay}" />
         </TextBlock>
 
         <TextBox materialDesign:HintAssist.Hint="Element name"

@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Splash
             _pluginService.PluginLoaded -= OnPluginServiceOnPluginLoaded;
             base.OnClose();
         }
-        
+
         private void OnPluginServiceOnPluginLoaded(object sender, PluginEventArgs args)
         {
             Status = "Initializing UI";

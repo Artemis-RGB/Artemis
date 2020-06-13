@@ -63,7 +63,7 @@ namespace Artemis.Core.Ninject
             }).InSingletonScope();
 
             Kernel.Bind<StorageMigrationService>().ToSelf().InSingletonScope();
-            
+
             // Bind all migrations as singletons
             Kernel.Bind(x =>
             {

@@ -3,7 +3,7 @@
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
     /// <summary>
-    /// A special layer property used to configure the selected layer brush
+    ///     A special layer property used to configure the selected layer brush
     /// </summary>
     public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference>
     {
@@ -12,11 +12,14 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             KeyframesSupported = false;
         }
 
+        public static implicit operator LayerBrushReference(LayerBrushReferenceLayerProperty p)
+        {
+            return p.CurrentValue;
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             throw new ArtemisCoreException("Layer brush references do not support keyframes.");
         }
-
-        public static implicit operator LayerBrushReference(LayerBrushReferenceLayerProperty p) => p.CurrentValue;
     }
 }

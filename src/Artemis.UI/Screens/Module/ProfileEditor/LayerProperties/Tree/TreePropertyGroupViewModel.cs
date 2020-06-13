@@ -8,9 +8,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
     public class TreePropertyGroupViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
-        private readonly ILayerService _layerService;
         private readonly IDialogService _dialogService;
+        private readonly ILayerService _layerService;
+        private readonly IProfileEditorService _profileEditorService;
 
         public TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel,
             IProfileEditorService profileEditorService, ILayerService layerService, IDialogService dialogService)

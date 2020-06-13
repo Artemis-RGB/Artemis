@@ -11,10 +11,8 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 

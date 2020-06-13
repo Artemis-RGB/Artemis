@@ -1,7 +1,6 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem

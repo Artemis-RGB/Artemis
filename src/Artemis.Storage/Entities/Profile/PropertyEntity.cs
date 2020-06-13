@@ -18,7 +18,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
     }
-    
+
     public class KeyframeEntity
     {
         public TimeSpan Position { get; set; }

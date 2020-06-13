@@ -3,7 +3,6 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Module.ProfileEditor;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Dialog;
 using Artemis.UI.Stylet;
 using FluentValidation;

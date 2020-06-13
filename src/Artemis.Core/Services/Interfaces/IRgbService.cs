@@ -35,7 +35,7 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="deviceProvider"></param>
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);
-        
+
         void Dispose();
 
         /// <summary>

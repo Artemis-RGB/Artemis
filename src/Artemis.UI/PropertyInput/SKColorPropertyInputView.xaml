@@ -17,9 +17,9 @@
     <StackPanel Orientation="Horizontal">
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <controls:ColorPicker Width="132"
-                             Margin="0 -2 0 3"
-                             Padding="0 -1"
-                             Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" />
+                              Margin="0 -2 0 3"
+                              Padding="0 -1"
+                              Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" />
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

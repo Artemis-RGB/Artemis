@@ -2,11 +2,16 @@
 
 namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public class SKPointLayerProperty : LayerProperty<SKPoint>
     {
         internal SKPointLayerProperty()
         {
+        }
+
+        public static implicit operator SKPoint(SKPointLayerProperty p)
+        {
+            return p.CurrentValue;
         }
 
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
@@ -15,7 +20,5 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             var yDiff = NextKeyframe.Value.Y - CurrentKeyframe.Value.Y;
             CurrentValue = new SKPoint(CurrentKeyframe.Value.X + xDiff * keyframeProgressEased, CurrentKeyframe.Value.Y + yDiff * keyframeProgressEased);
         }
-
-        public static implicit operator SKPoint(SKPointLayerProperty p) => p.CurrentValue;
     }
 }

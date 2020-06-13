@@ -25,7 +25,7 @@
             </TextBlock>
             <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
         </StackPanel>
-        
+
         <TreeView Grid.Row="1"
                   ItemsSource="{Binding RootFolder.Children}"
                   HorizontalContentAlignment="Stretch"
@@ -54,7 +54,7 @@
                     materialDesign:RippleAssist.IsCentered="True"
                     ToolTip="Add new folder to root"
                     Command="{s:Action AddFolder}">
-                <materialDesign:PackIcon Kind="CreateNewFolder" Width="15"/>
+                <materialDesign:PackIcon Kind="CreateNewFolder" Width="15" />
             </Button>
             <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                     Width="30"
@@ -63,7 +63,7 @@
                     materialDesign:RippleAssist.IsCentered="True"
                     ToolTip="Add new layer to root"
                     Command="{s:Action AddLayer}">
-                <materialDesign:PackIcon Kind="LayersPlus" Width="15"/>
+                <materialDesign:PackIcon Kind="LayersPlus" Width="15" />
             </Button>
         </StackPanel>
     </Grid>

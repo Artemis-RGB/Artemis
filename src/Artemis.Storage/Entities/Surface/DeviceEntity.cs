@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Artemis.Storage.Entities.Surface
+﻿namespace Artemis.Storage.Entities.Surface
 {
     public class DeviceEntity
     {

@@ -26,8 +26,8 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <materialDesign:PackIcon Grid.Row="0" Grid.RowSpan="2" Kind="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350"/>
+                <materialDesign:PackIcon Grid.Row="0" Grid.RowSpan="2" Kind="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="350" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
             </Grid>
         </ControlTemplate>

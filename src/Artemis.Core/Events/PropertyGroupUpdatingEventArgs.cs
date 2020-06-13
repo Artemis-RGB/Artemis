@@ -14,7 +14,7 @@ namespace Artemis.Core.Events
             OverrideTime = overrideTime;
         }
 
-        public double DeltaTime { get;  }
-        public TimeSpan OverrideTime { get;  }
+        public double DeltaTime { get; }
+        public TimeSpan OverrideTime { get; }
     }
 }

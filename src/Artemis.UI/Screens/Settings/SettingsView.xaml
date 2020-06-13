@@ -74,7 +74,7 @@
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Color scheme</TextBlock>
                                     <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                       Pick between a light and dark color scheme, the automatic option copies your Windows settings.
+                                        Pick between a light and dark color scheme, the automatic option copies your Windows settings.
                                     </TextBlock>
                                 </StackPanel>
                                 <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">

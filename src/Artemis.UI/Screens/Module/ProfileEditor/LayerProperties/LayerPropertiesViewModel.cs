@@ -8,7 +8,6 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
@@ -61,6 +60,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public TreeViewModel TreeViewModel { get; set; }
         public EffectsViewModel EffectsViewModel { get; set; }
         public TimelineViewModel TimelineViewModel { get; set; }
+
+        #region Effects
+
+        public void ToggleAddEffect()
+        {
+            if (DateTime.Now - _lastToggle < TimeSpan.FromMilliseconds(500))
+                return;
+
+            _lastToggle = DateTime.Now;
+            PropertyTreeIndex = PropertyTreeIndex == 0 ? 1 : 0;
+            if (PropertyTreeIndex == 1)
+                EffectsViewModel.PopulateDescriptors();
+        }
+
+        #endregion
 
         protected override void OnInitialActivate()
         {
@@ -115,10 +129,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void PopulateProperties(ProfileElement profileElement)
         {
-            if (SelectedFolder != null)
-            {
-                SelectedFolder = null;
-            }
+            if (SelectedFolder != null) SelectedFolder = null;
 
             if (SelectedLayer != null)
             {
@@ -133,9 +144,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             _brushPropertyGroup = null;
 
             if (profileElement is Folder folder)
-            {
                 SelectedFolder = folder;
-            }
             else if (profileElement is Layer layer)
             {
                 SelectedLayer = layer;
@@ -386,21 +395,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
 
             return result;
-        }
-
-        #endregion
-
-        #region Effects
-
-        public void ToggleAddEffect()
-        {
-            if (DateTime.Now - _lastToggle < TimeSpan.FromMilliseconds(500))
-                return;
-
-            _lastToggle = DateTime.Now;
-            PropertyTreeIndex = PropertyTreeIndex == 0 ? 1 : 0;
-            if (PropertyTreeIndex == 1)
-                EffectsViewModel.PopulateDescriptors();
         }
 
         #endregion

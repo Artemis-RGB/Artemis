@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
@@ -10,7 +9,6 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage;
-using Artemis.Storage.Migrations.Interfaces;
 using Newtonsoft.Json;
 using RGB.NET.Core;
 using Serilog;
@@ -29,11 +27,11 @@ namespace Artemis.Core.Services
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
+        private readonly PluginSetting<LogEventLevel> _loggingLevel;
         private List<Module> _modules;
-        private PluginSetting<LogEventLevel> _loggingLevel;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
-        internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService, 
+        internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
         {
             _logger = logger;
@@ -51,7 +49,7 @@ namespace Artemis.Core.Services
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
 
-            
+
             ConfigureJsonConvert();
         }
 
@@ -65,24 +63,6 @@ namespace Artemis.Core.Services
         }
 
         public bool IsInitialized { get; set; }
-
-        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
-        {
-            FrameRendering?.Invoke(this, e);
-        }
-
-        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
-        {
-            FrameRendered?.Invoke(this, e);
-        }
-
-        private void ConfigureJsonConvert()
-        {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter> {new SKColorConverter()}
-            };
-        }
 
         public void Initialize()
         {
@@ -105,6 +85,24 @@ namespace Artemis.Core.Services
             _profileService.ActivateDefaultProfiles();
 
             OnInitialized();
+        }
+
+        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
+        {
+            FrameRendering?.Invoke(this, e);
+        }
+
+        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
+        }
+
+        private void ConfigureJsonConvert()
+        {
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> {new SKColorConverter()}
+            };
         }
 
         private void ApplyLoggingLevel()

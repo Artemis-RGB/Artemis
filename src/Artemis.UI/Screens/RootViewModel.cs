@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,9 +16,9 @@ namespace Artemis.UI.Screens
     public class RootViewModel : Conductor<IScreen>
     {
         private readonly IEventAggregator _eventAggregator;
+        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private bool _lostFocus;
-        private PluginSetting<ApplicationColorScheme> _colorScheme;
-        private ThemeWatcher _themeWatcher;
+        private readonly ThemeWatcher _themeWatcher;
 
         public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService)
         {

@@ -1,18 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Documents;
+﻿using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
 using Ninject;
-using Ninject.Injection;
-using Ninject.Parameters;
 using Serilog;
 
 namespace Artemis.Core.Services
@@ -63,7 +57,7 @@ namespace Artemis.Core.Services
 
             if (descriptor == null)
                 return null;
-            
+
             var brush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = descriptor;

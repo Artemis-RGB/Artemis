@@ -20,7 +20,7 @@
                     Conditions are not yet implemented
                 </TextBlock>
                 <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
-                    Conditions will allow you to easily configure when a layer should be shown.<LineBreak/><LineBreak/>
+                    Conditions will allow you to easily configure when a layer should be shown.<LineBreak /><LineBreak />
                     You'll also use this to set up how a layer reacts to its conditions being matched, like play the timeline once or keep repeating the timeline until the conditions are no longer matched.
                 </TextBlock>
             </StackPanel>

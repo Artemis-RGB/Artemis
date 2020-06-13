@@ -3,9 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Services;
-using Artemis.UI.PropertyInput;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -16,25 +14,14 @@ namespace Artemis.UI.Services
 {
     public class LayerEditorService : ILayerEditorService
     {
-        private readonly ISettingsService _settingsService;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly ISettingsService _settingsService;
 
         public LayerEditorService(ISettingsService settingsService, IProfileEditorService profileEditorService)
         {
             _settingsService = settingsService;
             _profileEditorService = profileEditorService;
             RegisterBuiltInPropertyEditors();
-        }
-
-        private void RegisterBuiltInPropertyEditors()
-        {
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(BrushPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(ColorGradientPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(FloatPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(IntPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKColorPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKPointPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKSizePropertyInputViewModel));
         }
 
         /// <inheritdoc />
@@ -150,6 +137,17 @@ namespace Artemis.UI.Services
 
             // The difference between the two is the offset
             return topLeft - tempTopLeft;
+        }
+
+        private void RegisterBuiltInPropertyEditors()
+        {
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(BrushPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(ColorGradientPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(FloatPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(IntPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKColorPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKPointPropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKSizePropertyInputViewModel));
         }
     }
 }

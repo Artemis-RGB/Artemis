@@ -136,7 +136,7 @@
                         </Border>
                     </ScrollViewer>
 
-                    <materialDesign:TransitionerSlide >
+                    <materialDesign:TransitionerSlide>
                         <materialDesign:TransitionerSlide.BackwardWipe>
                             <materialDesign:CircleWipe />
                         </materialDesign:TransitionerSlide.BackwardWipe>

@@ -14,16 +14,16 @@
     <StackPanel Orientation="Horizontal" KeyboardNavigation.IsTabStop="True">
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <controls:DraggableFloat ToolTip="X-coordinate (horizontal)"
-                               Value="{Binding X}"
-                               StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                               DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                                 Value="{Binding X}"
+                                 StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                 DragStarted="{s:Action InputDragStarted}"
+                                 DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <controls:DraggableFloat ToolTip="Y-coordinate (vertical)"
-                               Value="{Binding Y}"
-                               StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                               DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                                 Value="{Binding Y}"
+                                 StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                                 DragStarted="{s:Action InputDragStarted}"
+                                 DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

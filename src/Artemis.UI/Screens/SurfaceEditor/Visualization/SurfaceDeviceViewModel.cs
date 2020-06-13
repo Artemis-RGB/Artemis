@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Surface;
@@ -20,7 +19,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         public ArtemisDevice Device { get; set; }
         public SelectionStatus SelectionStatus { get; set; }
         public Cursor Cursor { get; set; }
-        
+
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
             : new Rect(Device.X, Device.Y, Device.RgbDevice.DeviceRectangle.Size.Width, Device.RgbDevice.DeviceRectangle.Size.Height);

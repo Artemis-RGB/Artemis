@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;

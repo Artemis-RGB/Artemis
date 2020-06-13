@@ -37,9 +37,10 @@
             Background="{StaticResource Checkerboard}">
         <Rectangle Stroke="{DynamicResource NormalBorderBrush}" Cursor="Hand" MouseUp="UIElement_OnMouseUp">
             <Rectangle.Fill>
-                <LinearGradientBrush GradientStops="{Binding ColorGradient.Stops, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorGradientToGradientStopsConverter}}" 
-                                     EndPoint="1,0"
-                                     StartPoint="0,0"/>
+                <LinearGradientBrush
+                    GradientStops="{Binding ColorGradient.Stops, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorGradientToGradientStopsConverter}}"
+                    EndPoint="1,0"
+                    StartPoint="0,0" />
             </Rectangle.Fill>
         </Rectangle>
     </Border>

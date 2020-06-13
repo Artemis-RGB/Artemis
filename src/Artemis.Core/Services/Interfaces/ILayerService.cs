@@ -3,7 +3,6 @@ using Artemis.Core.Plugins.LayerBrush;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
-using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Services.Interfaces
 {

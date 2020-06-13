@@ -107,6 +107,21 @@ namespace Artemis.Core.Models.Profile
             return _allLayerProperties;
         }
 
+        public void UpdateOrder(int oldOrder)
+        {
+            // Expanded state is tied to the path so save it before changing the path
+            var expanded = Layer.IsPropertyGroupExpanded(this);
+            Layer.SetPropertyGroupExpanded(this, false);
+
+            Path = Path.Replace($"LayerEffect.{oldOrder}.", $"LayerEffect.{LayerEffect.Order}.");
+            // Restore the expanded state with the new path
+            Layer.SetPropertyGroupExpanded(this, expanded);
+
+            // Update children
+            foreach (var layerPropertyGroup in LayerPropertyGroups)
+                layerPropertyGroup.UpdateOrder(oldOrder);
+        }
+
         /// <summary>
         ///     Called before properties are fully initialized to allow you to populate
         ///     <see cref="LayerProperty{T}.DefaultValue" /> on the properties you want
@@ -280,20 +295,5 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        public void UpdateOrder(int oldOrder)
-        {
-            // Expanded state is tied to the path so save it before changing the path
-            var expanded = Layer.IsPropertyGroupExpanded(this);
-            Layer.SetPropertyGroupExpanded(this, false);
-
-            Path = Path.Replace($"LayerEffect.{oldOrder}.", $"LayerEffect.{LayerEffect.Order}.");
-            // Restore the expanded state with the new path
-            Layer.SetPropertyGroupExpanded(this, expanded);
-
-            // Update children
-            foreach (var layerPropertyGroup in LayerPropertyGroups)
-                layerPropertyGroup.UpdateOrder(oldOrder);
-        }
     }
 }

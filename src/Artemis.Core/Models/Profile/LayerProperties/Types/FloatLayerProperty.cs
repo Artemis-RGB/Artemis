@@ -1,10 +1,20 @@
 ﻿namespace Artemis.Core.Models.Profile.LayerProperties.Types
 {
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public class FloatLayerProperty : LayerProperty<float>
     {
         internal FloatLayerProperty()
         {
+        }
+
+        public static implicit operator float(FloatLayerProperty p)
+        {
+            return p.CurrentValue;
+        }
+
+        public static implicit operator double(FloatLayerProperty p)
+        {
+            return p.CurrentValue;
         }
 
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
@@ -12,8 +22,5 @@
             var diff = NextKeyframe.Value - CurrentKeyframe.Value;
             CurrentValue = CurrentKeyframe.Value + diff * keyframeProgressEased;
         }
-
-        public static implicit operator float(FloatLayerProperty p) => p.CurrentValue;
-        public static implicit operator double(FloatLayerProperty p) => p.CurrentValue;
     }
 }

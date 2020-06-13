@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Ninject.Factories;

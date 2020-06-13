@@ -127,14 +127,14 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        /// <summary>
-        ///     Applies the profile element's properties to the underlying storage entity
-        /// </summary>
-        internal abstract void ApplyToEntity();
-
         public override string ToString()
         {
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
+
+        /// <summary>
+        ///     Applies the profile element's properties to the underlying storage entity
+        /// </summary>
+        internal abstract void ApplyToEntity();
     }
 }

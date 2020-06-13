@@ -16,8 +16,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract
         public abstract bool IsVisible { get; }
 
         public List<LayerPropertyBaseViewModel> Children { get; set; }
+        public abstract void Dispose();
 
         public abstract List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly);
-        public abstract void Dispose();
     }
 }

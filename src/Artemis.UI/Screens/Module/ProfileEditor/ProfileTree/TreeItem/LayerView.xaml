@@ -26,13 +26,13 @@
             </ContextMenu>
         </StackPanel.ContextMenu>
         <StackPanel Orientation="Horizontal" Margin="10">
-            <materialDesign:PackIcon Kind="Layers" Width="16"  />
+            <materialDesign:PackIcon Kind="Layers" Width="16" />
             <materialDesign:PackIcon Kind="{Binding Layer.LayerBrush.Descriptor.Icon}"
                                      Width="16"
                                      Margin="5 0 0 0"
                                      ToolTip="{Binding Layer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
-                                     Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" 
-                                     Background="Transparent"/>
+                                     Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                                     Background="Transparent" />
             <TextBlock Text="{Binding Layer.Name}" Margin="5 0 0 0" />
         </StackPanel>
     </StackPanel>

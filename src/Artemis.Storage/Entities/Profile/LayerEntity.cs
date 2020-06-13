@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
@@ -33,6 +32,4 @@ namespace Artemis.Storage.Entities.Profile
 
         public Guid ProfileId { get; set; }
     }
-
-
 }
