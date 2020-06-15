@@ -7,14 +7,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
     public class TreeViewModel : PropertyChangedBase
     {
-        private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
 
         public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
         {
-            _layerPropertiesViewModel = layerPropertiesViewModel;
+            LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerPropertyGroups = layerPropertyGroups;
         }
 
+        public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
         public void PropertyTreePreviewMouseWheel(object sender, MouseWheelEventArgs e)

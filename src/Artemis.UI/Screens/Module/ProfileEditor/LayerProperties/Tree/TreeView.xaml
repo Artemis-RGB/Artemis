@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:abstract="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract"
              xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:TreeViewModel}}">
@@ -87,6 +88,9 @@
               HorizontalContentAlignment="Stretch"
               Background="{DynamicResource MaterialDesignToolBarBackground}"
               PreviewMouseWheel="{s:Action PropertyTreePreviewMouseWheel}"
+              dd:DragDrop.IsDragSource="True"
+              dd:DragDrop.IsDropTarget="True"
+              dd:DragDrop.DropHandler="{Binding LayerPropertiesViewModel}"
               Margin="0 -1">
         <TreeView.ItemContainerStyle>
             <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">
@@ -99,7 +103,7 @@
                 <ContentControl s:View.Model="{Binding TreePropertyGroupViewModel}" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
-                <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" />
+                <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" dd:DragDrop.DragSourceIgnore="True" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

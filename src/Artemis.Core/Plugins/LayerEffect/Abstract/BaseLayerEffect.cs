@@ -13,6 +13,11 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
         /// <summary>
+        /// Gets the unique ID of this effect
+        /// </summary>
+        public Guid EntityId { get; internal set; }
+
+        /// <summary>
         ///     Gets the layer this effect is applied to
         /// </summary>
         public Layer Layer { get; internal set; }
@@ -36,7 +41,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         /// <summary>
         ///     Gets the order in which this effect appears in the update loop and editor
         /// </summary>
-        public int Order { get; internal set; }
+        public int Order { get; set; }
 
         /// <summary>
         ///     Gets the descriptor of this effect
@@ -53,7 +58,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         /// </summary>
         public virtual LayerPropertyGroup BaseProperties => null;
 
-        internal string PropertyRootPath => $"LayerEffect.{Order}.{GetType().Name}.";
+        internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
 
         public void Dispose()
         {
@@ -85,17 +90,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         ///     Called after the layer of folder has been rendered
         /// </summary>
         public abstract void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
-
-        public void UpdateOrder(int newOrder)
-        {
-            if (newOrder == Order)
-                return;
-
-            var oldOrder = Order;
-            Order = newOrder;
-            BaseProperties.UpdateOrder(oldOrder);
-        }
-
+        
         internal void InternalPreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
             // Move the canvas to the top-left of the render path

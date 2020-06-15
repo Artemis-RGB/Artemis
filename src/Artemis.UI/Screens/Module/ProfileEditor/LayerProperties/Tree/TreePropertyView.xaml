@@ -44,17 +44,14 @@
                 </Style>
             </ContentControl.Resources>
         </ContentControl>
-
+        
         <Button Grid.Column="3"
-                Style="{StaticResource MaterialDesignOutlinedButton}"
-                Margin="0,1,0,1.2"
-                Padding="0"
-                Width="80"
-                Height="20"
+                Style="{StaticResource MaterialDesignIconButton}"
                 ToolTip="Change the property's data binding"
-                VerticalAlignment="Center"
-                IsEnabled="False">
-            <TextBlock FontSize="10">DATA BINDING</TextBlock>
+                Width="24"
+                Height="24"
+                VerticalAlignment="Center">
+            <materialDesign:PackIcon Kind="VectorLink" Height="16" Width="16" />
         </Button>
     </Grid>
 </UserControl>

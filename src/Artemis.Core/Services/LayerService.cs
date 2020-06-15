@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
@@ -38,6 +39,12 @@ namespace Artemis.Core.Services
             InstantiateLayerEffects(layer);
 
             return layer;
+        }
+
+        public void RemoveLayerBrush(Layer layer)
+        {
+            layer.RemoveLayerBrush();
+            layer.OnLayerBrushUpdated();
         }
 
         public BaseLayerBrush InstantiateLayerBrush(Layer layer)
@@ -87,6 +94,7 @@ namespace Artemis.Core.Services
                     continue;
 
                 var effect = (BaseLayerEffect) _kernel.Get(descriptor.LayerEffectType);
+                effect.EntityId = layerEntityLayerEffect.Id;
                 effect.Layer = layer;
                 effect.Order = layerEntityLayerEffect.Order;
                 effect.Name = layerEntityLayerEffect.Name;
@@ -104,6 +112,7 @@ namespace Artemis.Core.Services
         public BaseLayerEffect AddLayerEffect(Layer layer, LayerEffectDescriptor layerEffectDescriptor)
         {
             var effect = (BaseLayerEffect) _kernel.Get(layerEffectDescriptor.LayerEffectType);
+            effect.EntityId = Guid.NewGuid();
             effect.Layer = layer;
             effect.Order = layer.LayerEffects.Count + 1;
             effect.Descriptor = layerEffectDescriptor;
@@ -113,7 +122,7 @@ namespace Artemis.Core.Services
 
             layer.AddLayerEffect(effect);
             _logger.Debug("Added layer effect with root path {rootPath}", effect.PropertyRootPath);
-
+            
             layer.OnLayerEffectsUpdated();
             return effect;
         }
