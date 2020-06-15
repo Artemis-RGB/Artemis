@@ -80,6 +80,8 @@ namespace Artemis.UI.Shared.Controls
 
         private void InputMouseDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
+            
             _startValue = Value;
             ((IInputElement) sender).CaptureMouse();
             _mouseDragStartPoint = e.GetPosition((IInputElement) sender);
@@ -87,6 +89,8 @@ namespace Artemis.UI.Shared.Controls
 
         private void InputMouseUp(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
+
             var position = e.GetPosition((IInputElement) sender);
             if (position == _mouseDragStartPoint)
                 DisplayInput();
@@ -104,6 +108,8 @@ namespace Artemis.UI.Shared.Controls
             if (e.LeftButton != MouseButtonState.Pressed)
                 return;
 
+            e.Handled = true;
+            
             if (!_calledDragStarted)
             {
                 OnDragStarted();

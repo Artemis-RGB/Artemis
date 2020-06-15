@@ -155,5 +155,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             NotifyOfPropertyChange(nameof(IsVisible));
         }
+
+        public void UpdateOrder(int order)
+        {
+            LayerPropertyGroup.LayerEffect.Order = order;
+            NotifyOfPropertyChange(nameof(IsExpanded));
+        }
     }
 }

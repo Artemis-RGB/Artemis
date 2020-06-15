@@ -28,6 +28,11 @@ namespace Artemis.UI.Shared.Utilities
 
             return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription {Value = e, Description = e.Humanize()}).ToList();
         }
+
+        public static string HumanizeValue(Enum value)
+        {
+            return value.Humanize();
+        }
     }
 
     public class ValueDescription

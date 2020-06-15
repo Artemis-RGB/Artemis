@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -14,13 +15,17 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
+using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
+using GongSolutions.Wpf.DragDrop;
 using Stylet;
+using static Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerPropertyGroupViewModel.ViewModelType;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
-    public class LayerPropertiesViewModel : ProfileEditorPanelViewModel
+    public class LayerPropertiesViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
@@ -215,6 +220,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Add(_brushPropertyGroup);
             }
 
+            SortProperties();
             TimelineViewModel.UpdateKeyframes();
         }
 
@@ -244,7 +250,98 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties, brushDescription));
             }
 
+            SortProperties();
             TimelineViewModel.UpdateKeyframes();
+        }
+
+        private void SortProperties()
+        {
+            // Get all non-effect properties
+            var nonEffectProperties = LayerPropertyGroups.Where(l => l.GroupType != LayerEffectRoot).ToList();
+            // Order the effects
+            var effectProperties = LayerPropertyGroups.Where(l => l.GroupType == LayerEffectRoot).OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order).ToList();
+
+            // Put the non-effect properties in front
+            for (var index = 0; index < nonEffectProperties.Count; index++)
+            {
+                var layerPropertyGroupViewModel = nonEffectProperties[index];
+                LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index);
+            }
+
+            // Put the effect properties after, sorted by their order
+            for (var index = 0; index < effectProperties.Count; index++)
+            {
+                var layerPropertyGroupViewModel = effectProperties[index];
+                LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
+            }
+        }
+
+        #endregion
+
+        #region Drag and drop
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            // Workaround for https://github.com/punker76/gong-wpf-dragdrop/issues/344
+            // Luckily we know the index can never be 1 so it's an easy enough fix
+            if (dropInfo.InsertIndex == 1)
+                return;
+
+            var source = dropInfo.Data as LayerPropertyGroupViewModel;
+            var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
+
+            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+                return;
+            
+            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+            dropInfo.Effects = DragDropEffects.Move;
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            // Workaround for https://github.com/punker76/gong-wpf-dragdrop/issues/344
+            // Luckily we know the index can never be 1 so it's an easy enough fix
+            if (dropInfo.InsertIndex == 1)
+                return;
+
+            var source = dropInfo.Data as LayerPropertyGroupViewModel;
+            var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
+
+            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+                return;
+
+            if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
+                MoveBefore(source, target);
+            else if (dropInfo.InsertPosition == RelativeInsertPosition.AfterTargetItem)
+                MoveAfter(source, target);
+
+            ApplyCurrentEffectsOrder();
+            ProfileEditorService.UpdateSelectedProfile(true);
+        }
+
+        private void MoveBefore(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)
+        {
+            if (LayerPropertyGroups.IndexOf(target) == LayerPropertyGroups.IndexOf(source) + 1)
+                return;
+
+            LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(source), LayerPropertyGroups.IndexOf(target));
+        }
+
+        private void MoveAfter(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)
+        {
+            LayerPropertyGroups.Remove(source);
+            LayerPropertyGroups.Insert(LayerPropertyGroups.IndexOf(target) + 1, source);
+        }
+
+        private void ApplyCurrentEffectsOrder()
+        {
+            var order = 1;
+            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.GroupType == LayerEffectRoot))
+            {
+                
+                groupViewModel.UpdateOrder(order);
+                order++;
+            }
         }
 
         #endregion

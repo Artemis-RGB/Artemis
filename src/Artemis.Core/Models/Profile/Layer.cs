@@ -166,6 +166,7 @@ namespace Artemis.Core.Models.Profile
             {
                 var layerEffectEntity = new LayerEffectEntity
                 {
+                    Id = layerEffect.EntityId,
                     PluginGuid = layerEffect.PluginInfo.Guid,
                     EffectType = layerEffect.GetType().Name,
                     Name = layerEffect.Name,
@@ -524,7 +525,7 @@ namespace Artemis.Core.Models.Profile
             var index = 0;
             foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
             {
-                baseLayerEffect.UpdateOrder(index + 1);
+                baseLayerEffect.Order = Order = index + 1;
                 index++;
             }
 
