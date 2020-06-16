@@ -117,7 +117,7 @@ namespace Artemis.Core.RGB.NET
                     {
                         var x = left + horizontalSteps * horizontalStep;
                         var y = top + verticalSteps * verticalStep;
-                        if (x < 0 || x > bitmapWidth || y < 0 || y > bitmapHeight)
+                        if (x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight)
                             continue;
 
                         var color = pixmap.GetPixelColor(x, y);

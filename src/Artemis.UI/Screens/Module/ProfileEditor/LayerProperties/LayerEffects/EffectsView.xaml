@@ -12,7 +12,6 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:EffectsViewModel}">
     <Grid Background="{DynamicResource MaterialDesignCardBackground}">
-
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16"
                     Visibility="{Binding HasLayerEffectDescriptors, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}">
             <materialDesign:PackIcon Kind="AutoAwesome" Width="80" Height="80" HorizontalAlignment="Center" />
@@ -24,14 +23,16 @@
                 Think of things like blur, black &amp; white but also audio visualization etc.
             </TextBlock>
         </StackPanel>
-
-
         <ListBox ItemsSource="{Binding LayerEffectDescriptors}" SelectedItem="{Binding SelectedLayerEffectDescriptor}" HorizontalContentAlignment="Stretch"
                  Visibility="{Binding HasLayerEffectDescriptors, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="behaviors:MouseBehaviour.MouseUpCommand" Value="{x:Static materialDesign:Transitioner.MoveFirstCommand}" />
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type layerEffect:LayerEffectDescriptor}">
-                    <Border Padding="8" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Stretch"
-                            behaviors:MouseBehaviour.MouseUpCommand="{x:Static materialDesign:Transitioner.MoveFirstCommand}">
+                    <Border Padding="8" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Stretch">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
