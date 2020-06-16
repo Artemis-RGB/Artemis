@@ -102,6 +102,8 @@ namespace Artemis.UI.Shared.Services
             {
                 layer.OverrideProgress(CurrentTime);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
+                foreach (var baseLayerEffect in layer.LayerEffects)
+                    baseLayerEffect.Update(delta.TotalSeconds);
             }
 
             _lastUpdateTime = CurrentTime;

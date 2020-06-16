@@ -6,7 +6,11 @@ namespace Artemis.Plugins.LayerEffects.Filter
     {
         public override void EnablePlugin()
         {
-            AddLayerEffectDescriptor<BlurEffect>("Blur", "A layer effect providing a blur filter effect", "BlurOn");
+            AddLayerEffectDescriptor<BlurEffect>(
+                "Blur",
+                "A layer effect providing a blur filter effect. \r\nNote: CPU intensive, best to only use on small layers or for a short period of time.",
+                "BlurOn"
+            );
             AddLayerEffectDescriptor<DilateEffect>("Dilate", "A layer effect providing a dilation filter effect", "EyePlus");
             AddLayerEffectDescriptor<ErodeEffect>("Erode", "A layer effect providing an erode filter effect", "EyeMinus");
             AddLayerEffectDescriptor<GlowEffect>("Glow", "A layer effect providing a glow filter effect", "BoxShadow");
