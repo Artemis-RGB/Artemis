@@ -85,7 +85,7 @@
         </StackPanel>
 
         <!-- Type: LayerEffectRoot -->
-        <Grid Height="24" Cursor="SizeNS">
+        <Grid Height="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -105,7 +105,12 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <materialDesign:PackIcon Grid.Column="0" Kind="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Icon}" Margin="0 5 5 0" />
+            <materialDesign:PackIcon 
+                Grid.Column="0" 
+                Cursor="SizeNS"
+                Kind="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Icon}" 
+                Margin="0 5 5 0" 
+                Background="Transparent"/>
             <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5 0 0">
                 Effect
             </TextBlock>
