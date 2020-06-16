@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Services.Interfaces;
@@ -17,6 +19,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
             _layerService = layerService;
             LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerEffectDescriptors = new BindableCollection<LayerEffectDescriptor>();
+            PropertyChanged += HandleSelectedLayerEffectChanged;
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
@@ -24,27 +27,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
         public BindableCollection<LayerEffectDescriptor> LayerEffectDescriptors { get; set; }
         public bool HasLayerEffectDescriptors => LayerEffectDescriptors.Any();
 
-        public LayerEffectDescriptor SelectedLayerEffectDescriptor
-        {
-            get => null;
-            set => AddLayerEffect(value);
-        }
+        public LayerEffectDescriptor SelectedLayerEffectDescriptor { get; set; }
 
         public void PopulateDescriptors()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
+            var descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
+            LayerEffectDescriptors.AddRange(descriptors.Except(LayerEffectDescriptors));
+            LayerEffectDescriptors.RemoveRange(LayerEffectDescriptors.Except(descriptors));
 
-            if (LayerEffectDescriptors.Any())
-                LayerEffectDescriptors.Clear();
-            LayerEffectDescriptors.AddRange(layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors));
-
+            SelectedLayerEffectDescriptor = null;
             NotifyOfPropertyChange(nameof(HasLayerEffectDescriptors));
         }
 
-        private void AddLayerEffect(LayerEffectDescriptor value)
+        private void HandleSelectedLayerEffectChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (LayerPropertiesViewModel.SelectedLayer != null && value != null)
-                _layerService.AddLayerEffect(LayerPropertiesViewModel.SelectedLayer, value);
+            if (e.PropertyName == nameof(SelectedLayerEffectDescriptor) && SelectedLayerEffectDescriptor != null)
+            {
+                // Jump off the UI thread and let the fancy animation run
+                Task.Run(async () =>
+                {
+                    await Task.Delay(500);
+                    return _layerService.AddLayerEffect(LayerPropertiesViewModel.SelectedLayer, SelectedLayerEffectDescriptor);
+                });
+            }
         }
     }
 }

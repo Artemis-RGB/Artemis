@@ -125,22 +125,33 @@
 
             <!-- Properties tree -->
             <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" DialogTheme="Inherit" CloseOnClickAway="True" Grid.Row="1">
-                <materialDesign:Transitioner SelectedIndex="{Binding PropertyTreeIndex}" DefaultTransitionOrigin="0.9, 1" AutoApplyTransitionOrigins="True">
-
+                <materialDesign:Transitioner x:Name="PropertyTreeTransitioner" SelectedIndex="{Binding PropertyTreeIndex}" DefaultTransitionOrigin="0.9, 0.9" AutoApplyTransitionOrigins="True">
                     <ScrollViewer x:Name="PropertyTreeScrollViewer"
                                   HorizontalScrollBarVisibility="Hidden"
                                   VerticalScrollBarVisibility="Hidden"
                                   ScrollChanged="TimelineScrollChanged">
                         <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
-                            <ContentControl s:View.Model="{Binding TreeViewModel}" />
+                            <Grid>
+                                <ContentControl s:View.Model="{Binding TreeViewModel}" />
+                            </Grid>
+
                         </Border>
                     </ScrollViewer>
-
                     <materialDesign:TransitionerSlide>
                         <materialDesign:TransitionerSlide.BackwardWipe>
                             <materialDesign:CircleWipe />
                         </materialDesign:TransitionerSlide.BackwardWipe>
-                        <ContentControl s:View.Model="{Binding EffectsViewModel}" />
+                        <Grid>
+                            <ContentControl s:View.Model="{Binding EffectsViewModel}" />
+                            <!-- Transitions only work when the command comes from inside the transitioner but we want the button outside, 
+                            by setting the command target to this hidden button we cercumvent that -->
+                            <Button x:Name="TransitionCommandAnchor"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Width="110"
+                                    Height="1"
+                                    Visibility="Hidden" />
+                        </Grid>
                     </materialDesign:TransitionerSlide>
                 </materialDesign:Transitioner>
             </materialDesign:DialogHost>
@@ -243,12 +254,29 @@
                         Margin="0 -2"
                         Padding="10 0"
                         Height="20"
-                        Width="82"
-                        ToolTip="Change the property's data binding"
+                        Width="110"
+                        ToolTip="Select an effect to add"
                         VerticalAlignment="Center"
-                        Command="{s:Action ToggleAddEffect}">
+                        Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                        Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
+                        CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
                     <TextBlock FontSize="10">
-                        <Run Text="ADD EFFECT" />
+                        ADD EFFECT
+                    </TextBlock>
+                </Button>
+                <Button Grid.Column="1"
+                        Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                        Margin="0 -2"
+                        Padding="10 0"
+                        Height="20"
+                        Width="110"
+                        ToolTip="Show the layer/folder properties"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
+                        Command="{x:Static materialDesign:Transitioner.MoveFirstCommand}"
+                        CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                    <TextBlock FontSize="10">
+                        SHOW PROPERTIES
                     </TextBlock>
                 </Button>
             </Grid>

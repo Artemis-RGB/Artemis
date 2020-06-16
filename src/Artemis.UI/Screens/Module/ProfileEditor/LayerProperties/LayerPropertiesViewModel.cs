@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -15,8 +15,6 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
-using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
@@ -29,7 +27,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
-        private DateTime _lastToggle;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -41,6 +38,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             SettingsService = settingsService;
 
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
+            PropertyChanged += HandlePropertyTreeIndexChanged;
         }
 
         public IProfileEditorService ProfileEditorService { get; }
@@ -58,6 +56,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         public int PropertyTreeIndex { get; set; }
+        public bool PropertyTreeVisible => PropertyTreeIndex == 0;
         public Layer SelectedLayer { get; set; }
         public Folder SelectedFolder { get; set; }
 
@@ -65,22 +64,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public TreeViewModel TreeViewModel { get; set; }
         public EffectsViewModel EffectsViewModel { get; set; }
         public TimelineViewModel TimelineViewModel { get; set; }
-
-        #region Effects
-
-        public void ToggleAddEffect()
-        {
-            if (DateTime.Now - _lastToggle < TimeSpan.FromMilliseconds(500))
-                return;
-
-            _lastToggle = DateTime.Now;
-            PropertyTreeIndex = PropertyTreeIndex == 0 ? 1 : 0;
-            if (PropertyTreeIndex == 1)
-                EffectsViewModel.PopulateDescriptors();
-        }
-
-        #endregion
-
+        
         protected override void OnInitialActivate()
         {
             PopulateProperties(ProfileEditorService.SelectedProfileElement);
@@ -105,6 +89,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             Pause();
             base.OnDeactivate();
+        }
+
+        private void HandlePropertyTreeIndexChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PropertyTreeIndex) && PropertyTreeIndex == 1)
+                EffectsViewModel.PopulateDescriptors();
         }
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
@@ -292,7 +282,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
                 return;
-            
+
             dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
             dropInfo.Effects = DragDropEffects.Move;
         }
@@ -338,7 +328,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             var order = 1;
             foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.GroupType == LayerEffectRoot))
             {
-                
                 groupViewModel.UpdateOrder(order);
                 order++;
             }
