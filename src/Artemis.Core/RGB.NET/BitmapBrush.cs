@@ -10,6 +10,7 @@ namespace Artemis.Core.RGB.NET
     public class BitmapBrush : AbstractDecoratable<IBrushDecorator>, IBrush, IDisposable
     {
         private readonly PluginSetting<int> _sampleSizeSetting;
+        private object _disposeLock;
 
         #region Constructors
 
@@ -17,6 +18,7 @@ namespace Artemis.Core.RGB.NET
         {
             _sampleSizeSetting = sampleSizeSetting;
             Scale = scale;
+            _disposeLock = new object();
         }
 
         #endregion
@@ -55,20 +57,27 @@ namespace Artemis.Core.RGB.NET
         /// <inheritdoc />
         public virtual void PerformRender(Rectangle rectangle, IEnumerable<BrushRenderTarget> renderTargets)
         {
-            if (RenderedRectangle != rectangle || RenderedScale != Scale)
-                Bitmap = null;
+            lock (_disposeLock)
+            {
+                // Can happen during surface change
+                if (IsDisposed)
+                    return;
 
-            RenderedRectangle = rectangle;
-            RenderedScale = Scale;
-            RenderedTargets.Clear();
+                if (RenderedRectangle != rectangle || RenderedScale != Scale)
+                    Bitmap = null;
 
-            if (Bitmap == null)
-                CreateBitmap(RenderedRectangle);
+                RenderedRectangle = rectangle;
+                RenderedScale = Scale;
+                RenderedTargets.Clear();
 
-            if (_sampleSizeSetting.Value == 1)
-                TakeCenter(renderTargets);
-            else
-                TakeSamples(renderTargets);
+                if (Bitmap == null)
+                    CreateBitmap(RenderedRectangle);
+
+                if (_sampleSizeSetting.Value == 1)
+                    TakeCenter(renderTargets);
+                else
+                    TakeSamples(renderTargets);
+            }
         }
 
         private void TakeCenter(IEnumerable<BrushRenderTarget> renderTargets)
@@ -140,8 +149,14 @@ namespace Artemis.Core.RGB.NET
 
         public void Dispose()
         {
-            Bitmap?.Dispose();
+            lock (_disposeLock)
+            {
+                Bitmap?.Dispose();
+                IsDisposed = true;
+            }
         }
+
+        public bool IsDisposed { get; set; }
 
         #endregion
     }
