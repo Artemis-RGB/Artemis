@@ -40,8 +40,8 @@
                             </Grid.ColumnDefinitions>
                             <materialDesign:PackIcon Kind="{Binding Icon}" Width="20" Height="20" VerticalAlignment="Center" />
                             <StackPanel Margin="8 0 0 0" Grid.Column="1" VerticalAlignment="Stretch">
-                                <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" />
-                                <TextBlock Text="{Binding Description}" />
+                                <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
                             </StackPanel>
                         </Grid>
                     </Border>

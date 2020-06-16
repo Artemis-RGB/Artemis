@@ -287,6 +287,7 @@ namespace Artemis.Core.Models.Profile
 
             using (var paint = new SKPaint())
             {
+                paint.FilterQuality = SKFilterQuality.Low;
                 paint.BlendMode = General.BlendMode.CurrentValue;
                 paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
