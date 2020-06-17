@@ -65,7 +65,7 @@ namespace Artemis.Core.Models.Profile
             foreach (var baseLayerEffect in LayerEffects)
             {
                 var effectClip = baseLayerEffect.InternalCreateShapeClip(Path);
-                shapeClip = shapeClip.Op(effectClip, SKPathOp.Union);
+                shapeClip = shapeClip.Op(effectClip, SKPathOp.Difference);
             }
 
             return shapeClip;
