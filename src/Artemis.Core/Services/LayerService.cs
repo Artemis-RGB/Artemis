@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
@@ -7,6 +8,7 @@ using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Profile;
 using Ninject;
 using Serilog;
 
@@ -77,61 +79,68 @@ namespace Artemis.Core.Services
             return brush;
         }
 
-        public void InstantiateLayerEffects(Layer layer)
+        public BaseLayerEffect AddLayerEffect(EffectProfileElement effectElement, LayerEffectDescriptor layerEffectDescriptor)
         {
-            if (layer.LayerEffects.Any())
-                throw new ArtemisCoreException("Layer already has instantiated layer effects");
-
-            foreach (var layerEntityLayerEffect in layer.LayerEntity.LayerEffects.OrderByDescending(e => e.Order))
-            {
-                // Get a matching descriptor
-                var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
-                var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
-                var descriptor = descriptors.FirstOrDefault(d => d.LayerEffectProvider.PluginInfo.Guid == layerEntityLayerEffect.PluginGuid &&
-                                                                 d.LayerEffectType.Name == layerEntityLayerEffect.EffectType);
-
-                if (descriptor == null)
-                    continue;
-
-                var effect = (BaseLayerEffect) _kernel.Get(descriptor.LayerEffectType);
-                effect.EntityId = layerEntityLayerEffect.Id;
-                effect.Layer = layer;
-                effect.Order = layerEntityLayerEffect.Order;
-                effect.Name = layerEntityLayerEffect.Name;
-                effect.Descriptor = descriptor;
-                effect.Initialize(this);
-                effect.Update(0);
-
-                layer.AddLayerEffect(effect);
-                _logger.Debug("Added layer effect with root path {rootPath}", effect.PropertyRootPath);
-            }
-
-            layer.OnLayerEffectsUpdated();
-        }
-
-        public BaseLayerEffect AddLayerEffect(Layer layer, LayerEffectDescriptor layerEffectDescriptor)
-        {
+            // Create the effect with dependency injection
             var effect = (BaseLayerEffect) _kernel.Get(layerEffectDescriptor.LayerEffectType);
+
+            effect.ProfileElement = effectElement;
             effect.EntityId = Guid.NewGuid();
-            effect.Layer = layer;
-            effect.Order = layer.LayerEffects.Count + 1;
+            effect.Order = effectElement.LayerEffects.Count + 1;
             effect.Descriptor = layerEffectDescriptor;
 
             effect.Initialize(this);
             effect.Update(0);
 
-            layer.AddLayerEffect(effect);
+            effectElement.AddLayerEffect(effect);
             _logger.Debug("Added layer effect with root path {rootPath}", effect.PropertyRootPath);
-            
-            layer.OnLayerEffectsUpdated();
             return effect;
         }
 
         public void RemoveLayerEffect(BaseLayerEffect layerEffect)
         {
-            // // Make sure the group is collapsed or the effect that gets this effect's order gets expanded
-            // layerEffect.Layer.SetPropertyGroupExpanded(layerEffect.BaseProperties, false);
-            layerEffect.Layer.RemoveLayerEffect(layerEffect);
+            layerEffect.ProfileElement.RemoveLayerEffect(layerEffect);
+        }
+
+        public void InstantiateLayerEffects(EffectProfileElement effectElement)
+        {
+            if (effectElement.LayerEffects.Any())
+                throw new ArtemisCoreException("Effect element (layer/folder) already has instantiated layer effects");
+
+            var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
+            var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
+
+            List<LayerEffectEntity> entities;
+            if (effectElement is Layer layer)
+                entities = layer.LayerEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
+            else if (effectElement is Folder folder)
+                entities = folder.FolderEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
+            else
+                throw new ArtemisCoreException("Provided effect element is of an unsupported type, must be Layer of Folder");
+
+            foreach (var layerEffectEntity in entities)
+            {
+                // Get a matching descriptor
+                var descriptor = descriptors.FirstOrDefault(d => d.LayerEffectProvider.PluginInfo.Guid == layerEffectEntity.PluginGuid &&
+                                                                 d.LayerEffectType.Name == layerEffectEntity.EffectType);
+                if (descriptor == null)
+                    continue;
+
+                // Create the effect with dependency injection
+                var effect = (BaseLayerEffect) _kernel.Get(descriptor.LayerEffectType);
+
+                effect.ProfileElement = effectElement;
+                effect.EntityId = layerEffectEntity.Id;
+                effect.Order = layerEffectEntity.Order;
+                effect.Name = layerEffectEntity.Name;
+                effect.Descriptor = descriptor;
+
+                effect.Initialize(this);
+                effect.Update(0);
+
+                effectElement.AddLayerEffect(effect);
+                _logger.Debug("Instantiated layer effect with root path {rootPath}", effect.PropertyRootPath);
+            }
         }
     }
 }

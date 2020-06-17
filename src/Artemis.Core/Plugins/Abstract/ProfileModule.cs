@@ -26,7 +26,8 @@ namespace Artemis.Core.Plugins.Abstract
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, canvas, canvasInfo);
+                using var paint = new SKPaint {FilterQuality = SKFilterQuality.Low};
+                ActiveProfile?.Render(deltaTime, canvas, canvasInfo, paint);
             }
         }
 

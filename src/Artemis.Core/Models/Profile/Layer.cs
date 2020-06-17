@@ -21,13 +21,10 @@ namespace Artemis.Core.Models.Profile
     ///     Represents a layer on a profile. To create new layers use the <see cref="LayerService" /> by injecting
     ///     <see cref="ILayerService" /> into your code
     /// </summary>
-    public sealed class Layer : ProfileElement
+    public sealed class Layer : EffectProfileElement
     {
-        private readonly List<string> _expandedPropertyGroups;
-        private readonly List<BaseLayerEffect> _layerEffects;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
-        private SKPath _path;
 
         internal Layer(Profile profile, ProfileElement parent, string name)
         {
@@ -68,37 +65,13 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal LayerEntity LayerEntity { get; set; }
-
-        /// <summary>
-        ///     Gets a read-only collection of the layer effects on this layer
-        /// </summary>
-        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
+        internal override PropertiesEntity PropertiesEntity => LayerEntity;
+        internal override EffectsEntity EffectsEntity => LayerEntity;
 
         /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
         /// </summary>
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
-
-        /// <summary>
-        ///     Gets a copy of the path containing all the LEDs this layer is applied to, any rendering outside the layer Path is
-        ///     clipped.
-        /// </summary>
-        public SKPath Path
-        {
-            get => _path != null ? new SKPath(_path) : null;
-            private set
-            {
-                _path = value;
-                // I can't really be sure about the performance impact of calling Bounds often but
-                // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
-                Bounds = value?.Bounds ?? SKRect.Empty;
-            }
-        }
-
-        /// <summary>
-        ///     The bounds of this layer
-        /// </summary>
-        public SKRect Bounds { get; private set; }
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -130,19 +103,6 @@ namespace Artemis.Core.Models.Profile
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
-        public bool IsPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup)
-        {
-            return _expandedPropertyGroups.Contains(layerPropertyGroup.Path);
-        }
-
-        public void SetPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup, bool expanded)
-        {
-            if (!expanded && IsPropertyGroupExpanded(layerPropertyGroup))
-                _expandedPropertyGroups.Remove(layerPropertyGroup.Path);
-            else if (expanded && !IsPropertyGroupExpanded(layerPropertyGroup))
-                _expandedPropertyGroups.Add(layerPropertyGroup.Path);
-        }
-
         #region Storage
 
         internal override void ApplyToEntity()
@@ -161,21 +121,7 @@ namespace Artemis.Core.Models.Profile
             LayerBrush?.BaseProperties.ApplyToEntity();
 
             // Effects
-            LayerEntity.LayerEffects.Clear();
-            foreach (var layerEffect in LayerEffects)
-            {
-                var layerEffectEntity = new LayerEffectEntity
-                {
-                    Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.PluginInfo.Guid,
-                    EffectType = layerEffect.GetType().Name,
-                    Name = layerEffect.Name,
-                    HasBeenRenamed = layerEffect.HasBeenRenamed,
-                    Order = layerEffect.Order
-                };
-                LayerEntity.LayerEffects.Add(layerEffectEntity);
-                layerEffect.BaseProperties.ApplyToEntity();
-            }
+            ApplyLayerEffectsToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -190,7 +136,7 @@ namespace Artemis.Core.Models.Profile
             }
 
             // Conditions TODO
-            LayerEntity.Condition.Clear();
+            LayerEntity.Conditions.Clear();
         }
 
         #endregion
@@ -273,7 +219,7 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
             // Ensure the layer is ready
             if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
@@ -284,36 +230,42 @@ namespace Artemis.Core.Models.Profile
 
             canvas.Save();
             canvas.ClipPath(Path);
+            
+            paint.BlendMode = General.BlendMode.CurrentValue;
+            paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-            using (var paint = new SKPaint())
-            {
-                paint.FilterQuality = SKFilterQuality.Low;
-                paint.BlendMode = General.BlendMode.CurrentValue;
-                paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
+            // Pre-processing only affects other pre-processors and the brushes
+            canvas.Save();
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalPreProcess(canvas, canvasInfo, new SKPath(Path), paint);
 
-                foreach (var baseLayerEffect in LayerEffects)
-                    baseLayerEffect.PreProcess(canvas, canvasInfo, Path, paint);
+            // Shape clip must be determined before commiting to any rendering
+            var shapeClip = CreateShapeClip();
+            if (!shapeClip.IsEmpty)
+                ExcludePathFromTranslation(shapeClip);
 
-                if (!LayerBrush.SupportsTransformation)
-                    SimpleRender(canvas, canvasInfo, paint);
-                else if (General.FillType.CurrentValue == LayerFillType.Stretch)
-                    StretchRender(canvas, canvasInfo, paint);
-                else if (General.FillType.CurrentValue == LayerFillType.Clip)
-                    ClipRender(canvas, canvasInfo, paint);
+            if (!LayerBrush.SupportsTransformation)
+                SimpleRender(canvas, canvasInfo, paint, shapeClip);
+            else if (General.FillType.CurrentValue == LayerFillType.Stretch)
+                StretchRender(canvas, canvasInfo, paint, shapeClip);
+            else if (General.FillType.CurrentValue == LayerFillType.Clip)
+                ClipRender(canvas, canvasInfo, paint, shapeClip);
 
-                foreach (var baseLayerEffect in LayerEffects)
-                    baseLayerEffect.PostProcess(canvas, canvasInfo, Path, paint);
-            }
-
+            // Restore the canvas as to not be affected by pre-processors
+            canvas.Restore();
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalPostProcess(canvas, canvasInfo, new SKPath(Path), paint);
+            
             canvas.Restore();
         }
 
-        private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
+        private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath shapeClip)
         {
-            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            var path = LayerShape.Path.Op(shapeClip, SKPathOp.Difference);
+            LayerBrush.InternalRender(canvas, canvasInfo, path, paint);
         }
 
-        private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
+        private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath shapeClip)
         {
             // Apply transformations
             var sizeProperty = Transform.Scale.CurrentValue;
@@ -331,10 +283,11 @@ namespace Artemis.Core.Models.Profile
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            var path = LayerShape.Path.Op(shapeClip, SKPathOp.Difference);
+            LayerBrush.InternalRender(canvas, canvasInfo, path, paint);
         }
 
-        private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
+        private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath shapeClip)
         {
             // Apply transformation
             var sizeProperty = Transform.Scale.CurrentValue;
@@ -367,29 +320,31 @@ namespace Artemis.Core.Models.Profile
             var renderPath = new SKPath();
             renderPath.AddRect(boundsRect);
 
+            renderPath = renderPath.Op(shapeClip, SKPathOp.Difference);
             LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         internal void CalculateRenderProperties()
         {
             if (!Leds.Any())
-            {
                 Path = new SKPath();
+            else
+            {
+                var path = new SKPath {FillType = SKPathFillType.Winding};
+                foreach (var artemisLed in Leds)
+                    path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
-                LayerShape?.CalculateRenderProperties();
-                OnRenderPropertiesUpdated();
-                return;
+                Path = path;
             }
-
-            var path = new SKPath {FillType = SKPathFillType.Winding};
-            foreach (var artemisLed in Leds)
-                path.AddRect(artemisLed.AbsoluteRenderRectangle);
-
-            Path = path;
 
             // This is called here so that the shape's render properties are up to date when other code
             // responds to OnRenderPropertiesUpdated
             LayerShape?.CalculateRenderProperties();
+
+            // Folder render properties are based on child paths and thus require an update
+            if (Parent is Folder folder)
+                folder.CalculateRenderProperties();
+
             OnRenderPropertiesUpdated();
         }
 
@@ -407,9 +362,39 @@ namespace Artemis.Core.Models.Profile
             return position;
         }
 
-        #endregion
 
-        #region Effect management
+        /// <summary>
+        ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
+        ///     layer translations out
+        /// </summary>
+        /// <param name="path"></param>
+        public void ExcludePathFromTranslation(SKPath path)
+        {
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition();
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+            var reversedXScale = 1f / (sizeProperty.Width / 100f);
+            var reversedYScale = 1f / (sizeProperty.Height / 100f);
+
+            if (General.FillType == LayerFillType.Stretch)
+            {
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeScale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
+            }
+            else
+            {
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
+            }
+        }
 
         #endregion
 
@@ -494,15 +479,6 @@ namespace Artemis.Core.Models.Profile
             brush.Dispose();
         }
 
-        private void DeactivateLayerEffect([NotNull] BaseLayerEffect effect)
-        {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-
-            // Remove the effect from the layer and dispose it
-            _layerEffects.Remove(effect);
-            effect.Dispose();
-        }
-
         internal void RemoveLayerBrush()
         {
             if (LayerBrush == null)
@@ -513,60 +489,21 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
         }
 
-        internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
-        {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-
-            DeactivateLayerEffect(effect);
-
-            // Clean up properties
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == effect.PluginInfo.Guid && p.Path.StartsWith(effect.PropertyRootPath));
-
-            // Update the order on the remaining effects
-            var index = 0;
-            foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
-            {
-                baseLayerEffect.Order = Order = index + 1;
-                index++;
-            }
-
-            OnLayerEffectsUpdated();
-        }
-
-        internal void AddLayerEffect([NotNull] BaseLayerEffect effect)
-        {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-            _layerEffects.Add(effect);
-            OnLayerEffectsUpdated();
-        }
-
         #endregion
 
         #region Events
 
         public event EventHandler RenderPropertiesUpdated;
-        public event EventHandler ShapePropertiesUpdated;
         public event EventHandler LayerBrushUpdated;
-        public event EventHandler LayerEffectsUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
             RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnShapePropertiesUpdated()
-        {
-            ShapePropertiesUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
         internal void OnLayerBrushUpdated()
         {
             LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void OnLayerEffectsUpdated()
-        {
-            LayerEffectsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

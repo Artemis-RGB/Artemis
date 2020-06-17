@@ -306,7 +306,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             var device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
             if (device != null)
             {
-                _rgbService.UpdateTrigger.Stop();
+                _rgbService.IsRenderPaused = true;
                 _mouseDragStatus = MouseDragStatus.Dragging;
                 // If the device is not selected, deselect others and select only this one (if shift not held)
                 if (device.SelectionStatus != SelectionStatus.Selected)
@@ -351,7 +351,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
 
             _mouseDragStatus = MouseDragStatus.None;
-            _rgbService.UpdateTrigger.Start();
+            _rgbService.IsRenderPaused = false;
         }
 
         private void UpdateSelection(Point position)

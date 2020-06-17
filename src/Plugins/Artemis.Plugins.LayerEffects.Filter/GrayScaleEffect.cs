@@ -17,7 +17,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
         {
         }
 
-        public override void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        public override void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
         {
             paint.ImageFilter = SKImageFilter.CreateColorFilter(SKColorFilter.CreateColorMatrix(new[]
             {
@@ -28,7 +28,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
             }), paint.ImageFilter);
         }
 
-        public override void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        public override void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
         {
         }
     }

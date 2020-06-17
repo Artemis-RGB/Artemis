@@ -2,6 +2,7 @@
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
+using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerEffect.Abstract
 {
@@ -39,7 +40,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         {
             Properties = Activator.CreateInstance<T>();
             Properties.LayerEffect = this;
-            Properties.InitializeProperties(layerService, Layer, PropertyRootPath);
+            Properties.InitializeProperties(layerService, ProfileElement, PropertyRootPath);
             PropertiesInitialized = true;
 
             EnableLayerEffect();

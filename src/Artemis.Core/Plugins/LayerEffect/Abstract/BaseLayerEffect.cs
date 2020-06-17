@@ -13,19 +13,14 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
         /// <summary>
-        /// Gets the unique ID of this effect
+        ///     Gets the unique ID of this effect
         /// </summary>
         public Guid EntityId { get; internal set; }
 
         /// <summary>
-        ///     Gets the layer this effect is applied to
+        ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public Layer Layer { get; internal set; }
-
-        /// <summary>
-        ///     Gets the folder this effect is applied to
-        /// </summary>
-        public Folder Folder { get; internal set; }
+        public EffectProfileElement ProfileElement { get; internal set; }
 
         /// <summary>
         ///     The name which appears in the editor
@@ -84,31 +79,78 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         /// <summary>
         ///     Called before the layer or folder will be rendered
         /// </summary>
-        public abstract void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
+        /// <param name="canvas">The canvas used to render the frame</param>
+        /// <param name="canvasInfo">Info on the canvas size and pixel type</param>
+        /// <param name="renderBounds">The bounds this layer/folder will render in</param>
+        /// <param name="paint">The paint this layer/folder will use to render</param>
+        public abstract void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint);
 
         /// <summary>
         ///     Called after the layer of folder has been rendered
         /// </summary>
-        public abstract void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
-        
+        /// <param name="canvas">The canvas used to render the frame</param>
+        /// <param name="canvasInfo">Info on the canvas size and pixel type</param>
+        /// <param name="renderBounds">The bounds this layer/folder rendered in</param>
+        /// <param name="paint">The paint this layer/folder used to render</param>
+        public abstract void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint);
+
+        /// <summary>
+        ///     Allows you to return a clip that is applied to the layer shape (or in case of a folder, all layer shapes in the
+        ///     folder).
+        ///     <para>
+        ///         To avoid breaking other effects, use this instead of applying a clip to the entire canvas if you want to limit
+        ///         where shapes may render
+        ///     </para>
+        /// </summary>
+        /// <param name="renderBounds">The bounds this layer/folder rendered in</param>
+        /// <returns></returns>
+        public virtual SKPath CreateShapeClip(SKPath renderBounds)
+        {
+            return new SKPath();
+        }
+
         internal void InternalPreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
+            var x = path.Bounds.Left;
+            var y = path.Bounds.Top;
             // Move the canvas to the top-left of the render path
-            canvas.Translate(path.Bounds.Left, path.Bounds.Top);
+            canvas.Translate(x, y);
+
             // Pass the render path to the layer effect positioned at 0,0
-            path.Transform(SKMatrix.MakeTranslation(path.Bounds.Left * -1, path.Bounds.Top * -1));
+            path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
 
             PreProcess(canvas, canvasInfo, path, paint);
+
+            // Move the canvas back
+            canvas.Translate(x * -1, y * -1);
         }
 
         internal void InternalPostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
+            var x = path.Bounds.Left;
+            var y = path.Bounds.Top;
             // Move the canvas to the top-left of the render path
-            canvas.Translate(path.Bounds.Left, path.Bounds.Top);
+            canvas.Translate(x, y);
+
             // Pass the render path to the layer effect positioned at 0,0
-            path.Transform(SKMatrix.MakeTranslation(path.Bounds.Left * -1, path.Bounds.Top * -1));
+            path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
 
             PostProcess(canvas, canvasInfo, path, paint);
+
+            // Move the canvas back
+            canvas.Translate(x * -1, y * -1);
+        }
+
+        internal virtual SKPath InternalCreateShapeClip(SKPath path)
+        {
+            var x = path.Bounds.Left;
+            var y = path.Bounds.Top;
+
+            path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
+            var shapeClip = CreateShapeClip(path);
+            if (!shapeClip.IsEmpty)
+                shapeClip.Transform(SKMatrix.MakeTranslation(x, y));
+            return shapeClip;
         }
 
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything

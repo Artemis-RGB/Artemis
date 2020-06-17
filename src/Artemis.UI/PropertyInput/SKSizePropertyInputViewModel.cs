@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties;
+﻿using System;
+using Artemis.Core.Extensions;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentValidation;
@@ -42,18 +44,18 @@ namespace Artemis.UI.PropertyInput
         public SKSizePropertyInputViewModelValidator()
         {
             RuleFor(vm => vm.Width)
-                .LessThanOrEqualTo(vm => ((SKSize) vm.LayerProperty.PropertyDescription.MaxInputValue).Width)
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue is SKSize);
+                .LessThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MaxInputValue))
+                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
             RuleFor(vm => vm.Width)
-                .GreaterThanOrEqualTo(vm => ((SKSize) vm.LayerProperty.PropertyDescription.MaxInputValue).Width)
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue is SKSize);
+                .GreaterThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MinInputValue))
+                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
 
             RuleFor(vm => vm.Height)
-                .LessThanOrEqualTo(vm => ((SKSize) vm.LayerProperty.PropertyDescription.MaxInputValue).Height)
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue is SKSize);
+                .LessThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MaxInputValue))
+                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue.IsNumber());
             RuleFor(vm => vm.Height)
-                .GreaterThanOrEqualTo(vm => ((SKSize) vm.LayerProperty.PropertyDescription.MaxInputValue).Height)
-                .When(vm => vm.LayerProperty.PropertyDescription.MaxInputValue is SKSize);
+                .GreaterThanOrEqualTo(vm => Convert.ToSingle(vm.LayerProperty.PropertyDescription.MinInputValue))
+                .When(vm => vm.LayerProperty.PropertyDescription.MinInputValue.IsNumber());
         }
     }
 }

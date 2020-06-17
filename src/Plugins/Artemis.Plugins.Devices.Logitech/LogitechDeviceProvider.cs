@@ -43,11 +43,11 @@ namespace Artemis.Plugins.Devices.Logitech
             {
                 try
                 {
-                    _logger.Debug("Found Logitech device {name} with PID {pid}", hidDevice.GetFriendlyName(), hidDevice.ProductID);
+                    _logger.Debug("Found Logitech device {name} with PID 0x{pid}", hidDevice.GetFriendlyName(), hidDevice.ProductID.ToString("X"));
                 }
                 catch (Exception)
                 {
-                    _logger.Debug("Found Logitech device with PID {pid}", hidDevice.ProductID);
+                    _logger.Debug("Found Logitech device with PID 0x{pid}", hidDevice.ProductID.ToString("X"));
                 }
             }
         }

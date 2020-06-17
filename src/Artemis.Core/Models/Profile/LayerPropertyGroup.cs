@@ -29,9 +29,9 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
-        ///     The layer this property group applies to
+        ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public Layer Layer { get; internal set; }
+        public PropertiesProfileElement ProfileElement { get; internal set; }
 
         /// <summary>
         ///     The path of this property group
@@ -129,7 +129,7 @@ namespace Artemis.Core.Models.Profile
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void InitializeProperties(ILayerService layerService, Layer layer, [NotNull] string path)
+        internal void InitializeProperties(ILayerService layerService, PropertiesProfileElement profileElement, [NotNull] string path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -137,7 +137,7 @@ namespace Artemis.Core.Models.Profile
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
-            Layer = layer;
+            ProfileElement = profileElement;
             Path = path.TrimEnd('.');
 
             // Get all properties with a PropertyDescriptionAttribute
@@ -153,10 +153,10 @@ namespace Artemis.Core.Models.Profile
                     if (instance == null)
                         throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
 
-                    instance.Layer = layer;
+                    instance.ProfileElement = profileElement;
                     instance.Parent = this;
                     instance.PropertyDescription = (PropertyDescriptionAttribute) propertyDescription;
-                    InitializeProperty(layer, path + propertyInfo.Name, instance);
+                    InitializeProperty(profileElement, path + propertyInfo.Name, instance);
 
                     propertyInfo.SetValue(this, instance);
                     _layerProperties.Add(instance);
@@ -177,7 +177,7 @@ namespace Artemis.Core.Models.Profile
                         instance.GroupDescription = (PropertyGroupDescriptionAttribute) propertyGroupDescription;
                         instance.LayerBrush = LayerBrush;
                         instance.LayerEffect = LayerEffect;
-                        instance.InitializeProperties(layerService, layer, $"{path}{propertyInfo.Name}.");
+                        instance.InitializeProperties(layerService, profileElement, $"{path}{propertyInfo.Name}.");
 
                         propertyInfo.SetValue(this, instance);
                         _layerPropertyGroups.Add(instance);
@@ -236,7 +236,7 @@ namespace Artemis.Core.Models.Profile
             OnPropertyGroupOverriding(new PropertyGroupUpdatingEventArgs(overrideTime));
         }
 
-        private void InitializeProperty(Layer layer, string path, BaseLayerProperty instance)
+        private void InitializeProperty(PropertiesProfileElement profileElement, string path, BaseLayerProperty instance)
         {
             Guid pluginGuid;
             if (IsCorePropertyGroup || instance.IsCoreProperty)
@@ -246,13 +246,13 @@ namespace Artemis.Core.Models.Profile
             else
                 pluginGuid = instance.Parent.LayerEffect.PluginInfo.Guid;
 
-            var entity = layer.LayerEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
+            var entity = profileElement.PropertiesEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
             var fromStorage = true;
             if (entity == null)
             {
                 fromStorage = false;
                 entity = new PropertyEntity {PluginGuid = pluginGuid, Path = path};
-                layer.LayerEntity.PropertyEntities.Add(entity);
+                profileElement.PropertiesEntity.PropertyEntities.Add(entity);
             }
 
             instance.ApplyToLayerProperty(entity, this, fromStorage);
