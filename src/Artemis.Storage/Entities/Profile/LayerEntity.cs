@@ -4,13 +4,13 @@ using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
 {
-    public class LayerEntity
+    public class LayerEntity : EffectsEntity
     {
         public LayerEntity()
         {
             Leds = new List<LedEntity>();
             PropertyEntities = new List<PropertyEntity>();
-            Condition = new List<ProfileConditionEntity>();
+            Conditions = new List<ProfileConditionEntity>();
             LayerEffects = new List<LayerEffectEntity>();
             ExpandedPropertyGroups = new List<string>();
         }
@@ -22,11 +22,7 @@ namespace Artemis.Storage.Entities.Profile
         public string Name { get; set; }
 
         public List<LedEntity> Leds { get; set; }
-        public List<PropertyEntity> PropertyEntities { get; set; }
-        public List<ProfileConditionEntity> Condition { get; set; }
-        public List<LayerEffectEntity> LayerEffects { get; set; }
-        public List<string> ExpandedPropertyGroups { get; set; }
-
+       
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
 

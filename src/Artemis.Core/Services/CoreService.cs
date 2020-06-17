@@ -48,8 +48,7 @@ namespace Artemis.Core.Services
             _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
-
-
+            
             ConfigureJsonConvert();
         }
 
@@ -113,6 +112,9 @@ namespace Artemis.Core.Services
 
         private void SurfaceOnUpdating(UpdatingEventArgs args)
         {
+            if (_rgbService.IsRenderPaused)
+                return;
+
             try
             {
                 if (!ModuleUpdatingDisabled && _modules != null)
@@ -159,6 +161,9 @@ namespace Artemis.Core.Services
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)
         {
+            if (_rgbService.IsRenderPaused)
+                return;
+
             OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush, _rgbService.Surface));
         }
 

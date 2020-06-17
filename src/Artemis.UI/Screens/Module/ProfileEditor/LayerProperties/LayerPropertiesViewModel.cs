@@ -37,6 +37,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             CoreService = coreService;
             SettingsService = settingsService;
 
+            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
             PropertyChanged += HandlePropertyTreeIndexChanged;
         }
@@ -57,17 +58,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public int PropertyTreeIndex { get; set; }
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
-        public Layer SelectedLayer { get; set; }
-        public Folder SelectedFolder { get; set; }
+
+        public PropertiesProfileElement SelectedPropertiesElement { get; set; }
+        public Layer SelectedLayer => SelectedPropertiesElement as Layer;
+        public Folder SelectedFolder => SelectedPropertiesElement as Folder;
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
         public TreeViewModel TreeViewModel { get; set; }
         public EffectsViewModel EffectsViewModel { get; set; }
         public TimelineViewModel TimelineViewModel { get; set; }
-        
+
         protected override void OnInitialActivate()
         {
-            PopulateProperties(ProfileEditorService.SelectedProfileElement);
+            if (ProfileEditorService.SelectedProfileElement is PropertiesProfileElement propertiesElement)
+                PopulateProperties(propertiesElement);
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
@@ -99,8 +103,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
         {
-            PopulateProperties(e.ProfileElement);
+            PopulateProperties(e.ProfileElement as PropertiesProfileElement);
         }
+
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
         {
@@ -122,51 +127,45 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             return groups;
         }
 
-        private void PopulateProperties(ProfileElement profileElement)
+        private void PopulateProperties(PropertiesProfileElement profileElement)
         {
-            if (SelectedFolder != null) SelectedFolder = null;
-
+            if (SelectedPropertiesElement != null && SelectedPropertiesElement is EffectProfileElement effectElement)
+                effectElement.LayerEffectsUpdated -= SelectedElementOnLayerEffectsUpdated;
             if (SelectedLayer != null)
-            {
                 SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
-                SelectedLayer.LayerEffectsUpdated -= SelectedLayerOnLayerEffectsUpdated;
-                SelectedLayer = null;
-            }
 
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.Dispose();
             LayerPropertyGroups.Clear();
             _brushPropertyGroup = null;
 
-            if (profileElement is Folder folder)
-                SelectedFolder = folder;
-            else if (profileElement is Layer layer)
+            SelectedPropertiesElement = profileElement;
+            if (SelectedPropertiesElement is EffectProfileElement newEffectElement)
+                newEffectElement.LayerEffectsUpdated += SelectedElementOnLayerEffectsUpdated;
+
+            // Apply layer properties
+            if (SelectedLayer != null)
             {
-                SelectedLayer = layer;
                 SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
-                SelectedLayer.LayerEffectsUpdated += SelectedLayerOnLayerEffectsUpdated;
 
                 // Add the built-in root groups of the layer
                 var generalAttribute = Attribute.GetCustomAttribute(
-                    layer.GetType().GetProperty(nameof(layer.General)),
+                    SelectedLayer.GetType().GetProperty(nameof(SelectedLayer.General)),
                     typeof(PropertyGroupDescriptionAttribute)
                 );
                 var transformAttribute = Attribute.GetCustomAttribute(
-                    layer.GetType().GetProperty(nameof(layer.Transform)),
+                    SelectedLayer.GetType().GetProperty(nameof(SelectedLayer.Transform)),
                     typeof(PropertyGroupDescriptionAttribute)
                 );
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
+                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
+                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
             }
-            else
-                SelectedLayer = null;
 
             TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
-            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
             TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
 
             ApplyLayerBrush();
-            ApplyLayerEffects();
+            ApplyEffects();
         }
 
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
@@ -174,9 +173,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             ApplyLayerBrush();
         }
 
-        private void SelectedLayerOnLayerEffectsUpdated(object sender, EventArgs e)
+        private void SelectedElementOnLayerEffectsUpdated(object sender, EventArgs e)
         {
-            ApplyLayerEffects();
+            ApplyEffects();
         }
 
         public void ApplyLayerBrush()
@@ -214,18 +213,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             TimelineViewModel.UpdateKeyframes();
         }
 
-        private void ApplyLayerEffects()
+        private void ApplyEffects()
         {
-            if (SelectedLayer == null)
+            EffectProfileElement effectElement;
+            if (SelectedLayer != null)
+                effectElement = SelectedLayer;
+            else if (SelectedFolder != null)
+                effectElement = SelectedFolder;
+            else
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedLayer.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
+            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !effectElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
             LayerPropertyGroups.RemoveRange(toRemove);
             foreach (var layerPropertyGroupViewModel in toRemove)
                 layerPropertyGroupViewModel.Dispose();
 
-            foreach (var layerEffect in SelectedLayer.LayerEffects)
+            foreach (var layerEffect in effectElement.LayerEffects)
             {
                 if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect))
                     continue;
@@ -250,7 +254,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             var nonEffectProperties = LayerPropertyGroups.Where(l => l.GroupType != LayerEffectRoot).ToList();
             // Order the effects
             var effectProperties = LayerPropertyGroups.Where(l => l.GroupType == LayerEffectRoot).OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order).ToList();
-
+            
             // Put the non-effect properties in front
             for (var index = 0; index < nonEffectProperties.Count; index++)
             {

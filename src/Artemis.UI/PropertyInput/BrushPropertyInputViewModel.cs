@@ -52,8 +52,11 @@ namespace Artemis.UI.PropertyInput
 
         protected override void OnInputValueApplied()
         {
-            _layerService.RemoveLayerBrush(LayerProperty.Layer);
-            _layerService.InstantiateLayerBrush(LayerProperty.Layer);
+            if (LayerProperty.ProfileElement is Layer layer)
+            {
+                _layerService.RemoveLayerBrush(layer);
+                _layerService.InstantiateLayerBrush(layer);
+            }
         }
 
         private void SetBrushByDescriptor(LayerBrushDescriptor value)

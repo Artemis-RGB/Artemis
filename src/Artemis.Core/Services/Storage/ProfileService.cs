@@ -94,6 +94,7 @@ namespace Artemis.Core.Services.Storage
             {
                 InitializeLayerProperties(profile);
                 InstantiateLayers(profile);
+                InstantiateFolders(profile);
             }
         }
 
@@ -173,9 +174,16 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
+        private void InstantiateFolders(Profile profile)
+        {
+            foreach (var folder in profile.GetAllFolders())
+            {
+                _layerService.InstantiateLayerEffects(folder);
+            }
+        }
+
         private void InstantiateLayers(Profile profile)
         {
-            // Only instantiate brushes for layers without an existing brush/effect instance
             foreach (var layer in profile.GetAllLayers())
             {
                 _layerService.InstantiateLayerBrush(layer);
@@ -190,11 +198,14 @@ namespace Artemis.Core.Services.Storage
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
 
-        private void ActiveProfilesInstantiateProfileLayerBrushes()
+        private void ActiveProfilesInstantiatePlugins()
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
+            {
                 InstantiateLayers(profileModule.ActiveProfile);
+                InstantiateFolders(profileModule.ActiveProfile);
+            }
         }
 
         #region Event handlers
@@ -213,7 +224,7 @@ namespace Artemis.Core.Services.Storage
         private void OnPluginLoaded(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is LayerBrushProvider)
-                ActiveProfilesInstantiateProfileLayerBrushes();
+                ActiveProfilesInstantiatePlugins();
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {
                 var activeProfile = GetActiveProfile(profileModule);

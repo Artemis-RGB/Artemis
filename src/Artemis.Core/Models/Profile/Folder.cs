@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
@@ -8,10 +7,8 @@ using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
-    public sealed class Folder : ProfileElement
+    public sealed class Folder : EffectProfileElement
     {
-        private readonly List<BaseLayerEffect> _layerEffects;
-
         public Folder(Profile profile, ProfileElement parent, string name)
         {
             FolderEntity = new FolderEntity();
@@ -20,19 +17,25 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+
             _layerEffects = new List<BaseLayerEffect>();
+            _expandedPropertyGroups = new List<string>();
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
         {
             FolderEntity = folderEntity;
+
             EntityId = folderEntity.Id;
 
             Profile = profile;
             Parent = parent;
             Name = folderEntity.Name;
             Order = folderEntity.Order;
+
             _layerEffects = new List<BaseLayerEffect>();
+            _expandedPropertyGroups = new List<string>();
+            _expandedPropertyGroups.AddRange(folderEntity.ExpandedPropertyGroups);
 
             // TODO: Load conditions
 
@@ -50,14 +53,14 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal FolderEntity FolderEntity { get; set; }
-
-        /// <summary>
-        ///     Gets a read-only collection of the layer effects on this layer
-        /// </summary>
-        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
+        internal override PropertiesEntity PropertiesEntity => FolderEntity;
+        internal override EffectsEntity EffectsEntity => FolderEntity;
 
         public override void Update(double deltaTime)
         {
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Update(deltaTime);
+
             // Iterate the children in reverse because that's how they must be rendered too
             for (var index = Children.Count - 1; index > -1; index--)
             {
@@ -66,14 +69,32 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
+            canvas.Save();
+            canvas.ClipPath(Path);
+
+            // Clone the paint so that any changes are confined to the current group
+            var groupPaint = paint.Clone();
+
+            // Pre-processing only affects other pre-processors and the brushes
+            canvas.Save();
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalPreProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
+
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
             for (var index = Children.Count - 1; index > -1; index--)
             {
                 var profileElement = Children[index];
-                profileElement.Render(deltaTime, canvas, canvasInfo);
+                profileElement.Render(deltaTime, canvas, canvasInfo, groupPaint);
             }
+
+            // Restore the canvas as to not be affected by pre-processors
+            canvas.Restore();
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalPostProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
+
+            canvas.Restore();
         }
 
         public Folder AddFolder(string name)
@@ -88,6 +109,24 @@ namespace Artemis.Core.Models.Profile
             return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
+        public void CalculateRenderProperties()
+        {
+            var path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (var child in Children)
+            {
+                if (child is EffectProfileElement effectChild && effectChild.Path != null)
+                    path.AddPath(effectChild.Path);
+            }
+
+            Path = path;
+
+            // Folder render properties are based on child paths and thus require an update
+            if (Parent is Folder folder)
+                folder.CalculateRenderProperties();
+
+            OnRenderPropertiesUpdated();
+        }
+
         internal override void ApplyToEntity()
         {
             FolderEntity.Id = EntityId;
@@ -98,7 +137,20 @@ namespace Artemis.Core.Models.Profile
 
             FolderEntity.ProfileId = Profile.EntityId;
 
+            ApplyLayerEffectsToEntity();
+
             // TODO: conditions
         }
+
+        #region Events
+
+        public event EventHandler RenderPropertiesUpdated;
+
+        private void OnRenderPropertiesUpdated()
+        {
+            RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

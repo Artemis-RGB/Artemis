@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Services.Interfaces;
@@ -42,13 +43,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
 
         private void HandleSelectedLayerEffectChanged(object sender, PropertyChangedEventArgs e)
         {
+            EffectProfileElement effectElement;
+            if (LayerPropertiesViewModel.SelectedLayer != null)
+                effectElement = LayerPropertiesViewModel.SelectedLayer;
+            else if (LayerPropertiesViewModel.SelectedFolder != null)
+                effectElement = LayerPropertiesViewModel.SelectedFolder;
+            else
+                return;
+
             if (e.PropertyName == nameof(SelectedLayerEffectDescriptor) && SelectedLayerEffectDescriptor != null)
             {
-                // Jump off the UI thread and let the fancy animation run
-                Task.Run(async () =>
+                // Let the fancy animation run
+                Execute.PostToUIThread(async () =>
                 {
                     await Task.Delay(500);
-                    return _layerService.AddLayerEffect(LayerPropertiesViewModel.SelectedLayer, SelectedLayerEffectDescriptor);
+                    _layerService.AddLayerEffect(effectElement, SelectedLayerEffectDescriptor);
                 });
             }
         }

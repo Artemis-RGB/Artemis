@@ -24,7 +24,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         [PropertyDescription(Description = "The scale of the noise", MinInputValue = 0f, InputAffix = "%")]
         public SKSizeLayerProperty Scale { get; set; }
 
-        [PropertyDescription(Description = "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", MinInputValue = 0f, MaxInputValue = 2048f)]
+        [PropertyDescription(Description = "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 400)]
         public FloatLayerProperty Hardness { get; set; }
 
         [PropertyDescription(Description = "The speed at which the noise moves vertically and horizontally", MinInputValue = -64f, MaxInputValue = 64f)]
@@ -39,7 +39,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             SecondaryColor.DefaultValue = new SKColor(0, 0, 255);
             GradientColor.DefaultValue = ColorGradient.GetUnicornBarf();
             Scale.DefaultValue = new SKSize(100, 100);
-            Hardness.DefaultValue = 500f;
+            Hardness.DefaultValue = 100f;
             AnimationSpeed.DefaultValue = 25f;
         }
 

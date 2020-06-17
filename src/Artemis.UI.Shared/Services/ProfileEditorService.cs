@@ -98,6 +98,11 @@ namespace Artemis.UI.Shared.Services
                 return;
 
             var delta = CurrentTime - _lastUpdateTime;
+            foreach (var folder in SelectedProfile.GetAllFolders())
+            {
+                foreach (var baseLayerEffect in folder.LayerEffects)
+                    baseLayerEffect.Update(delta.TotalSeconds);
+            }
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
                 layer.OverrideProgress(CurrentTime);

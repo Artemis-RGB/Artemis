@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.LayerBrushes.Noise.Utilities;
@@ -61,11 +62,11 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            var mainColor = Properties.MainColor?.CurrentValue;
-            var gradientColor = Properties.GradientColor?.CurrentValue;
+            var mainColor = Properties.MainColor.CurrentValue;
+            var secondColor = Properties.SecondaryColor.CurrentValue;
+            var gradientColor = Properties.GradientColor.CurrentValue;
             var scale = Properties.Scale.CurrentValue;
-            var opacity = mainColor != null ? (float) Math.Round(mainColor.Value.Alpha / 255.0, 2, MidpointRounding.AwayFromZero) : 0;
-            var hardness = 127 + Properties.Hardness.CurrentValue;
+            var hardness = Properties.Hardness.CurrentValue / 100f;
 
             // Scale down the render path to avoid computing a value for every pixel
             var width = (int) Math.Floor(path.Bounds.Width * _renderScale);
@@ -83,35 +84,31 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                     if (double.IsInfinity(evalX) || double.IsNaN(evalX) || double.IsNaN(evalY) || double.IsInfinity(evalY))
                         continue;
 
-                    var v = _noise.Evaluate(evalX, evalY, _z);
-                    var alpha = (byte) Math.Max(0, Math.Min(255, v * hardness));
-                    if (Properties.ColorType.BaseValue == ColorMappingType.Simple && mainColor != null)
-                        _bitmap.SetPixel(x, y, new SKColor(mainColor.Value.Red, mainColor.Value.Green, mainColor.Value.Blue, (byte) (alpha * opacity)));
+                    var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
+                    var amount = Math.Max(0f, Math.Min(1f, v));
+                    if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
+                        _bitmap.SetPixel(x, y, mainColor.Interpolate(secondColor, amount));
                     else if (gradientColor != null && _colorMap.Length == 101)
                     {
-                        var color = _colorMap[(int) Math.Round(alpha / 255f * 100, MidpointRounding.AwayFromZero)];
+                        var color = _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
                         _bitmap.SetPixel(x, y, color);
                     }
                 }
             }
-
 
             var bitmapTransform = SKMatrix.Concat(
                 SKMatrix.MakeTranslation(path.Bounds.Left, path.Bounds.Top),
                 SKMatrix.MakeScale(1f / _renderScale, 1f / _renderScale)
             );
 
-            canvas.ClipPath(path);
             if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
             {
-                using var backgroundShader = SKShader.CreateColor(Properties.SecondaryColor.CurrentValue);
-                paint.Shader = backgroundShader;
-                canvas.DrawRect(path.Bounds, paint);
+                paint.Color = Properties.SecondaryColor.CurrentValue;
             }
 
             using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
             paint.Shader = foregroundShader;
-            canvas.DrawRect(path.Bounds, paint);
+            canvas.DrawPath(path, paint);
         }
 
         private void GradientColorChanged(object sender, PropertyChangedEventArgs e)

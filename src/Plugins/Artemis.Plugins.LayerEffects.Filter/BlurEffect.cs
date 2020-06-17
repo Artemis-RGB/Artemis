@@ -37,13 +37,13 @@ namespace Artemis.Plugins.LayerEffects.Filter
             }
         }
 
-        public override void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        public override void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
         {
             if (_imageFilter != null)
                 paint.ImageFilter = SKImageFilter.CreateMerge(paint.ImageFilter, _imageFilter);
         }
 
-        public override void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        public override void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
         {
         }
 

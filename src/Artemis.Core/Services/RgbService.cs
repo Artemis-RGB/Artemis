@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.RGB.NET;
@@ -47,6 +48,7 @@ namespace Artemis.Core.Services
         public BitmapBrush BitmapBrush { get; private set; }
         public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
         public double RenderScale => _renderScaleSetting.Value;
+        public bool IsRenderPaused { get; set; }
 
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
