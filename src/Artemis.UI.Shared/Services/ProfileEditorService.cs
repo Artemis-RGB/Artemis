@@ -71,9 +71,9 @@ namespace Artemis.UI.Shared.Services
             OnSelectedProfileChanged(profileElementEvent);
         }
 
-        public void UpdateSelectedProfile(bool includeChildren)
+        public void UpdateSelectedProfile()
         {
-            _profileService.UpdateProfile(SelectedProfile, includeChildren);
+            _profileService.UpdateProfile(SelectedProfile, true);
             UpdateProfilePreview();
             OnSelectedProfileElementUpdated(new ProfileElementEventArgs(SelectedProfile));
         }

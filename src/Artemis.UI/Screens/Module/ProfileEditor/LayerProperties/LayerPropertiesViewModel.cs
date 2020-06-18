@@ -310,7 +310,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 MoveAfter(source, target);
 
             ApplyCurrentEffectsOrder();
-            ProfileEditorService.UpdateSelectedProfile(true);
+            ProfileEditorService.UpdateSelectedProfile();
         }
 
         private void MoveBefore(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)

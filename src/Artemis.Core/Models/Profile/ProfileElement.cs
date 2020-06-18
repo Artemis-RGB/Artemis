@@ -36,6 +36,11 @@ namespace Artemis.Core.Models.Profile
         public string Name { get; set; }
 
         /// <summary>
+        ///     Gets or sets the enabled state, if not enabled the element is skipped in render and update
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
         ///     Updates the element
         /// </summary>
         /// <param name="deltaTime"></param>
@@ -79,7 +84,7 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         /// <param name="child">The profile element to add</param>
         /// <param name="order">The order where to place the child (1-based), defaults to the end of the collection</param>
-        public void AddChild(ProfileElement child, int? order = null)
+        public virtual void AddChild(ProfileElement child, int? order = null)
         {
             lock (_children)
             {
@@ -88,23 +93,25 @@ namespace Artemis.Core.Models.Profile
                 {
                     _children.Add(child);
                     child.Order = _children.Count;
-                    return;
+                }
+                // Shift everything after the given order
+                else
+                {
+                    foreach (var profileElement in _children.Where(c => c.Order >= order).ToList())
+                        profileElement.Order++;
+
+                    int targetIndex;
+                    if (order == 0)
+                        targetIndex = 0;
+                    else if (order > _children.Count)
+                        targetIndex = _children.Count;
+                    else
+                        targetIndex = _children.FindIndex(c => c.Order == order + 1);
+
+                    _children.Insert(targetIndex, child);
+                    child.Order = order.Value;
                 }
 
-                // Shift everything after the given order
-                foreach (var profileElement in _children.Where(c => c.Order >= order).ToList())
-                    profileElement.Order++;
-
-                int targetIndex;
-                if (order == 0)
-                    targetIndex = 0;
-                else if (order > _children.Count)
-                    targetIndex = _children.Count;
-                else
-                    targetIndex = _children.FindIndex(c => c.Order == order + 1);
-
-                _children.Insert(targetIndex, child);
-                child.Order = order.Value;
                 child.Parent = this;
             }
         }
@@ -113,7 +120,7 @@ namespace Artemis.Core.Models.Profile
         ///     Removes a profile element from the <see cref="Children" /> collection
         /// </summary>
         /// <param name="child">The profile element to remove</param>
-        public void RemoveChild(ProfileElement child)
+        public virtual void RemoveChild(ProfileElement child)
         {
             lock (_children)
             {

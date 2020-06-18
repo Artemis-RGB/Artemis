@@ -11,7 +11,7 @@
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Resources/Images/Logo/logo-512.png"
-                    Title="Artemis"
+                    Title="{Binding WindowTitle}"
                     TitleBarIcon="{StaticResource BowIcon}"
                     Foreground="{DynamicResource MaterialDesignBody}"
                     Background="{DynamicResource MaterialDesignPaper}"

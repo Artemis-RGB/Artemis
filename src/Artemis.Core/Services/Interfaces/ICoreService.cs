@@ -11,6 +11,11 @@ namespace Artemis.Core.Services.Interfaces
         bool IsInitialized { get; }
 
         /// <summary>
+        ///     The time the last frame took to render
+        /// </summary>
+        TimeSpan FrameTime { get; }
+
+        /// <summary>
         ///     Gets or sets whether modules are updated each frame by calling their Update method
         /// </summary>
         bool ModuleUpdatingDisabled { get; set; }

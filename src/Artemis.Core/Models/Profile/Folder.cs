@@ -17,6 +17,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+            Enabled = true;
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -31,6 +32,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = folderEntity.Name;
+            Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
 
             _layerEffects = new List<BaseLayerEffect>();
@@ -58,7 +60,10 @@ namespace Artemis.Core.Models.Profile
 
         public override void Update(double deltaTime)
         {
-            foreach (var baseLayerEffect in LayerEffects)
+            if (!Enabled)
+                return;
+
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.Update(deltaTime);
 
             // Iterate the children in reverse because that's how they must be rendered too
@@ -71,6 +76,12 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
+            if (!Enabled)
+                return;
+
+            if (Path == null)
+                return;
+
             canvas.Save();
             canvas.ClipPath(Path);
 
@@ -79,7 +90,7 @@ namespace Artemis.Core.Models.Profile
 
             // Pre-processing only affects other pre-processors and the brushes
             canvas.Save();
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.InternalPreProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
 
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
@@ -91,17 +102,36 @@ namespace Artemis.Core.Models.Profile
 
             // Restore the canvas as to not be affected by pre-processors
             canvas.Restore();
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.InternalPostProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
 
             canvas.Restore();
         }
 
+        /// <summary>
+        ///     Adds a new folder to the bottom of this folder
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Folder AddFolder(string name)
         {
             var folder = new Folder(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
             AddChild(folder);
             return folder;
+        }
+
+        /// <inheritdoc />
+        public override void AddChild(ProfileElement child, int? order = null)
+        {
+            base.AddChild(child, order);
+            CalculateRenderProperties();
+        }
+
+        /// <inheritdoc />
+        public override void RemoveChild(ProfileElement child)
+        {
+            base.RemoveChild(child);
+            CalculateRenderProperties();
         }
 
         public override string ToString()
@@ -134,6 +164,7 @@ namespace Artemis.Core.Models.Profile
 
             FolderEntity.Order = Order;
             FolderEntity.Name = Name;
+            FolderEntity.Enabled = Enabled;
 
             FolderEntity.ProfileId = Profile.EntityId;
 
@@ -152,5 +183,12 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+
+        internal void Deactivate()
+        {
+            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
+            foreach (var baseLayerEffect in layerEffects)
+                DeactivateLayerEffect(baseLayerEffect);
+        }
     }
 }

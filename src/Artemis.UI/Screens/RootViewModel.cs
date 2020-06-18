@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
@@ -15,16 +18,21 @@ namespace Artemis.UI.Screens
 {
     public class RootViewModel : Conductor<IScreen>
     {
-        private readonly IEventAggregator _eventAggregator;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
-        private bool _lostFocus;
+        private readonly ICoreService _coreService;
+        private readonly IEventAggregator _eventAggregator;
         private readonly ThemeWatcher _themeWatcher;
+        private bool _lostFocus;
+        private readonly Timer _titleUpdateTimer;
 
-        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService)
+        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService)
         {
             SidebarViewModel = sidebarViewModel;
             _eventAggregator = eventAggregator;
+            _coreService = coreService;
 
+            _titleUpdateTimer = new Timer(500);
+            _titleUpdateTimer.Elapsed += (sender, args) => UpdateWindowTitle();
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _colorScheme.SettingChanged += (sender, args) => ApplyColorSchemeSetting();
             _themeWatcher = new ThemeWatcher();
@@ -39,6 +47,8 @@ namespace Artemis.UI.Screens
         public SidebarViewModel SidebarViewModel { get; }
         public bool IsSidebarVisible { get; set; }
         public bool ActiveItemReady { get; set; }
+
+        public string WindowTitle { get; set; }
 
         public void WindowDeactivated()
         {
@@ -67,6 +77,26 @@ namespace Artemis.UI.Screens
         public void WindowKeyUp(object sender, KeyEventArgs e)
         {
             _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
+        }
+
+        protected override void OnActivate()
+        {
+            UpdateWindowTitle();
+            _titleUpdateTimer.Start();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _titleUpdateTimer.Stop();
+        }
+
+        private void UpdateWindowTitle()
+        {
+            var versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (versionAttribute != null)
+                WindowTitle = $"Artemis {versionAttribute.InformationalVersion} - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
+            else
+                WindowTitle = $"Artemis - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
         }
 
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)

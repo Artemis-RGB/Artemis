@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
@@ -37,7 +38,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement = profileElement;
 
             Children = new BindableCollection<TreeItemViewModel>();
+            ProfileElement.PropertyChanged += HandleProfileElementEnabledChanged;
             UpdateProfileElements();
+        }
+
+        private void HandleProfileElementEnabledChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ProfileElement.Enabled))
+                _profileEditorService.UpdateSelectedProfile();
         }
 
         public TreeItemViewModel Parent { get; set; }
@@ -113,7 +121,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             ProfileElement.AddChild(new Folder(ProfileElement.Profile, ProfileElement, "New folder"));
             UpdateProfileElements();
-            _profileEditorService.UpdateSelectedProfile(true);
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         public void AddLayer()
@@ -123,7 +131,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 
             _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
             UpdateProfileElements();
-            _profileEditorService.UpdateSelectedProfile(true);
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -139,7 +147,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (result is string newName)
             {
                 ProfileElement.Name = newName;
-                _profileEditorService.UpdateSelectedProfile(true);
+                _profileEditorService.UpdateSelectedProfile();
             }
         }
 
@@ -160,7 +168,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             parent.RemoveExistingElement(this);
             parent.UpdateProfileElements();
 
-            _profileEditorService.UpdateSelectedProfile(true);
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         public void UpdateProfileElements()

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
@@ -37,14 +38,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
             {
                 LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name = newName;
                 LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
-                _profileEditorService.UpdateSelectedProfile(true);
+                _profileEditorService.UpdateSelectedProfile();
             }
         }
 
         public void DeleteEffect()
         {
             _layerService.RemoveLayerEffect(LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect);
-            _profileEditorService.UpdateSelectedProfile(true);
+            _profileEditorService.UpdateSelectedProfile();
+        }
+
+        public void EnableToggled()
+        {
+            _profileEditorService.UpdateSelectedProfile();
         }
     }
 }

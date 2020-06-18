@@ -21,7 +21,7 @@ namespace Artemis.Core.Models.Profile
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            AddChild(new Folder(this, null, "Root folder"));
+            AddChild(new Folder(this, this, "Root folder"));
             ApplyToEntity();
         }
 
@@ -80,13 +80,18 @@ namespace Artemis.Core.Models.Profile
 
             lock (_children)
             {
+                foreach (var folder in GetAllFolders())
+                    folder.Deactivate();
+                foreach (var layer in GetAllLayers())
+                    layer.Deactivate();
+
                 _children.Clear();
                 // Populate the profile starting at the root, the rest is populated recursively
-                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == new Guid());
+                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
-                    AddChild(new Folder(this, null, "Root folder"));
+                    AddChild(new Folder(this, this, "Root folder"));
                 else
-                    AddChild(new Folder(this, null, rootFolder));
+                    AddChild(new Folder(this, this, rootFolder));
             }
         }
 
@@ -132,6 +137,8 @@ namespace Artemis.Core.Models.Profile
                 if (!IsActivated)
                     return;
 
+                foreach (var folder in GetAllFolders()) 
+                    folder.Deactivate();
                 foreach (var layer in GetAllLayers())
                     layer.Deactivate();
 
