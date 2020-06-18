@@ -9,6 +9,8 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Folder : EffectProfileElement
     {
+        private SKBitmap _folderBitmap;
+
         public Folder(Profile profile, ProfileElement parent, string name)
         {
             FolderEntity = new FolderEntity();
@@ -74,7 +76,7 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             if (!Enabled)
                 return;
@@ -82,28 +84,44 @@ namespace Artemis.Core.Models.Profile
             if (Path == null)
                 return;
 
-            canvas.Save();
-            canvas.ClipPath(Path);
+            if (_folderBitmap == null)
+                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
+            {
+                _folderBitmap.Dispose();
+                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            }
 
-            // Clone the paint so that any changes are confined to the current group
-            var groupPaint = paint.Clone();
+            using var folderCanvas = new SKCanvas(_folderBitmap);
+            using var folderPaint = new SKPaint();
+            folderCanvas.Clear();
 
-            // Pre-processing only affects other pre-processors and the brushes
-            canvas.Save();
+            var folderPath = new SKPath(Path);
+            folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.InternalPreProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
+                baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
 
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
             for (var index = Children.Count - 1; index > -1; index--)
             {
                 var profileElement = Children[index];
-                profileElement.Render(deltaTime, canvas, canvasInfo, groupPaint);
+                profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
             }
 
-            // Restore the canvas as to not be affected by pre-processors
-            canvas.Restore();
+            var targetLocation = Path.Bounds.Location;
+            if (Parent is Folder parentFolder)
+                targetLocation -= parentFolder.Path.Bounds.Location;
+
+            canvas.Save();
+
+            var clipPath = new SKPath(folderPath);
+            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
+            canvas.ClipPath(clipPath);
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.InternalPostProcess(canvas, canvasInfo, new SKPath(Path), groupPaint);
+                baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
+            canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
 
             canvas.Restore();
         }
@@ -186,6 +204,9 @@ namespace Artemis.Core.Models.Profile
 
         internal void Deactivate()
         {
+            _folderBitmap?.Dispose();
+            _folderBitmap = null;
+
             var layerEffects = new List<BaseLayerEffect>(LayerEffects);
             foreach (var baseLayerEffect in layerEffects)
                 DeactivateLayerEffect(baseLayerEffect);
