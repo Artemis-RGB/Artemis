@@ -78,12 +78,9 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (!Enabled)
+            if (!Enabled || Path == null || !Children.Any(c => c.Enabled))
                 return;
-
-            if (Path == null)
-                return;
-
+            
             if (_folderBitmap == null)
                 _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
