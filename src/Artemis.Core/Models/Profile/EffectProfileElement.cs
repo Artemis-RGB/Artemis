@@ -5,21 +5,39 @@ using System.Linq;
 using Artemis.Core.Annotations;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
-using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
     public abstract class EffectProfileElement : PropertiesProfileElement
     {
+        protected List<BaseLayerEffect> _layerEffects;
         internal abstract EffectsEntity EffectsEntity { get; }
 
-        protected List<BaseLayerEffect> _layerEffects;
-        
         /// <summary>
         ///     Gets a read-only collection of the layer effects on this entity
         /// </summary>
         public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
-        
+
+        protected void ApplyLayerEffectsToEntity()
+        {
+            EffectsEntity.LayerEffects.Clear();
+            foreach (var layerEffect in LayerEffects)
+            {
+                var layerEffectEntity = new LayerEffectEntity
+                {
+                    Id = layerEffect.EntityId,
+                    PluginGuid = layerEffect.PluginInfo.Guid,
+                    EffectType = layerEffect.GetType().Name,
+                    Name = layerEffect.Name,
+                    Enabled = layerEffect.Enabled,
+                    HasBeenRenamed = layerEffect.HasBeenRenamed,
+                    Order = layerEffect.Order
+                };
+                EffectsEntity.LayerEffects.Add(layerEffectEntity);
+                layerEffect.BaseProperties.ApplyToEntity();
+            }
+        }
+
         internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
         {
             if (effect == null) throw new ArgumentNullException(nameof(effect));
@@ -51,44 +69,6 @@ namespace Artemis.Core.Models.Profile
             // Remove the effect from the layer and dispose it
             _layerEffects.Remove(effect);
             effect.Dispose();
-        }
-
-        internal SKPath CreateShapeClip()
-        {
-            var shapeClip = new SKPath();
-            if (Path == null)
-                return shapeClip;
-
-            if (Parent is EffectProfileElement effectParent)
-                shapeClip = shapeClip.Op(effectParent.CreateShapeClip(), SKPathOp.Union);
-
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                var effectClip = baseLayerEffect.InternalCreateShapeClip(Path);
-                shapeClip = shapeClip.Op(effectClip, SKPathOp.Difference);
-            }
-
-            return shapeClip;
-        }
-
-        protected void ApplyLayerEffectsToEntity()
-        {
-            EffectsEntity.LayerEffects.Clear();
-            foreach (var layerEffect in LayerEffects)
-            {
-                var layerEffectEntity = new LayerEffectEntity
-                {
-                    Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.PluginInfo.Guid,
-                    EffectType = layerEffect.GetType().Name,
-                    Name = layerEffect.Name,
-                    Enabled = layerEffect.Enabled,
-                    HasBeenRenamed = layerEffect.HasBeenRenamed,
-                    Order = layerEffect.Order
-                };
-                EffectsEntity.LayerEffects.Add(layerEffectEntity);
-                layerEffect.BaseProperties.ApplyToEntity();
-            }
         }
 
         #region Events
