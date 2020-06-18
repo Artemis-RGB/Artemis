@@ -11,7 +11,7 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();
-            path.AddOval(Layer.Bounds);
+            path.AddOval(SKRect.Create(Layer.Bounds.Width, Layer.Bounds.Height));
             Path = path;
         }
     }
