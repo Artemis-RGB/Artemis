@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
@@ -23,11 +24,12 @@ namespace Artemis.Core.Services
     public class CoreService : ICoreService
     {
         private readonly ILogger _logger;
+        private readonly PluginSetting<LogEventLevel> _loggingLevel;
         private readonly IPluginService _pluginService;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
-        private readonly PluginSetting<LogEventLevel> _loggingLevel;
+        private readonly Stopwatch _frameStopWatch;
         private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
@@ -48,10 +50,13 @@ namespace Artemis.Core.Services
             _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
             _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
-            
+
+            _frameStopWatch = new Stopwatch();
+
             ConfigureJsonConvert();
         }
 
+        public TimeSpan FrameTime { get; private set; }
         public bool ModuleUpdatingDisabled { get; set; }
         public bool ModuleRenderingDisabled { get; set; }
 
@@ -117,6 +122,7 @@ namespace Artemis.Core.Services
 
             try
             {
+                _frameStopWatch.Restart();
                 if (!ModuleUpdatingDisabled && _modules != null)
                 {
                     lock (_modules)
@@ -156,6 +162,11 @@ namespace Artemis.Core.Services
             catch (Exception e)
             {
                 throw new ArtemisCoreException("Exception during update", e);
+            }
+            finally
+            {
+                _frameStopWatch.Stop();
+                FrameTime = _frameStopWatch.Elapsed;
             }
         }
 

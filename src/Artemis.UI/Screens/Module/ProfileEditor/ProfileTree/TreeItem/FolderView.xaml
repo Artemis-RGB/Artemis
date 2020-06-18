@@ -36,13 +36,28 @@
                 </MenuItem>
             </ContextMenu>
         </StackPanel.ContextMenu>
-        <StackPanel Orientation="Horizontal" Margin="10">
-            <materialDesign:PackIcon Kind="Folder"
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <materialDesign:PackIcon Grid.Column="0"
+                                     Kind="Folder"
                                      Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
-            <materialDesign:PackIcon Kind="FolderOpen"
+            <materialDesign:PackIcon Grid.Column="0"
+                                     Kind="FolderOpen"
                                      Visibility="{Binding IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" />
-
-            <TextBlock Text="{Binding ProfileElement.Name}" Margin="10 0 0 0" />
-        </StackPanel>
+            <TextBlock Grid.Column="1" Text="{Binding ProfileElement.Name}" Margin="10 0 0 0" VerticalAlignment="Center" />
+            <ToggleButton Grid.Column="2"
+                          Style="{StaticResource MaterialDesignFlatToggleButton}"
+                          ToolTip="Toggle enabled state"
+                          Width="18"
+                          Height="18"
+                          IsChecked="{Binding ProfileElement.Enabled}"
+                          VerticalAlignment="Center" Padding="-25">
+                <materialDesign:PackIcon Kind="Eye" Height="13" Width="13" />
+            </ToggleButton>
+        </Grid>
     </StackPanel>
 </UserControl>

@@ -77,7 +77,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
                     break;
             }
 
-            _profileEditorService.UpdateSelectedProfile(true);
+            _profileEditorService.UpdateSelectedProfile();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view

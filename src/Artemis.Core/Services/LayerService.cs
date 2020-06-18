@@ -86,6 +86,7 @@ namespace Artemis.Core.Services
 
             effect.ProfileElement = effectElement;
             effect.EntityId = Guid.NewGuid();
+            effect.Enabled = true;
             effect.Order = effectElement.LayerEffects.Count + 1;
             effect.Descriptor = layerEffectDescriptor;
 
@@ -109,15 +110,8 @@ namespace Artemis.Core.Services
 
             var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
             var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
-
-            List<LayerEffectEntity> entities;
-            if (effectElement is Layer layer)
-                entities = layer.LayerEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
-            else if (effectElement is Folder folder)
-                entities = folder.FolderEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
-            else
-                throw new ArtemisCoreException("Provided effect element is of an unsupported type, must be Layer of Folder");
-
+            var entities = effectElement.EffectsEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
+            
             foreach (var layerEffectEntity in entities)
             {
                 // Get a matching descriptor
@@ -133,6 +127,7 @@ namespace Artemis.Core.Services
                 effect.EntityId = layerEffectEntity.Id;
                 effect.Order = layerEffectEntity.Order;
                 effect.Name = layerEffectEntity.Name;
+                effect.Enabled = layerEffectEntity.Enabled;
                 effect.Descriptor = descriptor;
 
                 effect.Initialize(this);

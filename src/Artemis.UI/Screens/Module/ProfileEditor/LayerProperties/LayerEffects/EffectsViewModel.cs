@@ -5,6 +5,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
@@ -12,12 +13,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
     public class EffectsViewModel : PropertyChangedBase
     {
         private readonly ILayerService _layerService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginService _pluginService;
 
-        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, ILayerService layerService)
+        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, ILayerService layerService, IProfileEditorService profileEditorService)
         {
             _pluginService = pluginService;
             _layerService = layerService;
+            _profileEditorService = profileEditorService;
             LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerEffectDescriptors = new BindableCollection<LayerEffectDescriptor>();
             PropertyChanged += HandleSelectedLayerEffectChanged;
@@ -58,6 +61,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
                 {
                     await Task.Delay(500);
                     _layerService.AddLayerEffect(effectElement, SelectedLayerEffectDescriptor);
+                    _profileEditorService.UpdateSelectedProfileElement();
                 });
             }
         }

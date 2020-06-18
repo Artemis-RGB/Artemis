@@ -34,6 +34,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = name;
+            Enabled = true;
             General = new LayerGeneralProperties {IsCorePropertyGroup = true};
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
@@ -52,6 +53,7 @@ namespace Artemis.Core.Models.Profile
             Profile = profile;
             Parent = parent;
             Name = layerEntity.Name;
+            Enabled = layerEntity.Enabled;
             Order = layerEntity.Order;
             General = new LayerGeneralProperties {IsCorePropertyGroup = true};
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
@@ -111,6 +113,7 @@ namespace Artemis.Core.Models.Profile
             LayerEntity.Id = EntityId;
             LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
             LayerEntity.Order = Order;
+            LayerEntity.Enabled = Enabled;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
             LayerEntity.ExpandedPropertyGroups.Clear();
@@ -177,6 +180,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
+            if (!Enabled)
+                return;
+
             if (LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
@@ -192,7 +198,7 @@ namespace Artemis.Core.Models.Profile
                 General.Override(TimeSpan.Zero);
                 Transform.Override(TimeSpan.Zero);
                 LayerBrush.BaseProperties.Override(TimeSpan.Zero);
-                foreach (var baseLayerEffect in LayerEffects)
+                foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                     baseLayerEffect.BaseProperties?.Override(TimeSpan.Zero);
             }
             else
@@ -200,12 +206,12 @@ namespace Artemis.Core.Models.Profile
                 General.Update(deltaTime);
                 Transform.Update(deltaTime);
                 LayerBrush.BaseProperties.Update(deltaTime);
-                foreach (var baseLayerEffect in LayerEffects)
+                foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                     baseLayerEffect.BaseProperties?.Update(deltaTime);
             }
 
             LayerBrush.Update(deltaTime);
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.Update(deltaTime);
         }
 
@@ -221,6 +227,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint)
         {
+            if (!Enabled)
+                return;
+
             // Ensure the layer is ready
             if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
@@ -230,13 +239,13 @@ namespace Artemis.Core.Models.Profile
 
             canvas.Save();
             canvas.ClipPath(Path);
-            
+
             paint.BlendMode = General.BlendMode.CurrentValue;
             paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
             // Pre-processing only affects other pre-processors and the brushes
             canvas.Save();
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.InternalPreProcess(canvas, canvasInfo, new SKPath(Path), paint);
 
             // Shape clip must be determined before commiting to any rendering
@@ -253,9 +262,9 @@ namespace Artemis.Core.Models.Profile
 
             // Restore the canvas as to not be affected by pre-processors
             canvas.Restore();
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.InternalPostProcess(canvas, canvasInfo, new SKPath(Path), paint);
-            
+
             canvas.Restore();
         }
 

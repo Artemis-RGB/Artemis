@@ -28,6 +28,11 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         public string Name { get; set; }
 
         /// <summary>
+        ///     Gets or sets the enabled state, if not enabled the effect is skipped in render and update
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
         ///     Gets or sets whether the effect has been renamed by the user, if true consider refraining from changing the name
         ///     programatically
         /// </summary>

@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         IKernel Kernel { get; }
 
         void ChangeSelectedProfile(Profile profile);
-        void UpdateSelectedProfile(bool includeChildren);
+        void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(ProfileElement profileElement);
         void UpdateSelectedProfileElement();
         void UpdateProfilePreview();

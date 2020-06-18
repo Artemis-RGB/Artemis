@@ -62,7 +62,7 @@ namespace Artemis.Core.Models.Profile
             if (Parent is EffectProfileElement effectParent)
                 shapeClip = shapeClip.Op(effectParent.CreateShapeClip(), SKPathOp.Union);
 
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 var effectClip = baseLayerEffect.InternalCreateShapeClip(Path);
                 shapeClip = shapeClip.Op(effectClip, SKPathOp.Difference);
@@ -82,6 +82,7 @@ namespace Artemis.Core.Models.Profile
                     PluginGuid = layerEffect.PluginInfo.Guid,
                     EffectType = layerEffect.GetType().Name,
                     Name = layerEffect.Name,
+                    Enabled = layerEffect.Enabled,
                     HasBeenRenamed = layerEffect.HasBeenRenamed,
                     Order = layerEffect.Order
                 };

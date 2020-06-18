@@ -19,6 +19,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public int Order { get; set; }
         public string Name { get; set; }
+        public bool Enabled { get; set; }
 
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }
