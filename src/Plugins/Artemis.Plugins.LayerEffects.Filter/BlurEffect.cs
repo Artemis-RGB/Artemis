@@ -6,9 +6,9 @@ namespace Artemis.Plugins.LayerEffects.Filter
 {
     public class BlurEffect : LayerEffect<BlurEffectProperties>
     {
-        private double _lastWidth;
-        private double _lastHeight;
         private SKImageFilter _imageFilter;
+        private double _lastHeight;
+        private double _lastWidth;
 
         public override void EnableLayerEffect()
         {
@@ -39,7 +39,6 @@ namespace Artemis.Plugins.LayerEffects.Filter
 
         public override void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
         {
-          
         }
 
         public override void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint)
