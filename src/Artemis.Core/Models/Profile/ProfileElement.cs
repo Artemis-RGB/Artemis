@@ -49,7 +49,7 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint);
+        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
 
         public List<Folder> GetAllFolders()
         {
