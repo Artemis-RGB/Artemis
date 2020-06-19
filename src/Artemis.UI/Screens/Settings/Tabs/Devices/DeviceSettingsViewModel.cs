@@ -2,8 +2,11 @@
 using System.Diagnostics;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Shared.Services.Interfaces;
 using Humanizer;
+using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
@@ -11,11 +14,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
+        private readonly IWindowManager _windowManager;
+        private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
 
-        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService)
+        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService, 
+            IWindowManager windowManager, IDeviceDebugVmFactory deviceDebugVmFactory)
         {
             _deviceService = deviceService;
             _dialogService = dialogService;
+            _windowManager = windowManager;
+            _deviceDebugVmFactory = deviceDebugVmFactory;
             Device = device;
 
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
@@ -38,6 +46,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 
         public void ShowDeviceDebugger()
         {
+            _windowManager.ShowWindow(_deviceDebugVmFactory.Create(Device));
         }
 
         public async void OpenPluginDirectory()

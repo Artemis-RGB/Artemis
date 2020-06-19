@@ -1,4 +1,4 @@
-﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.Settings.Debug.DebugView"
+﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.Settings.Debug.DeviceDebugView"
                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,7 @@
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                     xmlns:debug="clr-namespace:Artemis.UI.Screens.Settings.Debug"
                     mc:Ignorable="d"
-                    Title="Artemis debugger"
+                    Title="Artemis device debugger"
                     TitleBarIcon="{StaticResource BowIcon}"
                     Foreground="{DynamicResource MaterialDesignBody}"
                     Background="{DynamicResource MaterialDesignPaper}"
@@ -21,45 +21,27 @@
                     Icon="/Resources/Images/Logo/logo-512.png">
     <DockPanel>
         <mde:AppBar Type="Dense"
-                    Title="Debugger"
+                    Title="Device debugger"
                     DockPanel.Dock="Top"
                     Margin="-18 0 0 0">
             <mde:AppBar.AppIcon>
-                <materialDesign:PackIcon Kind="BugReport" Width="20" Height="28" />
+                <materialDesign:PackIcon Kind="HammerWrench" Width="20" Height="28" />
             </mde:AppBar.AppIcon>
-            
-            <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
-                <StackPanel>
-                    <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}"/>
-                </StackPanel>
-            </materialDesign:PopupBox>
+
+            <!-- <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False"> -->
+            <!--     <StackPanel> -->
+            <!--         <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}"/> -->
+            <!--     </StackPanel> -->
+            <!-- </materialDesign:PopupBox> -->
         </mde:AppBar>
 
         <StackPanel Margin="10, 10, 10, 10">
             <TextBlock TextWrapping="Wrap">
-                In this window you can view the inner workings of Artemis.
+                In this window you can view detailed information of the device.
                 Please note that having this window open can have a performance impact on your system.
             </TextBlock>
 
-            <Grid Margin="0,10,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0">
-                    This image shows what is being rendered and dispatched to RGB.NET
-                </TextBlock>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0" FontWeight="Bold">
-                    FPS:
-                </TextBlock>
-                <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}" />
-            </Grid>
-
-            <materialDesign:Card VerticalAlignment="Stretch" Margin="0, 5,0,0">
-                <Image Source="{Binding CurrentFrame}" />
-            </materialDesign:Card>
+            
         </StackPanel>
     </DockPanel>
-
 </mde:MaterialWindow>

@@ -11,6 +11,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Stylet;
 
@@ -28,6 +29,11 @@ namespace Artemis.UI.Ninject.Factories
     public interface IDeviceSettingsVmFactory : IVmFactory
     {
         DeviceSettingsViewModel Create(ArtemisDevice device);
+    }
+
+    public interface IDeviceDebugVmFactory : IVmFactory
+    {
+        DeviceDebugViewModel Create(ArtemisDevice device);
     }
 
     public interface IProfileEditorVmFactory : IVmFactory
