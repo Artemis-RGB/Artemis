@@ -7,7 +7,6 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:screens="clr-namespace:Artemis.UI.Screens"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
-                    xmlns:tb="http://www.hardcodet.net/taskbar"
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Resources/Images/Logo/logo-512.png"
@@ -21,9 +20,7 @@
                     Activated="{s:Action WindowActivated}"
                     KeyDown="{s:Action WindowKeyDown}"
                     KeyUp="{s:Action WindowKeyUp}"
-                    d:DesignHeight="640"
-                    d:DesignWidth="1200"
-                    d:DataContext="{d:DesignInstance screens:RootViewModel}">
+                    d:DesignHeight="640" d:DesignWidth="1200" d:DataContext="{d:DesignInstance screens:RootViewModel}">
     <mde:MaterialWindow.Resources>
         <Style TargetType="ContentControl" x:Key="InitializingFade">
             <Style.Triggers>
