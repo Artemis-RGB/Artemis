@@ -86,7 +86,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
+            PopulateProperties(null);
             base.OnClose();
+        }
+
+        protected override void OnActivate()
+        {
+            PopulateProperties(ProfileEditorService.SelectedProfileElement as PropertiesProfileElement);
+            base.OnActivate();
         }
 
         protected override void OnDeactivate()

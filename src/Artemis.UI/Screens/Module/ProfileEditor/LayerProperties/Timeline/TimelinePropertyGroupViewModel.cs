@@ -6,7 +6,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelinePropertyGroupViewModel
+    public class TimelinePropertyGroupViewModel : PropertyChangedBase
     {
         public TimelinePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
@@ -20,7 +20,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
         public BindableCollection<double> TimelineKeyframeViewModels { get; set; }
-        public TimelineViewModel TimelineViewModel { get; set; }
 
         public void UpdateKeyframes()
         {

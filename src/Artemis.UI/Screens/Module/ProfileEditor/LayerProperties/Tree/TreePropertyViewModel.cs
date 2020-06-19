@@ -5,6 +5,7 @@ using Artemis.Core.Utilities;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
@@ -56,7 +57,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
         }
     }
 
-    public abstract class TreePropertyViewModel : IDisposable
+    public abstract class TreePropertyViewModel : PropertyChangedBase, IDisposable
     {
         protected TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {

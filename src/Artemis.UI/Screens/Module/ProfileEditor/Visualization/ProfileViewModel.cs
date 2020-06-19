@@ -60,7 +60,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             });
 
             ApplySurfaceConfiguration(_surfaceService.ActiveSurface);
-            ApplyActiveProfile();
             ActivateToolByIndex(0);
 
             eventAggregator.Subscribe(this);
@@ -151,9 +150,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             _profileEditorService.ProfileSelected -= OnProfileSelected;
             _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            if (_previousSelectedLayer != null)
+                _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
             OnlyShowSelectedShape.Save();
             HighlightSelectedLayer.Save();
+
+            foreach (var canvasViewModel in CanvasViewModels) 
+                canvasViewModel.Dispose();
+            CanvasViewModels.Clear();
 
             base.OnClose();
         }

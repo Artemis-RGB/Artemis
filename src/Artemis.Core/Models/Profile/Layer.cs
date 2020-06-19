@@ -246,6 +246,7 @@ namespace Artemis.Core.Models.Profile
                 _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
             }
 
+            using var layerPath = new SKPath(Path);
             using var layerCanvas = new SKCanvas(_layerBitmap);
             using var layerPaint = new SKPaint
             {
@@ -254,8 +255,7 @@ namespace Artemis.Core.Models.Profile
                 Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
             };
             layerCanvas.Clear();
-
-            var layerPath = new SKPath(Path);
+            
             layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
             
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
@@ -278,11 +278,13 @@ namespace Artemis.Core.Models.Profile
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
             canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
+            
         }
 
         private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
         {
-            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+            using var renderPath = new SKPath(LayerShape.Path);
+            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
@@ -302,8 +304,9 @@ namespace Artemis.Core.Models.Profile
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
-            
-            LayerBrush.InternalRender(canvas, canvasInfo, new SKPath(LayerShape.Path), paint);
+
+            using var renderPath = new SKPath(LayerShape.Path);
+            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
@@ -319,7 +322,7 @@ namespace Artemis.Core.Models.Profile
             var x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
             var y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
 
-            var clipPath = new SKPath(LayerShape.Path);
+            using var clipPath = new SKPath(LayerShape.Path);
             clipPath.Transform(SKMatrix.MakeTranslation(x, y));
             clipPath.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
             clipPath.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
@@ -336,7 +339,7 @@ namespace Artemis.Core.Models.Profile
                 Math.Max(clipPath.Bounds.Right - x, Bounds.Right - x),
                 Math.Max(clipPath.Bounds.Bottom - y, Bounds.Bottom - y)
             );
-            var renderPath = new SKPath();
+            using var renderPath = new SKPath();
             renderPath.AddRect(boundsRect);
 
             LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);

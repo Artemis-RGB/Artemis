@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Utilities;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -13,8 +12,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     {
         private readonly IProfileEditorService _profileEditorService;
 
-        public TimelineKeyframeViewModel(IProfileEditorService profileEditorService, TimelineViewModel timelineViewModel, LayerPropertyKeyframe<T> layerPropertyKeyframe)
-            : base(profileEditorService, timelineViewModel, layerPropertyKeyframe)
+        public TimelineKeyframeViewModel(IProfileEditorService profileEditorService, LayerPropertyKeyframe<T> layerPropertyKeyframe)
+            : base(profileEditorService, layerPropertyKeyframe)
         {
             _profileEditorService = profileEditorService;
             LayerPropertyKeyframe = layerPropertyKeyframe;
@@ -48,13 +47,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     public abstract class TimelineKeyframeViewModel : PropertyChangedBase
     {
         private readonly IProfileEditorService _profileEditorService;
-        private readonly TimelineViewModel _timelineViewModel;
         private int _pixelsPerSecond;
 
-        protected TimelineKeyframeViewModel(IProfileEditorService profileEditorService, TimelineViewModel timelineViewModel, BaseLayerPropertyKeyframe baseLayerPropertyKeyframe)
+        protected TimelineKeyframeViewModel(IProfileEditorService profileEditorService, BaseLayerPropertyKeyframe baseLayerPropertyKeyframe)
         {
             _profileEditorService = profileEditorService;
-            _timelineViewModel = timelineViewModel;
             BaseLayerPropertyKeyframe = baseLayerPropertyKeyframe;
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
         }
@@ -77,64 +74,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         #region Keyframe movement
-
-        public void KeyframeMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Released)
-                return;
-
-            ((IInputElement) sender).CaptureMouse();
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && !IsSelected)
-                _timelineViewModel.SelectKeyframe(this, true, false);
-            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-                _timelineViewModel.SelectKeyframe(this, false, true);
-            else if (!IsSelected)
-                _timelineViewModel.SelectKeyframe(this, false, false);
-
-            e.Handled = true;
-        }
-
-        public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _profileEditorService.UpdateSelectedProfileElement();
-            _timelineViewModel.ReleaseSelectedKeyframes();
-
-            ((IInputElement) sender).ReleaseMouseCapture();
-        }
-
-        public void KeyframeMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-                _timelineViewModel.MoveSelectedKeyframes(GetCursorTime(e.GetPosition(ParentView)));
-
-            e.Handled = true;
-        }
-
-        private TimeSpan GetCursorTime(Point position)
-        {
-            // Get the parent grid, need that for our position
-            var x = Math.Max(0, position.X);
-            var time = TimeSpan.FromSeconds(x / _pixelsPerSecond);
-
-            // Round the time to something that fits the current zoom level
-            if (_pixelsPerSecond < 200)
-                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 5.0) * 5.0);
-            else if (_pixelsPerSecond < 500)
-                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds / 2.0) * 2.0);
-            else
-                time = TimeSpan.FromMilliseconds(Math.Round(time.TotalMilliseconds));
-
-            // If shift is held, snap to the current time
-            // Take a tolerance of 5 pixels (half a keyframe width)
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                var tolerance = 1000f / _pixelsPerSecond * 5;
-                if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
-                    time = _profileEditorService.CurrentTime;
-            }
-
-            return time;
-        }
 
         #endregion
 

@@ -33,7 +33,7 @@
                              Height="10"
                              Margin="-5,6,0,0"
                              ToolTip="{Binding Timestamp}"
-                             s:View.ActionTarget="{Binding}"
+                             s:View.ActionTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TimelineView}}, Path=DataContext}"
                              MouseDown="{s:Action KeyframeMouseDown}"
                              MouseUp="{s:Action KeyframeMouseUp}"
                              MouseMove="{s:Action KeyframeMouseMove}"

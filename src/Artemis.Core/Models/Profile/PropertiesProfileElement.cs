@@ -11,12 +11,12 @@ namespace Artemis.Core.Models.Profile
         private SKPath _path;
 
         /// <summary>
-        ///     Gets a copy of the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
+        ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
         ///     clipped.
         /// </summary>
         public SKPath Path
         {
-            get => _path != null ? new SKPath(_path) : null;
+            get => _path;
             protected set
             {
                 _path = value;

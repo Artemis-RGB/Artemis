@@ -1,4 +1,5 @@
-﻿using RGB.NET.Core;
+﻿using System.Text;
+using RGB.NET.Core;
 
 namespace Artemis.Core.Extensions
 {
@@ -6,11 +7,17 @@ namespace Artemis.Core.Extensions
     {
         public static string GetDeviceIdentifier(this IRGBDevice rgbDevice)
         {
-            return rgbDevice.DeviceInfo.DeviceName +
-                   "-" + rgbDevice.DeviceInfo.Manufacturer +
-                   "-" + rgbDevice.DeviceInfo.Model +
-                   "-" + rgbDevice.DeviceInfo.DeviceType +
-                   "-" + rgbDevice.DeviceInfo.Lighting;
+            var builder = new StringBuilder();
+            builder.Append(rgbDevice.DeviceInfo.DeviceName);
+            builder.Append('-');
+            builder.Append(rgbDevice.DeviceInfo.Manufacturer);
+            builder.Append('-');
+            builder.Append(rgbDevice.DeviceInfo.Model);
+            builder.Append('-');
+            builder.Append(rgbDevice.DeviceInfo.DeviceType);
+            builder.Append('-');
+            builder.Append(rgbDevice.DeviceInfo.Lighting);
+            return builder.ToString();
         }
     }
 }

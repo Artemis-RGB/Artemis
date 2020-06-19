@@ -7,6 +7,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 {
     public class FolderViewModel : TreeItemViewModel
     {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var treeItemViewModel in Children) 
+                    treeItemViewModel.Dispose();
+                Children.Clear();
+            }
+
+            base.Dispose(disposing);
+        }
+
         // I hate this about DI, oh well
         public FolderViewModel(ProfileElement folder,
             IProfileEditorService profileEditorService,
