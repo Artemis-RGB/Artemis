@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -35,7 +38,7 @@ namespace Artemis.UI.Shared.Controls
             Loaded += (sender, args) => SubscribeToUpdate(true);
             Unloaded += (sender, args) => SubscribeToUpdate(false);
         }
-
+        
         public ArtemisDevice Device
         {
             get => (ArtemisDevice) GetValue(DeviceProperty);
@@ -169,7 +172,7 @@ namespace Artemis.UI.Shared.Controls
         {
             var drawingContext = _backingStore.Open();
 
-            if (HighlightedLeds.Any())
+            if (HighlightedLeds != null && HighlightedLeds.Any())
             {
                 foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));

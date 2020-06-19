@@ -14,12 +14,13 @@ namespace Artemis.Core.Models.Surface
             CalculateRenderRectangle();
         }
 
+        public int LedIndex => Device.Leds.IndexOf(this);
         public Led RgbLed { get; }
         public ArtemisDevice Device { get; }
 
         public SKRect RenderRectangle { get; private set; }
         public SKRect AbsoluteRenderRectangle { get; private set; }
-
+        
         public void CalculateRenderRectangle()
         {
             RenderRectangle = SKRect.Create(
