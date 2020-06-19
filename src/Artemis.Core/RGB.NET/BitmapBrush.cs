@@ -98,7 +98,7 @@ namespace Artemis.Core.RGB.NET
             var bitmapWidth = Bitmap.Width;
             var bitmapHeight = Bitmap.Height;
 
-            var pixmap = Bitmap.PeekPixels();
+            using var pixmap = Bitmap.PeekPixels();
             foreach (var renderTarget in renderTargets)
             {
                 // SKRect has all the good stuff we need

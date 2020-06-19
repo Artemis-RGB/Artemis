@@ -135,6 +135,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             }
         }
 
+        protected override void OnClose()
+        {
+            RootFolder?.Dispose();
+            RootFolder = null;
+            base.OnClose();
+        }
+
         #region Event handlers
 
         private void OnProfileElementSelected(object sender, EventArgs e)

@@ -44,14 +44,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         public Thickness LayerPosition => new Thickness(ViewportRectangle.Left, ViewportRectangle.Top, 0, 0);
         public bool IsSelected { get; set; }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
-            _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
-        }
+            if (disposing)
+            {
+                Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+                _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+                _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+                _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
+            }
 
+            base.Dispose(disposing);
+        }
+        
         private void Update()
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;

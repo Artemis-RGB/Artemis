@@ -55,6 +55,7 @@
                           Width="18"
                           Height="18"
                           IsChecked="{Binding ProfileElement.Enabled}"
+                          Command="{s:Action EnableToggled}"
                           VerticalAlignment="Center" Padding="-25">
                 <materialDesign:PackIcon Kind="Eye" Height="13" Width="13" />
             </ToggleButton>

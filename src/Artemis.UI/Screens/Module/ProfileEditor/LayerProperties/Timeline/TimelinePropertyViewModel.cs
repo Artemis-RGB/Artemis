@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
@@ -26,9 +25,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public override void UpdateKeyframes()
         {
-            if (TimelineViewModel == null)
-                throw new ArtemisUIException("Timeline view model must be set before keyframes can be updated");
-
             // Only show keyframes if they are enabled
             if (LayerPropertyViewModel.LayerProperty.KeyframesEnabled)
             {
@@ -37,7 +33,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 TimelineKeyframeViewModels.RemoveRange(toRemove);
                 TimelineKeyframeViewModels.AddRange(
                     keyframes.Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
-                        .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, TimelineViewModel, k))
+                        .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, k))
                 );
             }
             else
@@ -67,7 +63,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
     }
 
-    public abstract class TimelinePropertyViewModel : IDisposable
+    public abstract class TimelinePropertyViewModel : PropertyChangedBase, IDisposable
     {
         protected TimelinePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
@@ -76,7 +72,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
-        public TimelineViewModel TimelineViewModel { get; set; }
         public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels { get; set; }
 
         public abstract void Dispose();

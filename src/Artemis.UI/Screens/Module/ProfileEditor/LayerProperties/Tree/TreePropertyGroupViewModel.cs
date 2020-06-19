@@ -4,10 +4,11 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.Services.Interfaces;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
-    public class TreePropertyGroupViewModel
+    public class TreePropertyGroupViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
         private readonly ILayerService _layerService;

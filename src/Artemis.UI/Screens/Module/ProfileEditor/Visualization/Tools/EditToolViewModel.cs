@@ -361,7 +361,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
         {
-            var counterRotatePath = new SKPath();
+            using var counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.Transform.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using SkiaSharp;
 
@@ -13,14 +14,19 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void EnableLayerBrush()
         {
-            Layer.RenderPropertiesUpdated += (sender, args) => CreateShader();
-            Properties.GradientType.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Color.BaseValueChanged += (sender, args) => CreateShader();
-            Properties.Gradient.BaseValue.PropertyChanged += (sender, args) => CreateShader();
+            Layer.RenderPropertiesUpdated += HandleShaderChange;
+            Properties.GradientType.BaseValueChanged += HandleShaderChange;
+            Properties.Color.BaseValueChanged += HandleShaderChange;
+            Properties.Gradient.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
         }
 
         public override void DisableLayerBrush()
         {
+            Layer.RenderPropertiesUpdated -= HandleShaderChange;
+            Properties.GradientType.BaseValueChanged -= HandleShaderChange;
+            Properties.Color.BaseValueChanged -= HandleShaderChange;
+            Properties.Gradient.BaseValue.PropertyChanged -= BaseValueOnPropertyChanged;
+
             _paint?.Dispose();
             _shader?.Dispose();
             _paint = null;
@@ -48,6 +54,16 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
             paint.Shader = _shader;
             canvas.DrawPath(path, paint);
+        }
+
+        private void BaseValueOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            CreateShader();
+        }
+
+        private void HandleShaderChange(object? sender, EventArgs e)
+        {
+            CreateShader();
         }
 
         private void CreateShader()

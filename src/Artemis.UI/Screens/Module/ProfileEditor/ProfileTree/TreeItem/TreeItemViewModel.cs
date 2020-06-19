@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
 {
-    public abstract class TreeItemViewModel : PropertyChangedBase
+    public abstract class TreeItemViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDialogService _dialogService;
         private readonly IFolderVmFactory _folderVmFactory;
@@ -38,14 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement = profileElement;
 
             Children = new BindableCollection<TreeItemViewModel>();
-            ProfileElement.PropertyChanged += HandleProfileElementEnabledChanged;
             UpdateProfileElements();
-        }
-
-        private void HandleProfileElementEnabledChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ProfileElement.Enabled))
-                _profileEditorService.UpdateSelectedProfile();
         }
 
         public TreeItemViewModel Parent { get; set; }
@@ -207,6 +201,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             Children.AddRange(newChildren);
             foreach (var treeItemViewModel in newChildren)
                 treeItemViewModel.UpdateProfileElements();
+        }
+
+        public void EnableToggled()
+        {
+            _profileEditorService.UpdateSelectedProfile();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+       Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

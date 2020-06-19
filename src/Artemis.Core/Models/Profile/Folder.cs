@@ -80,7 +80,7 @@ namespace Artemis.Core.Models.Profile
         {
             if (!Enabled || Path == null || !Children.Any(c => c.Enabled))
                 return;
-            
+
             if (_folderBitmap == null)
                 _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
@@ -89,11 +89,11 @@ namespace Artemis.Core.Models.Profile
                 _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
 
+            using var folderPath = new SKPath(Path);
             using var folderCanvas = new SKCanvas(_folderBitmap);
             using var folderPaint = new SKPaint();
             folderCanvas.Clear();
 
-            var folderPath = new SKPath(Path);
             folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
@@ -112,7 +112,7 @@ namespace Artemis.Core.Models.Profile
 
             canvas.Save();
 
-            var clipPath = new SKPath(folderPath);
+            using var clipPath = new SKPath(folderPath);
             clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
             canvas.ClipPath(clipPath);
 
