@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Annotations;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -23,9 +22,12 @@ namespace Artemis.Core.Models.Profile
     /// </summary>
     public sealed class Layer : EffectProfileElement
     {
+        private LayerGeneralProperties _general;
+        private SKBitmap _layerBitmap;
+        private BaseLayerBrush _layerBrush;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
-        private SKBitmap _layerBitmap;
+        private LayerTransformProperties _transform;
 
         internal Layer(Profile profile, ProfileElement parent, string name)
         {
@@ -84,22 +86,34 @@ namespace Artemis.Core.Models.Profile
             get => _layerShape;
             set
             {
-                _layerShape = value;
+                SetAndNotify(ref _layerShape, value);
                 if (Path != null)
                     CalculateRenderProperties();
             }
         }
 
         [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
-        public LayerGeneralProperties General { get; set; }
+        public LayerGeneralProperties General
+        {
+            get => _general;
+            set => SetAndNotify(ref _general, value);
+        }
 
         [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
-        public LayerTransformProperties Transform { get; set; }
+        public LayerTransformProperties Transform
+        {
+            get => _transform;
+            set => SetAndNotify(ref _transform, value);
+        }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
-        public BaseLayerBrush LayerBrush { get; internal set; }
+        public BaseLayerBrush LayerBrush
+        {
+            get => _layerBrush;
+            internal set => SetAndNotify(ref _layerBrush, value);
+        }
 
         public override string ToString()
         {
@@ -239,11 +253,11 @@ namespace Artemis.Core.Models.Profile
                 return;
 
             if (_layerBitmap == null)
-                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
-            else if (_layerBitmap.Info.Width != (int)Path.Bounds.Width || _layerBitmap.Info.Height != (int)Path.Bounds.Height)
+                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            else if (_layerBitmap.Info.Width != (int) Path.Bounds.Width || _layerBitmap.Info.Height != (int) Path.Bounds.Height)
             {
                 _layerBitmap.Dispose();
-                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
+                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
 
             using var layerPath = new SKPath(Path);
@@ -255,9 +269,9 @@ namespace Artemis.Core.Models.Profile
                 Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
             };
             layerCanvas.Clear();
-            
+
             layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
-            
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
 
@@ -278,7 +292,6 @@ namespace Artemis.Core.Models.Profile
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
             canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
-            
         }
 
         private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)

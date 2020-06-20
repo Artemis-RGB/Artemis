@@ -13,27 +13,42 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
     /// </summary>
     public abstract class BaseLayerBrush : PropertyChangedBase, IDisposable
     {
+        private LayerBrushType _brushType;
+        private LayerBrushDescriptor _descriptor;
+        private Layer _layer;
         private bool _supportsTransformation = true;
 
         /// <summary>
         ///     Gets the layer this brush is applied to
         /// </summary>
-        public Layer Layer { get; internal set; }
+        public Layer Layer
+        {
+            get => _layer;
+            internal set => SetAndNotify(ref _layer, value);
+        }
 
         /// <summary>
         ///     Gets the descriptor of this brush
         /// </summary>
-        public LayerBrushDescriptor Descriptor { get; internal set; }
+        public LayerBrushDescriptor Descriptor
+        {
+            get => _descriptor;
+            internal set => SetAndNotify(ref _descriptor, value);
+        }
+
+        /// <summary>
+        ///     Gets the type of layer brush
+        /// </summary>
+        public LayerBrushType BrushType
+        {
+            get => _brushType;
+            internal set => SetAndNotify(ref _brushType, value);
+        }
 
         /// <summary>
         ///     Gets the plugin info that defined this brush
         /// </summary>
         public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
-
-        /// <summary>
-        ///     Gets the type of layer brush
-        /// </summary>
-        public LayerBrushType BrushType { get; internal set; }
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type

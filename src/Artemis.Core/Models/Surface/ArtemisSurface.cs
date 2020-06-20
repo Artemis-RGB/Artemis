@@ -9,6 +9,11 @@ namespace Artemis.Core.Models.Surface
 {
     public class ArtemisSurface : PropertyChangedBase
     {
+        private double _scale;
+        private string _name;
+        private bool _isActive;
+        private List<ArtemisDevice> _devices;
+
         internal ArtemisSurface(RGBSurface rgbSurface, string name, double scale)
         {
             SurfaceEntity = new SurfaceEntity {DeviceEntities = new List<DeviceEntity>()};
@@ -40,10 +45,30 @@ namespace Artemis.Core.Models.Surface
         }
 
         public RGBSurface RgbSurface { get; }
-        public double Scale { get; private set; }
-        public string Name { get; set; }
-        public bool IsActive { get; internal set; }
-        public List<ArtemisDevice> Devices { get; internal set; }
+
+        public double Scale
+        {
+            get => _scale;
+            private set => SetAndNotify(ref _scale, value);
+        }
+
+        public string Name
+        {
+            get => _name;
+            set => SetAndNotify(ref _name, value);
+        }
+
+        public bool IsActive
+        {
+            get => _isActive;
+            internal set => SetAndNotify(ref _isActive, value);
+        }
+
+        public List<ArtemisDevice> Devices
+        {
+            get => _devices;
+            internal set => SetAndNotify(ref _devices, value);
+        }
 
         internal SurfaceEntity SurfaceEntity { get; set; }
         internal Guid EntityId { get; set; }

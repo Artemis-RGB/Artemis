@@ -7,6 +7,9 @@ namespace Artemis.Core.Models.Surface
 {
     public class ArtemisLed : PropertyChangedBase
     {
+        private SKRect _renderRectangle;
+        private SKRect _absoluteRenderRectangle;
+
         public ArtemisLed(Led led, ArtemisDevice device)
         {
             RgbLed = led;
@@ -18,9 +21,18 @@ namespace Artemis.Core.Models.Surface
         public Led RgbLed { get; }
         public ArtemisDevice Device { get; }
 
-        public SKRect RenderRectangle { get; private set; }
-        public SKRect AbsoluteRenderRectangle { get; private set; }
-        
+        public SKRect RenderRectangle
+        {
+            get => _renderRectangle;
+            private set => SetAndNotify(ref _renderRectangle, value);
+        }
+
+        public SKRect AbsoluteRenderRectangle
+        {
+            get => _absoluteRenderRectangle;
+            private set => SetAndNotify(ref _absoluteRenderRectangle, value);
+        }
+
         public void CalculateRenderRectangle()
         {
             RenderRectangle = SKRect.Create(

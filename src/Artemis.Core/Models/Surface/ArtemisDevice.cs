@@ -12,6 +12,10 @@ namespace Artemis.Core.Models.Surface
 {
     public class ArtemisDevice : PropertyChangedBase
     {
+        private SKRect _renderRectangle;
+        private SKPath _renderPath;
+        private ReadOnlyCollection<ArtemisLed> _leds;
+
         internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface)
         {
             RgbDevice = rgbDevice;
@@ -37,14 +41,28 @@ namespace Artemis.Core.Models.Surface
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
-        public SKRect RenderRectangle { get; private set; }
-        public SKPath RenderPath { get; private set; }
+        public SKRect RenderRectangle
+        {
+            get => _renderRectangle;
+            private set => SetAndNotify(ref _renderRectangle, value);
+        }
+
+        public SKPath RenderPath
+        {
+            get => _renderPath;
+            private set => SetAndNotify(ref _renderPath, value);
+        }
 
         public IRGBDevice RgbDevice { get; }
         public Plugin Plugin { get; }
         public ArtemisSurface Surface { get; }
         public DeviceEntity DeviceEntity { get; }
-        public ReadOnlyCollection<ArtemisLed> Leds { get; set; }
+
+        public ReadOnlyCollection<ArtemisLed> Leds
+        {
+            get => _leds;
+            set => SetAndNotify(ref _leds, value);
+        }
 
         public double X
         {
