@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.Settings.Debug
         {
             Execute.PostToUIThread(() =>
             {
-                if (e.BitmapBrush.Bitmap == null)
+                if (e.BitmapBrush?.Bitmap == null)
                     return;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap))
