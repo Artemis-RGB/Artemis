@@ -77,8 +77,8 @@ namespace Artemis.Core.Services
             ApplyLoggingLevel();
 
             // Initialize the services
-            _pluginService.CopyBuiltInPlugins();
-            _pluginService.LoadPlugins();
+            // _pluginService.CopyBuiltInPlugins();
+            // _pluginService.LoadPlugins();
 
             var surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
