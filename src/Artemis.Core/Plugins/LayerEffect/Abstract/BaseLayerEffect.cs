@@ -12,41 +12,77 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
     /// </summary>
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
+        private Guid _entityId;
+        private EffectProfileElement _profileElement;
+        private string _name;
+        private bool _enabled;
+        private bool _hasBeenRenamed;
+        private int _order;
+        private LayerEffectDescriptor _descriptor;
+
         /// <summary>
         ///     Gets the unique ID of this effect
         /// </summary>
-        public Guid EntityId { get; internal set; }
+        public Guid EntityId
+        {
+            get => _entityId;
+            internal set => SetAndNotify(ref _entityId, value);
+        }
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public EffectProfileElement ProfileElement { get; internal set; }
+        public EffectProfileElement ProfileElement
+        {
+            get => _profileElement;
+            internal set => SetAndNotify(ref _profileElement, value);
+        }
 
         /// <summary>
         ///     The name which appears in the editor
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set => SetAndNotify(ref _name, value);
+        }
 
         /// <summary>
         ///     Gets or sets the enabled state, if not enabled the effect is skipped in render and update
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get => _enabled;
+            set => SetAndNotify(ref _enabled, value);
+        }
 
         /// <summary>
         ///     Gets or sets whether the effect has been renamed by the user, if true consider refraining from changing the name
         ///     programatically
         /// </summary>
-        public bool HasBeenRenamed { get; set; }
+        public bool HasBeenRenamed
+        {
+            get => _hasBeenRenamed;
+            set => SetAndNotify(ref _hasBeenRenamed, value);
+        }
 
         /// <summary>
         ///     Gets the order in which this effect appears in the update loop and editor
         /// </summary>
-        public int Order { get; set; }
+        public int Order
+        {
+            get => _order;
+            set => SetAndNotify(ref _order, value);
+        }
 
         /// <summary>
         ///     Gets the descriptor of this effect
         /// </summary>
-        public LayerEffectDescriptor Descriptor { get; internal set; }
+        public LayerEffectDescriptor Descriptor
+        {
+            get => _descriptor;
+            internal set => SetAndNotify(ref _descriptor, value);
+        }
 
         /// <summary>
         ///     Gets the plugin info that defined this effect
