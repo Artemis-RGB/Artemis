@@ -5,7 +5,7 @@ using System.IO;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services.Interfaces;
-using PropertyChanged;
+// using PropertyChanged;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug
@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.Settings.Debug
             Device = device;
         }
 
-        [DependsOn(nameof(SelectedLed))]
+        // [DependsOn(nameof(SelectedLed))]
         public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> {SelectedLed} : null;
 
         public ArtemisDevice Device { get; }

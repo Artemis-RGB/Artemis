@@ -4,7 +4,7 @@ using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentValidation;
-using PropertyChanged;
+// using PropertyChanged;
 using SkiaSharp;
 using Stylet;
 
@@ -18,14 +18,14 @@ namespace Artemis.UI.PropertyInput
         }
 
         // Since SKPoint is immutable we need to create properties that replace the SKPoint entirely
-        [DependsOn(nameof(InputValue))]
+        // [DependsOn(nameof(InputValue))]
         public float X
         {
             get => InputValue.X;
             set => InputValue = new SKPoint(value, Y);
         }
 
-        [DependsOn(nameof(InputValue))]
+       // [DependsOn(nameof(InputValue))]
         public float Y
         {
             get => InputValue.Y;

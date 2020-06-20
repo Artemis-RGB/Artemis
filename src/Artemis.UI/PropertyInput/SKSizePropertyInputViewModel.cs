@@ -4,7 +4,7 @@ using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 using FluentValidation;
-using PropertyChanged;
+// using PropertyChanged;
 using SkiaSharp;
 using Stylet;
 
@@ -18,14 +18,14 @@ namespace Artemis.UI.PropertyInput
         }
 
         // Since SKSize is immutable we need to create properties that replace the SKSize entirely
-        [DependsOn(nameof(InputValue))]
+        // [DependsOn(nameof(InputValue))]
         public float Width
         {
             get => InputValue.Width;
             set => InputValue = new SKSize(value, Height);
         }
 
-        [DependsOn(nameof(InputValue))]
+        // [DependsOn(nameof(InputValue))]
         public float Height
         {
             get => InputValue.Height;
