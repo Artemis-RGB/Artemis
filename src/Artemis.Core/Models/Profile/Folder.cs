@@ -45,15 +45,15 @@ namespace Artemis.Core.Models.Profile
 
             // Load child folders
             foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                _children.Add(new Folder(profile, this, childFolder));
+                ChildrenList.Add(new Folder(profile, this, childFolder));
             // Load child layers
             foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                _children.Add(new Layer(profile, this, childLayer));
+                ChildrenList.Add(new Layer(profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            _children = _children.OrderBy(c => c.Order).ToList();
-            for (var index = 0; index < _children.Count; index++)
-                _children[index].Order = index + 1;
+            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            for (var index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index + 1;
         }
 
         internal FolderEntity FolderEntity { get; set; }

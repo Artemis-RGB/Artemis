@@ -11,6 +11,8 @@ namespace Artemis.Core.Models.Profile
 {
     public sealed class Profile : ProfileElement
     {
+        private bool _isActivated;
+
         internal Profile(PluginInfo pluginInfo, string name)
         {
             ProfileEntity = new ProfileEntity();
@@ -38,7 +40,12 @@ namespace Artemis.Core.Models.Profile
         }
 
         public PluginInfo PluginInfo { get; }
-        public bool IsActivated { get; private set; }
+
+        public bool IsActivated
+        {
+            get => _isActivated;
+            private set => SetAndNotify(ref _isActivated, value);
+        }
 
         internal ProfileEntity ProfileEntity { get; set; }
 
@@ -78,14 +85,14 @@ namespace Artemis.Core.Models.Profile
         {
             Name = ProfileEntity.Name;
 
-            lock (_children)
+            lock (ChildrenList)
             {
                 foreach (var folder in GetAllFolders())
                     folder.Deactivate();
                 foreach (var layer in GetAllLayers())
                     layer.Deactivate();
 
-                _children.Clear();
+                ChildrenList.Clear();
                 // Populate the profile starting at the root, the rest is populated recursively
                 var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
