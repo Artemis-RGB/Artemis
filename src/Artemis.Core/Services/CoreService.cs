@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Ninject;
-using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -15,6 +15,7 @@ using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
+using Module = Artemis.Core.Plugins.Abstract.Module;
 
 namespace Artemis.Core.Services
 {
@@ -73,7 +74,8 @@ namespace Artemis.Core.Services
             if (IsInitialized)
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
-            _logger.Information("Initializing Artemis Core version {version}", typeof(CoreService).Assembly.GetName().Version);
+            var versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            _logger.Information("Initializing Artemis Core version {version}",  versionAttribute?.InformationalVersion);
             ApplyLoggingLevel();
 
             // Initialize the services

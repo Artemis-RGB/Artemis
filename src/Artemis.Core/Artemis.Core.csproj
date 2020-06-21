@@ -17,6 +17,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup>
+    <NrtRevisionFormat>2.0-{chash:6}</NrtRevisionFormat>
+    <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
+    <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
+    <NrtResolveCopyright>true</NrtResolveCopyright>
+    <NrtTagMatch>v[0-9]*</NrtTagMatch>
+    <NrtRemoveTagV>true</NrtRemoveTagV>
+    <NrtRequiredVcs>git</NrtRequiredVcs>
+    <NrtShowRevision>true</NrtShowRevision>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
       <Private>false</Private>
@@ -43,6 +53,10 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.8.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="Unclassified.NetRevisionTask" Version="0.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="RGB.NET.Brushes">

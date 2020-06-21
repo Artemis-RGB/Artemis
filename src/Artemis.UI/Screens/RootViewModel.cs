@@ -93,10 +93,7 @@ namespace Artemis.UI.Screens
         private void UpdateWindowTitle()
         {
             var versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            if (versionAttribute != null)
-                WindowTitle = $"Artemis {versionAttribute.InformationalVersion} - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
-            else
-                WindowTitle = $"Artemis - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
+            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
         }
 
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)

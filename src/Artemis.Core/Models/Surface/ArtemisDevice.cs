@@ -67,31 +67,51 @@ namespace Artemis.Core.Models.Surface
         public double X
         {
             get => DeviceEntity.X;
-            set => DeviceEntity.X = value;
+            set
+            {
+                DeviceEntity.X = value;
+                NotifyOfPropertyChange(nameof(X));
+            }
         }
 
         public double Y
         {
             get => DeviceEntity.Y;
-            set => DeviceEntity.Y = value;
+            set
+            {
+                DeviceEntity.Y = value;
+                NotifyOfPropertyChange(nameof(Y));
+            }
         }
 
         public double Rotation
         {
             get => DeviceEntity.Rotation;
-            set => DeviceEntity.Rotation = value;
+            set
+            {
+                DeviceEntity.Rotation = value;
+                NotifyOfPropertyChange(nameof(Rotation));
+            }
         }
 
         public double Scale
         {
             get => DeviceEntity.Scale;
-            set => DeviceEntity.Scale = value;
+            set
+            {
+                DeviceEntity.Scale = value;
+                NotifyOfPropertyChange(nameof(Scale));
+            }
         }
 
         public int ZIndex
         {
             get => DeviceEntity.ZIndex;
-            set => DeviceEntity.ZIndex = value;
+            set
+            {
+                DeviceEntity.ZIndex = value;
+                NotifyOfPropertyChange(nameof(ZIndex));
+            }
         }
 
         public override string ToString()
