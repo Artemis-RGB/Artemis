@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair Dominator Platinum RGB</Name>
+  <Description>Physical layout of Corsairs Dominator Platinum RGB</Description>
+  <Type>DRAM</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>GLAIVE RGB</Model>
+  <Width>9</Width>
+  <Height>135</Height>
+  <LedUnitWidth>6</LedUnitWidth>
+  <LedUnitHeight>6</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Memory</ImageBasePath>
+  <DeviceImage>DOMINATORPLATINUMRGB.png</DeviceImage>
+  <Leds>
+    <Led Id="DRAM1">
+      <X>1.5</X>
+      <Y>10.5</Y>
+      <Width>1</Width>
+    </Led>
+    <Led Id="DRAM2">
+      <X>=</X>
+      <Y>+1.6</Y>
+    </Led>
+    <Led Id="DRAM3">
+      <X>=</X>
+      <Y>+1.2</Y>
+    </Led>
+    <Led Id="DRAM4">
+      <X>=</X>
+      <Y>+1.7</Y>
+    </Led>
+    <Led Id="DRAM5">
+      <X>=</X>
+      <Y>+1.3</Y>
+    </Led>
+    <Led Id="DRAM6">
+      <X>=</X>
+      <Y>+5.5</Y>
+      <Height>2.4</Height>
+    </Led>
+    <Led Id="DRAM7">
+      <X>=</X>
+      <Y>+</Y>
+      <Height>2.4</Height>
+    </Led>
+    <Led Id="DRAM8">
+      <X>=</X>
+      <Y>+5.3</Y>
+    </Led>
+    <Led Id="DRAM9">
+      <X>=</X>
+      <Y>+1.8</Y>
+    </Led>
+    <Led Id="DRAM10">
+      <X>=</X>
+      <Y>+1.8</Y>
+    </Led>
+    <Led Id="DRAM11">
+      <X>=</X>
+      <Y>+1.5</Y>
+    </Led>
+    <Led Id="DRAM12">
+      <X>=</X>
+      <Y>+1.8</Y>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM1" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM4" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM5" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM6" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM7" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM8" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM9" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM10" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM11" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM12" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM1" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM4" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM5" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM6" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM7" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="DRAM8" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

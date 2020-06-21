@@ -75,8 +75,7 @@ namespace Artemis.Core.Services
                     var metadataFile = Path.Combine(match.FullName, "plugin.json");
                     if (!File.Exists(metadataFile))
                     {
-                        _logger.Information("Copying missing built-in plugin {name} version: {version}",
-                            builtInPluginInfo.Name, builtInPluginInfo.Version);
+                        _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
                         CopyBuiltInPlugin(subDirectory);
                     }
                     else
@@ -88,15 +87,13 @@ namespace Artemis.Core.Services
                             #if DEBUG
                             if (builtInPluginInfo.Version >= pluginInfo.Version)
                             {
-                                _logger.Information("Copying updated built-in plugin {name} version: {version} (old version: {oldVersion})",
-                                    builtInPluginInfo.Name, builtInPluginInfo.Version, pluginInfo.Version);
+                                _logger.Debug("Copying updated built-in plugin {builtInPluginInfo}", builtInPluginInfo);
                                 CopyBuiltInPlugin(subDirectory);
                             }
                             #else
-                            if (builtInPluginInfo.Version > pluginInfo.Version) 
+                            if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
-                                _logger.Information("Copying updated built-in plugin {name} version: {version} (old version: {oldVersion})", 
-                                    builtInPluginInfo.Name, builtInPluginInfo.Version, pluginInfo.Version);
+                                _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
                                 CopyBuiltInPlugin(subDirectory);
                             }
                             #endif
@@ -139,6 +136,8 @@ namespace Artemis.Core.Services
                         // Locate the main entry
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
                         pluginInfo.Directory = subDirectory;
+
+                        _logger.Debug("Loading plugin {pluginInfo}", pluginInfo);
                         OnPluginLoading(new PluginEventArgs(pluginInfo));
                         LoadPlugin(pluginInfo);
                     }
@@ -165,11 +164,12 @@ namespace Artemis.Core.Services
                     var threwException = false;
                     try
                     {
+                        _logger.Debug("Enabling plugin {pluginInfo}", pluginInfo);
                         pluginInfo.Instance.SetEnabled(true);
                     }
                     catch (Exception e)
                     {
-                        _logger.Warning(new ArtemisPluginException(pluginInfo, "Failed to load enable plugin", e), "Plugin exception");
+                        _logger.Warning(new ArtemisPluginException(pluginInfo, "Failed to enable plugin", e), "Plugin exception");
                         pluginInfo.Enabled = false;
                         threwException = true;
                     }
