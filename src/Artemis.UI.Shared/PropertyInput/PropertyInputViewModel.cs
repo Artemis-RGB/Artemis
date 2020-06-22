@@ -8,6 +8,7 @@ namespace Artemis.UI.Shared.PropertyInput
     public abstract class PropertyInputViewModel<T> : ValidatingModelBase, IDisposable
     {
         private T _inputValue;
+        private bool _inputDragging;
 
         protected PropertyInputViewModel(LayerProperty<T> layerProperty, IProfileEditorService profileEditorService)
         {
@@ -30,14 +31,18 @@ namespace Artemis.UI.Shared.PropertyInput
         public LayerProperty<T> LayerProperty { get; }
         public IProfileEditorService ProfileEditorService { get; }
 
-        public bool InputDragging { get; private set; }
+        public bool InputDragging
+        {
+            get => _inputDragging;
+            private set => SetAndNotify(ref _inputDragging, value);
+        }
 
         public T InputValue
         {
             get => _inputValue;
             set
             {
-                _inputValue = value;
+                SetAndNotify(ref _inputValue, value);
                 ApplyInputValue();
             }
         }

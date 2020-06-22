@@ -7,6 +7,8 @@ namespace Artemis.UI.Shared.Screens.Dialogs
 {
     public class ExceptionDialogViewModel : DialogViewModelBase
     {
+        private List<DialogException> _exceptions;
+
         public ExceptionDialogViewModel(string message, Exception exception)
         {
             Header = message;
@@ -21,8 +23,12 @@ namespace Artemis.UI.Shared.Screens.Dialogs
         }
 
         public string Header { get; }
-        public List<DialogException> Exceptions { get; set; }
 
+        public List<DialogException> Exceptions
+        {
+            get => _exceptions;
+            set => SetAndNotify(ref _exceptions, value);
+        }
 
         public void Close()
         {
