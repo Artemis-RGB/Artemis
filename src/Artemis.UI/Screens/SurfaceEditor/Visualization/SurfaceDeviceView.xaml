@@ -21,12 +21,8 @@
     </UserControl.Resources>
     <Grid>
         <!-- Content -->
-        <Grid Width="{Binding Device.RgbDevice.ActualSize.Width}" Height="{Binding Device.RgbDevice.ActualSize.Height}">
-            <Grid.RenderTransform>
-                <RotateTransform Angle="{Binding Device.Rotation}" />
-            </Grid.RenderTransform>
-
-            <controls:DeviceVisualizer Device="{Binding Device}" />
+        <Grid>
+            <controls:DeviceVisualizer Device="{Binding Device}" VerticalAlignment="Top" HorizontalAlignment="Left"/>
 
             <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
                        Stroke="{DynamicResource MaterialDesignTextBoxBorder}"

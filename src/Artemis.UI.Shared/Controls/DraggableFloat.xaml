@@ -12,7 +12,7 @@
             <Setter Property="Validation.ErrorTemplate" Value="{StaticResource MaterialDesignValidationErrorTemplate}" />
         </Style>
     </UserControl.Style>
-    <StackPanel>
+    <Grid>
         <!-- Drag handle -->
         <Border x:Name="DragHandle" BorderThickness="0,0,0,1" Height="19">
             <Border.BorderBrush>
@@ -28,8 +28,8 @@
             <TextBlock Style="{x:Null}"
                        Width="60"
                        Height="17"
-                       Padding="1 0"
-                       Margin="0 4 0 0"
+                       Padding="2 0"
+                       Margin="0 3 0 0"
                        Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                        Cursor="/Resources/Cursors/aero_drag_ew.cur"
                        Foreground="{DynamicResource SecondaryAccentBrush}"
@@ -42,11 +42,13 @@
         <!-- Input -->
         <TextBox x:Name="Input"
                  Width="60"
-                 Height="20"
+                 Height="21"
+                 Padding="0 0 -2 0"
                  HorizontalAlignment="Left"
                  Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                  LostFocus="InputLostFocus"
                  KeyDown="InputKeyDown"
+                 Visibility="Collapsed"
                  RequestBringIntoView="Input_OnRequestBringIntoView" />
-    </StackPanel>
+    </Grid>
 </UserControl>

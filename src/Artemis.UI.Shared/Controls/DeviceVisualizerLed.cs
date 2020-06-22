@@ -13,12 +13,14 @@ namespace Artemis.UI.Shared.Controls
     {
         public DeviceVisualizerLed(ArtemisLed led)
         {
+            if (led.Device.Scale != 1)
+                Console.WriteLine();
             Led = led;
             LedRect = new Rect(
-                Led.RgbLed.LedRectangle.Location.X,
-                Led.RgbLed.LedRectangle.Location.Y,
-                Led.RgbLed.LedRectangle.Size.Width,
-                Led.RgbLed.LedRectangle.Size.Height
+                Led.RgbLed.Location.X,
+                Led.RgbLed.Location.Y,
+                Led.RgbLed.Size.Width,
+                Led.RgbLed.Size.Height
             );
 
             if (Led.RgbLed.Image != null && File.Exists(Led.RgbLed.Image.AbsolutePath))
@@ -97,7 +99,7 @@ namespace Artemis.UI.Shared.Controls
             }
 
             // Stroke geometry is the display geometry excluding the inner geometry
-            DisplayGeometry.Transform = new TranslateTransform(Led.RgbLed.LedRectangle.Location.X, Led.RgbLed.LedRectangle.Location.Y);
+            DisplayGeometry.Transform = new TranslateTransform(Led.RgbLed.Location.X, Led.RgbLed.Location.Y);
             // Try to gain some performance
             DisplayGeometry.Freeze();
         }

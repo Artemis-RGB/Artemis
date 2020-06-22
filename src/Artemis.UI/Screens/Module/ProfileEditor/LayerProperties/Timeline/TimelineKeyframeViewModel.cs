@@ -23,7 +23,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         #region Context menu actions
 
-        public void Copy()
+        public override void Copy()
         {
             var newKeyframe = new LayerPropertyKeyframe<T>(
                 LayerPropertyKeyframe.Value,
@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public void Delete()
+        public override void Delete()
         {
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
             _profileEditorService.UpdateSelectedProfileElement();
@@ -73,23 +73,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             Timestamp = $"{Math.Floor(BaseLayerPropertyKeyframe.Position.TotalSeconds):00}.{BaseLayerPropertyKeyframe.Position.Milliseconds:000}";
         }
 
-        #region Keyframe movement
+        public abstract void Copy();
 
-        #endregion
+        public abstract void Delete();
 
         #region Easing
 
-        public void ContextMenuOpening()
-        {
-            CreateEasingViewModels();
-        }
-
-        public void ContextMenuClosing()
-        {
-            EasingViewModels.Clear();
-        }
-
-        private void CreateEasingViewModels()
+        public void CreateEasingViewModels()
         {
             EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(v => new TimelineEasingViewModel(this, v)));
         }

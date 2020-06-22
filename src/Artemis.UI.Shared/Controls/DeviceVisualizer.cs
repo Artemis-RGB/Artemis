@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
-using Point = System.Windows.Point;
+using Size = System.Windows.Size;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -29,6 +28,7 @@ namespace Artemis.UI.Shared.Controls
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private BitmapImage _deviceImage;
         private bool _subscribed;
+        private ArtemisDevice _oldDevice;
 
         public DeviceVisualizer()
         {
@@ -38,7 +38,7 @@ namespace Artemis.UI.Shared.Controls
             Loaded += (sender, args) => SubscribeToUpdate(true);
             Unloaded += (sender, args) => SubscribeToUpdate(false);
         }
-        
+
         public ArtemisDevice Device
         {
             get => (ArtemisDevice) GetValue(DeviceProperty);
@@ -68,9 +68,10 @@ namespace Artemis.UI.Shared.Controls
                 return;
 
             // Determine the scale required to fit the desired size of the control
-            var scale = Math.Min(DesiredSize.Width / Device.RgbDevice.Size.Width, DesiredSize.Height / Device.RgbDevice.Size.Height);
-            var scaledRect = new Rect(0, 0, Device.RgbDevice.Size.Width * scale, Device.RgbDevice.Size.Height * scale);
-
+            var measureSize = MeasureOverride(Size.Empty);
+            var scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
+            var scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
+            
             // Center and scale the visualization in the desired bounding box
             if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
             {
@@ -78,14 +79,43 @@ namespace Artemis.UI.Shared.Controls
                 drawingContext.PushTransform(new ScaleTransform(scale, scale));
             }
 
+            // Determine the offset required to rotate within bounds
+            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
+
+            // Apply device rotation
+            drawingContext.PushTransform(new TranslateTransform(0 - rotationRect.Left, 0 - rotationRect.Top));
+            drawingContext.PushTransform(new RotateTransform(Device.Rotation));
+
+            // Apply device scale
+            drawingContext.PushTransform(new ScaleTransform(Device.Scale, Device.Scale));
+
             // Render device and LED images 
             if (_deviceImage != null)
                 drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
-
+            
             foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
                 deviceVisualizerLed.RenderImage(drawingContext);
 
             drawingContext.DrawDrawing(_backingStore);
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (Device == null)
+                return Size.Empty;
+
+            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
+
+            return rotationRect.Size;
+        }
+
+
+        private void UpdateTransform()
+        {
+            InvalidateVisual();
+            InvalidateMeasure();
         }
 
         private void SubscribeToUpdate(bool subscribe)
@@ -121,6 +151,13 @@ namespace Artemis.UI.Shared.Controls
             if (Device == null)
                 return;
 
+            if (_oldDevice != null)
+                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+            _oldDevice = Device;
+
+            Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
+            UpdateTransform();
+
             // Load the device main image
             if (Device.RgbDevice?.DeviceInfo?.Image?.AbsolutePath != null && File.Exists(Device.RgbDevice.DeviceInfo.Image.AbsolutePath))
                 _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
@@ -130,7 +167,10 @@ namespace Artemis.UI.Shared.Controls
                 _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
 
             if (!ShowColors)
+            {
+                InvalidateMeasure();
                 return;
+            }
 
             // Create the opacity drawing group
             var opacityDrawingGroup = new DrawingGroup();
@@ -157,6 +197,14 @@ namespace Artemis.UI.Shared.Controls
             var bitmapBrush = new ImageBrush(bitmap);
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
+
+            InvalidateMeasure();
+        }
+
+        private void DevicePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Device.RgbDevice.Scale) || e.PropertyName == nameof(Device.RgbDevice.Rotation))
+                UpdateTransform();
         }
 
         private void RgbSurfaceOnUpdated(UpdatedEventArgs e)

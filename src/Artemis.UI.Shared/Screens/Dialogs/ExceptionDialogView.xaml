@@ -14,7 +14,7 @@
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding Header}"
                    TextWrapping="Wrap" />
         <Separator Margin="0 15" />
-        <ScrollViewer MaxHeight="500">
+        <ScrollViewer MaxHeight="500" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <ItemsControl ItemsSource="{Binding Exceptions}">
                     <ItemsControl.ItemTemplate>
