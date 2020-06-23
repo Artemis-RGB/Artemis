@@ -6,6 +6,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Ninject;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -24,13 +25,14 @@ namespace Artemis.Core.Services
     /// </summary>
     public class CoreService : ICoreService
     {
+        private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
         private readonly IPluginService _pluginService;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
-        private readonly Stopwatch _frameStopWatch;
+        private List<BaseDataModelExpansion> _dataModelExpansions;
         private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
@@ -48,9 +50,9 @@ namespace Artemis.Core.Services
             _rgbService.Surface.Updated += SurfaceOnUpdated;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
 
-            _modules = _pluginService.GetPluginsOfType<Module>();
-            _pluginService.PluginEnabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
-            _pluginService.PluginDisabled += (sender, args) => _modules = _pluginService.GetPluginsOfType<Module>();
+            _pluginService.PluginEnabled += (sender, args) => UpdatePluginCache();
+            _pluginService.PluginDisabled += (sender, args) => UpdatePluginCache();
+            UpdatePluginCache();
 
             _frameStopWatch = new Stopwatch();
 
@@ -58,7 +60,7 @@ namespace Artemis.Core.Services
         }
 
         public TimeSpan FrameTime { get; private set; }
-        public bool ModuleUpdatingDisabled { get; set; }
+        public bool PluginUpdatingDisabled { get; set; }
         public bool ModuleRenderingDisabled { get; set; }
 
         public void Dispose()
@@ -75,7 +77,7 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             var versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            _logger.Information("Initializing Artemis Core version {version}",  versionAttribute?.InformationalVersion);
+            _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
             ApplyLoggingLevel();
 
             // Initialize the services
@@ -103,6 +105,12 @@ namespace Artemis.Core.Services
             FrameRendered?.Invoke(this, e);
         }
 
+        private void UpdatePluginCache()
+        {
+            _modules = _pluginService.GetPluginsOfType<Module>();
+            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>();
+        }
+
         private void ConfigureJsonConvert()
         {
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
@@ -125,8 +133,15 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
-                if (!ModuleUpdatingDisabled && _modules != null)
+                if (!PluginUpdatingDisabled)
                 {
+                    lock (_dataModelExpansions)
+                    {
+                        // Update all active modules
+                        foreach (var dataModelExpansion in _dataModelExpansions)
+                            dataModelExpansion.Update(args.DeltaTime);
+                    }
+
                     lock (_modules)
                     {
                         // Update all active modules

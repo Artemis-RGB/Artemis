@@ -201,12 +201,12 @@ namespace Artemis.UI.Shared.Services
 
         public void StopRegularRender()
         {
-            _coreService.ModuleUpdatingDisabled = true;
+            _coreService.PluginUpdatingDisabled = true;
         }
 
         public void ResumeRegularRender()
         {
-            _coreService.ModuleUpdatingDisabled = false;
+            _coreService.PluginUpdatingDisabled = false;
         }
 
         protected virtual void OnSelectedProfileChanged(ProfileElementEventArgs e)

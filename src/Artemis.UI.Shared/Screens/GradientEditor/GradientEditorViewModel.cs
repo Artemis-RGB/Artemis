@@ -15,6 +15,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
     {
         private readonly List<ColorGradientStop> _originalStops;
         private ColorStopViewModel _selectedColorStopViewModel;
+        private double _previewWidth;
 
         public GradientEditorViewModel(ColorGradient colorGradient)
         {
@@ -41,7 +42,12 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
 
         public ColorGradient ColorGradient { get; }
-        public double PreviewWidth { get; set; }
+
+        public double PreviewWidth
+        {
+            get => _previewWidth;
+            set => SetAndNotify(ref _previewWidth, value);
+        }
 
         public void AddColorStop(object sender, MouseEventArgs e)
         {

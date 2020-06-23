@@ -13,8 +13,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     ///     Represents a property on a layer. Properties are saved in storage and can optionally be modified from the UI.
     ///     <para>
     ///         Note: You cannot initialize layer properties yourself. If properly placed and annotated, the Artemis core will
-    ///         initialize
-    ///         these for you.
+    ///         initialize these for you.
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
