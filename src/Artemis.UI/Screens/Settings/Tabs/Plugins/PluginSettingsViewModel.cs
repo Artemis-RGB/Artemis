@@ -66,7 +66,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             switch (Plugin)
             {
-                case DataModelExpansion _:
+                case BaseDataModelExpansion _:
                     return PackIconKind.TableAdd;
                 case DeviceProvider _:
                     return PackIconKind.Devices;

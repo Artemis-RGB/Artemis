@@ -18,7 +18,7 @@ namespace Artemis.Core.Services.Interfaces
         /// <summary>
         ///     Gets or sets whether modules are updated each frame by calling their Update method
         /// </summary>
-        bool ModuleUpdatingDisabled { get; set; }
+        bool PluginUpdatingDisabled { get; set; }
 
         /// <summary>
         ///     Gets or sets whether modules are rendered each frame by calling their Render method

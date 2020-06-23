@@ -4,7 +4,6 @@ using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract
 {
-    /// <inheritdoc />
     /// <summary>
     ///     This is the base plugin type, use the other interfaces such as Module to create plugins
     /// </summary>

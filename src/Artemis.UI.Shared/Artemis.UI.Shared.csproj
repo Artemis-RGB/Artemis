@@ -4,9 +4,9 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
     <AssemblyTitle>Artemis.UI.Shared</AssemblyTitle>
-    <Company>HP Inc.</Company>
+    <Company>Artemis.UI.Shared</Company>
     <Product>Artemis.UI.Shared</Product>
-    <Copyright>Copyright © HP Inc. 2019</Copyright>
+    <Copyright>Copyright © Robert Beekman - 2020</Copyright>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>7.3</LangVersion>
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
@@ -27,6 +27,7 @@
     <NrtRemoveTagV>true</NrtRemoveTagV>
     <NrtRequiredVcs>git</NrtRequiredVcs>
     <NrtShowRevision>true</NrtShowRevision>
+    <Version>2.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />

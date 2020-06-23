@@ -80,7 +80,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         {
             var result = await DialogService.ShowDialog<ProfileCreateViewModel>();
             if (result is string name)
-                CreateProfile(name);
+            {
+                var newProfile = CreateProfile(name);
+                SelectedProfile = newProfile;
+            }
         }
 
         public async Task DeleteActiveProfile()

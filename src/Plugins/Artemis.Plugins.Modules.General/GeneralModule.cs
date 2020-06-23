@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Plugins.Modules.General.ViewModels;
 
 namespace Artemis.Plugins.Modules.General
 {
-    public class GeneralModule : ProfileModule
+    public class GeneralModule : ProfileModule<GeneralDataModel>
     {
         private readonly PluginSettings _settings;
 
@@ -25,8 +26,8 @@ namespace Artemis.Plugins.Modules.General
         {
             DisplayName = "General";
             DisplayIcon = "AllInclusive";
-            ExpandsMainDataModel = true;
-            DataModel = new GeneralDataModel(this);
+            ExpandsDataModel = true;
+
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }

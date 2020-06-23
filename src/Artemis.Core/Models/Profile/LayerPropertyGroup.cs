@@ -44,7 +44,7 @@ namespace Artemis.Core.Models.Profile
         public LayerPropertyGroup Parent { get; internal set; }
 
         /// <summary>
-        ///     Gets whether this property group's properties are all initialized
+        ///     Gets whether this property groups properties are all initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
 

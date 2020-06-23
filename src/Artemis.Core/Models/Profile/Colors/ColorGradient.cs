@@ -10,13 +10,25 @@ namespace Artemis.Core.Models.Profile.Colors
 {
     public class ColorGradient : INotifyPropertyChanged
     {
+        private float _rotation;
+
         public ColorGradient()
         {
             Stops = new BindableCollection<ColorGradientStop>();
         }
 
         public BindableCollection<ColorGradientStop> Stops { get; }
-        public float Rotation { get; set; }
+
+        public float Rotation
+        {
+            get => _rotation;
+            set
+            {
+                if (value.Equals(_rotation)) return;
+                _rotation = value;
+                OnPropertyChanged();
+            }
+        }
 
         public SKColor[] GetColorsArray()
         {
