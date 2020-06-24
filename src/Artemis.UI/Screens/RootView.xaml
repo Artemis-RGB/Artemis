@@ -57,7 +57,15 @@
                             IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}"
                             Title="{Binding ActiveItem.DisplayName}"
                             ShowNavigationDrawerButton="True"
-                            DockPanel.Dock="Top" />
+                            DockPanel.Dock="Top">
+                    <StackPanel>
+                        <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Open debugger" Command="{s:Action ShowDebugger}"
+                                materialDesign:RippleAssist.RippleOnTop="True">
+                            <materialDesign:PackIcon Kind="Matrix" />
+                        </Button>
+                    </StackPanel>
+                </mde:AppBar>
                 <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
             </DockPanel>
         </materialDesign:DrawerHost>

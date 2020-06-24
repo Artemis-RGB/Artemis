@@ -25,7 +25,7 @@
                     DockPanel.Dock="Top"
                     Margin="-18 0 0 0">
             <mde:AppBar.AppIcon>
-                <materialDesign:PackIcon Kind="BugReport" Width="20" Height="28" />
+                <materialDesign:PackIcon Kind="Matrix" Width="20" Height="28" />
             </mde:AppBar.AppIcon>
             
             <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
