@@ -10,12 +10,11 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Core.Utilities;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
-using Ninject;
 using Serilog.Events;
 using Stylet;
 
@@ -23,29 +22,24 @@ namespace Artemis.UI.Screens.Settings
 {
     public class SettingsViewModel : MainScreenViewModel
     {
+        private readonly IDebugService _debugService;
         private readonly IDeviceSettingsVmFactory _deviceSettingsVmFactory;
         private readonly IDialogService _dialogService;
-        private readonly IKernel _kernel;
         private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
         private readonly IWindowManager _windowManager;
 
-        public SettingsViewModel(IKernel kernel,
-            ISurfaceService surfaceService,
-            IPluginService pluginService,
-            IDialogService dialogService,
-            IWindowManager windowManager,
-            ISettingsService settingsService,
-            IDeviceSettingsVmFactory deviceSettingsVmFactory)
+        public SettingsViewModel(ISurfaceService surfaceService, IPluginService pluginService, IDialogService dialogService, IWindowManager windowManager,
+            IDebugService debugService, ISettingsService settingsService, IDeviceSettingsVmFactory deviceSettingsVmFactory)
         {
             DisplayName = "Settings";
 
-            _kernel = kernel;
             _surfaceService = surfaceService;
             _pluginService = pluginService;
             _dialogService = dialogService;
             _windowManager = windowManager;
+            _debugService = debugService;
             _settingsService = settingsService;
             _deviceSettingsVmFactory = deviceSettingsVmFactory;
 
@@ -160,7 +154,7 @@ namespace Artemis.UI.Screens.Settings
 
         public void ShowDebugger()
         {
-            _windowManager.ShowWindow(_kernel.Get<DebugViewModel>());
+            _debugService.ShowDebugger();
         }
 
         public async Task ShowLogsFolder()

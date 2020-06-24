@@ -10,6 +10,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
 using MaterialDesignThemes.Wpf;
 using Stylet;
@@ -20,16 +21,19 @@ namespace Artemis.UI.Screens
     {
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
+        private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
         private readonly ThemeWatcher _themeWatcher;
-        private bool _lostFocus;
         private readonly Timer _titleUpdateTimer;
+        private bool _lostFocus;
 
-        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService)
+        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService, 
+            IDebugService debugService)
         {
             SidebarViewModel = sidebarViewModel;
             _eventAggregator = eventAggregator;
             _coreService = coreService;
+            _debugService = debugService;
 
             _titleUpdateTimer = new Timer(500);
             _titleUpdateTimer.Elapsed += (sender, args) => UpdateWindowTitle();
@@ -67,6 +71,11 @@ namespace Artemis.UI.Screens
 
             _lostFocus = false;
             _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
+        }
+
+        public void ShowDebugger()
+        {
+            _debugService.ShowDebugger();
         }
 
         public void WindowKeyDown(object sender, KeyEventArgs e)
