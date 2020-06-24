@@ -11,20 +11,6 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
 {
     public abstract class DataModel
     {
-        private static readonly List<Type> SupportedTypes = new List<Type>
-        {
-            typeof(bool),
-            typeof(byte),
-            typeof(decimal),
-            typeof(double),
-            typeof(float),
-            typeof(int),
-            typeof(long),
-            typeof(string),
-            typeof(SKColor),
-            typeof(SKPoint)
-        };
-
         /// <summary>
         ///     Gets the plugin info this data model belongs to
         /// </summary>
@@ -62,31 +48,19 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
             foreach (var propertyInfo in GetType().GetProperties())
             {
                 var dataModelPropertyAttribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
-                if (dataModelPropertyAttribute == null)
+                if (dataModelPropertyAttribute == null || !typeof(DataModel).IsAssignableFrom(propertyInfo.PropertyType))
                     continue;
 
-                // If the a nested datamodel create an instance and initialize it
-                if (typeof(DataModel).IsAssignableFrom(propertyInfo.PropertyType))
-                {
-                    var instance = (DataModel) Activator.CreateInstance(propertyInfo.PropertyType, true);
-                    if (instance == null)
-                        throw new ArtemisCoreException($"Failed to create instance of child datamodel at {propertyInfo.Name}");
+                // If the property is a nested datamodel create an instance and initialize it
+                var instance = (DataModel) Activator.CreateInstance(propertyInfo.PropertyType, true);
+                if (instance == null)
+                    throw new ArtemisCoreException($"Failed to create instance of child datamodel at {propertyInfo.Name}");
 
-                    instance.PluginInfo = PluginInfo;
-                    instance.DataModelDescription = dataModelPropertyAttribute;
-                    instance.Initialize();
+                instance.PluginInfo = PluginInfo;
+                instance.DataModelDescription = dataModelPropertyAttribute;
+                instance.Initialize();
 
-                    propertyInfo.SetValue(this, instance);
-                }
-                else if (!SupportedTypes.Contains(propertyInfo.PropertyType))
-                {
-                    // Show a useful error for plugin devs
-                    throw new ArtemisPluginException(PluginInfo,
-                        $"Plugin datamodel contains property of unsupported type {propertyInfo.PropertyType.Name}. \r\n\r\n" +
-                        $"Property name: {propertyInfo.Name}\r\n" +
-                        $"Property declared on: {propertyInfo.DeclaringType?.Name ?? "-"} \r\n\r\n" +
-                        $"Supported properties:\r\n{string.Join("\r\n", SupportedTypes.Select(t => $" - {t.Name}"))}");
-                }
+                propertyInfo.SetValue(this, instance);
             }
 
             Initialized = true;
