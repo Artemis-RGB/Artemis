@@ -13,9 +13,7 @@ namespace Artemis.Storage.Repositories
         {
             _repository = repository;
 
-            _repository.Database.GetCollection<PluginEntity>().EnsureIndex(s => s.PluginGuid);
-            _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => s.Name);
-            _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => s.PluginGuid);
+            _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => new {s.Name, s.PluginGuid}, true);
         }
 
         public void AddPlugin(PluginEntity pluginEntity)
@@ -25,12 +23,13 @@ namespace Artemis.Storage.Repositories
 
         public PluginEntity GetPluginByGuid(Guid pluginGuid)
         {
-            return _repository.FirstOrDefault<PluginEntity>(p => p.PluginGuid == pluginGuid);
+            return _repository.FirstOrDefault<PluginEntity>(p => p.Id == pluginGuid);
         }
 
         public void SavePlugin(PluginEntity pluginEntity)
         {
             _repository.Upsert(pluginEntity);
+            _repository.Database.Checkpoint();
         }
 
         public void AddSetting(PluginSettingEntity pluginSettingEntity)

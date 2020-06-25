@@ -3,7 +3,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class AttributeBasedPropertiesMigration : IStorageMigration
+    public class M1AttributeBasedPropertiesMigration : IStorageMigration
     {
         public int UserVersion => 1;
 
