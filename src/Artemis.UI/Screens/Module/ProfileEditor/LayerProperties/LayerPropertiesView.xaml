@@ -66,8 +66,9 @@
             <RowDefinition Height="28" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1.5*" />
         </Grid.ColumnDefinitions>
 
         <!-- Left side -->
@@ -157,8 +158,11 @@
             </materialDesign:DialogHost>
         </Grid>
 
+        <!-- Resize -->
+        <GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Width="15" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="-15 0" Background="Transparent" />
+
         <!-- Right side -->
-        <Grid Grid.Row="0" Grid.Column="1">
+        <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
                 <RowDefinition Height="*" />
@@ -214,72 +218,124 @@
 
         <!-- Bottom row, a bit hacky but has a ZIndex of 2 to cut off the time caret that overlaps the entire timeline -->
         <Grid Grid.Row="1"
-              Grid.ColumnSpan="2"
               Grid.Column="0"
               HorizontalAlignment="Stretch"
               Panel.ZIndex="2"
               Background="{DynamicResource MaterialDesignCardBackground}">
             <!-- Selected layer controls -->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            Margin="6"
-                            Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}">
-                    <materialDesign:PackIcon Kind="Layers" Width="16" />
-                    <materialDesign:PackIcon Kind="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
-                                             Width="16"
-                                             Margin="5 0 0 0"
-                                             ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
-                                             Background="Transparent"
-                                             Visibility="{Binding SelectedLayer.LayerBrush, Converter={StaticResource NullToVisibilityConverter}}" />
-                    <TextBlock Text="{Binding SelectedLayer.Name}" Margin="5 0 0 0" />
-                </StackPanel>
-                <StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            Margin="6"
-                            Visibility="{Binding SelectedFolder, Converter={StaticResource NullToVisibilityConverter}}">
-                    <materialDesign:PackIcon Kind="Folder" Width="16" />
-                    <TextBlock Text="{Binding SelectedFolder.Name}" Margin="5 0 0 0" />
-                </StackPanel>
-                <Button Grid.Column="1"
-                        Style="{StaticResource MaterialDesignFlatMidBgButton}"
-                        Margin="0 -2"
-                        Padding="10 0"
-                        Height="20"
-                        Width="110"
-                        ToolTip="Select an effect to add"
-                        VerticalAlignment="Center"
-                        Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                        Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
-                        CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
-                    <TextBlock FontSize="10">
-                        ADD EFFECT
-                    </TextBlock>
-                </Button>
-                <Button Grid.Column="1"
-                        Style="{StaticResource MaterialDesignFlatMidBgButton}"
-                        Margin="0 -2"
-                        Padding="10 0"
-                        Height="20"
-                        Width="110"
-                        ToolTip="Show the layer/folder properties"
-                        VerticalAlignment="Center"
-                        Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
-                        Command="{x:Static materialDesign:Transitioner.MoveFirstCommand}"
-                        CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
-                    <TextBlock FontSize="10">
-                        SHOW PROPERTIES
-                    </TextBlock>
-                </Button>
-            </Grid>
+
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="6"
+                        Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}">
+                <materialDesign:PackIcon Kind="Layers" Width="16" />
+                <materialDesign:PackIcon Kind="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
+                                         Width="16"
+                                         Margin="5 0 0 0"
+                                         ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                         Background="Transparent"
+                                         Visibility="{Binding SelectedLayer.LayerBrush, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock Text="{Binding SelectedLayer.Name}" Margin="5 0 0 0" />
+            </StackPanel>
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="6"
+                        Visibility="{Binding SelectedFolder, Converter={StaticResource NullToVisibilityConverter}}">
+                <materialDesign:PackIcon Kind="Folder" Width="16" />
+                <TextBlock Text="{Binding SelectedFolder.Name}" Margin="5 0 0 0" />
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                    Margin="0 -2 5 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Select an effect to add"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                    Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                <TextBlock FontSize="11">
+                    ADD EFFECT
+                </TextBlock>
+            </Button>
+            <Button Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                    Margin="0 -2 5 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Show the layer/folder properties"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
+                    Command="{x:Static materialDesign:Transitioner.MoveFirstCommand}"
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                <TextBlock FontSize="11">
+                    SHOW PROPERTIES
+                </TextBlock>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Grid.Column="2"
+              HorizontalAlignment="Stretch"
+              Panel.ZIndex="2"
+              Background="{DynamicResource MaterialDesignCardBackground}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="0" Height="20" Margin="5 0 0 0">
+                <ListBoxItem Padding="10 0">
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Placement="Top" VerticalOffset="-5">
+                            <StackPanel>
+                                <TextBlock>Select the <Run FontWeight="Bold">enter</Run> timeline</TextBlock>
+                                <TextBlock>Played when the folder/layer starts displaying (condition is met)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ListBoxItem.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="RayStart" Width="20" Height="20" Margin="0 -4" />
+                        <TextBlock Margin="5 0 0 0" FontSize="11">ENTER</TextBlock>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Padding="10 0">
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Placement="Top" VerticalOffset="-5">
+                            <StackPanel>
+                                <TextBlock>Select the <Run FontWeight="Bold">main</Run> timeline</TextBlock>
+                                <TextBlock>Played after the enter timeline finishes, either on repeat or once</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ListBoxItem.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="RayStartEnd" Width="20" Height="20" Margin="0 -4" />
+                        <TextBlock Margin="5 0 0 0" FontSize="11">MAIN</TextBlock>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Padding="10 0">
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Placement="Top" VerticalOffset="-5">
+                            <StackPanel>
+                                <TextBlock>Select the <Run FontWeight="Bold">exit</Run> timeline</TextBlock>
+                                <TextBlock>Played when the folder/layer stops displaying (conditon no longer met)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+
+                    </ListBoxItem.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="RayEnd" Width="20" Height="20" Margin="0 -4" />
+                        <TextBlock Margin="5 0 0 0" FontSize="11">EXIT</TextBlock>
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
 
             <!-- Zoom control -->
             <Slider Grid.Column="1"
@@ -290,6 +346,7 @@
                     Maximum="350"
                     Value="{Binding ProfileEditorService.PixelsPerSecond}"
                     Width="319" />
+
         </Grid>
     </Grid>
 </UserControl>
