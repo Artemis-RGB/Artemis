@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared.Ninject
                     .Configure(c => c.InSingletonScope());
             });
 
-            Kernel.Bind<ISnackbarMessageQueue>().ToConstant(new SnackbarMessageQueue()).InSingletonScope();
+            Kernel.Bind<ISnackbarMessageQueue>().ToConstant(new SnackbarMessageQueue(TimeSpan.FromSeconds(5))).InSingletonScope();
         }
     }
 }

@@ -47,6 +47,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public bool Enabling { get; set; }
 
+        public bool DisplayLoadFailed => !Enabling && !PluginInfo.LastEnableSuccessful;
+
         public async Task OpenSettings()
         {
             try
@@ -106,7 +108,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             if (PluginInfo.Enabled == enable)
             {
-                NotifyOfPropertyChange(() => IsEnabled);
+                NotifyOfPropertyChange(nameof(IsEnabled));
                 return;
             }
 
@@ -118,7 +120,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 );
                 if (!confirm)
                 {
-                    NotifyOfPropertyChange(() => IsEnabled);
+                    NotifyOfPropertyChange(nameof(IsEnabled));
                     return;
                 }
             }
@@ -126,25 +128,28 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             if (enable)
             {
                 Enabling = true;
+                NotifyOfPropertyChange(nameof(DisplayLoadFailed));
+
                 try
                 {
                     _pluginService.EnablePlugin(Plugin);
                     _snackbarMessageQueue.Enqueue($"Enabled plugin {PluginInfo.Name}");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}", "VIEW LOGS", async () => await ShowLogsFolder());
+                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}\r\n{e.Message}", "VIEW LOGS", async () => await ShowLogsFolder());
                 }
                 finally
                 {
                     Enabling = false;
-                    NotifyOfPropertyChange(() => IsEnabled);
+                    NotifyOfPropertyChange(nameof(IsEnabled));
+                    NotifyOfPropertyChange(nameof(DisplayLoadFailed));
                 }
             }
             else
                 _pluginService.DisablePlugin(Plugin);
 
-            NotifyOfPropertyChange(() => IsEnabled);
+            NotifyOfPropertyChange(nameof(IsEnabled));
         }
     }
 }

@@ -36,7 +36,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -45,9 +45,14 @@
 
                 <materialDesign:PackIcon Kind="{Binding Icon}" Width="48" Height="48" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" />
 
-                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding PluginInfo.Name}"  />
-                <materialDesign:Card Grid.Column="2" Grid.Row="0" Background="#FF4343" Height="22" Padding="4" Margin="0 -18 0 0"
-                                     Visibility="{Binding PluginInfo.LastEnableSuccessful, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding PluginInfo.Name}" />
+                <materialDesign:Card Grid.Column="2" Grid.Row="0"
+                                     Background="#FF4343"
+                                     Foreground="White"
+                                     Height="22"
+                                     Padding="4"
+                                     Margin="0 -18 0 0"
+                                     Visibility="{Binding DisplayLoadFailed, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
                     LOAD FAILED
                 </materialDesign:Card>
 

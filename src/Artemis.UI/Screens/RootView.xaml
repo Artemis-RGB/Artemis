@@ -70,7 +70,7 @@
                     <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
                 </DockPanel>
             </materialDesign:DrawerHost>
-            <materialDesign:Snackbar x:Name="MainSnackbar" MessageQueue="{Binding MainMessageQueue}" />
+            <materialDesign:Snackbar x:Name="MainSnackbar" MessageQueue="{Binding MainMessageQueue}" materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80" materialDesign:SnackbarMessage.ContentMaxHeight="200" />
         </Grid>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>
