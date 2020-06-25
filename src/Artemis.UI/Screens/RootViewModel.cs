@@ -12,6 +12,7 @@ using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
+using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 
@@ -23,8 +24,10 @@ namespace Artemis.UI.Screens
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ISettingsService _settingsService;
         private readonly ThemeWatcher _themeWatcher;
         private readonly Timer _titleUpdateTimer;
+        private readonly PluginSetting<WindowSize> _windowSize;
         private bool _lostFocus;
 
         public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
@@ -33,12 +36,14 @@ namespace Artemis.UI.Screens
             SidebarViewModel = sidebarViewModel;
             MainMessageQueue = snackbarMessageQueue;
             _eventAggregator = eventAggregator;
+            _settingsService = settingsService;
             _coreService = coreService;
             _debugService = debugService;
 
             _titleUpdateTimer = new Timer(500);
             _titleUpdateTimer.Elapsed += (sender, args) => UpdateWindowTitle();
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+            _windowSize = settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
             _colorScheme.SettingChanged += (sender, args) => ApplyColorSchemeSetting();
             _themeWatcher = new ThemeWatcher();
             _themeWatcher.ThemeChanged += (sender, args) => ApplyWindowsTheme(args.Theme);
@@ -54,7 +59,7 @@ namespace Artemis.UI.Screens
         public bool IsSidebarVisible { get; set; }
         public bool ActiveItemReady { get; set; }
         public string WindowTitle { get; set; }
-        
+
         public void WindowDeactivated()
         {
             var windowState = ((Window) View).WindowState;
@@ -89,16 +94,6 @@ namespace Artemis.UI.Screens
             _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
         }
 
-        protected override void OnActivate()
-        {
-            UpdateWindowTitle();
-            _titleUpdateTimer.Start();
-        }
-
-        protected override void OnDeactivate()
-        {
-            _titleUpdateTimer.Stop();
-        }
 
         private void UpdateWindowTitle()
         {
@@ -152,5 +147,39 @@ namespace Artemis.UI.Screens
             var extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
+
+        #region Overrides of Screen
+
+        protected override void OnViewLoaded()
+        {
+            var window = (MaterialWindow) View;
+            if (_windowSize.Value != null)
+                _windowSize.Value.ApplyToWindow(window);
+            else
+            {
+                _windowSize.Value = new WindowSize();
+                _windowSize.Value.ApplyFromWindow(window);
+            }
+
+            base.OnViewLoaded();
+        }
+
+        protected override void OnActivate()
+        {
+            UpdateWindowTitle();
+            _titleUpdateTimer.Start();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _titleUpdateTimer.Stop();
+
+            var window = (MaterialWindow) View;
+            _windowSize.Value ??= new WindowSize();
+            _windowSize.Value.ApplyFromWindow(window);
+            _windowSize.Save();
+        }
+
+        #endregion
     }
 }
