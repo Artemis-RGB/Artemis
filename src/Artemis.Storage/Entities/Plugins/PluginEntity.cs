@@ -8,7 +8,6 @@ namespace Artemis.Storage.Entities.Plugins
     public class PluginEntity
     {
         public Guid Id { get; set; }
-        public Guid PluginGuid { get; set; }
 
         public bool IsEnabled { get; set; }
         public bool LastEnableSuccessful { get; set; }

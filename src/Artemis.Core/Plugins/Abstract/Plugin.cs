@@ -52,13 +52,30 @@ namespace Artemis.Core.Plugins.Abstract
             if (enable && !Enabled)
             {
                 Enabled = true;
-                EnablePlugin();
+                PluginInfo.Enabled = true;
+                
+                // If enable failed, put it back in a disabled state
+                try
+                {
+                    EnablePlugin();
+                }
+                catch
+                {
+                    Enabled = false;
+                    PluginInfo.Enabled = false;
+                    throw;
+                }
+
                 OnPluginEnabled();
             }
             else if (!enable && Enabled)
             {
                 Enabled = false;
+                PluginInfo.Enabled = false;
+
+                // Even if disable failed, still leave it in a disabled state to avoid more issues
                 DisablePlugin();
+                
                 OnPluginDisabled();
             }
         }

@@ -137,8 +137,6 @@ namespace Artemis.Core.Services
                         var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
                         pluginInfo.Directory = subDirectory;
 
-                        _logger.Debug("Loading plugin {pluginInfo}", pluginInfo);
-                        OnPluginLoading(new PluginEventArgs(pluginInfo));
                         LoadPlugin(pluginInfo);
                     }
                     catch (Exception e)
@@ -150,38 +148,22 @@ namespace Artemis.Core.Services
                 // Activate plugins after they are all loaded
                 foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
                 {
-                    if (!pluginInfo.PluginEntity.LastEnableSuccessful)
+                    if (!pluginInfo.LastEnableSuccessful)
                     {
                         pluginInfo.Enabled = false;
                         _logger.Warning("Plugin failed to load last time, disabling it now to avoid instability. Plugin info: {pluginInfo}", pluginInfo);
                         continue;
                     }
 
-                    // Mark this as false until the plugin enabled successfully and save it in case the plugin drags us down into a crash
-                    pluginInfo.PluginEntity.LastEnableSuccessful = false;
-                    _pluginRepository.SavePlugin(pluginInfo.PluginEntity);
-
-                    var threwException = false;
                     try
                     {
-                        _logger.Debug("Enabling plugin {pluginInfo}", pluginInfo);
-                        pluginInfo.Instance.SetEnabled(true);
+                        EnablePlugin(pluginInfo.Instance);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        _logger.Warning(new ArtemisPluginException(pluginInfo, "Failed to enable plugin", e), "Plugin exception");
-                        pluginInfo.Enabled = false;
-                        threwException = true;
+                        // ignored, logged in EnablePlugin
                     }
-
-                    // We got this far so the plugin enabled and we didn't crash horribly, yay
-                    if (!threwException)
-                    {
-                        pluginInfo.PluginEntity.LastEnableSuccessful = true;
-                        _pluginRepository.SavePlugin(pluginInfo.PluginEntity);
-                    }
-
-                    OnPluginEnabled(new PluginEventArgs(pluginInfo));
+                    
                 }
 
                 LoadingPlugins = false;
@@ -213,16 +195,20 @@ namespace Artemis.Core.Services
         {
             lock (_plugins)
             {
+                _logger.Debug("Loading plugin {pluginInfo}", pluginInfo);
+                OnPluginLoading(new PluginEventArgs(pluginInfo));
+
                 // Unload the plugin first if it is already loaded
                 if (_plugins.Contains(pluginInfo))
                     UnloadPlugin(pluginInfo);
 
                 var pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
                 if (pluginEntity == null)
-                    pluginEntity = new PluginEntity {PluginGuid = pluginInfo.Guid, IsEnabled = true, LastEnableSuccessful = true};
+                    pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true, LastEnableSuccessful = true};
 
                 pluginInfo.PluginEntity = pluginEntity;
                 pluginInfo.Enabled = pluginEntity.IsEnabled;
+                pluginInfo.LastEnableSuccessful = pluginEntity.LastEnableSuccessful;
 
                 var mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
                 if (!File.Exists(mainFile))
@@ -310,28 +296,37 @@ namespace Artemis.Core.Services
 
         public void EnablePlugin(Plugin plugin)
         {
-            plugin.PluginInfo.Enabled = true;
-            plugin.PluginInfo.PluginEntity.IsEnabled = true;
-            plugin.PluginInfo.PluginEntity.LastEnableSuccessful = false;
-            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+            lock (_plugins)
+            {
+                _logger.Debug("Enabling plugin {pluginInfo}", plugin.PluginInfo);
 
-            var threwException = false;
-            try
-            {
-                plugin.SetEnabled(true);
-            }
-            catch (Exception e)
-            {
-                _logger.Warning(new ArtemisPluginException(plugin.PluginInfo, "Failed to enable plugin", e), "Plugin exception");
-                plugin.PluginInfo.Enabled = false;
-                threwException = true;
-            }
+                plugin.PluginInfo.LastEnableSuccessful = false;
+                plugin.PluginInfo.ApplyToEntity();
 
-            // We got this far so the plugin enabled and we didn't crash horribly, yay
-            if (!threwException)
-            {
-                plugin.PluginInfo.PluginEntity.LastEnableSuccessful = true;
                 _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+                try
+                {
+                    plugin.SetEnabled(true);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warning(new ArtemisPluginException(plugin.PluginInfo, "Exception during SetEnabled(true)", e), "Failed to enable plugin");
+                    throw;
+                }
+                finally
+                {
+                    // We got this far so the plugin enabled and we didn't crash horribly, yay
+                    if (plugin.PluginInfo.Enabled)
+                    {
+                        plugin.PluginInfo.LastEnableSuccessful = true;
+                        plugin.PluginInfo.ApplyToEntity();
+
+                        _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+                        _logger.Debug("Successfully enabled plugin {pluginInfo}", plugin.PluginInfo);
+                    }
+                }
             }
 
             OnPluginEnabled(new PluginEventArgs(plugin.PluginInfo));
@@ -339,18 +334,29 @@ namespace Artemis.Core.Services
 
         public void DisablePlugin(Plugin plugin)
         {
-            plugin.PluginInfo.Enabled = false;
-            plugin.PluginInfo.PluginEntity.IsEnabled = false;
-            _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
-
-            // Device providers cannot be disabled at runtime, restart the application
-            if (plugin is DeviceProvider)
+            lock (_plugins)
             {
-                CurrentProcessUtilities.Shutdown(2, true);
-                return;
-            }
+                _logger.Debug("Disabling plugin {pluginInfo}", plugin.PluginInfo);
 
-            plugin.SetEnabled(false);
+                // Device providers cannot be disabled at runtime, restart the application
+                if (plugin is DeviceProvider)
+                {
+                    // Don't call SetEnabled(false) but simply update enabled state and save it
+                    plugin.PluginInfo.Enabled = false;
+                    plugin.PluginInfo.ApplyToEntity();
+                    _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+                    _logger.Debug("Shutting down for device provider disable {pluginInfo}", plugin.PluginInfo);
+                    CurrentProcessUtilities.Shutdown(2, true);
+                    return;
+                }
+
+                plugin.SetEnabled(false);
+                plugin.PluginInfo.ApplyToEntity();
+                _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+
+                _logger.Debug("Successfully disabled plugin {pluginInfo}", plugin.PluginInfo);
+            }
 
             OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }

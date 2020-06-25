@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
@@ -13,9 +15,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly IPluginService _pluginService;
+        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly IWindowManager _windowManager;
 
-        public PluginSettingsViewModel(Plugin plugin, IWindowManager windowManager, IDialogService dialogService, IPluginService pluginService)
+        public PluginSettingsViewModel(Plugin plugin, IWindowManager windowManager, IDialogService dialogService, IPluginService pluginService,
+            ISnackbarMessageQueue snackbarMessageQueue)
         {
             Plugin = plugin;
             PluginInfo = plugin.PluginInfo;
@@ -23,6 +27,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginService = pluginService;
+            _snackbarMessageQueue = snackbarMessageQueue;
         }
 
         public Plugin Plugin { get; set; }
@@ -40,6 +45,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;
 
+        public bool Enabling { get; set; }
+
         public async Task OpenSettings()
         {
             try
@@ -52,6 +59,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             {
                 await _dialogService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
                 throw;
+            }
+        }
+
+        public async Task ShowLogsFolder()
+        {
+            try
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
         }
 
@@ -105,7 +124,23 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
 
             if (enable)
-                _pluginService.EnablePlugin(Plugin);
+            {
+                Enabling = true;
+                try
+                {
+                    _pluginService.EnablePlugin(Plugin);
+                    _snackbarMessageQueue.Enqueue($"Enabled plugin {PluginInfo.Name}");
+                }
+                catch (Exception)
+                {
+                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}", "VIEW LOGS", async () => await ShowLogsFolder());
+                }
+                finally
+                {
+                    Enabling = false;
+                    NotifyOfPropertyChange(() => IsEnabled);
+                }
+            }
             else
                 _pluginService.DisablePlugin(Plugin);
 

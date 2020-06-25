@@ -47,27 +47,30 @@
             </Style.Triggers>
         </Style>
     </mde:MaterialWindow.Resources>
-    <materialDesign:DialogHost Identifier="RootDialog" DialogTheme="Inherit">
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
-            </materialDesign:DrawerHost.LeftDrawerContent>
-            <DockPanel>
-                <mde:AppBar Type="Dense"
-                            IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}"
-                            Title="{Binding ActiveItem.DisplayName}"
-                            ShowNavigationDrawerButton="True"
-                            DockPanel.Dock="Top">
-                    <StackPanel>
-                        <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
-                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Open debugger" Command="{s:Action ShowDebugger}"
-                                materialDesign:RippleAssist.RippleOnTop="True">
-                            <materialDesign:PackIcon Kind="Matrix" />
-                        </Button>
-                    </StackPanel>
-                </mde:AppBar>
-                <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
-            </DockPanel>
-        </materialDesign:DrawerHost>
+    <materialDesign:DialogHost Identifier="RootDialog" DialogTheme="Inherit" SnackbarMessageQueue="{Binding MainMessageQueue}">
+        <Grid>
+            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
+                <materialDesign:DrawerHost.LeftDrawerContent>
+                    <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
+                </materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel>
+                    <mde:AppBar Type="Dense"
+                                IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}"
+                                Title="{Binding ActiveItem.DisplayName}"
+                                ShowNavigationDrawerButton="True"
+                                DockPanel.Dock="Top">
+                        <StackPanel>
+                            <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
+                            <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Open debugger" Command="{s:Action ShowDebugger}"
+                                    materialDesign:RippleAssist.RippleOnTop="True">
+                                <materialDesign:PackIcon Kind="Matrix" />
+                            </Button>
+                        </StackPanel>
+                    </mde:AppBar>
+                    <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
+                </DockPanel>
+            </materialDesign:DrawerHost>
+            <materialDesign:Snackbar x:Name="MainSnackbar" MessageQueue="{Binding MainMessageQueue}" />
+        </Grid>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>

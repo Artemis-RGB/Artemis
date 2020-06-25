@@ -4,7 +4,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class ProfileEntitiesEnabledMigration : IStorageMigration
+    public class M2ProfileEntitiesEnabledMigration : IStorageMigration
     {
         public int UserVersion => 2;
 

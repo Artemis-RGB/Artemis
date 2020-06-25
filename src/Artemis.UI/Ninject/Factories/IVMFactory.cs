@@ -13,6 +13,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
+using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Stylet;
 
 namespace Artemis.UI.Ninject.Factories
@@ -24,6 +25,11 @@ namespace Artemis.UI.Ninject.Factories
     public interface IModuleVmFactory : IVmFactory
     {
         ModuleRootViewModel Create(Module module);
+    }
+
+    public interface IPluginSettingsVmFactory : IVmFactory
+    {
+        PluginSettingsViewModel Create(Plugin plugin);
     }
 
     public interface IDeviceSettingsVmFactory : IVmFactory

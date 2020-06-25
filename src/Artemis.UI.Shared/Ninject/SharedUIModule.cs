@@ -1,6 +1,7 @@
 ﻿using System;
 using Artemis.UI.Shared.Ninject.Factories;
 using Artemis.UI.Shared.Services.Interfaces;
+using MaterialDesignThemes.Wpf;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
@@ -32,6 +33,8 @@ namespace Artemis.UI.Shared.Ninject
                     .BindAllInterfaces()
                     .Configure(c => c.InSingletonScope());
             });
+
+            Kernel.Bind<ISnackbarMessageQueue>().ToConstant(new SnackbarMessageQueue()).InSingletonScope();
         }
     }
 }
