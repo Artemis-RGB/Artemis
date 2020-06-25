@@ -27,10 +27,11 @@ namespace Artemis.UI.Screens
         private readonly Timer _titleUpdateTimer;
         private bool _lostFocus;
 
-        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService, 
-            IDebugService debugService)
+        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
+            IDebugService debugService, ISnackbarMessageQueue snackbarMessageQueue)
         {
             SidebarViewModel = sidebarViewModel;
+            MainMessageQueue = snackbarMessageQueue;
             _eventAggregator = eventAggregator;
             _coreService = coreService;
             _debugService = debugService;
@@ -49,11 +50,11 @@ namespace Artemis.UI.Screens
         }
 
         public SidebarViewModel SidebarViewModel { get; }
+        public ISnackbarMessageQueue MainMessageQueue { get; set; }
         public bool IsSidebarVisible { get; set; }
         public bool ActiveItemReady { get; set; }
-
         public string WindowTitle { get; set; }
-
+        
         public void WindowDeactivated()
         {
             var windowState = ((Window) View).WindowState;

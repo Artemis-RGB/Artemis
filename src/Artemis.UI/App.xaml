@@ -70,6 +70,10 @@
                 <Setter Property="IsTabStop" Value="False" />
                 <Setter Property="Focusable" Value="False" />
             </Style>
+            <Style TargetType="GridSplitter" BasedOn="{StaticResource MaterialDesignGridSplitter}">
+                <Setter Property="IsTabStop" Value="False" />
+                <Setter Property="Focusable" Value="False" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -27,20 +27,20 @@ namespace Artemis.UI.Screens.Settings
         private readonly IDialogService _dialogService;
         private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
+        private readonly IPluginSettingsVmFactory _pluginSettingsVmFactory;
         private readonly ISurfaceService _surfaceService;
-        private readonly IWindowManager _windowManager;
 
-        public SettingsViewModel(ISurfaceService surfaceService, IPluginService pluginService, IDialogService dialogService, IWindowManager windowManager,
-            IDebugService debugService, ISettingsService settingsService, IDeviceSettingsVmFactory deviceSettingsVmFactory)
+        public SettingsViewModel(ISurfaceService surfaceService, IPluginService pluginService, IDialogService dialogService, IDebugService debugService,
+            ISettingsService settingsService, IPluginSettingsVmFactory pluginSettingsVmFactory, IDeviceSettingsVmFactory deviceSettingsVmFactory)
         {
             DisplayName = "Settings";
 
             _surfaceService = surfaceService;
             _pluginService = pluginService;
             _dialogService = dialogService;
-            _windowManager = windowManager;
             _debugService = debugService;
             _settingsService = settingsService;
+            _pluginSettingsVmFactory = pluginSettingsVmFactory;
             _deviceSettingsVmFactory = deviceSettingsVmFactory;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
@@ -189,7 +189,7 @@ namespace Artemis.UI.Screens.Settings
             DeviceSettingsViewModels.AddRange(_surfaceService.ActiveSurface.Devices.Select(d => _deviceSettingsVmFactory.Create(d)));
 
             Plugins.Clear();
-            Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => new PluginSettingsViewModel(p.Instance, _windowManager, _dialogService, _pluginService)));
+            Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => _pluginSettingsVmFactory.Create(p.Instance)));
 
             base.OnInitialActivate();
         }
