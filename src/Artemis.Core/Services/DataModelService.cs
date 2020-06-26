@@ -61,37 +61,26 @@ namespace Artemis.Core.Services
             }
         }
 
-        public DataModelDescription GetMainDataModelDescription()
-        {
-            var dataModelDescription = new DataModelDescription();
-
-            return dataModelDescription;
-        }
-
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is Module module && module.InternalExpandsMainDataModel)
             {
-                if (!module.InternalDataModel.Initialized)
+                if (module.InternalDataModel.DataModelDescription == null)
                 {
                     module.InternalDataModel.DataModelDescription = module.InternalGetDataModelDescription();
                     if (module.InternalDataModel.DataModelDescription == null)
                         throw new ArtemisPluginException(module.PluginInfo, "Module overrides GetDataModelDescription but returned null");
-
-                    module.InternalDataModel.Initialize();
                 }
 
                 _dataModelExpansions.Add(module.InternalDataModel);
             }
             else if (e.PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
             {
-                if (!dataModelExpansion.InternalDataModel.Initialized)
+                if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
                 {
                     dataModelExpansion.InternalDataModel.DataModelDescription = dataModelExpansion.GetDataModelDescription();
                     if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
                         throw new ArtemisPluginException(dataModelExpansion.PluginInfo, "Data model expansion overrides GetDataModelDescription but returned null");
-
-                    dataModelExpansion.InternalDataModel.Initialize();
                 }
 
                 _dataModelExpansions.Add(dataModelExpansion.InternalDataModel);
