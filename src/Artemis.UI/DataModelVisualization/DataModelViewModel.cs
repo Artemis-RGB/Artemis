@@ -1,54 +1,57 @@
 ﻿using System;
-using System.Linq;
-using Artemis.Core.Attributes;
-using Artemis.Core.Plugins.Abstract.DataModels;
-using Artemis.UI.Exceptions;
+using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Humanizer;
 using Stylet;
 
 namespace Artemis.UI.DataModelVisualization
 {
-    public class DataModelViewModel : PropertyChangedBase
+    public class DataModelViewModel : DataModelVisualizationViewModel
     {
-        public DataModelViewModel(DataModel dataModel)
+        public DataModelViewModel()
         {
-            if (!DataModel.Initialized)
-                throw new ArtemisUIException("Cannot create view model for data model that is not yet initialized");
-
-            DataModel = dataModel;
+            Children = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
-        public DataModelViewModel(DataModel parent, DataModel dataModel)
+        public DataModelViewModel(object model, DataModelPropertyAttribute propertyDescription, DataModelViewModel parent)
         {
-            if (!DataModel.Initialized)
-                throw new ArtemisUIException("Cannot create view model for data model that is not yet initialized");
-
+            Model = model;
+            PropertyDescription = propertyDescription;
             Parent = parent;
-            DataModel = dataModel;
+            Children = new BindableCollection<DataModelVisualizationViewModel>();
+
+            PopulateProperties();
         }
 
-        public DataModel DataModel { get; }
-        public DataModel Parent { get; set; }
+        public object Model { get; }
+        public BindableCollection<DataModelVisualizationViewModel> Children { get; set; }
 
-
-        private void PopulateProperties()
+        public void PopulateProperties()
         {
-            foreach (var propertyInfo in DataModel.GetType().GetProperties())
+            Children.Clear();
+            foreach (var propertyInfo in Model.GetType().GetProperties())
             {
-                var dataModelPropertyAttribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
-                if (dataModelPropertyAttribute == null)
+                // Skip properties decorated with DataModelIgnore
+                if (Attribute.IsDefined(propertyInfo, typeof(DataModelIgnoreAttribute)))
                     continue;
 
-                // For child data models create another data model view model
-                if (typeof(DataModel).IsAssignableFrom(propertyInfo.PropertyType))
+                var dataModelPropertyAttribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
+                // If no DataModelProperty attribute was provided, pull one out of our ass
+                if (dataModelPropertyAttribute == null)
+                    dataModelPropertyAttribute = new DataModelPropertyAttribute {Name = propertyInfo.Name.Humanize()};
+
+                // For value types create a child view model if the value type is not null
+                if (propertyInfo.PropertyType.IsValueType)
                 {
+                    var value = propertyInfo.GetValue(Model);
+                    if (value == null)
+                        continue;
+
+                    Children.Add(new DataModelViewModel(value, dataModelPropertyAttribute, this));
                 }
-                // For primitives, create a property view model
+                // For primitives, create a property view model, it may be null that is fine
                 else if (propertyInfo.PropertyType.IsPrimitive)
                 {
-                }
-                // For anything else check if it has any child primitives and if so create a property container view model
-                else if (propertyInfo.PropertyType.GetProperties().Any(p => p.PropertyType.IsPrimitive))
-                {
+                    Children.Add(new DataModelPropertyViewModel(propertyInfo, dataModelPropertyAttribute, this));
                 }
             }
         }

@@ -1,10 +1,13 @@
-﻿using Artemis.Core.Models;
+﻿using System.Collections.ObjectModel;
+using Artemis.Core.Models;
 using Artemis.Core.Plugins.Abstract.DataModels;
 
 namespace Artemis.Core.Services.Interfaces
 {
     public interface IDataModelService : IArtemisService
     {
+        ReadOnlyCollection<DataModel> DataModelExpansions { get; }
+
         /// <summary>
         ///     Add an expansion to the datamodel to be available for use after the next update
         /// </summary>
@@ -16,11 +19,5 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="baseDataModelExpansion"></param>
         void RemoveExpansion(DataModel baseDataModelExpansion);
-
-        /// <summary>
-        ///     Generates a data model description for the main datamodel including all it's expansions
-        /// </summary>
-        /// <returns>The generated data model description</returns>
-        DataModelDescription GetMainDataModelDescription();
     }
 }
