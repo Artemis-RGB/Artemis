@@ -1,6 +1,8 @@
 ﻿using System;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
+using Castle.Core.Internal;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -9,7 +11,7 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Plugin : IDisposable
     {
-        public PluginInfo PluginInfo { get; internal set; }
+       public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -47,26 +49,39 @@ namespace Artemis.Core.Plugins.Abstract
             return null;
         }
 
-        internal void SetEnabled(bool enable)
+        internal void SetEnabled(bool enable, bool isAutoEnable = false)
         {
             if (enable && !Enabled)
             {
-                Enabled = true;
-                PluginInfo.Enabled = true;
-                
-                // If enable failed, put it back in a disabled state
                 try
                 {
-                    EnablePlugin();
+                    if (isAutoEnable && PluginInfo.GetLockFileCreated())
+                    {
+                        // Don't wrap existing lock exceptions, simply rethrow them
+                        if (PluginInfo.LoadException is ArtemisPluginLockException)
+                            throw PluginInfo.LoadException;
+                        
+                        throw new ArtemisPluginLockException(PluginInfo.LoadException);
+                    }
+
+                    Enabled = true;
+                    PluginInfo.Enabled = true;
+                    PluginInfo.CreateLockFile();
+
+                    InternalEnablePlugin();
+                    OnPluginEnabled();
+                    PluginInfo.LoadException = null;
                 }
-                catch
+                // If enable failed, put it back in a disabled state
+                catch (Exception e)
                 {
                     Enabled = false;
                     PluginInfo.Enabled = false;
+                    PluginInfo.LoadException = e;
                     throw;
                 }
 
-                OnPluginEnabled();
+                PluginInfo.DeleteLockFile();
             }
             else if (!enable && Enabled)
             {
@@ -74,10 +89,19 @@ namespace Artemis.Core.Plugins.Abstract
                 PluginInfo.Enabled = false;
 
                 // Even if disable failed, still leave it in a disabled state to avoid more issues
-                DisablePlugin();
-                
+                InternalDisablePlugin();
                 OnPluginDisabled();
             }
+        }
+
+        internal virtual void InternalEnablePlugin()
+        {
+            EnablePlugin();
+        }
+
+        internal virtual void InternalDisablePlugin()
+        {
+            DisablePlugin();
         }
 
         #region Events

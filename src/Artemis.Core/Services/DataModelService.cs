@@ -3,10 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Models;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
-using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
 
@@ -17,8 +15,8 @@ namespace Artemis.Core.Services
     /// </summary>
     public class DataModelService : IDataModelService
     {
-        private readonly IPluginService _pluginService;
         private readonly List<DataModel> _dataModelExpansions;
+        private readonly IPluginService _pluginService;
 
         internal DataModelService(IPluginService pluginService)
         {
@@ -27,6 +25,11 @@ namespace Artemis.Core.Services
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
+
+            foreach (var module in _pluginService.GetPluginsOfType<Module>().Where(m => m.InternalExpandsMainDataModel))
+                AddModuleDataModel(module);
+            foreach (var dataModelExpansion in _pluginService.GetPluginsOfType<BaseDataModelExpansion>())
+                AddDataModelExpansionDataModel(dataModelExpansion);
         }
 
         public ReadOnlyCollection<DataModel> DataModelExpansions
@@ -64,27 +67,25 @@ namespace Artemis.Core.Services
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is Module module && module.InternalExpandsMainDataModel)
-            {
-                if (module.InternalDataModel.DataModelDescription == null)
-                {
-                    module.InternalDataModel.DataModelDescription = module.InternalGetDataModelDescription();
-                    if (module.InternalDataModel.DataModelDescription == null)
-                        throw new ArtemisPluginException(module.PluginInfo, "Module overrides GetDataModelDescription but returned null");
-                }
-
-                _dataModelExpansions.Add(module.InternalDataModel);
-            }
+                AddModuleDataModel(module);
             else if (e.PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
-            {
-                if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
-                {
-                    dataModelExpansion.InternalDataModel.DataModelDescription = dataModelExpansion.GetDataModelDescription();
-                    if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
-                        throw new ArtemisPluginException(dataModelExpansion.PluginInfo, "Data model expansion overrides GetDataModelDescription but returned null");
-                }
+                AddDataModelExpansionDataModel(dataModelExpansion);
+        }
 
-                _dataModelExpansions.Add(dataModelExpansion.InternalDataModel);
-            }
+        private void AddDataModelExpansionDataModel(BaseDataModelExpansion dataModelExpansion)
+        {
+            if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
+                throw new ArtemisPluginException(dataModelExpansion.PluginInfo, "Data model expansion overrides GetDataModelDescription but returned null");
+            
+            AddExpansion(dataModelExpansion.InternalDataModel);
+        }
+
+        private void AddModuleDataModel(Module module)
+        {
+            if (module.InternalDataModel.DataModelDescription == null)
+                throw new ArtemisPluginException(module.PluginInfo, "Module overrides GetDataModelDescription but returned null");
+            
+            AddExpansion(module.InternalDataModel);
         }
 
         private void PluginServiceOnPluginDisabled(object sender, PluginEventArgs e)

@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.Abstract.DataModels;
+﻿using System;
+using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -15,6 +16,20 @@ namespace Artemis.Core.Plugins.Abstract
         {
             get => (T) InternalDataModel;
             internal set => InternalDataModel = value;
+        }
+
+        internal override void InternalEnablePlugin()
+        {
+            DataModel = Activator.CreateInstance<T>();
+            DataModel.PluginInfo = PluginInfo;
+            DataModel.DataModelDescription = GetDataModelDescription();
+            base.InternalEnablePlugin();
+        }
+
+        internal override void InternalDisablePlugin()
+        {
+            DataModel = null;
+            base.InternalDisablePlugin();
         }
     }
 

@@ -12,13 +12,13 @@ namespace Artemis.Core.Extensions
                 file.CopyTo(Path.Combine(target.FullName, file.Name));
         }
 
-        public static void RecursiveDelete(this DirectoryInfo baseDir)
+        public static void DeleteRecursively(this DirectoryInfo baseDir)
         {
             if (!baseDir.Exists)
                 return;
 
             foreach (var dir in baseDir.EnumerateDirectories())
-                RecursiveDelete(dir);
+                DeleteRecursively(dir);
             var files = baseDir.GetFiles();
             foreach (var file in files)
             {

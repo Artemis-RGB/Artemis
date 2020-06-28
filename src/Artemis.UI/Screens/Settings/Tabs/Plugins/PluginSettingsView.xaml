@@ -46,15 +46,19 @@
                 <materialDesign:PackIcon Kind="{Binding Icon}" Width="48" Height="48" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" />
 
                 <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding PluginInfo.Name}" />
-                <materialDesign:Card Grid.Column="2" Grid.Row="0"
-                                     Background="#FF4343"
-                                     Foreground="White"
-                                     Height="22"
-                                     Padding="4"
-                                     Margin="0 -18 0 0"
-                                     Visibility="{Binding DisplayLoadFailed, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-                    LOAD FAILED
-                </materialDesign:Card>
+                <Button Grid.Column="2" Grid.Row="0"
+                        Background="#FF4343"
+                        BorderBrush="#FF7474"
+                        Foreground="White"
+                        Height="22"
+                        Padding="4"
+                        Margin="0 -18 0 0"
+                        Visibility="{Binding DisplayLoadFailed, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        ToolTip="Click to see the full error that occured"
+                        Command="{s:Action ShowLoadException}">
+                    <TextBlock FontSize="11">LOAD FAILED</TextBlock>
+                </Button>
 
                 <TextBlock Grid.Column="1"
                            Grid.Row="1"
@@ -66,7 +70,7 @@
             </Grid>
 
             <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4" s:View.ActionTarget="{Binding}" Command="{s:Action OpenSettings}">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4" Command="{s:Action OpenSettings}">
                     SETTINGS
                 </Button>
             </StackPanel>

@@ -148,22 +148,14 @@ namespace Artemis.Core.Services
                 // Activate plugins after they are all loaded
                 foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
                 {
-                    if (!pluginInfo.LastEnableSuccessful)
-                    {
-                        pluginInfo.Enabled = false;
-                        _logger.Warning("Plugin failed to load last time, disabling it now to avoid instability. Plugin info: {pluginInfo}", pluginInfo);
-                        continue;
-                    }
-
                     try
                     {
-                        EnablePlugin(pluginInfo.Instance);
+                        EnablePlugin(pluginInfo.Instance, true);
                     }
                     catch (Exception)
                     {
                         // ignored, logged in EnablePlugin
                     }
-                    
                 }
 
                 LoadingPlugins = false;
@@ -204,11 +196,10 @@ namespace Artemis.Core.Services
 
                 var pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
                 if (pluginEntity == null)
-                    pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true, LastEnableSuccessful = true};
+                    pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true};
 
                 pluginInfo.PluginEntity = pluginEntity;
                 pluginInfo.Enabled = pluginEntity.IsEnabled;
-                pluginInfo.LastEnableSuccessful = pluginEntity.LastEnableSuccessful;
 
                 var mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
                 if (!File.Exists(mainFile))
@@ -294,20 +285,15 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void EnablePlugin(Plugin plugin)
+        public void EnablePlugin(Plugin plugin, bool isAutoEnable = false)
         {
             lock (_plugins)
             {
                 _logger.Debug("Enabling plugin {pluginInfo}", plugin.PluginInfo);
 
-                plugin.PluginInfo.LastEnableSuccessful = false;
-                plugin.PluginInfo.ApplyToEntity();
-
-                _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
-
                 try
                 {
-                    plugin.SetEnabled(true);
+                    plugin.SetEnabled(true, isAutoEnable);
                 }
                 catch (Exception e)
                 {
@@ -316,16 +302,16 @@ namespace Artemis.Core.Services
                 }
                 finally
                 {
-                    // We got this far so the plugin enabled and we didn't crash horribly, yay
-                    if (plugin.PluginInfo.Enabled)
-                    {
-                        plugin.PluginInfo.LastEnableSuccessful = true;
-                        plugin.PluginInfo.ApplyToEntity();
+                    // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
+                    // not affect the user's settings
+                    if (isAutoEnable) 
+                        plugin.PluginInfo.Enabled = true;
 
-                        _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                    plugin.PluginInfo.ApplyToEntity();
+                    _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
 
+                    if (plugin.PluginInfo.Enabled) 
                         _logger.Debug("Successfully enabled plugin {pluginInfo}", plugin.PluginInfo);
-                    }
                 }
             }
 
@@ -398,13 +384,16 @@ namespace Artemis.Core.Services
         private static void CopyBuiltInPlugin(DirectoryInfo builtInPluginDirectory)
         {
             var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", builtInPluginDirectory.Name));
+            var createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
             if (Directory.Exists(pluginDirectory.FullName))
-                pluginDirectory.RecursiveDelete();
+                pluginDirectory.DeleteRecursively();
             Directory.CreateDirectory(pluginDirectory.FullName);
 
             builtInPluginDirectory.CopyFilesRecursively(pluginDirectory);
+            if (createLockFile) 
+                File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
         }
 
         #region Events

@@ -20,8 +20,11 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel>
-                                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Stack trace"
-                                           TextWrapping="Wrap" FontWeight="Bold" />
+                                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                           Text="Stack trace"
+                                           TextWrapping="Wrap"
+                                           FontWeight="Bold"
+                                           MaxWidth="1000"/>
 
                                 <avalonedit:TextEditor SyntaxHighlighting="C#"
                                                        FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"

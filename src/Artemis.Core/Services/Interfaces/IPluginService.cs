@@ -46,7 +46,8 @@ namespace Artemis.Core.Services.Interfaces
         ///     Enables the provided plugin
         /// </summary>
         /// <param name="plugin"></param>
-        void EnablePlugin(Plugin plugin);
+        /// <param name="isAutoEnable">If true, fails if there is a lock file present</param>
+        void EnablePlugin(Plugin plugin, bool isAutoEnable = false);
 
         /// <summary>
         ///     Disables the provided plugin

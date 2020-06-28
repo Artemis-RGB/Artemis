@@ -12,16 +12,17 @@ namespace Artemis.Core.Plugins.Models
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : PropertyChangedBase
     {
-        private Guid _guid;
-        private string _name;
         private string _description;
-        private string _icon;
-        private Version _version;
-        private string _main;
         private DirectoryInfo _directory;
-        private Plugin _instance;
         private bool _enabled;
+        private Guid _guid;
+        private string _icon;
+        private Plugin _instance;
         private bool _lastEnableSuccessful;
+        private Exception _loadException;
+        private string _main;
+        private string _name;
+        private Version _version;
 
         internal PluginInfo()
         {
@@ -117,12 +118,12 @@ namespace Artemis.Core.Plugins.Models
         }
 
         /// <summary>
-        ///     Indicates whether the last time the plugin loaded, it loaded correctly
+        ///     Gets the exception thrown while loading
         /// </summary>
-        public bool LastEnableSuccessful
+        public Exception LoadException
         {
-            get => _lastEnableSuccessful;
-            internal set => SetAndNotify(ref _lastEnableSuccessful, value);
+            get => _loadException;
+            internal set => SetAndNotify(ref _loadException, value);
         }
 
         /// <summary>
@@ -149,7 +150,22 @@ namespace Artemis.Core.Plugins.Models
         {
             PluginEntity.Id = Guid;
             PluginEntity.IsEnabled = Enabled;
-            PluginEntity.LastEnableSuccessful = LastEnableSuccessful;
+        }
+
+        internal void CreateLockFile()
+        {
+            File.Create(Path.Combine(Directory.FullName, "artemis.lock")).Close();
+        }
+
+        internal void DeleteLockFile()
+        {
+            if (GetLockFileCreated())
+                File.Delete(Path.Combine(Directory.FullName, "artemis.lock"));
+        }
+
+        internal bool GetLockFileCreated()
+        {
+            return File.Exists(Path.Combine(Directory.FullName, "artemis.lock"));
         }
     }
 }

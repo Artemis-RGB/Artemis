@@ -12,6 +12,11 @@ namespace Artemis.Core.Extensions
             return type.BaseType?.GetGenericTypeDefinition() == genericType;
         }
 
+        public static bool IsStruct(this Type source)
+        {
+            return source.IsValueType && !source.IsPrimitive && !source.IsEnum;
+        }
+
         public static bool IsNumber(this object value)
         {
             return value is sbyte
