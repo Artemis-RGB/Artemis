@@ -1,4 +1,6 @@
 ﻿using System;
+using LiteDB;
+using Newtonsoft.Json;
 
 namespace Artemis.Storage.Entities.Plugins
 {
@@ -8,8 +10,6 @@ namespace Artemis.Storage.Entities.Plugins
     public class PluginEntity
     {
         public Guid Id { get; set; }
-
         public bool IsEnabled { get; set; }
-        public bool LastEnableSuccessful { get; set; }
     }
 }

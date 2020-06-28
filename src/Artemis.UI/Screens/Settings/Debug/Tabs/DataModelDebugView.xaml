@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Debug.Tabs.DataModelDebugView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Tabs"
+             xmlns:dataModel="clr-namespace:Artemis.UI.DataModelVisualization"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <TreeView ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelViewModel}" ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                            <Run>[</Run><Run Text="{Binding PropertyInfo.PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="2" 
+                                   Text="{Binding Value, Mode=OneWay}" 
+                                   FontFamily="Consolas" 
+                                   HorizontalAlignment="Right"
+                                   Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        <TextBlock Grid.Column="2" 
+                                   Text="null" 
+                                   FontFamily="Consolas" 
+                                   HorizontalAlignment="Right"
+                                   Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
+                                   Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}"/>
+                    </Grid>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+    </Grid>
+</UserControl>

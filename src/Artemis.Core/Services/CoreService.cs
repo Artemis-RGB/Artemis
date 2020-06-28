@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
@@ -107,8 +108,8 @@ namespace Artemis.Core.Services
 
         private void UpdatePluginCache()
         {
-            _modules = _pluginService.GetPluginsOfType<Module>();
-            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>();
+            _modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
+            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled).ToList(); 
         }
 
         private void ConfigureJsonConvert()

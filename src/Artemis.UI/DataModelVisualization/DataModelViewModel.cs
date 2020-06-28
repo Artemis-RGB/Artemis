@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Humanizer;
 using Stylet;
@@ -12,8 +14,9 @@ namespace Artemis.UI.DataModelVisualization
             Children = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
-        public DataModelViewModel(object model, DataModelPropertyAttribute propertyDescription, DataModelViewModel parent)
+        public DataModelViewModel(PropertyInfo propertyInfo, object model, DataModelPropertyAttribute propertyDescription, DataModelViewModel parent)
         {
+            PropertyInfo = propertyInfo;
             Model = model;
             PropertyDescription = propertyDescription;
             Parent = parent;
@@ -22,7 +25,7 @@ namespace Artemis.UI.DataModelVisualization
             PopulateProperties();
         }
 
-        public object Model { get; }
+        public object Model { get; private set; }
         public BindableCollection<DataModelVisualizationViewModel> Children { get; set; }
 
         public void PopulateProperties()
@@ -39,21 +42,34 @@ namespace Artemis.UI.DataModelVisualization
                 if (dataModelPropertyAttribute == null)
                     dataModelPropertyAttribute = new DataModelPropertyAttribute {Name = propertyInfo.Name.Humanize()};
 
-                // For value types create a child view model if the value type is not null
-                if (propertyInfo.PropertyType.IsValueType)
+                // For primitives, create a property view model, it may be null that is fine
+                if (propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType == typeof(string))
+                {
+                    // This may be slower than avoiding generics and Activator.CreateInstance but it allows for expression trees inside the VM we're creating
+                    // here, this means slow creation but fast updates after that
+                    var viewModelType = typeof(DataModelPropertyViewModel<,>).MakeGenericType(Model.GetType(), propertyInfo.PropertyType);
+                    var viewModel = (DataModelVisualizationViewModel) Activator.CreateInstance(viewModelType, propertyInfo, dataModelPropertyAttribute, this);
+                    Children.Add(viewModel);
+                }
+                // For other value types create a child view model if the value type is not null
+                else if (propertyInfo.PropertyType.IsClass || propertyInfo.PropertyType.IsStruct())
                 {
                     var value = propertyInfo.GetValue(Model);
                     if (value == null)
                         continue;
 
-                    Children.Add(new DataModelViewModel(value, dataModelPropertyAttribute, this));
-                }
-                // For primitives, create a property view model, it may be null that is fine
-                else if (propertyInfo.PropertyType.IsPrimitive)
-                {
-                    Children.Add(new DataModelPropertyViewModel(propertyInfo, dataModelPropertyAttribute, this));
+                    Children.Add(new DataModelViewModel(propertyInfo, value, dataModelPropertyAttribute, this));
                 }
             }
+        }
+
+        public override void Update()
+        {
+            if (PropertyInfo != null && PropertyInfo.PropertyType.IsStruct())
+                Model = PropertyInfo.GetValue(Parent.Model);
+
+            foreach (var dataModelVisualizationViewModel in Children)
+                dataModelVisualizationViewModel.Update();
         }
     }
 }

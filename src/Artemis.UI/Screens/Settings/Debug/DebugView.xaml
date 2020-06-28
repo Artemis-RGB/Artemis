@@ -27,39 +27,26 @@
             <mde:AppBar.AppIcon>
                 <materialDesign:PackIcon Kind="Matrix" Width="20" Height="28" />
             </mde:AppBar.AppIcon>
-            
+
             <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                 <StackPanel>
-                    <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}"/>
+                    <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}" />
                 </StackPanel>
             </materialDesign:PopupBox>
         </mde:AppBar>
 
-        <StackPanel Margin="10, 10, 10, 10">
-            <TextBlock TextWrapping="Wrap">
-                In this window you can view the inner workings of Artemis.
-                Please note that having this window open can have a performance impact on your system.
-            </TextBlock>
-
-            <Grid Margin="0,10,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0">
-                    This image shows what is being rendered and dispatched to RGB.NET
-                </TextBlock>
-                <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0" FontWeight="Bold">
-                    FPS:
-                </TextBlock>
-                <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}" />
-            </Grid>
-
-            <materialDesign:Card VerticalAlignment="Stretch" Margin="0, 5,0,0">
-                <Image Source="{Binding CurrentFrame}" />
-            </materialDesign:Card>
-        </StackPanel>
+        <TabControl ItemsSource="{Binding Items}"
+                    SelectedItem="{Binding ActiveItem}"
+                    DisplayMemberPath="DisplayName"
+                    Style="{StaticResource MaterialDesignTabControl}">
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
+                        <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Margin="10" />
+                    </materialDesign:TransitioningContent>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </DockPanel>
 
 </mde:MaterialWindow>

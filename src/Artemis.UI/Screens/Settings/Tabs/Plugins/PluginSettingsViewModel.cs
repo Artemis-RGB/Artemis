@@ -32,22 +32,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public Plugin Plugin { get; set; }
         public PluginInfo PluginInfo { get; set; }
-
-        public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
-
+        public bool Enabling { get; set; }
         public PackIconKind Icon => GetIconKind();
+        public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
+        public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;
+        public bool DisplayLoadFailed => !Enabling && PluginInfo.LoadException != null;
 
         public bool IsEnabled
         {
-            get => PluginInfo.Enabled;
+            get => Plugin.Enabled;
             set => Task.Run(() => UpdateEnabled(value));
         }
-
-        public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;
-
-        public bool Enabling { get; set; }
-
-        public bool DisplayLoadFailed => !Enabling && !PluginInfo.LastEnableSuccessful;
 
         public async Task OpenSettings()
         {
@@ -74,6 +69,14 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             {
                 await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
+        }
+
+        public async Task ShowLoadException()
+        {
+            if (PluginInfo.LoadException == null)
+                return;
+
+            await _dialogService.ShowExceptionDialog("The plugin failed to load: " + PluginInfo.LoadException.Message, PluginInfo.LoadException);
         }
 
         private PackIconKind GetIconKind()
@@ -106,7 +109,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private async Task UpdateEnabled(bool enable)
         {
-            if (PluginInfo.Enabled == enable)
+            if (Plugin.Enabled == enable)
             {
                 NotifyOfPropertyChange(nameof(IsEnabled));
                 return;
@@ -133,7 +136,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 try
                 {
                     _pluginService.EnablePlugin(Plugin);
-                    _snackbarMessageQueue.Enqueue($"Enabled plugin {PluginInfo.Name}");
                 }
                 catch (Exception e)
                 {

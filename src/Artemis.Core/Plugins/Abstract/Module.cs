@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
@@ -44,9 +45,18 @@ namespace Artemis.Core.Plugins.Abstract
             return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
         }
 
-        internal override DataModelPropertyAttribute InternalGetDataModelDescription()
+        internal override void InternalEnablePlugin()
         {
-            return GetDataModelDescription();
+            DataModel = Activator.CreateInstance<T>();
+            DataModel.PluginInfo = PluginInfo;
+            DataModel.DataModelDescription = GetDataModelDescription();
+            base.InternalEnablePlugin();
+        }
+
+        internal override void InternalDisablePlugin()
+        {
+            DataModel = null;
+            base.InternalDisablePlugin();
         }
     }
 
@@ -91,10 +101,5 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         /// <returns></returns>
         public abstract IEnumerable<ModuleViewModel> GetViewModels();
-
-        internal virtual DataModelPropertyAttribute InternalGetDataModelDescription()
-        {
-            return null;
-        }
     }
 }

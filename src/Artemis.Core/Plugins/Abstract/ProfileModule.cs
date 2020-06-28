@@ -4,6 +4,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.Core.Plugins.Models;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -18,7 +19,7 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         public T DataModel
         {
-            get => (T)InternalDataModel;
+            get => (T) InternalDataModel;
             internal set => InternalDataModel = value;
         }
 
@@ -42,12 +43,21 @@ namespace Artemis.Core.Plugins.Abstract
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute { Name = PluginInfo.Name, Description = PluginInfo.Description };
+            return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
+        }
+        
+        internal override void InternalEnablePlugin()
+        {
+            DataModel = Activator.CreateInstance<T>();
+            DataModel.PluginInfo = PluginInfo;
+            DataModel.DataModelDescription = GetDataModelDescription();
+            base.InternalEnablePlugin();
         }
 
-        internal override DataModelPropertyAttribute InternalGetDataModelDescription()
+        internal override void InternalDisablePlugin()
         {
-            return GetDataModelDescription();
+            DataModel = null;
+            base.InternalDisablePlugin();
         }
     }
 

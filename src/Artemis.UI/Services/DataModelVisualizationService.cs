@@ -17,7 +17,7 @@ namespace Artemis.UI.Services
         {
             var viewModel = new DataModelViewModel();
             foreach (var dataModelExpansion in _dataModelService.DataModelExpansions)
-                viewModel.Children.Add(new DataModelViewModel(dataModelExpansion, dataModelExpansion.DataModelDescription, viewModel));
+                viewModel.Children.Add(new DataModelViewModel(null,dataModelExpansion, dataModelExpansion.DataModelDescription, viewModel));
 
             return viewModel;
         }
