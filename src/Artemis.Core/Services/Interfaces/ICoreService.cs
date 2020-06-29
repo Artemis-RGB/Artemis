@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Events;
 
 namespace Artemis.Core.Services.Interfaces
@@ -24,6 +25,11 @@ namespace Artemis.Core.Services.Interfaces
         ///     Gets or sets whether modules are rendered each frame by calling their Render method
         /// </summary>
         bool ModuleRenderingDisabled { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a list of startup arguments
+        /// </summary>
+        List<string> StartupArguments { get; set; }
 
         /// <summary>
         ///     Initializes the core, only call once

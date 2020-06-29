@@ -211,7 +211,7 @@ namespace Artemis.UI.Screens.Settings
                 if (File.Exists(autoRunFile))
                     File.Delete(autoRunFile);
                 if (StartWithWindows)
-                    ShortcutUtilities.Create(autoRunFile, executableFile, "-autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
+                    ShortcutUtilities.Create(autoRunFile, executableFile, "--autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
             }
             catch (Exception e)
             {

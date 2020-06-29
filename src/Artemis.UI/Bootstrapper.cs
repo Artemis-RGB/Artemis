@@ -60,12 +60,13 @@ namespace Artemis.UI
             {
                 try
                 {
-                    if (StartupArguments.Contains("-autorun"))
+                    if (StartupArguments.Contains("--autorun"))
                     {
                         logger.Information("Sleeping for 15 seconds on auto run to allow applications like iCUE and LGS to start");
                         await Task.Delay(TimeSpan.FromSeconds(15));
                     }
 
+                    _core.StartupArguments = StartupArguments;
                     _core.Initialize();
                 }
                 catch (Exception e)
