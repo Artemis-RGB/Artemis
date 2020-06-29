@@ -100,6 +100,11 @@ namespace Artemis.Core.Services.Interfaces
         event EventHandler<PluginEventArgs> PluginUnloaded;
 
         /// <summary>
+        ///     Occurs when a plugin is being enabled
+        /// </summary>
+        event EventHandler<PluginEventArgs> PluginEnabling;
+
+        /// <summary>
         ///     Occurs when a plugin has been enabled
         /// </summary>
         event EventHandler<PluginEventArgs> PluginEnabled;

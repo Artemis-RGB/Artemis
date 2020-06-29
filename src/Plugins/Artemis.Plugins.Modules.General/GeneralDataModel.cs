@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.Abstract.DataModels;
+﻿using System.Collections.Generic;
+using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using SkiaSharp;
 
@@ -9,6 +10,8 @@ namespace Artemis.Plugins.Modules.General
         public GeneralDataModel()
         {
             PlayerInfo = new PlayerInfo();
+            IntsList = new List<int>();
+            PlayerInfosList = new List<PlayerInfo>();
         }
 
         [DataModelProperty(Name = "A test string", Description = "This is a test string that's not of any use outside testing!")]
@@ -21,6 +24,9 @@ namespace Artemis.Plugins.Modules.General
         public PlayerInfo PlayerInfo { get; set; }
 
         public double UpdatesDividedByFour { get; set; }
+
+        public List<int> IntsList { get; set; }
+        public List<PlayerInfo> PlayerInfosList { get; set; }
     }
 
     public class PlayerInfo : DataModel

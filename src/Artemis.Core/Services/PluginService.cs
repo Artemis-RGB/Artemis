@@ -287,10 +287,11 @@ namespace Artemis.Core.Services
 
         public void EnablePlugin(Plugin plugin, bool isAutoEnable = false)
         {
+            _logger.Debug("Enabling plugin {pluginInfo}", plugin.PluginInfo);
+            OnPluginEnabling(new PluginEventArgs(plugin.PluginInfo));
+
             lock (_plugins)
             {
-                _logger.Debug("Enabling plugin {pluginInfo}", plugin.PluginInfo);
-
                 try
                 {
                     plugin.SetEnabled(true, isAutoEnable);
@@ -402,6 +403,7 @@ namespace Artemis.Core.Services
         public event EventHandler<PluginEventArgs> PluginLoading;
         public event EventHandler<PluginEventArgs> PluginLoaded;
         public event EventHandler<PluginEventArgs> PluginUnloaded;
+        public event EventHandler<PluginEventArgs> PluginEnabling;
         public event EventHandler<PluginEventArgs> PluginEnabled;
         public event EventHandler<PluginEventArgs> PluginDisabled;
 
@@ -423,6 +425,11 @@ namespace Artemis.Core.Services
         protected virtual void OnPluginUnloaded(PluginEventArgs e)
         {
             PluginUnloaded?.Invoke(this, e);
+        }
+
+        protected virtual void OnPluginEnabling(PluginEventArgs e)
+        {
+            PluginEnabling?.Invoke(this, e);
         }
 
         protected virtual void OnPluginEnabled(PluginEventArgs e)

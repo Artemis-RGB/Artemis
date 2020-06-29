@@ -35,6 +35,8 @@ namespace Artemis.UI.Screens.Splash
             _pluginService.CopyingBuildInPlugins += OnPluginServiceOnCopyingBuildInPlugins;
             _pluginService.PluginLoading += OnPluginServiceOnPluginLoading;
             _pluginService.PluginLoaded += OnPluginServiceOnPluginLoaded;
+            _pluginService.PluginEnabling += PluginServiceOnPluginEnabling;
+            _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             base.OnInitialActivate();
         }
 
@@ -55,6 +57,16 @@ namespace Artemis.UI.Screens.Splash
         private void OnPluginServiceOnPluginLoading(object sender, PluginEventArgs args)
         {
             Status = "Loading plugin: " + args.PluginInfo.Name;
+        }
+
+        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs args)
+        {
+            Status = "Initializing UI";
+        }
+
+        private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs args)
+        {
+            Status = "Enabling plugin: " + args.PluginInfo.Name;
         }
 
         private void OnPluginServiceOnCopyingBuildInPlugins(object sender, EventArgs args)
