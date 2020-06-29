@@ -1,39 +1,36 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 
 namespace Artemis.UI.DataModelVisualization
 {
-    public class DataModelPropertyViewModel<T, TP> : DataModelPropertyViewModel
+    public class DataModelPropertyViewModel : DataModelVisualizationViewModel
     {
-        private readonly Func<T, TP> _expression;
-
-        public DataModelPropertyViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelViewModel parent)
+        public DataModelPropertyViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent)
         {
             PropertyInfo = propertyInfo;
             Parent = parent;
             PropertyDescription = propertyDescription;
-
-            var instance = Expression.Parameter(typeof(T), "instance");
-            var body = Expression.Property(instance, propertyInfo);
-            _expression = Expression.Lambda<Func<T, TP>>(body, instance).Compile();
         }
 
-        public TP Value
-        {
-            get => BaseValue is TP value ? value : default;
-            set => BaseValue = value;
-        }
+        public bool IsListProperty { get; set; }
+        public string ListDescription { get; set; }
+        public Type PropertyType { get; set; }
 
         public override void Update()
         {
-            Value = _expression((T) Parent.Model);
+            if (PropertyInfo != null && Parent?.Model != null)
+            {
+                IsListProperty = false;
+                Model = PropertyInfo.GetValue(Parent.Model);
+                PropertyType = PropertyInfo.PropertyType;
+            }
+            else if (Parent is DataModelListViewModel listViewModel)
+            {
+                IsListProperty = true;
+                ListDescription = $"List item [{listViewModel.List.IndexOf(Model)}]";
+                PropertyType = Model.GetType();
+            }
         }
-    }
-
-    public abstract class DataModelPropertyViewModel : DataModelVisualizationViewModel
-    {
-        public object BaseValue { get; protected set; }
     }
 }

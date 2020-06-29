@@ -19,6 +19,23 @@
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelViewModel}" ItemsSource="{Binding Children}">
                     <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
                 </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{Binding Children}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                            [List]
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="2" 
+                                   Text="{Binding Count, Mode=OneWay}" 
+                                   FontFamily="Consolas" 
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+                </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -27,20 +44,27 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
-                            <Run>[</Run><Run Text="{Binding PropertyInfo.PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
+                            <Run>[</Run><Run Text="{Binding PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
-                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding PropertyDescription.Name}" 
+                                   ToolTip="{Binding PropertyDescription.Description}"
+                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding ListDescription}" 
+                                   ToolTip="{Binding PropertyDescription.Description}"
+                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
                         <TextBlock Grid.Column="2" 
-                                   Text="{Binding Value, Mode=OneWay}" 
+                                   Text="{Binding Model, Mode=OneWay}" 
                                    FontFamily="Consolas" 
                                    HorizontalAlignment="Right"
-                                   Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}}"/>
                         <TextBlock Grid.Column="2" 
                                    Text="null" 
                                    FontFamily="Consolas" 
                                    HorizontalAlignment="Right"
                                    Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                   Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}"/>
+                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}"/>
                     </Grid>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>

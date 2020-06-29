@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Plugins.Modules.General.ViewModels;
@@ -12,7 +11,7 @@ namespace Artemis.Plugins.Modules.General
     public class GeneralModule : ProfileModule<GeneralDataModel>
     {
         private readonly PluginSettings _settings;
-        private Random _rand;
+        private readonly Random _rand;
 
         public GeneralModule(PluginSettings settings)
         {
@@ -29,6 +28,9 @@ namespace Artemis.Plugins.Modules.General
         {
             DataModel.UpdatesDividedByFour += 0.25;
             DataModel.PlayerInfo.Position = new SKPoint(_rand.Next(100), _rand.Next(100));
+
+            DataModel.IntsList[0] = _rand.Next();
+            DataModel.IntsList[2] = _rand.Next();
         }
 
         public override void EnablePlugin()
@@ -37,6 +39,8 @@ namespace Artemis.Plugins.Modules.General
             DisplayIcon = "AllInclusive";
             ExpandsDataModel = true;
 
+            DataModel.IntsList = new List<int> {_rand.Next(), _rand.Next(), _rand.Next()};
+            DataModel.PlayerInfosList = new List<PlayerInfo> {new PlayerInfo()};
 
             var testSetting = _settings.GetSetting("TestSetting", DateTime.Now);
         }
