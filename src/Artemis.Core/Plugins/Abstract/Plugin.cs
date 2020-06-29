@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
@@ -11,7 +12,7 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Plugin : IDisposable
     {
-       public PluginInfo PluginInfo { get; internal set; }
+        public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -60,7 +61,7 @@ namespace Artemis.Core.Plugins.Abstract
                         // Don't wrap existing lock exceptions, simply rethrow them
                         if (PluginInfo.LoadException is ArtemisPluginLockException)
                             throw PluginInfo.LoadException;
-                        
+
                         throw new ArtemisPluginLockException(PluginInfo.LoadException);
                     }
 
@@ -68,9 +69,15 @@ namespace Artemis.Core.Plugins.Abstract
                     PluginInfo.Enabled = true;
                     PluginInfo.CreateLockFile();
 
-                    InternalEnablePlugin();
-                    OnPluginEnabled();
+                    // Allow up to 15 seconds for plugins to activate.
+                    // This means plugins that need more time should do their long running tasks in a background thread, which is intentional
+                    // Little meh: Running this from a different thread could cause deadlocks
+                    var enableTask = Task.Run(InternalEnablePlugin);
+                    if (!enableTask.Wait(TimeSpan.FromSeconds(15)))
+                        throw new ArtemisPluginException(PluginInfo, "Plugin load timeout");
+
                     PluginInfo.LoadException = null;
+                    OnPluginEnabled();
                 }
                 // If enable failed, put it back in a disabled state
                 catch (Exception e)
@@ -80,8 +87,11 @@ namespace Artemis.Core.Plugins.Abstract
                     PluginInfo.LoadException = e;
                     throw;
                 }
-
-                PluginInfo.DeleteLockFile();
+                finally
+                {
+                    if (!(PluginInfo.LoadException is ArtemisPluginLockException))
+                        PluginInfo.DeleteLockFile();
+                }
             }
             else if (!enable && Enabled)
             {

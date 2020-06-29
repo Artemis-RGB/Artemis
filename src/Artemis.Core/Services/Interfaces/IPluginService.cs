@@ -23,7 +23,7 @@ namespace Artemis.Core.Services.Interfaces
         /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
-        void LoadPlugins();
+        void LoadPlugins(bool ignorePluginLock);
 
         /// <summary>
         ///     Unloads all installed plugins.

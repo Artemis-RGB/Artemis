@@ -63,6 +63,7 @@ namespace Artemis.Core.Services
         public TimeSpan FrameTime { get; private set; }
         public bool PluginUpdatingDisabled { get; set; }
         public bool ModuleRenderingDisabled { get; set; }
+        public List<string> StartupArguments { get; set; }
 
         public void Dispose()
         {
@@ -83,7 +84,7 @@ namespace Artemis.Core.Services
 
             // Initialize the services
             _pluginService.CopyBuiltInPlugins();
-            _pluginService.LoadPlugins();
+            _pluginService.LoadPlugins(StartupArguments.Contains("--ignore-plugin-lock"));
 
             var surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)

@@ -25,7 +25,7 @@ namespace Artemis.UI.Screens
             _eventAggregator = eventAggregator;
             CanShowRootViewModel = true;
 
-            var autoRunning = Bootstrapper.StartupArguments.Contains("-autorun");
+            var autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
             var showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
             if (!autoRunning || showOnAutoRun)
             {

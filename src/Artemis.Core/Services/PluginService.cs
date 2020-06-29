@@ -107,8 +107,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <inheritdoc />
-        public void LoadPlugins()
+        public void LoadPlugins(bool ignorePluginLock)
         {
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
@@ -150,7 +149,7 @@ namespace Artemis.Core.Services
                 {
                     try
                     {
-                        EnablePlugin(pluginInfo.Instance, true);
+                        EnablePlugin(pluginInfo.Instance, !ignorePluginLock);
                     }
                     catch (Exception)
                     {
@@ -305,13 +304,13 @@ namespace Artemis.Core.Services
                 {
                     // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
                     // not affect the user's settings
-                    if (isAutoEnable) 
+                    if (isAutoEnable)
                         plugin.PluginInfo.Enabled = true;
 
                     plugin.PluginInfo.ApplyToEntity();
                     _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
 
-                    if (plugin.PluginInfo.Enabled) 
+                    if (plugin.PluginInfo.Enabled)
                         _logger.Debug("Successfully enabled plugin {pluginInfo}", plugin.PluginInfo);
                 }
             }
@@ -351,10 +350,7 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public PluginInfo GetPluginInfo(Plugin plugin)
         {
-            lock (_plugins)
-            {
-                return _plugins.FirstOrDefault(p => p.Instance == plugin);
-            }
+            return _plugins.FirstOrDefault(p => p.Instance == plugin);
         }
 
         /// <inheritdoc />
@@ -366,10 +362,7 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public List<T> GetPluginsOfType<T>() where T : Plugin
         {
-            lock (_plugins)
-            {
-                return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
-            }
+            return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
         }
 
         public Plugin GetDevicePlugin(IRGBDevice rgbDevice)
@@ -393,7 +386,7 @@ namespace Artemis.Core.Services
             Directory.CreateDirectory(pluginDirectory.FullName);
 
             builtInPluginDirectory.CopyFilesRecursively(pluginDirectory);
-            if (createLockFile) 
+            if (createLockFile)
                 File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
         }
 
