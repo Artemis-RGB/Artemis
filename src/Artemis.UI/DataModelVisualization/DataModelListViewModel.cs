@@ -33,7 +33,7 @@ namespace Artemis.UI.DataModelVisualization
             foreach (var item in List)
             {
                 DataModelVisualizationViewModel child;
-                if (Children.Count < index)
+                if (Children.Count <= index)
                 {
                     child = CreateChild(item);
                     Children.Add(child);

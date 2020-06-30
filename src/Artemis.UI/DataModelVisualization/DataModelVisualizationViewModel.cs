@@ -10,10 +10,15 @@ namespace Artemis.UI.DataModelVisualization
 {
     public abstract class DataModelVisualizationViewModel : PropertyChangedBase
     {
-        public PropertyInfo PropertyInfo { get; protected set; }
         public DataModelPropertyAttribute PropertyDescription { get; protected set; }
+        public PropertyInfo PropertyInfo { get; protected set; }
+        public Type PropertyType { get; set; }
+
         public DataModelVisualizationViewModel Parent { get; protected set; }
         public object Model { get; set; }
+
+        public bool IsListProperty { get; set; }
+        public string ListDescription { get; set; }
 
         public abstract void Update();
 
@@ -58,6 +63,21 @@ namespace Artemis.UI.DataModelVisualization
                 return new DataModelViewModel(null, value, dataModelPropertyAttribute, this);
 
             return null;
+        }
+
+        protected void UpdateListStatus()
+        {
+            if (Parent is DataModelListViewModel listViewModel)
+            {
+                IsListProperty = true;
+                ListDescription = $"List item [{listViewModel.List.IndexOf(Model)}]";
+                PropertyType = Model.GetType();
+            }
+            else
+            {
+                IsListProperty = false;
+                PropertyType = PropertyInfo?.PropertyType;
+            }
         }
     }
 }

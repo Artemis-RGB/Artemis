@@ -64,6 +64,15 @@ namespace Artemis.Core.Services
             }
         }
 
+        public DataModel GetPluginDataModel(Plugin plugin)
+        {
+            if (plugin is Module module)
+                return module.InternalDataModel;
+            if (plugin is BaseDataModelExpansion dataModelExpansion)
+                return dataModelExpansion.InternalDataModel;
+            return null;
+        }
+
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is Module module && module.InternalExpandsMainDataModel)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Artemis.Core.Models;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 
 namespace Artemis.Core.Services.Interfaces
@@ -19,5 +20,11 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="baseDataModelExpansion"></param>
         void RemoveExpansion(DataModel baseDataModelExpansion);
+
+        /// <summary>
+        /// If found, returns the data model of the provided plugin
+        /// </summary>
+        /// <param name="plugin">Should be a module with a data model or a data model expansion</param>
+        DataModel GetPluginDataModel(Plugin plugin);
     }
 }

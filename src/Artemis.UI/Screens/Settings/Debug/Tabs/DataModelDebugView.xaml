@@ -8,16 +8,74 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:plugins="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
     <UserControl.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
-        <TreeView ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0 0 0 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="0.5*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="0.5*" />
+            </Grid.ColumnDefinitions>
+            <!-- Property searching (nyi) -->
+            <wpf:PackIcon Grid.Column="0" Kind="Search" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" wpf:HintAssist.Hint="Search property" VerticalAlignment="Center" Margin="5 0" IsEnabled="False"/>
+
+            <!-- Module filtering -->
+            <TextBlock Grid.Column="3" VerticalAlignment="Center">Filter module</TextBlock>
+            <ToggleButton Grid.Column="4" 
+                          VerticalAlignment="Center"
+                          Margin="5 0" 
+                          Style="{StaticResource MaterialDesignSwitchToggleButton}" 
+                          IsChecked="{Binding IsModuleFilterEnabled}" />
+            <ComboBox Grid.Column="5" 
+                      VerticalAlignment="Center" 
+                      wpf:HintAssist.Hint="Select a module"
+                      IsEditable="True"
+                      TextSearch.TextPath="DisplayName"
+                      Margin="5 0 0 0"
+                      IsEnabled="{Binding IsModuleFilterEnabled}"
+                      SelectedItem="{Binding SelectedModule}"
+                      ItemsSource="{Binding Modules}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel d:DataContext="{d:DesignInstance Type=plugins:Module}" Orientation="Horizontal">
+                            <wpf:PackIcon Kind="{Binding DisplayIcon}" VerticalAlignment="Center" Margin="0 0 5 0"/>
+                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+        <TreeView Grid.Row="1" ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelViewModel}" ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                    <Grid>
+                        <TextBlock Text="{Binding PropertyDescription.Name}"
+                                   ToolTip="{Binding PropertyDescription.Description}"
+                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+                        <Grid Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                                <Run>[</Run><Run Text="{Binding PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
+                            </TextBlock>
+                            <TextBlock Grid.Column="1" Text="{Binding ListDescription}" ToolTip="{Binding PropertyDescription.Description}" />
+                        </Grid>
+                    </Grid>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{Binding Children}">
                     <Grid>
@@ -30,10 +88,10 @@
                             [List]
                         </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
-                        <TextBlock Grid.Column="2" 
-                                   Text="{Binding Count, Mode=OneWay}" 
-                                   FontFamily="Consolas" 
-                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Count, Mode=OneWay}"
+                                   FontFamily="Consolas"
+                                   HorizontalAlignment="Right" />
                     </Grid>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
@@ -47,24 +105,24 @@
                             <Run>[</Run><Run Text="{Binding PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding PropertyDescription.Name}" 
+                                   Text="{Binding PropertyDescription.Name}"
                                    ToolTip="{Binding PropertyDescription.Description}"
-                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"/>
+                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding ListDescription}" 
+                                   Text="{Binding ListDescription}"
                                    ToolTip="{Binding PropertyDescription.Description}"
-                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
-                        <TextBlock Grid.Column="2" 
-                                   Text="{Binding Model, Mode=OneWay}" 
-                                   FontFamily="Consolas" 
+                                   Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding Model, Mode=OneWay}"
+                                   FontFamily="Consolas"
                                    HorizontalAlignment="Right"
-                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}}"/>
-                        <TextBlock Grid.Column="2" 
-                                   Text="null" 
-                                   FontFamily="Consolas" 
+                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="null"
+                                   FontFamily="Consolas"
                                    HorizontalAlignment="Right"
                                    Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}"/>
+                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
                     </Grid>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
