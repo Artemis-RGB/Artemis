@@ -12,8 +12,29 @@ namespace Artemis.UI.Screens.Shared
 {
     public class PanZoomViewModel : PropertyChangedBase
     {
-        public Point? LastPanPosition { get; set; }
-        public double Zoom { get; set; } = 1;
+        private Point? _lastPanPosition;
+        private double _zoom = 1;
+        private double _panX;
+        private double _panY;
+        private double _canvasWidth;
+        private double _canvasHeight;
+        private bool _limitToZero;
+
+        public Point? LastPanPosition
+        {
+            get => _lastPanPosition;
+            set => SetAndNotify(ref _lastPanPosition, value);
+        }
+
+        public double Zoom
+        {
+            get => _zoom;
+            set
+            {
+                if (!SetAndNotify(ref _zoom, value)) return;
+                NotifyOfPropertyChange(nameof(ZoomPercentage));
+            }
+        }
 
         public double ZoomPercentage
         {
@@ -21,11 +42,43 @@ namespace Artemis.UI.Screens.Shared
             set => SetZoomFromPercentage(value);
         }
 
-        public double PanX { get; set; }
-        public double PanY { get; set; }
-        public double CanvasWidth { get; set; }
-        public double CanvasHeight { get; set; }
-        public bool LimitToZero { get; set; }
+        public double PanX
+        {
+            get => _panX;
+            set
+            {
+                if (!SetAndNotify(ref _panX, value)) return;
+                NotifyOfPropertyChange(nameof(BackgroundViewport));
+            }
+        }
+
+        public double PanY
+        {
+            get => _panY;
+            set
+            {
+                if (!SetAndNotify(ref _panY, value)) return;
+                NotifyOfPropertyChange(nameof(BackgroundViewport));
+            }
+        }
+
+        public double CanvasWidth
+        {
+            get => _canvasWidth;
+            set => SetAndNotify(ref _canvasWidth, value);
+        }
+
+        public double CanvasHeight
+        {
+            get => _canvasHeight;
+            set => SetAndNotify(ref _canvasHeight, value);
+        }
+
+        public bool LimitToZero
+        {
+            get => _limitToZero;
+            set => SetAndNotify(ref _limitToZero, value);
+        }
 
         public Rect BackgroundViewport => new Rect(PanX, PanY, 20, 20);
 

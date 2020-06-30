@@ -16,6 +16,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
         private Core.Plugins.Abstract.Module _selectedModule;
+        private DataModelViewModel _mainDataModel;
+        private string _propertySearch;
+        private List<Core.Plugins.Abstract.Module> _modules;
 
         public DataModelDebugViewModel(IDataModelVisualizationService dataModelVisualizationService, IPluginService pluginService)
         {
@@ -27,17 +30,30 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             DisplayName = "Data model";
         }
 
-        public DataModelViewModel MainDataModel { get; set; }
+        public DataModelViewModel MainDataModel
+        {
+            get => _mainDataModel;
+            set => SetAndNotify(ref _mainDataModel, value);
+        }
 
-        public string PropertySearch { get; set; }
-        public List<Core.Plugins.Abstract.Module> Modules { get; set; }
+        public string PropertySearch
+        {
+            get => _propertySearch;
+            set => SetAndNotify(ref _propertySearch, value);
+        }
+
+        public List<Core.Plugins.Abstract.Module> Modules
+        {
+            get => _modules;
+            set => SetAndNotify(ref _modules, value);
+        }
 
         public Core.Plugins.Abstract.Module SelectedModule
         {
             get => _selectedModule;
             set
             {
-                _selectedModule = value;
+                if (!SetAndNotify(ref _selectedModule, value)) return;
                 GetDataModel();
             }
         }
@@ -47,8 +63,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             get => _isModuleFilterEnabled;
             set
             {
-                _isModuleFilterEnabled = value;
-                
+                SetAndNotify(ref _isModuleFilterEnabled, value);
+
                 if (!IsModuleFilterEnabled)
                     SelectedModule = null;
                 else
@@ -75,8 +91,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void GetDataModel()
         {
-            MainDataModel = SelectedModule != null 
-                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule) 
+            MainDataModel = SelectedModule != null
+                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule)
                 : _dataModelVisualizationService.GetMainDataModelVisualization();
         }
 

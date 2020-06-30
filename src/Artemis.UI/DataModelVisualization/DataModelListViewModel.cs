@@ -9,6 +9,10 @@ namespace Artemis.UI.DataModelVisualization
 {
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
+        private BindableCollection<DataModelVisualizationViewModel> _children;
+        private IList _list;
+        private string _count;
+
         public DataModelListViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent)
         {
             PropertyInfo = propertyInfo;
@@ -17,9 +21,23 @@ namespace Artemis.UI.DataModelVisualization
             Children = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
-        public BindableCollection<DataModelVisualizationViewModel> Children { get; set; }
-        public IList List { get; set; }
-        public string Count { get; set; }
+        public BindableCollection<DataModelVisualizationViewModel> Children
+        {
+            get => _children;
+            set => SetAndNotify(ref _children, value);
+        }
+
+        public IList List
+        {
+            get => _list;
+            set => SetAndNotify(ref _list, value);
+        }
+
+        public string Count
+        {
+            get => _count;
+            set => SetAndNotify(ref _count, value);
+        }
 
         public override void Update()
         {

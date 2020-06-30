@@ -6,11 +6,17 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 {
     public class SurfaceCreateViewModel : DialogViewModelBase
     {
+        private string _surfaceName;
+
         public SurfaceCreateViewModel(IModelValidator<SurfaceCreateViewModel> validator) : base(validator)
         {
         }
 
-        public string SurfaceName { get; set; }
+        public string SurfaceName
+        {
+            get => _surfaceName;
+            set => SetAndNotify(ref _surfaceName, value);
+        }
 
         public async Task Accept()
         {

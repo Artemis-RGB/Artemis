@@ -65,6 +65,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
     public abstract class TimelinePropertyViewModel : PropertyChangedBase, IDisposable
     {
+        private BindableCollection<TimelineKeyframeViewModel> _timelineKeyframeViewModels;
+
         protected TimelinePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
             LayerPropertyBaseViewModel = layerPropertyBaseViewModel;
@@ -72,7 +74,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
-        public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels { get; set; }
+
+        public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels
+        {
+            get => _timelineKeyframeViewModels;
+            set => SetAndNotify(ref _timelineKeyframeViewModels, value);
+        }
 
         public abstract void Dispose();
 

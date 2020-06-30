@@ -10,14 +10,15 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
-    public class DeviceSettingsViewModel
+    public class DeviceSettingsViewModel : PropertyChangedBase
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IWindowManager _windowManager;
         private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
+        private bool _isDeviceEnabled;
 
-        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService, 
+        public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService,
             IWindowManager windowManager, IDeviceDebugVmFactory deviceDebugVmFactory)
         {
             _deviceService = deviceService;
@@ -29,15 +30,22 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
             Name = Device.RgbDevice.DeviceInfo.Model;
             Manufacturer = Device.RgbDevice.DeviceInfo.Manufacturer;
+
+            // TODO: Implement this bad boy
             IsDeviceEnabled = true;
         }
 
         public ArtemisDevice Device { get; }
 
-        public string Type { get; set; }
-        public string Name { get; set; }
-        public string Manufacturer { get; set; }
-        public bool IsDeviceEnabled { get; set; }
+        public string Type { get; }
+        public string Name { get; }
+        public string Manufacturer { get; }
+
+        public bool IsDeviceEnabled
+        {
+            get => _isDeviceEnabled;
+            set => SetAndNotify(ref _isDeviceEnabled, value);
+        }
 
         public void IdentifyDevice()
         {

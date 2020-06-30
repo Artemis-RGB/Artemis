@@ -11,6 +11,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
@@ -61,6 +62,14 @@ namespace Artemis.UI.Ninject.Factories
     public interface IProfileLayerVmFactory : IVmFactory
     {
         ProfileLayerViewModel Create(Layer layer);
+    }
+
+    public interface IVisualizationToolVmFactory : IVmFactory
+    {
+        ViewpointMoveToolViewModel ViewpointMoveToolViewModel(ProfileViewModel profileViewModel);
+        EditToolViewModel EditToolViewModel(ProfileViewModel profileViewModel);
+        SelectionToolViewModel SelectionToolViewModel(ProfileViewModel profileViewModel);
+        SelectionRemoveToolViewModel SelectionRemoveToolViewModel(ProfileViewModel profileViewModel);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

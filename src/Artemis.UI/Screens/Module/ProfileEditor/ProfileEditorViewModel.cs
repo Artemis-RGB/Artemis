@@ -23,6 +23,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
+        private BindableCollection<Profile> _profiles;
+        private PluginSetting<GridLength> _sidePanelsWidth;
+        private PluginSetting<GridLength> _displayConditionsHeight;
+        private PluginSetting<GridLength> _bottomPanelsHeight;
+        private PluginSetting<GridLength> _elementPropertiesWidth;
 
         public ProfileEditorViewModel(ProfileModule module,
             ICollection<ProfileEditorPanelViewModel> viewModels,
@@ -54,12 +59,36 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public ProfileTreeViewModel ProfileTreeViewModel { get; }
         public ProfileViewModel ProfileViewModel { get; }
-        public BindableCollection<Profile> Profiles { get; set; }
 
-        public PluginSetting<GridLength> SidePanelsWidth { get; set; }
-        public PluginSetting<GridLength> DisplayConditionsHeight { get; set; }
-        public PluginSetting<GridLength> BottomPanelsHeight { get; set; }
-        public PluginSetting<GridLength> ElementPropertiesWidth { get; set; }
+        public BindableCollection<Profile> Profiles
+        {
+            get => _profiles;
+            set => SetAndNotify(ref _profiles, value);
+        }
+
+        public PluginSetting<GridLength> SidePanelsWidth
+        {
+            get => _sidePanelsWidth;
+            set => SetAndNotify(ref _sidePanelsWidth, value);
+        }
+
+        public PluginSetting<GridLength> DisplayConditionsHeight
+        {
+            get => _displayConditionsHeight;
+            set => SetAndNotify(ref _displayConditionsHeight, value);
+        }
+
+        public PluginSetting<GridLength> BottomPanelsHeight
+        {
+            get => _bottomPanelsHeight;
+            set => SetAndNotify(ref _bottomPanelsHeight, value);
+        }
+
+        public PluginSetting<GridLength> ElementPropertiesWidth
+        {
+            get => _elementPropertiesWidth;
+            set => SetAndNotify(ref _elementPropertiesWidth, value);
+        }
 
         public Profile SelectedProfile
         {
@@ -165,6 +194,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
 
             if (_profileEditorService.SelectedProfile != profile)
                 _profileEditorService.ChangeSelectedProfile(profile);
+
+            NotifyOfPropertyChange(nameof(SelectedProfile));
+            NotifyOfPropertyChange(nameof(CanDeleteActiveProfile));
         }
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)

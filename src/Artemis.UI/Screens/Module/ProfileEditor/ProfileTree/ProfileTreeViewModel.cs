@@ -15,6 +15,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
         private readonly IProfileEditorService _profileEditorService;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
+        private FolderViewModel _rootFolder;
 
         public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderVmFactory folderVmFactory)
         {
@@ -26,7 +27,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
         }
 
-        public FolderViewModel RootFolder { get; set; }
+        public FolderViewModel RootFolder
+        {
+            get => _rootFolder;
+            set => SetAndNotify(ref _rootFolder, value);
+        }
 
         public TreeItemViewModel SelectedTreeItem
         {
@@ -34,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             set
             {
                 if (_updatingTree) return;
-                _selectedTreeItem = value;
+                SetAndNotify(ref _selectedTreeItem, value);
                 _profileEditorService.ChangeSelectedProfileElement(value?.ProfileElement);
             }
         }

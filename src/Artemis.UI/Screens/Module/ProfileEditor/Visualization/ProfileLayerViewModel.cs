@@ -20,6 +20,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     {
         private readonly ILayerEditorService _layerEditorService;
         private readonly IProfileEditorService _profileEditorService;
+        private Geometry _layerGeometry;
+        private Geometry _opacityGeometry;
+        private Geometry _shapeGeometry;
+        private RenderTargetBitmap _layerGeometryBitmap;
+        private Rect _viewportRectangle;
+        private bool _isSelected;
 
         public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
         {
@@ -36,13 +42,47 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public Layer Layer { get; }
 
-        public Geometry LayerGeometry { get; set; }
-        public Geometry OpacityGeometry { get; set; }
-        public Geometry ShapeGeometry { get; set; }
-        public RenderTargetBitmap LayerGeometryBitmap { get; set; }
-        public Rect ViewportRectangle { get; set; }
+        public Geometry LayerGeometry
+        {
+            get => _layerGeometry;
+            set => SetAndNotify(ref _layerGeometry, value);
+        }
+
+        public Geometry OpacityGeometry
+        {
+            get => _opacityGeometry;
+            set => SetAndNotify(ref _opacityGeometry, value);
+        }
+
+        public Geometry ShapeGeometry
+        {
+            get => _shapeGeometry;
+            set => SetAndNotify(ref _shapeGeometry, value);
+        }
+
+        public RenderTargetBitmap LayerGeometryBitmap
+        {
+            get => _layerGeometryBitmap;
+            set => SetAndNotify(ref _layerGeometryBitmap, value);
+        }
+
+        public Rect ViewportRectangle
+        {
+            get => _viewportRectangle;
+            set
+            {
+                if (!SetAndNotify(ref _viewportRectangle, value)) return;
+                NotifyOfPropertyChange(nameof(LayerPosition));
+            }
+        }
+
         public Thickness LayerPosition => new Thickness(ViewportRectangle.Left, ViewportRectangle.Top, 0, 0);
-        public bool IsSelected { get; set; }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -56,7 +96,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
             base.Dispose(disposing);
         }
-        
+
         private void Update()
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;

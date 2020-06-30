@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
@@ -18,6 +17,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     {
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
         private readonly IProfileEditorService _profileEditorService;
+        private RectangleGeometry _selectionRectangle;
+        private double _width;
 
         public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
             IProfileEditorService profileEditorService)
@@ -32,8 +33,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
-        public double Width { get; set; }
-        public RectangleGeometry SelectionRectangle { get; set; }
+        public double Width
+        {
+            get => _width;
+            set => SetAndNotify(ref _width, value);
+        }
+
+        public RectangleGeometry SelectionRectangle
+        {
+            get => _selectionRectangle;
+            set => SetAndNotify(ref _selectionRectangle, value);
+        }
 
         public void UpdateKeyframes()
         {
@@ -60,7 +70,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             if (viewModel == null)
                 return;
 
-            ((IInputElement)sender).CaptureMouse();
+            ((IInputElement) sender).CaptureMouse();
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && !viewModel.IsSelected)
                 SelectKeyframe(viewModel, true, false);
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
@@ -76,7 +86,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.UpdateSelectedProfileElement();
             ReleaseSelectedKeyframes();
 
-            ((IInputElement)sender).ReleaseMouseCapture();
+            ((IInputElement) sender).ReleaseMouseCapture();
         }
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
@@ -176,10 +186,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             if (e.LeftButton == MouseButtonState.Released)
                 return;
 
-            ((IInputElement)sender).CaptureMouse();
+            ((IInputElement) sender).CaptureMouse();
 
             SelectionRectangle.Rect = new Rect();
-            _mouseDragStartPoint = e.GetPosition((IInputElement)sender);
+            _mouseDragStartPoint = e.GetPosition((IInputElement) sender);
             _mouseDragging = true;
             e.Handled = true;
         }
@@ -190,25 +200,25 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             if (!_mouseDragging)
                 return;
 
-            var position = e.GetPosition((IInputElement)sender);
+            var position = e.GetPosition((IInputElement) sender);
             var selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
             var keyframeViewModels = GetAllKeyframeViewModels();
-            var selectedKeyframes = HitTestUtilities.GetHitViewModels<TimelineKeyframeViewModel>((Visual)sender, SelectionRectangle);
+            var selectedKeyframes = HitTestUtilities.GetHitViewModels<TimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
             foreach (var keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);
 
             _mouseDragging = false;
             e.Handled = true;
-            ((IInputElement)sender).ReleaseMouseCapture();
+            ((IInputElement) sender).ReleaseMouseCapture();
         }
 
         public void TimelineCanvasMouseMove(object sender, MouseEventArgs e)
         {
             if (_mouseDragging && e.LeftButton == MouseButtonState.Pressed)
             {
-                var position = e.GetPosition((IInputElement)sender);
+                var position = e.GetPosition((IInputElement) sender);
                 var selectedRect = new Rect(_mouseDragStartPoint, position);
                 SelectionRectangle.Rect = selectedRect;
                 e.Handled = true;
@@ -264,7 +274,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 viewModels.AddRange(layerPropertyGroupViewModel.GetAllChildren());
 
             var keyframes = viewModels.Where(vm => vm is LayerPropertyViewModel)
-                .SelectMany(vm => ((LayerPropertyViewModel)vm).TimelinePropertyBaseViewModel.TimelineKeyframeViewModels)
+                .SelectMany(vm => ((LayerPropertyViewModel) vm).TimelinePropertyBaseViewModel.TimelineKeyframeViewModels)
                 .ToList();
 
             return keyframes;

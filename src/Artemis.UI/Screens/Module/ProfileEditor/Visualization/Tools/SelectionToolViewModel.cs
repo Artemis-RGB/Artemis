@@ -12,6 +12,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
     public class SelectionToolViewModel : VisualizationToolViewModel
     {
         private readonly ILayerService _layerService;
+        private Rect _dragRectangle;
 
         public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerService layerService)
             : base(profileViewModel, profileEditorService)
@@ -23,7 +24,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             }
         }
 
-        public Rect DragRectangle { get; set; }
+        public Rect DragRectangle
+        {
+            get => _dragRectangle;
+            set => SetAndNotify(ref _dragRectangle, value);
+        }
 
         public override void MouseUp(object sender, MouseButtonEventArgs e)
         {

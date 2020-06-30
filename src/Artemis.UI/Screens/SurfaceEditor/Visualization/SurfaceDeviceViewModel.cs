@@ -10,15 +10,36 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
     {
         private double _dragOffsetX;
         private double _dragOffsetY;
+        private ArtemisDevice _device;
+        private SelectionStatus _selectionStatus;
+        private Cursor _cursor;
 
         public SurfaceDeviceViewModel(ArtemisDevice device)
         {
             Device = device;
         }
 
-        public ArtemisDevice Device { get; set; }
-        public SelectionStatus SelectionStatus { get; set; }
-        public Cursor Cursor { get; set; }
+        public ArtemisDevice Device
+        {
+            get => _device;
+            set
+            {
+                if (SetAndNotify(ref _device, value)) return;
+                NotifyOfPropertyChange(nameof(DeviceRectangle));
+            }
+        }
+
+        public SelectionStatus SelectionStatus
+        {
+            get => _selectionStatus;
+            set => SetAndNotify(ref _selectionStatus, value);
+        }
+
+        public Cursor Cursor
+        {
+            get => _cursor;
+            set => SetAndNotify(ref _cursor, value);
+        }
 
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()

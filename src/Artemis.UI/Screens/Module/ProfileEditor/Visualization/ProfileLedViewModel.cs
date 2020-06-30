@@ -11,6 +11,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileLedViewModel : PropertyChangedBase
     {
+        private bool _isSelected;
+        private bool _isDimmed;
+        private Geometry _displayGeometry;
+        private Geometry _strokeGeometry;
+        private Color _displayColor;
+
         public ProfileLedViewModel(ArtemisLed led)
         {
             Led = led;
@@ -26,17 +32,40 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 
         public ArtemisLed Led { get; }
 
-        public bool IsSelected { get; set; }
-        public bool IsDimmed { get; set; }
-
         public double X { get; }
         public double Y { get; }
         public double Width { get; }
         public double Height { get; }
 
-        public Geometry DisplayGeometry { get; private set; }
-        public Geometry StrokeGeometry { get; private set; }
-        public Color DisplayColor { get; private set; }
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
+
+        public bool IsDimmed
+        {
+            get => _isDimmed;
+            set => SetAndNotify(ref _isDimmed, value);
+        }
+
+        public Geometry DisplayGeometry
+        {
+            get => _displayGeometry;
+            private set => SetAndNotify(ref _displayGeometry, value);
+        }
+
+        public Geometry StrokeGeometry
+        {
+            get => _strokeGeometry;
+            private set => SetAndNotify(ref _strokeGeometry, value);
+        }
+
+        public Color DisplayColor
+        {
+            get => _displayColor;
+            private set => SetAndNotify(ref _displayColor, value);
+        }
 
         public void Update()
         {

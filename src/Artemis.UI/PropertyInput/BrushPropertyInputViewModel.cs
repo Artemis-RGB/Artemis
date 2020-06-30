@@ -15,6 +15,7 @@ namespace Artemis.UI.PropertyInput
     {
         private readonly ILayerService _layerService;
         private readonly IPluginService _pluginService;
+        private List<LayerBrushDescriptor> _descriptors;
 
         public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService,
             ILayerService layerService, IPluginService pluginService) : base(layerProperty, profileEditorService)
@@ -27,7 +28,11 @@ namespace Artemis.UI.PropertyInput
             UpdateEnumValues();
         }
 
-        public List<LayerBrushDescriptor> Descriptors { get; set; }
+        public List<LayerBrushDescriptor> Descriptors
+        {
+            get => _descriptors;
+            set => SetAndNotify(ref _descriptors, value);
+        }
 
         public LayerBrushDescriptor SelectedDescriptor
         {

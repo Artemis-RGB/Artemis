@@ -9,9 +9,11 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 {
+
     public class TreePropertyViewModel<T> : TreePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
+        private PropertyInputViewModel<T> _propertyInputViewModel;
 
         public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, PropertyInputViewModel<T> propertyInputViewModel,
             IProfileEditorService profileEditorService) : base(layerPropertyBaseViewModel)
@@ -22,7 +24,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
         }
 
         public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
-        public PropertyInputViewModel<T> PropertyInputViewModel { get; set; }
+
+        public PropertyInputViewModel<T> PropertyInputViewModel
+        {
+            get => _propertyInputViewModel;
+            set => SetAndNotify(ref _propertyInputViewModel, value);
+        }
 
         public bool KeyframesEnabled
         {

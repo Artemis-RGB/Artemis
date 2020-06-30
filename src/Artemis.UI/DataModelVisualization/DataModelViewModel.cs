@@ -7,6 +7,8 @@ namespace Artemis.UI.DataModelVisualization
 {
     public class DataModelViewModel : DataModelVisualizationViewModel
     {
+        private BindableCollection<DataModelVisualizationViewModel> _children;
+
         public DataModelViewModel()
         {
             Children = new BindableCollection<DataModelVisualizationViewModel>();
@@ -23,7 +25,11 @@ namespace Artemis.UI.DataModelVisualization
             PopulateProperties();
         }
 
-        public BindableCollection<DataModelVisualizationViewModel> Children { get; set; }
+        public BindableCollection<DataModelVisualizationViewModel> Children
+        {
+            get => _children;
+            set => SetAndNotify(ref _children, value);
+        }
 
         public void PopulateProperties()
         {

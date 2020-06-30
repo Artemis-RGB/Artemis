@@ -27,6 +27,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
+        private ArtemisSurface _selectedSurface;
+        private ObservableCollection<SurfaceDeviceViewModel> _devices;
+        private ObservableCollection<ArtemisSurface> _surfaceConfigurations;
+        private RectangleGeometry _selectionRectangle;
+        private PanZoomViewModel _panZoomViewModel;
+        private PluginSetting<GridLength> _surfaceListWidth;
+        private Cursor _cursor;
 
         public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService,
             IDeviceService deviceService)
@@ -46,12 +53,41 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _deviceService = deviceService;
         }
 
-        public ObservableCollection<SurfaceDeviceViewModel> Devices { get; set; }
-        public ObservableCollection<ArtemisSurface> SurfaceConfigurations { get; set; }
-        public RectangleGeometry SelectionRectangle { get; set; }
-        public PanZoomViewModel PanZoomViewModel { get; set; }
-        public PluginSetting<GridLength> SurfaceListWidth { get; set; }
-        public Cursor Cursor { get; set; }
+        public ObservableCollection<SurfaceDeviceViewModel> Devices
+        {
+            get => _devices;
+            set => SetAndNotify(ref _devices, value);
+        }
+
+        public ObservableCollection<ArtemisSurface> SurfaceConfigurations
+        {
+            get => _surfaceConfigurations;
+            set => SetAndNotify(ref _surfaceConfigurations, value);
+        }
+
+        public RectangleGeometry SelectionRectangle
+        {
+            get => _selectionRectangle;
+            set => SetAndNotify(ref _selectionRectangle, value);
+        }
+
+        public PanZoomViewModel PanZoomViewModel
+        {
+            get => _panZoomViewModel;
+            set => SetAndNotify(ref _panZoomViewModel, value);
+        }
+
+        public PluginSetting<GridLength> SurfaceListWidth
+        {
+            get => _surfaceListWidth;
+            set => SetAndNotify(ref _surfaceListWidth, value);
+        }
+
+        public Cursor Cursor
+        {
+            get => _cursor;
+            set => SetAndNotify(ref _cursor, value);
+        }
 
         public ArtemisSurface SelectedSurface
         {
@@ -61,7 +97,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 if (value == null)
                     return;
 
-                _selectedSurface = value;
+                SetAndNotify(ref _selectedSurface, value);
                 ApplySelectedSurfaceConfiguration();
             }
         }
@@ -260,7 +296,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
-        private ArtemisSurface _selectedSurface;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)

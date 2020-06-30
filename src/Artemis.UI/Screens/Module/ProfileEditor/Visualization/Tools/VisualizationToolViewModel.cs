@@ -7,6 +7,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 {
     public abstract class VisualizationToolViewModel : CanvasViewModel
     {
+        private Cursor _cursor;
+        private bool _isMouseDown;
+        private Point _mouseDownStartPosition;
+
         protected VisualizationToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService)
         {
             // Not relevant for visualization tools as they overlay the entire canvas
@@ -20,9 +24,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
 
         public ProfileViewModel ProfileViewModel { get; }
         public IProfileEditorService ProfileEditorService { get; }
-        public Cursor Cursor { get; protected set; }
-        public bool IsMouseDown { get; protected set; }
-        public Point MouseDownStartPosition { get; protected set; }
+
+        public Cursor Cursor
+        {
+            get => _cursor;
+            protected set => SetAndNotify(ref _cursor, value);
+        }
+
+        public bool IsMouseDown
+        {
+            get => _isMouseDown;
+            protected set => SetAndNotify(ref _isMouseDown, value);
+        }
+
+        public Point MouseDownStartPosition
+        {
+            get => _mouseDownStartPosition;
+            protected set => SetAndNotify(ref _mouseDownStartPosition, value);
+        }
 
         public virtual void MouseDown(object sender, MouseButtonEventArgs e)
         {

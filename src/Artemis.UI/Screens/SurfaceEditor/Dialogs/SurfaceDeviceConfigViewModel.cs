@@ -9,6 +9,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
     public class SurfaceDeviceConfigViewModel : DialogViewModelBase
     {
         private readonly ICoreService _coreService;
+        private string _title;
+        private int _x;
+        private int _y;
+        private double _scale;
+        private int _rotation;
 
         public SurfaceDeviceConfigViewModel(SurfaceDeviceViewModel surfaceDeviceViewModel, ICoreService coreService, IModelValidator<SurfaceDeviceConfigViewModel> validator)
             : base(validator)
@@ -24,12 +29,36 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         }
 
         public SurfaceDeviceViewModel SurfaceDeviceViewModel { get; }
-        public string Title { get; set; }
 
-        public int X { get; set; }
-        public int Y { get; set; }
-        public double Scale { get; set; }
-        public int Rotation { get; set; }
+        public string Title
+        {
+            get => _title;
+            set => SetAndNotify(ref _title, value);
+        }
+
+        public int X
+        {
+            get => _x;
+            set => SetAndNotify(ref _x, value);
+        }
+
+        public int Y
+        {
+            get => _y;
+            set => SetAndNotify(ref _y, value);
+        }
+
+        public double Scale
+        {
+            get => _scale;
+            set => SetAndNotify(ref _scale, value);
+        }
+
+        public int Rotation
+        {
+            get => _rotation;
+            set => SetAndNotify(ref _rotation, value);
+        }
 
         public async Task Accept()
         {
