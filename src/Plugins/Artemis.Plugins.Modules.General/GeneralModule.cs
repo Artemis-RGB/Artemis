@@ -31,7 +31,6 @@ namespace Artemis.Plugins.Modules.General
 
             DataModel.IntsList[0] = _rand.Next();
             DataModel.IntsList[2] = _rand.Next();
-
             base.Update(deltaTime);
         }
 

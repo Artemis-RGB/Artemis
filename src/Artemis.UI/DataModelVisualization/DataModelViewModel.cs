@@ -1,8 +1,6 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
-using Humanizer;
 using Stylet;
 
 namespace Artemis.UI.DataModelVisualization
@@ -45,6 +43,8 @@ namespace Artemis.UI.DataModelVisualization
 
             foreach (var dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update();
+
+            UpdateListStatus();
         }
     }
 }
