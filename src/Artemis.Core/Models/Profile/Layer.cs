@@ -472,7 +472,7 @@ namespace Artemis.Core.Models.Profile
                 DeactivateLayerEffect(baseLayerEffect);
         }
 
-        private void DeactivateLayerBrush()
+        internal void DeactivateLayerBrush()
         {
             if (LayerBrush == null)
                 return;

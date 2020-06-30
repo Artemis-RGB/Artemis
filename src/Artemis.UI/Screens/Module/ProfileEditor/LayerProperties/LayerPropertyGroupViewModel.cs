@@ -55,7 +55,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public override bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);
-            set => LayerPropertyGroup.ProfileElement.SetPropertyGroupExpanded(LayerPropertyGroup, value);
+            set
+            {
+                LayerPropertyGroup.ProfileElement.SetPropertyGroupExpanded(LayerPropertyGroup, value);
+                NotifyOfPropertyChange(nameof(IsExpanded));
+            }
         }
 
         public ViewModelType GroupType
