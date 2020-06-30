@@ -14,7 +14,7 @@ Artemis adds highly configurable support for several games to a range of RGB key
 Artemis 2 is in development. In the meanwhile I'm no longer supporting Artemis 1.x, sorry!  
 Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekman.nl/repository/downloadAll/Artemis_Build/.lastSuccessful/artifacts.zip?guest=1). To use, extract the ZIP and run Artemis.UI.exe.  
 
-**Please note that for now I've only included Corsair and very limited Logitech support. If you want to test support for a different device (must be RGB.NET supported), let me know on Discord.**
+**Please note that even though I've included a plugin for each brand supported by RGB.NET, only Corsair and Logitech have been tested. If you run into any issues please let us know on Discord.**
 
 #### Want to build? Follow these instructions
 1. Create a central folder like ```C:\Repos```
@@ -23,19 +23,19 @@ Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekma
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
 4. Open ```<central folder>\Artemis\src\Artemis.sln```
 5. Restore Nuget packages
-6. Run ```Update-Package -reinstall PropertyChanged.Fody``` on both the **Artemis.Core** and **Artemis.UI** projects
 
-Some things I have planned for 2.0
+A quick overview of the largest changes compared to Artemis 1.x
 - Completely overhauled UI
 - Deep intergration with DarthAffe's [RGB.NET](https://github.com/DarthAffe/RGB.NET) (meaning more devices!)
-- Profiles will no longer be bound to a specific keyboard but will work on any keyboard
-- Layers will be assigned to keys accurately like done in per example Corsair's CUE thanks to RGB.NET
-- Instead of the built-in game support Artemis currently offers there will be plugins that add support for games, new layers, effects and more
-- The plugin system will replace the current idea of having a scripting engine and will be in multiple languages (these will be in the form of plugins themselves)
-- I'll include some plugins by default to support most of the games Artemis currently supports (I might drop some games that don't work well/are too much work to maintain)
-- There will be a workshop to share plugins, profiles and even layers. This workshop will be part of an Artemis website
+- Custom device positions to accurately map out your real-world setup
+- Profiles are no longer be bound to a specific keyboard but will with any setup
+- Layers are assigned to LEDs to allow for very precise lighting
+- Profiles are built using an entirely custom made editor with support for keyframe-based animations and shape manipulation
+- Devices, layer types (known as brushes and effects in Artemis 2), modules and many other things are available in the form of plugins
+- There will be a workshop to share plugins, profiles and even layers. This workshop will be integrated into the application and will also part of an Artemis website
 
 Much of this is subject to change and will take a while to create but it'll leave us with a much better platform to create a community around :smiley:
+For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page
 
 ### Work in progress screenshots
 ![Surface editor](https://i.imgur.com/7d8wgkr.png)
