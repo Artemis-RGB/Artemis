@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Utilities;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -47,7 +46,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
     public abstract class TimelineKeyframeViewModel : PropertyChangedBase
     {
         private readonly IProfileEditorService _profileEditorService;
+        private BindableCollection<TimelineEasingViewModel> _easingViewModels;
+        private bool _isSelected;
         private int _pixelsPerSecond;
+        private string _timestamp;
+        private double _x;
 
         protected TimelineKeyframeViewModel(IProfileEditorService profileEditorService, BaseLayerPropertyKeyframe baseLayerPropertyKeyframe)
         {
@@ -57,13 +60,30 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public BaseLayerPropertyKeyframe BaseLayerPropertyKeyframe { get; }
-        public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; set; }
 
-        public bool IsSelected { get; set; }
-        public double X { get; set; }
-        public string Timestamp { get; set; }
+        public BindableCollection<TimelineEasingViewModel> EasingViewModels
+        {
+            get => _easingViewModels;
+            set => SetAndNotify(ref _easingViewModels, value);
+        }
 
-        public UIElement ParentView { get; set; }
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
+
+        public double X
+        {
+            get => _x;
+            set => SetAndNotify(ref _x, value);
+        }
+
+        public string Timestamp
+        {
+            get => _timestamp;
+            set => SetAndNotify(ref _timestamp, value);
+        }
 
         public void Update(int pixelsPerSecond)
         {

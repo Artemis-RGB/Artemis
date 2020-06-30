@@ -17,6 +17,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginService _pluginService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly IWindowManager _windowManager;
+        private Plugin _plugin;
+        private PluginInfo _pluginInfo;
+        private bool _enabling;
 
         public PluginSettingsViewModel(Plugin plugin, IWindowManager windowManager, IDialogService dialogService, IPluginService pluginService,
             ISnackbarMessageQueue snackbarMessageQueue)
@@ -30,9 +33,24 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _snackbarMessageQueue = snackbarMessageQueue;
         }
 
-        public Plugin Plugin { get; set; }
-        public PluginInfo PluginInfo { get; set; }
-        public bool Enabling { get; set; }
+        public Plugin Plugin
+        {
+            get => _plugin;
+            set => SetAndNotify(ref _plugin, value);
+        }
+
+        public PluginInfo PluginInfo
+        {
+            get => _pluginInfo;
+            set => SetAndNotify(ref _pluginInfo, value);
+        }
+
+        public bool Enabling
+        {
+            get => _enabling;
+            set => SetAndNotify(ref _enabling, value);
+        }
+
         public PackIconKind Icon => GetIconKind();
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
         public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;

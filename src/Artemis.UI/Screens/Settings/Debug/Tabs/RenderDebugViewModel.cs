@@ -4,7 +4,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -14,20 +13,26 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
     public class RenderDebugViewModel : Screen
     {
         private readonly ICoreService _coreService;
-        private readonly IRgbService _rgbService;
-        private readonly ISurfaceService _surfaceService;
+        private double _currentFps;
+        private ImageSource _currentFrame;
 
-        public RenderDebugViewModel(ICoreService coreService, IRgbService rgbService, ISurfaceService surfaceService)
+        public RenderDebugViewModel(ICoreService coreService)
         {
             _coreService = coreService;
-            _rgbService = rgbService;
-            _surfaceService = surfaceService;
-
             DisplayName = "Rendering";
         }
 
-        public ImageSource CurrentFrame { get; set; }
-        public double CurrentFps { get; set; }
+        public ImageSource CurrentFrame
+        {
+            get => _currentFrame;
+            set => SetAndNotify(ref _currentFrame, value);
+        }
+
+        public double CurrentFps
+        {
+            get => _currentFps;
+            set => SetAndNotify(ref _currentFps, value);
+        }
 
         protected override void OnActivate()
         {
@@ -47,7 +52,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             Execute.PostToUIThread(() =>
             {
-                if (e.BitmapBrush?.Bitmap == null)
+                if (e.BitmapBrush?.Bitmap == null || e.BitmapBrush.Bitmap.Pixels.Length == 0)
                     return;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap))

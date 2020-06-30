@@ -24,11 +24,13 @@ namespace Artemis.UI.Screens
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
-        private readonly ISettingsService _settingsService;
         private readonly ThemeWatcher _themeWatcher;
         private readonly Timer _titleUpdateTimer;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _lostFocus;
+        private bool _isSidebarVisible;
+        private bool _activeItemReady;
+        private string _windowTitle;
 
         public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
             IDebugService debugService, ISnackbarMessageQueue snackbarMessageQueue)
@@ -36,7 +38,6 @@ namespace Artemis.UI.Screens
             SidebarViewModel = sidebarViewModel;
             MainMessageQueue = snackbarMessageQueue;
             _eventAggregator = eventAggregator;
-            _settingsService = settingsService;
             _coreService = coreService;
             _debugService = debugService;
 
@@ -55,10 +56,25 @@ namespace Artemis.UI.Screens
         }
 
         public SidebarViewModel SidebarViewModel { get; }
-        public ISnackbarMessageQueue MainMessageQueue { get; set; }
-        public bool IsSidebarVisible { get; set; }
-        public bool ActiveItemReady { get; set; }
-        public string WindowTitle { get; set; }
+        public ISnackbarMessageQueue MainMessageQueue { get;  }
+
+        public bool IsSidebarVisible
+        {
+            get => _isSidebarVisible;
+            set => SetAndNotify(ref _isSidebarVisible, value);
+        }
+
+        public bool ActiveItemReady
+        {
+            get => _activeItemReady;
+            set => SetAndNotify(ref _activeItemReady, value);
+        }
+
+        public string WindowTitle
+        {
+            get => _windowTitle;
+            set => SetAndNotify(ref _windowTitle, value);
+        }
 
         public void WindowDeactivated()
         {

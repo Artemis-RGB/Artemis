@@ -9,6 +9,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileDeviceViewModel : CanvasViewModel
     {
+        private ObservableCollection<ProfileLedViewModel> _leds;
+        private ArtemisDevice _device;
+        private bool _addedLeds;
+
         public ProfileDeviceViewModel(ArtemisDevice device)
         {
             Device = device;
@@ -17,9 +21,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             Task.Run(AddLedsAsync);
         }
 
-        public ObservableCollection<ProfileLedViewModel> Leds { get; set; }
-        public ArtemisDevice Device { get; set; }
-        public bool AddedLeds { get; private set; }
+        public ObservableCollection<ProfileLedViewModel> Leds
+        {
+            get => _leds;
+            set => SetAndNotify(ref _leds, value);
+        }
+
+        public ArtemisDevice Device
+        {
+            get => _device;
+            set => SetAndNotify(ref _device, value);
+        }
+
+        public bool AddedLeds
+        {
+            get => _addedLeds;
+            private set => SetAndNotify(ref _addedLeds, value);
+        }
 
         public new double X
         {

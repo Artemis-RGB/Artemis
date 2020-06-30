@@ -26,6 +26,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         }
 
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
+        private ViewModelType _groupType;
+        private TreePropertyGroupViewModel _treePropertyGroupViewModel;
+        private TimelinePropertyGroupViewModel _timelinePropertyGroupViewModel;
 
         public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription,
             IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -44,22 +47,34 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             DetermineType();
         }
 
+        public override bool IsVisible => !LayerPropertyGroup.IsHidden; 
+        public IProfileEditorService ProfileEditorService { get; }
+        public LayerPropertyGroup LayerPropertyGroup { get; }
+        public PropertyGroupDescriptionAttribute PropertyGroupDescription { get; }
+
         public override bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);
             set => LayerPropertyGroup.ProfileElement.SetPropertyGroupExpanded(LayerPropertyGroup, value);
         }
 
-        public override bool IsVisible => !LayerPropertyGroup.IsHidden;
-        public ViewModelType GroupType { get; set; }
+        public ViewModelType GroupType
+        {
+            get => _groupType;
+            set => SetAndNotify(ref _groupType, value);
+        }
 
-        public IProfileEditorService ProfileEditorService { get; }
+        public TreePropertyGroupViewModel TreePropertyGroupViewModel
+        {
+            get => _treePropertyGroupViewModel;
+            set => SetAndNotify(ref _treePropertyGroupViewModel, value);
+        }
 
-        public LayerPropertyGroup LayerPropertyGroup { get; }
-        public PropertyGroupDescriptionAttribute PropertyGroupDescription { get; }
-
-        public TreePropertyGroupViewModel TreePropertyGroupViewModel { get; set; }
-        public TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel { get; set; }
+        public TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel
+        {
+            get => _timelinePropertyGroupViewModel;
+            set => SetAndNotify(ref _timelinePropertyGroupViewModel, value);
+        }
 
         public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
         {

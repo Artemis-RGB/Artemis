@@ -8,6 +8,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class TimelinePropertyGroupViewModel : PropertyChangedBase
     {
+        private BindableCollection<double> _timelineKeyframeViewModels;
+
         public TimelinePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
         {
             LayerPropertyGroupViewModel = (LayerPropertyGroupViewModel) layerPropertyBaseViewModel;
@@ -19,7 +21,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
-        public BindableCollection<double> TimelineKeyframeViewModels { get; set; }
+
+        public BindableCollection<double> TimelineKeyframeViewModels
+        {
+            get => _timelineKeyframeViewModels;
+            set => SetAndNotify(ref _timelineKeyframeViewModels, value);
+        }
 
         public void UpdateKeyframes()
         {

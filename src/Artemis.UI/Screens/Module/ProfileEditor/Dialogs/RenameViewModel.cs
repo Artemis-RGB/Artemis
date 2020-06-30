@@ -7,6 +7,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
 {
     public class RenameViewModel : DialogViewModelBase
     {
+        private string _elementName;
+
         public RenameViewModel(IModelValidator<RenameViewModel> validator, string subject, string currentName) : base(validator)
         {
             Subject = subject;
@@ -14,7 +16,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
         }
 
         public string Subject { get; }
-        public string ElementName { get; set; }
+
+        public string ElementName
+        {
+            get => _elementName;
+            set => SetAndNotify(ref _elementName, value);
+        }
 
         public async Task Accept()
         {

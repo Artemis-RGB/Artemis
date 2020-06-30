@@ -27,6 +27,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
+        private bool _repeatAfterLastKeyframe;
+        private int _propertyTreeIndex;
+        private PropertiesProfileElement _selectedPropertiesElement;
+        private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
+        private TreeViewModel _treeViewModel;
+        private EffectsViewModel _effectsViewModel;
+        private TimelineViewModel _timelineViewModel;
+        private bool _playing;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -46,8 +54,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public ICoreService CoreService { get; }
         public ISettingsService SettingsService { get; }
 
-        public bool Playing { get; set; }
-        public bool RepeatAfterLastKeyframe { get; set; }
+        public bool Playing
+        {
+            get => _playing;
+            set => SetAndNotify(ref _playing, value);
+        }
+
+        public bool RepeatAfterLastKeyframe
+        {
+            get => _repeatAfterLastKeyframe;
+            set => SetAndNotify(ref _repeatAfterLastKeyframe, value);
+        }
+
         public string FormattedCurrentTime => $"{Math.Floor(ProfileEditorService.CurrentTime.TotalSeconds):00}.{ProfileEditorService.CurrentTime.Milliseconds:000}";
 
         public Thickness TimeCaretPosition
@@ -56,17 +74,55 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / ProfileEditorService.PixelsPerSecond);
         }
 
-        public int PropertyTreeIndex { get; set; }
+        public int PropertyTreeIndex
+        {
+            get => _propertyTreeIndex;
+            set
+            {
+                if (!SetAndNotify(ref _propertyTreeIndex, value)) return;
+                NotifyOfPropertyChange(nameof(PropertyTreeVisible));
+            }
+        }
+
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
-        public PropertiesProfileElement SelectedPropertiesElement { get; set; }
+        public PropertiesProfileElement SelectedPropertiesElement
+        {
+            get => _selectedPropertiesElement;
+            set
+            {
+                if (!SetAndNotify(ref _selectedPropertiesElement, value)) return;
+                NotifyOfPropertyChange(nameof(SelectedLayer));
+                NotifyOfPropertyChange(nameof(SelectedFolder));
+            }
+        }
+
         public Layer SelectedLayer => SelectedPropertiesElement as Layer;
         public Folder SelectedFolder => SelectedPropertiesElement as Folder;
 
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; set; }
-        public TreeViewModel TreeViewModel { get; set; }
-        public EffectsViewModel EffectsViewModel { get; set; }
-        public TimelineViewModel TimelineViewModel { get; set; }
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
+        {
+            get => _layerPropertyGroups;
+            set => SetAndNotify(ref _layerPropertyGroups, value);
+        }
+
+        public TreeViewModel TreeViewModel
+        {
+            get => _treeViewModel;
+            set => SetAndNotify(ref _treeViewModel, value);
+        }
+
+        public EffectsViewModel EffectsViewModel
+        {
+            get => _effectsViewModel;
+            set => SetAndNotify(ref _effectsViewModel, value);
+        }
+
+        public TimelineViewModel TimelineViewModel
+        {
+            get => _timelineViewModel;
+            set => SetAndNotify(ref _timelineViewModel, value);
+        }
 
         protected override void OnInitialActivate()
         {
@@ -116,8 +172,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
         {
-            NotifyOfPropertyChange(() => FormattedCurrentTime);
-            NotifyOfPropertyChange(() => TimeCaretPosition);
+            NotifyOfPropertyChange(nameof(FormattedCurrentTime));
+            NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
@@ -261,7 +317,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             var nonEffectProperties = LayerPropertyGroups.Where(l => l.GroupType != LayerEffectRoot).ToList();
             // Order the effects
             var effectProperties = LayerPropertyGroups.Where(l => l.GroupType == LayerEffectRoot).OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order).ToList();
-            
+
             // Put the non-effect properties in front
             for (var index = 0; index < nonEffectProperties.Count; index++)
             {

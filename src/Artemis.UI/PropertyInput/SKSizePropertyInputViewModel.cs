@@ -18,14 +18,12 @@ namespace Artemis.UI.PropertyInput
         }
 
         // Since SKSize is immutable we need to create properties that replace the SKSize entirely
-        // [DependsOn(nameof(InputValue))]
         public float Width
         {
             get => InputValue.Width;
             set => InputValue = new SKSize(value, Height);
         }
 
-        // [DependsOn(nameof(InputValue))]
         public float Height
         {
             get => InputValue.Height;

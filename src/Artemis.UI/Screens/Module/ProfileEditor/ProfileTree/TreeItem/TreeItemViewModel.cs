@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
@@ -20,6 +19,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
         private readonly ILayerService _layerService;
         private readonly ILayerVmFactory _layerVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private BindableCollection<TreeItemViewModel> _children;
+        private TreeItemViewModel _parent;
+        private ProfileElement _profileElement;
 
         protected TreeItemViewModel(TreeItemViewModel parent,
             ProfileElement profileElement,
@@ -42,11 +44,31 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             UpdateProfileElements();
         }
 
-        public TreeItemViewModel Parent { get; set; }
-        public ProfileElement ProfileElement { get; set; }
+        public TreeItemViewModel Parent
+        {
+            get => _parent;
+            set => SetAndNotify(ref _parent, value);
+        }
+
+        public ProfileElement ProfileElement
+        {
+            get => _profileElement;
+            set => SetAndNotify(ref _profileElement, value);
+        }
+
+        public BindableCollection<TreeItemViewModel> Children
+        {
+            get => _children;
+            set => SetAndNotify(ref _children, value);
+        }
 
         public abstract bool SupportsChildren { get; }
-        public BindableCollection<TreeItemViewModel> Children { get; set; }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         public List<TreeItemViewModel> GetAllChildren()
         {
@@ -213,12 +235,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (disposing)
             {
             }
-        }
-
-        public void Dispose()
-        {
-       Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

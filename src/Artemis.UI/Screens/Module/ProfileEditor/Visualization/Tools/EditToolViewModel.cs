@@ -18,6 +18,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
         private SKPoint _dragOffset;
         private SKPoint _dragStart;
         private SKPoint _topLeft;
+        private SKPath _shapePath;
+        private SKPoint _shapeAnchor;
+        private RectangleGeometry _shapeGeometry;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
             : base(profileViewModel, profileEditorService)
@@ -32,9 +35,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
-        public SKPath ShapePath { get; set; }
-        public SKPoint ShapeAnchor { get; set; }
-        public RectangleGeometry ShapeGeometry { get; set; }
+        public SKPath ShapePath
+        {
+            get => _shapePath;
+            set => SetAndNotify(ref _shapePath, value);
+        }
+
+        public SKPoint ShapeAnchor
+        {
+            get => _shapeAnchor;
+            set => SetAndNotify(ref _shapeAnchor, value);
+        }
+
+        public RectangleGeometry ShapeGeometry
+        {
+            get => _shapeGeometry;
+            set => SetAndNotify(ref _shapeGeometry, value);
+        }
 
         private void Update()
         {

@@ -10,15 +10,55 @@ namespace Artemis.UI.DataModelVisualization
 {
     public abstract class DataModelVisualizationViewModel : PropertyChangedBase
     {
-        public DataModelPropertyAttribute PropertyDescription { get; protected set; }
-        public PropertyInfo PropertyInfo { get; protected set; }
-        public Type PropertyType { get; set; }
+        private DataModelPropertyAttribute _propertyDescription;
+        private PropertyInfo _propertyInfo;
+        private Type _propertyType;
+        private DataModelVisualizationViewModel _parent;
+        private object _model;
+        private bool _isListProperty;
+        private string _listDescription;
 
-        public DataModelVisualizationViewModel Parent { get; protected set; }
-        public object Model { get; set; }
+        public DataModelPropertyAttribute PropertyDescription
+        {
+            get => _propertyDescription;
+            protected set => SetAndNotify(ref _propertyDescription, value);
+        }
 
-        public bool IsListProperty { get; set; }
-        public string ListDescription { get; set; }
+        public PropertyInfo PropertyInfo
+        {
+            get => _propertyInfo;
+            protected set => SetAndNotify(ref _propertyInfo, value);
+        }
+
+        public Type PropertyType
+        {
+            get => _propertyType;
+            set => SetAndNotify(ref _propertyType, value);
+        }
+
+        public DataModelVisualizationViewModel Parent
+        {
+            get => _parent;
+            protected set => SetAndNotify(ref _parent, value);
+        }
+
+        public object Model
+        {
+            get => _model;
+            set => SetAndNotify(ref _model, value);
+        }
+
+        public bool IsListProperty
+        {
+            get => _isListProperty;
+            set => SetAndNotify(ref _isListProperty, value);
+        }
+
+        public string ListDescription
+        {
+            get => _listDescription;
+            set => SetAndNotify(ref _listDescription, value);
+        }
 
         public abstract void Update();
 

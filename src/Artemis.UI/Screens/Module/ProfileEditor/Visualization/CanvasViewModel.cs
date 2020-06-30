@@ -5,8 +5,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public abstract class CanvasViewModel : PropertyChangedBase, IDisposable
     {
-        public double X { get; set; }
-        public double Y { get; set; }
+        private double _x;
+        private double _y;
+
+        public double X
+        {
+            get => _x;
+            set => SetAndNotify(ref _x, value);
+        }
+
+        public double Y
+        {
+            get => _y;
+            set => SetAndNotify(ref _y, value);
+        }
 
         protected virtual void Dispose(bool disposing)
         {

@@ -29,6 +29,11 @@ namespace Artemis.UI.Screens.Settings
         private readonly ISettingsService _settingsService;
         private readonly IPluginSettingsVmFactory _pluginSettingsVmFactory;
         private readonly ISurfaceService _surfaceService;
+        private List<Tuple<string, int>> _targetFrameRates;
+        private List<Tuple<string, double>> _renderScales;
+        private List<int> _sampleSizes;
+        private BindableCollection<DeviceSettingsViewModel> _deviceSettingsViewModels;
+        private BindableCollection<PluginSettingsViewModel> _plugins;
 
         public SettingsViewModel(ISurfaceService surfaceService, IPluginService pluginService, IDialogService dialogService, IDebugService debugService,
             ISettingsService settingsService, IPluginSettingsVmFactory pluginSettingsVmFactory, IDeviceSettingsVmFactory deviceSettingsVmFactory)
@@ -60,14 +65,38 @@ namespace Artemis.UI.Screens.Settings
             SampleSizes = new List<int> {1, 9};
         }
 
-        public List<Tuple<string, int>> TargetFrameRates { get; set; }
-        public List<Tuple<string, double>> RenderScales { get; set; }
+        public List<Tuple<string, int>> TargetFrameRates
+        {
+            get => _targetFrameRates;
+            set => SetAndNotify(ref _targetFrameRates, value);
+        }
+
+        public List<Tuple<string, double>> RenderScales
+        {
+            get => _renderScales;
+            set => SetAndNotify(ref _renderScales, value);
+        }
+
+        public List<int> SampleSizes
+        {
+            get => _sampleSizes;
+            set => SetAndNotify(ref _sampleSizes, value);
+        }
+
+        public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels
+        {
+            get => _deviceSettingsViewModels;
+            set => SetAndNotify(ref _deviceSettingsViewModels, value);
+        }
+
+        public BindableCollection<PluginSettingsViewModel> Plugins
+        {
+            get => _plugins;
+            set => SetAndNotify(ref _plugins, value);
+        }
+
         public IEnumerable<ValueDescription> LogLevels { get; }
         public IEnumerable<ValueDescription> ColorSchemes { get; }
-
-        public List<int> SampleSizes { get; set; }
-        public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels { get; set; }
-        public BindableCollection<PluginSettingsViewModel> Plugins { get; set; }
 
         public bool StartWithWindows
         {

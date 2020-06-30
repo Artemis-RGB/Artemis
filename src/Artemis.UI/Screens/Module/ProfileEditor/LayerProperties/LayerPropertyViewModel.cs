@@ -17,6 +17,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 {
     public class LayerPropertyViewModel<T> : LayerPropertyViewModel
     {
+        private TreePropertyViewModel<T> _treePropertyViewModel;
+        private TimelinePropertyViewModel<T> _timelinePropertyViewModel;
+
         public LayerPropertyViewModel(IProfileEditorService profileEditorService, LayerProperty<T> layerProperty) : base(profileEditorService, layerProperty)
         {
             LayerProperty = layerProperty;
@@ -44,8 +47,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public LayerProperty<T> LayerProperty { get; }
 
-        public TreePropertyViewModel<T> TreePropertyViewModel { get; set; }
-        public TimelinePropertyViewModel<T> TimelinePropertyViewModel { get; set; }
+        public TreePropertyViewModel<T> TreePropertyViewModel
+        {
+            get => _treePropertyViewModel;
+            set => SetAndNotify(ref _treePropertyViewModel, value);
+        }
+
+        public TimelinePropertyViewModel<T> TimelinePropertyViewModel
+        {
+            get => _timelinePropertyViewModel;
+            set => SetAndNotify(ref _timelinePropertyViewModel, value);
+        }
 
         public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
         {
@@ -102,6 +114,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
     public abstract class LayerPropertyViewModel : LayerPropertyBaseViewModel
     {
+        private TreePropertyViewModel _treePropertyBaseViewModel;
+        private TimelinePropertyViewModel _timelinePropertyBaseViewModel;
+
         protected LayerPropertyViewModel(IProfileEditorService profileEditorService, BaseLayerProperty baseLayerProperty)
         {
             ProfileEditorService = profileEditorService;
@@ -111,7 +126,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public IProfileEditorService ProfileEditorService { get; }
         public BaseLayerProperty BaseLayerProperty { get; }
 
-        public TreePropertyViewModel TreePropertyBaseViewModel { get; set; }
-        public TimelinePropertyViewModel TimelinePropertyBaseViewModel { get; set; }
+        public TreePropertyViewModel TreePropertyBaseViewModel
+        {
+            get => _treePropertyBaseViewModel;
+            set => SetAndNotify(ref _treePropertyBaseViewModel, value);
+        }
+
+        public TimelinePropertyViewModel TimelinePropertyBaseViewModel
+        {
+            get => _timelinePropertyBaseViewModel;
+            set => SetAndNotify(ref _timelinePropertyBaseViewModel, value);
+        }
     }
 }

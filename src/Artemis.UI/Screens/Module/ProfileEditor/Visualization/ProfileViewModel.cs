@@ -8,14 +8,12 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
@@ -23,30 +21,38 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
     public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
-        private readonly ILayerEditorService _layerEditorService;
-        private readonly ILayerService _layerService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileLayerVmFactory _profileLayerVmFactory;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
+        private readonly IVisualizationToolVmFactory _visualizationToolVmFactory;
+
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
+        private bool _canApplyToLayer;
+        private bool _canSelectEditTool;
+        private BindableCollection<CanvasViewModel> _canvasViewModels;
+        private BindableCollection<ArtemisDevice> _devices;
+        private BindableCollection<ArtemisLed> _highlightedLeds;
+        private PluginSetting<bool> _highlightSelectedLayer;
+        private bool _isInitializing;
+        private PluginSetting<bool> _onlyShowSelectedShape;
+        private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
+        private BindableCollection<ArtemisLed> _selectedLeds;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
-            ILayerEditorService layerEditorService,
-            ILayerService layerService,
             ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
+            IVisualizationToolVmFactory visualizationToolVmFactory,
             IProfileLayerVmFactory profileLayerVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _layerEditorService = layerEditorService;
-            _layerService = layerService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
+            _visualizationToolVmFactory = visualizationToolVmFactory;
             _profileLayerVmFactory = profileLayerVmFactory;
 
             Execute.OnUIThreadSync(() =>
@@ -65,19 +71,59 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             eventAggregator.Subscribe(this);
         }
 
+        public bool IsInitializing
+        {
+            get => _isInitializing;
+            private set => SetAndNotify(ref _isInitializing, value);
+        }
 
-        public bool IsInitializing { get; private set; }
-        public bool CanSelectEditTool { get; set; }
+        public bool CanSelectEditTool
+        {
+            get => _canSelectEditTool;
+            set => SetAndNotify(ref _canSelectEditTool, value);
+        }
 
-        public PanZoomViewModel PanZoomViewModel { get; set; }
+        public PanZoomViewModel PanZoomViewModel
+        {
+            get => _panZoomViewModel;
+            set => SetAndNotify(ref _panZoomViewModel, value);
+        }
 
-        public BindableCollection<CanvasViewModel> CanvasViewModels { get; set; }
-        public BindableCollection<ArtemisDevice> Devices { get; set; }
-        public BindableCollection<ArtemisLed> HighlightedLeds { get; set; }
-        public BindableCollection<ArtemisLed> SelectedLeds { get; set; }
+        public BindableCollection<CanvasViewModel> CanvasViewModels
+        {
+            get => _canvasViewModels;
+            set => SetAndNotify(ref _canvasViewModels, value);
+        }
 
-        public PluginSetting<bool> OnlyShowSelectedShape { get; set; }
-        public PluginSetting<bool> HighlightSelectedLayer { get; set; }
+        public BindableCollection<ArtemisDevice> Devices
+        {
+            get => _devices;
+            set => SetAndNotify(ref _devices, value);
+        }
+
+        public BindableCollection<ArtemisLed> HighlightedLeds
+        {
+            get => _highlightedLeds;
+            set => SetAndNotify(ref _highlightedLeds, value);
+        }
+
+        public BindableCollection<ArtemisLed> SelectedLeds
+        {
+            get => _selectedLeds;
+            set => SetAndNotify(ref _selectedLeds, value);
+        }
+
+        public PluginSetting<bool> OnlyShowSelectedShape
+        {
+            get => _onlyShowSelectedShape;
+            set => SetAndNotify(ref _onlyShowSelectedShape, value);
+        }
+
+        public PluginSetting<bool> HighlightSelectedLayer
+        {
+            get => _highlightSelectedLayer;
+            set => SetAndNotify(ref _highlightSelectedLayer, value);
+        }
 
         public VisualizationToolViewModel ActiveToolViewModel
         {
@@ -95,7 +141,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 }
 
                 // Set the new tool
-                _activeToolViewModel = value;
+                SetAndNotify(ref _activeToolViewModel, value);
                 // Add the new tool to the canvas
                 if (_activeToolViewModel != null)
                 {
@@ -113,13 +159,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             get => _activeToolIndex;
             set
             {
-                if (_activeToolIndex != value)
-                {
-                    _activeToolIndex = value;
-                    ActivateToolByIndex(value);
-                    NotifyOfPropertyChange(() => ActiveToolIndex);
-                }
+                if (!SetAndNotify(ref _activeToolIndex, value)) return;
+                ActivateToolByIndex(value);
             }
+        }
+
+        public bool CanApplyToLayer
+        {
+            get => _canApplyToLayer;
+            set => SetAndNotify(ref _canApplyToLayer, value);
         }
 
         public List<ArtemisLed> GetLedsInRectangle(Rect selectedRect)
@@ -156,7 +204,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             OnlyShowSelectedShape.Save();
             HighlightSelectedLayer.Save();
 
-            foreach (var canvasViewModel in CanvasViewModels) 
+            foreach (var canvasViewModel in CanvasViewModels)
                 canvasViewModel.Dispose();
             CanvasViewModels.Clear();
 
@@ -230,16 +278,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             switch (value)
             {
                 case 0:
-                    ActiveToolViewModel = new ViewpointMoveToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = _visualizationToolVmFactory.ViewpointMoveToolViewModel(this);
                     break;
                 case 1:
-                    ActiveToolViewModel = new EditToolViewModel(this, _profileEditorService, _layerEditorService);
+                    ActiveToolViewModel = _visualizationToolVmFactory.EditToolViewModel(this);
                     break;
                 case 2:
-                    ActiveToolViewModel = new SelectionToolViewModel(this, _profileEditorService, _layerService);
+                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionToolViewModel(this);
                     break;
                 case 3:
-                    ActiveToolViewModel = new SelectionRemoveToolViewModel(this, _profileEditorService);
+                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionRemoveToolViewModel(this);
                     break;
             }
 
@@ -281,8 +329,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         #endregion
 
         #region Context menu actions
-
-        public bool CanApplyToLayer { get; set; }
 
         public void CreateLayer()
         {

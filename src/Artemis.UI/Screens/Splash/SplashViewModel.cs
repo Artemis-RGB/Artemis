@@ -11,6 +11,7 @@ namespace Artemis.UI.Screens.Splash
     {
         private readonly ICoreService _coreService;
         private readonly IPluginService _pluginService;
+        private string _status;
 
         public SplashViewModel(ICoreService coreService, IPluginService pluginService)
         {
@@ -19,7 +20,11 @@ namespace Artemis.UI.Screens.Splash
             Status = "Initializing Core";
         }
 
-        public string Status { get; set; }
+        public string Status
+        {
+            get => _status;
+            set => SetAndNotify(ref _status, value);
+        }
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void MouseDown(object sender, MouseButtonEventArgs e)

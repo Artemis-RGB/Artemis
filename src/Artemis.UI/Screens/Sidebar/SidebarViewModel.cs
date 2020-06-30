@@ -24,6 +24,9 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginService _pluginService;
+        private BindableCollection<INavigationItem> _sidebarItems;
+        private Dictionary<INavigationItem, Core.Plugins.Abstract.Module> _sidebarModules;
+        private IScreen _selectedItem;
 
         public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
@@ -41,9 +44,23 @@ namespace Artemis.UI.Screens.Sidebar
             eventAggregator.Subscribe(this);
         }
 
-        public BindableCollection<INavigationItem> SidebarItems { get; set; }
-        public Dictionary<INavigationItem, Core.Plugins.Abstract.Module> SidebarModules { get; set; }
-        public IScreen SelectedItem { get; set; }
+        public BindableCollection<INavigationItem> SidebarItems
+        {
+            get => _sidebarItems;
+            set => SetAndNotify(ref _sidebarItems, value);
+        }
+
+        public Dictionary<INavigationItem, Core.Plugins.Abstract.Module> SidebarModules
+        {
+            get => _sidebarModules;
+            set => SetAndNotify(ref _sidebarModules, value);
+        }
+
+        public IScreen SelectedItem
+        {
+            get => _selectedItem;
+            set => SetAndNotify(ref _selectedItem, value);
+        }
 
         public void SetupSidebar()
         {

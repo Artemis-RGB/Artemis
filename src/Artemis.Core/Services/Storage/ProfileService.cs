@@ -89,6 +89,9 @@ namespace Artemis.Core.Services.Storage
 
         public void ActivateProfile(ProfileModule module, Profile profile)
         {
+            if (module.ActiveProfile == profile)
+                return;
+
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
             {

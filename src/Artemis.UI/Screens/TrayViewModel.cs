@@ -17,6 +17,7 @@ namespace Artemis.UI.Screens
         private readonly IWindowManager _windowManager;
         private bool _setGradientPickerService;
         private SplashViewModel _splashViewModel;
+        private bool _canShowRootViewModel;
 
         public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
         {
@@ -34,7 +35,11 @@ namespace Artemis.UI.Screens
             }
         }
 
-        public bool CanShowRootViewModel { get; set; }
+        public bool CanShowRootViewModel
+        {
+            get => _canShowRootViewModel;
+            set => SetAndNotify(ref _canShowRootViewModel, value);
+        }
 
         public void TrayBringToForeground()
         {

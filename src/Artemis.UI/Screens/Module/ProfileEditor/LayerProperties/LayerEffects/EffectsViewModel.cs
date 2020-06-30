@@ -13,8 +13,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
     public class EffectsViewModel : PropertyChangedBase
     {
         private readonly ILayerService _layerService;
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginService _pluginService;
+        private readonly IProfileEditorService _profileEditorService;
+        private BindableCollection<LayerEffectDescriptor> _layerEffectDescriptors;
+        private LayerEffectDescriptor _selectedLayerEffectDescriptor;
 
         public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, ILayerService layerService, IProfileEditorService profileEditorService)
         {
@@ -27,12 +29,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
-
-        public BindableCollection<LayerEffectDescriptor> LayerEffectDescriptors { get; set; }
         public bool HasLayerEffectDescriptors => LayerEffectDescriptors.Any();
 
-        public LayerEffectDescriptor SelectedLayerEffectDescriptor { get; set; }
+        public BindableCollection<LayerEffectDescriptor> LayerEffectDescriptors
+        {
+            get => _layerEffectDescriptors;
+            set => SetAndNotify(ref _layerEffectDescriptors, value);
+        }
 
+        public LayerEffectDescriptor SelectedLayerEffectDescriptor
+        {
+            get => _selectedLayerEffectDescriptor;
+            set => SetAndNotify(ref _selectedLayerEffectDescriptor, value);
+        }
+        
         public void PopulateDescriptors()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
