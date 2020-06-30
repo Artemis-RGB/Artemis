@@ -46,6 +46,10 @@ namespace Artemis.Core.Services
             _surfaceService = surfaceService;
             _profileService = profileService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
+            _frameStopWatch = new Stopwatch();
+            
+            UpdatePluginCache();
+            ConfigureJsonConvert();
 
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
@@ -53,11 +57,6 @@ namespace Artemis.Core.Services
 
             _pluginService.PluginEnabled += (sender, args) => UpdatePluginCache();
             _pluginService.PluginDisabled += (sender, args) => UpdatePluginCache();
-            UpdatePluginCache();
-
-            _frameStopWatch = new Stopwatch();
-
-            ConfigureJsonConvert();
         }
 
         public TimeSpan FrameTime { get; private set; }

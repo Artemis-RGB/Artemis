@@ -4,6 +4,7 @@ using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Entities.Profile;
@@ -34,7 +35,8 @@ namespace Artemis.Core.Services.Storage
 
             _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
             _surfaceService.SurfaceConfigurationUpdated += OnSurfaceConfigurationUpdated;
-            _pluginService.PluginLoaded += OnPluginLoaded;
+            _pluginService.PluginEnabled += OnPluginToggled;
+            _pluginService.PluginDisabled += OnPluginToggled;
         }
 
         public void ActivateDefaultProfiles()
@@ -89,9 +91,6 @@ namespace Artemis.Core.Services.Storage
 
         public void ActivateProfile(ProfileModule module, Profile profile)
         {
-            if (module.ActiveProfile == profile)
-                return;
-
             module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             if (profile != null)
             {
@@ -181,7 +180,12 @@ namespace Artemis.Core.Services.Storage
         {
             foreach (var folder in profile.GetAllFolders())
             {
+                // Instantiate effects
                 _layerService.InstantiateLayerEffects(folder);
+                // Remove effects of plugins that are disabled
+                var disabledEffects = new List<BaseLayerEffect>(folder.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
+                foreach (var layerLayerEffect in disabledEffects)
+                    _layerService.RemoveLayerEffect(layerLayerEffect);
             }
         }
 
@@ -189,8 +193,19 @@ namespace Artemis.Core.Services.Storage
         {
             foreach (var layer in profile.GetAllLayers())
             {
-                _layerService.InstantiateLayerBrush(layer);
+                // Instantiate brush
+                if (layer.LayerBrush == null)
+                    _layerService.InstantiateLayerBrush(layer);
+                // Remove brush if plugin is disabled
+                else if (!layer.LayerBrush.PluginInfo.Enabled)
+                    _layerService.DeactivateLayerBrush(layer);
+
+                // Instantiate effects
                 _layerService.InstantiateLayerEffects(layer);
+                // Remove effects of plugins that are disabled
+                var disabledEffects = new List<BaseLayerEffect>(layer.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
+                foreach (var layerLayerEffect in disabledEffects)
+                    _layerService.RemoveLayerEffect(layerLayerEffect);
             }
         }
 
@@ -224,9 +239,11 @@ namespace Artemis.Core.Services.Storage
                 ActiveProfilesPopulateLeds(e.Surface);
         }
 
-        private void OnPluginLoaded(object sender, PluginEventArgs e)
+        private void OnPluginToggled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is LayerBrushProvider)
+                ActiveProfilesInstantiatePlugins();
+            if (e.PluginInfo.Instance is LayerEffectProvider)
                 ActiveProfilesInstantiatePlugins();
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {

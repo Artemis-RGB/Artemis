@@ -49,6 +49,12 @@ namespace Artemis.Core.Services
             layer.OnLayerBrushUpdated();
         }
 
+        public void DeactivateLayerBrush(Layer layer)
+        {
+            layer.DeactivateLayerBrush();
+            layer.OnLayerBrushUpdated();
+        }
+
         public BaseLayerBrush InstantiateLayerBrush(Layer layer)
         {
             if (layer.LayerBrush != null)
@@ -105,15 +111,16 @@ namespace Artemis.Core.Services
 
         public void InstantiateLayerEffects(EffectProfileElement effectElement)
         {
-            if (effectElement.LayerEffects.Any())
-                throw new ArtemisCoreException("Effect element (layer/folder) already has instantiated layer effects");
-
             var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
             var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
             var entities = effectElement.EffectsEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
-            
+
             foreach (var layerEffectEntity in entities)
             {
+                // Skip effects already on the element
+                if (effectElement.LayerEffects.Any(e => e.EntityId == layerEffectEntity.Id))
+                    continue;
+
                 // Get a matching descriptor
                 var descriptor = descriptors.FirstOrDefault(d => d.LayerEffectProvider.PluginInfo.Guid == layerEffectEntity.PluginGuid &&
                                                                  d.LayerEffectType.Name == layerEffectEntity.EffectType);

@@ -24,6 +24,12 @@ namespace Artemis.Core.Services.Interfaces
         void RemoveLayerBrush(Layer layer);
 
         /// <summary>
+        ///     Deactivates the currently active layer brush from the <see cref="Layer" /> but keeps all settings     
+        /// </summary>
+        /// <param name="layer">The layer to deactivate the active brush on</param>
+        void DeactivateLayerBrush(Layer layer);
+
+        /// <summary>
         ///     Instantiates and adds the <see cref="BaseLayerBrush" /> described by the provided
         ///     <see cref="LayerBrushDescriptor" />
         ///     to the <see cref="Layer" />.
