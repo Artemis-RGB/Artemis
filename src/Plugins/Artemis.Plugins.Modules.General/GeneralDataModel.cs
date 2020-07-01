@@ -29,7 +29,7 @@ namespace Artemis.Plugins.Modules.General
         public List<PlayerInfo> PlayerInfosList { get; set; }
     }
 
-    public class PlayerInfo : DataModel
+    public class PlayerInfo
     {
         [DataModelProperty(Name = "A test string", Description = "This is a test string that's not of any use outside testing!")]
         public string TestString { get; set; }

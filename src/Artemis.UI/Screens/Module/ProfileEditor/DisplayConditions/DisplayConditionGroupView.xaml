@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.DisplayConditionGroupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=local:DisplayConditionGroupViewModel, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                HorizontalAlignment="Left"
+                Visibility="{Binding IsRootGroup, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                Width="25"
+                Height="25"
+                Foreground="#E74C4C">
+            <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
+        </Button>
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
+                Background="#E74C4C"
+                BorderBrush="#E74C4C"
+                Margin="3 1">
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="And" />
+                    <MenuItem Header="Or" />
+                    <MenuItem Header="And not" />
+                    <MenuItem Header="Or not" />
+                </ContextMenu>
+            </Button.ContextMenu>
+            Or
+        </Button>
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                HorizontalAlignment="Left"
+                Foreground="#4CE758"
+                Width="25"
+                Height="25">
+            <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
+        </Button>
+
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Children}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
